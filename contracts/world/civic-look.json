@@ -617,7 +617,7 @@
   "materials": [
    {
     "material": "DK_Accent_Gold",
-    "unlit": "#99784D",
+    "unlit": "#C29A55",
     "used_by": [
      "OceanLiner",
      "PlanterArc"
@@ -647,7 +647,7 @@
    },
    {
     "material": "DK_Bloom_Coral",
-    "unlit": "#FC9C84",
+    "unlit": "#F28A70",
     "used_by": [
      "PlanterRun_2_A",
      "PlanterRun_4_A",
@@ -687,7 +687,7 @@
    },
    {
     "material": "DK_Bloom_Peach",
-    "unlit": "#FCC4AC",
+    "unlit": "#F8B898",
     "used_by": [
      "PlanterRun_2_B",
      "PlanterRun_2_C",
@@ -703,7 +703,7 @@
    },
    {
     "material": "DK_Brass_Civic",
-    "unlit": "#99784D",
+    "unlit": "#C29A55",
     "used_by": [
      "BoardingPavilion_Square_v2",
      "CafeBay",
@@ -883,7 +883,7 @@
    },
    {
     "material": "DK_Cloth_CoralSoft",
-    "unlit": "#FC9C84",
+    "unlit": "#F28A70",
     "used_by": [
      "PlazaSphereLamp_Play",
      "CafeBay_v2"
@@ -1129,7 +1129,7 @@
    },
    {
     "material": "DK_Gold",
-    "unlit": "#99784D",
+    "unlit": "#D6AE62",
     "used_by": [
      "AdColumn",
      "ArcadeBay_3",
@@ -1166,7 +1166,7 @@
    },
    {
     "material": "DK_Gold17",
-    "unlit": "#AD866F",
+    "unlit": "#D6B676",
     "used_by": [
      "AtomFountain",
      "ParadeGate_Block",
@@ -1385,7 +1385,7 @@
   ]
  },
  "roles": {
-  "decision": "Sky, 14 Oct: seafoam and deep teal are the kit enamels; coral, flamingo and peach (contract accents) are for banners and flowers; gold is hairline, frame and bead only; the full-height gold fins come off. 14 Oct (first Unity build, against the paintings): ivory stone fields, seafoam bands, deep teal an accent of 0.3 m or less never a field, fascia, cap or band; the hairline gold is the painted brass #99784D, not the world gold #D0C848 (yellow-green in Unity).",
+  "decision": "Sky, 14 Oct: seafoam and deep teal are the kit enamels; coral, flamingo and peach (contract accents) are for banners and flowers; gold is hairline, frame and bead only; the full-height gold fins come off. 14 Oct (first Unity build, against the paintings): ivory stone fields, seafoam bands, deep teal an accent of 0.3 m or less never a field, fascia, cap or band; the hairline gold is the painted brass #99784D, not the world gold #D0C848 (yellow-green in Unity). 072-G (Sky, 27 Oct: 'yep, more, more reds / blues allowed as well'): the hairline is brass-gold #C29A55 and may be a band up to 15 cm; deep teal is also the Records Office's storey band (up to 0.9 m, never a field); glass dark teal to blue-teal; the signal-gate reasons are history.",
   "roles": {
    "stone": {
     "materials": [
@@ -1429,9 +1429,9 @@
     "hex": [
      "#1F6C67"
     ],
-    "rule": "an accent of 0.3 m or less: the caf\u00e9 blade-sign body, the lamp sleeve, chair cushions, an 8 cm reveal round the Office window. Never a field, fin, fascia, cap or band (Unity read them as dark panels and a dark marquee)",
+    "rule": "storey bands, fascia lines and reveals up to 0.9 m; never a whole field. The Records Office's storey band (5.0 to 5.9 m, RecordsTower) is DecoKit's deep teal, as the old DecoKit civic office (072-G (Sky, 27 Oct: 'yep, more, more reds / blues allowed as well'), Q1b 'yep'); the sign body, lamp sleeve, cushions and the 8 cm window reveal stay",
     "painting": "the paintings use it only as thin edge lines and the sign blades",
-    "use": "sign body, cushions, lamp sleeve, window reveal"
+    "use": "the Office storey band, sign body, cushions, lamp sleeve, window reveal"
    },
    "metal": {
     "materials": [
@@ -1447,19 +1447,19 @@
      "DK_Brass_Civic"
     ],
     "hex": [
-     "#99784D"
+     "#C29A55"
     ],
     "facade_swatch": {
-     "gold": "#99784D",
-     "paletteOverride.gold_trim": "#99784D"
+     "gold": "#C29A55",
+     "paletteOverride.gold_trim": "#C29A55"
     },
     "old": {
      "material": "DK_Accent_Gold",
      "hex": "#D0C848"
     },
-    "rule": "only as a bead, frame, mullion or line of 3 to 7 cm; never a panel, fin, fascia or band; at most 6% of any elevation's area. #99784D is dE2000 21.3 from the guard colour: a gold of this hue that is any lighter than L 52 falls inside the gate, so this dark brass is the gold",
+    "rule": "bead, frame, mullion, line or band up to 15 cm; at most 12% of an elevation; never a large panel. Brass-gold #C29A55 (072-G (Sky, 27 Oct: 'yep, more, more reds / blues allowed as well'); DK_Gold is DecoKit's #D6AE62, DK_Gold17 #D6B676). Was dark brass #99784D, held there only by the signal-colour gate dropped on 2026-10-16",
     "painting": "gp-entrance: the door posts, #99784D in the shade of the marquee (lit brass is lighter; the unlit palette gate reads this value)",
-    "use": "glazing frames, door frames, fascia lines, marquee edge, banner rods, window grid"
+    "use": "glazing frames, door frames, fascia lines, marquee edge, banner rods, window grid, the Office band's hairlines"
    },
    "banner": {
     "materials": [
@@ -1480,7 +1480,7 @@
      "material": "DK_Banner_Comet + DK_Fabric_Banner",
      "hex": "#048A7C (texture field)"
     },
-    "rule": "entrance banners: seafoam field, ivory comet (banner_comet_seafoam_v1.png, derive008.py); lamp pennants: seafoam and the contract coral. Never a red-orange: DK_Fabric_Coral #E07560 (dE 12.0 from the cones colour) and DK_Blind_Coral #E58A6E (17.3) stay off this block; the contract accents are 21.7 or more",
+    "rule": "entrance banners: seafoam field, ivory comet (banner_comet_seafoam_v1.png, derive008.py); lamp pennants: seafoam and the contract coral. Coral, flamingo, peach and red-orange are all allowed (the signal-colour gate that kept DK_Fabric_Coral off this block was dropped on 2026-10-16); the block keeps seafoam to follow the paintings",
     "painting": "gp-entrance: the pier banners, ivory comet on a teal field (#406464 as painted; seafoam here because the shaded Unity faces multiply it by about 0.18 in linear light)"
    },
    "flowers": {
@@ -1547,7 +1547,7 @@
     "hex": [
      "#35585A"
     ],
-    "rule": "clear dark teal, no blue curtain wall (facade.json glass_clear)",
+    "rule": "dark teal to blue-teal with sky reflections (facade.json glass_clear #2C6478; the kit film DK_GlassDark glaze #3F7A8E); no curtain wall",
     "painting": "records-office: dark glazing",
     "use": "glass"
    },
@@ -1558,7 +1558,7 @@
     "hex": [
      "#FFF1C4"
     ],
-    "rule": "DK_Lamp #FFE2A6 is dE 19.3 from the guard colour: the civic pieces use Lamp_Deco (24.6)"
+    "rule": "DK_Lamp_Deco #FFF1C4, the paler lamp, chosen for the civic pieces' colour (the old reason, a distance from the guard colour, is gone since 2026-10-16)"
    }
   },
   "parts": {
@@ -1624,6 +1624,14 @@
    },
    "paving": {
     "stone": "DK_Pave_Civic slabs on the plot surfaces of the square, the caf\u00e9 terrace and the office apron (world-space UVs, 4 m tile, like DK_Asphalt_Fine)"
+   },
+   "RecordsTower": {
+    "stone": "wing, pilasters, towers, crowns (DK_Limestone, DK_Enamel_Ivory)",
+    "band": "pilaster flutes, parapet band, tower fins, crown ring (seafoam)",
+    "deep": "the storey band 5.0 to 5.9 m round the wing and both towers (DK_Enamel_Teal), the service door",
+    "hairline": "the band's two hairlines, parapet and crown lines, pilaster caps (brass-gold)",
+    "glass": "the giant order's glazing, stair slots, rotunda (DK_GlassDark)",
+    "metal": "mullions, rotunda ribs, spheres (chrome)"
    }
   },
   "pool_water": {

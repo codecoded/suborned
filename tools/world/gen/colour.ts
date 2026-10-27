@@ -16,10 +16,11 @@ import { type Bld, floorTop } from './masses';
 import { SHOP_PIECE } from './faces';
 import type { BaseSkin } from './skins';
 
-/** §2 accent roles and weights (look.json surfaces); gold is the trim on every building, never its accent. */
-export const ACCENT_ROLES: [string, number][] = [['accent_teal', 35], ['accent_coral', 20], ['accent_turquoise', 15], ['accent_mint', 10], ['accent_flamingo', 10], ['accent_peach', 10]];
+/** §2 accent roles and weights (look.json surfaces); gold is the trim on every building, never its accent. Brief 072-G (Sky, 2026-10-27: "more reds / blues allowed as well"):
+ *  enamel red, royal and cobalt join (reds coral + red + flamingo 36, blues royal + cobalt + turquoise 30, teal 24, mint and peach 10); was teal 35, coral 20, turquoise 15, mint 10, flamingo 10, peach 10. */
+export const ACCENT_ROLES: [string, number][] = [['accent_teal', 24], ['accent_coral', 18], ['accent_red', 12], ['accent_royal', 12], ['accent_turquoise', 10], ['accent_cobalt', 8], ['accent_mint', 6], ['accent_flamingo', 6], ['accent_peach', 4]];
 export const GOLD = 'accent_gold', CANVAS = 'canvas';
-/** Fabric never takes the cone red; these are the only fabric colours (accent roles + canvas). */
+/** The only fabric colours (accent roles + canvas). Red is free for the world since 2026-10-16 (signals draw unlit with their own cue), so the accent red is fabric too. */
 export const FABRIC_SURFACES = new Set([...ACCENT_ROLES.map(r => r[0]), GOLD, CANVAS]);
 
 export const COLOUR = {
@@ -34,10 +35,10 @@ export const COLOUR = {
   /** §2a item 3a (Vela, round 3 wrap-up): a w x h accent panel behind every porthole, centred on it, its chrome ring proud of it; the porthole centre is the
    *  storey's sill-to-head midpoint (row + 1.75), under an eave at most `d/2 + ring + 0.1` below the top (ProcSkin.Overlay). */
   portholePanel: { w: 1.5, h: 1.5 },
-  fin: { w: 1.2, d: 0.6, bead: 0.08, roles: ['accent_coral', 'accent_teal'] as const, minH: 3 },
+  fin: { w: 1.2, d: 0.6, bead: 0.08, roles: ['accent_coral', 'accent_teal', 'accent_red', 'accent_royal'] as const, minH: 3 },
   awning: { w: 2.4, d: 0.9, fall: 0.45, valance: 0.3, stripe: 0.4, share: 1 / 3, every: 2, at: 3.25 }, // `at`: back edge above the storey floor (head 2.6)
   banner: { w: 1.2, h: 6, border: 0.12, arm: 0.6, cornerShare: 1 / 3, over: 0.4 }, // `over`: bottom this far above the deck line
-  flag: { h: 8, pennant: [1.2, 1.8] as [number, number], pitch: 9, roles: ['accent_coral', 'accent_teal', 'accent_gold', 'accent_flamingo'], r: 0.25 },
+  flag: { h: 8, pennant: [1.2, 1.8] as [number, number], pitch: 9, roles: ['accent_coral', 'accent_teal', 'accent_gold', 'accent_flamingo', 'accent_red', 'accent_royal'], r: 0.25 },
 };
 
 type Span = [number, number];
@@ -94,7 +95,7 @@ export function colourLife(ctx: Ctx, blds: Bld[], masses: Mass[], skins: BaseSki
     const massOf = new Map(ms.map(m => [m.id, m])), fac = facB.get(b.id) ?? [], r = rng(`colour/${b.id}`);
     const accent2 = r.weighted(ACCENT_ROLES.filter(x => x[0] !== sk.accent), x => x[1])[0];
     let piers = r.chance(C.faience.piersShare), spandrel = r.chance(C.spandrel.share);
-    const resi = b.use === 'residential' && r.chance(C.awning.share), finRole = C.fin.roles[r.int(0, 1)]!;
+    const resi = b.use === 'residential' && r.chance(C.awning.share), finRole = C.fin.roles[r.int(0, C.fin.roles.length - 1)]!;
     const street = sk.faces.filter(f => /[RPB]/.test(f.bays));
     // per face: its kit spans, the procedural length, the zone height it carries (lower storeys) and its whole height
     const fx = street.map(f => { const m = massOf.get(f.mass)!, L = dist(f.a, f.b), sp = kitSpans(f.a, f.b, fac), Lp = Math.max(0, L - coverLen(sp)), top = m.base + m.height;

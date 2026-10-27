@@ -21,13 +21,17 @@ import bpy
 # lightest brass the gate lets through: a lighter, yellower brass drifts onto the guard amber (L 73, C 68), so the highlight brass leans rose (#AD866F, 21.3).
 # DK_Gold, DK_Gold17 and DK_Accent_Gold are brass; the crown pieces (crown.py) draw DK_Crown_Gold / DK_Crown_Gold17 at the old values, so the shared names can turn.
 # Gold stays hairline, frame, bead and the small metal of a piece, never a fat panel. 15 Oct: the brass rows are kind `brass` (satin, KIND below), the crown rows stay `metal`.
-BRASS, BRASS_LIGHT, CROWN_GOLD, CROWN_GOLD17 = "#99784D", "#AD866F", "#E3D681", "#C9C08E"
+# 27 Oct (brief 072-G; Sky on the 072-B proposal: "yep, more, more reds / blues allowed as well"): the signal gate that held brass dark and rose is gone (2026-10-16), so the
+# street brass is a warm brass-gold again: BRASS #C29A55 (DK_Accent_Gold, DK_Brass_Civic: frames, beads, bands up to ~15 cm), BRASS_LIGHT #D6B676 (DK_Gold17), and DK_Gold is
+# DecoKit's own #D6AE62 (kind `brass`, not DecoKit's `metal`: full metal mirrored the dark zenith, black studs in Unity). Crowns unchanged. Never a large gold or brass panel.
+BRASS, BRASS_LIGHT, CROWN_GOLD, CROWN_GOLD17 = "#C29A55", "#D6B676", "#E3D681", "#C9C08E"
+GOLD_DK = "#D6AE62"  # DecoKit's DK_Gold
 
 LIB = {
     # enamel
     "DK_Enamel_Ivory": ("enamel", "#EFE8D6"), "DK_Enamel_Cream": ("enamel", "#F3DDB0"),
     "DK_Enamel_Teal": ("enamel", "#1F6C67"), "DK_Enamel_Seafoam": ("enamel", "#72B5A7"),
-    "DK_Enamel_Mint": ("enamel", "#A8D3BE"), "DK_Enamel_Red": ("enamel", "#820606"),
+    "DK_Enamel_Mint": ("enamel", "#A8D3BE"), "DK_Enamel_Red": ("enamel", "#C42A1F"),
     "DK_Enamel_Mustard": ("enamel", "#EEA82D"), "DK_Enamel_RedBright": ("enamel", "#C42A1F"), "DK_Enamel_Powder": ("enamel", "#86ADD3"),
     "DK_Enamel_Royal": ("enamel", "#2C56A6"), "DK_Enamel_Charcoal": ("enamel", "#2B2F33"),
     # ceramic paving
@@ -39,11 +43,11 @@ LIB = {
     "DK_Soil": ("stone", "#3B2C22"),
     # metal
     "DK_Chrome": ("chrome", "#EDEDED"), "DK_Steel": ("metal", "#A9ABAE"),
-    "DK_Gold": ("brass", BRASS), "DK_Iron": ("metal", "#3A3C3E"),
+    "DK_Gold": ("brass", GOLD_DK), "DK_Iron": ("metal", "#3A3C3E"),
     # misc
     "DK_Rubber": ("rubber", "#1B1C1E"), "DK_Glass": ("glass", "#CFEDE6"),
     "DK_GlassDark": ("glass", "#35585A"),
-    "DK_Lamp": ("emit", "#FFE2A6", 6.0), "DK_Signal_Red": ("emit", "#E8609A", 4.0),
+    "DK_Lamp": ("emit", "#FFE2A6", 6.0), "DK_Signal_Red": ("emit", "#FF3B26", 4.0),
     "DK_Signal_Amber": ("emit", "#FFB21E", 4.0), "DK_Signal_Green": ("emit", "#2EE07A", 4.0),
     "DK_Screen": ("emit", "#7FE3D4", 1.5), "DK_RobotEye": ("emit", "#FF8A1E", 3.0),
     # textured (TEXTURES below): decals are alpha-keyed sheets, tiles are metric-scale albedo
@@ -99,15 +103,18 @@ LIB.setdefault("DK_Faience_Teal", ("ceramic", look_hex("accent_teal")))   # teal
 # Signal_Red #FF3B26 6.7 -> the flamingo accent (24.6). DK_Signal_Red stays only because legacy FBXs bind it by name.
 # 20 Oct (Sky, brief 026 compare): Enamel_Mustard back to #EEA82D (the old mustard; "everything else, old looked better"); Enamel_Red stays oxblood #820606.
 # 14 Oct (Sky, brass over gold): Gold #E3D681 20.6 -> BRASS #99784D 21.3 (the crowns keep #E3D681 as DK_Crown_Gold).
+# 27 Oct (brief 072-G, Sky: "more reds / blues allowed"): all four back to DecoKit's colours: Mustard #EEA82D, Gold #D6AE62 (as satin brass), Enamel_Red #C42A1F (bright enamel red,
+# pillar boxes and trims), Signal_Red #FF3B26 (only legacy FBXs bind it; ALIAS still keeps every generated piece on DK_Beacon_Rose). The tuple stays: unity_mats rewrites these .mat files
+# under their old guids.
 WORLD_RETUNE = ("DK_Enamel_Mustard", "DK_Gold", "DK_Enamel_Red", "DK_Signal_Red")
-LIB["DK_Signal_Red"] = ("emit", ACCENT["flamingo"], 4.0)
 
 # Window film (brief 048, Vela): DK_GlassDark is the glass in front of every facade bay (ribbons, deco columns, portholes, shop transoms). As URP Lit at smoothness 0.98 and alpha 0.3 over a
 # charcoal back wall it mirrored the dark street-canyon cube and read as a black void in third person. Unity draws it with Suborned/DecoKit/GlassSky (a fake sky, no probe: see the shader):
 # the glaze is the old colour at alpha 0.72 (the 1.1 m cavity behind it is the adopted store pieces', charcoal and unreachable from here), the mirror a pale warm horizon to a soft blue zenith (the paintings' windows: dark teal glass with sky glints). Blender keeps the same alpha.
 # GLASS_SHADER_GUID is the .shader.meta guid (unity/Assets/Suborned/Shaders/DecoKit/DK_GlassSky.shader.meta).
 GLASS_SHADER_GUID = "0a6625b81c13d56024a16fdc589a1954"
-GLASS_FILM = {"DK_GlassDark": dict(alpha=0.72, glaze="#4A8588", edge=0.92, fresnel=3.0, sheen=0.12, glow=0.85, horizon="#D8E6E4", zenith="#86B8E0", street="#A78F78")}
+# 27 Oct (brief 072-G): the glaze a step bluer and a touch clearer (#4A8588 a0.72 -> #3F7A8E a0.65: blue-teal glass with more sky, toward DecoKit's #35585A a0.3 mirror).
+GLASS_FILM = {"DK_GlassDark": dict(alpha=0.65, glaze="#3F7A8E", edge=0.92, fresnel=3.0, sheen=0.12, glow=0.85, horizon="#D8E6E4", zenith="#86B8E0", street="#A78F78")}
 
 LIB.setdefault("DK_Beacon_Rose", ("emit", ACCENT["flamingo"], 4.0))  # obstruction / status lamps: pink, never signal red
 ALIAS = {"Signal_Red": "DK_Beacon_Rose"}  # generated pieces never use DK_Signal_Red on a world surface
@@ -200,7 +207,8 @@ KIND = {
     # satin brass (Sky, 15 Oct, brief 009: "satin brass"): the street-level brass pieces drew `metal` (metallic 1.0, smoothness 0.7), which has no diffuse colour and mirrors the dark
     # zenith above a street: near-black studs and edge lines in Unity. Metallic 0.3, smoothness 0.5 is lit by sun and sky and reads as the brass hex; the colours are unchanged
     # (dE2000 21.3 from the guard amber). The skyline crowns keep `metal` and their gold (DK_Crown_Gold, DK_Crown_Gold17: crown.py).
-    "brass": (0.5, 0.3, 0.0, 0.0, 1.0),
+    # 27 Oct (brief 072-G): (0.5, 0.3) -> (0.4, 0.6): brass-gold reads as metal and catches the sun, and keeps its colour in shade (still not DecoKit's full metal).
+    "brass": (0.4, 0.6, 0.0, 0.0, 1.0),
     "ground": (0.75, 0.0, 0.0, 0.0, 1.0),  # world-metre-UV ground (GROUND); roughness comes from the _mask alpha where there is one
     "paving": (0.5, 0.0, 0.0, 0.0, 1.0),  # sheet-mapped stone (paving.py); roughness comes from the _mask alpha
     "face": (0.2, 0.0, 0.0, 0.0, 0.0),  # robot display face: drawn by DK_RobotFace.shader in Unity, clear here

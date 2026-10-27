@@ -16,7 +16,9 @@ canopy, fascia and plinth of a shopfront run carry on where a street bay stops.
 Frame (as SideBay, sides.py): pivot = the module's centre on the building line at its foot; Blender face -Y (kit front +Z), x across; the building line is y 0;
 the canopy reaches 1.6 / 1.65 m out (-Y), the shop's back wall 2.0 m in (+Y). Nothing stands over the coping. Materials: the side bay's set with the
 fronts' shopfront glass (DK_GlassDark, as the street bays, L0 only) and DK_Lobby for the back wall; the upper windows are the side bay's opaque DK_Window_Film.
-L1 / L2 hand-built: the shop glass becomes an opaque dark quad (DK_Stone_Dark: the dark shop at distance, no see-through), bands and canopy as boxes."""
+L1 / L2 hand-built: the shop glass becomes an opaque dark quad (DK_Stone_Dark: the dark shop at distance, no see-through), bands and canopy as boxes. L2 is the
+module's shadow copy (ShadowProxies), so it keeps the shop open to its back wall (the dark quad 2.0 m in, the piers and head that deep, the floor's top) and its
+upper windows open in the slab (sides.py _slab, brief 072-G): the canopy and reveals shade the shop and the pockets, as L0's own shadow would."""
 
 from kit import asset
 from mats import pal
@@ -42,8 +44,9 @@ def shop_ground(S, hw, lod):
     line = [(-hw, 0.0), (hw, 0.0)]
 
     def draw(s):
-        # piers to the back wall (the shop's side walls), the head behind the fascia; L1 / L2 close the shop at the glass, so only the slab's depth
-        back = DEEP + 0.15 if lod == 0 else BACKY
+        # piers to the back wall (the shop's side walls), the head behind the fascia; L1 closes the shop at the glass, so only the slab's depth; L2 (the
+        # module's shadow copy, brief 072-G) keeps the shop's depth, so the sun reaches L0's shop floor and back wall under the canopy as L0's own shadow lets it
+        back = DEEP + 0.15 if lod != 1 else BACKY
         for x0, x1 in ((-hw, g0), (g1, hw)):
             s.box((x0, SKIN, 0.45), (x1, back, f0), pal.Limestone_Tex)
         s.box((-hw, SKIN + 0.02, f0), (hw, back, f1), pal.Limestone_Tex)
@@ -59,7 +62,10 @@ def shop_ground(S, hw, lod):
             bead(s, line, -out, (c0 + c1) / 2, 0.03, pal.Chrome)
             return
         s.box((-hw, -0.06, 0.0), (hw, 0.3, 0.45), pal.Stone_Dark)
-        s.face([(g0, GLASS_Y, 0.45), (g1, GLASS_Y, 0.45), (g1, GLASS_Y, f0), (g0, GLASS_Y, f0)], pal.Stone_Dark)  # the dark shop behind the glass, opaque; a material of L0's set (kit.test: a LOD asks only for its piece's materials)
+        yb = GLASS_Y if lod == 1 else DEEP   # L1: the dark shop on the glass; L2: the back wall at L0's, over the shop floor
+        if lod == 2:
+            s.face([(g0, GLASS_Y, 0.45), (g1, GLASS_Y, 0.45), (g1, DEEP, 0.45), (g0, DEEP, 0.45)], pal.Stone_Dark)  # the shop floor's top (faces up)
+        s.face([(g0, yb, 0.45), (g1, yb, 0.45), (g1, yb, f0), (g0, yb, f0)], pal.Stone_Dark)  # the dark shop behind the glass, opaque; a material of L0's set (kit.test: a LOD asks only for its piece's materials)
         if lod == 1:
             s.box((-0.035, GLASS_Y - 0.07, 0.45), (0.035, GLASS_Y, f0), pal.Gold)
         s.box((-hw, -0.1, f0), (hw, 0.0, f1), pal.Enamel_Teal)

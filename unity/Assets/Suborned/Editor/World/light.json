@@ -94,10 +94,11 @@
       "tint": "light.bloomTint"
     },
     "colour": {
-      "postExposure": 0.15,
-      "contrast": 6,
-      "saturation": 18,
+      "postExposure": 0.02,
+      "contrast": 10,
+      "saturation": 25,
       "filter": "light.filter",
+      "r072": "Glint, brief 072-G (2026-10-27; Sky 'yeo' to the grade toward the old DecoKit's). DecoKit's street grade (DK_StreetGrade, DecoKitStreet: ACES, exposure -0.8 with a #ffedcc sun at 3, contrast 10, saturation 25, no shadow tint) against today's. Moved: contrast 6 -> 10 (DecoKit's), saturation 18 -> 25 (DecoKit's; the follow and long tiers take it as is; the play tier multiplies it by lens.json gradePlay, which goes 14 -> 8 percent so the play camera lands at 35.0, about today's 36.9: the play view was ALREADY above DecoKit's 25, and contrast 10 adds colour of its own), postExposure +0.15 -> +0.02 (DecoKit's -0.8 at sun 3 is about -0.06 at our sun 1.8; +0.02 keeps lit cream at about 236 at play zoom, not grey), the sun from pink-peach #ffe0d0 toward DecoKit's gold (#ffe4c8; the full #ffecca turned lit paving S 0.41 and the shaded powder-blue road teal-green, hue 204 -> 173; Sky keeps the powder-blue road), the shadows tint milder (light.gradeShadows #c7d1eb -> #d0d8ec: DecoKit had none; a cool shade still keeps the road blue). Measured at play zoom, office-front yaw 30 (frame mean S 0.245 -> 0.273; lit paving (227,196,154) S 0.32 -> (228,194,141) S 0.38; shaded road H 204 -> 196; lit top-20 percent (235,211,182) -> (236,211,172)). Night is its own block and does not move (frames byte-identical). The crossing heads' day trims are refitted for this grade in Resources/Atmosphere/signals.json; lens.json evening deltas re-based so the evening grade is unchanged. Evidence: briefs/072/grade/.",
       "honest": "Glint, 008 light-honest. The colour filter is neutral (was #fffbf4): it warmed shade as well as sun (shaded paving R-B 31 against the paintings' 17-24). Post-exposure, contrast and saturation are unchanged (saturation keeps the enamel accents saturated)."
     },
     "shadowsMidtonesHighlights": {
@@ -233,7 +234,8 @@
     "night.lampStreet": { "hex": "#ffe6bf" },
     "night.uplight": { "hex": "#e4efc7" },
     "light.sun": {
-      "hex": "#ffe0d0"
+      "hex": "#ffe4c8",
+      "note": "Glint 072-G: #ffe0d0 -> #ffe4c8, toward the old DecoKit sun #ffedcc (see post.colour.r072)"
     },
     "light.sunGlow": {
       "hex": "#ffe0b0"
@@ -267,7 +269,8 @@
       "hex": "#ffffff"
     },
     "light.gradeShadows": {
-      "hex": "#c7d1eb"
+      "hex": "#d0d8ec",
+      "note": "Glint 072-G: #c7d1eb -> #d0d8ec, milder (DecoKit had no shadow tint; see post.colour.r072)"
     },
     "light.gradeMid": {
       "hex": "#ffffff"

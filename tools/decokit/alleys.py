@@ -17,11 +17,12 @@ duct run centred 0.7 under the roof deck, panel seams; the riser duct (x -2.45) 
 
 import math
 
-from alleys_parts import (HW, SKIN, ALONG_X, ac_unit, antennas, band, cable_run, canopy, caged_lamp, catwalk, conduit,
+from alleys_parts import (HW, SKIN, REVEAL, ALONG_X, ac_unit, antennas, band, cable_run, canopy, caged_lamp, catwalk, conduit,
                           door, drainpipe, duct_run, grille, porthole, rails, riser, round_poly, slab, straight,
                           vent_bank, window)
 from booths import sub
 from geo import circle, dome, fillet
+from holes import holed_slab
 from kit import asset
 from mats import DECAL, cell, pal
 from plaza_parts import offset
@@ -246,20 +247,24 @@ asset("AlleyWall_6D", "Alleys", bevel=0.0)(service_wall(6, "stream", "dock"))
 # ground band and parapet run on from the front round the corner. Candidates until Splice adopts them and the world places them on non-street faces.
 def service_lod(n, ground, lod):
     """Hand-built L1 / L2 of the play-street service walls (the 25 % collapse of the carved slab threw shards off the wall): the slab as a box, its windows and
-    portholes as dark quads where L0 cuts them, the ground band, floor courses, top duct run, the riser and drainpipe, the door or dock, the parapet band and coping."""
+    portholes as dark quads where L0 cuts them (L2, the module's shadow copy: the window and vent pockets open, holes.py, brief 072-G), the ground band, floor courses, top duct run, the riser and drainpipe, the door or dock, the parapet band and coping."""
     def build(s):
         zt = top_of(n)
         z1 = zt + 0.95
-        s.box((-HW, SKIN, 0.0), (HW, 0.35, z1), pal.Limestone_Tex)
         y = SKIN - 0.005
-        for k in range(n):
-            for h in floor_items(k, G + k * FH)[0]:
-                if h[0] == "c":
-                    _, x, z, r, _m = h
-                    s.face([(x + r * math.cos(math.pi * j / 4), y, z + r * math.sin(math.pi * j / 4)) for j in range(8)], pal.Window_Tower)
-                else:
-                    _, x0, za, x1, zb, m = h
-                    s.face([(x0, y, za), (x1, y, za), (x1, y, zb), (x0, y, zb)], pal.Window_Tower if m is pal.Enamel_Ivory else pal.Enamel_Charcoal)
+        holes = [h for k in range(n) for h in floor_items(k, G + k * FH)[0]]
+        if lod == 2:  # the shadow copy (brief 072-G): the slab open at L0's window and vent pockets, closed at their depth by the pane or the dark vent
+            holed_slab(s, -HW, HW, 0.0, z1, SKIN, 0.35, [(h[1], h[2], h[3], h[4], pal.Window_Tower if h[5] is pal.Enamel_Ivory else pal.Enamel_Charcoal, h[5])
+                                                       for h in holes if h[0] == "r"], pal.Limestone_Tex, SKIN + REVEAL + 0.02)
+        else:
+            s.box((-HW, SKIN, 0.0), (HW, 0.35, z1), pal.Limestone_Tex)
+        for h in holes:
+            if h[0] == "c":
+                _, x, z, r, _m = h
+                s.face([(x + r * math.cos(math.pi * j / 4), y, z + r * math.sin(math.pi * j / 4)) for j in range(8)], pal.Window_Tower)
+            elif lod != 2:
+                _, x0, za, x1, zb, m = h
+                s.face([(x0, y, za), (x1, y, za), (x1, y, zb), (x0, y, zb)], pal.Window_Tower if m is pal.Enamel_Ivory else pal.Enamel_Charcoal)
         s.box((-HW, SKIN - 0.06, 0.0), (HW, SKIN, 0.45), pal.Stone_Dark)
         if ground == "dock":
             s.box((-1.9, SKIN - 0.02, 0.95), (1.1, SKIN, 3.85), pal.Enamel_Mustard)

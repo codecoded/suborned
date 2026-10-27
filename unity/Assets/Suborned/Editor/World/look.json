@@ -383,6 +383,24 @@
       "value": 1,
       "smoothness": 0.4
     },
+    "accent_cobalt": {
+      "detail": "enamel",
+      "palette": "harbour.accent_cobalt",
+      "value": 1,
+      "smoothness": 0.5
+    },
+    "accent_royal": {
+      "detail": "enamel",
+      "palette": "harbour.accent_royal",
+      "value": 1,
+      "smoothness": 0.5
+    },
+    "accent_red": {
+      "detail": "enamel",
+      "palette": "harbour.accent_red",
+      "value": 1,
+      "smoothness": 0.5
+    },
     "canvas": {
       "detail": "limestone",
       "palette": "harbour.canvas",
@@ -559,7 +577,7 @@
       "hex": "#e2e2e4"
     },
     "harbour.limestone": {
-      "hex": "#f8eed9"
+      "hex": "#f0e3ca"
     },
     "harbour.deck": {
       "hex": "#faf1df"
@@ -568,28 +586,28 @@
       "hex": "#eee1c9"
     },
     "harbour.civic": {
-      "hex": "#fbe8b8"
+      "hex": "#f7dfa8"
     },
     "harbour.trim": {
-      "hex": "#99784d"
+      "hex": "#c29a55"
     },
     "harbour.crossing": {
       "hex": "#d0c848"
     },
     "harbour.residential": {
-      "hex": "#f8eedb"
+      "hex": "#f3e3c6"
     },
     "harbour.mixed": {
-      "hex": "#fdf5e4"
+      "hex": "#f7ead2"
     },
     "harbour.frontage": {
-      "hex": "#f6ecd8"
+      "hex": "#f0e0c3"
     },
     "harbour.roof": {
-      "hex": "#fff6e6"
+      "hex": "#f6ebd6"
     },
     "harbour.commercial": {
-      "hex": "#f9e2cc"
+      "hex": "#f5d3b5"
     },
     "harbour.industrial": {
       "hex": "#f3e1c6"
@@ -673,19 +691,28 @@
       "hex": "#1cb9c6"
     },
     "harbour.accent_coral": {
-      "hex": "#fc9c84"
+      "hex": "#f28a70"
     },
     "harbour.accent_flamingo": {
       "hex": "#e8609a"
     },
     "harbour.accent_gold": {
-      "hex": "#99784d"
+      "hex": "#c29a55"
     },
     "harbour.accent_mint": {
       "hex": "#7fd0b8"
     },
     "harbour.accent_peach": {
-      "hex": "#fcc4ac"
+      "hex": "#f8b898"
+    },
+    "harbour.accent_cobalt": {
+      "hex": "#2f84e8"
+    },
+    "harbour.accent_royal": {
+      "hex": "#2c56a6"
+    },
+    "harbour.accent_red": {
+      "hex": "#c42a1f"
     },
     "harbour.canvas": {
       "hex": "#f7f4ec"

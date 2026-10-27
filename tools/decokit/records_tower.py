@@ -1,6 +1,6 @@
 """RecordsTower (brief 072 A, Vela; Sky 2026-10-27 "yes"): the Records Office as one landmark kit piece, the one tall building of the play streets, in place of
 the procedural "grand" mass. Drawn from the 26 Sep paintings (records-office, mission-block): a cream limestone wing with bull-nosed corners, horizontal seafoam
-bands that wrap the rounds, a giant order of limestone pilasters with seafoam flutes over two-storey glazing, a planted roof terrace with a glass rotunda,
+bands that wrap the rounds (the storey band at 5.0..5.9 m deep teal, DecoKit's old civic office band: brief 072-G, Sky 2026-10-27 "yep"), a giant order of limestone pilasters with seafoam flutes over two-storey glazing, a planted roof terrace with a glass rotunda,
 and two pylon towers with seafoam fins round a glazed stair slot, a stepped crown and a chrome sphere at 38 m.
 
 Footprint, entrances and heights are civic-block.json's `civic-office` (rule C-0; this piece never changes the block): the wing polygon (x 55.5..72.5,
@@ -155,7 +155,7 @@ def wing_far(s):
         closed_or_runs(s, P, keep_g, lambda q, c, z0=z0, z1=z1: ribbon(s, offset(q, -0.02, c), z0, z1, pal.GlassDark, c))
     keep_e = lambda x, y: not at_entrance(x, y)  # noqa: E731
     tube(s, lift(P), sec(-0.08, 0.3, 0.0, ORDER0), pal.Stone_Dark, closed=True)
-    closed_or_runs(s, P, keep_e, lambda q, c: tube(s, lift(q), sec(-0.06, 0.02, 5.0, 5.9), pal.Enamel_Seafoam, closed=c))
+    closed_or_runs(s, P, keep_e, lambda q, c: tube(s, lift(q), sec(-0.06, 0.02, 5.0, 5.9), pal.Enamel_Teal, closed=c))
     closed_or_runs(s, P, keep_e, lambda q, c: tube(s, lift(q), sec(-0.35, 0.3, ORDER1, ORDER1 + 0.3), pal.Enamel_Ivory, closed=c))
     tube(s, lift(P), sec(0.0, 0.45, 14.2, WINGS - 0.15), pal.Limestone, closed=True)
     tube(s, lift(P), sec(-0.06, 0.02, 13.85, 14.3), pal.Enamel_Seafoam, closed=True)
@@ -186,8 +186,8 @@ def wing(s, lod):
     keep_g = lambda x, y: not at_entrance(x, y) and not in_tower(x, y, 0.05)  # noqa: E731
     closed_or_runs(s, P, lambda x, y: keep_g(x, y) and not at_door(x, y), lambda q, c: glazing_run(s, q, GL0, GL1, 3.65, lod, c))
     closed_or_runs(s, P, keep_g, lambda q, c: glazing_run(s, q, GU0, GU1, FLOOR2, lod, c))
-    # the seafoam spandrel band wrapping the rounds, its brass hairlines; the ivory cornice over the giant order; the parapet's seafoam band; the coping
-    closed_or_runs(s, P, keep_e, lambda q, c: tube(s, lift(q), sec(-0.06, 0.02, 5.0, 5.9, 0.02 if lod == 0 else 0.0), pal.Enamel_Seafoam, closed=c))
+    # the deep teal storey band wrapping the rounds (072-G, Sky "yep": DecoKit's old civic office band, DK_Enamel_Teal), its brass hairlines; the ivory cornice over the giant order; the parapet's seafoam band; the coping
+    closed_or_runs(s, P, keep_e, lambda q, c: tube(s, lift(q), sec(-0.06, 0.02, 5.0, 5.9, 0.02 if lod == 0 else 0.0), pal.Enamel_Teal, closed=c))
     if lod == 0:
         for z in (4.93, 5.97):
             closed_or_runs(s, P, keep_e, lambda q, c, z=z: hair(s, q, -0.075, z, 0.035, pal.Brass_Civic, closed=c))
@@ -289,7 +289,7 @@ def tower(s, key, lod):
     zt = 33.4
     s.extrude(O, 0.0, zt, pal.Limestone)
     tube(s, lift(O), sec(-0.08, 0.3, 0.0, ORDER0), pal.Stone_Dark, closed=True)
-    tube(s, lift(O), sec(-0.06, 0.02, 5.0, 5.9), pal.Enamel_Seafoam, closed=True)                    # the wing's band runs round the tower
+    tube(s, lift(O), sec(-0.06, 0.02, 5.0, 5.9), pal.Enamel_Teal, closed=True)                    # the wing's band runs round the tower
     tube(s, lift(O), sec(-0.35, 0.3, ORDER1, ORDER1 + 0.3), pal.Enamel_Ivory, closed=True)
     if lod == 0:
         for z in (4.93, 5.97):

@@ -36,6 +36,7 @@ quads alone, so the windows survive the far levels (a collapse decimate eats the
 import math
 
 from geo import arc
+from holes import holed_slab
 from kit import asset
 from mats import pal, register
 from plaza_parts import bead, lift, offset
@@ -73,15 +74,14 @@ def tops(F):
 
 def _window(s, x, z0, z1, lod, w=WW, transom=None):
     """Window in its stone pocket (lod 0): the opaque window film (DK_Window_Film), chrome frame, centre mullion and a transom; lod 1: a chrome frame quad with
-    the film inset; lod 2: the film quad alone."""
+    the film inset; lod 2: nothing here, the holed slab draws the film at the back of its pocket (_slab)."""
     x0, x1 = x - w / 2, x + w / 2
+    if lod == 2:
+        return  # the film closes the slab's pocket (_slab: L2 is holed so the shadow copy lets the sun into L0's pockets, brief 072-G)
     if lod:
         y = SKIN - 0.01
-        if lod == 1:
-            s.face([(x0, y, z0), (x1, y, z0), (x1, y, z1), (x0, y, z1)], pal.Chrome)
-            s.face([(x0 + 0.06, y - 0.005, z0 + 0.06), (x1 - 0.06, y - 0.005, z0 + 0.06), (x1 - 0.06, y - 0.005, z1 - 0.06), (x0 + 0.06, y - 0.005, z1 - 0.06)], pal.Window_Film)
-        else:
-            s.face([(x0, y, z0), (x1, y, z0), (x1, y, z1), (x0, y, z1)], pal.Window_Film)
+        s.face([(x0, y, z0), (x1, y, z0), (x1, y, z1), (x0, y, z1)], pal.Chrome)
+        s.face([(x0 + 0.06, y - 0.005, z0 + 0.06), (x1 - 0.06, y - 0.005, z0 + 0.06), (x1 - 0.06, y - 0.005, z1 - 0.06), (x0 + 0.06, y - 0.005, z1 - 0.06)], pal.Window_Film)
         return
     yg = SKIN + REVEAL - 0.04
     s.face([(x0, yg, z0), (x1, yg, z0), (x1, yg, z1), (x0, yg, z1)], pal.Window_Film)
@@ -200,8 +200,14 @@ def mod_top(F, hw, kind, z0, lod):
 
 
 def _slab(s, hw, z0, z1, holes, seams, lod):
-    """The wall from z0 to z1 minus window pockets, portholes and rustication grooves (one exact boolean, cut faces in the stone); lod 1/2: a plain box."""
+    """The wall from z0 to z1 minus window pockets, portholes and rustication grooves (one exact boolean, cut faces in the stone); lod 1: a plain box;
+    lod 2: a box open at the window pockets, closed at the pocket depth by the window film (holes.py; brief 072-G, Sky's "ok": the L2 is the module's
+    shadow copy, and a solid slab put every sunlit pocket in shadow). Portholes stay closed: 0.6 m, their own proud rim shades them in L0 too."""
     body = pal.Limestone_Tex
+    rects = [h for h in holes if h[0] == "r"]
+    if lod == 2 and rects:
+        holed_slab(s, -hw, hw, z0, z1, SKIN, BACKY, [(x0, za, x1, zb, pal.Window_Film, None) for _, x0, za, x1, zb in rects], body, SKIN + REVEAL)
+        return
     if lod or not (holes or seams):
         s.box((-hw, SKIN, z0), (hw, BACKY, z1), body)
         return

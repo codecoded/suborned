@@ -33,11 +33,17 @@ BUDGET_MIB = 24.0  # the whole 072-F set (array + kit pairs); stated before Redl
 
 # Layer order is the array index FacadeLit reads. classes = the FacadeLit surface classes (ProcPaint.Cls) that sample it; "up" = only up-facing faces of that class.
 # sd = target albedo standard deviation (fraction of the mean), hgt = height contrast, sm = smoothness spread; tile = metres per repeat on the wall plane (FcPlane).
+# hp = high-pass width in texels (blur(px) keeps a Gaussian of spatial sigma px / 2; Glint, 072-G): variation coarser than this is taken out of the albedo and the height before sd is set, so what survives the
+# play mip (zoom 14: about 2.6 cm a pixel, a 2 m tile is about 77 px) is fine grain, not 0.3-1 m tonal blotches; cloud = the macro cloud's blur width in texels (default N/10).
+# Glint 072-G (2026-10-27): the textured Records Office read blotchy, not honed. Measured on the v1 sheets: limestone kept 3.4 % albedo sd in 25 cm patches and 2.4 % in
+# 50 cm ones (render 2.4 / 1.8 at 38 / 75 cm, roof 3.8 / 2.7 at 19 / 38 cm), the source's tonal clouds plus the macro cloud. Now high-passed, the macro cloud fainter and
+# 2.5x finer, sd raised so the pixel-scale grain still reads: limestone 4.35 / 3.86 / 3.35 / 2.36 % -> 2.15 / 1.06 / 0.62 / 0.34 % at 3 / 12 / 25 / 50 cm; render 3.41 / 2.88 /
+# 2.37 / 1.76 -> about 2.0 / 0.9 / 0.4 / 0.25 at 5 / 19 / 38 / 75 cm; roof 5.04 / 4.65 / 3.81 / 2.65 -> 2.11 / 1.39 / 0.79 / 0.43 at 2 / 9 / 19 / 38 cm. Enamel, metal, panel unchanged.
 LAYERS = [
-    dict(name="render", src="gen/limestone_polished_v1.png", nrm="derived/limestone_polished_v1_normal.png", rot=1, tile=3.0, sd=.035, macro=.03, hgt=.6, sm=.04,
+    dict(name="render", src="gen/limestone_polished_v1.png", nrm="derived/limestone_polished_v1_normal.png", rot=1, tile=3.0, sd=.04, macro=.01, cloud=40, hp=90, hgt=.5, sm=.04,
          classes=["0 matte (walls, far LODs, megastructures, gates, civic style kit, service doors)"],
          why="jointless trowelled render: the limestone sheet turned 90 degrees and softened, so matte walls carry tonal cloud and grain but no courses"),
-    dict(name="limestone", src="gen/limestone_polished_v1.png", nrm="derived/limestone_polished_v1_normal.png", rot=0, tile=2.0, sd=.06, macro=.04, hgt=1.0, sm=.05,
+    dict(name="limestone", src="gen/limestone_polished_v1.png", nrm="derived/limestone_polished_v1_normal.png", rot=0, tile=2.0, sd=.065, macro=.012, cloud=40, hp=90, hgt=.8, sm=.05,
          classes=["1 stone (ProcFacade walls, plinths, cornices)"],
          why="DecoKit's honed limestone (fossil flecks, tonal clouds); FacadeLit keeps its procedural ashlar joints and drops its two-noise grain for this sample"),
     dict(name="enamel", src="gen/glazed_tile_ivory_v1.png", nrm="derived/glazed_tile_ivory_v1_normal.png", rot=0, tile=1.0, sd=.025, macro=.015, hgt=.5, sm=.08,
@@ -46,7 +52,7 @@ LAYERS = [
     dict(name="metal", src="gen/brushed_steel_v1.png", nrm="derived/brushed_steel_v1_normal.png", rot=0, tile=0.5, sd=.05, hgt=.35, sm=.12,
          classes=["4 chrome (at 0.35 strength)", "6 brass"],
          why="DecoKit's brushed steel: straight brushing; chrome takes it faint (polished), brass full (satin)"),
-    dict(name="roof", src="derived/asphalt_fine_v1.png", nrm="derived/asphalt_fine_v1_normal.png", rot=0, tile=1.5, sd=.08, macro=.05, hgt=1.0, sm=.03,
+    dict(name="roof", src="derived/asphalt_fine_v1.png", nrm="derived/asphalt_fine_v1_normal.png", rot=0, tile=1.5, sd=.10, macro=.02, cloud=40, hp=110, hgt=1.0, sm=.03,
          classes=["0 matte, up-facing (roof caps, roof boxes' tops)"],
          why="DecoKit's fine asphalt as a roof membrane / fine gravel: roofs are the largest flat area the play camera sees"),
     dict(name="panel", src="derived/facade_panel_v1.png", nrm="derived/facade_panel_v1_normal.png", rot=0, tile=2.0, sd=.05, hfrom="albedo", hgt=1.0, sm=.04,
@@ -55,7 +61,7 @@ LAYERS = [
 ]
 # Kit detail pairs: layer -> the DecoKit kinds (mats.KIND) whose untextured rows take it, and the bump the .mat would carry.
 KIT_PAIRS = {"enamel": dict(kinds=["enamel", "ceramic"], bump=.25), "metal": dict(kinds=["metal", "chrome", "brass", "satin"], bump=.2),
-             "limestone": dict(kinds=["stone"], bump=.35)}
+             "limestone": dict(kinds=["stone"], bump=.25)}  # Glint 072-G: .35 -> .25 (honed, not rough)
 
 
 def sha(p):
@@ -119,17 +125,21 @@ def layer(spec):
     ratio = y / max(y.mean(), 1e-6)
     if spec["name"] == "render":
         ratio = 1 + (blur(ratio, 2.0) - 1)  # softer than stone: the fine fleck is the trowel, not the fossil
+    if spec.get("hp"):
+        ratio = 1 + (ratio - blur(ratio, spec["hp"]))  # Glint 072-G: keep the fleck, drop the tonal clouds coarser than hp texels
     if spec["sd"] is not None:
         ratio = 1 + (ratio - 1) * (spec["sd"] / max(ratio.std(), 1e-9))
     if spec.get("macro"):
         # the play camera sees about 2.6 cm a pixel, so the sheets' millimetre grain mips away to flat: a soft tonal cloud (about a fifth of the tile) is what survives at zoom 14
         rng = np.random.default_rng(int(hashlib.sha256(spec["name"].encode()).hexdigest()[:8], 16))
-        cloud = blur(rng.standard_normal(ratio.shape), N / 10)
+        cloud = blur(rng.standard_normal(ratio.shape), spec.get("cloud", N / 10))
         ratio = ratio + spec["macro"] * cloud / max(cloud.std(), 1e-9)
     ratio = np.clip(ratio, .6, 1.4)
     alb = np.clip(.5 * ratio, 0, 1)
     # height: from the normal map (Frankot-Chellappa), or for the panel sheet from its albedo (the joints are its darkest lines; its normal integrates to almost flat)
     hgt = periodic(height_from_normal(nrm)) if spec.get("hfrom") != "albedo" else ratio - blur(ratio, 40.0)
+    if spec.get("hp"):
+        hgt = hgt - blur(hgt, spec["hp"])  # the derivative bump and the kit normal: no slow undulation that shades a wall in patches
     hgt = (hgt - hgt.mean()) / max(hgt.std(), 1e-9)
     h01 = np.clip(.5 + hgt * .16 * spec["hgt"], 0, 1)
     # smoothness: crevices (low height) and dark flecks a touch rougher; brushed metal streaks follow the albedo

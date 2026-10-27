@@ -120,7 +120,8 @@ test('brass over gold (Sky, 14 Oct): street level and facades draw brass, the 25
   const palette = new Map((JSON.parse(readFileSync(resolve(import.meta.dir, '../../contracts/world/civic-look.json'), 'utf8')) as { palette: { materials: { material: string; unlit: string }[] } }).palette.materials.map(m => [m.material, m.unlit]));
   // the dE gate reads the palette rows; the .mat the generator wrote is what Unity draws: they must say the same colour
   const hexOf = (name: string) => { const c = /_BaseColor: \{r: ([\d.e-]+), g: ([\d.e-]+), b: ([\d.e-]+)/.exec(readFileSync(join(GEN_ROOT, `Materials/${name}.mat`), 'utf8'))!; return '#' + [c[1]!, c[2]!, c[3]!].map(x => Math.round(+x * 255).toString(16).padStart(2, '0')).join('').toUpperCase(); };
-  const want = { DK_Gold: '#99784D', DK_Accent_Gold: '#99784D', DK_Brass_Civic: '#99784D', DK_Gold17: '#AD866F', DK_Crown_Gold: '#E3D681', DK_Crown_Gold17: '#C9C08E' };
+  // brief 072-G (Sky, 27 Oct: "more reds / blues allowed"): street brass is brass-gold #C29A55, DK_Gold DecoKit's #D6AE62, light brass #D6B676; the crowns' golds unchanged
+  const want = { DK_Gold: '#D6AE62', DK_Accent_Gold: '#C29A55', DK_Brass_Civic: '#C29A55', DK_Gold17: '#D6B676', DK_Crown_Gold: '#E3D681', DK_Crown_Gold17: '#C9C08E' };
   for (const [m, hex] of Object.entries(want)) { expect(hexOf(m), `${m}.mat`).toBe(hex); expect(palette.get(m), `${m} palette row`).toBe(hex); }
   for (const m of Object.keys(want)) expect(new Set(adopted.flatMap(a => a.files.filter(f => f.path === `Materials/${m}.mat`).map(f => f.sha256))).size, `${m}: one file in the catalogue`).toBe(1);
 });

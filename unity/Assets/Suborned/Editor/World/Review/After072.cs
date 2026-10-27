@@ -37,6 +37,8 @@ namespace Suborned.World.Review
     ///     size from its format, size, mips and layers → briefs/072/latch/&lt;tag&gt;/texmem.json.
     /// `-tag textured` (072-F) writes shots to briefs/072/shots/textured, counts and texmem to briefs/072/latch/textured and the area census to
     /// briefs/072/texture/area-after.json; `-tag before` writes texmem only to briefs/072/latch/textured/texmem-before.json.
+    /// `-tag g` (072-G, the rebuild after the palette, holes and grade) writes shots to briefs/072/shots/g, counts, texmem and area-g.json to
+    /// briefs/072/latch/g, and f1 to briefs/072/shots/f1g at the three walls recorded in briefs/072/shots/f1/f1.json.
     /// Everything changed is put back; nothing is saved.
     ///   Unity -batchmode -quit -projectPath unity -executeMethod Suborned.World.Review.After072.Cli [-only shots,counts,area,k6,texmem] [-tag textured] -logFile &lt;log&gt;</summary>
     public static class After072
@@ -60,9 +62,11 @@ namespace Suborned.World.Review
             var only = oi >= 0 && oi + 1 < a.Length ? new HashSet<string>(a[oi + 1].Split(',')) : new HashSet<string> { "shots", "counts", "area", "k6" };
             int ti = Array.IndexOf(a, "-tag"); var tag = ti >= 0 && ti + 1 < a.Length ? a[ti + 1] : null;
             var root = HarbourWorldBuilder.RepoRoot;
-            string shotsDir = tag == null || tag == "before" ? Path.Combine(root, "briefs", "072", "shots", "after") : tag == "textured" ? Path.Combine(root, "briefs", "072", "shots", "textured") : Path.Combine(root, "out", "scratch", "latch", "072", tag);
-            string countsDir = Path.Combine(root, "briefs", "072", "latch", tag == null ? "after" : "textured");
-            string areaFile = Path.Combine(root, "briefs", "072", "texture", tag == "textured" ? "area-after.json" : "area.json");
+            // `-tag g` (072-G): shots, counts, texmem and area-g.json under briefs/072/{shots,latch}/g; f1 at the spots recorded in shots/f1/f1.json → shots/f1g
+            bool g = tag == "g";
+            string shotsDir = tag == null || tag == "before" ? Path.Combine(root, "briefs", "072", "shots", "after") : tag == "textured" ? Path.Combine(root, "briefs", "072", "shots", "textured") : g ? Path.Combine(root, "briefs", "072", "shots", "g") : Path.Combine(root, "out", "scratch", "latch", "072", tag);
+            string countsDir = Path.Combine(root, "briefs", "072", "latch", tag == null ? "after" : g ? "g" : "textured");
+            string areaFile = g ? Path.Combine(countsDir, "area-g.json") : Path.Combine(root, "briefs", "072", "texture", tag == "textured" ? "area-after.json" : "area.json");
             EditorSceneManager.OpenScene(HarbourWorldBuilder.ScenePath, OpenSceneMode.Single);
             var c = new Ctx();
             var playGo = GameObject.Find("cameras/play") ?? throw new InvalidOperationException("072: no cameras/play in the scene");
@@ -101,7 +105,7 @@ namespace Suborned.World.Review
             }
             if (only.Contains("area")) Area(c, session, areaFile, exportLine);
             if (only.Contains("sd")) SurfaceDetailCheck(c, session, Path.Combine(root, "out", "scratch", "latch", "072", "sd"));
-            if (only.Contains("f1")) F1(c, session, Path.Combine(root, "briefs", "072", "shots", "f1"), stamp);
+            if (only.Contains("f1")) F1(c, session, Path.Combine(root, "briefs", "072", "shots", g ? "f1g" : "f1"), stamp, g ? Path.Combine(root, "briefs", "072", "shots", "f1", "f1.json") : null);
             if (only.Contains("k6")) K6(c, session, Path.Combine(root, "briefs", "072", "latch", "after", "k6-lamplight-south-w-13.json"), Path.Combine(root, "briefs", "072", "shots", "after"), stamp);
             Debug.Log($"072 after: done in {(DateTime.UtcNow - t0).TotalSeconds:F0} s");
         }
@@ -130,7 +134,7 @@ namespace Suborned.World.Review
         /// twice: the modules casting from their L2 proxies (as built) and from their own LODs (L0 at play zoom; LookLab.SetModuleShadows),
         /// plus a 2x crop (the middle 960 x 540) of each. The architecture fade is off for these frames (the wall nearest the focus would ghost);
         /// the shell is in both. → briefs/072/shots/f1/ (f1-&lt;n&gt;-{proxy,l0}[-x2].png, f1.json).</summary>
-        static void F1(Ctx c, RenderSession session, string dir, WorldStamp stamp)
+        static void F1(Ctx c, RenderSession session, string dir, WorldStamp stamp, string spotsFile = null)
         {
             Directory.CreateDirectory(dir);
             var sun = RenderSettings.sun;
@@ -186,6 +190,20 @@ namespace Suborned.World.Review
                     chosen.Add((p.id, p.kit, p.at, p.n, p.dot, p.dist, y, hid)); usedBuildings.Add(bld); break;
                 }
                 if (chosen.Count == 3) break;
+            }
+            if (spotsFile != null)
+            {
+                // the same three walls as the first F1 run (facade, yaw), so the frames compare; the facade's place comes from this export
+                chosen.Clear(); var rec = File.ReadAllText(spotsFile);
+                foreach (Match m in Regex.Matches(rec, "\\{ \"facade\": \"([^\"]+)\", \"kit\": \"([^\"]+)\", \"at\": \\[([-\\d.]+), ([-\\d.]+)\\], \"normal\": \\[([-\\d.]+), ([-\\d.]+)\\][^}]*?\"yaw\": (\\d+)"))
+                {
+                    var id = m.Groups[1].Value; var now = picks.FirstOrDefault(x => x.id == id);
+                    var at = now.id != null ? now.at : new Vector2(P(m.Groups[3].Value), P(m.Groups[4].Value));
+                    var n = now.id != null ? now.n : new Vector2(P(m.Groups[5].Value), P(m.Groups[6].Value)).normalized;
+                    if (now.id == null) Debug.LogWarning($"072 f1: {id} is not a street-level SideBay with an L2 proxy in this export; framing it at the recorded place");
+                    chosen.Add((id, now.id != null ? now.kit : m.Groups[2].Value, at, n, Vector2.Dot(n, toSun), (at - Baseline072.OfficeFront).magnitude, P(m.Groups[7].Value), 0));
+                }
+                Debug.Log($"072 f1: {chosen.Count} walls from {spotsFile}");
             }
             if (chosen.Count == 0) { Debug.LogWarning("072 f1: every sun-facing SideBay wall is hidden from the quarter yaws"); return; }
             bool fadeWas = c.fade && c.fade.fade;
