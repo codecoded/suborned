@@ -102,3 +102,18 @@ Sky asked to redo the Fixer from her concept (`Cell/picks/fixer_P4-6.png` in the
   - The coat man's hair speckle is in the Hunyuan texture.
   - Byte-identical: e2e 31/31, Fixer 9/9.
 - **Unity take 2 (Latch):** all five import with no per-figure work. Both avatar routes work; the meta-write route is recommended and also copies the full 52-bone map (Unity's auto-map on the A-pose finds only 22). Fixed: the guard's cap, the hand shredding (hands are now rigid and open, with no grip), and the elbow flecks. Walk and run slide ≤2.5% at the manifest speeds. Crouch-walk speed in Unity is 0.82–0.93 m/s against the manifest's 1.02–1.17 (Blender), so the generator adopts the Unity values. The rigged Fixer works as a second layer but reads as kneeling in sit, which confirms it isn't adopted. Evidence: `latch/e2e-unity.md`, `latch/e2e-unity-numbers.json`. Next: Redline's frame cost.
+- **Frame cost (Redline, Studio, `redline/cost-e2e.md`):**
+  - **At play zoom the new five cost +40% per person** against today's five (11.58 vs 8.28 µs). A 60-person crowd costs 0.69 vs 0.50 ms, which fails the Hold.
+  - **Causes:**
+    - the bag and cap are separate skinned meshes outside the level-of-detail group: draw calls ×2, +10%;
+    - the finger bones: +8–9%;
+    - the far LOD has about 9% more vertices.
+  - **Textures:** frame cost is the same at any size, so it's a memory question only (50 crowd figures: 530 MB at 4K, 135 at 2K, 34 at 1K). Unity silently caps imports at 2048.
+  - **The cell:** four 29k Fixers at LOD0 cost 0.042 ms, so 30k for the cell is safe.
+  - **Recommended:**
+    - crowd LOD0 about 12k / LOD1 4.5k / LOD2 1.5k;
+    - 1K crowd textures and 2K for the cell and heroes, with the import size set explicitly;
+    - the 22-bone crowd skeleton;
+    - worn props merged into the body per LOD;
+    - Optimize Game Objects for crowd figures.
+  - **Then:** one confirmation pass on Forma's rebuilt figures.
