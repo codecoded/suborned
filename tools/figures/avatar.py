@@ -385,10 +385,22 @@ def _f(x):
     return f'{x:.9g}'
 
 
-def human_description(human, nodes):
-    """The humanDescription's human and skeleton arrays, in the layout Unity writes them."""
-    h = ''.join(f"    - boneName: {bn}\n      humanName: {hn}\n      limit:\n        min: {{x: 0, y: 0, z: 0}}\n        max: {{x: 0, y: 0, z: 0}}\n"
-                f"        value: {{x: 0, y: 0, z: 0}}\n        length: 0\n        modified: 0\n" for bn, hn in human)
+def human_description(human, nodes, limits=None):
+    """The humanDescription's human and skeleton arrays, in the layout Unity writes them.
+    limits: {humanName: {'min': [x, y, z], 'max': [x, y, z]}} (degrees per muscle axis: x twist, y spread/in-out, z front-back/stretched; Unity's
+    HumanLimit with useDefaultValues off = modified 1, its length the bone's own length to its first child in this skeleton)."""
+    by = {n.name: n for n in nodes}
+    def length(bn):
+        kids = [c for c in by[bn].children] if bn in by else []
+        return float(np.linalg.norm(kids[0].lpos * kids[0].parent.lossy)) if kids else 0.0
+    def row(bn, hn):
+        L_ = (limits or {}).get(hn)
+        if not L_: return (f"    - boneName: {bn}\n      humanName: {hn}\n      limit:\n        min: {{x: 0, y: 0, z: 0}}\n        max: {{x: 0, y: 0, z: 0}}\n"
+                           f"        value: {{x: 0, y: 0, z: 0}}\n        length: 0\n        modified: 0\n")
+        mn, mx = L_['min'], L_['max']
+        return (f"    - boneName: {bn}\n      humanName: {hn}\n      limit:\n        min: {{x: {_f(mn[0])}, y: {_f(mn[1])}, z: {_f(mn[2])}}}\n"
+                f"        max: {{x: {_f(mx[0])}, y: {_f(mx[1])}, z: {_f(mx[2])}}}\n        value: {{x: 0, y: 0, z: 0}}\n        length: {_f(length(bn))}\n        modified: 1\n")
+    h = ''.join(row(bn, hn) for bn, hn in human)
     s = ''
     for n in nodes:
         p, q, c = n.lpos, n.lrot, n.lscl
@@ -437,3 +449,14 @@ def reference_rest(ref_nodes, fbx_path, root_name):
         if n.name.split(':')[-1] == 'Hips': n.position = r.position
     b = map_bones(nodes)
     return [(b[i].name, HUMAN[i]) for i in sorted(b)], nodes
+
+
+def finger_limits(rule, human):
+    """fit.json transfer.fingers.humanLimits expanded to every mapped right and left finger bone: {humanName: {'min', 'max'}}"""
+    out = {}
+    for _, hn in human:
+        parts = hn.split(' ')
+        if len(parts) != 3 or parts[1] not in ('Thumb', 'Index', 'Middle', 'Ring', 'Little'): continue
+        key = ('Thumb' if parts[1] == 'Thumb' else 'Finger') + ' ' + parts[2]
+        if key in rule: out[hn] = rule[key]
+    return out

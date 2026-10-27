@@ -23,7 +23,7 @@ public static class PropCal {
     static string Q(Quaternion q) => $"[{q.x:0.######},{q.y:0.######},{q.z:0.######},{q.w:0.######}]";
     public static void Run() {
         var a = System.Environment.GetCommandLineArgs(); string Arg(string k) => a[System.Array.IndexOf(a, k) + 1];
-        var figs = Arg("-figs").Split(','); var clipPath = Arg("-clip"); var attach = Arg("-attach"); var outp = Arg("-out"); var lp = new Vector3(0, 0, float.Parse(Arg("-forward")));
+        var figs = Arg("-figs").Split(','); var clipPath = Arg("-clip"); var attach = Arg("-attach"); var outp = Arg("-out"); var lpa = Arg("-forward").Split(',').Select(float.Parse).ToArray(); var lp = lpa.Length == 3 ? new Vector3(lpa[0], lpa[1], lpa[2]) : new Vector3(0, 0, lpa[0]);
         var clip = AssetDatabase.LoadAllAssetsAtPath(clipPath).OfType<AnimationClip>().First(c => !c.name.StartsWith("__preview"));
         var all = new List<Quaternion>(); var per = new Dictionary<string, List<(int fr, Quaternion local, Transform at, Vector3 aim)>>(); var sb = new StringBuilder("{\n");
         var keep = new List<(GameObject go, PlayableGraph g, AnimationClipPlayable cp, Animator an)>();
@@ -60,7 +60,17 @@ public static class PropCal {
                 var aim = at.position - mid; aim.y = 0; var barrel = at.rotation * one * Vector3.forward; var flat = barrel; flat.y = 0;
                 float pitch = Mathf.Asin(Mathf.Clamp(barrel.y, -1, 1)) * Mathf.Rad2Deg; float yaw = Vector3.SignedAngle(aim, flat, Vector3.up);
                 float own = Quaternion.Angle(loc, one);
-                rows.Add($"   {{\"frame\": {k}, \"pitchDeg\": {pitch:0.##}, \"yawToAimDeg\": {yaw:0.##}, \"ownOffsetDegFromOne\": {own:0.##}}}");
+                string sup = "";
+                int si = System.Array.IndexOf(a, "-support");
+                if (si >= 0) {   // the left palm's target (the prop's frame) placed with the gun on the right hand: within the left arm's reach?
+                    var sp = a[si + 1].Split(',').Select(float.Parse).ToArray(); var gunRot = at.rotation * one; var gunPos = at.TransformPoint(lp);
+                    var tgt = gunPos + gunRot * new Vector3(sp[0], sp[1], sp[2]);
+                    Transform B_(HumanBodyBones b) => an.GetBoneTransform(b); var la = Find(an.transform, "Attach_LeftHand");
+                    float arm = (B_(HumanBodyBones.LeftUpperArm).position - B_(HumanBodyBones.LeftLowerArm).position).magnitude + (B_(HumanBodyBones.LeftLowerArm).position - B_(HumanBodyBones.LeftHand).position).magnitude + (B_(HumanBodyBones.LeftHand).position - la.position).magnitude;
+                    float reach = (tgt - B_(HumanBodyBones.LeftUpperArm).position).magnitude;
+                    sup = $", \"supportReachRatio\": {reach / arm:0.###}, \"supportFromClipHandM\": {(tgt - la.position).magnitude:0.###}";
+                }
+                rows.Add($"   {{\"frame\": {k}, \"pitchDeg\": {pitch:0.##}, \"yawToAimDeg\": {yaw:0.##}, \"ownOffsetDegFromOne\": {own:0.##}{sup}}}");
             }
             sb.Append($"  \"{f}\": [\n{string.Join(",\n", rows)}\n  ]{(fi < keep.Count - 1 ? "," : "")}\n"); fi++;
             g.Destroy(); Object.DestroyImmediate(go);

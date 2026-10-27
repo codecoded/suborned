@@ -15,7 +15,8 @@ os.makedirs(f'{out}/Clips', exist_ok=True)
 AV = spec['avatar']; ref = next(c for c in spec['clips'] if c['name'] == AV['reference'])
 ref_src = ref['src'] if os.path.isabs(ref['src']) else os.path.join(STORE, ref['src'])
 ref_human, ref_nodes, _ = av.neutral_avatar(ref_src, f"{AV['reference']}(Clone)", AV['footPitchDeg'])
-ref_h, ref_s = av.human_description(ref_human, ref_nodes)
+FL = json.load(open(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'finger_limits.json')))   # brief 069: the same finger limits as finger-boned figures
+ref_h, ref_s = av.human_description(ref_human, ref_nodes, av.finger_limits(FL, ref_human))
 ref_rel = f"Clips/{AV['reference']}.fbx"
 for c in spec['clips']:
     if 'author' in c:   # posed here, on the donor clip's skeleton (tools/figures/author_clips.py); the donor is the recorded source
@@ -49,7 +50,7 @@ for c in spec['clips']:
             c_human, c_nodes = av.reference_rest(ref_nodes, dst, f'{name}(Clone)'); kind = 'the reference rest in its own hierarchy'
         else:
             c_human, c_nodes, _ = av.neutral_avatar(dst, f'{name}(Clone)', AV['footPitchDeg']); kind = 'own neutral-leg avatar (rig differs)'
-        c_h, c_s = av.human_description(c_human, c_nodes)
+        c_h, c_s = av.human_description(c_human, c_nodes, av.finger_limits(FL, c_human))
         print('AVATAR', name, kind, '|', '; '.join(rig[:3]), f'({len(rig)})')
     else: c_h, c_s = ref_h, ref_s
     open(dst + '.meta', 'w').write(um.clip_meta(rel, name, 'mixamo.com', c.get('first', 0), f1 - f0, c.get('loop', False), feet=c.get('feet', False), bake_xz=um.bakes_xz(c), additive_ref=c.get('refPose', 0) if c.get('additive') else None,

@@ -171,3 +171,9 @@ Forma put Latch's left-foot and bow-leg fix into the game's figure pipeline as g
   - **Fixer:** 4+4 fingers and the right thumb fitted; the left thumb stays rigid. Byte-identical 10/10, and run's finger curl plays.
   - **Closed grip:** a pose in data (`props.json` `grip`), seated at the closed middle finger's centre. Wrap check: middle 180°, ring 248° (pass). The fingers sink a little into the grip (330 pairs).
 - **Unity is the source of truth for prop offsets:** `PropCal.cs` measures in Unity. No fixed offset holds the barrel level across aim_pistol's hold (residual pitch −13…+15°, yaw up to about 30°), so the drawn states need a runtime level-aim correction (Latch's IK). The offset rule is now grip seated by the hand, rotation identity, which agrees between Blender and Unity to 0.0°.
+- **Grip, hands and support (Forma):**
+  - **Finger limits:** wider Humanoid finger limits for finger-boned figures (`tools/figures/finger_limits.json`), written into each figure's avatar and the clips' reference avatar. Not installed in the game: today's figures have no finger bones.
+  - **Support hand:** a left-hand `support` attach in the prop data, solved from the grip shape and reachable in Unity (PropCal), plus a left-hand pose.
+  - **Rebuilds:** Fixer 11/11 and e2e 39/39, byte-identical.
+  - **The grip tidy failed:** the pistol's grip is 6.4–7.2 × 3.9 cm, about 1.5× a real compact pistol's, and the fitted fingers can't close round it without crossing. Fixed grip: 330 crossings, wrap passes. Contact solver: 60 crossings, wrap fails. A slimmer grip settles it: Sky's call.
+- **Latch's runtime job** (`PistolHold.cs`, scratch): grip muscles, level aim, the guard arm-out and the support-hand IK. The root yaw follows the barrel's per-frame blade, so the wrist correction is pitch only (−5…+17°) and the barrel lands within 0.3° of the target.

@@ -70,6 +70,52 @@
     "axis": "barrel"
    },
    "grip": {
+    "rule": "the closed hand of the drawn states (attach.hand.show.onlyWhile), solved per prop from its own grip surface (prop_show.solve_grip, contact): the grip pushed out of the palm until no palm vertex is inside it, then each finger bone closes, knuckle first, up to curlMaxDeg and stops at contact (the step before a vertex of it or the bones beyond goes inside the prop by more than tolM). The solved angles go to attach.json hand.grip.curlDeg: in the game a hand layer masked to the right fingers, its Humanoid finger muscles Latch's to tune to them. Only figures with finger bones (the 52-bone cell). Checked (fails loudly): seen down the grip's own axis, the middle and ring fingers (wrapFingers), knuckle to tip, each turn at least wrapMinDeg about the grip's centre at their height (the grip is inside the closed fingers), and the right hand crosses the prop in at most handCrossMaxPairs triangle pairs; the index (trigger finger), the little finger and the thumb are reported.",
+    "wrapMinDeg": 150,
+    "seatFromClosedHand": true,
+    "seatNote": "for figures with finger bones: the grip goes where the closed middle finger's circle has its centre (knuckle, last joint, tip), its height along the grip kept: attach.json hand.localPositionFingerBoned. Rigid-handed figures (the crowd) keep attach.hand.offset.",
+    "wrapFingers": [
+     "Middle",
+     "Ring"
+    ],
+    "curlMaxDeg": {
+     "Index": [
+      60,
+      80,
+      50
+     ],
+     "Middle": [
+      90,
+      100,
+      70
+     ],
+     "Ring": [
+      90,
+      100,
+      70
+     ],
+     "Pinky": [
+      90,
+      100,
+      70
+     ],
+     "Thumb": [
+      30,
+      40,
+      30
+     ]
+    },
+    "contact": {
+     "stepDeg": 2,
+     "stepM": 0.002,
+     "tolM": 0.001,
+     "maxPushSteps": 25,
+     "thenarM": 0.025,
+     "scanSteps": 41,
+     "thumbTurnDeg": 40
+    },
+    "handCrossMaxPairs": 30,
+    "mode": "fixed",
     "curlDeg": {
      "Index": [
       45,
@@ -97,14 +143,7 @@
       20
      ]
     },
-    "rule": "the closed hand of the drawn states (attach.hand.show.onlyWhile): each finger bone of the right hand turned toward the palm by its angle (bone 1, 2, 3), over the clip's own fingers. In the game this is a hand layer masked to the right hand's fingers; its Humanoid finger muscles are Latch's to tune against these angles. Only figures with finger bones (the 52-bone cell); the crowd's rigid hands hold the prop as before. Checked (fails loudly): seen down the grip's own axis, the middle and ring fingers (wrapFingers), knuckle to tip, each turn at least wrapMinDeg about the grip's centre at their height, so the grip is inside the closed fingers; the index (the trigger finger), the little finger (shortest, at the grip's raked foot) and the thumb are reported.",
-    "wrapMinDeg": 150,
-    "seatFromClosedHand": true,
-    "seatNote": "for figures with finger bones: the grip goes where the closed middle finger's circle has its centre (knuckle, last joint, tip), its height along the grip kept: attach.json hand.localPositionFingerBoned. Rigid-handed figures (the crowd) keep attach.hand.offset.",
-    "wrapFingers": [
-     "Middle",
-     "Ring"
-    ]
+    "modeNote": "fixed: curlDeg with the grip at the closed middle finger's circle centre (wraps: middle 180, ring 248 degrees; 330 hand-grip crossing pairs). contact: solved from the prop's surface (prop_show.solve_grip: slide lifted off the hand, grip pushed out of the palm, thumb turned out, each finger closed to contact): 60 pairs but no wrap (middle 88, ring 73), the hand reads open. Neither meets both gates on this pistol: its grip is 7.2 cm deep and 3.9 cm wide at the palm (a real compact pistol's is about 4.5-5 by 3), so the Fixer's fingers (fitted 5-7 cm past the webs) can't close round it without passing through. Kept on fixed (the grip reads closed at play zoom) until the grip's size is settled."
    },
    "texPx": 1024,
    "material": {
@@ -174,6 +213,56 @@
      "wornHipProp": "a figure wearing a hip prop at Attach_HipRight (the crowd's cross-body bag) has no free holster point: the holster is not shown or checked on it, and the report says so",
      "parked": false,
      "usedBy": "roles whose holster is visible (roles.guard)"
+    },
+    "support": {
+     "bone": "Attach_LeftHand",
+     "frame": "the prop's own frame (Unity: +Z barrel, +Y slide, +X its right): Latch's left-hand IK target for Attach_LeftHand = prop.transform * (position, rotation)",
+     "rule": {
+      "fingerThicknessM": 0.022,
+      "frontInsetM": 0.012,
+      "heightFrom": "the right middle finger's height on the grip",
+      "longAxis": [
+       1,
+       -1,
+       0
+      ],
+      "thumb": [
+       0,
+       0,
+       1
+      ],
+      "text": "a two-handed cup: the left palm against the gun's left side over the right hand's fingers: at the grip's section at the right middle finger's height, out from the grip's left face by the right fingers' thickness, back from the grip's front by frontInsetM; the left hand's long axis (its attach frame's +Z) runs across under the grip to the right and down (longAxis), its thumb side (+Y) forward along the frame (thumb). Checked in Unity (PropCal -support): over the aim hold the target lies within the left arm's reach."
+     },
+     "fingers": {
+      "curlDeg": {
+       "Index": [
+        35,
+        45,
+        30
+       ],
+       "Middle": [
+        40,
+        50,
+        35
+       ],
+       "Ring": [
+        40,
+        50,
+        35
+       ],
+       "Pinky": [
+        40,
+        50,
+        35
+       ],
+       "Thumb": [
+        5,
+        10,
+        5
+       ]
+      },
+      "note": "the left hand's support pose (data, like grip): fingers half closed round the right hand, thumb along the frame; a hand layer masked to the left fingers"
+     }
     }
    },
    "seat": {

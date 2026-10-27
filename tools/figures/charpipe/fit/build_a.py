@@ -15,6 +15,22 @@ from mathutils import Vector, Matrix
 OUT = L.ensure(os.path.join(L.SCR, 'a'))
 
 
+def write_avatar_meta(fid, path):
+    """the _avatarT's Unity meta (Create From This Model, auto-mapping off): Unity's own T-pose for this file (tools/figures/avatar.py, MakePoseValid)
+    and its human map, with the finger limits widened for finger-boned figures (fit.json transfer.fingers.humanLimits). Latch's import takes the
+    figure's human rows from this avatar, so the limits reach the figure."""
+    sys.path.append(os.path.dirname(os.path.dirname(HERE))); import avatar as av, unitymeta as um
+    row = {r['id']: r for r in L.D['inputs']}[fid]; F = L.D['transfer'].get('fingers', {})
+    nodes = av.read_fbx(path, os.path.splitext(os.path.basename(path))[0] + '(Clone)'); b = av.map_bones(nodes); av.make_pose_valid(b)
+    human = [(b[i].name, av.HUMAN[i]) for i in sorted(b)]
+    tab = json.load(open(os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(HERE))), '..', F['humanLimits']))) if F.get('humanLimits') else None
+    lim = av.finger_limits(tab, human) if tab and L.budget(row)['skeleton'] in F.get('skeletons', []) else None
+    h, sk = av.human_description(human, nodes, lim)
+    rel = f'Figures/{fid}/{os.path.basename(path)}'
+    open(path + '.meta', 'w').write(um.model_meta(rel, {}, avatar={'human': h, 'skeleton': sk, 'source': None}).replace('  importAnimation: 0', '  importAnimation: 0', 1))
+    return {k: v for k, v in (lim or {}).items()}
+
+
 def build(fid, hybrid=False):
     tm = L.Timer(); fit = json.load(open(os.path.join(L.SCR, 'fit', f'{fid}.fit.json'))); row = {r['id']: r for r in L.D['inputs']}[fid]
     bpy.ops.wm.open_mainfile(filepath=L.src_blend(fid))
@@ -218,6 +234,7 @@ def humanoid_zero(fid, arm, hybrid):
         arm.name = 'Armature_figure'; a2.name = 'Armature'; a2.data.name = 'Armature'
         mk = L.mesh_obj(f'{fid}_avatar_marker', [(0, 0, 0), (0.001, 0, 0), (0, 0.001, 0)], [(0, 1, 2)])
         L.export_fbx(path, [a2, mk], a2); bpy.data.objects.remove(mk, do_unlink=True); a2.name = 'Armature_avatarT'; arm.name = 'Armature'
+        if L.SET in ('e2e', 'fixer'): write_avatar_meta(fid, path)
     bpy.data.objects.remove(a2, do_unlink=True)
     return legs, os.path.basename(path) if path else None
 
