@@ -1,0 +1,42 @@
+{
+ "note": "Held props for the new pipeline's figures (brief 069; the cell's pistol first). Today's game figures keep tools/figures/props.json (their own rigs, offsets per figure); this file is the new pipeline's: one convention for every held prop, one offset per skeleton (the shared MPFB rig, Attach_* bones placed and turned by rule in fit.json attach), and a seat check that fails loudly. Built by tools/figures/charpipe/props/prop_build.py; shown and checked by prop_show.py.",
+ "convention": {
+  "units": "metres, true size",
+  "origin": "the grip point: where the palm closes around the grip (for a prop without a grip, the point that rests in or on the hand)",
+  "axes": "Unity axes, left-handed: +Z forward along the prop's working line (a pistol's barrel, muzzle at +Z), +Y up (a pistol's slide, held level), +X the prop's right side. The FBX is written so Unity imports these axes with an identity root (Blender: barrel +Y, slide +Z before export; tools/figures/charpipe/fit/lib.export_fbx axis -Z forward, Y up)",
+  "attach": "every Attach_* bone carries the same frame by rule (fit.json attach.frame): its own +Z (Unity) is the prop's working line there, its +Y the prop's up. So a prop sits at localPosition = offset, localRotation = identity under the bone, one offset per skeleton for every figure on it"
+ },
+ "props": {
+  "pistol": {
+   "label": "The cell's sidearm, design 4 (Sky's pick, 2026-10-27): compact boxy body, glossy white and piano-black panels, polished chrome muzzle frame and side disc, one thin aubergine line",
+   "concept": "paid/069-props/codex/pistol_v3_gloss_contrast.png",
+   "sheet": "paid/069-props/codex/pistol_d4_sheet_1.png",
+   "sheetCells": {"cols": 3, "rows": 2, "views": {"right": [0, 0], "left": [0, 1], "threeQuarter": [0, 2], "muzzle": [1, 0], "rear": [1, 1], "top": [1, 2]},
+                  "note": "row, col on the sheet; 'left' = the gun's left side (muzzle to the image's right)"},
+   "mesh": {
+    "job": "069-props", "pass": "pistol-mesh", "budgetUsd": 1.0, "estUsd": 0.6, "model": "tripo:v3.1@0",
+    "views": ["left", "muzzle", "right", "rear"],
+    "viewsNote": "Tripo multiview slots [front, left, back, right], 'left' being the object's own left (as the Fixer's take showed: her left side went in 'left'). With the gun's left side as the front, the object's own left (the viewer's right) is the muzzle end, its back is the gun's right side, its right is the rear. Each sheet cell is cut on the sheet's flat grey, recentred on the object at the sheet's one scale (no view is rescaled alone), 1024 px.",
+    "settings": {"texture": true, "pbr": true, "faceLimit": 3000, "geometryQuality": "standard", "textureQuality": "detailed", "orientation": "default"},
+    "settingsNote": "pbr on: the finish is gloss (white enamel, piano black, chrome) and Tripo's metallic-roughness map carries it; the figures are matte, this prop is meant to shine. faceLimit 3000 for a 2-3k prop (the tray is 2.2k). Standard geometry: 'detailed' is for dense meshes and is cut to 3k anyway."
+   },
+   "size": {"lengthM": 0.18, "axis": "barrel"},
+   "grip": {"belowSlideFrac": 0.4, "rearFrac": 0.5, "muzzleProbeFrac": 0.12,
+            "rule": "the slide's underside is the lowest point of the front muzzleProbeFrac of the length (only slide there); the grip is the part below it in the rear rearFrac; the grip point is the centre of the grip's section belowSlideFrac of the grip's height down from the slide"},
+   "texPx": 1024,
+   "material": {"smoothnessFloor": 0.0, "note": "URP Lit from Tripo's PBR: albedo, and the metallic map packed R metallic / A smoothness (1 - roughness), as build.write_metal does"},
+   "attach": {
+    "hand": {"bone": "Attach_RightHand", "offset": [0, 0, 0], "clips": ["aim_pistol", "idle"]},
+    "holster": {"bone": "Attach_HipRight", "offset": [0.018, 0, 0], "clips": ["walk", "run", "crouch_walk"],
+                "note": "offset along the bone's +X (out from the hip): half the pistol's thickness clear of the body. The bone hangs barrel down, slide forward."}
+   },
+   "seat": {
+    "clip": "aim_pistol", "frames": [0.25, 0.5, 0.75],
+    "gripInsideHandM": 0.02,
+    "barrelToForearmMaxDeg": 15,
+    "propBodyMaxPairs": 0,
+    "rule": "fails loudly (exit 1): at each frame of the clip the grip point lies within gripInsideHandM of the hand's palm centre (inside a rigid, open hand there is no closed fist to sit in), the barrel (+Z) points along the forearm (ForeArm -> Hand) within barrelToForearmMaxDeg, and no prop triangle crosses the body (LOD0) except the hand's own; holstered in walk, no prop triangle crosses the body"
+   }
+  }
+ }
+}

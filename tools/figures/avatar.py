@@ -413,3 +413,11 @@ def rig_differences(ref_nodes, fbx_path, tol_m=0.01):
             d = abs(float(np.linalg.norm(cn.position - cn.parent.position)) - float(np.linalg.norm(rn.position - rn.parent.position)))
             if d > tol_m: out.append(f'{HUMAN[i]}: {d * 100:.1f} cm longer or shorter than the reference')
     return out
+
+
+def lone_root_above_hips(fbx_path):
+    """The file's only top-level node, when it is not the hips but holds them (a Blender export's `Armature`); else None. Unity folds a lone root
+    into the prefab root unless Preserve Hierarchy is on, so an avatar written with that node in it fails to build (brief 069 A)."""
+    nodes = read_fbx(fbx_path, 'root'); tops = nodes[0].children
+    if len(tops) != 1 or tops[0].name.split(':')[-1] == 'Hips': return None
+    return tops[0].name if any(n.name.split(':')[-1] == 'Hips' for n in nodes if n is not tops[0]) else None

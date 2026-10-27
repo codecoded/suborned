@@ -63,6 +63,9 @@ for f in sorted(glob.glob(os.path.join(P, 'Clips', '*.fbx'))):
         else: res['clips']['miss'][n] = f'copies {src}'
     elif n in rows and rows[n].get('avatar', {}).get('own'):
         ok, info = own_ok(s, SPEC['avatar']['footPitchDeg'])
+        hips_parent = re.search(r'\n    - name: mixamorig:Hips\n      parentName: (.*)', s).group(1)
+        if hips_parent != f'{n}(Clone)' and field(s, '  preserveHierarchy') != '1':   # brief 069 A: a written Armature above Hips needs Preserve Hierarchy
+            ok = False; info = {**info, 'error': f'Hips under {hips_parent} without preserveHierarchy 1'} if isinstance(info, dict) else info
         if ok: res['clips']['own'].append(n)
         else: res['clips']['miss'][n] = info
     else: res['clips']['miss'][n] = f"avatarSetup {field(s, 'avatarSetup')}, not in clips.json" if n not in rows else 'no avatar rule written'

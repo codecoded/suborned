@@ -42,15 +42,17 @@ for c in spec['clips']:
     # a clip on the reference's rig copies its avatar; one whose hierarchy differs (the clips authored in Blender sit under an `Armature` node) can't, so it
     # gets its own avatar with the same neutral legs (Latch's option b): the leg fix holds, its other bones keep their own frame-0 rest as today
     rig = [] if name == AV['reference'] else av.rig_differences(ref_nodes, dst); own = name == AV['reference'] or bool(rig)
+    lone = av.lone_root_above_hips(dst)   # brief 069 A: Preserve Hierarchy keeps a lone `Armature` root, or the written avatar's Hips parent can't match
     if own and name != AV['reference']:
         c_human, c_nodes, _ = av.neutral_avatar(dst, f'{name}(Clone)', AV['footPitchDeg']); c_h, c_s = av.human_description(c_human, c_nodes)
         print('AVATAR', name, 'own neutral-leg avatar: rig differs from', AV['reference'], '|', '; '.join(rig[:3]), f'({len(rig)})')
     else: c_h, c_s = ref_h, ref_s
     open(dst + '.meta', 'w').write(um.clip_meta(rel, name, 'mixamo.com', c.get('first', 0), f1 - f0, c.get('loop', False), feet=c.get('feet', False), bake_xz=um.bakes_xz(c), additive_ref=c.get('refPose', 0) if c.get('additive') else None,
-                                                avatar={'human': c_h, 'skeleton': c_s, 'source': None if own else um.guid(ref_rel)}))
+                                                avatar={'human': c_h, 'skeleton': c_s, 'source': None if own else um.guid(ref_rel)}, preserve_hierarchy=bool(lone)))
     rows.append({'name': name, 'file': rel, 'source': c['src'], 'sha256': hashlib.sha256(open(dst, 'rb').read()).hexdigest(), 'frames': f1 - f0 + 1,
                  'fps': sc.render.fps, 'seconds': round((f1 - f0 + 1) / sc.render.fps, 3), 'loop': c.get('loop', False), 'naturalSpeedMs': nat if c.get('loco') else None, 'use': c.get('use', '')})
     rows[-1]['avatar'] = {'own': True, 'neutralLegs': True, 'footPitchDeg': AV['footPitchDeg'], 'rigDifferences': rig} if own else {'copiedFrom': ref_rel}
+    if lone: rows[-1]['avatar']['preserveHierarchy'] = lone
     if 'author' in c: rows[-1]['authoredBy'] = c['author']
     if c.get('additive'): rows[-1]['additive'] = True; rows[-1]['additiveReferencePoseFrame'] = c.get('refPose', 0); rows[-1]['firstFrame'] = c.get('first', 0)
     if 'upper' in c: rows[-1]['upperFrom'] = c['upper']; rows[-1]['upperFromSha256'] = hashlib.sha256(open(os.path.join(STORE, c['upper']), 'rb').read()).hexdigest()
