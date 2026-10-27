@@ -6,7 +6,8 @@ import { join } from 'node:path';
 import { civic } from '../plan/civic';
 import { derive } from '../plan/plan';
 import { walkGrid } from '../plan/walk-grid';
-import { floorRows, HEAD, hull, simGrid, STEP } from './solids';
+import { collideDigest, floorRows, HEAD, hull, simGrid, STEP } from './solids';
+import { inPoly, type V } from '../plan/geom';
 
 const root = join(import.meta.dir, '..', '..');
 const read = (f: string) => JSON.parse(readFileSync(join(root, f), 'utf8'));
@@ -38,6 +39,24 @@ describe('the walk grid with the drawn solids', () => {
     expect(site.grid.drawn.walkCells).toBe(G.added.size);
     expect(site.grid.floor).toEqual(floorRows(G.floor, G.nx, G.ny));
     expect(site.grid.collide).toBe(G.drawn.collideSha);
+  });
+});
+
+describe('brief 072: a civic building with a kit piece, and what of kit.collide.json the grid answers to', () => {
+  test('the Office stands on the block\'s footprint and its towers\' (civic-block.json polygons); its kit volumes count only where they stand proud of them', () => {
+    const block = read(plan.civic.block), off = block.buildings.find((b: { id: string }) => b.id === 'civic-office');
+    const walls: V[][] = [off.polygon, ...off.towers.map((t: { polygon: V[] }) => t.polygon)];
+    const ids = new Set(['civic/civic-office', ...off.towers.map((t: { id: string }) => `civic/civic-office/${t.id}`)]), own = G.drawn.solids.filter((s) => ids.has(s.id));
+    expect(own.filter((s) => !s.piece).length).toBe(1 + off.towers.length); // the footprint and one prism per tower
+    for (const s of own.filter((x) => x.piece)) expect(walls.some((P) => inPoly(s.circle ? s.circle.c : [(s.x0 + s.x1) / 2, (s.y0 + s.y1) / 2], P))).toBe(false);
+  });
+  test('the digest reads only the pieces it is given (and the schema, frame and rule), never the file\'s version or another piece', () => {
+    const c = read('contracts/world/kit.collide.json'), kits = Object.keys(c.pieces).slice(0, 3), a = collideDigest(c, kits);
+    expect(collideDigest({ ...c, version: c.version + 1, pieces: { ...c.pieces, ZZ_Filler: { sha256: 'x', bounds: [[0, 0, 0], [1, 1, 1]], class: 'prop', volumes: [] } } }, kits)).toBe(a);
+    expect(collideDigest(c, [...kits].reverse())).toBe(a);
+    const moved = structuredClone(c); moved.pieces[kits[0]!].bounds[1][1] += 0.01;
+    expect(collideDigest(moved, kits)).not.toBe(a);
+    expect(collideDigest({ ...c, rule: `${c.rule} ` }, kits)).not.toBe(a);
   });
 });
 

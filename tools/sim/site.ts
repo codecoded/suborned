@@ -99,7 +99,7 @@ export function buildSite(src: Source = { people: PROMOTED_PEOPLE }, opts: SiteO
   // the drawn solids at eye height on pieces that stop sight (brief 055 step 2): a building's own footprint is already above, so its drawn copy is not repeated
   const civicIds = new Set(occluders.map((o) => `civic/${o.id}`));
   for (const o of opts.drawnOccluders ? G.occluders : []) {
-    if (civicIds.has(o.id)) continue;
+    if (civicIds.has(o.id.replace(/#\d+$/, ''))) continue; // brief 072: a building's drawn volumes come as id#k when it keeps more than one
     occluders.push({ id: `solid:${o.id}`, z: cm(o.z), h: cm(o.h), poly: o.poly.map(P), src: `${COLLIDE_FILE} volumes spanning eye height (rulebook eye-cm ${eyeCm}), placed as the world places the piece` });
   }
 
@@ -288,15 +288,18 @@ export function buildProvisional(): string {
 }
 
 /** The cover the engine's fight AI reads (brief 011, Pulse's briefs/011/pulse-fight-ai.md §5): a copy of contracts/world/civic-block.cover.json's points and sight
- *  blockers, with the file's sha256, so the engine reads one site file and a stale copy fails the site test. The file itself is Pulse's (`bun run cover`). */
+ *  blockers, so the engine reads one site file and a stale copy fails the site test. The file itself is Pulse's (`bun run cover`).
+ *  sha256: of what is copied (points, blockers, refuge), as tools/sim/range.ts does. Brief 072 (Keel): was the whole file's, whose `from` holds kit.json's
+ *  sha256, so any kit piece added anywhere changed the site's bytes and every recorded run's inputs while the cover stood as it was. */
 export const COVER_FILE = 'contracts/world/civic-block.cover.json';
 function coverOf() {
   const text = readFileSync(join(import.meta.dir, '../..', COVER_FILE), 'utf8'), c = JSON.parse(text);
   if (c.schema !== 'suborned.cover/1') throw new Error(`${COVER_FILE} is not suborned.cover/1`);
+  const points = c.points, blockers = c.blockers, refuge = c.refuge.map((r: { id: string; at: number[]; kind: string }) => ({ id: r.id, at: r.at, kind: r.kind }));
   return {
-    from: COVER_FILE, sha256: createHash('sha256').update(text).digest('hex'),
-    src: 'brief 011 fight AI (Pulse): cover points (where a body stands, the direction it shields against, the cone, the quality, present for cars) and the objects at eye height and up that block sight',
-    points: c.points, blockers: c.blockers, refuge: c.refuge.map((r: { id: string; at: number[]; kind: string }) => ({ id: r.id, at: r.at, kind: r.kind })),
+    from: COVER_FILE, sha256: createHash('sha256').update(JSON.stringify({ points, blockers, refuge })).digest('hex'),
+    src: 'brief 011 fight AI (Pulse): cover points (where a body stands, the direction it shields against, the cone, the quality, present for cars) and the objects at eye height and up that block sight; sha256 of the points, blockers and refuge as copied here',
+    points, blockers, refuge,
   };
 }
 

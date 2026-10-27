@@ -14,7 +14,15 @@ const env = { ...process.env, DOTNET_CLI_TELEMETRY_OPTOUT: '1', DOTNET_NOLOGO: '
 const dotnet = Bun.which('dotnet');
 const sim = (...args: string[]) => {
   const r = Bun.spawnSync(['dotnet', 'run', '--project', 'sim/cli', '--', ...args], { cwd: root, env, stdout: 'pipe', stderr: 'pipe' });
-  return { code: r.exitCode, out: r.stdout.toString(), err: r.stderr.toString() };
+  const out = r.stdout.toString(), err = r.stderr.toString();
+  return { code: r.exitCode, out, err: why(out, err) };
+};
+/** Why a run failed: stderr, and the failing checks a play reports on stdout (brief 072: a play that fails a check exits 1 with stderr empty, so the
+ *  message was blank; the reason, such as "record: the inputs differ from the record", is in its JSON's `checks`). */
+const why = (out: string, err: string): string => {
+  let failed: string[] = [];
+  try { const j = JSON.parse(out); failed = (Array.isArray(j?.checks) ? j.checks : []).filter((c: { ok?: boolean }) => c && c.ok === false).map((c: { what?: string }) => c.what ?? JSON.stringify(c)); } catch { /* not a play's JSON */ }
+  return [err.trim(), ...failed.map((w) => `check failed: ${w}`)].filter(Boolean).join('\n');
 };
 
 describe('sim/data/handover.site.json', () => {

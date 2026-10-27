@@ -57,6 +57,15 @@ export type Solid = {
 export type Drawn = { solids: Solid[]; elements: number; volumes: number; unmeasured: string[]; collideSha: string };
 
 const sha = (t: string) => new Bun.CryptoHasher('sha256').update(t).digest('hex');
+/** The kit piece the mission cameras' poles stand as (missionPoles, tools/missions/handover/legs.ts cameraPoles): on the same grid, so in the digest. */
+const POLE_PIECE = 'CCTVPole';
+/** Brief 072 (Keel): what of kit.collide.json this grid reads: its schema, frame and rule, and the bounds and volumes of the pieces placed in the window (and the
+ *  camera pole), pieces sorted by name. Was the whole file's sha256, so a piece added or re-measured anywhere in the city (a street filler outside the window, a
+ *  version bump) changed grid.collide, the site's bytes and every recorded run's inputs while the ground stood as it was. */
+export function collideDigest(collide: { schema: string; frame?: string; rule?: string; pieces: Record<string, Piece> }, kits: string[]): string {
+  const pieces = Object.fromEntries([...new Set(kits)].filter((k) => collide.pieces[k]).sort().map((k) => [k, { bounds: collide.pieces[k]!.bounds, volumes: collide.pieces[k]!.volumes }]));
+  return sha(JSON.stringify({ schema: collide.schema, frame: collide.frame ?? '', rule: collide.rule ?? '', pieces }));
+}
 
 /** Every drawn solid the world stands in (or within `pad` of) the window. */
 export function drawnSolids(plan: Plan, civ: Civic, w: World, win: Window = WINDOW, pad = 2): Drawn {
@@ -64,7 +73,7 @@ export function drawnSolids(plan: Plan, civ: Civic, w: World, win: Window = WIND
   if (collide.schema !== 'suborned.kit.collide/1') throw new Error(`${COLLIDE_FILE} is not suborned.kit.collide/1`);
   const toBlock = toBlockFn(plan.civic), pave = pavementOf(plan);
   const inWin = (b: V) => b[0] >= win.x0 - pad && b[0] <= win.x1 + pad && b[1] >= win.y0 - pad && b[1] <= win.y1 + pad;
-  const solids: Solid[] = [], unmeasured = new Set<string>();
+  const solids: Solid[] = [], unmeasured = new Set<string>(), placed = new Set<string>();
   let elements = 0;
   const push = (s: Omit<Solid, 'x0' | 'x1' | 'y0' | 'y1'>) => {
     if (!s.poly.some(inWin)) return;
@@ -79,6 +88,7 @@ export function drawnSolids(plan: Plan, civ: Civic, w: World, win: Window = WIND
   };
   const placePiece = (id: string, kit: string, pivot: V, yaw: number, scale: [number, number, number], zOrigin: number, sight: Solid['sight'], face = false): boolean => {
     const p = collide.pieces[kit]; if (!p) { unmeasured.add(kit); return false; }
+    placed.add(kit);
     const [sx, sy, sz] = scale, T = at(pivot, yaw, sx, sz);
     elements++;
     for (const v of p.volumes) {
@@ -98,12 +108,28 @@ export function drawnSolids(plan: Plan, civ: Civic, w: World, win: Window = WIND
   // the civic block's pieces (KitPlacer: pivot on kit.at, lowest point on kit.base); a mass with no kit piece stands as its prism. Hidden masses draw nothing.
   // A civic building, its towers, its ground storey (`groundBy`) and its interior are faces; the terrace, the entrances and the dressing are ground solids.
   const faces = new Set<string>([...civ.buildings.flatMap((b) => [`civic/${b.id}`, ...(b.towers ?? []).map((t) => `civic/${b.id}/${t.id}`)]), ...w.civic.flatMap((m) => (m.groundBy ? [m.groundBy] : [])), ...w.civic.filter((m) => m.id.endsWith('/interior')).map((m) => m.id)]);
+  const buildingOf = new Map(civ.buildings.map((b) => [`civic/${b.id}`, b]));
   for (const m of w.civic) {
     if (m.hidden || m.height < 0.02) continue;
     const face = faces.has(m.id);
     if (m.kit) {
-      const p = collide.pieces[m.kit.id];
-      if (p && placePiece(m.id, m.kit.id, m.kit.at, m.kit.yaw ?? 0, m.kit.scale, m.kit.base - p.bounds[0][1] * m.kit.scale[1], 'blocks', face)) continue;
+      const p = collide.pieces[m.kit.id], from = solids.length;
+      if (p && placePiece(m.id, m.kit.id, m.kit.at, m.kit.yaw ?? 0, m.kit.scale, m.kit.base - p.bounds[0][1] * m.kit.scale[1], 'blocks', face)) {
+        // brief 072 (Keel): a civic building's walls are the block's footprint and its towers' (civic-block.json polygons), as the block-only grid and the site's
+        // sight have them; its kit piece's measured volumes add only what stands proud of them (the Office's pilasters, its step). Was every kit volume: the
+        // RecordsTower's measured slabs stood 0.1 to 0.4 m off the declared faces, so the walk moved round the Office and every record's inputs with it.
+        const b = buildingOf.get(m.id);
+        if (b) {
+          const towers = (b.towers ?? []).flatMap((t) => (t.poly ? [{ id: `${m.id}/${t.id}`, poly: t.poly.map(toBlock), height: t.height as number }] : []));
+          const walls = [b.poly.map(toBlock), ...towers.map((t) => t.poly)];
+          const mid = (s: Solid): V => (s.circle ? s.circle.c : [(s.x0 + s.x1) / 2, (s.y0 + s.y1) / 2]);
+          const proud = solids.splice(from).filter((s) => !walls.some((P) => inPoly(mid(s), P)));
+          prism(m.id, b.poly.map(toBlock), m.base, m.height, 'blocks', face);
+          for (const t of towers) prism(t.id, t.poly, m.base, t.height, 'blocks', true);
+          solids.push(...proud);
+        }
+        continue;
+      }
     }
     prism(m.id, m.ring.map(toBlock), m.base, m.height, 'blocks', face);
   }
@@ -126,7 +152,7 @@ export function drawnSolids(plan: Plan, civ: Civic, w: World, win: Window = WIND
     const boxes = [...(f.facade ? [] : [f.front, f.entrance]), ...(f.service ? [f.service] : [])];
     for (const b of boxes) if (b.shape === 'box' && b.size[2] >= 0.02) { const poly = rect(b.c, b.size[0], b.size[1], b.yaw); if (poly.some(inWin)) prism(b.id, poly, b.base, b.size[2], 'blocks', true); }
   }
-  return { solids, elements, volumes: solids.length, unmeasured: [...unmeasured].sort(), collideSha: sha(text) };
+  return { solids, elements, volumes: solids.length, unmeasured: [...unmeasured].sort(), collideSha: collideDigest(collide, [...placed, POLE_PIECE]) };
 }
 
 /** The pavement's height above the carriageway (standards.levels.datum.pavement): block z 0. */
