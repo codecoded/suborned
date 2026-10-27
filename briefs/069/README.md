@@ -269,3 +269,5 @@ Forma put Latch's left-foot and bow-leg fix into the game's figure pipeline as g
     - flat-fingered clips flagged, plus a `hand_relaxed` clip for a fingers-only override layer.
   - **Result:** palms within 3.3° of the source in walk, fingers within about 4°. Byte-identical.
   - **Open:** the crowd's 22-bone palms. Evidence: `forma/hands.json`.
+- **Reinstall with the `kept` import (Latch):** all six figures are valid, with their own limits. Walk palms within about 4.6° of the source; the `hand_relaxed` fingers-only layer gives 82.3° bend (source 84.6°) on the six flat clips; the Enforcer's ankles 20.8 cm, 0 boot overlaps. The weapons still pass (the carbine butt in the pocket at 0.0 cm, the support hand slid 8 cm).
+- **Bug found (game too):** the authored clips' metas say take `mixamo.com`, frames 0..N−1, but the FBX take is `Scene`, frames 1..N. `hand_relaxed` imports empty, and `serve_walk` and the new weapon blends lose their last frame. Forma is fixing it in the meta writer.
