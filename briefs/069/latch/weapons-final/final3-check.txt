@@ -1,0 +1,40 @@
+
+enforcer_carbine_pull: diag@40: butt from the R joint fwd 10.7 up 0.6 in 11.9 cm; support from the L joint 68.0 cm (fwd 67.8 up 3.5 in -2.0), L arm reach 55.6 cm; muzzle from the R joint fwd 91.1 in 52.5; head from the R joint in 20.1 up 15.6; shoulder pull (aim from the shoulder: the weapon pivots on its butt socket, Multi-Parent to the shoulder pocket by drawn, Multi-Aim of the bore line, right hand Two Bone IK to the grip) [pocket on RightShoulder: 10 cm in from the RightArm joint, the skin 12.0 cm in front of it (6 skin vertices on the line), +0.5 cm]; spine aim-offset [Spine Spine aim Z up Y weight 0.2; Chest Spine1 aim Z up Y weight 0.3; UpperChest Spine2 aim Z up Y weight 0.5], no root turn; cell route: unoptimised (88 transforms with the rig), Animation Rigging (Multi-Parent, Multi-Aim, Two Bone IK ×2), grip layer, 147 frames
+  blade: rifle_aim +1.5..+2.1°
+  held frames 99: barrel to target 0.00..0.00°; right hand to its grip socket 0.0 cm / 0.0° max; left hand (Attach_LeftHand) to the support socket 10.8..11.4 cm / 0.0° max; left hand to its slid support point 0.0 cm max, slid back along the handguard 10.8..11.4 cm; butt (shoulder socket) to the shoulder pocket 0.0..0.0 cm, to the shoulder joint centre 16.0..16.0 cm
+  chest yaw against the hips -15.7..-13.8°; root yaw +0.0..+0.0°
+    rifle_raise (3 held frames): barrel 0.00° max; right hand 0.0 cm; left hand 10.8..11.3 cm; butt to pocket 0.0 cm max
+    rifle_aim (61 held frames): barrel 0.00° max; right hand 0.0 cm; left hand 11.0..11.4 cm; butt to pocket 0.0 cm max
+    rifle_fire (35 held frames): barrel 0.00° max; right hand 0.0 cm; left hand 11.0..11.2 cm; butt to pocket 0.0 cm max
+  feet per segment (cm, max from the segment's start): 1 rifle_raise L 21.4 R 5.3; 2 rifle_aim L 1.2 R 1.2; 3 rifle_fire L 1.1 R 1.2; 4 rifle_aim L 0.2 R 0.2; 5 rifle_lower L 21.7 R 5.4; 6 idle L 0.8 R 0.8
+  determinism: the sequence twice from a fresh figure, every frame: max 0.000 mm; errors and exceptions logged: 0
+
+enforcer_carbine_nopull: diag@40: butt from the R joint fwd -1.5 up 9.0 in 21.9 cm; support from the L joint 60.7 cm (fwd 59.9 up 9.1 in -2.1), L arm reach 55.6 cm; muzzle from the R joint fwd 84.9 in 47.1; head from the R joint in 19.4 up 15.6; spine aim-offset [Spine Spine aim Z up Y weight 0.2; Chest Spine1 aim Z up Y weight 0.3; UpperChest Spine2 aim Z up Y weight 0.5], no root turn; cell route: unoptimised (84 transforms with the rig), Animation Rigging (Multi-Parent, Multi-Aim, Two Bone IK ×2), grip layer, 147 frames
+  blade: rifle_aim +1.5..+2.1°
+  held frames 99: barrel to target 0.74..0.75°; right hand to its grip socket 0.0 cm / 0.0° max; left hand (Attach_LeftHand) to the support socket 1.4..5.7 cm / 0.0° max; left hand to its slid support point 5.7 cm max, slid back along the handguard 0.0..0.0 cm; butt (shoulder socket) to the shoulder pocket n/a, to the shoulder joint centre 22.2..24.3 cm
+  chest yaw against the hips -25.3..-23.5°; root yaw +0.0..+0.0°
+    rifle_raise (3 held frames): barrel 0.75° max; right hand 0.0 cm; left hand 2.8..5.7 cm
+    rifle_aim (61 held frames): barrel 0.74° max; right hand 0.0 cm; left hand 2.8..3.2 cm
+    rifle_fire (35 held frames): barrel 0.74° max; right hand 0.0 cm; left hand 1.4..3.0 cm
+  feet per segment (cm, max from the segment's start): 1 rifle_raise L 21.4 R 5.3; 2 rifle_aim L 1.2 R 1.2; 3 rifle_fire L 1.1 R 1.2; 4 rifle_aim L 0.2 R 0.2; 5 rifle_lower L 21.7 R 5.4; 6 idle L 0.8 R 0.8
+  determinism: the sequence twice from a fresh figure, every frame: max 0.000 mm; errors and exceptions logged: 0
+
+fixer_pistol_newset_spine: spine aim-offset [Spine Spine aim Z up Y weight 0.2; Chest Spine1 aim Z up Y weight 0.3; UpperChest Spine2 aim Z up Y weight 0.5], no root turn; cell route: unoptimised (81 transforms with the rig), Animation Rigging (Multi-Parent, Multi-Aim, Two Bone IK ×2), grip layer, 157 frames
+  blade: aim +13.0..+13.4°
+  held frames 88: barrel to target 0.45..0.45°; right hand to its grip socket 0.0 cm / 0.0° max; left hand (Attach_LeftHand) to the support socket 0.0..0.0 cm / 0.0° max; left hand to its slid support point 0.0 cm max, slid back along the handguard 0.0..0.0 cm
+  chest yaw against the hips -64.5..-52.8°; root yaw +0.0..+0.0°
+    draw (6 held frames): barrel 0.45° max; right hand 0.0 cm; left hand 0.0..0.0 cm
+    aim (55 held frames): barrel 0.45° max; right hand 0.0 cm; left hand 0.0..0.0 cm
+    fire (27 held frames): barrel 0.45° max; right hand 0.0 cm; left hand 0.0..0.0 cm
+  feet per segment (cm, max from the segment's start): 1 walk L 37.3 R 35.6; 2 draw L 34.1 R 21.6; 3 aim L 1.2 R 1.1; 4 fire L 1.1 R 0.8; 5 fire L 0.9 R 0.7; 6 aim L 0.5 R 0.4; 7 holster L 20.8 R 14.0; 8 walk L 27.8 R 31.9
+  determinism: the sequence twice from a fresh figure, every frame: max 0.000 mm; errors and exceptions logged: 0
+
+guard_pistol_newset: root turned by the blade; guard route: optimised (16 transforms), Humanoid IK pass (GuardAimIK), arm-out additive layer while holstered, 157 frames
+  blade: aim +21.7..+22.2°
+  held frames 88: barrel to target 0.47..0.56°; right hand to its grip socket 1.8 cm / 0.0° max; left hand (Attach_LeftHand) to the support socket 3.3..5.4 cm
+  chest yaw against the hips +0.0..+0.0°; root yaw -22.2..+0.0°
+    draw (6 held frames): barrel 0.52° max; right hand 0.6 cm; left hand 4.9..5.4 cm
+    aim (55 held frames): barrel 0.56° max; right hand 1.5 cm; left hand 4.7..5.0 cm
+    fire (27 held frames): barrel 0.55° max; right hand 1.8 cm; left hand 3.3..4.9 cm
+  feet per segment (cm, max from the segment's start): 1 walk L 0.0 R 0.0; 2 draw L 0.0 R 0.0; 3 aim L 0.0 R 0.0; 4 fire L 0.0 R 0.0; 5 fire L 0.0 R 0.0; 6 aim L 0.0 R 0.0; 7 holster L 0.0 R 0.0; 8 walk L 0.0 R 0.0
+  determinism: the sequence twice from a fresh figure, every frame: max 0.000 mm; errors and exceptions logged: 0

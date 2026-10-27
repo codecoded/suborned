@@ -237,3 +237,5 @@ Forma put Latch's left-foot and bow-leg fix into the game's figure pipeline as g
   - **Transitions:** match within 1 mm (hands and feet).
   - **Feet:** move only in raise and lower (11–13 cm: different stance), which would need a step or entering from walk.
   - Strip: `out/scratch/forma/char-pipeline/props/sheet_rifle_set.png`.
+- **Carbine shoulder pull (Latch):** the weapon pivots at the butt, pulled into a shoulder pocket off the right clavicle, with Multi-Aim to the target. Butt to pocket 0.0 cm, barrel 0.00°. To reach, the support hand slides about 11 cm back along the handguard and the left clavicle turns forward. Feet move only in raise and lower (about 21 / 5 cm). Every take also has a front-on video. Evidence: `latch/weapons-final/final3-check.txt`.
+- **Animation library comparison:** `research/anim-packs.md`. Recommended: ActorCore clip by clip ($424.50, 38/50 covered).
