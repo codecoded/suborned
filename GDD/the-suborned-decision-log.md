@@ -34,7 +34,7 @@ The GDD keeps a default for each (the draft's, or the build's) until Sky rules. 
 29. (brief 064, Redline 2026-10-26) §11 says 60 fps at 1080p, but every Air row ran at the panel's 2880×1864: which is the bar? And render scale (0.75 or 0.62 saves about 4.5–8.5 ms warm) is a look call.
 30. (brief 066) The low city round the play streets (3–4 storeys, the Records Office the one landmark): Sky decides from the pictures after batch 0.2.123.
 31. (brief 067) With the patrol in the service yard, "entry seen by patrol" can't happen on the Handover's site; it stays a general fail line, counted by the mission check only where a patrol watches an entry. Motive also offered a "way out seen by the patrol" fail; Aster held it (not built).
-32. (brief 072) The loosened style kit (style contract, GDD §15, facade.json, the glass rule): Sky decides from Vela's before/after pictures (briefs/072/style/proposal.html); then one GDD version carries it with brief 072's decisions below.
+32. (brief 072) **Answered, Sky 2026-10-27: "yep, more, more reds / blues allowed as well".** The loosened style kit (style contract, GDD §15, facade.json, the glass rule): Sky decides from Vela's before/after pictures (briefs/072/style/proposal.html); then one GDD version carries it with brief 072's decisions below.
 Q13 of brief 035 ("Vale exits north") is settled by brief 059: "Vale comes out of the official door".
 
 ## Pending GDD version (2026-10-27; brief 072, Sky's answers to Aster; GDD not yet edited)
@@ -43,6 +43,7 @@ Q13 of brief 035 ("Vale exits north") is settled by brief 059: "Vale comes out o
 - Sky, 2026-10-27: the Records Office tower as a landmark kit piece, "yes".
 - Sky, 2026-10-27: texture, "Anywhere with a flat color, no texture, we need to give it one, as long as it doesn't hurt performance": every flat-colour surface gets a texture (shared tiling detail and normals, DecoKit's own maps), measured neutral or within 064 A5; colour stays under today's rules until the style proposal is OKed (brief 072 decision 5, objective 072-F).
 - Sky, 2026-10-27: "I think our style kit is too restrictive - the original decokit looked great, though I even loosened the desaturated hue as well a little": the old DecoKit planet colours stay; the loosening of the style kit is shown as pictures first (open item 32).
+- Sky, 2026-10-27, on brief 072's proposal: palette "yep, more, more reds / blues allowed as well" · the Records Office teal band "yep" · road "keep powdblue - feels more modern" · grade toward DecoKit "yeo" · the Air sitting "yeah wiat" (once 064's no-look settings and the window-shadow fix are in one player) · window holes in the shadow copies "ok" · balcony awnings stay at 0, "ok".
 - "I really miss the brilliance of DecoKit and quality we had there." · "DecoKit played fine though on the Air in FPS walking through the street" · "our play cam means we see a lot of the sides of the buildings" (the reasons given).
 
 ## v0.30.2 (2026-10-27; Sky's answers, relayed by main)

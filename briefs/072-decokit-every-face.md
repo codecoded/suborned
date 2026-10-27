@@ -71,6 +71,22 @@ Datum or Vantage only if the plan or block layouts must change (they should not)
 ## Rules for this round
 Shared tree: never stash, checkout, reset or clean. Kill by PID only. No paid API calls (Codex stills are free). Checks under 10 minutes with `bun run test`. No heavy load while Sky plays (`bun run guard`). No deploy, no Air run without Sky. Crew don't commit; Aster commits checkpoints with this round's files only.
 
+## Sky's answers to the round's questions (2026-10-27)
+- Q1a palette loosening as rendered: **"yep, more, more reds / blues allowed as well"**: approved and pushed further; more reds and blues as accents and in world colour. Signals still don't own red, amber or violet (Sky, 2026-10-16).
+- Q1b DecoKit's deep teal band back on the Records Office: **"yep"**.
+- Q1c road: **"keep powdblue - feels more modern"**: the powder-blue road stays; no asphalt A/B.
+- Q1d grade toward DecoKit's: **"yeo"** (yes); Glint.
+- Q2 the Air sitting: **"yeah wiat"**: ask for it once 064's no-look settings and the window-shadow fix are in one development player.
+- Q3 window shadows: **"ok"**: Vela cuts window holes in the low-detail shadow copies; shadows stay on the copies; Redline confirms the cost.
+- Q4 balcony awnings: **"ok"**: stay at 0; an awninged side-bay variant only if the play shots read flat.
+
+### Follow-up (072-G)
+1. Vela: the loosened palette into contracts/style/suborned.style.json, facade.json and the look sources (civic-look.json regenerated, never hand-edited), with more reds and blues and the Office's teal band; a before/after render.
+2. Aster: one GDD version for brief 072 (§15 style, §09/§10 every face, texture on flat colour); `bun run crew`, `--check`.
+3. Glint: the grade toward DecoKit's; detail strength for stone and roofs (the textured Records Office reads blotchy, not honed).
+4. Vela: window holes in the shadow copies; Redline measures.
+5. Latch: rebuild, offscreen capture only, the compare views.
+
 ## Status
 - 2026-10-27: brief, decision log and the planet/moon rebuild committed (96176fed). Phase A out: 072-A Vela (pieces), 072-B Vela (style proposal), 072-C Splice, 072-D Redline phase 1, 072-E Latch baseline.
 - 072-A done: 25 pieces adopted (briefs/072/pieces/pieces.md; the names grew: SidePilaster_*, CornerPier_*_Base/_Top), plus pass 2: ShopFill_3/_4 and ShopStack_Base for street-facing shop stretches, and opaque side windows (DK_Window_Film). Commits e8614ede, a405be1e.
