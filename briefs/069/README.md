@@ -227,3 +227,8 @@ Forma put Latch's left-foot and bow-leg fix into the game's figure pipeline as g
   - **Carbine:** the butt is 8.2 cm from the shoulder in Blender.
 - **Pistol set rebuilt around one stance:** aim `Pistol_Idle c9cdb599`; fire = the aim held plus an 8° kick; draw and holster = 0.6 s blends into and out of the aim. Transitions match to 0.0 cm on the Fixer; no body swing in fire. There's no hip-holster draw in the library.
 - **Latch's spine aim** (Multi-Aim on Spine/Chest/UpperChest): the pistol hand stays on the grip (was 3.8 cm), but the old fire clip's foot drift remains (that's the clip). The carbine is worse with it, so it keeps the grip + shoulder setup.
+- **Pistol rerun (Latch):**
+  - **Fixer** (new one-stance set, spine aim): fixed. Feet drift 1–2 cm (was 20–33), no spin, hands on the gun throughout, barrel 0.45°.
+  - **Guard** (Humanoid IK): barrel on target, hands 2–5 cm off their sockets.
+  - **New Enforcer, carbine:** barrel and hands right, but the butt is 13–14 cm off the shoulder in Unity (it needs a shoulder pull); left foot drift 22.6 cm in the idle→aim move.
+  - **All three:** 0 errors, deterministic. Evidence: `latch/weapons-final/final2-check.txt`.

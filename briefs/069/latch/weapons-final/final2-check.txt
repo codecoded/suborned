@@ -1,0 +1,29 @@
+Enforcer import: avatar valid humanoid 52 human bones; import messages 0
+grip layer, Enforcer (right glove fitted; the left is rigid): Index 1 Stretched 40.0°; Index 2 Stretched 55.0°; Index 3 Stretched 30.0°; Middle 1 Stretched 80.0°; Middle 2 Stretched 95.0°; Middle 3 Stretched 65.0°; Ring 1 Stretched 85.0°; Ring 2 Stretched 95.0°; Ring 3 Stretched 65.0°; Little 1 Stretched 85.0°; Little 2 Stretched 95.0°; Little 3 Stretched 65.0°; Thumb 1 Stretched 25.0°; Thumb 2 Stretched 35.0°; Thumb 3 Stretched 25.0°
+
+fixer_pistol_newset_spine: spine aim-offset [Spine Spine aim Z up Y weight 0.2; Chest Spine1 aim Z up Y weight 0.3; UpperChest Spine2 aim Z up Y weight 0.5], no root turn; cell route: unoptimised (80 transforms with the rig), Animation Rigging (Multi-Parent, Multi-Aim, Two Bone IK ×2), grip layer, 157 frames
+  blade (barrel yaw against the root, per clip, the spine aim's input offset where used): aim +13.0..+13.4°
+  held frames 88: barrel to target 0.45..0.45°; right hand to its grip socket 0.0 cm max; left hand (Attach_LeftHand) to the support socket 0.0..0.0 cm
+  root yaw +0.0..+0.0°; chest yaw against the hips -64.5..-52.8°; feet drift while drawn L 1.2 cm, R 1.7 cm
+    draw (6 frames): barrel 0.45° max; right hand 0.0 cm; left hand 0.0..0.0 cm; chest -55..-53°
+    aim (55 frames): barrel 0.45° max; right hand 0.0 cm; left hand 0.0..0.0 cm; chest -64..-64°
+    fire (27 frames): barrel 0.45° max; right hand 0.0 cm; left hand 0.0..0.0 cm; chest -64..-64°
+  determinism: the sequence twice from a fresh figure, every frame: max 0.000 mm; errors and exceptions logged: 0
+
+guard_pistol_newset: root turned by the blade; guard route: optimised (16 transforms), Humanoid IK pass (GuardAimIK), arm-out additive layer while holstered, 157 frames
+  blade (barrel yaw against the root, per clip, the spine aim's input offset where used): aim +21.7..+22.2°
+  held frames 88: barrel to target 0.47..0.56°; right hand to its grip socket 1.8 cm max; left hand (Attach_LeftHand) to the support socket 3.3..5.4 cm
+  root yaw -22.2..+0.0°; chest yaw against the hips +0.0..+0.0°; feet drift while drawn L 0.0 cm, R 0.0 cm
+    draw (6 frames): barrel 0.52° max; right hand 0.6 cm; left hand 4.9..5.4 cm; chest +0..+0°
+    aim (55 frames): barrel 0.56° max; right hand 1.5 cm; left hand 4.7..5.0 cm; chest +0..+0°
+    fire (27 frames): barrel 0.55° max; right hand 1.8 cm; left hand 3.3..4.9 cm; chest +0..+0°
+  determinism: the sequence twice from a fresh figure, every frame: max 0.000 mm; errors and exceptions logged: 0
+
+enforcer_carbine: root turned by the blade; cell route: unoptimised (80 transforms with the rig), Animation Rigging (Multi-Parent, Multi-Aim, Two Bone IK ×2), grip layer, 116 frames
+  blade (barrel yaw against the root, per clip, the spine aim's input offset where used): rifle_aim +1.5..+2.1°
+  held frames 99: barrel to target 0.73..0.74°; right hand to its grip socket 0.0 cm max; left hand (Attach_LeftHand) to the support socket 0.0..3.3 cm; butt to the right shoulder joint 10.0..31.1 cm
+  root yaw +0.0..+0.0°; chest yaw against the hips +0.8..+8.4°; feet drift while drawn L 22.6 cm, R 3.6 cm
+    rifle_idle (6 frames): barrel 0.74° max; right hand 0.0 cm; left hand 0.0..3.3 cm; butt 10.0..31.1 cm; chest +1..+7°
+    rifle_aim (55 frames): barrel 0.74° max; right hand 0.0 cm; left hand 0.0..0.0 cm; butt 13.8..13.9 cm; chest +7..+7°
+    rifle_fire (38 frames): barrel 0.74° max; right hand 0.0 cm; left hand 0.0..0.0 cm; butt 12.5..14.0 cm; chest +7..+8°
+  determinism: the sequence twice from a fresh figure, every frame: max 0.000 mm; errors and exceptions logged: 0
