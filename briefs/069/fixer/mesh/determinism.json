@@ -8,32 +8,32 @@
   {
    "file": "a/fixer_v7_H.fbx",
    "result": "identical",
-   "sha256": "17aec2fda986e047e2c8d2f35ac42e69872bcaac899148077b6cfcf43cc32038"
+   "sha256": "564f48db0cde2630bebae82884cbce257eb7cae68accb5738fc9988625e0ae11"
   },
   {
    "file": "a/fixer_v7_H.json",
    "result": "identical",
-   "sha256": "a5a775291d78b1177fbb3bd14a090f2ad0e795117522c2c96ef08bc99325ccb0"
+   "sha256": "d7f1c0aceda3bf63aae4ff57515c58d9b13ebc35d84365a6b1ddf85a00b3f394"
   },
   {
    "file": "a/fixer_v7_H_albedo.jpg",
    "result": "identical",
-   "sha256": "1f5ce25ac89efdea8afcc7c42a0bfc3bcb79116a3b6b0f16e9e7edfe63475548"
+   "sha256": "669a124c40ec591a7a50f4eb996527edfbd5268f3a7437310d4f5a0c55221f76"
   },
   {
    "file": "a/fixer_v7_H_avatarT.fbx",
    "result": "identical",
-   "sha256": "a6ddc15a7ec0379bc0639b82a8594ca91dbd067945ce093584eef4c52c203312"
+   "sha256": "a5d46d32ee935d2afd79c59a5e8b01f1297023508a7ba8544cd9a2260092cf93"
   },
   {
    "file": "a/fixer_v7_H_labels.npy",
    "result": "identical",
-   "sha256": "58ab11448d8030aa1cb7245c663b643661ca7552e8284b6233eb750e7e4eb151"
+   "sha256": "e624d4b0b04b36988950ba4c2c788bd36c2cfc4e9ac38b1c52e8b2da1e274ad2"
   },
   {
    "file": "a/textures.json",
    "result": "identical",
-   "sha256": "40b1338250732b9d0a928cf1cb30c270459f233ff038b05c7615b5cbb2a67a5c"
+   "sha256": "41263533450f26d3417f94407d4653b8af40f6ebaab3195e8b6c4daaa715bea6"
   },
   {
    "file": "basis/basis_f.npz",
@@ -48,7 +48,7 @@
   {
    "file": "fit/fixer_v7.fit.json",
    "result": "identical",
-   "sha256": "e1f3f08123dee8e84373bc8644ff11cfdf8a5cf30b1294e5d08d8f4b7612cf94"
+   "sha256": "f7e9449d7e93621a5369ca3fda10509a3187573484d0716ad3569b601ed63c99"
   }
  ]
 }

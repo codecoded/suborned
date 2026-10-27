@@ -2,25 +2,82 @@
  "schema": "suborned.charpipe.e2e/1",
  "brief": "069 the Fixer redone (Sky, 2026-10-27: 'Go'): Sky's final concept fixer_v7_cutout (intake pose) -> Tripo 3.1 -> the hybrid fit -> the static check. No animation until Sky's OK.",
  "out": "out/scratch/forma/char-pipeline/fixer",
- "job": "069-fixer", "pass": "mesh", "budgetUsd": 1.00,
- "note": "Sky's 'Go' 2026-10-27: one Tripo 3.1 take (about $0.60); a retry only for a call that fails at $0",
+ "job": "069-fixer",
+ "pass": "mesh30k",
+ "budgetUsd": 1.0,
+ "note": "Sky's 'Go' 2026-10-27; then Sky: 'Player Models should be created at 30k triangles' (the cell: Scout, Fixer, Tech, Enforcer). Pass mesh (20k, $0.60) kept for comparison; pass mesh30k: one take at about $0.60, budget $1.00, a retry only for a call that fails at $0",
  "model": {
   "id": "tripo:v3.1@0",
-  "settings": {"texture": true, "pbr": false, "faceLimit": 20000, "geometryQuality": "detailed", "textureQuality": "detailed", "orientation": "default"},
-  "estUsd": 0.60,
-  "viewOrder": ["front", "left", "back"],
-  "note": "Sky's pick for 3D (memory: Tripo 3.1, ~$0.60 via Runware). Runware's Tripo 3.1 page (https://runware.ai/docs/models/tripo-v3-1): inputs.images takes 1 to 4 images for multiview-to-3D, order not stated there; Tripo's own API orders multi-view as [front, left, back, right] with views omittable (front required, at least 2: https://developers.tripo3d.com/en/docs/generation-multiview-to-model/standard), so the three real views go in that order and no right view is invented. faceLimit 20000 is Runware's maximum for Tripo. pbr off: the game's figures are matte. orientation default: the fit normalises facing itself."
+  "settings": {
+   "texture": true,
+   "pbr": false,
+   "faceLimit": 30000,
+   "geometryQuality": "detailed",
+   "textureQuality": "detailed",
+   "orientation": "default"
+  },
+  "estUsd": 0.6,
+  "viewOrder": [
+   "front",
+   "left",
+   "back"
+  ],
+  "note": "Sky's pick for 3D (memory: Tripo 3.1, ~$0.60 via Runware). Runware's Tripo 3.1 page (https://runware.ai/docs/models/tripo-v3-1): inputs.images takes 1 to 4 images for multiview-to-3D, order not stated there; Tripo's own API orders multi-view as [front, left, back, right] with views omittable (front required, at least 2: https://developers.tripo3d.com/en/docs/generation-multiview-to-model/standard), so the three real views go in that order and no right view is invented. faceLimit by the person's kind (faceLimitByKind; the cell at 30000). Runware's page lists 20000 as Tripo's maximum, but the October Fixer was made at 30000 through Runware (28,428 triangles); the first v7 take used 20000 and returned 18,841. pbr off: the game's figures are matte. orientation default: the fit normalises facing itself.",
+  "faceLimitByKind": {
+   "cell": 30000,
+   "note": "Sky, 2026-10-27: 'Player Models should be created at 30k triangles'. A person row's kind picks its face limit; the October Fixer was made through Runware with tripo:v3.1@0 faceLimit 30000 (tools/figures/fixer_gen.py, 28,428 triangles), so Runware's documented 20000 maximum is not enforced."
+  }
  },
- "crop": {"marginPx": 24, "sizePx": 1024},
+ "crop": {
+  "marginPx": 24,
+  "sizePx": 1024
+ },
  "people": [
-  {"id": "fixer_v7", "sheet": "paid/069-intake/codex/fixer_v7_cutout.png", "sex": "f", "category": "hero", "wears": [], "label": "the Fixer, Sky's final concept v7: ivory and aubergine, long asymmetric wrap skirt to mid-calf split at her left hip, open back, sleeves joined by a band over each shoulder with pointed cut-outs, top knot and ponytail, block-heel ankle boots", "today": "fixer", "src": "paid/069-fixer/meshes/fixer_v7__tripo31_mv_t1.glb"}
+  {
+   "id": "fixer_v7",
+   "sheet": "paid/069-intake/codex/fixer_v7_cutout.png",
+   "sex": "f",
+   "category": "hero",
+   "wears": [],
+   "label": "the Fixer, Sky's final concept v7: ivory and aubergine, long asymmetric wrap skirt to mid-calf split at her left hip, open back, sleeves joined by a band over each shoulder with pointed cut-outs, top knot and ponytail, block-heel ankle boots",
+   "today": "fixer",
+   "src": "paid/069-fixer/meshes/fixer_v7__tripo31_mv30k_t1.glb",
+   "kind": "cell",
+   "src20k": "paid/069-fixer/meshes/fixer_v7__tripo31_mv_t1.glb"
+  }
  ],
  "looseRules": [],
  "looseRulesNote": "none: the ponytail and the long skirt take nearest-body weights for now (Aster, 2026-10-27); their extra bones are a later hero step",
- "hat": {"note": "as e2e.json", "shellShare": 0.6, "minOwnShells": 0.8, "rimM": 0.01},
+ "hat": {
+  "note": "as e2e.json",
+  "shellShare": 0.6,
+  "minOwnShells": 0.8,
+  "rimM": 0.01
+ },
  "props": false,
- "rest": {"mode": "source", "note": "as e2e.json: the rest is the intake A-pose she was generated in; the Humanoid T reference with neutral legs is <id>_H_avatarT.fbx"},
- "lod0": {"mode": "source", "note": "as e2e.json: LOD0 is the generated mesh at full detail"},
- "armpit": {"mergeM": 0.015, "band": [0.05, 0.95], "torsoMin": 0.05, "note": "as e2e.json"},
- "deliverables": {"note": "as e2e.json", "dirs": ["basis", "fit", "a"]}
+ "rest": {
+  "mode": "source",
+  "note": "as e2e.json: the rest is the intake A-pose she was generated in; the Humanoid T reference with neutral legs is <id>_H_avatarT.fbx"
+ },
+ "lod0": {
+  "mode": "source",
+  "note": "as e2e.json: LOD0 is the generated mesh at full detail"
+ },
+ "armpit": {
+  "mergeM": 0.015,
+  "band": [
+   0.05,
+   0.95
+  ],
+  "torsoMin": 0.05,
+  "note": "as e2e.json"
+ },
+ "deliverables": {
+  "note": "as e2e.json",
+  "dirs": [
+   "basis",
+   "fit",
+   "a"
+  ]
+ }
 }

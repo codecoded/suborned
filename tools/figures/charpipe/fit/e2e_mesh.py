@@ -45,7 +45,9 @@ def mesh(pid, front_only, take):
     order = ['front'] if front_only else M['viewOrder']
     files = [os.path.join(CROPS, f'{pid}_{v}.png') for v in order]
     p = paid.Pass(E['job'], E['pass'])
-    p.mesh({'model': M['id'], 'inputs': {'images': [uri(f) for f in files]}, 'settings': dict(M['settings']), 'includeCost': True},
+    settings = dict(M['settings'])
+    if r.get('kind') in M.get('faceLimitByKind', {}): settings['faceLimit'] = M['faceLimitByKind'][r['kind']]       # the person's kind picks the face limit (data)
+    p.mesh({'model': M['id'], 'inputs': {'images': [uri(f) for f in files]}, 'settings': settings, 'includeCost': True},
            name=os.path.basename(r['src']).replace('_t1.glb', f'_t{take}.glb') if not front_only else f"{pid}__front_t{take}.glb", est=M['estUsd'],
            prompt=f"image-to-3D, views {order}, from the intake sheet {r['sheet']}", refs_log=files,
            note=f"take {take}; {r['label']}", used_in=['briefs/069-character-pipeline.md'])

@@ -1,0 +1,20 @@
+{
+ "20k": {
+  "arms": 2522,
+  "feet": 1090,
+  "hands": 419,
+  "head and hair": 2512,
+  "legs and skirt": 7684,
+  "torso": 4614,
+  "total": 18841
+ },
+ "30k": {
+  "arms": 3014,
+  "feet": 2131,
+  "hands": 752,
+  "head and hair": 4026,
+  "legs and skirt": 13786,
+  "torso": 5407,
+  "total": 29116
+ }
+}
