@@ -10,9 +10,9 @@ CP = os.path.dirname(HERE)
 ROOT = os.path.dirname(os.path.dirname(os.path.dirname(CP)))
 SCR = os.path.join(ROOT, 'out/scratch/forma/char-pipeline/fit-test')
 D = json.load(open(os.path.join(HERE, 'fit.json')))
-SET = os.environ.get('FIT_SET', 'fittest')          # 'e2e': the same stages on brief 069's end-to-end people (e2e.json), written to its out folder
-if SET == 'e2e':
-    E2E = json.load(open(os.path.join(HERE, 'e2e.json')))
+SET = os.environ.get('FIT_SET', 'fittest')          # 'e2e' / 'fixer': the same stages on an end-to-end set (<set>.json), written to its out folder
+if SET in ('e2e', 'fixer'):                          # end-to-end sets: e2e.json, fixer.json (the same stages, their own people and out folder)
+    E2E = json.load(open(os.path.join(HERE, f'{SET}.json')))
     SCR = os.path.join(ROOT, os.environ.get('FIT_OUT', E2E['out']))
     D['inputs'] = [dict(r, src=os.path.join(ROOT, r['src'])) for r in E2E['people']]
 MPFB = os.environ.get('MPFBDATA', '')
@@ -362,7 +362,7 @@ def import_glb(path):
     o.data.transform(o.matrix_world); o.matrix_world = Matrix.Identity(4)
     # glTF brings custom split normals; once the mesh is re-posed they no longer turn with it and shade as light and dark slivers (found in the
     # brief 069 end-to-end test): clear them and shade smooth from the geometry
-    if not (SET == 'e2e' and E2E.get('lod0', {}).get('mode') == 'source'): clean_normals(o)
+    if not (SET in ('e2e', 'fixer') and E2E.get('lod0', {}).get('mode') == 'source'): clean_normals(o)
     for x in new:
         if x is not o and x.name in bpy.data.objects: bpy.data.objects.remove(x, do_unlink=True)
     return o
@@ -476,6 +476,7 @@ def classify(Vt, Tt, dist, nearest_bone, lm, wears):
 def loose_rules(W, names, Vt, lab, lm, arm):
     """overwrite the weights of loose vertices by fit.json transfer.loose (A); returns the count per rule."""
     R = D['transfer']['loose']; ix = {n: i for i, n in enumerate(names)}; Mw = arm.matrix_world; Bn = arm.data.bones
+    if SET in ('e2e', 'fixer') and 'looseRules' in E2E: R = {k: v for k, v in R.items() if k in E2E['looseRules']}
     knee = {s: np.array(Mw @ Bn[s + 'Leg'].head_local) for s in ('Left', 'Right')}
     hipj = {s: np.array(Mw @ Bn[s + 'UpLeg'].head_local) for s in ('Left', 'Right')}
     counts = {}
@@ -824,13 +825,13 @@ def src_blend(fid):
 
 
 def rest_mode():
-    return E2E.get('rest', {}).get('mode', 'tpose') if SET == 'e2e' else D['rest'].get('mode', 'tpose')
+    return E2E.get('rest', {}).get('mode', 'tpose') if SET in ('e2e', 'fixer') else D['rest'].get('mode', 'tpose')
 
 
 
 def armpit_merge(V, W, names):
     """e2e.json armpit: spatial weight averaging inside the armpit band only."""
-    if not (SET == 'e2e' and 'armpit' in E2E): return W, 0
+    if not (SET in ('e2e', 'fixer') and 'armpit' in E2E): return W, 0
     A = E2E['armpit']; ix = {n: i for i, n in enumerate(names)}
     armw = W[:, ix['LeftArm']] + W[:, ix['RightArm']]; torw = sum(W[:, ix[n]] for n in ('Spine1', 'Spine2', 'LeftShoulder', 'RightShoulder'))
     band = (armw > A['band'][0]) & (armw < A['band'][1]) & (torw > A['torsoMin'])

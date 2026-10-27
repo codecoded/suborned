@@ -12,7 +12,7 @@ import numpy as np
 from PIL import Image
 HERE = os.path.dirname(os.path.abspath(__file__)); CP = os.path.dirname(HERE); ROOT = os.path.dirname(os.path.dirname(os.path.dirname(CP)))
 sys.path.insert(0, CP); sys.path.insert(0, os.path.join(ROOT, 'tools/paid'))
-E = json.load(open(os.path.join(HERE, 'e2e.json'))); OUT = os.path.join(ROOT, E['out']); CROPS = os.path.join(OUT, 'crops')
+E = json.load(open(os.path.join(HERE, os.environ.get('FIT_SET', 'e2e') + '.json'))); OUT = os.path.join(ROOT, E['out']); CROPS = os.path.join(OUT, 'crops')
 
 
 def crops():
@@ -46,7 +46,7 @@ def mesh(pid, front_only, take):
     files = [os.path.join(CROPS, f'{pid}_{v}.png') for v in order]
     p = paid.Pass(E['job'], E['pass'])
     p.mesh({'model': M['id'], 'inputs': {'images': [uri(f) for f in files]}, 'settings': dict(M['settings']), 'includeCost': True},
-           name=f"{pid}__hy31pro_{'front' if front_only else 'mv'}_t{take}.glb", est=M['estUsd'],
+           name=os.path.basename(r['src']).replace('_t1.glb', f'_t{take}.glb') if not front_only else f"{pid}__front_t{take}.glb", est=M['estUsd'],
            prompt=f"image-to-3D, views {order}, from the intake sheet {r['sheet']}", refs_log=files,
            note=f"take {take}; {r['label']}", used_in=['briefs/069-character-pipeline.md'])
 

@@ -107,6 +107,11 @@
    "legSplayDeg": 4.0,
    "feetSpacingHLoose": 0.06
   },
-  "calibration": "negative test (intake_pose.py --wrong: feet out 20 deg, arms 30 deg, legs leaning out 6.8 deg) fails on arms, feet spacing, splay and yaw. The yaw estimate over-reads (the 20 deg turn reads about 44, since leaning legs also push the feet out) and booted straight feet read 2-9 (a boot's toe box), so the yaw gate is 12; leg splay is measured between 24 % and 8.5 % of the height, above any boot's flare, and judged against straight (0), gate 4 (Latch's bow legs were 5-6)."
+  "calibration": "negative test (intake_pose.py --wrong: feet out 20 deg, arms 30 deg, legs leaning out 6.8 deg) fails on arms, feet spacing, splay and yaw. The yaw estimate over-reads (the 20 deg turn reads about 44, since leaning legs also push the feet out) and booted straight feet read 2-9 (a boot's toe box), so the yaw gate is 12; leg splay is measured between 24 % and 8.5 % of the height, above any boot's flare, and judged against straight (0), gate 4 (Latch's bow legs were 5-6). Long-skirt rule (2026-10-27, the Fixer v7 sheet): the knee row inside a mid-calf skirt now falls back to the visible lower legs; the wrong pose and the base mannequins read as before (knee row visible, rule not used).",
+  "longSkirt": {
+   "note": "a hem below the knee (a hero exception: the Fixer's mid-calf wrap) covers the knee row the leg-splay line starts from. Then the splay is measured over the legs' visible stretch: from the lowest row where the skirt still joins them (scanning up from the shin row, the first row that is not two legs apart, less marginH) down to the shin row. The stretch must be at least minSpanH of the height, else the check fails loudly ('legs hidden by the skirt'): a floor-length skirt cannot be checked.",
+   "minSpanH": 0.05,
+   "marginH": 0.01
+  }
  }
 }

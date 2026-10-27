@@ -14,7 +14,7 @@ import numpy as np
 from PIL import Image, ImageDraw
 
 HERE = __file__.rsplit('/', 1)[0]
-TOL = json.load(open(HERE + '/intake.json'))['check']['tolerances']
+_CHK = json.load(open(HERE + '/intake.json'))['check']; TOL = _CHK['tolerances']; LONG = _CHK.get('longSkirt')
 
 
 def mask_of(a):
@@ -96,10 +96,21 @@ def view_metrics(m, kind):
             r['_feet'] = [[int(feet[0]), int(feet[1])], int(yb(0.012))]
         else:
             r['feetSpacingH'] = None; r['footWidthH'] = None
+        r['splayFrom'] = 'knee'
+        if knee is None and shin is not None and LONG:
+            # long-skirt rule (intake.json check.longSkirt): the knee is under the hem; take the top of the legs' visible stretch instead
+            y_sh = yb(0.085); y = y_sh
+            while y > top and two(range(y - 1, y)) is not None: y -= 1
+            y_top = y + int(round(LONG['marginH'] * H)); span = (y_sh - y_top) / H
+            r['visibleLegSpanH'] = round(float(span), 4)
+            if span >= LONG['minSpanH']:
+                knee = two(range(y_top, y_top + 2)); r['splayFrom'] = 'visible lower legs'; r['_kneeY'] = y_top; r['_splaySpanH'] = span
+            else: r['splayFrom'] = 'legs hidden by the skirt'
         if feet is not None and shin is not None:
             # splay: the legs lean out if the feet sit wider than the shins (over 7.5 % of the height); yaw: a toe turned out pushes the foot's blob outward of its shin line
             # splay from the leg's own line between knee-low (24 %) and shin (8.5 %) heights: above any boot's flare at the sole
-            r['legSplayDeg'] = round(math.degrees(math.atan(((shin[1] - shin[0]) - (knee[1] - knee[0])) / 2 / (0.155 * H))), 1) if knee is not None else None
+            dz = r.get('_splaySpanH', 0.155) * H                               # the vertical run the splay is measured over (knee row 24 % -> shin 8.5 %, or the visible stretch)
+            r['legSplayDeg'] = round(math.degrees(math.atan(((shin[1] - shin[0]) - (knee[1] - knee[0])) / 2 / dz)), 1) if knee is not None else None
             r['footOutwardH'] = [round(float(shin[0] - feet[0]) / H, 4), round(float(feet[1] - shin[1]) / H, 4)]
             r['_shin'] = [[int(shin[0]), int(shin[1])], int(yb(0.085))]
         else:
@@ -150,7 +161,8 @@ def verdict(s, b):
     num['feetSpacingH'] = f.get('feetSpacingH'); num['feetSpacingH_base'] = bf.get('feetSpacingH'); num['legSplayDeg'] = f.get('legSplayDeg')
     if f.get('feetSpacingH') is None: fails.append('two feet not found at the soles')
     elif abs(f['feetSpacingH'] - bf['feetSpacingH']) > TOL['feetSpacingHLoose']: fails.append(f'feet {f["feetSpacingH"]} H apart (base {bf["feetSpacingH"]}, loose tolerance {TOL["feetSpacingHLoose"]})')
-    if f.get('legSplayDeg') is None: fails.append('shins not found apart')
+    num['splayFrom'] = f.get('splayFrom'); num['visibleLegSpanH'] = f.get('visibleLegSpanH')
+    if f.get('legSplayDeg') is None: fails.append('legs hidden by the skirt: no visible stretch to measure the splay on' if f.get('splayFrom') == 'legs hidden by the skirt' else 'shins not found apart')
     elif abs(f['legSplayDeg']) > TOL['legSplayDeg']: fails.append(f'legs lean {"out" if f["legSplayDeg"] > 0 else "in"} {abs(f["legSplayDeg"])} deg (straight is 0; base {bf.get("legSplayDeg")}, tolerance {TOL["legSplayDeg"]})')
     L = (v.get('side') or {}).get('footLengthH') or (bv.get('side') or {}).get('footLengthH'); num['footLengthH'] = L
     ys = []
@@ -184,6 +196,8 @@ def overlay(a, s, bm, b, out):
             d.line([(f['x0'] + aa * y0 + bb, y0), (f['x0'] + aa * y1 + bb, y1)], fill=(40, 200, 255), width=3)
         if f.get('_feet'):
             (c1, c2), y = f['_feet']; d.line([(f['x0'] + c1, y), (f['x0'] + c2, y)], fill=(40, 200, 255), width=3)
+        if f.get('_kneeY'):
+            d.line([(f['x0'] + f['left'], f['_kneeY']), (f['x0'] + f['right'], f['_kneeY'])], fill=(255, 120, 40), width=2)     # the long-skirt rule's upper row
         if f.get('_shin') and f.get('_feet'):
             (s1, s2), ys_ = f['_shin']; (c1, c2), yf = f['_feet']
             d.line([(f['x0'] + s1, ys_), (f['x0'] + c1, yf)], fill=(255, 210, 40), width=2); d.line([(f['x0'] + s2, ys_), (f['x0'] + c2, yf)], fill=(255, 210, 40), width=2)

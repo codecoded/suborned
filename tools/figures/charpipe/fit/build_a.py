@@ -21,13 +21,13 @@ def build(fid, hybrid=False):
     for o in list(bpy.data.objects):
         if o.name.endswith('_fitproxy'): bpy.data.objects.remove(o, do_unlink=True)
     src = bpy.data.objects[f'{fid}_src']; img = L.base_color_image(src)
-    if not (L.SET == 'e2e' and L.E2E.get('lod0', {}).get('mode') == 'source'): L.clean_normals(src)
+    if not (L.SET in ('e2e', 'fixer') and L.E2E.get('lod0', {}).get('mode') == 'source'): L.clean_normals(src)
     L.addon_utils.enable('bl_ext.user_default.mpfb', default_set=True, persistent=False)
     arm, b, px, donor = L.fitted_human(fit); tm.lap('body')
     lm = L.landmarks(arm, donor['V']); height = lm['crown']
     # LOD0: the source decimated to budget, one matte material with the source's base colour
     L.flat_material(src, img)
-    if not (L.SET == 'e2e' and L.E2E.get('lod0', {}).get('mode') == 'source'): L.decimate_to(src, L.D['lods']['tris'][0])
+    if not (L.SET in ('e2e', 'fixer') and L.E2E.get('lod0', {}).get('mode') == 'source'): L.decimate_to(src, L.D['lods']['tris'][0])
     src.name = f'{fid}_A_LOD0'; tm.lap('lod0')
     crumbs, parts = L.drop_crumbs(src, L.D['transfer']['crumbPct'])
     Vt = np.array([list(v.co) for v in src.data.vertices]); Tt = L.tris_of(src)
@@ -80,16 +80,17 @@ def build(fid, hybrid=False):
     src['fit_labels'] = os.path.join(OUT, f'{fid}_{TAGN(hybrid)}_labels.npy'); arm['fit_weight'] = fit['macros']['weight']
     L.tag(px, 'donor'); px.hide_render = True; px.name = f'{fid}_A_donor'
     arm.name = 'Armature'; tm.lap('lods')
-    bpy.ops.wm.save_as_mainfile(filepath=L.work(f'{fid}_{TAGN(hybrid)}.blend') if L.SET == 'e2e' else os.path.join(OUT, f'{fid}_{TAGN(hybrid)}.blend'), compress=True)
-    if L.SET == 'e2e' and img is not None:       # the material points at the texture delivered beside the FBX (e2e_textures.py), by its file name
-        img.name = f'{fid}_{TAGN(hybrid)}_albedo.png'; img.filepath_raw = os.path.join(OUT, img.name)
+    bpy.ops.wm.save_as_mainfile(filepath=L.work(f'{fid}_{TAGN(hybrid)}.blend') if L.SET in ('e2e', 'fixer') else os.path.join(OUT, f'{fid}_{TAGN(hybrid)}.blend'), compress=True)
+    if L.SET in ('e2e', 'fixer') and img is not None:       # the material points at the texture delivered beside the FBX (e2e_textures.py), by its file name
+        ext = {'JPEG': 'jpg', 'PNG': 'png', 'WEBP': 'webp'}.get(img.file_format, 'png')       # the glb's own image format (e2e_textures.py copies it as is)
+        img.name = f'{fid}_{TAGN(hybrid)}_albedo.{ext}'; img.filepath_raw = os.path.join(OUT, img.name)
     L.export_fbx(os.path.join(OUT, f'{fid}_{TAGN(hybrid)}.fbx'), [arm] + lods, arm)          # the figure: body, LODs and its own pieces; never the props
     if props: L.export_fbx(os.path.join(OUT, f'{fid}_{TAGN(hybrid)}_props.fbx'), [arm] + props, arm)
     tm.lap('export')
     stats = {'id': fid, 'approach': TAGN(hybrid), 'hybrid': hyb, 'sex': fit['sex'], 'macros': fit['macros'], 'lodTris': tris, 'srcTris': fit['srcTris'], 'bones': len([b for b in arm.data.bones if b.use_deform]),
              'attach': sorted(att), 'rest': L.rest_mode(), 'avatarT': avatar, 'materials': 1, 'texture': list(img.size) if img else None, 'transfer': st, 'crumbsDropped': crumbs, 'sourceParts': parts, 'looseRules': rule_counts,
              'labels': {k: int((lab == k).sum()) for k in sorted(set(lab.tolist())) if k}, 'restLegs': legs, 'seconds': tm.t, 'heightM': round(height, 3)}
-    if L.SET == 'e2e': json.dump(stats.pop('seconds'), open(L.work(f'{fid}_{TAGN(hybrid)}.seconds.json'), 'w'), indent=1)
+    if L.SET in ('e2e', 'fixer'): json.dump(stats.pop('seconds'), open(L.work(f'{fid}_{TAGN(hybrid)}.seconds.json'), 'w'), indent=1)
     json.dump(stats, open(os.path.join(OUT, f'{fid}_{TAGN(hybrid)}.json'), 'w'), indent=1, sort_keys=True)
     L.log('DONE A', fid, tris, st, rule_counts)
 
@@ -162,7 +163,7 @@ def hybrid_parts(fid, src, arm, px, att):
             hd = arm.matrix_world @ arm.data.bones['Head'].head_local; tl = arm.matrix_world @ arm.data.bones['Head'].tail_local
             lm = L.landmarks(arm, L.eval_co(src)); info['hairUnderHatMoved'] = L.hair_under_hat(hat, [src], (np.array(hd) + np.array(tl)) / 2, lm['brow'])
         else: info['welded'] = 'the cut is not clean: the hat stays in the A mesh, rigid on Head (the loose rule)'
-    if L.SET == 'e2e' and L.E2E.get('props'):
+    if L.SET in ('e2e', 'fixer') and L.E2E.get('props'):
         pr = L.props(arm, att, src); out += pr; info['props'] = [o.name for o in pr]
     return out, info
 

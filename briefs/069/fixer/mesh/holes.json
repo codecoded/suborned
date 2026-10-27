@@ -1,0 +1,49 @@
+{
+ "verts": 9391,
+ "tris": 18841,
+ "shells": 1,
+ "biggestShellPct": 100.0,
+ "boundaryEdges": 1,
+ "nonManifoldEdges": 5,
+ "boundaryByHeightTenths": [
+  0,
+  0,
+  0,
+  0,
+  0,
+  0,
+  0,
+  0,
+  1,
+  0
+ ],
+ "boundaryFrontBack": {
+  "front(y<0)": 1,
+  "back": 0
+ },
+ "note": "after welding UV-seam splits. Probes: a ray from in front along +y (or from the side along x) at a spot, listing every surface crossed; a real opening shows the body surface behind it as the first hit",
+ "probe_front_leftThigh_z40": [
+  -0.074,
+  0.098
+ ],
+ "probe_front_rightThigh_z40": [
+  -0.106,
+  -0.075,
+  -0.063,
+  0.097
+ ],
+ "probe_back_centre_z65": [
+  0.126,
+  0.098,
+  0.071,
+  -0.108
+ ],
+ "probe_back_centre_z55": [
+  0.127,
+  -0.101
+ ],
+ "probe_top_leftShoulderCutout": [
+  1.314,
+  1.269
+ ]
+}

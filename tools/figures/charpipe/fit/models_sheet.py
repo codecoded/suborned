@@ -3,7 +3,8 @@
 import sys, os
 from PIL import Image, ImageDraw, ImageFont
 D = sys.argv[1]; M = os.path.join(D, 'models'); F = ImageFont.truetype('/System/Library/Fonts/Helvetica.ttc', 22)
-ids = ['e2e_coat', 'e2e_dress', 'e2e_guard', 'e2e_flamingo']; BG = (240, 240, 236)
+import json
+SET = os.environ.get('FIT_SET', 'e2e'); ids = [p['id'] for p in json.load(open(os.path.join(os.path.dirname(os.path.abspath(__file__)), f'{SET}.json')))['people']]; BG = (240, 240, 236)
 
 
 def fit_h(im, h): return im.resize((int(im.width * h / im.height), h))

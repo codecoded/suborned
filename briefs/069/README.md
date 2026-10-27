@@ -74,3 +74,10 @@ Sky asked to redo the Fixer from her concept (`Cell/picks/fixer_P4-6.png` in the
   - The skirt and ponytail need extra bones or cloth.
   - The pose check needs a long-skirt rule (measure from the visible ankles): the skirt hides the leg gap.
 - **Next:** the Tripo 3.1 mesh (about $0.60) waits for Sky's OK.
+
+### The Fixer's mesh (2026-10-27)
+- **The mesh:** Tripo 3.1 multi-view (front, left side, back) via Runware, $0.60 in one call (`paid/069-fixer/`). 18,841 triangles and one 4K texture.
+- **Cut-outs, open back and split:** painted on, not holes. The mesh is one closed surface, so it can't tear, but the split can't open in a stride; that waits for the skirt bones or cloth.
+- **The pose check's long-skirt rule:** it measures the stance below the hem. The Fixer passes, and the wrong pose and a floor-length skirt still fail.
+- **Fit:** same scripts plus one data file (`tools/figures/charpipe/fit/fixer.json`). Byte-identical 9/9. The new Fixer stands 1.67 m against today's 1.75 m (the height slider can change it), with LOD0 at 18.8k triangles against today's 12k.
+- **Pictures:** `out/scratch/forma/char-pipeline/fixer/` (`models.png`, `beside.png`, `shoulders.png`, `play.png`). Evidence: `fixer/mesh/`.
