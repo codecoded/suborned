@@ -34,7 +34,8 @@ def build(fid, hybrid=False):
     W, st, dist, nb = L.transfer(donor, Vt, Tt, height); tm.lap('transfer')
     lab = L.classify(Vt, Tt, dist, nb, lm, row['wears'])
     W, rule_counts = L.loose_rules(W, donor['names'], Vt, lab, lm, arm)
-    W, pit_n = L.armpit_merge(Vt, W, donor['names']); rule_counts['armpitMerged'] = pit_n; tm.lap('rules')
+    W, pit_n = L.armpit_merge(Vt, W, donor['names']); rule_counts['armpitMerged'] = pit_n
+    W, bm = L.band_merge(Vt, W, lm); rule_counts['bandMerge'] = bm; tm.lap('rules')
     L.set_weights(src, W, donor['names'], L.D['transfer']['maxInfluences'])
     src.parent = arm; md = src.modifiers.new('Armature', 'ARMATURE'); md.object = arm
     KINDS = ['', 'hair', 'coat', 'skirt', 'cape', 'hat']

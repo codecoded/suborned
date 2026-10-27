@@ -192,7 +192,18 @@
     ]
    }
   },
-  "crumbPct": 0.0
+  "crumbPct": 0.0,
+  "bandMerge": {
+   "note": "long garments (brief 069, 2026-10-27): an image-to-3D long skirt is overlapping folds of one surface, and with nearest-body weights each fold follows its own leg and the folds tear apart. If the mesh bridges the leg gap (surface within centreM of the centre line on at least minBridged of levelN heights around the knee: from kneeDownFrac of the height below the knee joints to kneeUpFrac above; trousers keep the knees apart, and a dress or coat above the knee ends before them. A first version tested knee to crotch and also fired on trousers and short dresses, where the thighs nearly touch), the weights of every vertex between zLoFrac of the height and the hip joints are averaged over all vertices within mergeM in space, so the folds move as one sheet. Trousers and dresses above the knee do not bridge and are left alone.",
+   "levelN": 12,
+   "centreM": 0.02,
+   "minBridged": 0.8,
+   "zLoFrac": 0.08,
+   "mergeM": 0.02,
+   "passes": 1,
+   "kneeDownFrac": 0.05,
+   "kneeUpFrac": 0.03
+  }
  },
  "rest": {
   "note": "The standard rest: CharPipe/Clips/reference_tpose.json (the clips' own Mixamo T-pose directions), with Latch's neutral legs written by construction: UpLeg and Leg straight down, Foot->ToeBase along the hips' facing at the body's own flat-foot pitch, toe level.",

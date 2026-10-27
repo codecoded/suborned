@@ -842,3 +842,27 @@ def armpit_merge(V, W, names):
     for i in np.nonzero(band)[0]:
         nb = [j for (_, j, _) in kd.find_range(Vector(V[i]), A['mergeM'])]; W2[i] = W[nb].mean(0)
     s = W2.sum(1, keepdims=True); s[s == 0] = 1; return W2 / s, int(band.sum())
+
+
+
+def band_merge(V, W, lm):
+    """fit.json transfer.bandMerge: a long garment's band (a skirt bridging the legs) gets spatially averaged weights, so its folds move as one."""
+    R = D['transfer'].get('bandMerge')
+    if not R: return W, {}
+    z0 = float(V[:, 2].min()); H = float(V[:, 2].max()) - z0
+    lo_z = lm['knee'] - R['kneeDownFrac'] * H; hi_z = lm['knee'] + R['kneeUpFrac'] * H
+    levels = np.linspace(lo_z, hi_z, R['levelN']); dz = (hi_z - lo_z) / (2 * R['levelN'])
+    bridged = sum(1 for z in levels if ((np.abs(V[:, 2] - z) < dz) & (np.abs(V[:, 0]) < R['centreM'])).any())
+    frac = bridged / R['levelN']; info = {'bridgedFrac': round(frac, 3), 'applied': frac >= R['minBridged']}
+    if not info['applied']: return W, info
+    band = (V[:, 2] > z0 + R['zLoFrac'] * H) & (V[:, 2] < lm['hip'])
+    from mathutils.kdtree import KDTree
+    kd = KDTree(len(V))
+    for i, v in enumerate(V): kd.insert(Vector(v), i)
+    kd.balance(); idx = np.nonzero(band)[0]
+    for _ in range(R['passes']):
+        W2 = W.copy()
+        for i in idx:
+            nb = [j for (_, j, _) in kd.find_range(Vector(V[i]), R['mergeM'])]; W2[i] = W[nb].mean(0)
+        W = W2
+    s = W.sum(1, keepdims=True); s[s == 0] = 1; info['merged'] = int(len(idx)); return W / s, info

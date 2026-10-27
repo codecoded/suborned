@@ -90,3 +90,4 @@ Sky asked to redo the Fixer from her concept (`Cell/picks/fixer_P4-6.png` in the
     2. A skirt rig of about 8 chains × 3 bones on spring or bone cloth with leg colliders.
     3. Or cloth simulation.
   - **The ponytail:** sinks into her back in crouch and carried; a 3–4 bone chain later.
+- **Skirt step 1 done:** a band merge (`fit.json` `transfer.bandMerge`; it fires only where a garment bridges the knee band, so only the Fixer's long skirt, with the e2e figures unchanged) stops the tearing in all seven clips. Leg-to-leg stretch p99 drops about 3.5× (walk 49→14, run 63→19). Walk, aim, sit and carry are acceptable for play. In run the sheet bulges around the forward thigh and the split can't open, so it still needs the skirt rig (step 2, about 8×3 bones with thigh colliders). Byte-identical: Fixer 9/9, e2e 31/31.
