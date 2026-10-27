@@ -281,3 +281,10 @@ Forma put Latch's left-foot and bow-leg fix into the game's figure pipeline as g
   - **By data:** `clips.json` marks the pistol, rifle and `hand_relaxed` clips `game: false`. Two targets: `game` (no finger limits, matching today's figures) and `pipeline` (built into `out/people-models-pipeline`).
   - **Checks:** a second run changes 0 files; today's Enforcer walk and idle are identical.
   - **Open:** `tools/figures/build.py` figures aren't byte-repeatable (FBX header time and ids).
+- **Game check (Latch, dev build 0.2.142, not shipped):**
+  - **Clips:** the 16 authored clips import as take `Scene` at full length; `serve_walk` plays 39 frames. 0 import messages across 59 clips.
+  - **Controller:** 60 states, names identical to before. The tray still seats.
+  - **Visuals:** carry and sit look the same (one-frame shift).
+  - **Build time:** 2,376 s, mostly a full shader-variant compile.
+  - **Scratch:** foot IK on the standing weapon states puts the Enforcer's raise/lower feet at 10/11 cm (source); the probes still pass.
+  - **Open:** `pin_peek_add`'s range starts at frame 2 (reference at frame 1), to confirm; the guard's left hand is 3–5 cm off the pistol.

@@ -73,6 +73,28 @@ namespace Suborned.World.Review
             foreach (var g in clipRows.GroupBy(r => r.setup + (r.src.Length > 0 ? " from " + r.src : ""))) sb.AppendLine($"{g.Key}: {g.Count()} [{string.Join(", ", g.Select(r => r.name + (r.human ? "" : " (NOT humanoid)")))}]");
             sb.AppendLine($"import messages (warnings and errors) while reimporting {clipRows.Count} clips: {msgs.Count}");
             foreach (var s in msgs.Distinct()) sb.AppendLine("  " + s);
+            // 1c. takes (brief 069 round 3): each clip's take and frame range against its FBX's own take, the clip's length and frames, and the manifest's frames
+            sb.AppendLine("\n## Takes");
+            int takeOk = 0, takeN = 0;
+            foreach (var c in J.A(m, "clips"))
+            {
+                string name = J.S(c, "name"), file = Path.Combine(Root, J.S(c, "file")); takeN++;
+                var imp = AssetImporter.GetAtPath(file) as ModelImporter; var clip = AssetDatabase.LoadAllAssetsAtPath(file).OfType<AnimationClip>().FirstOrDefault(x => !x.name.StartsWith("__preview__"));
+                var ti = imp.importedTakeInfos; var ca = imp.clipAnimations.Length > 0 ? imp.clipAnimations[0] : null;
+                var take = ca != null ? ti.FirstOrDefault(t => t.name == ca.takeName) : ti.FirstOrDefault();
+                float tf0 = take.name != null ? take.startTime * take.sampleRate : -1, tf1 = take.name != null ? take.stopTime * take.sampleRate : -1;
+                int frames = clip ? Mathf.RoundToInt(clip.length * clip.frameRate) + 1 : 0; object mf = (c as Dictionary<string, object>)?.TryGetValue("frames", out var fv) == true ? fv : null;
+                bool match = ca != null && take.name == ca.takeName && Mathf.Abs(ca.firstFrame - tf0) < 0.01f && Mathf.Abs(ca.lastFrame - tf1) < 0.01f && clip && AnimationUtility.GetCurveBindings(clip).Length > 0;
+                if (match) takeOk++;
+                sb.AppendLine($"{name}: takes [{string.Join(", ", ti.Select(t => $"{t.name} {F(t.startTime * t.sampleRate)}-{F(t.stopTime * t.sampleRate)}"))}]; clip {ca?.takeName} {F(ca?.firstFrame ?? -1)}-{F(ca?.lastFrame ?? -1)}; length {F(clip ? clip.length : 0)} s, {frames} frames (manifest {mf ?? "-"}), curves {(clip ? AnimationUtility.GetCurveBindings(clip).Length : 0)}; {(match ? "ok" : "MISMATCH")}");
+            }
+            sb.AppendLine($"clips whose clip range is their FBX's own take: {takeOk}/{takeN}");
+            {
+                var ctl = AssetDatabase.LoadAssetAtPath<UnityEditor.Animations.AnimatorController>(Root + "/Generated/Figures.controller");
+                var states = ctl.layers.SelectMany(l => l.stateMachine.states.Select(x => l.name + "/" + x.state.name)).ToList();
+                sb.AppendLine($"controller: {states.Count} states over {ctl.layers.Length} layers ({string.Join(", ", ctl.layers.Select(l => $"{l.name} {l.stateMachine.states.Length}"))})");
+                File.WriteAllText(Path.Combine(outDir, "states.txt"), string.Join("\n", ctl.layers.SelectMany(l => l.stateMachine.states.Select(x => x.state.name)).OrderBy(x => x, System.StringComparer.Ordinal)) + "\n");
+            }
             File.WriteAllText(Path.Combine(outDir, "check.md"), sb.ToString());
 
             // 2. FootDiag
