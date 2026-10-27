@@ -504,13 +504,27 @@ def loose_rules(W, names, Vt, lab, lm, arm):
     return W, counts
 
 
+def stance_deg(arm):
+    """fit.json rest.stance (brief 069, Sky: the Enforcer's feet land in line): the legs' sideways angle in the Humanoid zero. 'keepOutward': the
+    figure's own designed stance, the mean of its two legs' outward angle at the fitted rest (hip joint to ankle, seen from the front), never
+    inward (an inward rest is knees held together by a skirt or a fit artefact: straight down, as before) and at most maxDeg. Unity reads
+    the zero as legs straight down, so a wide stance designed into the mesh is kept, and narrowed by nothing, in every clip."""
+    rule = D['rest'].get('stance', {}); Mw = arm.matrix_world; B = arm.data.bones
+    if rule.get('rule') != 'keepOutward': return 0.0
+    a = []
+    for s, sx in (('Left', 1), ('Right', -1)):
+        up = Mw @ B[s + 'UpLeg'].head_local; an = Mw @ B[s + 'Foot'].head_local
+        a.append(math.degrees(math.atan2((an.x - up.x) * sx, up.z - an.z)))
+    return round(min(max(0.0, sum(a) / 2), rule['maxDeg']), 3)
+
+
 def standard_aims(arm):
     """the standard rest: the reference T-pose directions for the upper body, Latch's neutral legs (straight down, feet forward at their own pitch, toes level)."""
     ref = json.load(open(os.path.join(ROOT, D['rest']['reference'])))['directions']
     aims = {k: list(v) for k, v in ref.items() if k in arm.pose.bones and 'Leg' not in k}
-    Mw = arm.matrix_world
-    for s in ('Left', 'Right'):
-        aims[s + 'UpLeg'] = [0, 0, -1]; aims[s + 'Leg'] = [0, 0, -1]
+    Mw = arm.matrix_world; spread = stance_deg(arm)
+    for s, sx in (('Left', 1), ('Right', -1)):
+        t = math.radians(spread); aims[s + 'UpLeg'] = [sx * math.sin(t), 0, -math.cos(t)]; aims[s + 'Leg'] = list(aims[s + 'UpLeg'])
         pb = arm.pose.bones[s + 'Foot']; v = (Mw.to_3x3() @ (pb.tail - pb.head)); pitch = math.atan2(-v.z, math.hypot(v.x, v.y))
         aims[s + 'Foot'] = [0, -math.cos(pitch), -math.sin(pitch)]; aims[s + 'ToeBase'] = [0, -1, 0]
     return aims
@@ -521,7 +535,7 @@ def rest_leg_report(arm):
     for s in ('Left', 'Right'):
         up = Mw @ B[s + 'UpLeg'].head_local; kn = Mw @ B[s + 'Leg'].head_local; an = Mw @ B[s + 'Foot'].head_local; to = Mw @ B[s + 'ToeBase'].head_local
         d = kn - up; f = to - an
-        out[s] = {'abductionDeg': round(math.degrees(math.atan2(abs(d.x), -d.z)), 2), 'ankleOutM': round(abs(an.x - up.x), 4),
+        out[s] = {'abductionDeg': round(math.degrees(math.atan2(d.x * (1 if s == 'Left' else -1), -d.z)), 2) + 0.0, 'ankleOutM': round(abs(an.x - up.x), 4),
                   'footYawDeg': round(math.degrees(math.atan2(f.x, -f.y)), 2), 'footPitchDeg': round(math.degrees(math.atan2(-f.z, math.hypot(f.x, f.y))), 2)}
     return out
 

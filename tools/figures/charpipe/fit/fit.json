@@ -250,8 +250,13 @@
   }
  },
  "rest": {
-  "note": "The standard rest: CharPipe/Clips/reference_tpose.json (the clips' own Mixamo T-pose directions), with Latch's neutral legs written by construction: UpLeg and Leg straight down, Foot->ToeBase along the hips' facing at the body's own flat-foot pitch, toe level.",
-  "reference": "out/scratch/forma/char-pipeline/CharPipe/Clips/reference_tpose.json"
+  "note": "The standard rest: CharPipe/Clips/reference_tpose.json (the clips' own Mixamo T-pose directions), with Latch's neutral legs written by construction: UpLeg and Leg in one straight line, down at the figure's own outward stance (rest.stance), Foot->ToeBase along the hips' facing at the body's own flat-foot pitch, toe level.",
+  "reference": "out/scratch/forma/char-pipeline/CharPipe/Clips/reference_tpose.json",
+  "stance": {
+   "rule": "keepOutward",
+   "maxDeg": 6,
+   "note": "brief 069 (Sky, 2026-10-27: 'our enforcer's feet are oddly placed'): the Humanoid zero's legs keep the figure's own outward stance (lib.stance_deg), so a design drawn with a wide stance plays wide; an inward rest stays straight down. Was: always straight down, which turned a wide-stance mesh's legs inward by its stance angle in every clip."
+  }
  },
  "lods": {
   "tris": [

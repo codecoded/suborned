@@ -252,3 +252,8 @@ Forma put Latch's left-foot and bow-leg fix into the game's figure pipeline as g
     - start and end clips need their ground-speed profile or root motion.
   - **Pre-existing:** the 23 Blender-authored game clips aren't byte-identical across builds.
   - Evidence: `forma/actorcore-test.json`.
+- **The new Enforcer's feet** (Sky: "oddly placed"):
+  - **Cause:** his mesh stands each leg 2.26° outward, and the neutral-leg rest straightened it, so every clip turned his legs inward (ankles 0.30→0.23 m; long boots nearly touching).
+  - **Rule:** `fit.json` `rest.stance` keeps a figure's own outward stance (up to 6°); inward stays straight as before.
+  - **Result:** walk ankles 16.0→20.8 cm apart, boot gap 5.4→10.3 cm, no overlaps. The Fixer and e2e figures are unchanged; byte-identical.
+  - **Open:** the right foot's ~11° toe-out is the Mixamo walk's own gait, on every figure. Evidence: `forma/enforcer-feet.json`.
