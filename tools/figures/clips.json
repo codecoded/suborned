@@ -814,9 +814,9 @@
   },
   {
    "name": "rifle_idle",
-   "src": "Anim/mixamo_library/Rifle_Idle__c9cd4f94.fbx",
+   "src": "Anim/mixamo_library/Rifle_Aiming_Idle__c9c84492.fbx",
    "loop": true,
-   "use": "rifle (carbine): idle at low ready, both hands closed on the weapon (right 183, left 168 deg), hands 29 cm apart (grip to handguard)",
+   "use": "rifle: armed idle = the aim pack's own idle aim (Rifle_Aiming_Idle), so idle, aim and fire share one stance and the feet never move between them (Latch: Rifle_Idle c9cd4f94, another pack, drifted the left foot 22.6 cm into the aim). The aim pack has no lowered idle",
    "loco": false,
    "feet": true,
    "set": "rifle",
@@ -883,6 +883,49 @@
    "use": "pistol: the holster, the draw played back (the aim's first frame eased to the idle's hands-down pose over 0.6 s)",
    "licence": "Adobe Mixamo: royalty-free in games and films; the raw files are not redistributed on their own (the store's mixamo_library)",
    "donor": "Anim/mixamo_library/Pistol_Idle__c9cdb599.fbx"
+  },
+  {
+   "name": "rifle_raise",
+   "author": "tools/figures/author_clips.py",
+   "kind": "blend",
+   "from": {
+    "src": "Anim/mixamo_library/Neutral_Idle__c9c80e28.fbx",
+    "frame": 1
+   },
+   "to": {
+    "src": "Anim/mixamo_library/Rifle_Aiming_Idle__c9c84492.fbx",
+    "frame": 1
+   },
+   "donor": "Anim/mixamo_library/Rifle_Aiming_Idle__c9c84492.fbx",
+   "frames": 18,
+   "loop": false,
+   "loco": false,
+   "feet": true,
+   "set": "rifle",
+   "use": "rifle: the raise from the unarmed idle into the aim pack's stance, the standard 0.6 s blend into its first frame (as pistol_draw); its last frame is rifle_aim's first",
+   "licence": "Adobe Mixamo: royalty-free in games and films; the raw files are not redistributed on their own (the store's mixamo_library)"
+  },
+  {
+   "name": "rifle_lower",
+   "author": "tools/figures/author_clips.py",
+   "kind": "blend",
+   "from": {
+    "src": "Anim/mixamo_library/Neutral_Idle__c9c80e28.fbx",
+    "frame": 1
+   },
+   "to": {
+    "src": "Anim/mixamo_library/Rifle_Aiming_Idle__c9c84492.fbx",
+    "frame": 1
+   },
+   "donor": "Anim/mixamo_library/Rifle_Aiming_Idle__c9c84492.fbx",
+   "frames": 18,
+   "reverse": true,
+   "loop": false,
+   "loco": false,
+   "feet": true,
+   "set": "rifle",
+   "use": "rifle: the raise played back, the aim's first frame eased to the unarmed idle",
+   "licence": "Adobe Mixamo: royalty-free in games and films; the raw files are not redistributed on their own (the store's mixamo_library)"
   }
  ]
 }

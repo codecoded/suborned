@@ -232,3 +232,8 @@ Forma put Latch's left-foot and bow-leg fix into the game's figure pipeline as g
   - **Guard** (Humanoid IK): barrel on target, hands 2–5 cm off their sockets.
   - **New Enforcer, carbine:** barrel and hands right, but the butt is 13–14 cm off the shoulder in Unity (it needs a shoulder pull); left foot drift 22.6 cm in the idle→aim move.
   - **All three:** 0 errors, deterministic. Evidence: `latch/weapons-final/final2-check.txt`.
+- **Rifle set, one stance (Forma):**
+  - **Clips:** idle is now `Rifle_Aiming_Idle` (gun held at aim; the pack has no lowered idle), with aim and fire from the same pack; new 0.6 s `rifle_raise` / `rifle_lower` blends from the unarmed idle.
+  - **Transitions:** match within 1 mm (hands and feet).
+  - **Feet:** move only in raise and lower (11–13 cm: different stance), which would need a step or entering from walk.
+  - Strip: `out/scratch/forma/char-pipeline/props/sheet_rifle_set.png`.

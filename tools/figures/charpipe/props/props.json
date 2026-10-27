@@ -402,7 +402,7 @@
   "pistol_idle": "Pistol_Idle__c9c6b74c.fbx",
   "pistol_aim": "Pistol_Idle__c9cdb599.fbx",
   "pistol_run": "Pistol_Run__c9c9b1f3.fbx",
-  "rifle_idle": "Rifle_Idle__c9cd4f94.fbx",
+  "rifle_idle": "Rifle_Aiming_Idle__c9c84492.fbx",
   "rifle_aim": "Rifle_Aiming_Idle__c9c84492.fbx",
   "rifle_fire": "Firing_Rifle__c9c863fe.fbx",
   "rifle_walk": "Walk_With_Rifle__c9cc1182.fbx",
@@ -637,7 +637,10 @@
    "aim": "rifle_aim",
    "fire": "rifle_fire",
    "walk": "rifle_walk",
-   "run": "rifle_run"
+   "run": "rifle_run",
+   "raise": "rifle_raise",
+   "lower": "rifle_lower",
+   "stance": "one stance, the rifle aim pack (Rifle_Aiming_Idle c9c84492, Firing_Rifle c9c863fe, Rifle_Run c9c814a0): idle is the aim held (the pack has no lowered idle), fire from the same pack; raise and lower are the standard 0.6 s blend between the unarmed idle and the aim's first frame"
   },
   "speedBands": {
    "walk": [
