@@ -1,7 +1,7 @@
 # THE SUBORNED · DECISION LOG
 Kept by Aster. Who decided what, when, and the brief it came from, newest first. The GDD says what the game is; this log says how it got there. Sky's words are quoted as said. "Aster" marks a reading or correction made by the crew, which Sky may strike.
 
-## Open for Sky (as of v0.30.2, 2026-10-27)
+## Open for Sky (as of v0.31.0, 2026-10-28)
 The GDD keeps a default for each (the draft's, or the build's) until Sky rules. Numbers are brief 035's questions.
 1. (035 Q1) Keep the decision log beside the GDD, out of it? Done that way in v0.25.0.
 2. (035 Q2) Promote take control / the ground view from [lab]? It would turn the tiebreaker "commander > avatar" into "commander and avatar": a pillar change.
@@ -37,7 +37,8 @@ The GDD keeps a default for each (the draft's, or the build's) until Sky rules. 
 32. (brief 072) **Answered, Sky 2026-10-27: "yep, more, more reds / blues allowed as well".** The loosened style kit (style contract, GDD §15, facade.json, the glass rule): Sky decides from Vela's before/after pictures (briefs/072/style/proposal.html); then one GDD version carries it with brief 072's decisions below.
 Q13 of brief 035 ("Vale exits north") is settled by brief 059: "Vale comes out of the official door".
 
-## Pending GDD version (2026-10-27; brief 072, Sky's answers to Aster; GDD not yet edited)
+## v0.31.0 (2026-10-28; brief 072, Sky's answers to Aster)
+- GDD: §09 world row and §10 capstone: DecoKit on every face, no flat procedural wall or untextured flat colour at play zoom; §15 city, world, palette (base, accents, facade roles, civic block, brass-gold, glass) and materials loosened toward the old DecoKit with more reds and blues; style contract v0.22.0 (Vela); the art bible regenerated.
 - Sky, 2026-10-27: side walls, "a)": a calm frontage-style side bay wherever the public sees a wall; service walls (the AlleyWall family) only on true service backs.
 - Sky, 2026-10-27: scope, "every": DecoKit kit on every face of every building in the district; the flat procedural facade is not seen at play zoom, surviving at most as a far LOD or impostor if Redline shows it is needed. Replaces §10 "DecoKit kit where it counts, procedural fill to the same bar" and the §09 world row's "or procedural to the same bar".
 - Sky, 2026-10-27: the Records Office tower as a landmark kit piece, "yes".
