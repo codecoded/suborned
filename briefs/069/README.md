@@ -132,3 +132,10 @@ Sky asked to redo the Fixer from her concept (`Cell/picks/fixer_P4-6.png` in the
   - The Fixer keeps the band-merge skirt; the rig is parked (`fixer/parked_rig/`).
   - Byte-identical: e2e 35/35, Fixer 10/10.
   - Evidence: `e2e/manifest-budget.json`, `e2e/textures-budget.json`, `fixer/mesh/manifest-budget.json`. Next: Latch take 3 (Optimize Game Objects), then Redline's confirmation pass.
+- **Unity take 3 (Latch):** all five import by one rule with Optimize Game Objects (Head, hands and the Attach bones exposed). LODs, bones and textures read as the manifest; the merged props show once at every LOD; the tray rides `Attach_LeftHand`. Walk and crouch walk are within 1.7%; run is 2–4% fast in the manifest, so Unity's run values should be adopted too.
+- **The Hold passes (Redline, `redline/cost-take3.md`):**
+  - **60-person crowd:** new 0.377 ms against 0.405 ms for today's crowd as the game draws it (7–8% cheaper per person, cheaper in every paired round). Against today's also optimised, it's +0.03 ms, closing to about 2% (noise) if the `Attach_*` bones are exposed only where the role carries a prop.
+  - **Texture memory:** 0.7 MB per crowd figure against 2.2 MB.
+  - **Draw calls:** the same (604 per 300 people).
+  - **The cell at 30k:** negligible (+0.007 ms for four).
+  - **Optimize Game Objects alone:** saves today's figures 15%. Worth moving into the game's figure code for everyone.
