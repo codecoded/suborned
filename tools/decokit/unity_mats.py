@@ -343,7 +343,7 @@ def write(table_path, dst, retuned):
         (d / f"{n}.mat").write_text(mat_text(row))
         (d / f"{n}.mat.meta").write_text(meta_text(n, legacy))
         out.append(n)
-    import colourways  # brief 074-B: DK_Limestone_Tex on the neutral panel sheet, then the 12 colourway sets from the base .mats just written
+    import colourways  # brief 075 old palette: the old DecoKitColourways sets (five ensembles + Soft) from the base .mats just written
     out += colourways.write_mats(dst, legacy, meta_text)
     import livery  # brief 075-C: the landmark livery (vermilion lattices, brick sphere, SpaceHQ gold), the same recolour as the colourways
     out += livery.write_mats(dst, legacy, meta_text, colourways._recolour)

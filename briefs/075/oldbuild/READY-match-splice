@@ -1,0 +1,1 @@
+Splice 2026-10-29: plan-match check built (bun run oldbuild:match, tools/world/oldmatch); schema suborned.oldbuilt/1 (contracts/world/oldbuilt.schema.ts) PROPOSED in notes.md "Plan match", awaiting Latch's ack there. built.json not yet exported: no mismatch counts yet.

@@ -1,4 +1,4 @@
-// CW-1, building colourways (brief 074). The live export passes; each failing example puts one fault in.
+// CW-1, building colourways (brief 074; brief 075 old palette: the old ensembles by area, the high street's Soft paint). The live export passes; each failing example puts one fault in.
 import { expect, setDefaultTimeout, test } from 'bun:test';
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
@@ -7,6 +7,7 @@ import { civic } from '../../plan/civic';
 import { derive, type Plan } from '../../plan/plan';
 import { ctxOf, generated } from '../../plan/world-ctx';
 import { FAMILIES, deltaE2000, drawFamily, hostOf, streetNeighbours } from '../gen/colourways';
+import { ctxOf as liveCtx } from '../../plan/world-ctx';
 import { colourwayFaults, colourwayRules } from './colourways';
 import { OLD_STREET } from '../gen/oldstreet';
 
@@ -25,14 +26,30 @@ test('CIEDE2000 matches tools/decokit/deltae.py', () => {
   expect(deltaE2000('#f7e38c', '#d8c8ec')).toBeCloseTo(41.574, 3);
 });
 
-test('the live export: every building one colourway, its pieces in it, no street neighbours alike; the neighbour median at least 22 (CW-1 passes)', () => {
+test('the live export: every building one colourway, its pieces in it, each its area\'s old ensemble or the high street\'s paint, no painted neighbours (CW-1 passes)', () => {
   const r = cw1(base.w), f = colourwayFaults(base.w);
   expect(r.ok, r.detail).toBe(true);
   expect(f.faults).toEqual([]);
-  expect(f.spread.same).toBe(0);
-  expect(f.spread.de!.median).toBeGreaterThanOrEqual(22);
-  expect(Object.keys(f.spread.families).every(k => FAMILIES.includes(k) || OLD_STREET.colour.palette.includes(k))).toBe(true); // brief 075: the old high street's families, given only on the old-street roads
+  expect(Object.keys(f.spread.families).every(k => FAMILIES.includes(k) || OLD_STREET.colour.palette.includes(k) || k === 'civic')).toBe(true);
   expect(base.w.civic.filter(m => m.colourway === 'civic').map(m => m.id)).toContain('civic/civic-office');
+});
+
+test('the live plan: the old ensembles by area (boulevard, circus, harbour, gardens, southside) and the Soft paint on the boulevard, no painted neighbours (CW-1 passes)', () => {
+  const lp: Plan = read('contracts/world/harbour-district.plan.json'), ld = derive(lp), lc = civic(lp.civic, read(lp.civic.block)), lg = generated(lp, ld, lc);
+  const r = colourwayRules(liveCtx(lp, ld, lc, lg))[0]!;
+  expect(r.ok, r.detail).toBe(true);
+  const fams = new Set(lg.w.buildings.map(m => m.colourway));
+  for (const k of ['boulevard', ...OLD_STREET.colour.palette]) expect(fams.has(k), k).toBe(true);
+  expect([...fams].every(k => FAMILIES.includes(k!) || OLD_STREET.colour.palette.includes(k!))).toBe(true);
+});
+
+test('failing example: a building given another area\'s ensemble fails CW-1', () => {
+  const w = clone(base.w), m = w.buildings.find(x => !OLD_STREET.colour.palette.includes(x.colourway!) && x.colourway !== 'civic')!, h = hostOf(m.id), was = m.colourway!, other = FAMILIES.find(k => k !== was)!;
+  for (const x of w.buildings) if (hostOf(x.id) === h) x.colourway = other;
+  for (const f of w.facades) if (f.building === h) { f.colourway = other; f.instance = `${f.kit.id}|${other}`; }
+  const r = cw1(w);
+  expect(r.ok).toBe(false);
+  expect(r.detail).toContain(`${h}: in ${other}, its area's ensemble is ${was}`);
 });
 
 test('the pick is seeded by the building id: the same id and salt give the same family', () => {
@@ -40,14 +57,16 @@ test('the pick is seeded by the building id: the same id and salt give the same 
   expect(FAMILIES).not.toContain('civic');
 });
 
-test('failing example: a street neighbour given its neighbour\'s family (on all its masses and pieces) fails CW-1', () => {
-  const w = clone(base.w), hosts = new Set(w.buildings.map(m => hostOf(m.id))), [p, q] = streetNeighbours(w.frontages, hosts)[0]!;
-  const fam = w.buildings.find(m => hostOf(m.id) === p)!.colourway!;
-  for (const m of w.buildings) if (hostOf(m.id) === q) m.colourway = fam;
-  for (const f of w.facades) if (f.building === q) { f.colourway = fam; f.instance = `${f.kit.id}|${fam}`; }
-  const r = cw1(w);
-  expect(r.ok).toBe(false);
-  expect(r.detail).toContain(`street neighbours share ${fam}`);
+test('failing example: two painted street neighbours (the old HighStreet never paints two side by side) fail CW-1', () => {
+  const w = clone(base.w), hosts = new Set(w.buildings.map(m => hostOf(m.id))), [p, q] = streetNeighbours(w.frontages, hosts).find(([x, y]) => x.split('/')[1] === y.split('/')[1])!;
+  const [a, b] = OLD_STREET.colour.palette as [string, string];
+  for (const [h, fam] of [[p, a], [q, b]] as const) {
+    for (const m of w.buildings) if (hostOf(m.id) === h) m.colourway = fam;
+    for (const f of w.facades) if (f.building === h) { f.colourway = fam; f.instance = `${f.kit.id}|${fam}`; }
+  }
+  const r = colourwayFaults(w);
+  expect(r.faults.map(f => f.why)).toContain(`painted street neighbours (${a}, ${b})`);
+  expect(cw1(w).ok).toBe(false);
 });
 
 test('failing example: a SideBay module left in `base` on a coloured building fails CW-1', () => {

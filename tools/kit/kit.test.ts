@@ -186,31 +186,42 @@ test('brief 072 F2: every roof crown switches by the crown distance class, L1 be
   expect(l1).toBeGreaterThan(36); expect(l2).toBeGreaterThan(350);
 });
 
-test('brief 074-B/H: 12 colourway sets over the wall and plinth slots (band and fascia stay seafoam and teal), each a recolour of its base (same shader, keywords, textures), copied with their metas', () => {
+test('brief 075 old palette: the old DecoKitColourways scheme (five ensembles + the Soft high street) over wall, fascia, sills and trim, each a recolour of its base matching the old Paint .mat, copied with their metas', () => {
   const cw = kit.colourways!, fac = JSON.parse(readFileSync(resolve(import.meta.dir, '../../unity/Assets/Suborned/Editor/World/facade.json'), 'utf8')) as { families: Record<string, string[]> };
-  expect(cw.families).toEqual(Object.keys(fac.families).filter(f => f !== 'civic')); // one colourway per facade.json wall family; civic keeps the base
+  expect(cw.families).toEqual(['boulevard', 'circus', 'harbour', 'gardens', 'southside', 'soft-apricot', 'soft-celadon', 'soft-rose', 'soft-ochre']);
+  expect(Object.keys(fac.families).filter(f => f !== 'civic').sort()).toEqual([...cw.families].sort()); // one colourway per facade.json family; civic keeps the base
   expect(cw.keep).toEqual(['base', 'civic']);
-  const oldF = new Set(cw.old?.families ?? []); // brief 075 (golden view): the old high-street families recolour walls + trim (DK_Enamel_Ivory, old Lighter), never the plinth
-  expect(Object.keys(cw.slots).sort()).toEqual(['DK_Limestone_Tex', 'DK_Render_White', 'DK_Stone_Dark', ...(oldF.size ? ['DK_Enamel_Ivory'] : [])].sort()); // 074-H (Sky 2026-10-28): walls and plinth only
-  expect(cw.files.some(f => /^Materials\/DK_Enamel_(Seafoam|Teal)__/.test(f.path))).toBe(false);
-  expect(cw.wallSoften).toBeGreaterThanOrEqual(0); expect(cw.wallSoften).toBeLessThan(1);
+  expect(cw.slots).toEqual({ DK_Limestone_Tex: 'wall', DK_Render_White: 'wall', DK_Enamel_Teal: 'fascia', DK_Enamel_Seafoam: 'sills', DK_Enamel_Ivory: 'trim' });
+  // the old values, exactly (DecoKitColourways.cs Ensembles, Soft, Lighter)
+  expect(cw.colours.boulevard).toEqual({ fascia: '#C8553D' });
+  expect(cw.colours.circus).toEqual({ wall: '#EBDCB5', fascia: '#1F6C67', sills: '#C8553D' });
+  expect(cw.colours.harbour).toEqual({ wall: '#E2E8E0', fascia: '#1F7F7A', sills: '#1F7F7A' });
+  expect(cw.colours.gardens).toEqual({ wall: '#E8D6C4', fascia: '#B9653F', sills: '#8FA88A' });
+  expect(cw.colours.southside).toEqual({ wall: '#EEE3C9', fascia: '#D9962B', sills: '#2F7E86' });
+  expect(cw.colours['soft-apricot']).toEqual({ wall: '#E8B793', fascia: '#C8553D', trim: '#ECD1B8' });
+  expect(cw.colours['soft-ochre']).toEqual({ wall: '#E2C07A', fascia: '#C8553D', trim: '#E9D5B0' });
+  for (const c of Object.values(cw.check ?? {})) if (c.oldBaseColor) expect(c.oldDelta!).toBeLessThan(1e-5); // the old Paint .mat's _BaseColor
+  for (const [n, c] of Object.entries(cw.check ?? {})) if (!c.oldBaseColor) expect(c.tintedOver, n).toBeUndefined(); // no old Paint .mat (DK_Render_White__circus): an untextured base, so the hex itself
+  expect(Object.values(cw.check ?? {}).filter(c => c.oldBaseColor).length).toBeGreaterThanOrEqual(32);
   const paths = new Set(cw.files.map(f => f.path));
   const mat = (n: string) => { const g = join(GEN_ROOT, `Materials/${n}.mat`); return existsSync(g) ? readFileSync(g, 'utf8') : undefined; };
+  const legacy = (n: string) => { const p = join(root, `Materials/${n}.mat`); return existsSync(p) ? readFileSync(p, 'utf8') : undefined; };
   const strip = (t: string) => t.replace(/  m_Name: \S+\n/, '').replace(/    - _(Base)?Color: \{[^}]*\}\n/g, '');
+  const slotOf = (f: string, base: string) => (cw.colours[f] as Record<string, string>)[cw.slots[base]!];
   for (const [base, by] of Object.entries(cw.materials)) {
-    expect(Object.keys(by)).toEqual(cw.families.filter(f => (oldF.has(f) ? cw.old!.slots : { DK_Limestone_Tex: 1, DK_Render_White: 1, DK_Stone_Dark: 1 } as Record<string, unknown>)[base] !== undefined)); // each family over its own slots
+    expect(Object.keys(by)).toEqual(cw.families.filter(f => slotOf(f, base) !== undefined)); // each family over the slots it paints
     for (const [f, n] of Object.entries(by)) {
       expect(n).toBe(`${base}__${f}`);
       for (const p of [`Materials/${n}.mat`, `Materials/${n}.mat.meta`]) expect(paths.has(p), p).toBe(true);
-      const b = mat(base), v = mat(n);
+      const b = mat(base) ?? legacy(base), v = mat(n);
       if (b && v) expect(strip(v), n).toBe(strip(b)); // only the name and the base colour differ: no new variant, no new SetPass
     }
   }
-  for (const [f, c] of Object.entries(cw.colours)) for (const k of ['wall', oldF.has(f) ? 'trim' : 'plinth', 'wallSwatch'] as const) expect(c[k], `${f}.${k}`).toMatch(/^#[0-9A-F]{6}$/);
-  // the base wall sits on the neutral sheet (the old cream sheet leaves the copy: replaced, not added)
-  const lime = kit.assets.find(a => a.materials.includes('DK_Limestone_Tex'))!;
-  expect(lime.files.some(f => f.path === 'Textures/wall_panel_neutral_v1.png')).toBe(true);
-  expect(kit.assets.some(a => a.status === 'adopted' && a.files.some(f => f.path === 'Textures/facade_panel_v1.png'))).toBe(false);
+  expect(cw.files.some(f => /__(cream|peach|mint|butter|lilac|apricot|oldochre)\.mat$/.test(f.path))).toBe(false);
+  // the walls sit on the old sheet again (the neutral sheet is gone)
+  const lime = kit.assets.find(a => a.status === 'adopted' && a.materials.includes('DK_Limestone_Tex'))!;
+  expect(lime.files.some(f => f.path === 'Textures/facade_panel_v1.png')).toBe(true);
+  expect(kit.assets.some(a => a.files.some(f => f.path === 'Textures/wall_panel_neutral_v1.png'))).toBe(false);
   const only: Kit = { ...kit, carPaints: undefined, textures: [], landmarks: undefined, posters: undefined, assets: [] }, dest = mkdtempSync(join(tmpdir(), 'kit-cw-'));
   try { const r = copyAdopted(only, root, dest, GEN_ROOT); expect(r.errors).toEqual([]); expect(r.copied.length).toBe(cw.files.length); }
   finally { rmSync(dest, { recursive: true, force: true }); }
@@ -231,7 +242,8 @@ test('brief 075-C: landmark livery (old DecoKitColourways `livery`): vermilion l
   const paths = new Set(lv.files.map(f => f.path));
   const mat = (n: string) => { const g = join(GEN_ROOT, `Materials/${n}.mat`); return existsSync(g) ? readFileSync(g, 'utf8') : undefined; };
   const legacy = (n: string) => { const p = join(root, `Materials/${n}.mat`); return existsSync(p) ? readFileSync(p, 'utf8') : undefined; };
-  const strip = (t: string) => t.replace(/  m_Name: \S+\n/, '').replace(/    - _(Base)?Color: \{[^}]*\}\n/g, '');
+  const strip = (t: string) => t.replace(/  m_Name: \S+\n/, '').replace(/    - _(Base)?Color: \{[^}]*\}\n/g, '').replace(/    - _(Metallic|Smoothness): [\d.e-]+\n/g, ''); // brief 075 old palette: the gold takes the old finish too (floats only)
+  expect(lv.keys.gold!.finish).toEqual({ metallic: 1, smoothness: 0.45 });
   for (const v of Object.values(lv.keys)) {
     for (const p of [`Materials/${v.material}.mat`, `Materials/${v.material}.mat.meta`]) expect(paths.has(p), p).toBe(true);
     const b = mat(v.base) ?? legacy(v.base), m = mat(v.material);
@@ -278,9 +290,10 @@ test('brief 075 roll-out: the old sky track kit and the presentation vehicles ad
   const beam = byId.get('SkyRail_Beam_4m')!; expect(beam.size[1]).toBeCloseTo(1.6, 2); expect(beam.size[2]).toBeCloseTo(4, 2); expect(beam.materials).toEqual(expect.arrayContaining(['DK_Hull_Ivory', 'DK_Enamel_Teal']));
   expect(byId.get('SkyRail_Pylon_HeadTwin')!.size[0]).toBeCloseTo(8, 1); // pads at the plan's beam centres +-3 (beamCentres 6)
   for (const id of ['DiscTower', 'DiscTower@avenue-gate-e', 'DiscTower@avenue-gate-w']) { const a = byId.get(id)!; expect(a.materials, id).not.toContain('DK_Steel_Ivory'); expect(a.materials, id).not.toContain('DK_Concrete'); }
-  const cp = kit.carPaints!; expect(Object.keys(cp.keys).length).toBeGreaterThanOrEqual(10);
+  const cp = kit.carPaints!; expect(Object.keys(cp.keys).length).toBe(8); // brief 075 old palette: the old reel's eight enamels over the old ivory body (DecoKitCitizens.Enamels)
+  expect(Object.values(cp.keys).map(k => k.roofHex)).toEqual(['#0A6D82', '#E25E47', '#E7B84C', '#78C4A2', '#B53A31', '#5F9FC6', '#27406A', '#2F7D5C']); for (const k of Object.values(cp.keys)) expect(k.bodyHex).toBe('#F9F0D7');
   for (const [k, v] of Object.entries(cp.keys)) { expect(cp.colours[v.body], k).toBe(v.bodyHex); expect(cp.colours[v.roof], k).toBe(v.roofHex); }
-  for (const s of Object.values(cp.slots)) for (const v of Object.values(cp.keys)) expect([v.bodyHex, v.roofHex]).not.toEqual(s.body === 'DK_CarEnamel_Teal' ? ['#1F6C67', '#EFE8D6'] : ['#F28A70', '#72B5A7']);
+  for (const s of Object.values(cp.slots)) for (const v of Object.values(cp.keys)) expect([v.bodyHex, v.roofHex]).not.toEqual(s.body === 'DK_CarEnamel_Teal' ? ['#1F6C67', '#EFE8D6'] : ['#FC9C84', '#72B5A7']);
   const gen = (p: string) => { const g = join(GEN_ROOT, p); return existsSync(g) ? readFileSync(g, 'utf8') : undefined; };
   const strip = (t: string) => t.replace(/  m_Name: \S+\n/, '').replace(/    - _BaseColor: \{[^}]*\}/, '').replace(/    - _Color: \{[^}]*\}/, '');
   const base = gen(`Materials/${cp.base}.mat`);

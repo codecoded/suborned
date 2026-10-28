@@ -48,7 +48,9 @@ from vehicles_parts import carve
 # of the screen (est. 0.09-0.31 ms). DK_Window_Film is that film made opaque: the colour the film shows at the play camera (DK_GlassSky: the glaze #4A8588 lerped
 # 0.41 toward its street mirror #A78F78, at alpha 0.72 over the charcoal back = about #5F726E unlit), taken a step darker as a lit enamel (sunlit walls read
 # brighter), clear coat for the sky glint. Through the Complex Lit path it takes the cutaway shader, so it fades with the wall. [S]: Glint judges it in game.
-register("DK_Window_Film", "enamel", "#4F6B6B")
+# 29 Oct (brief 075 old palette, Sky: "back to old town"): the old DK_GlassDark colour #35585A (was #4F6B6B, the 072 film estimate): the old reel's windows read as dark glass
+# ribbons (sampled #2A3229-#333328 at the circus), and the old glass is #35585A.
+register("DK_Window_Film", "enamel", "#35585A")
 
 SKIN, BACKY = -0.02, 0.35              # render face, slab back (alleys_parts)
 REVEAL = 0.2                           # window pocket depth

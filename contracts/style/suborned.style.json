@@ -2,8 +2,8 @@
   "$schema": "../hml-style.v2.schema.json",
   "contract": "hml.style/2",
   "id": "suborned",
-  "version": "0.23.0",
-  "date": "2026-10-28",
+  "version": "0.24.0",
+  "date": "2026-10-29",
   "status": "simple style: look and framing in the prompt; brief guidance in guide, read by Enhance and Explore",
   "notes": [
     "Optimistic surface, coercive underneath (design intent, not a prompt line).",
@@ -44,12 +44,13 @@
     "v0.20.1 (2026-10-14): Sky: 'too strong a 1950s ruined character concept' (as at v0.6.1). concept_prompt.era, with its 1950s, is for places, objects and machines; new concept_prompt.people (no dates) for any figure in a frame; the rule bars the era from people, character, lineup, model and versions prompts; avoid adds period dress. People in the accepted crossing frames (fedoras, tea dresses) are not costume reference.",
     "v0.21.0 (2026-10-16): Sky (Aster brief; GDD to follow in its next version): signal colours are no longer reserved. Signals (cones red, guard amber, rivals violet) stay readable by how they are drawn: unlit and emissive, outside the post grade, each with its own shape or motion cue; red, amber and violet are free for the world and props. Removed: the deltaE2000 >= 20 gate between every world colour and the signal colours, and the display-pictogram exception (red on an electronic display) that gate needed. concept_prompt.avoid loses 'red-orange', which only kept the art clear of the cones colour. The v0.18.0 to v0.20.0 entries above that describe the gate and the exception are history.",
     "v0.22.0 (2026-10-27): Sky (brief 072-G, on Vela's 072-B proposal briefs/072/style/proposal.html and rules.json): 'yep, more, more reds / blues allowed as well'; the Records Office's deep teal storey band 'yep'; the road 'keep powdblue - feels more modern'. palette_world re-recorded from looks/harbour.json (sha256 refreshed): limestone #f8eed9 -> #f0e3ca, residential #f8eedb -> #f3e3c6, mixed #fdf5e4 -> #f7ead2, commercial #f9e2cc -> #f5d3b5, frontage #f6ecd8 -> #f0e0c3, civic #fbe8b8 -> #f7dfa8, roof #fff6e6 -> #f6ebd6 (off near-white toward warm limestone); trim and accent_gold #99784d -> brass-gold #c29a55 (surface_overrides.gold_trim the same); accent_coral #fc9c84 -> #f28a70, accent_peach #fcc4ac -> #f8b898; new world accents accent_red #c42a1f (DecoKit's enamel red), accent_royal #2c56a6 (DecoKit's royal), accent_cobalt #2f84e8 (tools/world/gen/colour.ts weights). The rule widens the accent set to DecoKit's and the push (royal, sky blue, enamel red, red-orange, oxblood, mustard, teal), allows brass-gold bands up to ~15 cm (never a large panel) and blue-teal glass (still no curtain walls). materials and concept_prompt city/avoid follow. Kit (tools/decokit mats.py): the four gate-era colours back to DecoKit's (DK_Enamel_Mustard #EEA82D, DK_Gold #D6AE62 as satin brass, DK_Enamel_Red #C42A1F, DK_Signal_Red #FF3B26), brass rows #C29A55 / light #D6B676 at (rough 0.4, metal 0.6), the window film glaze #3F7A8E a0.65. Facade (facade.json): warmer walls, blush and powder families, red and blue plinths, DecoKit enamels and the push's reds and blues in every area, civic seafoam + deep teal; the Records Office's storey band (5.0 to 5.9 m) is DecoKit's deep teal DK_Enamel_Teal (tools/decokit/records_tower.py); civic-look.json through tools/decokit/lookcolours072.py. The road stays powder-blue enamel. Final values: briefs/072/style/rules.json `applied`. GDD §15 to follow (Aster).",
-    "v0.23.0 (2026-10-28): Sky (brief 072, on the applied 072-G palette): 'yeah, I more colors needed'. Everything 072-G added stays; the range widens (Vela, briefs/072/style/rules.json `applied2`): world accent roles accent_tangerine #f07a28, accent_plum #7a3b78, accent_cerulean #1f8fc4, accent_jade #1e9c78 (teal-green), accent_lime #b5d334 join (looks/harbour.json and look.json, sha256 refreshed; tools/world/gen/colour.ts weights: teal 13, coral 12, red 9, royal 9, tangerine 9, turquoise 7, cerulean 7, cobalt 6, flamingo 6, plum 6, mint 5, jade 5, peach 3, lime 3; fins and flags take the new roles too). facade.json: four new wall families (butter #f7e38c, lilac #d8c8ec, apricot #f9b977, seagreen #9ad2c6) with cerulean, plum, jade and tangerine plinths; sand_w #ddbe8a, blush_w #f4c3c8, sky_w #9ccdee, mint_w #c8e8c6 (rose plinth #d9548a) pulled apart; family roofs one tint deeper; cream's area weight 4 -> 2; five new enamels in every area's set except civic (seafoam + deep teal kept). The rule names the renders and the wider accents; materials and concept_prompt.city follow. Road unchanged (powder-blue enamel). GDD §15 to follow (Aster)."
+    "v0.23.0 (2026-10-28): Sky (brief 072, on the applied 072-G palette): 'yeah, I more colors needed'. Everything 072-G added stays; the range widens (Vela, briefs/072/style/rules.json `applied2`): world accent roles accent_tangerine #f07a28, accent_plum #7a3b78, accent_cerulean #1f8fc4, accent_jade #1e9c78 (teal-green), accent_lime #b5d334 join (looks/harbour.json and look.json, sha256 refreshed; tools/world/gen/colour.ts weights: teal 13, coral 12, red 9, royal 9, tangerine 9, turquoise 7, cerulean 7, cobalt 6, flamingo 6, plum 6, mint 5, jade 5, peach 3, lime 3; fins and flags take the new roles too). facade.json: four new wall families (butter #f7e38c, lilac #d8c8ec, apricot #f9b977, seagreen #9ad2c6) with cerulean, plum, jade and tangerine plinths; sand_w #ddbe8a, blush_w #f4c3c8, sky_w #9ccdee, mint_w #c8e8c6 (rose plinth #d9548a) pulled apart; family roofs one tint deeper; cream's area weight 4 -> 2; five new enamels in every area's set except civic (seafoam + deep teal kept). The rule names the renders and the wider accents; materials and concept_prompt.city follow. Road unchanged (powder-blue enamel). GDD §15 to follow (Aster).",
+    "v0.24.0 (2026-10-29): Sky (brief 075): 'our red is too red - we changed it when not much in the game, but now it needs to go back to old town.' The 072-B loosening (v0.22.0) and its push (v0.23.0) are withdrawn: palette_world roles back to their v0.21.0 values (the brass-gold #c29a55 of trim, accent_gold and gold_trim kept: the old DecoKit trim was its gold #d6ae62), 072's eight accent roles retired, the city and materials prompt lines back to v0.21.0. Buildings, glass, livery and car paints are the old DecoKit city's exactly (tools/decokit colourways.py, mats.py, livery.py, carpaint.py; facade.json families and areas; table in briefs/075/notes.md 'Old palette'). GDD §15 to follow in Aster's next version."
   ],
   "era": "Bright retro-future: a space age imagined as the present, built as high art, optimistic and immaculate.",
   "concept_prompt": {
     "era": "Optimistic atompunk city in an alternate history: a 1950s world that discovered atomic power centuries ago, so its culture and style are 1950s but its technology is centuries ahead: 1950s-styled robots, trams and street furniture doing super-advanced things. Atomic power made energy, travel and building cheap: sky rail, skyports, towers and liners, everything physical abundant. Thinking machines and networks never came: robots are clockwork-smart on fixed routines, and records are physical (microfilm, punch cards, pneumatic tubes, stamped forms). An abundant, orderly city that runs on routine and paperwork.",
-    "city": "Streamline Moderne, Art Deco and Googie. Cream limestone and pastel-rendered buildings (butter yellow, mint, sea green, sky blue, lilac, apricot, blush), each neighbour a different colour, with seafoam-teal faience bands, chrome sphere finials, banners on lamp posts, planted terraces, cypress and palms, parasol café terraces, pale cream stone paving with seafoam inlay bands, soft lilac-grey asphalt, brushed brass-gold trim lines and bands, coral, peach, mustard, tangerine, plum, lime and cerulean accents, enamel red and royal blue accents. Warm afternoon sun, soft shadows, soft blue sky. Clean, prosperous, graceful; people in the city's space-age couture. Cinematic painted concept art with photographic material realism.",
+    "city": "Streamline Moderne, Art Deco and Googie. Cream limestone and ivory enamel buildings with seafoam-teal faience bands, chrome sphere finials, banners on lamp posts, planted terraces, cypress and palms, parasol café terraces, pale cream stone paving with seafoam inlay bands, soft lilac-grey asphalt, thin brushed-brass hairline trim, coral and peach accents. Warm afternoon sun, soft shadows, soft blue sky. Clean, prosperous, graceful; people in the city's space-age couture. Cinematic painted concept art with photographic material realism.",
     "avoid": [
       "large gold panels",
       "glass curtain walls",
@@ -123,11 +124,11 @@
     }
   },
   "palette_world": {
-    "status": "current, tuneable: Sky approved the 072-B loosening and pushed it twice (2026-10-27: 'yep, more, more reds / blues allowed as well'; 2026-10-28: 'yeah, I more colors needed'); judged in the world",
-    "rule": "Pastel stone and render bodies: cream, peach and warm limestone, and since 072's second push butter yellow, mint, sea green, sky blue, powder blue, lilac, apricot and blush renders, so neighbours read different at play zoom; saturated enamel accents (cobalt, royal, cerulean, sky blue, enamel red, coral, red-orange, tangerine, oxblood, plum, flamingo, rose, mustard, sunshine, lime, mint, jade, turquoise, teal) on panels, plinths, spandrels, bands, awnings, signs, roofs and trim, never a whole building's body; pastel walls with saturated accents, never garish; signals don't own red, amber or violet; blue-teal glass with sky reflections, no curtain walls in the play streets; lagoon water; coral transit; a powder-blue enamel road; the civic block keeps cream stone with seafoam and deep teal. Warm brass-gold at street level and on facades: frames, beads, bands, fins and small metal up to about 15 cm; skyline crowns keep gold; never a large gold or brass panel.",
+    "status": "current: back to the old town (Sky 2026-10-29, brief 075: \"our red is too red - we changed it when not much in the game, but now it needs to go back to old town\"); the 072-B loosening and its two pushes are withdrawn",
+    "rule": "Pastel cream and peach base for ground, stone and bodies; saturated enamel accents (cobalt, flamingo, sunshine, mint, turquoise) on panels, awnings, signs, roofs and trim, never whole buildings; lagoon water; coral transit. Brass, not gold, at street level and on facades; skyline crowns keep gold; gold or brass only as hairline, frame, bead and small metal, never a large surface. Brief 075 (v0.24.0): buildings take the old town's colourways (the old DecoKitColourways scheme): mostly cream stone, colour by ensemble along the horizontal lines (boulevard: one coral fascia #c8553d; circus: Naples cream #ebdcb5, teal fascia, coral sills; harbour: sea-glass cream #e2e8e0, teal #1f7f7a; gardens: sand-rose #e8d6c4, terracotta #b9653f, sage #8fa88a; southside: warm white #eee3c9, marigold #d9962b, petrol teal #2f7e86), and on the high street every other rendered building painted apricot #e8b793, celadon #b7cdb4, terracotta-rose #dda596 or ochre #e2c07a, never two side by side; dark glass (#35585a); landmark livery: vermilion lattices #b8432e, the brick sphere #9c2e2b, SpaceHQ gold #f2c14e.",
     "source": {
       "path": "unity/Assets/Suborned/Editor/World/looks/harbour.json",
-      "sha256": "989c743e85562b3da62a6858f3069739ef7c8a2e4c9315c06f65267363c5cc95",
+      "sha256": "7637faffdf1039ce8a425809bd53686a81d1882e85803fdb851a924af9484d01",
       "review": "out/review/palette.html (roles and signal deltaE table)",
       "keys": "harbour.<role> in the look file"
     },
@@ -199,7 +200,7 @@
         "group": "base"
       },
       "limestone": {
-        "hex": "#f0e3ca",
+        "hex": "#f8eed9",
         "group": "base"
       },
       "deck": {
@@ -211,7 +212,7 @@
         "group": "base"
       },
       "civic": {
-        "hex": "#f7dfa8",
+        "hex": "#fbe8b8",
         "group": "base"
       },
       "trim": {
@@ -223,23 +224,23 @@
         "group": "base"
       },
       "residential": {
-        "hex": "#f3e3c6",
+        "hex": "#f8eedb",
         "group": "base"
       },
       "mixed": {
-        "hex": "#f7ead2",
+        "hex": "#fdf5e4",
         "group": "base"
       },
       "frontage": {
-        "hex": "#f0e0c3",
+        "hex": "#f6ecd8",
         "group": "base"
       },
       "roof": {
-        "hex": "#f6ebd6",
+        "hex": "#fff6e6",
         "group": "base"
       },
       "commercial": {
-        "hex": "#f5d3b5",
+        "hex": "#f9e2cc",
         "group": "base"
       },
       "industrial": {
@@ -333,7 +334,7 @@
         "group": "accent"
       },
       "accent_coral": {
-        "hex": "#f28a70",
+        "hex": "#fc9c84",
         "group": "accent"
       },
       "accent_flamingo": {
@@ -349,45 +350,26 @@
         "group": "accent"
       },
       "accent_peach": {
-        "hex": "#f8b898",
+        "hex": "#fcc4ac",
         "group": "accent"
       },
       "canvas": {
         "hex": "#f7f4ec",
         "group": "base"
-      },
-      "accent_red": {
-        "hex": "#c42a1f",
-        "group": "accent"
-      },
-      "accent_royal": {
-        "hex": "#2c56a6",
-        "group": "accent"
-      },
-      "accent_cobalt": {
-        "hex": "#2f84e8",
-        "group": "accent"
-      },
-      "accent_tangerine": {
-        "hex": "#f07a28",
-        "group": "accent"
-      },
-      "accent_plum": {
-        "hex": "#7a3b78",
-        "group": "accent"
-      },
-      "accent_cerulean": {
-        "hex": "#1f8fc4",
-        "group": "accent"
-      },
-      "accent_jade": {
-        "hex": "#1e9c78",
-        "group": "accent"
-      },
-      "accent_lime": {
-        "hex": "#b5d334",
-        "group": "accent"
       }
+    },
+    "retired_roles": {
+      "roles": {
+        "accent_red": "#c42a1f",
+        "accent_royal": "#2c56a6",
+        "accent_cobalt": "#2f84e8",
+        "accent_tangerine": "#f07a28",
+        "accent_plum": "#7a3b78",
+        "accent_cerulean": "#1f8fc4",
+        "accent_jade": "#1e9c78",
+        "accent_lime": "#b5d334"
+      },
+      "why": "v0.24.0 (brief 075 old palette): 072's added accent roles (red, royal, cobalt, tangerine, plum, cerulean, jade, lime) are withdrawn from the palette; facade.json's areas and the kit no longer draw them. They stay as look-file keys only while tools/world/gen/colour.ts ACCENT_ROLES still names them (Splice drops them)."
     }
   },
   "signal_colours": {
@@ -397,17 +379,15 @@
     "rivals": "#8a4fd0"
   },
   "materials": [
-    "honed cream, peach and warm limestone",
-    "pastel renders: butter yellow, mint, sea green, sky blue, powder blue, lilac, apricot, blush",
+    "honed cream and peach limestone",
     "flamed grey granite kerb",
-    "saturated vitreous enamel panels (cobalt, royal blue, cerulean, enamel red, coral, tangerine, plum, mustard, flamingo, sunshine, lime, mint, jade, turquoise)",
-    "teal, deep teal and mint vitreous enamel",
+    "saturated vitreous enamel panels (cobalt, flamingo, sunshine, mint, turquoise)",
+    "teal and mint vitreous enamel",
     "chrome and brushed silver",
     "white vinyl and lame",
     "clear acrylic",
-    "blue-teal glass with sky reflections",
-    "warm brass-gold trim, frames and bands at street level and on facades, gold on skyline crowns",
-    "powder-blue enamel road"
+    "warm brass trim at street level and on facades, gold on skyline crowns",
+    "pale asphalt"
   ],
   "types": {
     "character": {

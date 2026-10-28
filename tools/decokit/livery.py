@@ -10,9 +10,10 @@ metallic, instancing flag) with only m_Name, _BaseColor and _Color changed. Same
   brick      DK_Hull_Ivory     #9C2E2B   `Signature` SphereStation (Paint/DK_Hull_Ivory_9C2E2B) SphereStation (the hull)
   gold       DK_Crown_Gold     #F2C14E   `Signature` SpaceHQ on DK_Gold (Paint/DK_Gold_F2C14E_m100s45) SpaceHQ_Portal (ribs, beads, orbits, crown: pal.Gold there is DK_Crown_Gold)
 
+Brief 075 old palette (Sky 2026-10-29, "back to old town"): the gold also takes the old Paint .mat's finish, metallic 1 smoothness 0.45 (FINISH), not only its colour.
 A textured base (DK_Hull_Ivory on hull_panels_v1) is tinted the old way (DecoKitColourways.Variant): tint = linear(hex) / linear(the texture's sRGB mean,
 every 7th texel), so the texture's mean lands on the hex; this reproduces the old Paint .mat's _BaseColor. The old gold also set metallic 1 and
-smoothness 0.45; here only the base colour changes (DK_Crown_Gold keeps metallic 1, smoothness 0.7): a smoothness change is Sky's/Glint's call.
+smoothness 0.45; brief 075's old palette takes that finish too (FINISH: the floats only, same shader and keywords).
 
 Names: <base>__<key> (DK_Steel_Ivory__vermilion); guids derived from the name. Data/livery.json is the mapping the catalogue copies into
 contracts/world/kit.json `landmarks` (Latch swaps per instance; Splice's export table briefs/075/landmarks.json keys its slots on the same keys).
@@ -26,8 +27,9 @@ from pathlib import Path
 LIVERY = {  # key -> (base material, sRGB hex, the old source, pieces: a list of ids or {"categories": [...]})
     "vermilion": ("DK_Steel_Ivory", "#B8432E", "DecoKitColourways.Vermilion (Paint/DK_Steel_Ivory_B8432E.mat)", {"categories": ["Landmarks", "Skyport", "Sky"]}),
     "brick": ("DK_Hull_Ivory", "#9C2E2B", "DecoKitColourways.Signature[SphereStation] (Paint/DK_Hull_Ivory_9C2E2B.mat)", ["SphereStation"]),
-    "gold": ("DK_Crown_Gold", "#F2C14E", "DecoKitColourways.Signature[SpaceHQ] on DK_Gold, metallic 1 smoothness 0.45 (Paint/DK_Gold_F2C14E_m100s45.mat); base colour only here", ["SpaceHQ_Portal", "DiscTower@crown-vista"]),  # brief 075 golden: the Crown Vista tower's gold shaft (vista075.py)
+    "gold": ("DK_Crown_Gold", "#F2C14E", "DecoKitColourways.Signature[SpaceHQ] on DK_Gold, metallic 1 smoothness 0.45 (Paint/DK_Gold_F2C14E_m100s45.mat), base colour and finish", ["SpaceHQ_Portal", "DiscTower@crown-vista"]),  # brief 075 golden: the Crown Vista tower's gold shaft (vista075.py)
 }
+FINISH = {"gold": (1.0, 0.45)}  # brief 075 old palette (Aster: "each as the old Paint materials exactly"): the old gold's own metallic and smoothness (DK_Crown_Gold: 1 / 0.7)
 OLD_PAINT = {"vermilion": "DK_Steel_Ivory_B8432E", "brick": "DK_Hull_Ivory_9C2E2B", "gold": "DK_Gold_F2C14E_m100s45"}
 
 
@@ -108,14 +110,19 @@ def write_mats(dst, legacy, meta_text, recolour):
         text = (own if own.exists() else legacy / f"{base}.mat").read_text()
         rgb, tex = tint(text, hx, roots)
         name = f"{base}__{key}"
-        (d / f"{name}.mat").write_text(recolour(text, name, rgb))
+        mat = recolour(text, name, rgb)
+        if key in FINISH:  # floats only: same shader and keywords, no new SetPass
+            mat, n1 = re.subn(r"(    - _Metallic: )[\d.e-]+", rf"\g<1>{FINISH[key][0]:g}", mat)
+            mat, n2 = re.subn(r"(    - _Smoothness: )[\d.e-]+", rf"\g<1>{FINISH[key][1]:g}", mat)
+            assert n1 == 1 and n2 == 1, f"{name}: no _Metallic / _Smoothness"
+        (d / f"{name}.mat").write_text(mat)
         (d / f"{name}.mat.meta").write_text(meta_text(name, legacy))
         out.append(name)
         old = _old_base_colour(legacy, key)
         keys[key] = dict(base=base, material=name, hex=hx, source=src, baseFrom="generated" if own.exists() else "legacy",
                          baseColor=[round(x, 6) for x in rgb], **({"tintedOver": tex} if tex else {}),
                          **({"oldBaseColor": old, "oldDelta": round(max(abs(a - b) for a, b in zip(rgb, old)), 6)} if old else {}),
-                         pieces=pieces)
+                         **({"finish": dict(metallic=FINISH[key][0], smoothness=FINISH[key][1])} if key in FINISH else {}), pieces=pieces)
     data = dict(schema="suborned.livery/1", brief="075-C", source="tools/decokit/livery.py",
                 rule="A landmark instance swaps each base material below for its key's variant where its piece is listed (or in a listed kit category). "
                      "Same shader, keywords and textures as the base: only the base colour differs. Ported from the old DecoKitColourways `livery` layer.",

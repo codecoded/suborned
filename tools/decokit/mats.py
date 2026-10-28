@@ -117,7 +117,8 @@ GLASS_SHADER_GUID = "0a6625b81c13d56024a16fdc589a1954"
 # 28 Oct (brief 075-B, Sky "back to the old world textures"): the film's fake sky is the old street's own (DecoKit DK_Sky_Street.png, the Skybox/Panoramic gradient the old windows reflected through
 # their baked probes): horizon #D1DBDD (the texel above the horizon), zenith #75A4D6 (5 % from the top). Was #D8E6E4 / #86B8E0. Glaze, alpha and the rest stay (the old a0.3 over the charcoal cavity is
 # brief 048's black void without probes; the old reel's green-teal windows are its probes and grade, Glint's 075-A).
-GLASS_FILM = {"DK_GlassDark": dict(alpha=0.65, glaze="#3F7A8E", edge=0.92, fresnel=3.0, sheen=0.12, glow=0.85, horizon="#D1DBDD", zenith="#75A4D6", street="#A78F78")}
+# 29 Oct (brief 075 old palette, Sky: "back to old town"): the glaze is the old DK_GlassDark colour again, #35585A (was 072-G's #3F7A8E): the old reel's dark glass ribbons.
+GLASS_FILM = {"DK_GlassDark": dict(alpha=0.65, glaze="#35585A", edge=0.92, fresnel=3.0, sheen=0.12, glow=0.85, horizon="#D1DBDD", zenith="#75A4D6", street="#A78F78")}
 
 LIB.setdefault("DK_Beacon_Rose", ("emit", ACCENT["flamingo"], 4.0))  # obstruction / status lamps: pink, never signal red
 ALIAS = {"Signal_Red": "DK_Beacon_Rose"}  # generated pieces never use DK_Signal_Red on a world surface
@@ -168,7 +169,9 @@ GROUND = {
 # Brief 074-B (colourways.py): Unity draws DK_Limestone_Tex on the neutral panel sheet (the old sheet's luminance, its cream moved into the .mat's tint) so a colourway's tint can land
 # any wall family; Blender keeps facade_panel_v1 for the base row (TEXTURES above), so the FBX bytes do not move. The materials table names the sheet Unity uses (the catalogue
 # copies what the table and the .mat name), so the old sheet leaves the kit copy: replaced, not added.
-UNITY_TEXTURE = {"DK_Limestone_Tex": "wall_panel_neutral_v1.png"}
+# Brief 075 (old palette, Sky 2026-10-29): the colourways are the old DecoKitColourways variants again, tinted over the old sheet itself, so Unity draws DK_Limestone_Tex on
+# facade_panel_v1 as the old kit did (the legacy .mat) and the neutral sheet is gone.
+UNITY_TEXTURE = {}
 
 UV_MAPPED = ("decal", "art", "emit", "emitmap", "fabric", "cutout", "paving", "face")  # these use the face's explicit (decal) UVs, not metric tiling
 SOURCE_ART = Path(os.environ.get("DECOKIT_SOURCEART") or Path(os.environ.get("SUBORNED_STORE", "~/Projects/the-suborned-store")).expanduser() / "source-art/DecoKit")

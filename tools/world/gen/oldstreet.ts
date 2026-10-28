@@ -26,10 +26,9 @@
 //   colour  DecoKitColourways (scheme "plan+livery+soft", DecoKitStreetDemo.Colour): HighStreet walks each boulevard wall in order; a rendered
 //           (streamline) building is painted when the one before it is not, the palette running on in order from wall to wall (Soft: apricot #E8B793,
 //           celadon #B7CDB4, terracotta-rose #DDA596, ochre #E2C07A), every other building the kit's cream; a painted building's eyebrows and canopy
-//           (DK_Enamel_Ivory) take Lighter(wall) = halfway (linear) to ivory #EFE8D6. The four are facade.json families `oldapricot` … `oldochre`
-//           (tools/decokit/colourways.py OLD_FAMILIES: the exact hexes, no softening, wall + trim slots); the unpainted take `cream` (dE2000 2.5
-//           from the old kit cream #E6D7C2). The old Boulevard ensemble's coral fascia (#C8553D on DK_Enamel_Teal) is NOT ported: 074-H keeps the fascia
-//           teal everywhere (Sky, Redline); it is listed for Sky.
+//           (DK_Enamel_Ivory) take Lighter(wall) = halfway (linear) to ivory #EFE8D6. The four are facade.json families `soft-apricot` … `soft-ochre`
+//           (brief 075 old palette, Vela: tools/decokit/colourways.py, the exact hexes, wall + fascia + trim slots, the boulevard's coral fascia
+//           running on); the unpainted keep their area's ensemble (`boulevard`: the kit limestone with the coral fascia), as the old scheme did.
 import { type V, dist } from '../../plan/geom';
 import type { Ctx } from './common';
 
@@ -71,10 +70,9 @@ export const OLD_STREET = {
     squash: 0.92,
   },
   colour: {
-    /** The old Soft palette as facade.json families, in the old order. */
-    palette: ['oldapricot', 'oldceladon', 'oldrose', 'oldochre'],
-    /** The unpainted buildings' family (the old kit cream). */
-    plain: 'cream',
+    /** The old Soft palette as facade.json families, in the old order (brief 075 old palette, Vela's keys; was oldapricot … oldochre). The unpainted keep
+     *  their area's ensemble (colourways.ts), as the old ones kept the Boulevard ensemble's kit cream. */
+    palette: ['soft-apricot', 'soft-celadon', 'soft-rose', 'soft-ochre'],
   },
 };
 

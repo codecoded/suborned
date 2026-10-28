@@ -1,5 +1,5 @@
 {
-  "note": "Harbour look (Vela, Sky: a mix). Base = sunrise warm cream and peach for ground, stone and plot bodies; accents = fair enamel (cobalt, flamingo, sunshine, mint, turquoise) on towers, megastructures, landmarks, enamel, signs, awnings only; water = lagoon turquoise; transit stays coral (flamingo-coral, clear of cone red). Colour lives on panels, awnings, signs, roofs and trim, not whole buildings. Exact hex, value 1; keys prefixed 'harbour.'. frontage/sign/awning/roof are not in the export yet. Roles and signal table: out/review/palette.html.",
+  "note": "Harbour look (Vela, Sky: a mix). Base = sunrise warm cream and peach for ground, stone and plot bodies; accents = fair enamel (cobalt, flamingo, sunshine, mint, turquoise) on towers, megastructures, landmarks, enamel, signs, awnings only; water = lagoon turquoise; transit stays coral (flamingo-coral, clear of cone red). Colour lives on panels, awnings, signs, roofs and trim, not whole buildings. Exact hex, value 1; keys prefixed 'harbour.'. frontage/sign/awning/roof are not in the export yet. Roles and signal table: out/review/palette.html. Brief 075 old palette (Sky 2026-10-29, Vela): 072-G's palette loosening is withdrawn: limestone, civic, residential, mixed, frontage, roof, commercial, accent_coral and accent_peach back to their values before it (style contract v0.24.0); the brass-gold trim kept; 072's eight added accent keys stay only while tools/world/gen/colour.ts names them.",
   "surfaces": {
     "asphalt": {
       "palette": "harbour.asphalt",
@@ -406,7 +406,7 @@
       "hex": "#e2e2e4"
     },
     "harbour.limestone": {
-      "hex": "#f0e3ca"
+      "hex": "#f8eed9"
     },
     "harbour.deck": {
       "hex": "#faf1df"
@@ -415,7 +415,7 @@
       "hex": "#eee1c9"
     },
     "harbour.civic": {
-      "hex": "#f7dfa8"
+      "hex": "#fbe8b8"
     },
     "harbour.trim": {
       "hex": "#c29a55"
@@ -424,19 +424,19 @@
       "hex": "#d0c848"
     },
     "harbour.residential": {
-      "hex": "#f3e3c6"
+      "hex": "#f8eedb"
     },
     "harbour.mixed": {
-      "hex": "#f7ead2"
+      "hex": "#fdf5e4"
     },
     "harbour.frontage": {
-      "hex": "#f0e0c3"
+      "hex": "#f6ecd8"
     },
     "harbour.roof": {
-      "hex": "#f6ebd6"
+      "hex": "#fff6e6"
     },
     "harbour.commercial": {
-      "hex": "#f5d3b5"
+      "hex": "#f9e2cc"
     },
     "harbour.industrial": {
       "hex": "#f3e1c6"
@@ -520,7 +520,7 @@
       "hex": "#1cb9c6"
     },
     "harbour.accent_coral": {
-      "hex": "#f28a70"
+      "hex": "#fc9c84"
     },
     "harbour.accent_flamingo": {
       "hex": "#e8609a"
@@ -532,7 +532,7 @@
       "hex": "#7fd0b8"
     },
     "harbour.accent_peach": {
-      "hex": "#f8b898"
+      "hex": "#fcc4ac"
     },
     "harbour.canvas": {
       "hex": "#f7f4ec"

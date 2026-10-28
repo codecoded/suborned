@@ -1,9 +1,11 @@
-// Building colourways (brief 074, Sky 2026-10-28: "Do building colors"). Each building takes one wall family from facade.json `families` (the 12 district
-// colourways; `civic` is the civic block's own and never drawn here), picked by its area's family weights (`areas[area].families`), seeded by the building id.
-// Street neighbours (the hosts met in walking order along one side of one street, as Vela's briefs/072/style/applied2/src/spread.py and Unity's
-// ProcGrammar.Index build them) never share a family, and a building whose wall is within COLOURWAY.floor dE2000 of a neighbour's is re-drawn
-// (salts #1..#tries, in id order, passes until nothing changes): deterministic, never by hand. The export writes the family on every mass of the building
-// (`buildings[].colourway`) and on every facade piece of it (`facades[].colourway`); CW-1 (rules/colourways.ts) checks both.
+// Building colourways (brief 074, Sky 2026-10-28: "Do building colors"; brief 075, Sky 2026-10-29: "our red is too red ... it needs to go back to old town").
+// Brief 075 old palette: the old DecoKitColourways scheme the old reel ran (`plan+livery+soft`, ~/Projects/the-suborned/game Editor/DecoKit, read only). The
+// families are the old ensembles (facade.json `families`: boulevard, circus, harbour, gardens, southside; Vela) and each facade.json area draws one of them
+// (`areas[area].families`, one family each: records/lamplight boulevard, lantern southside, docks/harbour harbour, crescent circus, gardens gardens), so a
+// building takes its area's ensemble and street neighbours share it by design ("colour goes by ensemble, never building by building"). On the old-street roads
+// the old HighStreet walk paints alternate buildings in the Soft palette (oldStreetFamilies: soft-apricot, soft-celadon, soft-rose, soft-ochre, in order), the
+// rest keep their ensemble. The 074 neighbour repair (dE2000 floor, re-draws) is gone with the 12 families. The export writes the family on every mass of the
+// building (`buildings[].colourway`) and on every facade piece of it (`facades[].colourway`); CW-1 (rules/colourways.ts) checks both.
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import type { Frontage } from '../../../contracts/world/world.schema';
@@ -25,11 +27,6 @@ export const CIVIC = 'civic';
 export const FAMILIES = Object.keys(COLOURWAY_SPEC.families).filter(k => k !== CIVIC && !OLD_STREET.colour.palette.includes(k));
 export const wallOf = (fam: string) => COLOURWAY_SPEC.families[fam]![0]!;
 
-export const COLOURWAY = {
-  floor: 15, // dE2000: a building closer than this to any street neighbour's wall is re-drawn (the median then lands near 27; 072's push had 22.1)
-  tries: 40, // re-draw salts per building per pass
-  passes: 8,
-};
 
 // ---------------------------------------------------------------- CIEDE2000 (sRGB hex, D65; the same maths as tools/decokit/deltae.py)
 function lab(hex: string): [number, number, number] {
@@ -97,43 +94,49 @@ export function drawFamily(id: string, area: string, salt: number): string {
 
 export type ColourwayLog = { buildings: number; pairs: number; redrawn: number; passes: number; families: Record<string, number>; same: number; de: { min: number; p10: number; median: number } | null };
 
-/** Each building's colourway (the civic block's `civic`), then the neighbour repair. `blds`: id and area (facade.json area key) of every building host. */
-export function assignColourways(blds: { id: string; area?: string }[], frontages: Frontage[], fixed: Map<string, string> = new Map()): { of: Map<string, string>; log: ColourwayLog } {
-  const of = new Map<string, string>(), area = new Map<string, string>();
-  const ids = [...new Set(blds.map(b => b.id))].sort();
-  for (const b of blds) if (!area.has(b.id)) area.set(b.id, areaKey(b.area, b.id));
-  for (const id of ids) of.set(id, civicHost(id) ? CIVIC : drawFamily(id, area.get(id)!, 0));
-  for (const [id, f] of fixed) if (of.has(id) && of.get(id) !== CIVIC) of.set(id, f); // brief 075: the old high street's families (oldStreetFamilies) stand; the repair never re-draws them
-  const pairs = streetNeighbours(frontages, new Set(ids)), nb = new Map<string, string[]>();
-  for (const [p, q] of pairs) { (nb.get(p) ?? nb.set(p, []).get(p)!).push(q); (nb.get(q) ?? nb.set(q, []).get(q)!).push(p); }
-  // brief 075: two old-street buildings on different walls that meet as street neighbours (a cross street's faces either side of the boulevard) with one palette
-  // family: the later one takes the next palette family none of its neighbours has (the old walk's order otherwise stands)
-  for (const [p, q] of pairs) if (fixed.has(p) && fixed.has(q) && of.get(p) === of.get(q) && OLD_STREET.colour.palette.includes(of.get(q)!)) {
-    const P = OLD_STREET.colour.palette, i = P.indexOf(of.get(q)!), alt = [1, 2, 3].map(s => P[(i + s) % P.length]!).find(f => !(nb.get(q) ?? []).some(o => of.get(o) === f));
-    if (alt) of.set(q, alt);
-  }
-  // a building's worst neighbour: -1 sharing a family, else the smallest wall dE
-  const score = (id: string, fam: string) => Math.min(Infinity, ...(nb.get(id) ?? []).map(o => (of.get(o) === fam ? -1 : famDE(fam, of.get(o)!))));
-  const changed = new Set<string>(); let passes = 0;
-  for (; passes < COLOURWAY.passes; passes++) {
-    let n = 0;
-    for (const id of ids) {
-      if (of.get(id) === CIVIC || fixed.has(id)) continue;
-      let best = of.get(id)!, bs = score(id, best);
-      if (bs >= COLOURWAY.floor) continue;
-      for (let s = 1; s <= COLOURWAY.tries; s++) {
-        const f = drawFamily(id, area.get(id)!, s + passes * COLOURWAY.tries), sc = score(id, f);
-        if (sc > bs) { best = f; bs = sc; }
-        if (sc >= COLOURWAY.floor) break;
-      }
-      // the area's weights could not part it from a neighbour: any district family that does (weights aside), the first in facade.json order
-      if (bs < 0) for (const f of FAMILIES) { const sc = score(id, f); if (sc > bs) { best = f; bs = sc; } }
-      if (best !== of.get(id)) { of.set(id, best); changed.add(id); n++; }
-    }
-    if (!n) break;
-  }
-  return { of, log: { ...spreadOf(of, pairs), redrawn: changed.size, passes: passes + 1 } };
+/** Brief 075 old palette: the old DecoKitColourways.Of, by a piece's position in the old frame (plan = old (x, z - 206), the circus at the origin; read only,
+ *  DecoKitCityPlan.cs): on the crescents' circle (R 35, within 1.5 m) circus; past the terrace backs (x > EastBack 46 - 6) harbour; Southside south; past the
+ *  garden backs (x < -46 + 6) gardens; else the boulevard's walls and returns. Southside is read from the plan's areas (Datum's transcription names the old
+ *  districts: `southside`, `westrow` the Southside fill west of the Boulevard). Used for the remap's areas that facade.json does not name (facade.json areas keep
+ *  Vela's mapping: records/lamplight boulevard, lantern southside, docks/harbour harbour, crescent circus, gardens gardens). */
+export const OLD_ENSEMBLE = { crescentR: 35, ring: 1.5, east: 40, west: -40, south: ['southside', 'westrow'] as string[] };
+export function oldOf(p: V, area: string | undefined): string {
+  if (Math.abs(Math.hypot(p[0], p[1]) - OLD_ENSEMBLE.crescentR) < OLD_ENSEMBLE.ring) return 'circus';
+  if (p[0] > OLD_ENSEMBLE.east) return 'harbour';
+  if (area && OLD_ENSEMBLE.south.includes(area)) return 'southside';
+  if (p[0] < OLD_ENSEMBLE.west) return 'gardens';
+  return 'boulevard';
 }
+
+/** The family a building takes when nothing paints it: the civic block `civic`; an area facade.json names, its ensemble (drawFamily, salt 0: the area's one
+ *  family); else the old Of by its facade pieces' positions, the most of them (old HighStreet's majority; ties in family order), its ring's vertices without pieces. */
+export function ensembleOf(id: string, area: string | undefined, at: V[] = [], ring: V[] = []): string {
+  if (civicHost(id)) return CIVIC;
+  if (area && area !== CIVIC && COLOURWAY_SPEC.areas[area]) return drawFamily(id, area, 0);
+  const pts = at.length ? at : ring, n = new Map<string, number>();
+  for (const p of pts) { const f = oldOf(p, area); n.set(f, (n.get(f) ?? 0) + 1); }
+  const order = Object.keys(COLOURWAY_SPEC.families);
+  return [...n].sort((x, y) => y[1] - x[1] || order.indexOf(x[0]) - order.indexOf(y[0]))[0]?.[0] ?? 'boulevard';
+}
+
+/** Each building's colourway: the civic block's `civic`, the old high street's Soft paint where `fixed` gives it (oldStreetFamilies), else its ensemble
+ *  (ensembleOf). `blds`: id, area (the plot's) and ring of every building host; `at`: its facade pieces' positions by host. */
+export function assignColourways(blds: { id: string; area?: string; ring?: V[] }[], frontages: Frontage[], fixed: Map<string, string> = new Map(), at: Map<string, V[]> = new Map()): { of: Map<string, string>; log: ColourwayLog } {
+  const of = new Map<string, string>(), by = new Map<string, { area?: string; ring?: V[] }>();
+  for (const b of blds) if (!by.has(b.id)) by.set(b.id, b);
+  const ids = [...by.keys()].sort();
+  for (const id of ids) of.set(id, civicHost(id) ? CIVIC : fixed.get(id) ?? ensembleOf(id, by.get(id)!.area, at.get(id), by.get(id)!.ring));
+  const pairs = streetNeighbours(frontages, new Set(ids));
+  return { of, log: { ...spreadOf(of, pairs), redrawn: 0, passes: 0 } };
+}
+
+/** The facade pieces' positions by building (ensembleOf's vote): each piece's front-centre, the middle of its wall line a-b (the old Of read the piece's pivot,
+ *  "the facade's front-centre"; `kit.at` is the footprint's centre, 7 m inside a 14 m bay). */
+export const piecesAt = (facades: { building: string; a: V | number[]; b: V | number[] }[]): Map<string, V[]> => {
+  const m = new Map<string, V[]>();
+  for (const f of facades) (m.get(f.building) ?? m.set(f.building, []).get(f.building)!).push([(f.a[0]! + f.b[0]!) / 2, (f.a[1]! + f.b[1]!) / 2]);
+  return m;
+};
 
 /** The spread: families used and counts, neighbours sharing a family, neighbour wall dE2000 min, p10 and median (pairs with a civic side included). */
 export function spreadOf(of: Map<string, string>, pairs: [string, string][]): Omit<ColourwayLog, 'redrawn' | 'passes'> {
@@ -149,9 +152,9 @@ export function spreadOf(of: Map<string, string>, pairs: [string, string][]): Om
 }
 
 // ---------------------------------------------------------------- brief 075: the old high street (oldstreet.ts; old DecoKitColourways.HighStreet)
-/** The families of the buildings fronting an old-street road, by the old HighStreet rule: each road's walls walked in order (its right side, then its left,
+/** The painted buildings fronting an old-street road, by the old HighStreet rule: each road's walls walked in order (its right side, then its left,
  *  each along the road's direction, as the old east walls came before the west), a run broken where the plot changes (a side street or lane); a building is
- *  painted when the one before it in its run is not, the palette running on in order from wall to wall; the rest take the plain family. Towers aside. */
+ *  painted when the one before it in its run is not, the palette running on in order from wall to wall; the rest are not in the map (they keep their ensemble). Towers aside. */
 export function oldStreetFamilies(ctx: Ctx, blds: { id: string; plot: string; tower?: boolean; ring: { p: V[]; c: string[] } }[]): Map<string, string> {
   const C = OLD_STREET.colour, walls = new Map<string, { id: string; plot: string; u: number }[]>();
   for (const b of blds) {
@@ -171,7 +174,7 @@ export function oldStreetFamilies(ctx: Ctx, blds: { id: string; plot: string; to
     for (const w of walls.get(key)!.sort((x, y) => x.u - y.u || (x.id < y.id ? -1 : 1))) {
       if (w.plot !== plot) { previous = false; plot = w.plot; } // a new run
       previous = !previous;
-      out.set(w.id, previous ? C.palette[k++ % C.palette.length]! : C.plain);
+      if (previous) out.set(w.id, C.palette[k++ % C.palette.length]!); // the unpainted keep their ensemble (old: e.Wall)
     }
   }
   return out;

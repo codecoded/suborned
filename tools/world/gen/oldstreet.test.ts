@@ -10,6 +10,7 @@ import { streetChecks } from '../../plan/street-checks';
 import { worldOf } from '../build';
 import { ctxOf } from './common';
 import { classOf } from './stream';
+import { ensembleOf, piecesAt } from './colourways';
 import { OLD_STREET, isOldRoad, palmStations, roadFrame } from './oldstreet';
 import { inCapstoneZone } from './street/palms';
 
@@ -69,10 +70,11 @@ test('frontage: the buildings fronting the old road stand streamline bays only, 
   }
 });
 
-test('colour: the old HighStreet rule, each wall painted and cream by turns from the start of each run, the Soft palette in order', () => {
+test('colour: the old HighStreet rule, each wall painted and its ensemble by turns from the start of each run, the Soft palette in order (brief 075 old palette)', () => {
   const on = gen.blds.filter(b => !b.tower && b.ring.c.some(isOldRoad)), of = new Map(w.buildings.map(m => [m.id.split('/').slice(0, 3).join('/'), m.colourway]));
   const fams = on.map(b => of.get(b.id)!);
-  expect(new Set(fams)).toEqual(new Set([...OLD_STREET.colour.palette, OLD_STREET.colour.plain]));
+  expect(new Set(fams.filter(f => OLD_STREET.colour.palette.includes(f!)))).toEqual(new Set(OLD_STREET.colour.palette));
+  for (const b of on) if (!OLD_STREET.colour.palette.includes(of.get(b.id)!)) expect(of.get(b.id), b.id).toBe(ensembleOf(b.id, b.area, piecesAt(w.facades).get(b.id), b.ring.p)); // the unpainted keep their area's ensemble
   const painted = fams.filter(f => OLD_STREET.colour.palette.includes(f!)).length;
   expect(painted).toBeGreaterThanOrEqual(fams.length / 2); // the first of every run is painted
   // no other building is given an old family

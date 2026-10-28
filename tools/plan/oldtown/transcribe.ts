@@ -26,6 +26,13 @@ const ROOT = resolve(import.meta.dir, '../../..');
 const args = process.argv.slice(2), opt = (k: string, d: string) => (args.includes(k) ? args[args.indexOf(k) + 1]! : d);
 const BASE = opt('--base', 'briefs/075/remap/base.plan.json'), OUT = opt('--out', 'contracts/world/harbour-district.oldtown.plan.json');
 const live: any = JSON.parse(readFileSync(resolve(ROOT, BASE), 'utf8'));
+// the plan already at --out (Pulse's journeys and the SpaceHQ switch are kept from it)
+const PREV: any = existsSync(resolve(ROOT, OUT)) ? JSON.parse(readFileSync(resolve(ROOT, OUT), 'utf8')) : null;
+// The SpaceHQ switch (brief 075 remap step 2: the form is Sky's call): 'old' = the old gold SpaceHQ (DecoKitStreetSkyline: the kit SpaceHQ × 1.35 at old (0, 450), 340 m)
+// with S1's Crown Circus station beside it, the default; 'ours' = our SpaceHQ_Portal remake (252 m) with S1 through its drum and the station inside. One setting:
+// plan.spacehq.form, read back from the plan at --out (or --spacehq old|ours); both forms are carried in plan.spacehq.forms.
+const HQ_FORM: 'old' | 'ours' = opt('--spacehq', PREV?.spacehq?.form ?? 'old') as 'old' | 'ours';
+if (HQ_FORM !== 'old' && HQ_FORM !== 'ours') throw new Error(`--spacehq: old or ours, not ${HQ_FORM}`);
 const old = readOld(), S = old.S;
 type V = [number, number];
 const DZ = S['Circus.z']!; // 206
@@ -46,6 +53,15 @@ const harbour = { terrace: [eb, S.StepsX!] as V, promenade: [S.PromenadeX!, S.Qu
 const piers = { market: [yOf(S['MarketPierZ.x']!), yOf(S['MarketPierZ.y']!)] as V, skyport: [yOf(S['SkyportPierZ.x']!), yOf(S['SkyportPierZ.y']!)] as V };
 const north = yOf(S.NorthFacade!); // 140
 const gardensX = [S['GardensX.x']!, S['GardensX.y']!] as V; // -110, -46
+// The old SpaceHQ (DecoKitStreetSkyline.Landmarks: Put("SpaceHQ", (0, 0, Z.y + 70), 0, scale 1.35), "grand stair foot at Z.y + 5"): the kit SpaceHQ's box (kit.json size and
+// pivotOffset, the piece the old builders place) × 1.35 round the old pivot, so its ground runs from the stair foot (y 178.1, old z 384.1) to y 298 and x ±54; tip 340.2.
+const HQ_OLD = (() => {
+  const p = old.puts.find(q => q.kit === 'SpaceHQ')!, k = p.scale, at = P(p.at[0], p.at[2]);
+  const kit = (JSON.parse(readFileSync(resolve(ROOT, 'contracts/world/kit.json'), 'utf8')).assets as any[]).find(a => a.id === 'SpaceHQ');
+  const [w, h, dpt] = kit.size as number[], off = (kit.pivotOffset as number[])[1]! * k, cy = at[1] + off;
+  return { put: p, at, scale: k, size: [r2(w * k), r2(h * k), r2(dpt * k)], tip: r2(h * k), ground: [r2(at[0] - w * k / 2), r2(at[0] + w * k / 2), r2(cy - dpt * k / 2), r2(cy + dpt * k / 2)] as [number, number, number, number] };
+})();
+const HQ_OURS_SOUTH = 204; // the remake's drum ground (r 40 round (0, 244)) starts at y 204
 
 // The plan's street section on the Boulevard is sections.tramStreet.district: 20 kerb to kerb, 8 m pavements, so the walls stand at x ±18 exactly where the old facades stood
 // (old: kerb 8, 10 m promenade). The Handover's Satellite Street (x -60, w 12) puts its east kerb at -54: the old west wall's back (-46) is 8 m inside it, on the line.
@@ -161,7 +177,16 @@ manual(`Orbit Gardens are trimmed at the Handover zone's edge (y -148, old z 58)
 manual('The old west terrace (one 286 m wall facing the gardens at x -110, its back to the procedural massing) is one 28 m deep block south of the Gardens Gate at x -138..-110 (terrace-s, fronting Lamplight Lane, the garden walk at its back; the grammar wants 28 back to back, so its back faces Orbit Row); its 37 m north of the gate is lawn (gardens-n), where S1 turns north');
 // Sphere Park: the old sphere station's ground and the sky rail's loop round it; the park the old town left north of the gardens
 const swx = r2(old.skyrail.sphere[0]! - old.skyrail.ringR); // the sphere walk on the old ring's west point (x -218), under S1's north leg and its station
-plots.push({ id: 'sphere-park', name: 'Sphere Park', use: 'park', area: 'sphere', poly: [[-328, 9], [-180, 9], [-180, 30], [-156, 30], [-156, 50], [W0, 50], [W0, sheetY[1] + 1], [-328, sheetY[1] + 1]] });
+// The SpaceHQ switch's ground on Sphere Park (brief 075 remap step 2). 'old': Crown Walk, a 12 m walk on y 238 from the west of S1's north leg (x -115) through Crown
+// Circus station (x -95) east to the old HQ's west face (x -54): the station stands on it, not on the park (N-P2), and fronts it (W-3); the station's banks stand on the park
+// either side of the line, S1's pylons on the park north and south of the walk. Sphere Park keeps the rest, a slot cut from its east edge for the walk (to its west end cap, x -121). 'ours': Crown Walk
+// runs on the HQ's axis (y 244) from Sphere Park through the drum's ground hall (between the legs, y 224..264) to the harbour quay (x 48), under S1; Sphere Park stays whole.
+const CW = { x0: -115, w: 12, y: Math.round((HQ_OLD.ground[2] + HQ_OLD.ground[3]) / 2) };
+const crownWalk = HQ_FORM === 'old'
+  ? { id: 'crown-walk', name: 'Crown Walk', kind: 'walk', w: CW.w, pts: [[CW.x0, CW.y], [W0, CW.y]] }
+  : { id: 'crown-walk', name: 'Crown Walk', kind: 'walk', w: CW.w, pts: [[W0 + CW.w / 2, 244], [E1, 244]] };
+plots.push({ id: 'sphere-park', name: 'Sphere Park', use: 'park', area: 'sphere', poly: [[-328, 9], [-180, 9], [-180, 30], [-156, 30], [-156, 50], [W0, 50],
+  ...(HQ_FORM === 'old' ? [[W0, CW.y - CW.w / 2], [CW.x0 - CW.w / 2, CW.y - CW.w / 2], [CW.x0 - CW.w / 2, CW.y + CW.w / 2], [W0, CW.y + CW.w / 2]] : []), [W0, sheetY[1] + 1], [-328, sheetY[1] + 1]] });
 plot('west-terraces', 'residential', 'westend', [-244, -164, -114, -45], { name: 'West Terraces' });
 plot('gardens-forecourt', 'open', 'westend', [-244, -164, -45, -9], { name: 'Gardens Forecourt (S1 Orbit Gardens station\'s south banks)' });
 plot('sphere-gate', 'open', 'sphere', [-180, -156, 9, 30], { name: 'Sphere Park gate (the garden walk\'s crossing of Circus Road lands here)' });
@@ -181,7 +206,7 @@ plot('ss3', 'mixed', 'southside', [W0, W1, -548, -419], { name: 'old SS3 / SS5' 
 plot('lantern-court', 'residential', 'lantern', [-180, -66, -484, -419]);
 plot('lantern-west', 'residential', 'lantern', [-328, -192, -548, -419]);
 plot('lantern-south', 'residential', 'lantern', [-180, -66, -548, -496]);
-plot('crown-forecourt', 'open', 'crown', [W0, E1, north + 4, 204], { name: 'Crown Forecourt' });
+plot('crown-forecourt', 'open', 'crown', [W0, E1, north + 4, HQ_FORM === 'old' ? HQ_OLD.ground[2] : HQ_OURS_SOUTH], { name: 'Crown Forecourt' });
 
 // ------------------------------------------------------------------ West Row: the strip between the sheet's west edge and Sunset Way (brief 075 remap follow-up, Aster:
 // "no bare sand is left in the district outside water, parks and plazas"). The old town had procedural massing west of the gardens (DecoKitCityMass); the first remap left
@@ -241,7 +266,7 @@ const APRON = { x1: SK - 30, y: 30 }, MPIER_X1 = 254;
 // the Market Pier's landing stage at its root (x quay..140, y -196..-106: the banks clear of the pier walk), carrying S2's Harbour station banks either side of the line (x 117)
 const STAGE = { x1: 140, y: [-196, -106] as V };
 const foot = [
-  byId(live.foot, 'garden-walk'), ...wrLanes,
+  byId(live.foot, 'garden-walk'), ...wrLanes, crownWalk,
   { id: 'gardens-gate', name: 'Gardens Gate', kind: 'mall', w: 18, pts: [[-146, 0], [-circus.crescent, 0]] },
   { id: 'crown-parade', name: 'Crown Parade', kind: 'walk', w: 18, pts: [[circus.crescent, 0], [harbour.quay, 0]] },
   { id: 'skyport-pier', name: 'Skyport Pier', kind: 'walk', w: 12, pts: [[harbour.quay, 0], [APRON.x1, 0]] },
@@ -290,15 +315,31 @@ manual('The tram: the old line ran on the boulevard\'s west lane from Sunset Way
 // End along Circus Road's median with two stations on the circus axis (the old gardens gate's line), north over Orbit Gardens' north lawn and Sphere Park past the Sphere's
 // east side, east behind the SpaceHQ over Crown Mall (its third station), south over the water off the quay and onto the Skyport Pier axis into the Skyport Tower's portal
 // (its fourth station), turning on the loop round the aircar pad, as today. It joins T1 at Sunset Terraces. The old lines' own geometry (S1, S2 below) waits for north-south banks.
-const S0 = {
+const S1_STATIONS = [
+  { id: 'west-end', name: 'Western Park', path: 'trunk', at: [-395, 0], length: 50, interchange: 'T1/terraces', fronts: 'circus-road', kit: 'SkyRailStation_Twin' },
+  { id: 'gardens', name: 'Orbit Gardens', path: 'trunk', at: [-191, 0], length: 50, fronts: 'circus-road', kit: 'SkyRailStation_Twin' },
+];
+// The SpaceHQ switch's two S1s (brief 075 remap step 2). 'old': the line as before (north on x -95 past the Sphere, off the sheet), and a third station, Crown Circus,
+// on its north leg beside the old HQ (platforms y 213..263 level with the HQ's middle, x -95: its banks, stairs and lifts on Sphere Park, the east bank tower 26 m off the
+// HQ's west face at x -54), north–south as S2's. 'ours': north on x -95, east on the HQ's axis (y 244) through the remake's drum, the station inside it at the concourse
+// (the drum's legs stand either side of the line, y 204–224 and 264–284), and on east over the quay and the water off the sheet.
+const S1_OLD = {
   id: 'S1', name: 'Sphere Line', beyond: 'west off-sheet along Circus Road to the West End; north off-sheet past the Sphere toward the old main loop\'s north arc',
   paths: [{ id: 'trunk', role: 'line', double: true, pts: [[sheetX[0], 0], [-95, 0, 70], [-95, sheetY[1]]] }],
   order: ['trunk'],
-  stations: [
-    { id: 'west-end', name: 'Western Park', path: 'trunk', at: [-395, 0], length: 50, interchange: 'T1/terraces', fronts: 'circus-road', kit: 'SkyRailStation_Twin' },
-    { id: 'gardens', name: 'Orbit Gardens', path: 'trunk', at: [-191, 0], length: 50, fronts: 'circus-road', kit: 'SkyRailStation_Twin' },
-  ],
+  stations: [...S1_STATIONS,
+    { id: 'crown-circus', name: 'Crown Circus', path: 'trunk', at: [-95, Math.round((HQ_OLD.ground[2] + HQ_OLD.ground[3]) / 2)], length: 50, fronts: 'crown-walk', kit: 'SkyRailStation_Twin',
+      kitWhy: `open-air on S1's north leg beside the old SpaceHQ (its west face x ${HQ_OLD.ground[0]}), north–south; banks (stairs, escalators, lifts to the deck 9.43 and the concourse 24) on Sphere Park either side of the line; the old HQ is the old builders' piece and carries no beam` }],
 };
+const S1_OURS = {
+  id: 'S1', name: 'Sphere Line', beyond: 'west off-sheet along Circus Road to the West End; east off-sheet over the harbour north of the Skyport',
+  paths: [{ id: 'trunk', role: 'line', double: true, pts: [[sheetX[0], 0], [-95, 0, 70], [-95, 244, 70], [sheetX[1], 244]] }],
+  order: ['trunk'],
+  stations: [...S1_STATIONS,
+    { id: 'crown-circus', name: 'Crown Circus', path: 'trunk', at: [0, 244], length: 50, fronts: 'crown-walk', in: 'signatures/space-hq', kit: 'SkyRailStation_Twin',
+      kitWhy: 'inside the SpaceHQ_Portal drum at the concourse (24), east–west on the HQ\'s axis; the drum carries the beam (portal openings at x ±40), the banks stand in the ground hall between the legs' }],
+};
+const S0 = HQ_FORM === 'old' ? S1_OLD : S1_OURS;
 // S2 in the plan, the Harbour Line (brief 075 review, Sky 2026-10-28: "we need the skytrak to get here - it's unreachable right now"): the old harbour line's sweep out
 // to the Skyport on pylons (DecoKitSkyRail.HarbourRoute: up the quay, round the Skyport at R 48, back over the sea at x 122), laid to the plan's rules. From the south edge
 // over the water on x 117 (the old sea leg's line, 21 m off the quay), Harbour station on the Market Pier's landing stage (y -140; T1's Crown Circus stop 136 m: the
@@ -393,11 +434,30 @@ manual('The old SkyBridge between the gate towers (60 m up) is in oldtown.props,
 // SpaceHQ at the old position closing the boulevard (old (0, 450) × 1.35): the plan's regenerated SpaceHQ_Portal, its drum without a beam (the plan's portal reads a line on y 0)
 const hqDelta: V = (() => { const p = put('SpaceHQ')[0]!, at = P(p.at[0], p.at[2]); return [r2(at[0] - 96), r2(at[1] - 0)]; })();
 const signatures: any[] = [];
+const HQ_FORMS: Record<'old' | 'ours', any> = { old: null, ours: null };
 { const s = byId(live.signatures, 'space-hq'); s.c = mv(s.c, hqDelta); s.ground = mvRect(s.ground, hqDelta); s.legs = s.legs.map((l: number[]) => mvRect(l, hqDelta)); s.areas = ['crown'];
   s.spans = { plots: [], foot: [] }; s.portalWas = s.portal; delete s.portal; s.oldPut = put('SpaceHQ')[0];
   s.standWhy = `the old SpaceHQ's place: on the axis at old z 450 (plan ${s.c}), closing the boulevard and Crown Avenue through the arch; the plan's SpaceHQ_Portal (252 m) at × 1 (the old stood the kit at × 1.35)`;
-  signatures.push(s);
-  manual('SpaceHQ: at the old position (plan (0, 244)), closing the axis; its drum keeps the regenerated SpaceHQ_Portal but carries no beam (portalWas): the plan\'s signature portal reads a line on y 0, and the old main loop turned west before the HQ'); }
+  // 'ours': the remake, its drum on the HQ's axis carrying S1 (the portal as data: P-1 reads a portal's line on y 0, so it is kept in portalOnAxis until the rule reads
+  // the axis; Splice) and Crown Circus station inside it
+  const ours = clone(s);
+  ours.form = 'ours'; ours.stationIn = 'S1/crown-circus';
+  ours.portalOnAxis = { ...clone(s.portalWas), line: 'S1', path: 'trunk', axis: 'y 244, x -40 → 40', station: 'S1/crown-circus', openings: { ...(s.portalWas?.openings ?? {}), at: [-40, 40] },
+    why: 'the remake\'s portal moved with the drum to the old place: S1 runs east on y 244 through it. Not in signatures[].portal: P-1 (signature-checks.ts) and portalsOf (plan.ts) read a portal corridor on y 0 (Splice: read the portal\'s axis)' };
+  ours.formWhy = 'our remake (brief 007, Sky 2026-10-13): the SpaceHQ_Portal piece, 252 m, at the old place; S1 through its drum with Crown Circus station inside at the concourse';
+  // 'old': the old gold SpaceHQ as the old reel stood it (DecoKitStreetSkyline), the old builders' piece
+  const o: any = { id: s.id, name: 'SpaceHQ', kind: 'tower', role: 'dominant', form: 'old', areas: ['crown'], c: HQ_OLD.at, yaw: 'grand stair to the south (−y), facing Crown Circus through the arch down the Boulevard', yawDeg: 180, oldYaw: HQ_OLD.put.yaw,
+    base: s.base, ground: HQ_OLD.ground, kit: 'SpaceHQ', scale: HQ_OLD.scale, height: HQ_OLD.tip, size: HQ_OLD.size, spans: { plots: [], foot: [] }, oldPut: HQ_OLD.put,
+    standWhy: `the old SpaceHQ as the old reel stood it: DecoKitStreetSkyline Put("SpaceHQ", (0, 0, Z.y + 70 = 450), yaw 0, scale 1.35), plan (${HQ_OLD.at}); the kit SpaceHQ (${'80 × 252 × 88.8'}, pivotOffset z -4.4) × 1.35 = ${HQ_OLD.size.join(' × ')} m, tip ${HQ_OLD.tip}; it closes the Boulevard and Crown Avenue through the arch, between the gate towers`,
+    groundWhy: `the scaled kit box round the old pivot: x ${HQ_OLD.ground[0]}..${HQ_OLD.ground[1]}, y ${HQ_OLD.ground[2]} (the grand stair's foot, old z 384) to ${HQ_OLD.ground[3]}. No plot building stands on it; Crown Forecourt (open) runs from the north walls (y 144) to the stair foot`,
+    station: 'S1/crown-circus beside it, on S1\'s north leg (x -95), no beam through the HQ',
+    oldBuilder: 'the old DecoKit builders place the piece (DecoKitStreetSkyline.Landmarks), with its old gold (DecoKitColourways: DK_Gold #F2C14E, metallic 1, smoothness 0.45) and the showpiece probe (DecoKitStreetDemo: DecoKitShowpiece.Apply("SpaceHQ")). Our kit has SpaceHQ rejected, so the TS world carries it as a procedural signature to its tip (data only, nothing drawn from it)',
+    crownType: s.crownType, crownWhy: 'the old kit\'s own crown (the old reel\'s gold HQ); the other atom (crescent-tower) is not in the remap',
+    watchers: s.watchers, why: 'Sky\'s call between the forms (brief 075 remap step 2); the old reel\'s gold tower closing the Boulevard, the tallest thing in the district (standards.skyline.dominant)',
+    source: 'old DecoKit: DecoKitStreetSkyline.cs (Landmarks), DecoKitStreetLayout.cs (Z), the kit SpaceHQ (contracts/world/kit.json)' };
+  HQ_FORMS.old = o; HQ_FORMS.ours = ours;
+  signatures.push(clone(HQ_FORMS[HQ_FORM]));
+  manual(`SpaceHQ switch (plan.spacehq.form = ${HQ_FORM}; brief 075 remap step 2, Sky's call): 'old' = the old gold SpaceHQ, the kit SpaceHQ × 1.35 at the old place (plan (${HQ_OLD.at}), ground x ${HQ_OLD.ground[0]}..${HQ_OLD.ground[1]}, y ${HQ_OLD.ground[2]}..${HQ_OLD.ground[3]}, tip ${HQ_OLD.tip}, the dominant), S1's Crown Circus station beside it on x -95; 'ours' = the SpaceHQ_Portal remake (252 m, drum r 40 at (0, 244)) with S1 east on y 244 through the drum and the station inside. Both forms are in plan.spacehq.forms`); }
 { const s = byId(live.signatures, 'ocean-liner'); s.c = mv(s.c, linerDelta); s.ground = mvRect(s.ground, linerDelta); signatures.push(s); }
 const megastructures: any[] = [];
 { const m = byId(live.megastructures, 'crown-terraces'), r = plots.find(q => q.id === 'lantern-court').rect as number[];
@@ -456,16 +516,16 @@ plan.notes = {
     'The boulevard runs through to the Sea Gates (old Comet Row and Satellite Street on its axis); Southside east of it (Constellation N2, Orbit Square, Starline Green, SS1–SS4); the Lantern Quarter south of Market Street.',
     'West Row west of Sunset Way (the old procedural massing\'s place): an access street off Circus Road, lanes, old-grammar blocks; Western Park north of Circus Road to Crown Road.',
     'T1 tram: street running from the West End down Sunset Way and Market Street, up the boulevard to the circus, where it turns on the ring road (R 25). No overhead wires.',
-    'S1 sky rail on the circus axis from the West End (Western Park and Orbit Gardens stations), north past the Sphere; the old main loop is planned data (oldtown.skyrail).',
+    HQ_FORM === 'old' ? 'S1 sky rail on the circus axis from the West End (Western Park and Orbit Gardens stations), north past the Sphere with Crown Circus station beside the SpaceHQ; the old main loop is planned data (oldtown.skyrail).' : 'S1 sky rail on the circus axis from the West End (Western Park and Orbit Gardens stations), north past the Sphere and east through the SpaceHQ drum (Crown Circus station inside); the old main loop is planned data (oldtown.skyrail).',
     'S2 sky rail (Harbour Line) from the south over the water, Harbour station on the Market Pier\'s landing stage (the T1 interchange at Crown Circus), and a terminal loop round the Skyport Tower with the Skyport station on the Skyport apron: the old harbour line\'s sweep round the Skyport.',
-    'SpaceHQ closes the axis at the old place (0, 244), the gate towers either side of the forecourt, the Skylon, the Sphere, the Skyport on its caisson at the pier head, the liner at the Market Pier.',
+    `SpaceHQ closes the axis at the old place (0, 244) (plan.spacehq.form ${HQ_FORM}: ${HQ_FORM === 'old' ? 'the old gold HQ, 340 m' : 'the SpaceHQ_Portal remake, 252 m'}), the gate towers either side of the forecourt, the Skylon, the Sphere, the Skyport on its caisson at the pier head, the liner at the Market Pier.`,
   ],
   why: ['Sky 2026-10-28 (brief 075): "why can\'t we just remap the world around d handover using old buildings" and "And old props. So the sky trak and other things all planned properly but looking great".', ...MANUAL.slice(0, 0)],
   sources: [...(live.notes?.sources ?? []), `old DecoKit town: ${OLD_DIR} (DecoKitCityPlan, CityBlocks, Block, StreetLayout, Circus, Southside, Gardens, SkyRail, Harbour, StreetSkyline), read by tools/plan/oldtown/old.ts`],
 };
 // history and skyline notes recorded on the live plan after the remap's first transcription (kept here so the output is reproducible from the base)
-plan.version = '0.5.2';
-plan.notes.history = ["2026-10-29 (Datum, brief 075 review, Aster relaying Sky; version 0.5.2): (1) the old asphalt road back (Sky: overriding 'keep powdblue'): roads.finish.set asphalt, road-asphalt = the old DK_Asphalt_Road (Vela's port, #817B75, 16 m repeat), dashes 0.12 m, 2 m on 4 m off; the light ribbon kept on every class (GDD §14/§15), so SF-24 holds unchanged. (2) The Skyport reachable (Sky: 'we need the skytrak to get here'): S2 Harbour Line from the south edge over the water on x 117, Harbour station on the Market Pier's new landing stage (x 96..140, y -196..-106; T1/Crown Circus interchange 137 m), a terminal loop (R 40) round the Skyport Tower with the Skyport station on its west leg over the new Skyport apron (x 96..140, y ±30), 41 pylons in water and on the quays. (3) Every structure reachable (RCH-1 33/33): the Skyport apron runs 8 m onto the tower's caisson, the Market Pier 6 m onto the liner berth's. The Handover zone, its routes (M-1), escape walks (W-1) and V-1 unchanged; Pulse's journeys kept (T1 and S1 unchanged; S2's runs added, its journeys Pulse's). Notes: briefs/075/notes.md 'Remap: Skyport and reach'.", "2026-10-28 (Datum, brief 075 remap follow-up, Aster; version 0.5.1): no bare sand in the district outside water, parks and plazas. The first remap left the strip west of Sunset Way (x -460..-352) as the beyond hatch, which the world draws as bare ground. It is now West Row (area westrow): an access street on x -416 from Circus Road (gate west-row-gate) to the south plot line, 8 m lanes opposite the seams of Sunset Way's east-side plots and at equal spans of at most 140 m, ten plots fitted as old-grammar blocks (28 m solid on the sheet-edge side, 46 m open-court on Sunset Way, the corner block on Circus Road), Western Park run on north to Crown Road; westend and sphere areas start at Sunset Way's west kerb; the beyond hatch keeps only the sheet's slivers. Rule-based in tools/plan/oldtown/transcribe.ts (WR); the Handover zone, its streets, plots, gates, routes and site are unchanged", "2026-10-28 (Datum, brief 075 remap, Aster; input edit, version kept at 0.5.0): the gate towers back to the old reel: landmarks disc-west / disc-east top 108 → 156.6, scale 0.69 → 1 (the kit DiscTower as built, tip 156.8; at 108 the fit fell under tags.scale 0.9 and the world drew procedural cylinders). New standards.skyline.harbour.exceptions (the pair, tip 156.8) and exceptionsWhy, as standards.skyline.vista was done: SK-1 to read it (Splice; the one-line read is in signature-checks.ts); bends GDD §10's harbour line for this pair (next GDD version, Aster). The Crown Avenue arch's text (landmarks[disc-west].gateway piece, whyNot38, siteWhy, keep) restated for its site at (0, 44) from Splice's measure (frontage zone |x| 13.5–18 at y 41–47, the old walls behind the plinths); oldtown.manual's arch and gate tower lines updated (the duplicate gate line dropped). No road, plot, line, stop or Handover geometry changed", ...(live.notes?.history ?? [])];
+plan.version = '0.5.3'; plan.date = '2026-10-29';
+plan.notes.history = ["2026-10-29 (Datum, brief 075 remap step 2, Aster; version 0.5.3): the SpaceHQ switch, plan.spacehq.form (Sky's call; default 'old'). 'old': the old gold SpaceHQ as the old reel stood it (DecoKitStreetSkyline: the kit SpaceHQ × 1.35 at old (0, 450)), ground x -54..54, y 178.12..298, tip 340.2 = standards.skyline.dominant (rivalMax 200 kept; SK-1 exempts the dominant from the harbour band, so no exception), Crown Forecourt to the grand stair's foot (y 178.12), and S1's third station, Crown Circus, on its north leg beside it (x -95, y 238; banks, stairs and lifts on Sphere Park). 'ours': the SpaceHQ_Portal remake (252) at (0, 244) with S1 east on y 244 through its drum and the station inside. Both forms in plan.spacehq.forms; tools/plan/oldtown/transcribe.ts writes the chosen one. Handover zone untouched; Pulse's journeys kept (no journey rides the new run). Notes: briefs/075/notes.md 'SpaceHQ switch'.", "2026-10-29 (Datum, brief 075 review, Aster relaying Sky; version 0.5.2): (1) the old asphalt road back (Sky: overriding 'keep powdblue'): roads.finish.set asphalt, road-asphalt = the old DK_Asphalt_Road (Vela's port, #817B75, 16 m repeat), dashes 0.12 m, 2 m on 4 m off; the light ribbon kept on every class (GDD §14/§15), so SF-24 holds unchanged. (2) The Skyport reachable (Sky: 'we need the skytrak to get here'): S2 Harbour Line from the south edge over the water on x 117, Harbour station on the Market Pier's new landing stage (x 96..140, y -196..-106; T1/Crown Circus interchange 137 m), a terminal loop (R 40) round the Skyport Tower with the Skyport station on its west leg over the new Skyport apron (x 96..140, y ±30), 41 pylons in water and on the quays. (3) Every structure reachable (RCH-1 33/33): the Skyport apron runs 8 m onto the tower's caisson, the Market Pier 6 m onto the liner berth's. The Handover zone, its routes (M-1), escape walks (W-1) and V-1 unchanged; Pulse's journeys kept (T1 and S1 unchanged; S2's runs added, its journeys Pulse's). Notes: briefs/075/notes.md 'Remap: Skyport and reach'.", "2026-10-28 (Datum, brief 075 remap follow-up, Aster; version 0.5.1): no bare sand in the district outside water, parks and plazas. The first remap left the strip west of Sunset Way (x -460..-352) as the beyond hatch, which the world draws as bare ground. It is now West Row (area westrow): an access street on x -416 from Circus Road (gate west-row-gate) to the south plot line, 8 m lanes opposite the seams of Sunset Way's east-side plots and at equal spans of at most 140 m, ten plots fitted as old-grammar blocks (28 m solid on the sheet-edge side, 46 m open-court on Sunset Way, the corner block on Circus Road), Western Park run on north to Crown Road; westend and sphere areas start at Sunset Way's west kerb; the beyond hatch keeps only the sheet's slivers. Rule-based in tools/plan/oldtown/transcribe.ts (WR); the Handover zone, its streets, plots, gates, routes and site are unchanged", "2026-10-28 (Datum, brief 075 remap, Aster; input edit, version kept at 0.5.0): the gate towers back to the old reel: landmarks disc-west / disc-east top 108 → 156.6, scale 0.69 → 1 (the kit DiscTower as built, tip 156.8; at 108 the fit fell under tags.scale 0.9 and the world drew procedural cylinders). New standards.skyline.harbour.exceptions (the pair, tip 156.8) and exceptionsWhy, as standards.skyline.vista was done: SK-1 to read it (Splice; the one-line read is in signature-checks.ts); bends GDD §10's harbour line for this pair (next GDD version, Aster). The Crown Avenue arch's text (landmarks[disc-west].gateway piece, whyNot38, siteWhy, keep) restated for its site at (0, 44) from Splice's measure (frontage zone |x| 13.5–18 at y 41–47, the old walls behind the plinths); oldtown.manual's arch and gate tower lines updated (the duplicate gate line dropped). No road, plot, line, stop or Handover geometry changed", ...(live.notes?.history ?? [])];
 { const t = plan.standards.skyline.tiers as string[]; if (!t.some(x => x.startsWith('gate pair'))) t.splice(3, 0, "gate pair 156.8: disc-west / disc-east (landmarks, the kit DiscTower × 1.0 either side of Crown Avenue at (±44, 166); standards.skyline.harbour.exceptions)"); }
 // standards that name today's roads, plots and lines
 const st = plan.standards;
@@ -506,6 +566,23 @@ manual('The Crown Vista tower (250 m, standards.skyline.vista) goes: the old axi
 st.skyline.harbour.why = "the Skyport Tower stays the harbour's icon (brief 007 Fixed): nothing standing within 150 m of the quay edge (SK-1 takes the quay's westmost point, x 46 in the remap) tops 108, save the exceptions below";
 st.skyline.harbour.exceptions = [{ id: 'disc-west', tip: 156.8 }, { id: 'disc-east', tip: 156.8 }];
 st.skyline.harbour.exceptionsWhy = "brief 075 remap (Aster, under Sky's scope: only the Handover is protected): the Crown Avenue gate towers stand as the old reel stood them, the kit DiscTower × 1.0 (156.6 on the 0.2 landmark base, tip 156.8), not a × 0.69 stand-in the fit rejects (tags.scale 0.9–1.1). In the remap the quay runs to x 46, so the 150 m band reaches x −104 and takes the whole axis; the pair stands inland of the harbour front at (±44, 166), under rivalMax 200 and under the dominant. Scoped to these two landmarks only; every other tip within the band keeps 108. Bends GDD §10's harbour line for this pair: the note goes in the next GDD version (Aster)";
+// the dominant follows the SpaceHQ switch: 340.2 for the old gold HQ, 252 for the remake. rivalMax stays 200 (under 0.8 × either); SK-1 exempts the dominant from the
+// harbour band, so the old HQ needs no exception there
+const DOM = {
+  old: { id: 'space-hq', tip: HQ_OLD.tip, why: `the old gold SpaceHQ as the old reel stood it (the kit SpaceHQ × 1.35, ${HQ_OLD.tip} m; brief 075 remap step 2, plan.spacehq.form 'old'): the tallest thing in the district; every other tip stays under rivalMax` },
+  ours: clone(st.skyline.dominant),
+};
+st.skyline.dominant = clone(DOM[HQ_FORM]);
+{ const t = st.skyline.tiers as string[], i = t.findIndex(x => x.startsWith('dominant')); if (i >= 0) t[i] = HQ_FORM === 'old' ? `dominant ${HQ_OLD.tip}: space-hq (signatures; the old gold SpaceHQ, the kit × 1.35, plan.spacehq.form 'old')` : t[i]!; }
+plan.spacehq = {
+  form: HQ_FORM,
+  setting: 'the one switch: set form to "old" or "ours" and run bun tools/plan/oldtown/transcribe.ts --out contracts/world/harbour-district.plan.json (or pass --spacehq old|ours); it writes the chosen form into signatures[space-hq], skyrail S1, the Crown Forecourt plot and standards.skyline.dominant, and keeps both here',
+  why: 'brief 075 remap step 2 (Aster): the SpaceHQ form is Sky\'s call; "old" is the default until Sky picks',
+  forms: {
+    old: { what: 'the old gold SpaceHQ (the old reel\'s tower closing the Boulevard), placed by the old builders; S1 Crown Circus station beside it', signature: HQ_FORMS.old, skyrail: S1_OLD, forecourt: [W0, E1, north + 4, HQ_OLD.ground[2]], dominant: DOM.old },
+    ours: { what: 'our SpaceHQ_Portal remake at the old place with S1 through its drum and Crown Circus station inside', signature: HQ_FORMS.ours, skyrail: S1_OURS, forecourt: [W0, E1, north + 4, HQ_OURS_SOUTH], dominant: DOM.ours },
+  },
+};
 { const mx = st.frontage.mix; st.frontage.mix = { records: mx.records, lamplight: mx.lamplight, boulevard: mx.crescent, crown: mx.records, southside: mx.gardens, westrow: mx.gardens, westend: mx.gardens, gardens: mx.lamplight, lantern: mx.lantern, harbour: mx.harbour };
   manual('Frontage mixes for the new areas from today\'s: the Boulevard takes the Crescent Quarter\'s, Crown Circus the Records Precinct\'s, Southside, West Row (Southside\'s spirit, brief 075 follow-up) and the West Terraces Sphere Gardens\' (their faces on squares and greens), the garden terrace Lamplight\'s, the Lantern Quarter and the harbour keep theirs'); }
 if (st.buildings.caps) st.buildings.caps = { records: st.buildings.caps.records, lamplight: st.buildings.caps.lamplight };
@@ -645,9 +722,13 @@ plan.oldtown = {
 
 // Pulse's part of the timetable (journeys, open questions, notes; bun run life:journeys) is kept from the plan already at --out when the regenerated lines are the same
 // lines (same runs, speeds, headways and dwells), so a re-run of this transcription never wipes it; a change to the lines clears the journeys for Pulse, as above.
-{ const prev: any = existsSync(resolve(ROOT, OUT)) ? JSON.parse(readFileSync(resolve(ROOT, OUT), 'utf8')) : null;
-  const same = (a: any[], b: any[]) => a.every(x => b.some(y => JSON.stringify(x) === JSON.stringify(y)));
-  if (prev?.timetable && same(prev.timetable.lines, plan.timetable.lines)) { // every line the journeys were set on is unchanged (a line may be added: brief 075's S2)
+{ const prev: any = PREV;
+  // Pulse's journeys stand while every line they ride is the same: the same speed, headway and dwell, and every run between two stops the journeys name still run as
+  // it was. A line may gain a station or a run (brief 075's S2; S1's Crown Circus, whose run differs between the SpaceHQ forms and is named by no journey yet)
+  const key = (l: any) => JSON.stringify([l.line, l.headwaySec, l.dwellSec, l.speed]);
+  const named = new Set<string>((prev?.timetable?.journeys ?? []).flatMap((j: any) => [j.from, j.to, ...(j.via ?? [])]));
+  const kept = (a: any) => plan.timetable.lines.some((b: any) => key(a) === key(b) && a.runs.filter((r: any) => named.has(r.from) && named.has(r.to)).every((r: any) => b.runs.some((q: any) => JSON.stringify(q) === JSON.stringify(r))));
+  if (prev?.timetable && prev.timetable.lines.every(kept)) {
     for (const k of ['journeys', 'openQuestions', 'notes']) if (prev.timetable[k] !== undefined) plan.timetable[k] = prev.timetable[k]; }
   else if (prev?.timetable) console.log(`timetable: the lines changed from ${OUT}'s; journeys cleared for Pulse`); }
 

@@ -821,3 +821,186 @@ Proposal of the material keys, from the old Editor/DecoKit/DecoKitColourways.cs 
 
 - **The old assignment, for Splice** (DecoKitColourways.Of / HighStreet): by position: the circus crescents → circus; walls facing the harbour → harbour; Southside → southside; the garden walls → gardens; everything else (the boulevard's two walls and returns) → boulevard. Then the high street: walking each boulevard run in order, a rendered building (not mostly DecoBay_ / DecoCorner_ / DecoEnd_ / Hall / CornerTower_ pieces) is painted when the one before it is not, the Soft palette running on in order from wall to wall; every other building stays its ensemble. So street neighbours share a key by design: CW-1's "no two neighbours alike" has to go (yours).
 - **Livery** (unchanged keys `vermilion`, `brick`, `gold`); the old `CityMass` rule also painted the massing's teal slot (slot 4) coral #C8553D under `livery`: for whoever owns the procedural masses (Splice/Latch), it is not a kit material.
+
+- Files I touch (old palette): tools/decokit/colourways.py (rewritten: the old scheme), mats.py (glass glaze, no neutral sheet), sides.py (DK_Window_Film), livery.py (gold finish), carpaint.py (old reel's paints), review075_palette.py (new, renders), contracts/world/kit.schema.ts (colourway and paint types), tools/kit/kit.test.ts (the three tests), unity/.../facade.json, look.json, looks/harbour.json, contracts/style/suborned.style.json (v0.24.0). Not tools/world.
+- 01:53 Vela old palette: Blender -b review075_palette.py before (renders only, from the snapshot out/scratch/vela/palette/before; not a decokit run)
+- 01:53 START Vela old palette: bun run guard bun run decokit --mats-only (colourways = the old scheme, livery gold finish, old car paints, glass)
+- 01:54 END   Vela old palette decokit --mats-only (287 materials; colourways 33, 32 matched to the old Paint .mats at delta 0; exit 1 only from the fit table's stale tower / SpaceHQ_Portal orders, as before)
+- 01:54 Vela old palette: bun run guard bun run kit
+- 01:54 Vela old palette: Blender -b review075_palette.py after (renders only, reads out/decokit; not a decokit run)
+- 01:56 START Vela old palette: bun run guard bun run decokit --only Sedan_Getaway,Sedan_Official (their car enamel rows follow DK_Accent_Coral, now look.json's pre-072 coral #FC9C84; a --mats-only run keeps their table rows)
+- 01:57 END   Vela old palette decokit --only Sedan_Getaway,Sedan_Official (2 assets; exit 1 only from the fit table's stale tower / SpaceHQ_Portal orders)
+- 01:57 Vela old palette: bun run guard bun run kit (again, the two sedans)
+- 01:57 Vela old palette: bun run collide --only Sedan_Getaway,Sedan_Official (Blender measure of the 2 rebuilt sedans; not a decokit run)
+
+## Old palette (Vela, brief 075, 2026-10-29) · parity/READY-palette-vela
+Sky: "our red is too red - we changed it when not much in the game, but now it needs to go back to old town." Sources (read only): the old Editor/DecoKit/DecoKitColourways.cs (scheme `plan+livery+soft`, DecoKitStreetDemo.Colour), its output Art/DecoKit/Generated/Paint/*.mat, the old Art/DecoKit/Materials/DK_*.mat, DecoKitCitizens.cs (cars) and the RFM car glTFs. Every new colourway and livery .mat was compared with the old Paint .mat of the same base and hex: 32 of 33 colourway .mats and all 3 livery .mats match the old `_BaseColor` at delta 0. The one without an old Paint .mat is DK_Render_White__circus, an untextured base, so its colour is the hex itself.
+
+**Kit materials (tools/decokit/mats.py, sides.py).** I diffed every generated .mat against the old DK_*.mat. The enamels (DK_Enamel_*), the stone (DK_Limestone, DK_Stone_Dark) and the tiles were already the old values. Only these differed:
+
+| material | was (ours) | now (old) | source |
+|---|---|---|---|
+| DK_Limestone_Tex | neutral sheet wall_panel_neutral_v1 x tint #EBDCC6 (074-B) | the old .mat: facade_panel_v1, white tint | old Materials/DK_Limestone_Tex.mat (the neutral sheet is deleted) |
+| DK_GlassDark film glaze | #3F7A8E (072-G) | #35585A | old DK_GlassDark.mat. The film shader and alpha 0.65 stay (048) |
+| DK_Window_Film (the opaque windows on every-face pieces) | #4F6B6B (072 estimate) | #35585A | the old glass colour; the old reel's ribbons sample #2A3229-#333328 |
+| DK_Accent_Coral / DK_CarEnamel_Coral (look accent_coral) | #F28A70 (072-G) | #FC9C84 | look.json before 072-G. The getaway sedan's body follows it |
+| DK_Accent_Peach (look accent_peach) | #F8B898 (072-G) | #FCC4AC | look.json before 072-G |
+
+**Livery (tools/decokit/livery.py)**, each compared with the old Paint .mat:
+
+| key | base | was | now | old Paint .mat |
+|---|---|---|---|---|
+| brick (SphereStation hull) | DK_Hull_Ivory | #9C2E2B, tinted over hull_panels_v1 (already exact) | unchanged, delta 0 | DK_Hull_Ivory_9C2E2B |
+| vermilion (lattices on Landmarks, Skyport, Sky) | DK_Steel_Ivory | #B8432E (already exact) | unchanged, delta 0 | DK_Steel_Ivory_B8432E |
+| gold (SpaceHQ_Portal, DiscTower@crown-vista) | DK_Crown_Gold | #F2C14E, metallic 1, smoothness 0.7 | #F2C14E, **metallic 1, smoothness 0.45** | DK_Gold_F2C14E_m100s45 |
+
+The sphere's material is the old one, byte for byte apart from the name: compare `diff` of DK_Hull_Ivory__brick.mat with the old Paint .mat. The same hull texture is in both, same sha. The saturated red in grid-s6 therefore comes from light, not paint: the old sphere sat behind the old haze/fog, the old grade and 17 baked reflection probes. Ours is smoothness 1 (with a gloss map) in clear air and reflects the bright sky. That is Glint's haze item (Sky's no. 2). In the Blender crop (neutral light) the sphere reads brick.
+
+**Colourways (tools/decokit/colourways.py)**: the 12 families, 074-H's wall softening (0.35 toward cream), the neutral sheet and the old* families are all gone. They are replaced by the old scheme, as agreed with Splice above:
+
+| ours (removed) | replaced by (old) | wall | fascia DK_Enamel_Teal | sills DK_Enamel_Seafoam | trim DK_Enamel_Ivory | old source |
+|---|---|---|---|---|---|---|
+| cream #EBDABA, ivory #EFE8D6, sand #DDBE8A, peach #F2C4A4 (records, lamplight areas) | boulevard | kit limestone (mean #E6D7C1) | #C8553D | kit #72B5A7 | kit | Boulevard |
+| mint #C8E8C6, sky #9CCDEE, lilac #D8C8EC (crescent) | circus | #EBDCB5 | #1F6C67 | #C8553D | kit | Circus |
+| powder #CCDCF0, seagreen #9AD2C6 (docks, harbour) | harbour | #E2E8E0 | #1F7F7A | #1F7F7A | kit | Harbour |
+| (gardens' mint, sky, butter) | gardens | #E8D6C4 | #B9653F | #8FA88A | kit | Gardens |
+| butter #F7E38C, apricot #F9B977, blush #F4C3C8 (lantern) | southside | #EEE3C9 | #D9962B | #2F7E86 | kit | Southside |
+| oldapricot | soft-apricot | #E8B793 | #C8553D | kit | #ECD1B8 | Soft[0], Lighter |
+| oldceladon | soft-celadon | #B7CDB4 | #C8553D | kit | #D5DBC6 | Soft[1] |
+| oldrose | soft-rose | #DDA596 | #C8553D | kit | #E6CABA | Soft[2] |
+| oldochre | soft-ochre | #E2C07A | #C8553D | kit | #E9D5B0 | Soft[3] |
+
+- The 074 slots plinth (DK_Stone_Dark) and the walls are dropped. The fascia and the sills are back as slots, as the old rule had them.
+- The old* additions only painted wall and trim, so they never had the boulevard's coral fascia; the soft-* keys now carry it.
+- Each textured wall is tinted the old way: linear hex over the linear mean of facade_panel_v1, every 7th texel.
+
+**Car paints (tools/decokit/carpaint.py)**: the old reel's colours, exactly. The old DecoKitCitizens kept every body the glTFs' "polished warm ivory" and painted the accent panels in one of eight enamels:
+
+| was (11 two-tones) | now (8 keys: body DK_CarPaint_Ivory #F9F0D7, roof = the enamel) |
+|---|---|
+| tropical-turquoise #3FA9A5, larkspur-blue #7FA7D3, dusk-pink #E8A3AE, seafoam-green #9CCFB4, canary-yellow #F0CF6A, orchid #B5A2D4, matador-red #B3262C, harbor-blue #2D57A3, tangerine #E0773A, onyx #24272B (all over cream #F2E8CF), cream-turquoise | ivory-turquoise #0A6D82, ivory-tomato #E25E47, ivory-canary #E7B84C, ivory-seafoam #78C4A2, ivory-cherry #B53A31, ivory-sky #5F9FC6, ivory-navy #27406A, ivory-green #2F7D5C |
+
+The roof slot on the sedan is the hardtop, the posts and the flank flash. Pulse: `carPaints.keys` now has 8 keys, all named `ivory-*`.
+
+**Procedural parts (facade.json, look files, style contract v0.24.0).**
+- facade.json:
+  - `families` are the nine keys above plus `civic`.
+  - Swatches are `<key>_w` (wall), `_p` (fascia: the procedural plinth / ground band), `_s` (sills) and `_r` (roof, the old Lighter of the wall).
+  - Each area draws its ensemble, and its enamel pair is that ensemble's fascia + sills.
+  - glass_clear #2C6478 → #2E6D70 (= the kit window DK_Window_Teal), glass_dark #233F50 → #24484A, glass_t #A7CAD8 → #A9CFC8.
+  - civic_w #EDE5D2 → #EEE9DA, civic enamel back to seafoam + pale seafoam.
+  - Trades back to their colours before 072-G: diner #E8553A → #F58468, record #C42A1F → #F09A8A, cinema #A8322B → #D8B4E0, travel #2C56A6 → #4AA3E8, garage #3D72C8 → #8FA5C8, radio #F07A28 → #5F8FD0, launderette #3FA7D6 → #9FD1C9, chandler #1E8C6E → #5A8FA8.
+  - The whole file as it was is in out/scratch/vela/palette/before/facade.json.
+- look.json and looks/harbour.json: the values 072-G changed are back to their earlier values:
+  - limestone #F0E3CA → #F8EED9, civic #F7DFA8 → #FBE8B8, residential #F3E3C6 → #F8EEDB, mixed #F7EAD2 → #FDF5E4, frontage #F0E0C3 → #F6ECD8, roof #F6EBD6 → #FFF6E6, commercial #F5D3B5 → #F9E2CC;
+  - accent_coral #F28A70 → #FC9C84, accent_peach #F8B898 → #FCC4AC.
+  - Kept: trim / accent_gold brass-gold #C29A55 (nearer the old DK_Gold #D6AE62 than 072-G's former #99784D) and the 075-B road and pavement values.
+- Style contract v0.24.0:
+  - palette_world roles go back to the same earlier values, and its rule now describes the old ensembles, glass and livery.
+  - The eight accent roles added in 072 (red, royal, cobalt, tangerine, plum, cerulean, jade, lime) move to `retired_roles`.
+  - The city prompt and materials lines go back to v0.21.0.
+  - The source sha is re-recorded.
+
+**For Splice:** tools/world/gen/colour.ts ACCENT_ROLES and the fin and flag role lists still pick 072's accent_red, royal, tangerine, plum, cerulean, jade, lime and cobalt (look.json still holds those keys so nothing breaks). Drop them to finish the procedural side: the old town's accents were the ensembles' fascia and sills. Also the old CityMass coral #C8553D on the massing's teal slot (your note).
+
+**For Aster, GDD §15 rows to update in the next version** (agent GDD lines 501-509, the `city:` line 484 and `materials:` line 511):
+- `city:` drop "pale blush and powder-blue renders" and the long accent list; buildings: mostly cream stone, colour by ensemble on the horizontal lines (the old DecoKitColourways scheme), dark glass ribbons, landmark livery vermilion / brick / gold.
+- `palette` base row: limestone #f8eed9, residential #f8eedb, mixed #fdf5e4, civic #fbe8b8, commercial #f9e2cc, frontage #f6ecd8, roof #fff6e6.
+- Accents row: coral #fc9c84; drop royal, enamel red and "reds and blues are welcome".
+- `facade accent roles` row (weights reds 36, blues 30, teal 24): replace with the five ensembles and the Soft palette as tabled above.
+- `materials:` back to v0.21.0 (honed cream and peach limestone; enamel cobalt, flamingo, sunshine, mint, turquoise).
+- The brass-gold row stays.
+- Add: car traffic = ivory bodies with one of the eight old enamels.
+
+**Evidence:**
+- Blender crops in briefs/075/parity/palette/: sphere, run and cars, each `_before` / `_after`, plus compare.png and log_*.json.
+- Render command: `Blender -b -P tools/decokit/review075_palette.py -- briefs/075/parity/palette <before|after> <mats root> 800`. The before pass reads the snapshot out/scratch/vela/palette/before (taken before the change).
+
+## Old palette: assignment (Splice, brief 075, 2026-10-29) · for Vela, Latch, Aster
+- Vela's keys agreed as written (`boulevard` `circus` `harbour` `gardens` `southside`, `soft-apricot` `soft-celadon` `soft-rose` `soft-ochre`; `civic`/`base` keep the kit; slots wall / fascia / sills / trim as her table). No other names wanted.
+- Why I'm touching it despite the STOP: facade.json now carries only these families, so the TS generator crashed (`wallOf` on the gone `oldapricot`, and the 074 neighbour repair) and every world test died. Minimal change only, to keep the tree passing until the old builders land: each building takes its area's ensemble (facade.json `areas`, one family each, as Vela set them: records/lamplight boulevard, lantern southside, docks/harbour harbour, crescent circus, gardens gardens); the old HighStreet walk on the old-street roads paints the Soft palette on alternate buildings (unpainted ones keep their ensemble, no more `cream`); the 074 neighbour repair and the cross-street palette step are gone. CW-1 reworked: one colourway per building on all masses and pieces, its area's ensemble or the high street's Soft paint where the walk put it, and no two painted buildings side by side (old rule); "no two neighbours alike" is dropped (neighbours share an ensemble by design).
+- Files: tools/world/gen/colourways.ts, tools/world/gen/oldstreet.ts (palette names, no `plain`), tools/world/rules/colourways.ts + colourways.test.ts, oldstreet.test.ts (re-pins). Not facade.json, not tools/decokit.
+- Not done (old builders' job, or Latch): the old CityMass coral on the massing's teal slot; the Office/zone keep whatever their area gives (the Handover zone's plots are in `lamplight`/`records`: boulevard).
+
+## Uncommitted superseded edits (Aster, 2026-10-29)
+The TS palette/colourway work (Vela "Old palette", Splice colourways/ground storey) left edits in contracts/style/suborned.style.json, kit.json/kit.collide.json/kit.schema.ts, tools/decokit/{carpaint,colourways,livery,mats,run,sides,unity_mats}.py, tools/world/gen/{colourways,oldblocks,oldstreet}.ts, tools/world/rules/colourways.*, facade.json, look.json, looks/harbour.json. They are NOT committed (superseded by the old builders) and must not be committed with the swap. Anyone building the Handover zone from our pipeline: build from HEAD's versions of these files (git show HEAD:<path>), not the working tree, until Aster resolves them. The overlap rule (tools/world/rules/overlap.*) is still wanted.
+- 02:03 START Glint 075 bloom 0.48 vs 1.0 + reel banding: bun run guard Unity -batchmode Glint075 -mode golden (in memory, nothing saved)
+
+## Reel banding (Glint, brief 075, 2026-10-29) · for Latch
+- Cause confirmed: the 2x frame's four 8-bit samples each carry the camera's dither, so their lanczos average holds the sky between 8-bit steps, but ReviewVideo.Scale went rgb24 → 8-bit YUV in one swscale step, and swscale never dithers from an 8-bit source: the average was rounded straight back into bands.
+- Fix (one method, review path only): `ReviewVideo.Scale` is now two steps: lanczos down into rgb48le, then the BT.709 8-bit conversion from that 16-bit source, where swscale dithers (ordered). Nothing else changed: same capture (8-bit, ss 2), same args, Flyby/Flyby074 pick it up through `Args`. At ss 1 (Flyby.cs) the first step is a plain format change. Compiled in my batch run (no CS errors).
+- Evidence (golden boulevard t10, 2x, Capture): briefs/075/parity/reelband/sky-before-after-contrast6-x3.png (100% sky crop, contrast x6, shown x3), reelband.json; script out/scratch/glint/reelband/reelband.py. Low-frequency banding (luma levels rms on 8x8 means minus the sky's own gradient): pre-encode 0.264 → 0.117; share CRF 14 420 0.298 → 0.210; master 444 CRF 8 0.282 → 0.139.
+- Your call: the share copy at CRF 14 keeps patches of the dither but flattens some macroblocks (visible in the crop). CRF 10 gives 0.160 for +40 % size (459 → 640 KB a frame on this still); the master is already clean.
+- 02:05 DONE Glint 075 reel banding + bloom 0.48 vs 1.0 (briefs/075/parity/haze/bloom-048-vs-100.png, in memory, nothing shipped)
+
+## No intersections: OV-1 (Splice, brief 075, 2026-10-29) · parity/READY-splice
+- New world rule OV-1 (tools/world/rules/overlap.ts): no building mass, facade-piece volume or eyebrow inside another building's mass or piece. Enforced from plan 0.5.2; pinned older plans WAIVE. The Handover's protected buildings among themselves are counted, not failed (79 faults, today's grammar's corner piers; ZK-1 keeps them).
+- Outside the Handover: 146 faults between 60 building pairs -> 0. Every one was a StreamEnd rounding toward a lower neighbour: its eyebrows wrap 1.6 m past the bay at every floor, into the neighbour's wall (east-wall-s/2 into /3 is Sky's curved end in the Skyport view). Fix: oldblocks.ts OLD_BLOCK.intoWalls = false (an end rounds only into open ground or at a plan end cap).
+- For the old-builder swap (Aster, Latch): the old DecoKitFrontage.Bays has the same rule, so the old-built town will show the same clash; change it there and run OV-1 on that export.
+- Latch: rebuild picks up the square joins (the ends at 4-storey corners become plain bays) and the old palette families.
+
+## Plan match (Splice, brief 075 remap step 2, 2026-10-29) · for Latch · oldbuild/READY-match-splice
+Proposed schema for Latch's export, `briefs/075/oldbuild/built.json`: **`suborned.oldbuilt/1`**, the type is `contracts/world/oldbuilt.schema.ts` (read its header), a trimmed example is `briefs/075/oldbuild/built.example.json`, and a full one (our own world in this format, which matches itself with 0 mismatches) comes from `bun run oldbuild:match --example` → `out/oldbuild/built.self.json`. Latch: say here if a field can't be had from the scene; otherwise this is the contract.
+- **Frame**: plan frame (x east, y north, m) after `frame.offset`: plan (x, y) = (unity.x + offset[0], unity.z + offset[1]). Old DecoKit coordinates: `[0, -206]`; a scene already in our frame: `[0, 0]`. Heights are Unity y. Round to 1 mm.
+- **What**: the whole composited scene, the Handover zone included (our civic block as the swap keeps it), so the check proves the cut-out is clean.
+- `levels[]` {id, z, walk}: street 0/0.18, deck 9.43, concourse 24 (must equal plan standards.levels.list exactly).
+- `buildings[]` {id, building?, ring, base, height, kind, origin old|ours, storeys?, piece?}: one per footprint at the foot (ground storey with plinth; no canopies or eyebrows); wings of one building repeat `building`. kind ∈ domestic, commercial, flagship, landmark, civic, megastructure, signature, station, other.
+- `entrances[]` {id, building, at, z, normal?, w?, kind?}: each usable door's centre on the wall line, z = the floor it opens onto.
+- `roads[]` {id, line, width, level}: centreline (a vertex every ≤ 2 m on curves), kerb-to-kerb width. `circuses[]` {id, centre, radius, islandRadius, level}. `kerbs[]` {id, line, top, road?} optional (the kerb face as built, returns included).
+- `pavements[]` {id, ring, top}: raised walking surfaces at their top (not lawns or water). `decks[]` {id, ring, z, level}: our walkways at deck/concourse.
+- **The check**: `bun run oldbuild:match` (tools/world/oldmatch; tests match.test.ts, a failing example each). Tolerances: footprints 0.5 m (outline of the union of footprints, both ways; a gap under 0.5 m between neighbours is a touch), kerbs and pavement edges 0.5 m (kerbs derived from roads and circuses on both sides; pavement edge = the outline of pavement ∪ footprints), entrances 1 m at the same level, levels, deck and pavement tops exact (1 mm). Every mismatch listed in `briefs/075/oldbuild/match.json`; any mismatch or OV-1 fault exits 1. Inside the Handover zone (standards.blocks.zone) a mismatch is a hard failure, never patched; outside it the old-built world wins, so `briefs/075/oldbuild/plan-patch.json` (`suborned.plan-patch/1`) proposes ops for Datum (block/plot rects, new plots, road reviews with the built width and centreline, door reviews per block), plus `builderFixes` for Latch (levels, decks, pavement tops: our network, kept as planned). The plan is never edited by the check.
+- **OV-1** also runs on the old-built footprints (landmarks left out, as OV-1 leaves them out of our world: a landmark's ring is its reserve).
+- Heights are reported (`heights.byKind`, tall > 17 m vs low), not compared: they are Sky's flagship/domestic rule, not mission maths.
+- Overlap rule: OV-1 (tools/world/rules/overlap.ts + overlap.test.ts) is finished and registered; `bun run plan`: OV-1 PASS, 0 faults outside the Handover (79 among the zone's protected buildings, reported). The frontage fix that goes with it is `OLD_BLOCK.intoWalls` (off) in tools/world/gen/oldblocks.ts: that file's working-tree diff is only this OV-1 fix, not palette work, and should be committed with overlap.* (Aster).
+
+## SpaceHQ switch (Datum, brief 075 remap step 2, 2026-10-29) · oldbuild/READY-spacehq-datum
+The setting is `plan.spacehq.form`, `"old"` (the default) or `"ours"`. To flip it, run `bun tools/plan/oldtown/transcribe.ts --spacehq ours|old --out <plan>`; without the flag it keeps the form already in `--out`. It writes the chosen form into `signatures[space-hq]`, `skyrail[0]` (S1), Crown Walk (`foot`), the Sphere Park and Crown Forecourt plots and `standards.skyline.dominant`. Both forms are kept in full in `plan.spacehq.forms.{old,ours}` (signature, S1, forecourt, dominant). The old → ours → old round trip comes back byte for byte, and Pulse's 8 journeys are kept in both forms.
+
+**Where it is:** draft `contracts/world/harbour-district.oldtown.plan.json` (v0.5.3, form old). This is the transcribe default and reproduces byte for byte. **The live `harbour-district.plan.json` is still 0.5.2 (unchanged, exit 0)**, because the old form fails one world rule, NP-1 (see Blocker). Once that is cleared, the swap is `cp contracts/world/harbour-district.oldtown.plan.json contracts/world/harbour-district.plan.json`.
+
+**"old" (default): what Latch builds**
+- The old gold SpaceHQ, placed by the old builders exactly as the old reel had it: `DecoKitStreetSkyline.Landmarks`, `Put("SpaceHQ", (0, 0, 450), yaw 0, scale 1.35)`, with DK_Gold #F2C14E m1 s0.45 and the showpiece probe.
+  - Plan centre (0, 244).
+  - Ground (the kit box 80 × 252 × 88.8, pivotOffset z -4.4, × 1.35): x -54..54, y 178.12..298. The grand stair's foot is at y 178.1 (old z 384), facing the circus.
+  - Tip 340.2 = `standards.skyline.dominant` (SK-1 passes; rivalMax 200 kept). No exception is needed: the dominant is exempt from the harbour band.
+  - No beam goes through it.
+- Crown Forecourt (open) runs from y 144 to 178.12, ending at the stair foot.
+- **S1 Crown Circus station** (`S1/crown-circus`) sits beside the HQ on S1's north leg: line x -95, station at (-95, 238), platforms y 213..263, north–south, `SkyRailStation_Twin`.
+  - S1 is now 3 stations: Western Park, Orbit Gardens, Crown Circus. Spacing 204 and 304 m.
+  - Banks as the checker's world lays them (L-1, L-5, SF-9, SF-12 and SF-13 pass):
+
+  | side | stair tower (to 27.6) | run A (to deck 9.43) | run B (to concourse 24) | lift (to 24) |
+  |---|---|---|---|---|
+  | west (l) | x -109.7..-102.7, y 244..253.6 | x -104.9..-102.7, y 257..278 | x -109.3..-107.1, y 253.6..283.8 | x -112.3..-109.9, y 244..246.4 |
+  | east (r) | x -87.2..-80.2, y 244..253.6 | x -87.2..-85, y 257..278 | x -82.8..-80.6, y 253.6..283.8 | x -80..-77.6, y 244..246.4 |
+
+  - Station entrances at (-115.25, 257.8) and (-74.75, 257.8).
+  - Watchers: pole cameras at (-115.75, 244.3) and (-74.25, 244.3), the robot dock at (-118.75, 253.8), plus canopy cameras on the platforms.
+- **Crown Walk** (`foot.crown-walk`, walk, 12 m, y 238, x -115 → -54) runs from the west bank through the station east to the HQ's west face. The station stands on it (N-P2) and fronts it (W-3).
+- Sphere Park has a slot cut out of its east edge for the walk (x -121..-54, y 232..244). S1's pylons stand on the park north and south of the walk.
+- **Latch, from the old-built scene:** cut nothing round the HQ (the old piece stands as it is). Add our S1 beam and pylons along x -95 and the station with its banks, as in the table above. The station is the newer build kept under "newer builds", with the old finish.
+
+**"ours" (data, `plan.spacehq.forms.ours`):** the SpaceHQ_Portal remake (252 m), drum r 40 at (0, 244), ground x ±40, y 204..284, legs y 204..224 and 264..284.
+- S1 runs north on x -95, then east on y 244 (R 70) through the drum and off the sheet east over the quay.
+- Crown Circus station is inside the drum at (0, 244), `in: signatures/space-hq`. Crown Walk runs on y 244 from x -54 to the quay (x 48).
+- The portal is kept as `portalOnAxis`, because P-1 and `portalsOf` read a portal corridor only on y 0.
+- **Not buildable yet:** with `--spacehq ours` the checker fails, and every fault is the generator's (Splice). The station banks are not laid for an east–west station off y 0 inside a drum (L-1, L-5, SF-9, SF-12). There is no pylon ground over x -54..48 (S-P1). The R 70 turn at (-95, 244) ends at x -25, so the platform has no straight (S-S1), and the corner clips Sphere Park by 4 m (S-C1). Both are mine to re-lay (a tighter turn further west, or the drum's line further north) if Sky picks "ours". Kept as data until then.
+
+**Blocker for "old" in the live plan (Splice and Vela; Aster to route):** NP-1 fails with "signature/space-hq: procedural stand-in for SpaceHQ (no adopted kit piece SpaceHQ)". The old SpaceHQ is the old builders' piece. Our kit.json has `SpaceHQ` **rejected**, so the TS world can only carry it as a procedural signature to its tip (data only; Latch draws nothing from it). Two honest fixes, either one:
+- (a) Kit (Vela/Splice): adopt `SpaceHQ` (the same old piece, sha already in kit.json), and Splice's `tools/world/gen/signatures.ts` reads `signatures[].scale` (1.35: kit scale [k,k,k], tip = base + size.y × k). The TS world then places the old piece as the old builders do, SG-1 and SK-1 read 340.38, and NP-1 passes.
+- (b) Splice: NP-1 accepts a signature the plan marks `oldBuilder` (placed by the old builders, not our kit).
+
+I did not touch either file (not mine). The plan already carries `kit: SpaceHQ`, `scale: 1.35` and `oldBuilder`.
+
+**Generator bug found (Splice):** `tools/world/gen/signatures.ts` places every station's kit at `[st.at[0], 0]` with yaw π/2.
+- In the live export, `station/S2/harbour` stands at (117, 0) instead of (117, -140).
+- In the draft, `station/S1/crown-circus` stands at (-95, 0) instead of (-95, 238).
+- North–south stations need the station's y and yaw 0.
+- Latch: take station places from `plan.skyrail[].stations[].at`, not from the export's station kit, until this is fixed.
+
+**Handover zone untouched.** Through the overlay on the draft, V-1, M-1 (getaway 447, official 1124, getaway-service 126, rivals 593), W-1 (Café → Orbit Gardens 243), C-0, C-1 and C-3 are identical to the live plan's. The zone's 592 street items are the same pieces at the same places. Their counters shift by +21 (e.g. pole-camera-197 → -218) because the new station's items are numbered first. The takedown uses zone ids (`-z57`); after the swap, run `bun test tools/sim` to confirm.
+
+**Evidence (2026-10-29):**
+- `bun tools/plan/cli.ts` (live): exit 0, 158 PASS. With `--overlay tools/missions/handover/overlay.ts` (live): exit 0.
+- `bun tools/plan/cli.ts contracts/world/harbour-district.oldtown.plan.json`: exit 1, 157 PASS, 1 FAIL (NP-1 only). With the overlay: 162 PASS, NP-1 only.
+- transcribe re-run into a copy: cmp identical. Round trip old → ours → old: identical. `bun run typecheck`: clean.

@@ -9,8 +9,9 @@
 //     long faces ran corner to corner, the short walls started 8 m in);
 //   - end: the run's last bay rounds off (StreamEnd; at a run's head its mirrored twin `_M`, Vela's caps075.py, since the export has no mirror);
 //   - open / join / arc: flush (joining a party wall or a neighbour's run, a reserved mass, or the crescent that continues the wall);
-//   - a streamline segment taller than its neighbour (by more than 1 m) rounds off toward it (DecoKitFrontage.Bays), and an open run end does where the building
-//     beyond is lower or there is none;
+//   - the old rule rounded a streamline segment taller than its neighbour (by more than 1 m) off toward it (DecoKitFrontage.Bays), and an open run end where the
+//     building beyond is lower or there is none; brief 075 OV-1 (no intersecting buildings) keeps only the open ground: an end never rounds into a wall
+//     (OLD_BLOCK.intoWalls, off);
 //   - every segment of a run is one building (one colourway); a short wall's bays inside a long wall's band belong to that wall's end building and take its class
 //     (DecoKitBlock.Ends; DecoKitCityBlocks.Short); a block too shallow for two 14 m bands back to back splits at the short wall's bay line (k - k/2 | k/2);
 //   - a crescent (circus.crescents, the old Crescent) is bays on 6 m chords of the circle facing its centre, one building, its last bay the end cap; where its fanned
@@ -37,8 +38,13 @@ export const OLD_BLOCK = {
   on: true,
   bay: 6, cell: 8, body: 14,
   tol: 0.06,
-  /** A run's end rounds off where the neighbour beyond is this much lower (old Bays: h > neighbour + 1). */
+  /** A run's end rounds off where the neighbour beyond is this much lower (old Bays: h > neighbour + 1). Only read when `intoWalls` is on. */
   taller: 1,
+  /** Brief 075 (Sky 2026-10-29, OV-1): whether an end may round off toward a lower neighbour that stands against it (the old Bays rule). A StreamEnd's ribbon
+   *  eyebrows wrap its nose 1.6 m past the bay line at every floor, ground included, so toward any neighbour that touches it they run into that neighbour's wall
+   *  (the curved end in the Skyport view; OV-1 counted 64 ends). Off: an end rounds off only into open ground (a run end with nothing standing beyond it) or where
+   *  the plan names an end cap; a taller segment meets a lower one square, on a plain bay. */
+  intoWalls: false,
   /** Segment lengths: at least this many bays (today's massing.width 18: a lobby and a shop on the narrowest public face; the old walls' 1- and 2-bay segments
    *  left out). A short wall's own stretch under it joins the building beside it. */
   minSeg: 3,
@@ -401,7 +407,7 @@ export function layOld(ctx: Ctx, plots: OldPlot[], beyond: (q: V, self: string) 
       // rounding: toward the tail where the slot before is another building lower by more than `taller` (or an open run end with nothing as tall beyond), toward
       // the head likewise, or where the plan names an end cap; the tail is the end piece's natural side (stream.ts KIT_X), the head its mirrored twin
       const prev = S[i - 1], next = S[i + 1], k = bays.indexOf(i), drop = run.crescent && k % 2 === 1 ? 0.005 : 0; // old Crescent: odd bays 5 mm down (the chords' canopies overlap at the joints)
-      const lowerThan = (h: number | null) => h === null || b.top > h + OLD_BLOCK.taller;
+      const lowerThan = (h: number | null) => h === null || (OLD_BLOCK.intoWalls && b.top > h + OLD_BLOCK.taller); // OV-1: never into a neighbour's wall
       const t = norm(sub(x.b, x.a)), nb = (q: V, s: number): V => [q[0] + t[0] * s - x.n[0] * 2, q[1] + t[1] * s - x.n[1] * 2];
       const tailN = x.force === 'tail' || (x.force !== 'head' && (prev ? prev.bld !== b.id && lowerThan(hOf(prev.bld)) : run.tail.open && lowerThan(beyond(nb(x.a, -1), b.id))));
       const headN = x.force === 'head' || (next ? next.bld !== b.id && lowerThan(hOf(next.bld)) : run.head.open && lowerThan(beyond(nb(x.b, 1), b.id)));
