@@ -68,7 +68,7 @@ namespace Suborned
             public int sides, count; public string distribution;
         }
         [Serializable] public sealed class Flarep { public float follow, @long, occlusionRadius; public int samples; public string starburst; public FlareEl[] elements; }
-        [Serializable] public sealed class Gradep { public float saturationPercent, liftOffset, liftWarmth; public string liftTint; public float fallbackSaturation; public Greensp greens; }
+        [Serializable] public sealed class Gradep { public float saturationPercent, liftOffset, liftWarmth; public string liftTint; public float fallbackSaturation; public Greensp greens; public float exposureDelta; }
         /// <summary>Greens protection (Glint 2026-10-23): a hue-vs-hue shift of hueDeg on hues fromDeg..toDeg, full between fullFromDeg and fullToDeg, eased to 0 at the ends; hueDeg 0 = none.</summary>
         [Serializable] public sealed class Greensp { public float hueDeg, fromDeg, fullFromDeg, fullToDeg, toDeg; }
         /// <summary>Glint 2026-10-24 (Glyph's review of 0.2.99): the sun's SHADOW STRENGTH by day (1 = a shadow takes the whole sun out; below 1 the sun still fills the shade in its own warm colour, so shaded cream stays cream and shaded enamel stays powder blue; the sunlit side does not change). 0 or absent = the scene's own.</summary>
@@ -102,7 +102,7 @@ namespace Suborned
         [Serializable] public sealed class LampScale { public string prefix; public float scale; }
         [Serializable] public sealed class Lens
         {
-            public string schema; public Skyp sky; public Palp teal; public Bloomp bloomFollow, bloomLong; public Dofp dofLong;
+            public string schema; public Skyp sky; public Palp teal; public Bloomp bloomFollow, bloomLong, bloomPlay; public Dofp dofLong;
             public Flarep flare; public Gradep gradePlay; public Bandp farBand; public Sunp sun; public Longp gradeLong; public Evening evening; public NightFloor night;
         }
 
@@ -132,6 +132,7 @@ namespace Suborned
         Texture2D farBand; bool farBandTried;
         readonly HashSet<Camera> forcedPost = new();
 
+        static readonly int idNight = Shader.PropertyToID("_AtmNight");
         static readonly int idHaze = Shader.PropertyToID("_AtmHaze"), idZenith = Shader.PropertyToID("_AtmSkyZenith"), idMid = Shader.PropertyToID("_AtmSkyMid"),
             idShape = Shader.PropertyToID("_AtmSkyShape"), idExtra = Shader.PropertyToID("_AtmSkyExtra"), idBand = Shader.PropertyToID("_AtmFarBand"), idBandRange = Shader.PropertyToID("_AtmFarBandRange"),
             idSunDir = Shader.PropertyToID("_AtmSunDir"), idSunCol = Shader.PropertyToID("_AtmSunCol");
@@ -141,8 +142,10 @@ namespace Suborned
         void SceneSky()
         {
             if (skyRead) return;
-            var m = RenderSettings.skybox; if (!m || !m.HasProperty("_Zenith") || !m.HasProperty("_Mid") || !m.HasProperty("_SunColour")) return;
-            dayZenith = Lin(m.GetColor("_Zenith")); dayMid = Lin(m.GetColor("_Mid")); daySunGlow = Lin(m.GetColor("_SunColour")); skyRead = true;
+            var m = RenderSettings.skybox; if (!m || !m.HasProperty("_Zenith") || !m.HasProperty("_Mid")) return;
+            var glow = m.HasProperty("_SunColour") ? "_SunColour" : m.HasProperty("_SunColor") ? "_SunColor" : null; // _SunColor: the ported old sky, DecoKit/Space Age Sky (brief 075-A)
+            if (glow == null) return;
+            dayZenith = Lin(m.GetColor("_Zenith")); dayMid = Lin(m.GetColor("_Mid")); daySunGlow = Lin(m.GetColor(glow)); skyRead = true;
         }
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
@@ -172,6 +175,8 @@ namespace Suborned
             if (d.sky == null || d.sky.hazeHeight <= 0f || d.sky.hazeHeight > 1f) return "sky.hazeHeight in (0, 1]";
             if (d.sky.hazeHeightLong < 0f || d.sky.hazeHeightLong > 1f) return "sky.hazeHeightLong in [0, 1] (0 = sky.hazeHeight)";
             if (d.teal == null || !ColorUtility.TryParseHtmlString(d.teal.zenith, out _) || !ColorUtility.TryParseHtmlString(d.teal.mid, out _)) return "teal.zenith / teal.mid are not #rrggbb";
+            if (HasBloom(d.bloomPlay) && (d.bloomPlay.threshold < 0f || d.bloomPlay.scatter < 0f || d.bloomPlay.scatter > 1f || !ColorUtility.TryParseHtmlString(d.bloomPlay.tint, out _))) return "bloomPlay: threshold >= 0, intensity > 0, scatter 0..1, tint #rrggbb (or absent: the scene grade's bloom)";
+            if (d.gradePlay != null && Mathf.Abs(d.gradePlay.exposureDelta) > 1.5f) return "gradePlay.exposureDelta within +-1.5 EV";
             foreach (var b in new[] { d.bloomFollow, d.bloomLong })
                 if (b == null || b.threshold < 0f || b.intensity < 0f || b.scatter < 0f || b.scatter > 1f || !ColorUtility.TryParseHtmlString(b.tint, out _)) return "bloom: threshold >= 0, intensity >= 0, scatter 0..1, tint #rrggbb";
             if (d.dofLong == null || (d.dofLong.enabled && (d.dofLong.start < 0f || d.dofLong.end <= d.dofLong.start || d.dofLong.maxRadius <= 0f || d.dofLong.maxRadius > 5f))) return "dofLong: 0 <= start < end, 0 < maxRadius <= 5";
@@ -236,6 +241,7 @@ namespace Suborned
             // scene has volumeLayerMask Default (checked in HarbourDistrict.unity: 23 of 23).
             vPlay = NewVolume("lens/play", out var pp);
             playSat = pp.Add<ColorAdjustments>(false); playLift = pp.Add<LiftGammaGain>(false); playCurves = pp.Add<ColorCurves>(false);
+            if (HasBloom(data.bloomPlay)) Bloom(pp, data.bloomPlay); // brief 075-A: the play view's own bloom (the old reel's whole bloom veils a frame of lit stone)
             vFollow = NewVolume("lens/follow", out var pf);
             Bloom(pf, data.bloomFollow); followCurves = pf.Add<ColorCurves>(false); // Glint 2026-10-23 (optional): the greens protection on the follow and long tiers too
             vLong = NewVolume("lens/long", out var pl);
@@ -277,6 +283,9 @@ namespace Suborned
             return v;
         }
 
+        /// <summary>A bloom block that is there: JsonUtility fills an absent one with zeros.</summary>
+        static bool HasBloom(Bloomp b) => b != null && b.intensity > 0f && !string.IsNullOrEmpty(b.tint);
+
         static void Bloom(VolumeProfile p, Bloomp b)
         {
             var bl = p.Add<Bloom>(false);
@@ -305,7 +314,8 @@ namespace Suborned
                 var keys = new[] { new Keyframe(gr.fromDeg / 360f, 0.5f, 0f, 0f), new Keyframe(gr.fullFromDeg / 360f, y, 0f, 0f), new Keyframe(gr.fullToDeg / 360f, y, 0f, 0f), new Keyframe(gr.toDeg / 360f, 0.5f, 0f, 0f) };
                 foreach (var cc in new[] { playCurves, followCurves, longCurves }) if (cc) cc.hueVsHue.Override(new TextureCurve(keys, 0.5f, true, new Vector2(0f, 1f)));
             }
-            if (longAdj && Mathf.Abs(longExposureDelta) > 0.001f) longAdj.postExposure.Override(BaseExposure() + longExposureDelta); // only the exposure is overridden; contrast, saturation and filter stay the scene grade's
+            if (longAdj && Mathf.Abs(longExposureDelta) > 0.001f) longAdj.postExposure.Override(BaseExposure() + longExposureDelta);
+            if (Mathf.Abs(g.exposureDelta) > 0.001f) playSat.postExposure.Override(BaseExposure() + g.exposureDelta); else playSat.postExposure.overrideState = false; // brief 075-A: the play view's own exposure step // only the exposure is overridden; contrast, saturation and filter stay the scene grade's
             baseSaturation = s0;
             duskK = -1f; // the evening grade is pushed again on the next Update (a scene load re-reads the scene grade)
         }
@@ -363,6 +373,7 @@ namespace Suborned
                 bool play = i == 0, lng = i == 2;
                 // exposure: the long tier's own delta stays; play and follow have none by day
                 if (lng && Mathf.Abs(longExposureDelta) > 0.001f) r.adj.postExposure.Override(expBase + longExposureDelta + g.exposure * k);
+                else if (play && Mathf.Abs(data.gradePlay.exposureDelta) > 0.001f) r.adj.postExposure.Override(expBase + data.gradePlay.exposureDelta + g.exposure * k); // the play view's own step stays at k 0
                 else if (on) r.adj.postExposure.Override(expBase + g.exposure * k); else r.adj.postExposure.overrideState = false;
                 if (play) r.adj.saturation.Override(playSatValue + g.saturation * k);                      // the play grade's own saturation is always overridden
                 else if (on) r.adj.saturation.Override(satBase + g.saturation * k); else r.adj.saturation.overrideState = false;
@@ -441,6 +452,7 @@ namespace Suborned
             if (fl > 0f) EnsureFlare();
             if (flare) { flare.intensity = fl; if (flare.enabled != fl > 0f) flare.enabled = fl > 0f; } // brief 064 A3 item 5: a registered flare with occlusion makes URP force the depth texture (CheckPostProcessForDepth), so it is off wherever it does not draw (the play view)
             Sky(on && tier != DistanceHaze.Tier.Play && !overlay, tier);
+            Shader.SetGlobalFloat(idNight, DistanceHaze.Night ? 1f : 0f); // brief 075-A: the ported sea (Suborned/DK Ocean) mirrors the day sky's air only by day
         }
 
         void End(ScriptableRenderContext _, Camera c)

@@ -42,7 +42,8 @@ export type Generated = {
 
 export function generate(ctx: Ctx, stops: Mass[], stations: Mass[]): Generated {
   const sites = towerSites(ctx), { masses, blds, facades: fac } = generateMasses(ctx, sites), megaOut = generateMegas(ctx, sites);
-  // brief 072-C: the every-face pass over every plot building and tower complex, against every neighbour's walls (plot buildings, towers, the civic block, megastructure parts)
+  // brief 072-C: the every-face pass over every plot building and tower complex, against every neighbour's walls (plot buildings, towers, the civic block, megastructure parts).
+  // T-K1 (brief 075-C): a hidden mass (a tower site's stand-in where its kit piece stands) is dressed by nothing; it still stands in `occ`, the volume the kit tower fills
   const ownerOf = (id: string) => id.split('/').slice(0, id.startsWith('tower/') ? 2 : 3).join('/');
   const occ = [...masses.filter(m => !/\/band-\d+$/.test(m.id)).map(m => occOf(ownerOf(m.id), m.ring, m.base, m.base + m.height)),
     ...ctx.civ.buildings.flatMap(b => [occOf(`civic/${b.id}`, b.poly, ctx.pav + b.z, ctx.pav + b.z + b.height), ...(b.towers ?? []).filter(t => t.poly).map(t => occOf(`civic/${b.id}`, t.poly!, ctx.pav + b.z, ctx.pav + b.z + t.height))]),
@@ -51,7 +52,7 @@ export function generate(ctx: Ctx, stops: Mass[], stations: Mass[]): Generated {
   const hosts: Host[] = [...blds.filter(b => !b.tower).flatMap(b => buildingHost(ctx, b) ?? []), ...megaOut.flatMap(m => m.hosts)];
   const fronts = generateFrontages(ctx, hosts);
   const tenancies = linkFacades(fronts, fac.facades).filter(t => !t.facade && t.level === 'street').map(t => ({ host: t.host, a: t.a, b: t.b }));
-  const faces = dressFaces(ctx, { blds: blds.map(b => ({ id: b.id, plot: b.plot, area: b.area, use: b.use, kind: b.kind, n: b.n, ring: b.ring, tower: b.tower, play: !!ctx.B.caps?.[b.area]?.play, top: b.z })), masses, occ, facades: fac.facades, catalogue: catalogued, tenancies });
+  const faces = dressFaces(ctx, { blds: blds.map(b => ({ id: b.id, plot: b.plot, area: b.area, use: b.use, kind: b.kind, n: b.n, ring: b.ring, tower: b.tower, play: !!ctx.B.caps?.[b.area]?.play, top: b.z })), masses: masses.filter(m => !m.hidden), occ, facades: fac.facades, catalogue: catalogued, tenancies });
   fac.facades.push(...faces.facades);
   const solids: V[][] = [...masses.filter(m => m.base < 1).map(m => m.ring), ...megaOut.flatMap(m => m.parts.filter(p => p.base < 1).map(p => p.ring))];
   const conn0 = generateConnectors(ctx, megaOut, stations, solids);

@@ -2,7 +2,7 @@
 import { createHash } from 'node:crypto';
 import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs';
 import { join, relative } from 'node:path';
-import type { Kit, KitAsset, KitBuilt, KitColourways, KitFile, KitOrder, KitStatus } from '../../contracts/world/kit.schema';
+import type { Kit, KitAsset, KitBuilt, KitColourways, KitFile, KitLandmarks, KitOrder, KitStatus } from '../../contracts/world/kit.schema';
 import { WAVE1, tagsOf } from './tags';
 import { generatedTags } from './generated';
 import { FULL_DETAIL, LOD_CATEGORIES, LOD_CLASSES, lodCategoryOf, lodClassOf, lodScreens } from './lod';
@@ -128,5 +128,24 @@ export function buildCatalogue(root: string, prior?: Kit, gen?: string): Kit {
     if (files.length !== names.length * 2) throw new Error(`colourways: ${names.length * 2 - files.length} .mat/.meta files missing in ${gen}/Materials (rerun bun run decokit --mats-only)`);
     colourways = { ...cw, files };
   }
-  return { schema: 'suborned.kit/1', source: { manifest: 'decokit_manifest.json', materials: 'decokit_materials.json', manifestSha256: sha(manifestText), materialsSha256: sha(materialsText) }, lodCategories: LOD_CATEGORIES, ...(classed.some(a => a.lodClass) ? { lodClasses: LOD_CLASSES } : {}), ...(textures.length ? { textures } : {}), ...(colourways ? { colourways } : {}), assets: classed }; // the classes ride once a classed piece is catalogued
+  // brief 075-C: the landmark livery (tools/decokit livery.py, Data/livery.json): the variant .mats and the old rule resolved to piece -> base slot -> key over this catalogue.
+  const lvFile = gen && join(gen, 'Data/livery.json');
+  let landmarks: KitLandmarks | undefined = prior?.landmarks;
+  if (lvFile && existsSync(lvFile)) {
+    const lv = JSON.parse(readFileSync(lvFile, 'utf8')) as { schema: 'suborned.livery/1'; brief: string; source: string; keys: Record<string, KitLandmarks['keys'][string] & { baseFrom?: unknown; tintedOver?: unknown; oldBaseColor?: unknown; oldDelta?: unknown }> };
+    const keys = Object.fromEntries(Object.entries(lv.keys).map(([k, { baseFrom: _b, tintedOver: _t, oldBaseColor: _o, oldDelta: _d, ...v }]) => [k, v]));
+    const names = Object.values(keys).map(v => v.material).sort();
+    const files = names.flatMap(n => pair('material', `Materials/${n}.mat`));
+    if (files.length !== names.length * 2) throw new Error(`livery: ${names.length * 2 - files.length} .mat/.meta files missing in ${gen}/Materials (rerun bun run decokit --mats-only)`);
+    const pieces: Record<string, Record<string, string>> = {};
+    for (const a of [...classed].sort((x, y) => x.id.localeCompare(y.id))) {
+      if (a.status === 'rejected') continue;
+      for (const [k, v] of Object.entries(keys)) {
+        const listed = Array.isArray(v.pieces) ? v.pieces.includes(a.id) : v.pieces.categories.includes(a.category);
+        if (listed && a.materials.includes(v.base)) (pieces[a.id] ??= {})[v.base] = k;
+      }
+    }
+    landmarks = { schema: lv.schema, brief: lv.brief, source: lv.source, keys, pieces, files };
+  }
+  return { schema: 'suborned.kit/1', source: { manifest: 'decokit_manifest.json', materials: 'decokit_materials.json', manifestSha256: sha(manifestText), materialsSha256: sha(materialsText) }, lodCategories: LOD_CATEGORIES, ...(classed.some(a => a.lodClass) ? { lodClasses: LOD_CLASSES } : {}), ...(textures.length ? { textures } : {}), ...(colourways ? { colourways } : {}), ...(landmarks ? { landmarks } : {}), assets: classed }; // the classes ride once a classed piece is catalogued
 }

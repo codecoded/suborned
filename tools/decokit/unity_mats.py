@@ -345,6 +345,8 @@ def write(table_path, dst, retuned):
         out.append(n)
     import colourways  # brief 074-B: DK_Limestone_Tex on the neutral panel sheet, then the 12 colourway sets from the base .mats just written
     out += colourways.write_mats(dst, legacy, meta_text)
+    import livery  # brief 075-C: the landmark livery (vermilion lattices, brick sphere, SpaceHQ gold), the same recolour as the colourways
+    out += livery.write_mats(dst, legacy, meta_text, colourways._recolour)
     (Path(dst) / "surface-detail-mats.json").write_text(json.dumps(dict(schema="suborned.surfacedetail/1", brief="072-F", source="tools/decokit/unity_mats.py surface_detail",
                                                                        materials=dict(sorted(detailed.items()))), indent=1) + "\n")
     return out

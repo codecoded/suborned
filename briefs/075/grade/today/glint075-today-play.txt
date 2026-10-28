@@ -1,0 +1,1 @@
+variant today: sun #FFE4C8 x1.800 euler (38.00, 330.00, 0.00); skybox Suborned/SkyGradient; ambient sky #99989B eq #B2A69C gr #5D5143

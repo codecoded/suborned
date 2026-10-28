@@ -38,6 +38,8 @@ export type World = {
   takedown?: Takedown; // brief 013 (Vantage C, Pulse, Motive §8): where a body can be hidden, where a witness can report, where the response starts; derived by tools/world/gen/street/quiet.ts, present when the civic block is
   landmarks: Landmark[];
   signatures: SignatureOut[]; // plan signatures[] (SpaceHQ): the kit piece on its ground, no plot building on `ground`
+  /** Brief 075-C, landmark livery (tools/world/gen/livery.ts, rule LV-1): the material slots each placed landmark piece paints, as `<slot>__<colour>` keys Latch swaps per instance. */
+  liveries?: Liveries;
   gates: Mass[];
   horizon: Horizon; // derived (grammar §9): the sea plane and the distant band of kit pieces beyond the district; nothing here is in the plan
   counts: Record<string, number>; // elements per layer, as the Unity build must report them
@@ -77,7 +79,9 @@ export type Mass = {
   fade?: true;
   /** Civic only: the id of the kit mass that is this mass's ground storey. This mass starts above it (its `base` is that piece's top): draw no plinth, shopfront or ground floor at its base. */
   groundBy?: string;
-  /** Civic only (brief 028): this mass stays for its id, footprint and clearance but draws nothing: the piece beside it carries it (`BoardingPavilion_TB_Square` has its own supports, so the two `square-pavilion-support-*` piers are hidden). */
+  /** This mass stays for its id, footprint and clearance but draws nothing: a piece carries it. Civic (brief 028): `BoardingPavilion_TB_Square` has its own supports, so the two
+   *  `square-pavilion-support-*` piers are hidden. Buildings (brief 075-C, rule T-K1): a tower site's stand-in `tower/<site>/lower` and `/upper` where the site's regenerated kit
+   *  piece stands (signatures tower/<site>, source kit); the every-face pass dresses none of their faces and the coverage check counts them dressed by that piece. */
   hidden?: true;
   /** Civic only: a material this mass draws in place of its kit piece's own, by the piece's material slot (`{ DK_Water: 'DK_Pool_Civic' }` on the atom fountain). Absent = the piece's own. */
   materials?: Record<string, string>;
@@ -279,3 +283,10 @@ export type ReportPoint = { id: string; kind: 'door' | 'call-box'; at: V; stand:
 export type Origin = { id: string; kind: 'dock' | 'post'; at: V; stand: V; item?: string; door?: string };
 export type Coverage = { samples: number; worstM: number; medianM: number; within: number; baselineWithin: number; baselineWorstM: number };
 export type WatcherNote = { id: string; kind: string; at: V; facings: number[]; range: number; coneDeg: number; item: string };
+
+/** Brief 075-C, landmark livery: `colours` = colour name -> hex (and a finish where the old reel set one; none = the slot keeps its own finish); `placed` = every placed piece that takes
+ *  livery: `host` = the export object holding the kit ref (landmark/sphere, signature/space-hq, tower/avenue-gate-w, mega/skyport-tower, a roof id), `ref` = the key path of the kit ref in it
+ *  (`kit`, `kits[1]`, `gateway`; `use` = the piece Unity places for that megastructure by its kit `landmark:<name>` tag), `piece` = the kit id, `slots` = kit material -> material key
+ *  `<slot>__<colour>` (074's colourway form; Vela's tinted material of that name). Derived from the catalogue by rule, never by hand. */
+export type LiveryPlaced = { host: string; ref: string; piece: string; slots: Record<string, string> };
+export type Liveries = { colours: Record<string, { hex: string; metallic?: number; smoothness?: number }>; placed: LiveryPlaced[] };

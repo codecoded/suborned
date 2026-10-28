@@ -1,0 +1,7 @@
+075-C step 2 (Vela), 2026-10-28 12:33: landmark livery materials adopted.
+kit.json `landmarks`: vermilion DK_Steel_Ivory__vermilion #B8432E · brick DK_Hull_Ivory__brick #9C2E2B · gold DK_Crown_Gold__gold #F2C14E; pieces = the old DecoKitColourways livery rule (15 pieces).
+Generator: tools/decokit/livery.py (called from unity_mats.write after colourways) -> out/decokit/Data/livery.json; catalogue tools/kit/catalogue.ts; copy tools/kit/copy.ts.
+C5: the Portal regen kept the red bands (DK_Steel_Ivory shaft rings, vermilion under livery); it lost only the back service gantry.
+Renders: briefs/075/landmarks/ (sheet.png, *_before/_after.png, SpaceHQ_Portal_crown_crop.png, slots.json).
+Checks: collide --check ok · cover + cover --check ok (CV-1, CV-2) · typecheck ok · bun test tools/kit tools/decokit 44 pass.
+Next: Splice keys briefs/075/landmarks.json on these keys; Latch swaps per instance.

@@ -5,14 +5,14 @@ import type { Mass } from '../../../contracts/world/world.schema';
 import { type Ctx, type Rng, bandFor, heightOf, r3, rng, rv, storeysUnder } from './common';
 import { buildingLine, kindOf, plotRing } from './edges';
 import { type Rect, type Ring, areaOf, fit, insetBoth, insetRing, isSimple, bbox, clipHalf, growRect, inset, offsetPts, rectPts, subtractRect } from './geo';
-import { signatureGrounds } from './signatures';
+import { signatureGrounds, towerKit } from './signatures';
 import { GRAMMAR, isStreetClass, roundRing } from './grammar';
 import { type FacadeOut, adjacent, generateFacades } from './facades';
 import { faceKitReady } from './faces';
 
 /** A generated building, kept for roofs and frontages. `ring` = ground footprint with edge classes; `top` = highest roof polygon at z. */
 export type Bld = { id: string; plot: string; area: string; use: string; kind: string; n: number; ring: Ring; top: V[]; z: number; tower: boolean; open: boolean };
-export type Site = { id: string; plot: string; rect: Rect; storeys: number; podium: Rect };
+export type Site = { id: string; plot: string; rect: Rect; storeys: number; podium: Rect; kit?: string };
 
 const BUILT = ['residential', 'mixed', 'commercial', 'industrial', 'port'];
 export const isBuilt = (use: string) => BUILT.includes(use);
@@ -27,7 +27,8 @@ export function towerSites(ctx: Ctx): Site[] {
   return ctx.B.towers.sites.map((s: any) => {
     const plot = ctx.d.plots.find(p => p.id === s.plot)!, line = buildingLine(ctx, plotRing(ctx, plot)), lb = line ? bbox(line.p) : bbox(plot.polyV);
     const rect = clip(s.rect, lb), podium = clip(growRect(rect, ctx.B.towers.podiumGrow), lb);
-    return { id: s.id, plot: s.plot, rect, storeys: s.storeys, podium };
+    const k = towerKit(s);
+    return { id: s.id, plot: s.plot, rect, storeys: s.storeys, podium, ...(k ? { kit: k.id } : {}) };
   });
 }
 
@@ -262,9 +263,12 @@ export function generateMasses(ctx: Ctx, sites: Site[]): MassOut {
     const B = ctx.B, pav = ctx.pav, id = `tower/${s.id}`, r = s.rect, podTop = pav + floorTop(B, B.towers.podium);
     masses.push({ id: `${id}/podium`, surface: 'limestone', ring: rectPts(s.podium).map(rv), base: 0, height: r3(podTop) });
     const lowN = Math.min(s.storeys, B.setback.above), lowTop = pav + floorTop(B, lowN), top = pav + heightOf(B, s.storeys);
-    masses.push({ id: `${id}/lower`, surface: 'tower', ring: rectPts(r).map(rv), base: r3(podTop), height: r3(lowTop - podTop) });
+    // T-K1 (brief 075-C): where the site's regenerated kit piece dresses it, the drawn stand-in tower (lower and upper) stays for its id, footprint, height and clearance
+    // (B-2, B-5, B-6 read it) but is `hidden`: nothing draws it and the every-face pass gives it no faces (index.ts), so the round kit shafts stand clear
+    const hide = s.kit ? { hidden: true as const } : {};
+    masses.push({ id: `${id}/lower`, surface: 'tower', ring: rectPts(r).map(rv), base: r3(podTop), height: r3(lowTop - podTop), ...hide });
     const up: Rect = growRect(r, -B.halfBay);
-    masses.push({ id: `${id}/upper`, surface: 'tower', ring: rectPts(up).map(rv), base: r3(lowTop), height: r3(top - lowTop) });
+    masses.push({ id: `${id}/upper`, surface: 'tower', ring: rectPts(up).map(rv), base: r3(lowTop), height: r3(top - lowTop), ...hide });
     const ring: Ring = { p: rectPts(s.podium), c: ['party', 'party', 'party', 'party'] };
     blds.push({ id, plot: s.plot, area: ctx.d.plots.find(p => p.id === s.plot)!.area, use: 'tower', kind: 'tower', n: s.storeys, ring, top: rectPts(up), z: r3(top), tower: true, open: false });
   }

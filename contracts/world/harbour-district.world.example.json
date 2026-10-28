@@ -2965,6 +2965,18 @@
    }
   }
  ],
+ "liveries": {
+  "colours": {
+   "brick": { "hex": "#9C2E2B" },
+   "vermilion": { "hex": "#B8432E" },
+   "gold": { "hex": "#F2C14E", "metallic": 1, "smoothness": 0.45 }
+  },
+  "placed": [
+   { "host": "landmark/sphere", "ref": "kit", "piece": "SphereStation", "slots": { "DK_Steel_Ivory": "DK_Steel_Ivory__vermilion", "DK_Hull_Ivory": "DK_Hull_Ivory__brick" } },
+   { "host": "signature/space-hq", "ref": "kit", "piece": "SpaceHQ_Portal", "slots": { "DK_Crown_Gold": "DK_Crown_Gold__gold" } },
+   { "host": "mega/skyport-tower", "ref": "use", "piece": "Skyport_Tower_Portal", "slots": { "DK_Steel_Ivory": "DK_Steel_Ivory__vermilion" } }
+  ]
+ },
  "gates": [
   {
    "id": "gate/rocket-gate",

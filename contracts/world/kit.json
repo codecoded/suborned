@@ -873,6 +873,151 @@
    }
   ]
  },
+ "landmarks": {
+  "schema": "suborned.livery/1",
+  "brief": "075-C",
+  "source": "tools/decokit/livery.py",
+  "keys": {
+   "vermilion": {
+    "base": "DK_Steel_Ivory",
+    "material": "DK_Steel_Ivory__vermilion",
+    "hex": "#B8432E",
+    "source": "DecoKitColourways.Vermilion (Paint/DK_Steel_Ivory_B8432E.mat)",
+    "baseColor": [
+     0.721569,
+     0.262745,
+     0.180392
+    ],
+    "pieces": {
+     "categories": [
+      "Landmarks",
+      "Skyport",
+      "Sky"
+     ]
+    }
+   },
+   "brick": {
+    "base": "DK_Hull_Ivory",
+    "material": "DK_Hull_Ivory__brick",
+    "hex": "#9C2E2B",
+    "source": "DecoKitColourways.Signature[SphereStation] (Paint/DK_Hull_Ivory_9C2E2B.mat)",
+    "baseColor": [
+     0.672767,
+     0.204857,
+     0.197518
+    ],
+    "pieces": [
+     "SphereStation"
+    ]
+   },
+   "gold": {
+    "base": "DK_Crown_Gold",
+    "material": "DK_Crown_Gold__gold",
+    "hex": "#F2C14E",
+    "source": "DecoKitColourways.Signature[SpaceHQ] on DK_Gold, metallic 1 smoothness 0.45 (Paint/DK_Gold_F2C14E_m100s45.mat); base colour only here",
+    "baseColor": [
+     0.94902,
+     0.756863,
+     0.305882
+    ],
+    "pieces": [
+     "SpaceHQ_Portal"
+    ]
+   }
+  },
+  "pieces": {
+   "DiscTower": {
+    "DK_Steel_Ivory": "vermilion"
+   },
+   "DiscTower@avenue-gate-e": {
+    "DK_Steel_Ivory": "vermilion"
+   },
+   "DiscTower@avenue-gate-w": {
+    "DK_Steel_Ivory": "vermilion"
+   },
+   "LinerDock": {
+    "DK_Steel_Ivory": "vermilion"
+   },
+   "LinerDock@liner-berth": {
+    "DK_Steel_Ivory": "vermilion"
+   },
+   "Skylon": {
+    "DK_Steel_Ivory": "vermilion"
+   },
+   "SkyPad_Roof": {
+    "DK_Steel_Ivory": "vermilion"
+   },
+   "Skyport_Tower": {
+    "DK_Steel_Ivory": "vermilion"
+   },
+   "Skyport_Tower_Portal": {
+    "DK_Steel_Ivory": "vermilion"
+   },
+   "SkyRail_Pylon_Head": {
+    "DK_Steel_Ivory": "vermilion"
+   },
+   "SkyRailStation": {
+    "DK_Steel_Ivory": "vermilion"
+   },
+   "SkyRailStation_Blank": {
+    "DK_Steel_Ivory": "vermilion"
+   },
+   "SkyRailStation_Twin": {
+    "DK_Steel_Ivory": "vermilion"
+   },
+   "SpaceHQ_Portal": {
+    "DK_Crown_Gold": "gold"
+   },
+   "SphereStation": {
+    "DK_Steel_Ivory": "vermilion",
+    "DK_Hull_Ivory": "brick"
+   }
+  },
+  "files": [
+   {
+    "root": "generated",
+    "role": "material",
+    "path": "Materials/DK_Crown_Gold__gold.mat",
+    "sha256": "2302e72a3f98b0bb7f874f526bc82e43f74b6aa3f88e8163fa05ce78096ce95a",
+    "bytes": 4045
+   },
+   {
+    "root": "generated",
+    "role": "material-meta",
+    "path": "Materials/DK_Crown_Gold__gold.mat.meta",
+    "sha256": "c26074fdae0078ae11e7e4dabcdd59711c54a118ef5d2f80add30ed47c76bdbb",
+    "bytes": 188
+   },
+   {
+    "root": "generated",
+    "role": "material",
+    "path": "Materials/DK_Hull_Ivory__brick.mat",
+    "sha256": "965c9b66726ddeb0d39a028aa4efd35d435ebf4be3960f26edcb98e93b857144",
+    "bytes": 4143
+   },
+   {
+    "root": "generated",
+    "role": "material-meta",
+    "path": "Materials/DK_Hull_Ivory__brick.mat.meta",
+    "sha256": "d3c4d86609ba3e7161976e47063cd257dbe6d28c835f72c86854a52ebb89ede8",
+    "bytes": 188
+   },
+   {
+    "root": "generated",
+    "role": "material",
+    "path": "Materials/DK_Steel_Ivory__vermilion.mat",
+    "sha256": "e4ef3790bf75b67c991f658453bce1180a12ca3d3355424250cf14fbd285243d",
+    "bytes": 3995
+   },
+   {
+    "root": "generated",
+    "role": "material-meta",
+    "path": "Materials/DK_Steel_Ivory__vermilion.mat.meta",
+    "sha256": "1522b1b6ecced832e01dc05964b0cc44f6f6147f2427a00b7f393c9dc4502373",
+    "bytes": 188
+   }
+  ]
+ },
  "assets": [
   {
    "id": "Bollard",

@@ -162,7 +162,7 @@ test('brief 072-F: the surface-detail array and the three detail pairs ride as k
   for (const f of t) { expect(f.root).toBe('generated'); expect(f.sha256).toMatch(/^[0-9a-f]{64}$/); }
   const meta = join(GEN_ROOT, 'Textures/surface_detail_v1.png.meta');
   if (existsSync(meta)) expect(readFileSync(meta, 'utf8')).toMatch(/textureShape: 4\n/); // Texture2DArray (TextureImporterShape: 2D=1, Cube=2, 2DArray=4)
-  const only: Kit = { ...kit, colourways: undefined, assets: [] }, dest = mkdtempSync(join(tmpdir(), 'kit-tex-'));
+  const only: Kit = { ...kit, colourways: undefined, landmarks: undefined, assets: [] }, dest = mkdtempSync(join(tmpdir(), 'kit-tex-'));
   try { const r = copyAdopted(only, root, dest, GEN_ROOT); expect(r.errors).toEqual([]); expect(r.copied.length).toBe(t.length); expect(r.pruned).toEqual([]); }
   finally { rmSync(dest, { recursive: true, force: true }); }
 });
@@ -210,7 +210,33 @@ test('brief 074-B/H: 12 colourway sets over the wall and plinth slots (band and 
   const lime = kit.assets.find(a => a.materials.includes('DK_Limestone_Tex'))!;
   expect(lime.files.some(f => f.path === 'Textures/wall_panel_neutral_v1.png')).toBe(true);
   expect(kit.assets.some(a => a.status === 'adopted' && a.files.some(f => f.path === 'Textures/facade_panel_v1.png'))).toBe(false);
-  const only: Kit = { ...kit, textures: [], assets: [] }, dest = mkdtempSync(join(tmpdir(), 'kit-cw-'));
+  const only: Kit = { ...kit, textures: [], landmarks: undefined, assets: [] }, dest = mkdtempSync(join(tmpdir(), 'kit-cw-'));
   try { const r = copyAdopted(only, root, dest, GEN_ROOT); expect(r.errors).toEqual([]); expect(r.copied.length).toBe(cw.files.length); }
+  finally { rmSync(dest, { recursive: true, force: true }); }
+});
+
+test('brief 075-C: landmark livery (old DecoKitColourways `livery`): vermilion lattices, the brick sphere, SpaceHQ gold; each a recolour of its base, mapped per piece, copied with their metas', () => {
+  const lv = kit.landmarks!;
+  expect(lv.schema).toBe('suborned.livery/1');
+  expect(Object.fromEntries(Object.entries(lv.keys).map(([k, v]) => [k, [v.base, v.material, v.hex]]))).toEqual({
+    vermilion: ['DK_Steel_Ivory', 'DK_Steel_Ivory__vermilion', '#B8432E'], brick: ['DK_Hull_Ivory', 'DK_Hull_Ivory__brick', '#9C2E2B'], gold: ['DK_Crown_Gold', 'DK_Crown_Gold__gold', '#F2C14E'] });
+  expect(lv.pieces.SphereStation).toEqual({ DK_Steel_Ivory: 'vermilion', DK_Hull_Ivory: 'brick' });
+  expect(lv.pieces.Skyport_Tower_Portal).toEqual({ DK_Steel_Ivory: 'vermilion' });
+  expect(lv.pieces.SpaceHQ_Portal).toEqual({ DK_Crown_Gold: 'gold' });
+  const byId = new Map(kit.assets.map(a => [a.id, a]));
+  for (const [id, slots] of Object.entries(lv.pieces)) for (const [base, key] of Object.entries(slots)) {
+    const a = byId.get(id)!; expect(a.status, id).not.toBe('rejected'); expect(a.materials, id).toContain(base); expect(lv.keys[key].base, `${id} ${base}`).toBe(base);
+  }
+  const paths = new Set(lv.files.map(f => f.path));
+  const mat = (n: string) => { const g = join(GEN_ROOT, `Materials/${n}.mat`); return existsSync(g) ? readFileSync(g, 'utf8') : undefined; };
+  const legacy = (n: string) => { const p = join(root, `Materials/${n}.mat`); return existsSync(p) ? readFileSync(p, 'utf8') : undefined; };
+  const strip = (t: string) => t.replace(/  m_Name: \S+\n/, '').replace(/    - _(Base)?Color: \{[^}]*\}\n/g, '');
+  for (const v of Object.values(lv.keys)) {
+    for (const p of [`Materials/${v.material}.mat`, `Materials/${v.material}.mat.meta`]) expect(paths.has(p), p).toBe(true);
+    const b = mat(v.base) ?? legacy(v.base), m = mat(v.material);
+    if (b && m) expect(strip(m), v.material).toBe(strip(b)); // only the name and the base colour differ: no new variant, no new SetPass
+  }
+  const only: Kit = { ...kit, textures: [], colourways: undefined, assets: [] }, dest = mkdtempSync(join(tmpdir(), 'kit-lv-'));
+  try { const r = copyAdopted(only, root, dest, GEN_ROOT); expect(r.errors).toEqual([]); expect(r.copied.length).toBe(lv.files.length); }
   finally { rmSync(dest, { recursive: true, force: true }); }
 });

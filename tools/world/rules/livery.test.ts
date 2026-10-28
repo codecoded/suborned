@@ -1,0 +1,79 @@
+// LV-1 landmark livery and T-K1 tower stand-ins (brief 075-C). The live export passes; each failing example puts one fault in.
+import { expect, setDefaultTimeout, test } from 'bun:test';
+import { readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
+import type { World } from '../../../contracts/world/world.schema';
+import { civic } from '../../plan/civic';
+import { derive, type Plan } from '../../plan/plan';
+import { ctxOf, generated } from '../../plan/world-ctx';
+import { catalogued } from '../gen/kitrefs';
+import { LIVERY, liveryOf } from '../gen/livery';
+import { faceCoverage } from './faces-cover';
+import { liveryFaults, liveryRules } from './livery';
+
+setDefaultTimeout(120000);
+const root = resolve(import.meta.dir, '../../..'), read = (p: string) => JSON.parse(readFileSync(resolve(root, p), 'utf8'));
+const plan: Plan = read('contracts/world/harbour-district.plan.json'), d = derive(plan), civ = civic(plan.civic, read(plan.civic.block)), base = generated(plan, d, civ);
+const lv1 = (w: World) => liveryRules(ctxOf(plan, d, civ, { w, gen: base.gen }))[0]!;
+const clone = (w: World): World => structuredClone(w);
+
+test('the live export: LV-1 passes; the sphere brick and vermilion, SpaceHQ gold, the Skyport tower (by its landmark tag) vermilion', () => {
+  const r = lv1(base.w);
+  expect(r.ok, r.detail).toBe(true);
+  const at = (host: string) => base.w.liveries!.placed.find(p => p.host === host)!;
+  expect(at('landmark/sphere').slots).toEqual({ DK_Steel_Ivory: 'DK_Steel_Ivory__vermilion', DK_Hull_Ivory: 'DK_Hull_Ivory__brick' });
+  expect(at('signature/space-hq').slots).toEqual({ DK_Crown_Gold: 'DK_Crown_Gold__gold' });
+  expect(at('mega/skyport-tower')).toMatchObject({ ref: 'use', piece: 'Skyport_Tower_Portal', slots: { DK_Steel_Ivory: 'DK_Steel_Ivory__vermilion' } });
+  expect(base.w.liveries!.colours).toEqual(LIVERY.colours);
+});
+
+test('the rule: a piece outside the livery categories takes none; a regenerated piece takes its base piece\'s paint', () => {
+  expect(liveryOf({ id: 'Roof_Mast', category: 'Rooftop', materials: ['DK_Steel_Ivory'] })).toBeNull();
+  expect(liveryOf({ id: 'SphereStation@x', category: 'Landmarks', materials: ['DK_Hull_Ivory'] })).toEqual({ DK_Hull_Ivory: 'DK_Hull_Ivory__brick' });
+  expect(liveryOf(catalogued('OceanLiner')!)).toBeNull();
+});
+
+test('failing example: SphereStation\'s hull left unpainted fails LV-1', () => {
+  const w = clone(base.w), p = w.liveries!.placed.find(x => x.host === 'landmark/sphere')!;
+  delete p.slots.DK_Hull_Ivory;
+  expect(lv1(w).ok).toBe(false);
+  expect(liveryFaults(w).faults.join('\n')).toContain('landmark/sphere kit SphereStation');
+});
+
+test('failing example: a station\'s lattice given gold fails LV-1', () => {
+  const w = clone(base.w), p = w.liveries!.placed.find(x => x.host.startsWith('station/'))!;
+  p.slots.DK_Steel_Ivory = 'DK_Steel_Ivory__gold';
+  expect(lv1(w).ok).toBe(false);
+});
+
+test('failing example: a livery on a piece the rule does not paint (the OceanLiner) fails LV-1', () => {
+  const w = clone(base.w);
+  w.liveries!.placed.push({ host: 'signature/ocean-liner', ref: 'kit', piece: 'OceanLiner', slots: { DK_Hull_Silver: 'DK_Hull_Silver__brick' } });
+  expect(lv1(w).ok).toBe(false);
+});
+
+// T-K1 (brief 075-C): where a tower site's kit piece stands, its stand-in masses are hidden and carry no facade pieces; the coverage check counts them dressed by the piece
+const plotArea = new Map(plan.plots.map(p => [p.id, p.area as string])), siteArea = new Map(((plan.standards.buildings as any).towers.sites as { id: string; plot: string }[]).map(s => [`tower/${s.id}`, plotArea.get(s.plot) ?? '?']));
+const areaOf = (b: string) => (b.startsWith('bld/') ? plotArea.get(b.split('/')[1]!) ?? '?' : siteArea.get(b) ?? 'records');
+const cover = (w: World) => faceCoverage(w, catalogued, areaOf, () => false);
+
+test('T-K1: every kit-dressed tower site exports its lower and upper hidden, with no facade piece above its podium', () => {
+  const kitSites = base.w.signatures.filter(s => s.kind === 'tower' && s.source === 'kit').map(s => s.id);
+  expect(kitSites.length).toBe(10);
+  for (const t of kitSites) {
+    for (const part of ['lower', 'upper']) expect(base.w.buildings.find(m => m.id === `${t}/${part}`)?.hidden).toBe(true);
+    expect(base.w.buildings.find(m => m.id === `${t}/podium`)?.hidden).toBeUndefined();
+    const podTop = base.w.buildings.find(m => m.id === `${t}/podium`)!.height;
+    expect(base.w.facades.filter(f => f.building === t && f.base >= podTop - 0.01)).toEqual([]);
+  }
+  const c = cover(base.w);
+  expect(c.undressed).toEqual([]);
+  expect(c.byKitTower).toBeGreaterThan(0);
+});
+
+test('failing example: a hidden stand-in with no kit tower over it counts as undressed (hiding never passes a face)', () => {
+  const w = clone(base.w), s = w.signatures.find(x => x.id === 'tower/avenue-needle')!;
+  s.source = 'procedural'; delete s.kit;
+  const c = cover(w);
+  expect(c.undressed.some(g => g.building === 'tower/avenue-needle')).toBe(true);
+});

@@ -26,6 +26,10 @@ export function generateSignatures(ctx: Ctx): SignatureOut[] {
   });
 }
 
+/** The regenerated kit piece that dresses a tower site (`<regen.from>@<site>`, adopted), or undefined: the site then keeps its drawn stand-in tower. masses.ts (rule T-K1:
+ *  a site this returns a piece for exports its stand-in tower masses `hidden`, data only, and the every-face pass dresses none of their faces) and generateStructures read the same. */
+export const towerKit = (s: { id: string; regen?: { from?: string } }) => adoptedBy(s.regen?.from ? `${s.regen.from}@${s.id}` : undefined);
+
 /** Kit pieces the plan names for its tall and threaded structures (brief 007): tower sites (the regenerated `<from>@<site>` piece, pivot on the podium deck), the SkyBridge between the
  *  avenue gate towers, the SkyRail stations that name a kit piece (pivot on the line at the station; the pieces run along local Z, so yaw π/2 for an east-west trunk) and the Parade gate block.
  *  A piece the kit has not adopted leaves the procedural mass and is listed `pending`. */
@@ -33,7 +37,7 @@ export function generateStructures(ctx: Ctx): SignatureOut[] {
   const out: SignatureOut[] = [], B = ctx.B;
   const podTop = r3(ctx.pav + B.plinth + B.groundStorey + (B.towers.podium - 1) * B.upperStorey), at = (r: Rect): [number, number] => [r3((r[0] + r[1]) / 2), r3((r[2] + r[3]) / 2)];
   for (const s of B.towers.sites as { id: string; rect: Rect; regen?: { from?: string } }[]) {
-    const id = s.regen?.from ? `${s.regen.from}@${s.id}` : '', a = adoptedBy(id);
+    const id = s.regen?.from ? `${s.regen.from}@${s.id}` : '', a = towerKit(s);
     if (!a) { out.push({ id: `tower/${s.id}`, kind: 'tower', source: 'procedural', base: podTop, tip: 0, pending: id, why: `no adopted piece ${id}` }); continue; }
     out.push({ id: `tower/${s.id}`, kind: 'tower', source: 'kit', base: podTop, tip: r3(podTop + a.size[1]), kit: { id: a.id, scale: [1, 1, 1], yaw: 0, at: at(s.rect) } });
   }

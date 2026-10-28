@@ -1,0 +1,4 @@
+port: state fields sunColour,sunIntensity,sunRotation,ambientSky,ambientEquator,ambientGround,fogColour,fogStart,fogEnd,fogDensity,skybox,reflection,reflectionIntensity,probeIntensity,grade; water renderers swapped 2
+variant port: sun #FFEDCC x1.800 euler (44.70, 330.00, 0.00); skybox DecoKit/Space Age Sky; ambient sky #8F9399 eq #989188 gr #A09582
+urp: hdr precision _32Bits, grading LowDynamicRange lut 32
+heads: 3 x 3 states x 4 yaws

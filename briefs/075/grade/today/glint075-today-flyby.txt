@@ -1,0 +1,6 @@
+variant today: sun #FFE4C8 x1.800 euler (38.00, 330.00, 0.00); skybox Suborned/SkyGradient; ambient sky #99989B eq #B2A69C gr #5D5143
+flyby t6: eye (1.93, 8.11, -214.57) tier Long fog Linear 0
+flyby t20: eye (16.14, 12.06, -34.75) tier Long fog Linear 0
+flyby t33: eye (125.00, 62.00, -64.00) tier Long fog Linear 0
+flyby t50: eye (600.00, 72.00, -70.00) tier Long fog Linear 0
+flyby t61.5: eye (759.13, 58.07, -119.37) tier Long fog Linear 0

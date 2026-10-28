@@ -109,6 +109,7 @@ namespace Suborned.World
         /// colour and smoothness, a grazing colour of the water mixed 55% toward the fog (haze) colour, and the haze it fades into.</summary>
         Material Water(object e)
         {
+            if (Light("ocean") is { } ocean) return Ocean(ocean, Colour(Entry("fog")), Light("spaceSky"));
             var shader = Shader.Find("Suborned/Water") ?? throw new InvalidDataException("World: shader Suborned/Water not found (Assets/Suborned/Shaders)");
             var c = Colour(e); var haze = Colour(Entry("fog"));
             var m = new Material(shader) { name = "water", enableInstancing = true };
@@ -117,6 +118,37 @@ namespace Suborned.World
             m.SetColor("_Haze", haze);
             m.SetFloat("_Smoothness", J.Get(e, "smoothness") is double s ? (float)s : 0.6f);
             m.SetFloat("_FadeFrom", 1e7f); m.SetFloat("_FadeTo", 2e7f); // no fade until the horizon sets it
+            return m;
+        }
+
+        /// <summary>Brief 075-A (Glint): the old reel's sea (Suborned/DK Ocean, a port of DecoKit/Ocean) from light.json `ocean`: the old
+        /// DecoKitHarbour.Ocean values (wave sheet, body and scatter colours as sRGB, sky lift and Fresnel cap, waves, slope fade, glitter, F0).
+        /// Same material name and fade inputs as Suborned/Water, so SeaFade and the district water work unchanged. Missing key = reject.</summary>
+        public static Material Ocean(object o, Color haze, object space)
+        {
+            var shader = Shader.Find(J.S(o, "shader")) ?? throw new InvalidDataException($"World: light.json ocean.shader `{J.S(o, "shader")}` not found");
+            var m = new Material(shader) { name = "water", enableInstancing = true };
+            var sheet = J.S(o, "waveTex");
+            var tex = UnityEditor.AssetDatabase.LoadAssetAtPath<Texture2D>(sheet) ?? throw new InvalidDataException($"World: light.json ocean.waveTex {sheet} missing");
+            m.SetTexture("_WaveTex", tex);
+            Vector4 V(string k) { var a = J.A(o, k) ?? throw new InvalidDataException($"World: light.json ocean.{k} missing"); var v = Vector4.zero; for (int i = 0; i < a.Count && i < 4; i++) v[i] = (float)(double)a[i]; return v; }
+            Color C(string k) { var v = V(k); return new Color(v.x, v.y, v.z, 1f); } // as DecoKitHarbour set them: SetColor with the sRGB triple
+            m.SetColor("_Deep", C("deep")); m.SetColor("_Scatter", C("scatter"));
+            m.SetVector("_Sky", V("sky")); m.SetVector("_Waves", V("waves")); m.SetVector("_Wind", V("wind"));
+            m.SetVector("_Fade", V("fade")); m.SetVector("_Sun", V("sun")); m.SetFloat("_F0", J.F(o, "f0"));
+            m.SetColor("_Haze", haze);
+            m.SetFloat("_FadeFrom", 1e7f); m.SetFloat("_FadeTo", 2e7f); // no fade until the horizon sets it
+            // by day the sea mirrors the old sky's air (the old scene's default reflection was its skybox; ours is the street-canyon cube chrome needs):
+            // the spaceSky colours set the same way as on the sky material, so Unity's colour conversion gives the shader the same values
+            if (space != null && J.Get(space, "colours") is Dictionary<string, object> cs && J.Get(space, "vectors") is Dictionary<string, object> vs && J.Get(space, "floats") is Dictionary<string, object> fs)
+            {
+                Color SC(string k) { var a = J.A(cs, k); return new Color((float)(double)a[0], (float)(double)a[1], (float)(double)a[2], (float)(double)a[3]); }
+                var au = J.A(vs, "_Aureole");
+                m.SetColor("_SkyZenith", SC("_Zenith")); m.SetColor("_SkyMid", SC("_Mid")); m.SetColor("_SkyHorizon", SC("_Horizon")); m.SetColor("_SkySun", SC("_SunColor"));
+                m.SetVector("_SkyShape", new Vector4(J.F(fs, "_MidHeight"), J.F(fs, "_HazeHeight"), 0f, 0f));
+                m.SetVector("_SkyAureole", new Vector4((float)(double)au[0], (float)(double)au[1], (float)(double)au[2], (float)(double)au[3]));
+                m.SetFloat("_SkyOn", 1f);
+            }
             return m;
         }
 
