@@ -103,10 +103,14 @@ const PLAIN_USE: Record<string, string[]> = { 'LinerDock@liner-berth': ['landmar
  *  wave-2 street bays read: `face:*` is not `facade`, so facades.ts never takes a side bay for a street bay). Width and height scale 0.85-1.15 (6 m modules tiled
  *  along any face, a storey band's height), squash 0.7 (a narrow module on a tall band: 0.85 / 1.15). Vela's briefs/072/pieces/pieces.md is the final list. */
 const FACE_072 = /^(SideBay_[34]|SideBayStack_(Base|Mid|Top)|CornerPier_(Out|In)_(3|4|Base|Mid|Top)|AlleyWall_[34]D?|SidePilaster_(3|4|Base|Mid|Top)|ShopFill_[34]|ShopStack_Base)$/;
+const STREAM_075 = /^Stream(Bay|Corner|End)Stack_(Base|Mid|Top)$/;
 const faceUse = (name: string): string[] => [/^Shop(Fill|Stack)/.test(name) ? 'face:shop' : /^SidePilaster/.test(name) ? 'face:pilaster' : /^SideBayStack/.test(name) ? 'face:stack' : /^SideBay/.test(name) ? 'face:side' : /^CornerPier_Out/.test(name) ? 'face:pier-out' : /^CornerPier_In/.test(name) ? 'face:pier-in' : 'face:service'];
 
 export function tagsOf(name: string, category: string): KitTags {
   if (FACE_072.test(name)) return /^Shop(Fill|Stack)/.test(name) ? { use: faceUse(name), scale: [0.5, 1.7], squash: 0.2, wave: 2 } : /^SidePilaster/.test(name) ? { use: faceUse(name), scale: [0.33, 1.7], squash: 0.2, wave: 2 } : { use: faceUse(name), scale: [0.85, 1.15], squash: 0.7, wave: 2 }; // a pilaster takes 0.5-2.5 m of a run (1.5 m nominal); the shop fillers (Vela, 072 pass 2: 3 m nominal) 1.5-5.1 m, tiled at 0.5-1.7 so any run of 1.5 m or more takes whole modules
+  // brief 075-E (Vela): the streamline stack modules (tools/decokit/streamstack.py). Splice places them by name (tools/world/gen/faces.ts); their use is `face:*`, never `facade`, so
+  // the wave-2 street-bay picker never takes a storey band for a whole bay. A bay tiles at 0.85-1.15 like SideBayStack; the corner and end keep their plan (the round's radius) at 0.9-1.1.
+  if (STREAM_075.test(name)) { const f = /Corner/.test(name) ? 'corner' : /End/.test(name) ? 'end' : 'bay'; return { use: [`face:stream-${f}`], form: f, scale: f === 'bay' ? [0.85, 1.15] : [0.9, 1.1], squash: f === 'bay' ? 0.7 : 1, wave: 2 }; }
   if (name === 'RecordsTower') return { use: ['landmark:records-tower'], scale: [1, 1], squash: 1, wave: 2 }; // brief 072: built to the Records Office (build.ts recordsTower), scale 1
   const form = /Corner/.test(name) ? 'corner' : /End/.test(name) ? 'end' : /Bay/.test(name) ? 'bay' : undefined;
   return {

@@ -197,3 +197,83 @@ Nothing stands over the coping. The shop box (piers, head, floor, back wall) sit
   (as DK_Window_Tower does); judge it against the fronts' film in the game light and tell me the value.
 - **Redline**: the shopfront glass of the shop pieces (as on the street bays) is still transparent DK_GlassDark at L0, so the cut leaves it unfaded on the ground
   storey there too; if that shows, an opaque shop-glass variant is a one-line change for both the street bays and the fillers (a palette/look call, ask first).
+
+---
+
+# 075-E (Vela, 2026-10-28): streamline stack modules, CornerTower_12
+
+Sky 2026-10-28: "we've still lost all the lovely curved buildings". Builder `tools/decokit/streamstack.py`: the old streamline bay, run end and wrap-around corner
+(skyline.py `stream_bay` / `stream_end`, facades.py `stream_corner`, the old generator's own code, diffed against `~/Projects/the-suborned/workbench/Tools/Blender/decokit`)
+cut into the plan's storey bands. All 9 adopted (source generated) with CornerTower_12; collide volumes measured. Pictures: `briefs/075/stream/contact_sheet.png`.
+
+## Frame (PLAN, as SideBayStack)
+
+Base + (n − 1) × Mid + Top = H(n) = 9.6 + 3.6 (n − 1) at **sy 1**. Stack pivot z = the band's foot.
+- **Base 5.65**: granite plinth 0–0.45, shop glazing 0.45–4.65 (transom 3.2), ivory canopy 1.6 m out at 4.5–4.65 (chrome nose), teal fascia 4.65–5.65 with two brass beads.
+- **Mid 3.6**: spandrel 0–1.1 (seafoam sill band 0.88–1.04), ribbon window 1.1–3.6, ivory eyebrow 0.45 proud at 3.48–3.6 (inside the band).
+- **Top 3.95**: attic ribbon (spandrel 0–0.75, ribbon 0.75–2.85), eyebrow 2.83–2.95, seafoam parapet band 3.2–3.45, ivory coping 3.8–3.95 (= SideBayStack_Top's coping).
+Every band is the same in all three families, so the floor lines, eyebrows, canopy, fascia and coping run unbroken from a bay round a corner or an end.
+A whole-wall `_n` piece (KIT frame, sy = H(n) / coping) beside a stack does not share floor lines; it never did with SideBay either.
+
+## Pivot, footprint, facing (kit frame: x across, y up, z front = +Z; kit x = −Blender x, kit z = −Blender y)
+
+**The same footprint and pivot as the whole-wall StreamBay_n / StreamEnd_n / StreamCorner_n**, so a column of stack modules stands at the transform the whole-wall piece would.
+Pivot = the footprint's front centre on the facade plane (the building line), front +Z out of the face. Bodies are solid to the full depth (as the whole-wall pieces).
+
+| family | plan | width along the face | depth | round | where the next piece goes |
+|---|---|---|---|---|---|
+| StreamBayStack | 6 × 14 m, x −3..3, z −14..0 (canopy to +1.63, eyebrows +0.45) | 6.0 (tile at sx 0.85–1.15) | 14 | none | the next bay at x ± 6 |
+| StreamEndStack | x −3..3 front, the side wall at kit **x = +3** running back to z −14 | 6.0 | 14 | quarter round **R 3**, centre (kit) (0, −3) — the run's free end on **kit +X** (Blender −X); scale x −1 for an end on −X | the run continues at kit x − 6 |
+| StreamCornerStack | 8 × 8 cell, kit x −4..4, z −8..0 | front leg 8 (kit x −4..4), side leg 8 (kit z 0..−8 on x = +4) | 8 | quarter round **R 6** about kit (−2, −6), from (4, −6) round to (−2, 0): the corner vertex is kit **(+4, 0)** | front face continues at kit x − 7 (bay centre), side face at kit z − 11 (a bay yawed so its front is kit +X) |
+
+- **Corner angle: square (90°) outside corners only**, symmetric about its diagonal (mirror x for the other hand, or yaw: the four corners of a box are yaw 0/90/180/270).
+  At any other turn use something else (CornerPier or the modules meeting); never stretch it in plan (scale 0.9–1.1 uniform in x and z, like StreamCorner_n).
+- The plan's sharp corner lies 2.49 m outside the R 6 round (on the diagonal), and 0.88 m outside the End's R 3 round: **the mass behind must not poke through** —
+  hide or round the mass corner where these stand (step 2 of 075-E), as the whole-wall corners need today.
+- **The corner fin** (ivory, 1.3 m proud on the diagonal) climbs the Mid bands and on the Top rises **6.0 m over the eyebrow line (to 8.85, 4.9 m over the coping)**
+  with three teal bands and a 3.2 m mast (Top size y 12.21) — as the whole-wall StreamCorner_n. No fin in the Base (it starts at the fascia top, as on the whole-wall piece).
+  Nothing else passes the coping.
+- Windows: the opaque **DK_Window_Film** (Redline's 072 rule for every-face pieces; fades in the occlusion cut). One constant (`GLASS`) swaps it for the fronts' DK_GlassDark.
+- Tags (tools/kit/tags.ts, Splice may retune): use `face:stream-bay|end|corner` (never `facade`, so the wave-2 street-bay picker never takes a storey band), form
+  bay/end/corner, scale bay 0.85–1.15 (squash 0.7), end/corner 0.9–1.1. LOD class (lod.ts): bay `storey`, end/corner `cornerStorey` (45 / 120 / 330 m).
+
+## Triangles (L0 / L1 / L2), for Redline
+
+| piece | L0 | L1 | L2 | replaces | L0 / L1 / L2 |
+|---|---|---|---|---|---|
+| StreamBayStack_Base | 470 | 170 | 86 | SideBayStack_Base | 560 / 44 / 68 |
+| StreamBayStack_Mid | 250 | 122 | 62 | SideBayStack_Mid | 482 / 74 / 80 |
+| StreamBayStack_Top | 414 | 158 | 86 | SideBayStack_Top | 494 / 50 / 68 |
+| StreamEndStack_Base | 4148 | 348 | 244 | (a free end: SideBayStack + CornerPier_Out_Base 1116 / 176 / 128) | |
+| StreamEndStack_Mid | 1688 | 392 | 144 | (… CornerPier_Out_Mid 240 / 108 / 64) | |
+| StreamEndStack_Top | 3108 | 564 | 224 | (… CornerPier_Out_Top 456 / 160 / 64) | |
+| StreamCornerStack_Base | 4684 | 452 | 312 | CornerPier_Out_Base | 1116 / 176 / 128 |
+| StreamCornerStack_Mid | 1892 | 420 | 192 | CornerPier_Out_Mid | 240 / 108 / 64 |
+| StreamCornerStack_Top | 3806 | 668 | 296 | CornerPier_Out_Top | 456 / 160 / 64 |
+| CornerTower_12 | 26142 | 6397 (auto 25 %) | 1864 (auto 6 %) | (none placed) | |
+
+Bays are lighter than the SideBayStack they replace at L0 (one ribbon instead of two windows and a porthole); the rounds cost 1.7–4.7k per band at L0 (the whole-wall
+StreamCorner_4 is 14.2k over its 6 bands, the same density). L1 and L2 are hand-built (square trims, 8 / 6 segments on the R 6 round and 6 / 4 on the R 3, no beads or mast;
+L2 the body, the recessed film, eyebrows, canopy and coping: it is the shadow copy, windows open as in 072-G). Their L1/L2 are a little heavier than SideBayStack's
+because the eyebrows and canopy stay in the shadow copy (they cast the streamline's horizontal shadow bands).
+
+## CornerTower_12 (now adopted), DecoCorner_10, DecoEnd_10
+
+- **CornerTower_12**: nothing on record kept it a candidate (it was simply never in the first adoption); on review the old piece broke SF-21: its 5.9 m door canopy
+  disc and two 3.7 m columns were DK_Gold, which is brass at street level since 14 Oct, so a large brass surface. Fixed in facades_tower.py: the disc is ivory enamel with
+  a brass hairline under the chrome rim, the columns chrome; shape unchanged. It now ships from our generator (the old FBX lacked brief 048's flank fix), with L1/L2.
+  Storey frame: KIT (G 5.0, 3.4 m storeys); the 6-floor streamline base (wing parapets at 26.5, pairs with StreamBay_6) and the R 5 drum to 12 floors (coping 46.9,
+  disc and spire to 67.3). Cell 10 × 10 (kit x −5..5, z −10..0, corner vertex kit (+5, 0)), square corner, R 5. sy = H(12) / 46.9 = 1.049 inside its 0.9–1.1. Tall city only.
+  **Open (Splice):** its blade sign reads HOTEL in neon: place it only where the corner tenancy is a hotel (tag `trade: ['hotel-lobby', 'travel-bureau']` as BladeSign_Hotel),
+  or ask me for a blank-panel variant.
+- **DecoCorner_10 / DecoEnd_10**: already adopted (old FBX, LODs from our generator); brass only as beads, bands, frames and a 0.9 m sunburst: SF-21 holds, nothing to fix.
+  KIT frame, 10 floors (coping zt 39.0 + 0.95; DecoCorner crown and spire to 57.4, DecoEnd's pier finial to 45.6): sy = H(10) / 40.1 ≈ 1.05. DecoCorner = 8 × 8 cell (as
+  StreamCorner) with a 4.24 m 45° chamfer, square corner; DecoEnd = 6 × 14 with a square corner pier on kit +X. They pair with DecoBay_10; placed 0 times only because
+  nothing asks for them (Splice's grammar).
+
+## Evidence
+
+- `bun run guard bun run decokit --only <9 stack ids>,CornerTower_12` exit 0 (55 s); `bun run guard bun run kit` exit 0 (adopted 294 → 304; kit.json: +9 pieces, CornerTower_12
+  changed, nothing else); `bun run guard bun run collide` (10 measured) and `bun run collide --check` ok (342 pieces, 4013 volumes); `bun run guard bun run cover` and
+  `bun run cover --check` exit 0; `bun run typecheck` exit 0; `bun test tools/decokit tools/kit` 44 pass 0 fail; kit digest fixture regenerated (fixture.test passes).
+- Renders: Blender Eevee via `briefs/075/stream/sheet.py` and `tower.py`, not the game's light; the in-game read is Latch's.

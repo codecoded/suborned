@@ -31227,7 +31227,7 @@
     -4.937
    ],
    "front": "+Z",
-   "tris": 25870,
+   "tris": 26142,
    "materials": [
     "DK_Limestone_Tex",
     "DK_GlassDark",
@@ -31243,7 +31243,7 @@
     "DK_Steel_Ivory",
     "DK_Steel",
     "DK_Iron",
-    "DK_Signal_Red",
+    "DK_Beacon_Rose",
     "DK_Window_Tower",
     "DK_Hull_Ivory",
     "DK_Signal_Amber",
@@ -31251,13 +31251,26 @@
     "DK_Glass",
     "DK_Neon_Coral"
    ],
+   "lods": [
+    {
+     "file": "Models/Facades/DK_CornerTower_12_L1.fbx",
+     "tris": 6397,
+     "screen": 0.2
+    },
+    {
+     "file": "Models/Facades/DK_CornerTower_12_L2.fbx",
+     "tris": 1864,
+     "screen": 0.07
+    }
+   ],
    "lodCategory": "facades",
    "files": [
     {
+     "root": "generated",
      "role": "fbx",
      "path": "Models/Facades/DK_CornerTower_12.fbx",
-     "sha256": "0ca134ca331ad634a914a744e744371cebe8a6a2cad33024e2a39ca450f2861e",
-     "bytes": 588028
+     "sha256": "1f4376baf5e038ff548ac88742ae7ad0825a1d6693f8d418e545c37f27ad9240",
+     "bytes": 593676
     },
     {
      "role": "fbx-meta",
@@ -31474,15 +31487,15 @@
     {
      "root": "generated",
      "role": "material",
-     "path": "Materials/DK_Signal_Red.mat",
-     "sha256": "af27f44e7b6f61d5543b7bbcb964f3a793319e16a3cefd084e013754aacb4166",
-     "bytes": 3931
+     "path": "Materials/DK_Beacon_Rose.mat",
+     "sha256": "2dacf9e3914c1fa57a77a28fc9eba82272f04c550bf14f92912a67cfbaf492a8",
+     "bytes": 3947
     },
     {
      "root": "generated",
      "role": "material-meta",
-     "path": "Materials/DK_Signal_Red.mat.meta",
-     "sha256": "fd6388893e0ded49c829db67d88226e839f93935e7f4804924ef659320ce33a0",
+     "path": "Materials/DK_Beacon_Rose.mat.meta",
+     "sha256": "59a36a5faa060d3b3897dea4537f7909d9a555e8fe4512338129eb9eb0844347",
      "bytes": 188
     },
     {
@@ -31738,6 +31751,20 @@
      "path": "Textures/wall_panel_neutral_v1.png.meta",
      "sha256": "cec1064be22b52d7cc7a6c9f39658568961badf0731ee9bb6b309a57747be9a0",
      "bytes": 2714
+    },
+    {
+     "root": "generated",
+     "role": "lod",
+     "path": "Models/Facades/DK_CornerTower_12_L1.fbx",
+     "sha256": "f557def6ad23e83cc4b70922c7e99e579d59d361aff58bf4946529addeb64450",
+     "bytes": 264284
+    },
+    {
+     "root": "generated",
+     "role": "lod",
+     "path": "Models/Facades/DK_CornerTower_12_L2.fbx",
+     "sha256": "5955e137eaec97e759a38bc581aa905989735bca1aaa270a78675f62f4b17a74",
+     "bytes": 116796
     }
    ],
    "tags": {
@@ -31752,7 +31779,7 @@
     "squash": 1,
     "wave": 2
    },
-   "status": "candidate"
+   "status": "adopted"
   },
   {
    "id": "Dumpster",
@@ -92102,6 +92129,2367 @@
     "tipPlan": 252,
     "tiers": null
    }
+  },
+  {
+   "id": "StreamBayStack_Base",
+   "category": "Facades",
+   "size": [
+    6,
+    5.65,
+    15.63
+   ],
+   "pivot": "origin-ground",
+   "pivotOffset": [
+    0,
+    -6.185
+   ],
+   "front": "+Z",
+   "tris": 470,
+   "materials": [
+    "DK_Limestone_Tex",
+    "DK_Window_Film",
+    "DK_Gold",
+    "DK_Chrome",
+    "DK_Stone_Dark",
+    "DK_Enamel_Teal",
+    "DK_Enamel_Ivory"
+   ],
+   "lods": [
+    {
+     "file": "Models/Facades/DK_StreamBayStack_Base_L1.fbx",
+     "tris": 170,
+     "screen": 0.2
+    },
+    {
+     "file": "Models/Facades/DK_StreamBayStack_Base_L2.fbx",
+     "tris": 86,
+     "screen": 0.07
+    }
+   ],
+   "lodCategory": "facades",
+   "source": "generated",
+   "lodClass": "storey",
+   "files": [
+    {
+     "root": "generated",
+     "role": "fbx",
+     "path": "Models/Facades/DK_StreamBayStack_Base.fbx",
+     "sha256": "a73acb6419fc5a2323fae86ac6a42654eef9df3233c88f552f7f0996f252cc51",
+     "bytes": 33484
+    },
+    {
+     "root": "generated",
+     "role": "material",
+     "path": "Materials/DK_Limestone_Tex.mat",
+     "sha256": "8b31e541d549a854b28e8fe0093142a7c4c3d022c541f953c19b47bea813b307",
+     "bytes": 4272
+    },
+    {
+     "root": "generated",
+     "role": "material-meta",
+     "path": "Materials/DK_Limestone_Tex.mat.meta",
+     "sha256": "ae76f47b08ffe2a83dcaf6efeaf41bdcdab4b24c4280b18c81d9e98f88f7498f",
+     "bytes": 188
+    },
+    {
+     "root": "generated",
+     "role": "material",
+     "path": "Materials/DK_Window_Film.mat",
+     "sha256": "bf97bfa5afa5348a63e9738c865972b382ca38881e0c87a38c7409d353a2f550",
+     "bytes": 3833
+    },
+    {
+     "root": "generated",
+     "role": "material-meta",
+     "path": "Materials/DK_Window_Film.mat.meta",
+     "sha256": "723148604413474bc1198056d880c25c2dd68439da5b77e0bcf2eb82c30a47d4",
+     "bytes": 188
+    },
+    {
+     "root": "generated",
+     "role": "material",
+     "path": "Materials/DK_Gold.mat",
+     "sha256": "c71f203ce4de7b01bf12a1ede0030bb2bfd14dbe28bb56344398c9d5260975f0",
+     "bytes": 4035
+    },
+    {
+     "root": "generated",
+     "role": "material-meta",
+     "path": "Materials/DK_Gold.mat.meta",
+     "sha256": "37b495884bcdf20273ddc0bd8a24391478df009364b6ead9845267bb58b06498",
+     "bytes": 188
+    },
+    {
+     "root": "generated",
+     "role": "material",
+     "path": "Materials/DK_Chrome.mat",
+     "sha256": "5dc81d1880e4d910fc4c88d842a770af3852644101b32a32c2adc37b5326e7f9",
+     "bytes": 4056
+    },
+    {
+     "root": "generated",
+     "role": "material-meta",
+     "path": "Materials/DK_Chrome.mat.meta",
+     "sha256": "4c894cf78eb05e94d210de5d4f10603033ae87f67a5ff31c9ac6c3f2371620f7",
+     "bytes": 188
+    },
+    {
+     "root": "generated",
+     "role": "material",
+     "path": "Materials/DK_Stone_Dark.mat",
+     "sha256": "4885ec7fa5d343f65b414d79e0aed172e8fa8b204ebed001fe13d839cabe0dc8",
+     "bytes": 4068
+    },
+    {
+     "root": "generated",
+     "role": "material-meta",
+     "path": "Materials/DK_Stone_Dark.mat.meta",
+     "sha256": "bdc4995270128e90866a2b2b838d236f22c2ca47a79debff8e33869ed88f6fad",
+     "bytes": 188
+    },
+    {
+     "root": "generated",
+     "role": "material",
+     "path": "Materials/DK_Enamel_Teal.mat",
+     "sha256": "58fa1a89f064b566b89323bf9a72e627a4ff6f23b6eeeb9520b3754b4ffa42d1",
+     "bytes": 3985
+    },
+    {
+     "root": "generated",
+     "role": "material-meta",
+     "path": "Materials/DK_Enamel_Teal.mat.meta",
+     "sha256": "a70a4359fb1102bee640740027c6ccba8b741c65b93f8d4af2acb6db8bd36f5a",
+     "bytes": 188
+    },
+    {
+     "root": "generated",
+     "role": "material",
+     "path": "Materials/DK_Enamel_Ivory.mat",
+     "sha256": "86fbae6bdcee94c8d92b60eabf67561c9e19ee7b2196606e5461a682aefa50f0",
+     "bytes": 3983
+    },
+    {
+     "root": "generated",
+     "role": "material-meta",
+     "path": "Materials/DK_Enamel_Ivory.mat.meta",
+     "sha256": "631111bbf64b77d5f6f289e8233a50d23f222070525c881a69d2db9c838992f8",
+     "bytes": 188
+    },
+    {
+     "role": "texture",
+     "path": "Textures/facade_panel_v1_mask.png",
+     "sha256": "06b88718b39837b5229f3fb20de9756e46c6e95cd60bd1a056a09b2ccea2a88d",
+     "bytes": 974447
+    },
+    {
+     "role": "texture-meta",
+     "path": "Textures/facade_panel_v1_mask.png.meta",
+     "sha256": "a58d4e958ddacf146aadb10a18b9e1502bcd77f235a2e29af3fb3209a289af93",
+     "bytes": 2714
+    },
+    {
+     "role": "texture",
+     "path": "Textures/facade_panel_v1_normal.png",
+     "sha256": "af57c53efdeb3bc4dca92ce8eb4c0f86c7ba6f08710115e61dc6f701b78d9465",
+     "bytes": 987621
+    },
+    {
+     "role": "texture-meta",
+     "path": "Textures/facade_panel_v1_normal.png.meta",
+     "sha256": "276cdae04b563c96228b2dcb3170f5ca04031d1d5382c064131945bcfd8557b5",
+     "bytes": 2714
+    },
+    {
+     "root": "generated",
+     "role": "texture",
+     "path": "Textures/surface_enamel_detail_v1.png",
+     "sha256": "a407da57c4a52fc85b1946b9f33f91f2ae1a1c5ff3d31fd2bebcc210d60fd147",
+     "bytes": 474006
+    },
+    {
+     "root": "generated",
+     "role": "texture-meta",
+     "path": "Textures/surface_enamel_detail_v1.png.meta",
+     "sha256": "30eb7058ac45ff6a9f483843d9f9118b13b98ab96576ef30bd3233c6b64dd0d6",
+     "bytes": 2718
+    },
+    {
+     "root": "generated",
+     "role": "texture",
+     "path": "Textures/surface_enamel_detail_v1_normal.png",
+     "sha256": "45e4c502424bb43719e315020ffb03d7ac8dd5fb85658f978cd099d8d7d6af45",
+     "bytes": 1964610
+    },
+    {
+     "root": "generated",
+     "role": "texture-meta",
+     "path": "Textures/surface_enamel_detail_v1_normal.png.meta",
+     "sha256": "ff1f0ca0ac42c65a890f56d5f8aee70ad346771c991ed17c4174132622d09279",
+     "bytes": 2718
+    },
+    {
+     "root": "generated",
+     "role": "texture",
+     "path": "Textures/surface_limestone_detail_v1.png",
+     "sha256": "a8dbee7fa54175ca65d121a2c9f26845b277011c3e46322f5c8a1d7ddb4c0fa1",
+     "bytes": 886792
+    },
+    {
+     "root": "generated",
+     "role": "texture-meta",
+     "path": "Textures/surface_limestone_detail_v1.png.meta",
+     "sha256": "f2a2621861633f71259aa27ec765333390c198302ff40887d8a13894580ce3c3",
+     "bytes": 2718
+    },
+    {
+     "root": "generated",
+     "role": "texture",
+     "path": "Textures/surface_limestone_detail_v1_normal.png",
+     "sha256": "c35393574e0aafc33677535adad7890499f177090f42071d993199ca6acfd8f9",
+     "bytes": 2674711
+    },
+    {
+     "root": "generated",
+     "role": "texture-meta",
+     "path": "Textures/surface_limestone_detail_v1_normal.png.meta",
+     "sha256": "82938cc6e790f442a64f634fb847462a50ef174b137374a34a03f1461ac6e686",
+     "bytes": 2718
+    },
+    {
+     "root": "generated",
+     "role": "texture",
+     "path": "Textures/surface_metal_detail_v1.png",
+     "sha256": "b4e253548eb27ad5b9c6541e73e8a3ec743deef73aed90c8b25a491a51cecc18",
+     "bytes": 491305
+    },
+    {
+     "root": "generated",
+     "role": "texture-meta",
+     "path": "Textures/surface_metal_detail_v1.png.meta",
+     "sha256": "1e8a51bb2ee18bdcdf08c2cc7cc9cb9c38873a5bf40b59d5971300f590bbe376",
+     "bytes": 2718
+    },
+    {
+     "root": "generated",
+     "role": "texture",
+     "path": "Textures/surface_metal_detail_v1_normal.png",
+     "sha256": "5848fec158580a1bb23686e7112e59ee09bee832cc86f8e1a11532836f0a3891",
+     "bytes": 1613297
+    },
+    {
+     "root": "generated",
+     "role": "texture-meta",
+     "path": "Textures/surface_metal_detail_v1_normal.png.meta",
+     "sha256": "818ae432cca438c26b951fcf6aef34251cd221041a400a710e920a89f4de6d42",
+     "bytes": 2718
+    },
+    {
+     "root": "generated",
+     "role": "texture",
+     "path": "Textures/wall_panel_neutral_v1.png",
+     "sha256": "69e32933789c067f894986f0104c4daddfb019b5c0cf88d5878c8d5f58ebfe79",
+     "bytes": 1030928
+    },
+    {
+     "root": "generated",
+     "role": "texture-meta",
+     "path": "Textures/wall_panel_neutral_v1.png.meta",
+     "sha256": "cec1064be22b52d7cc7a6c9f39658568961badf0731ee9bb6b309a57747be9a0",
+     "bytes": 2714
+    },
+    {
+     "root": "generated",
+     "role": "lod",
+     "path": "Models/Facades/DK_StreamBayStack_Base_L1.fbx",
+     "sha256": "f6ada04ea5ee341f7f552c4ad528e12f6ac98b64fd51ea32cb46e344e3a54065",
+     "bytes": 28188
+    },
+    {
+     "root": "generated",
+     "role": "lod",
+     "path": "Models/Facades/DK_StreamBayStack_Base_L2.fbx",
+     "sha256": "3bcf5ad35e72d45eccc43a6b7fb5f4badc7b43560d1b7751f1f59acadd9f8259",
+     "bytes": 24764
+    }
+   ],
+   "tags": {
+    "use": [
+     "face:stream-bay"
+    ],
+    "form": "bay",
+    "scale": [
+     0.85,
+     1.15
+    ],
+    "squash": 0.7,
+    "wave": 2
+   },
+   "status": "adopted"
+  },
+  {
+   "id": "StreamBayStack_Mid",
+   "category": "Facades",
+   "size": [
+    6,
+    3.6,
+    14.45
+   ],
+   "pivot": "origin-ground",
+   "pivotOffset": [
+    0,
+    -6.775
+   ],
+   "front": "+Z",
+   "tris": 250,
+   "materials": [
+    "DK_Limestone_Tex",
+    "DK_Window_Film",
+    "DK_Chrome",
+    "DK_Enamel_Seafoam",
+    "DK_Enamel_Ivory"
+   ],
+   "lods": [
+    {
+     "file": "Models/Facades/DK_StreamBayStack_Mid_L1.fbx",
+     "tris": 122,
+     "screen": 0.2
+    },
+    {
+     "file": "Models/Facades/DK_StreamBayStack_Mid_L2.fbx",
+     "tris": 62,
+     "screen": 0.07
+    }
+   ],
+   "lodCategory": "facades",
+   "source": "generated",
+   "lodClass": "storey",
+   "files": [
+    {
+     "root": "generated",
+     "role": "fbx",
+     "path": "Models/Facades/DK_StreamBayStack_Mid.fbx",
+     "sha256": "10be03e825cb7009545788b00278b6940cadc68ab08c9268d4c72007ef91c41e",
+     "bytes": 27692
+    },
+    {
+     "root": "generated",
+     "role": "material",
+     "path": "Materials/DK_Limestone_Tex.mat",
+     "sha256": "8b31e541d549a854b28e8fe0093142a7c4c3d022c541f953c19b47bea813b307",
+     "bytes": 4272
+    },
+    {
+     "root": "generated",
+     "role": "material-meta",
+     "path": "Materials/DK_Limestone_Tex.mat.meta",
+     "sha256": "ae76f47b08ffe2a83dcaf6efeaf41bdcdab4b24c4280b18c81d9e98f88f7498f",
+     "bytes": 188
+    },
+    {
+     "root": "generated",
+     "role": "material",
+     "path": "Materials/DK_Window_Film.mat",
+     "sha256": "bf97bfa5afa5348a63e9738c865972b382ca38881e0c87a38c7409d353a2f550",
+     "bytes": 3833
+    },
+    {
+     "root": "generated",
+     "role": "material-meta",
+     "path": "Materials/DK_Window_Film.mat.meta",
+     "sha256": "723148604413474bc1198056d880c25c2dd68439da5b77e0bcf2eb82c30a47d4",
+     "bytes": 188
+    },
+    {
+     "root": "generated",
+     "role": "material",
+     "path": "Materials/DK_Chrome.mat",
+     "sha256": "5dc81d1880e4d910fc4c88d842a770af3852644101b32a32c2adc37b5326e7f9",
+     "bytes": 4056
+    },
+    {
+     "root": "generated",
+     "role": "material-meta",
+     "path": "Materials/DK_Chrome.mat.meta",
+     "sha256": "4c894cf78eb05e94d210de5d4f10603033ae87f67a5ff31c9ac6c3f2371620f7",
+     "bytes": 188
+    },
+    {
+     "root": "generated",
+     "role": "material",
+     "path": "Materials/DK_Enamel_Seafoam.mat",
+     "sha256": "431d3e1a26bf85a6fb1c16687e95c486dc6851f9b84849b854e78b694c45b736",
+     "bytes": 3985
+    },
+    {
+     "root": "generated",
+     "role": "material-meta",
+     "path": "Materials/DK_Enamel_Seafoam.mat.meta",
+     "sha256": "76ed38fd07788956339cae17c5f59888d551ffbccfc4a2b3763688c4034c1820",
+     "bytes": 188
+    },
+    {
+     "root": "generated",
+     "role": "material",
+     "path": "Materials/DK_Enamel_Ivory.mat",
+     "sha256": "86fbae6bdcee94c8d92b60eabf67561c9e19ee7b2196606e5461a682aefa50f0",
+     "bytes": 3983
+    },
+    {
+     "root": "generated",
+     "role": "material-meta",
+     "path": "Materials/DK_Enamel_Ivory.mat.meta",
+     "sha256": "631111bbf64b77d5f6f289e8233a50d23f222070525c881a69d2db9c838992f8",
+     "bytes": 188
+    },
+    {
+     "role": "texture",
+     "path": "Textures/facade_panel_v1_mask.png",
+     "sha256": "06b88718b39837b5229f3fb20de9756e46c6e95cd60bd1a056a09b2ccea2a88d",
+     "bytes": 974447
+    },
+    {
+     "role": "texture-meta",
+     "path": "Textures/facade_panel_v1_mask.png.meta",
+     "sha256": "a58d4e958ddacf146aadb10a18b9e1502bcd77f235a2e29af3fb3209a289af93",
+     "bytes": 2714
+    },
+    {
+     "role": "texture",
+     "path": "Textures/facade_panel_v1_normal.png",
+     "sha256": "af57c53efdeb3bc4dca92ce8eb4c0f86c7ba6f08710115e61dc6f701b78d9465",
+     "bytes": 987621
+    },
+    {
+     "role": "texture-meta",
+     "path": "Textures/facade_panel_v1_normal.png.meta",
+     "sha256": "276cdae04b563c96228b2dcb3170f5ca04031d1d5382c064131945bcfd8557b5",
+     "bytes": 2714
+    },
+    {
+     "root": "generated",
+     "role": "texture",
+     "path": "Textures/surface_enamel_detail_v1.png",
+     "sha256": "a407da57c4a52fc85b1946b9f33f91f2ae1a1c5ff3d31fd2bebcc210d60fd147",
+     "bytes": 474006
+    },
+    {
+     "root": "generated",
+     "role": "texture-meta",
+     "path": "Textures/surface_enamel_detail_v1.png.meta",
+     "sha256": "30eb7058ac45ff6a9f483843d9f9118b13b98ab96576ef30bd3233c6b64dd0d6",
+     "bytes": 2718
+    },
+    {
+     "root": "generated",
+     "role": "texture",
+     "path": "Textures/surface_enamel_detail_v1_normal.png",
+     "sha256": "45e4c502424bb43719e315020ffb03d7ac8dd5fb85658f978cd099d8d7d6af45",
+     "bytes": 1964610
+    },
+    {
+     "root": "generated",
+     "role": "texture-meta",
+     "path": "Textures/surface_enamel_detail_v1_normal.png.meta",
+     "sha256": "ff1f0ca0ac42c65a890f56d5f8aee70ad346771c991ed17c4174132622d09279",
+     "bytes": 2718
+    },
+    {
+     "root": "generated",
+     "role": "texture",
+     "path": "Textures/surface_metal_detail_v1.png",
+     "sha256": "b4e253548eb27ad5b9c6541e73e8a3ec743deef73aed90c8b25a491a51cecc18",
+     "bytes": 491305
+    },
+    {
+     "root": "generated",
+     "role": "texture-meta",
+     "path": "Textures/surface_metal_detail_v1.png.meta",
+     "sha256": "1e8a51bb2ee18bdcdf08c2cc7cc9cb9c38873a5bf40b59d5971300f590bbe376",
+     "bytes": 2718
+    },
+    {
+     "root": "generated",
+     "role": "texture",
+     "path": "Textures/surface_metal_detail_v1_normal.png",
+     "sha256": "5848fec158580a1bb23686e7112e59ee09bee832cc86f8e1a11532836f0a3891",
+     "bytes": 1613297
+    },
+    {
+     "root": "generated",
+     "role": "texture-meta",
+     "path": "Textures/surface_metal_detail_v1_normal.png.meta",
+     "sha256": "818ae432cca438c26b951fcf6aef34251cd221041a400a710e920a89f4de6d42",
+     "bytes": 2718
+    },
+    {
+     "root": "generated",
+     "role": "texture",
+     "path": "Textures/wall_panel_neutral_v1.png",
+     "sha256": "69e32933789c067f894986f0104c4daddfb019b5c0cf88d5878c8d5f58ebfe79",
+     "bytes": 1030928
+    },
+    {
+     "root": "generated",
+     "role": "texture-meta",
+     "path": "Textures/wall_panel_neutral_v1.png.meta",
+     "sha256": "cec1064be22b52d7cc7a6c9f39658568961badf0731ee9bb6b309a57747be9a0",
+     "bytes": 2714
+    },
+    {
+     "root": "generated",
+     "role": "lod",
+     "path": "Models/Facades/DK_StreamBayStack_Mid_L1.fbx",
+     "sha256": "1259c5536b61dd490e60aa5ec2c0ca76780474c3056ed9750f38dd25034aa683",
+     "bytes": 25244
+    },
+    {
+     "root": "generated",
+     "role": "lod",
+     "path": "Models/Facades/DK_StreamBayStack_Mid_L2.fbx",
+     "sha256": "69e07a304cf538af14a7cd6c0a10c3f76cdcf440ca6be074c68a701e02d77234",
+     "bytes": 22300
+    }
+   ],
+   "tags": {
+    "use": [
+     "face:stream-bay"
+    ],
+    "form": "bay",
+    "scale": [
+     0.85,
+     1.15
+    ],
+    "squash": 0.7,
+    "wave": 2
+   },
+   "status": "adopted"
+  },
+  {
+   "id": "StreamBayStack_Top",
+   "category": "Facades",
+   "size": [
+    6,
+    3.95,
+    14.45
+   ],
+   "pivot": "origin-ground",
+   "pivotOffset": [
+    0,
+    -6.775
+   ],
+   "front": "+Z",
+   "tris": 414,
+   "materials": [
+    "DK_Limestone_Tex",
+    "DK_Window_Film",
+    "DK_Chrome",
+    "DK_Enamel_Seafoam",
+    "DK_Enamel_Ivory"
+   ],
+   "lods": [
+    {
+     "file": "Models/Facades/DK_StreamBayStack_Top_L1.fbx",
+     "tris": 158,
+     "screen": 0.2
+    },
+    {
+     "file": "Models/Facades/DK_StreamBayStack_Top_L2.fbx",
+     "tris": 86,
+     "screen": 0.07
+    }
+   ],
+   "lodCategory": "facades",
+   "source": "generated",
+   "lodClass": "storey",
+   "files": [
+    {
+     "root": "generated",
+     "role": "fbx",
+     "path": "Models/Facades/DK_StreamBayStack_Top.fbx",
+     "sha256": "8755af26faa4ac4f0cde7228ae7fdcd3483663d0802caefbe5b8461b74649856",
+     "bytes": 30588
+    },
+    {
+     "root": "generated",
+     "role": "material",
+     "path": "Materials/DK_Limestone_Tex.mat",
+     "sha256": "8b31e541d549a854b28e8fe0093142a7c4c3d022c541f953c19b47bea813b307",
+     "bytes": 4272
+    },
+    {
+     "root": "generated",
+     "role": "material-meta",
+     "path": "Materials/DK_Limestone_Tex.mat.meta",
+     "sha256": "ae76f47b08ffe2a83dcaf6efeaf41bdcdab4b24c4280b18c81d9e98f88f7498f",
+     "bytes": 188
+    },
+    {
+     "root": "generated",
+     "role": "material",
+     "path": "Materials/DK_Window_Film.mat",
+     "sha256": "bf97bfa5afa5348a63e9738c865972b382ca38881e0c87a38c7409d353a2f550",
+     "bytes": 3833
+    },
+    {
+     "root": "generated",
+     "role": "material-meta",
+     "path": "Materials/DK_Window_Film.mat.meta",
+     "sha256": "723148604413474bc1198056d880c25c2dd68439da5b77e0bcf2eb82c30a47d4",
+     "bytes": 188
+    },
+    {
+     "root": "generated",
+     "role": "material",
+     "path": "Materials/DK_Chrome.mat",
+     "sha256": "5dc81d1880e4d910fc4c88d842a770af3852644101b32a32c2adc37b5326e7f9",
+     "bytes": 4056
+    },
+    {
+     "root": "generated",
+     "role": "material-meta",
+     "path": "Materials/DK_Chrome.mat.meta",
+     "sha256": "4c894cf78eb05e94d210de5d4f10603033ae87f67a5ff31c9ac6c3f2371620f7",
+     "bytes": 188
+    },
+    {
+     "root": "generated",
+     "role": "material",
+     "path": "Materials/DK_Enamel_Seafoam.mat",
+     "sha256": "431d3e1a26bf85a6fb1c16687e95c486dc6851f9b84849b854e78b694c45b736",
+     "bytes": 3985
+    },
+    {
+     "root": "generated",
+     "role": "material-meta",
+     "path": "Materials/DK_Enamel_Seafoam.mat.meta",
+     "sha256": "76ed38fd07788956339cae17c5f59888d551ffbccfc4a2b3763688c4034c1820",
+     "bytes": 188
+    },
+    {
+     "root": "generated",
+     "role": "material",
+     "path": "Materials/DK_Enamel_Ivory.mat",
+     "sha256": "86fbae6bdcee94c8d92b60eabf67561c9e19ee7b2196606e5461a682aefa50f0",
+     "bytes": 3983
+    },
+    {
+     "root": "generated",
+     "role": "material-meta",
+     "path": "Materials/DK_Enamel_Ivory.mat.meta",
+     "sha256": "631111bbf64b77d5f6f289e8233a50d23f222070525c881a69d2db9c838992f8",
+     "bytes": 188
+    },
+    {
+     "role": "texture",
+     "path": "Textures/facade_panel_v1_mask.png",
+     "sha256": "06b88718b39837b5229f3fb20de9756e46c6e95cd60bd1a056a09b2ccea2a88d",
+     "bytes": 974447
+    },
+    {
+     "role": "texture-meta",
+     "path": "Textures/facade_panel_v1_mask.png.meta",
+     "sha256": "a58d4e958ddacf146aadb10a18b9e1502bcd77f235a2e29af3fb3209a289af93",
+     "bytes": 2714
+    },
+    {
+     "role": "texture",
+     "path": "Textures/facade_panel_v1_normal.png",
+     "sha256": "af57c53efdeb3bc4dca92ce8eb4c0f86c7ba6f08710115e61dc6f701b78d9465",
+     "bytes": 987621
+    },
+    {
+     "role": "texture-meta",
+     "path": "Textures/facade_panel_v1_normal.png.meta",
+     "sha256": "276cdae04b563c96228b2dcb3170f5ca04031d1d5382c064131945bcfd8557b5",
+     "bytes": 2714
+    },
+    {
+     "root": "generated",
+     "role": "texture",
+     "path": "Textures/surface_enamel_detail_v1.png",
+     "sha256": "a407da57c4a52fc85b1946b9f33f91f2ae1a1c5ff3d31fd2bebcc210d60fd147",
+     "bytes": 474006
+    },
+    {
+     "root": "generated",
+     "role": "texture-meta",
+     "path": "Textures/surface_enamel_detail_v1.png.meta",
+     "sha256": "30eb7058ac45ff6a9f483843d9f9118b13b98ab96576ef30bd3233c6b64dd0d6",
+     "bytes": 2718
+    },
+    {
+     "root": "generated",
+     "role": "texture",
+     "path": "Textures/surface_enamel_detail_v1_normal.png",
+     "sha256": "45e4c502424bb43719e315020ffb03d7ac8dd5fb85658f978cd099d8d7d6af45",
+     "bytes": 1964610
+    },
+    {
+     "root": "generated",
+     "role": "texture-meta",
+     "path": "Textures/surface_enamel_detail_v1_normal.png.meta",
+     "sha256": "ff1f0ca0ac42c65a890f56d5f8aee70ad346771c991ed17c4174132622d09279",
+     "bytes": 2718
+    },
+    {
+     "root": "generated",
+     "role": "texture",
+     "path": "Textures/surface_metal_detail_v1.png",
+     "sha256": "b4e253548eb27ad5b9c6541e73e8a3ec743deef73aed90c8b25a491a51cecc18",
+     "bytes": 491305
+    },
+    {
+     "root": "generated",
+     "role": "texture-meta",
+     "path": "Textures/surface_metal_detail_v1.png.meta",
+     "sha256": "1e8a51bb2ee18bdcdf08c2cc7cc9cb9c38873a5bf40b59d5971300f590bbe376",
+     "bytes": 2718
+    },
+    {
+     "root": "generated",
+     "role": "texture",
+     "path": "Textures/surface_metal_detail_v1_normal.png",
+     "sha256": "5848fec158580a1bb23686e7112e59ee09bee832cc86f8e1a11532836f0a3891",
+     "bytes": 1613297
+    },
+    {
+     "root": "generated",
+     "role": "texture-meta",
+     "path": "Textures/surface_metal_detail_v1_normal.png.meta",
+     "sha256": "818ae432cca438c26b951fcf6aef34251cd221041a400a710e920a89f4de6d42",
+     "bytes": 2718
+    },
+    {
+     "root": "generated",
+     "role": "texture",
+     "path": "Textures/wall_panel_neutral_v1.png",
+     "sha256": "69e32933789c067f894986f0104c4daddfb019b5c0cf88d5878c8d5f58ebfe79",
+     "bytes": 1030928
+    },
+    {
+     "root": "generated",
+     "role": "texture-meta",
+     "path": "Textures/wall_panel_neutral_v1.png.meta",
+     "sha256": "cec1064be22b52d7cc7a6c9f39658568961badf0731ee9bb6b309a57747be9a0",
+     "bytes": 2714
+    },
+    {
+     "root": "generated",
+     "role": "lod",
+     "path": "Models/Facades/DK_StreamBayStack_Top_L1.fbx",
+     "sha256": "9b275487402b99d46a94cac5abf8f7f351f47a5d394b8d581ea6ba4f5db3db9d",
+     "bytes": 25900
+    },
+    {
+     "root": "generated",
+     "role": "lod",
+     "path": "Models/Facades/DK_StreamBayStack_Top_L2.fbx",
+     "sha256": "3ea49479bea0f4e7830952e777151c9613e2404f848954881d463c76dc7ce506",
+     "bytes": 22620
+    }
+   ],
+   "tags": {
+    "use": [
+     "face:stream-bay"
+    ],
+    "form": "bay",
+    "scale": [
+     0.85,
+     1.15
+    ],
+    "squash": 0.7,
+    "wave": 2
+   },
+   "status": "adopted"
+  },
+  {
+   "id": "StreamCornerStack_Base",
+   "category": "Facades",
+   "size": [
+    9.63,
+    5.65,
+    9.63
+   ],
+   "pivot": "origin-ground",
+   "pivotOffset": [
+    0.815,
+    -3.185
+   ],
+   "front": "+Z",
+   "tris": 4684,
+   "materials": [
+    "DK_Limestone_Tex",
+    "DK_Window_Film",
+    "DK_Gold",
+    "DK_Chrome",
+    "DK_Stone_Dark",
+    "DK_Enamel_Teal",
+    "DK_Enamel_Ivory"
+   ],
+   "lods": [
+    {
+     "file": "Models/Facades/DK_StreamCornerStack_Base_L1.fbx",
+     "tris": 452,
+     "screen": 0.2
+    },
+    {
+     "file": "Models/Facades/DK_StreamCornerStack_Base_L2.fbx",
+     "tris": 312,
+     "screen": 0.07
+    }
+   ],
+   "lodCategory": "facades",
+   "source": "generated",
+   "lodClass": "cornerStorey",
+   "files": [
+    {
+     "root": "generated",
+     "role": "fbx",
+     "path": "Models/Facades/DK_StreamCornerStack_Base.fbx",
+     "sha256": "62364c4e7e33db4a3ed978f9a5f899fc038282f7581dfd0126bbe9bb31c0b39e",
+     "bytes": 130348
+    },
+    {
+     "root": "generated",
+     "role": "material",
+     "path": "Materials/DK_Limestone_Tex.mat",
+     "sha256": "8b31e541d549a854b28e8fe0093142a7c4c3d022c541f953c19b47bea813b307",
+     "bytes": 4272
+    },
+    {
+     "root": "generated",
+     "role": "material-meta",
+     "path": "Materials/DK_Limestone_Tex.mat.meta",
+     "sha256": "ae76f47b08ffe2a83dcaf6efeaf41bdcdab4b24c4280b18c81d9e98f88f7498f",
+     "bytes": 188
+    },
+    {
+     "root": "generated",
+     "role": "material",
+     "path": "Materials/DK_Window_Film.mat",
+     "sha256": "bf97bfa5afa5348a63e9738c865972b382ca38881e0c87a38c7409d353a2f550",
+     "bytes": 3833
+    },
+    {
+     "root": "generated",
+     "role": "material-meta",
+     "path": "Materials/DK_Window_Film.mat.meta",
+     "sha256": "723148604413474bc1198056d880c25c2dd68439da5b77e0bcf2eb82c30a47d4",
+     "bytes": 188
+    },
+    {
+     "root": "generated",
+     "role": "material",
+     "path": "Materials/DK_Gold.mat",
+     "sha256": "c71f203ce4de7b01bf12a1ede0030bb2bfd14dbe28bb56344398c9d5260975f0",
+     "bytes": 4035
+    },
+    {
+     "root": "generated",
+     "role": "material-meta",
+     "path": "Materials/DK_Gold.mat.meta",
+     "sha256": "37b495884bcdf20273ddc0bd8a24391478df009364b6ead9845267bb58b06498",
+     "bytes": 188
+    },
+    {
+     "root": "generated",
+     "role": "material",
+     "path": "Materials/DK_Chrome.mat",
+     "sha256": "5dc81d1880e4d910fc4c88d842a770af3852644101b32a32c2adc37b5326e7f9",
+     "bytes": 4056
+    },
+    {
+     "root": "generated",
+     "role": "material-meta",
+     "path": "Materials/DK_Chrome.mat.meta",
+     "sha256": "4c894cf78eb05e94d210de5d4f10603033ae87f67a5ff31c9ac6c3f2371620f7",
+     "bytes": 188
+    },
+    {
+     "root": "generated",
+     "role": "material",
+     "path": "Materials/DK_Stone_Dark.mat",
+     "sha256": "4885ec7fa5d343f65b414d79e0aed172e8fa8b204ebed001fe13d839cabe0dc8",
+     "bytes": 4068
+    },
+    {
+     "root": "generated",
+     "role": "material-meta",
+     "path": "Materials/DK_Stone_Dark.mat.meta",
+     "sha256": "bdc4995270128e90866a2b2b838d236f22c2ca47a79debff8e33869ed88f6fad",
+     "bytes": 188
+    },
+    {
+     "root": "generated",
+     "role": "material",
+     "path": "Materials/DK_Enamel_Teal.mat",
+     "sha256": "58fa1a89f064b566b89323bf9a72e627a4ff6f23b6eeeb9520b3754b4ffa42d1",
+     "bytes": 3985
+    },
+    {
+     "root": "generated",
+     "role": "material-meta",
+     "path": "Materials/DK_Enamel_Teal.mat.meta",
+     "sha256": "a70a4359fb1102bee640740027c6ccba8b741c65b93f8d4af2acb6db8bd36f5a",
+     "bytes": 188
+    },
+    {
+     "root": "generated",
+     "role": "material",
+     "path": "Materials/DK_Enamel_Ivory.mat",
+     "sha256": "86fbae6bdcee94c8d92b60eabf67561c9e19ee7b2196606e5461a682aefa50f0",
+     "bytes": 3983
+    },
+    {
+     "root": "generated",
+     "role": "material-meta",
+     "path": "Materials/DK_Enamel_Ivory.mat.meta",
+     "sha256": "631111bbf64b77d5f6f289e8233a50d23f222070525c881a69d2db9c838992f8",
+     "bytes": 188
+    },
+    {
+     "role": "texture",
+     "path": "Textures/facade_panel_v1_mask.png",
+     "sha256": "06b88718b39837b5229f3fb20de9756e46c6e95cd60bd1a056a09b2ccea2a88d",
+     "bytes": 974447
+    },
+    {
+     "role": "texture-meta",
+     "path": "Textures/facade_panel_v1_mask.png.meta",
+     "sha256": "a58d4e958ddacf146aadb10a18b9e1502bcd77f235a2e29af3fb3209a289af93",
+     "bytes": 2714
+    },
+    {
+     "role": "texture",
+     "path": "Textures/facade_panel_v1_normal.png",
+     "sha256": "af57c53efdeb3bc4dca92ce8eb4c0f86c7ba6f08710115e61dc6f701b78d9465",
+     "bytes": 987621
+    },
+    {
+     "role": "texture-meta",
+     "path": "Textures/facade_panel_v1_normal.png.meta",
+     "sha256": "276cdae04b563c96228b2dcb3170f5ca04031d1d5382c064131945bcfd8557b5",
+     "bytes": 2714
+    },
+    {
+     "root": "generated",
+     "role": "texture",
+     "path": "Textures/surface_enamel_detail_v1.png",
+     "sha256": "a407da57c4a52fc85b1946b9f33f91f2ae1a1c5ff3d31fd2bebcc210d60fd147",
+     "bytes": 474006
+    },
+    {
+     "root": "generated",
+     "role": "texture-meta",
+     "path": "Textures/surface_enamel_detail_v1.png.meta",
+     "sha256": "30eb7058ac45ff6a9f483843d9f9118b13b98ab96576ef30bd3233c6b64dd0d6",
+     "bytes": 2718
+    },
+    {
+     "root": "generated",
+     "role": "texture",
+     "path": "Textures/surface_enamel_detail_v1_normal.png",
+     "sha256": "45e4c502424bb43719e315020ffb03d7ac8dd5fb85658f978cd099d8d7d6af45",
+     "bytes": 1964610
+    },
+    {
+     "root": "generated",
+     "role": "texture-meta",
+     "path": "Textures/surface_enamel_detail_v1_normal.png.meta",
+     "sha256": "ff1f0ca0ac42c65a890f56d5f8aee70ad346771c991ed17c4174132622d09279",
+     "bytes": 2718
+    },
+    {
+     "root": "generated",
+     "role": "texture",
+     "path": "Textures/surface_limestone_detail_v1.png",
+     "sha256": "a8dbee7fa54175ca65d121a2c9f26845b277011c3e46322f5c8a1d7ddb4c0fa1",
+     "bytes": 886792
+    },
+    {
+     "root": "generated",
+     "role": "texture-meta",
+     "path": "Textures/surface_limestone_detail_v1.png.meta",
+     "sha256": "f2a2621861633f71259aa27ec765333390c198302ff40887d8a13894580ce3c3",
+     "bytes": 2718
+    },
+    {
+     "root": "generated",
+     "role": "texture",
+     "path": "Textures/surface_limestone_detail_v1_normal.png",
+     "sha256": "c35393574e0aafc33677535adad7890499f177090f42071d993199ca6acfd8f9",
+     "bytes": 2674711
+    },
+    {
+     "root": "generated",
+     "role": "texture-meta",
+     "path": "Textures/surface_limestone_detail_v1_normal.png.meta",
+     "sha256": "82938cc6e790f442a64f634fb847462a50ef174b137374a34a03f1461ac6e686",
+     "bytes": 2718
+    },
+    {
+     "root": "generated",
+     "role": "texture",
+     "path": "Textures/surface_metal_detail_v1.png",
+     "sha256": "b4e253548eb27ad5b9c6541e73e8a3ec743deef73aed90c8b25a491a51cecc18",
+     "bytes": 491305
+    },
+    {
+     "root": "generated",
+     "role": "texture-meta",
+     "path": "Textures/surface_metal_detail_v1.png.meta",
+     "sha256": "1e8a51bb2ee18bdcdf08c2cc7cc9cb9c38873a5bf40b59d5971300f590bbe376",
+     "bytes": 2718
+    },
+    {
+     "root": "generated",
+     "role": "texture",
+     "path": "Textures/surface_metal_detail_v1_normal.png",
+     "sha256": "5848fec158580a1bb23686e7112e59ee09bee832cc86f8e1a11532836f0a3891",
+     "bytes": 1613297
+    },
+    {
+     "root": "generated",
+     "role": "texture-meta",
+     "path": "Textures/surface_metal_detail_v1_normal.png.meta",
+     "sha256": "818ae432cca438c26b951fcf6aef34251cd221041a400a710e920a89f4de6d42",
+     "bytes": 2718
+    },
+    {
+     "root": "generated",
+     "role": "texture",
+     "path": "Textures/wall_panel_neutral_v1.png",
+     "sha256": "69e32933789c067f894986f0104c4daddfb019b5c0cf88d5878c8d5f58ebfe79",
+     "bytes": 1030928
+    },
+    {
+     "root": "generated",
+     "role": "texture-meta",
+     "path": "Textures/wall_panel_neutral_v1.png.meta",
+     "sha256": "cec1064be22b52d7cc7a6c9f39658568961badf0731ee9bb6b309a57747be9a0",
+     "bytes": 2714
+    },
+    {
+     "root": "generated",
+     "role": "lod",
+     "path": "Models/Facades/DK_StreamCornerStack_Base_L1.fbx",
+     "sha256": "ecf03ec74ba1056e8975120ebae046e9269591250b9442679b1b7768cd76ccfc",
+     "bytes": 35084
+    },
+    {
+     "root": "generated",
+     "role": "lod",
+     "path": "Models/Facades/DK_StreamCornerStack_Base_L2.fbx",
+     "sha256": "e555ab9b2ccd04c0f78335cb9166138e37eaa1f4aa04ca61f78391f513b164e3",
+     "bytes": 30732
+    }
+   ],
+   "tags": {
+    "use": [
+     "face:stream-corner"
+    ],
+    "form": "corner",
+    "scale": [
+     0.9,
+     1.1
+    ],
+    "squash": 1,
+    "wave": 2
+   },
+   "status": "adopted"
+  },
+  {
+   "id": "StreamCornerStack_Mid",
+   "category": "Facades",
+   "size": [
+    8.45,
+    3.6,
+    8.45
+   ],
+   "pivot": "origin-ground",
+   "pivotOffset": [
+    0.225,
+    -3.775
+   ],
+   "front": "+Z",
+   "tris": 1892,
+   "materials": [
+    "DK_Limestone_Tex",
+    "DK_Window_Film",
+    "DK_Chrome",
+    "DK_Enamel_Seafoam",
+    "DK_Enamel_Ivory"
+   ],
+   "lods": [
+    {
+     "file": "Models/Facades/DK_StreamCornerStack_Mid_L1.fbx",
+     "tris": 420,
+     "screen": 0.2
+    },
+    {
+     "file": "Models/Facades/DK_StreamCornerStack_Mid_L2.fbx",
+     "tris": 192,
+     "screen": 0.07
+    }
+   ],
+   "lodCategory": "facades",
+   "source": "generated",
+   "lodClass": "cornerStorey",
+   "files": [
+    {
+     "root": "generated",
+     "role": "fbx",
+     "path": "Models/Facades/DK_StreamCornerStack_Mid.fbx",
+     "sha256": "6cc5d1d430e37dba12579fed374f47e4d868dba9655ad29b6afb73a4682cb1a1",
+     "bytes": 65084
+    },
+    {
+     "root": "generated",
+     "role": "material",
+     "path": "Materials/DK_Limestone_Tex.mat",
+     "sha256": "8b31e541d549a854b28e8fe0093142a7c4c3d022c541f953c19b47bea813b307",
+     "bytes": 4272
+    },
+    {
+     "root": "generated",
+     "role": "material-meta",
+     "path": "Materials/DK_Limestone_Tex.mat.meta",
+     "sha256": "ae76f47b08ffe2a83dcaf6efeaf41bdcdab4b24c4280b18c81d9e98f88f7498f",
+     "bytes": 188
+    },
+    {
+     "root": "generated",
+     "role": "material",
+     "path": "Materials/DK_Window_Film.mat",
+     "sha256": "bf97bfa5afa5348a63e9738c865972b382ca38881e0c87a38c7409d353a2f550",
+     "bytes": 3833
+    },
+    {
+     "root": "generated",
+     "role": "material-meta",
+     "path": "Materials/DK_Window_Film.mat.meta",
+     "sha256": "723148604413474bc1198056d880c25c2dd68439da5b77e0bcf2eb82c30a47d4",
+     "bytes": 188
+    },
+    {
+     "root": "generated",
+     "role": "material",
+     "path": "Materials/DK_Chrome.mat",
+     "sha256": "5dc81d1880e4d910fc4c88d842a770af3852644101b32a32c2adc37b5326e7f9",
+     "bytes": 4056
+    },
+    {
+     "root": "generated",
+     "role": "material-meta",
+     "path": "Materials/DK_Chrome.mat.meta",
+     "sha256": "4c894cf78eb05e94d210de5d4f10603033ae87f67a5ff31c9ac6c3f2371620f7",
+     "bytes": 188
+    },
+    {
+     "root": "generated",
+     "role": "material",
+     "path": "Materials/DK_Enamel_Seafoam.mat",
+     "sha256": "431d3e1a26bf85a6fb1c16687e95c486dc6851f9b84849b854e78b694c45b736",
+     "bytes": 3985
+    },
+    {
+     "root": "generated",
+     "role": "material-meta",
+     "path": "Materials/DK_Enamel_Seafoam.mat.meta",
+     "sha256": "76ed38fd07788956339cae17c5f59888d551ffbccfc4a2b3763688c4034c1820",
+     "bytes": 188
+    },
+    {
+     "root": "generated",
+     "role": "material",
+     "path": "Materials/DK_Enamel_Ivory.mat",
+     "sha256": "86fbae6bdcee94c8d92b60eabf67561c9e19ee7b2196606e5461a682aefa50f0",
+     "bytes": 3983
+    },
+    {
+     "root": "generated",
+     "role": "material-meta",
+     "path": "Materials/DK_Enamel_Ivory.mat.meta",
+     "sha256": "631111bbf64b77d5f6f289e8233a50d23f222070525c881a69d2db9c838992f8",
+     "bytes": 188
+    },
+    {
+     "role": "texture",
+     "path": "Textures/facade_panel_v1_mask.png",
+     "sha256": "06b88718b39837b5229f3fb20de9756e46c6e95cd60bd1a056a09b2ccea2a88d",
+     "bytes": 974447
+    },
+    {
+     "role": "texture-meta",
+     "path": "Textures/facade_panel_v1_mask.png.meta",
+     "sha256": "a58d4e958ddacf146aadb10a18b9e1502bcd77f235a2e29af3fb3209a289af93",
+     "bytes": 2714
+    },
+    {
+     "role": "texture",
+     "path": "Textures/facade_panel_v1_normal.png",
+     "sha256": "af57c53efdeb3bc4dca92ce8eb4c0f86c7ba6f08710115e61dc6f701b78d9465",
+     "bytes": 987621
+    },
+    {
+     "role": "texture-meta",
+     "path": "Textures/facade_panel_v1_normal.png.meta",
+     "sha256": "276cdae04b563c96228b2dcb3170f5ca04031d1d5382c064131945bcfd8557b5",
+     "bytes": 2714
+    },
+    {
+     "root": "generated",
+     "role": "texture",
+     "path": "Textures/surface_enamel_detail_v1.png",
+     "sha256": "a407da57c4a52fc85b1946b9f33f91f2ae1a1c5ff3d31fd2bebcc210d60fd147",
+     "bytes": 474006
+    },
+    {
+     "root": "generated",
+     "role": "texture-meta",
+     "path": "Textures/surface_enamel_detail_v1.png.meta",
+     "sha256": "30eb7058ac45ff6a9f483843d9f9118b13b98ab96576ef30bd3233c6b64dd0d6",
+     "bytes": 2718
+    },
+    {
+     "root": "generated",
+     "role": "texture",
+     "path": "Textures/surface_enamel_detail_v1_normal.png",
+     "sha256": "45e4c502424bb43719e315020ffb03d7ac8dd5fb85658f978cd099d8d7d6af45",
+     "bytes": 1964610
+    },
+    {
+     "root": "generated",
+     "role": "texture-meta",
+     "path": "Textures/surface_enamel_detail_v1_normal.png.meta",
+     "sha256": "ff1f0ca0ac42c65a890f56d5f8aee70ad346771c991ed17c4174132622d09279",
+     "bytes": 2718
+    },
+    {
+     "root": "generated",
+     "role": "texture",
+     "path": "Textures/surface_metal_detail_v1.png",
+     "sha256": "b4e253548eb27ad5b9c6541e73e8a3ec743deef73aed90c8b25a491a51cecc18",
+     "bytes": 491305
+    },
+    {
+     "root": "generated",
+     "role": "texture-meta",
+     "path": "Textures/surface_metal_detail_v1.png.meta",
+     "sha256": "1e8a51bb2ee18bdcdf08c2cc7cc9cb9c38873a5bf40b59d5971300f590bbe376",
+     "bytes": 2718
+    },
+    {
+     "root": "generated",
+     "role": "texture",
+     "path": "Textures/surface_metal_detail_v1_normal.png",
+     "sha256": "5848fec158580a1bb23686e7112e59ee09bee832cc86f8e1a11532836f0a3891",
+     "bytes": 1613297
+    },
+    {
+     "root": "generated",
+     "role": "texture-meta",
+     "path": "Textures/surface_metal_detail_v1_normal.png.meta",
+     "sha256": "818ae432cca438c26b951fcf6aef34251cd221041a400a710e920a89f4de6d42",
+     "bytes": 2718
+    },
+    {
+     "root": "generated",
+     "role": "texture",
+     "path": "Textures/wall_panel_neutral_v1.png",
+     "sha256": "69e32933789c067f894986f0104c4daddfb019b5c0cf88d5878c8d5f58ebfe79",
+     "bytes": 1030928
+    },
+    {
+     "root": "generated",
+     "role": "texture-meta",
+     "path": "Textures/wall_panel_neutral_v1.png.meta",
+     "sha256": "cec1064be22b52d7cc7a6c9f39658568961badf0731ee9bb6b309a57747be9a0",
+     "bytes": 2714
+    },
+    {
+     "root": "generated",
+     "role": "lod",
+     "path": "Models/Facades/DK_StreamCornerStack_Mid_L1.fbx",
+     "sha256": "815a261eeb47b2ad1c5586be34d70bf5f7c49916533bd91625a4fe1aad13cce0",
+     "bytes": 33452
+    },
+    {
+     "root": "generated",
+     "role": "lod",
+     "path": "Models/Facades/DK_StreamCornerStack_Mid_L2.fbx",
+     "sha256": "4a799ea43a3337515e37adab6f4cdb4b72f0a776a717649faf493c63de5aa187",
+     "bytes": 25868
+    }
+   ],
+   "tags": {
+    "use": [
+     "face:stream-corner"
+    ],
+    "form": "corner",
+    "scale": [
+     0.9,
+     1.1
+    ],
+    "squash": 1,
+    "wave": 2
+   },
+   "status": "adopted"
+  },
+  {
+   "id": "StreamCornerStack_Top",
+   "category": "Facades",
+   "size": [
+    8.45,
+    12.21,
+    8.45
+   ],
+   "pivot": "origin-ground",
+   "pivotOffset": [
+    0.225,
+    -3.775
+   ],
+   "front": "+Z",
+   "tris": 3806,
+   "materials": [
+    "DK_Limestone_Tex",
+    "DK_Window_Film",
+    "DK_Chrome",
+    "DK_Enamel_Seafoam",
+    "DK_Enamel_Ivory",
+    "DK_Enamel_Teal",
+    "DK_Steel",
+    "DK_Beacon_Rose"
+   ],
+   "lods": [
+    {
+     "file": "Models/Facades/DK_StreamCornerStack_Top_L1.fbx",
+     "tris": 668,
+     "screen": 0.2
+    },
+    {
+     "file": "Models/Facades/DK_StreamCornerStack_Top_L2.fbx",
+     "tris": 296,
+     "screen": 0.07
+    }
+   ],
+   "lodCategory": "facades",
+   "source": "generated",
+   "lodClass": "cornerStorey",
+   "files": [
+    {
+     "root": "generated",
+     "role": "fbx",
+     "path": "Models/Facades/DK_StreamCornerStack_Top.fbx",
+     "sha256": "973a1bcbdc97f335a55cef576498de10821450c9ecdf04cb774efae95c845574",
+     "bytes": 111740
+    },
+    {
+     "root": "generated",
+     "role": "material",
+     "path": "Materials/DK_Limestone_Tex.mat",
+     "sha256": "8b31e541d549a854b28e8fe0093142a7c4c3d022c541f953c19b47bea813b307",
+     "bytes": 4272
+    },
+    {
+     "root": "generated",
+     "role": "material-meta",
+     "path": "Materials/DK_Limestone_Tex.mat.meta",
+     "sha256": "ae76f47b08ffe2a83dcaf6efeaf41bdcdab4b24c4280b18c81d9e98f88f7498f",
+     "bytes": 188
+    },
+    {
+     "root": "generated",
+     "role": "material",
+     "path": "Materials/DK_Window_Film.mat",
+     "sha256": "bf97bfa5afa5348a63e9738c865972b382ca38881e0c87a38c7409d353a2f550",
+     "bytes": 3833
+    },
+    {
+     "root": "generated",
+     "role": "material-meta",
+     "path": "Materials/DK_Window_Film.mat.meta",
+     "sha256": "723148604413474bc1198056d880c25c2dd68439da5b77e0bcf2eb82c30a47d4",
+     "bytes": 188
+    },
+    {
+     "root": "generated",
+     "role": "material",
+     "path": "Materials/DK_Chrome.mat",
+     "sha256": "5dc81d1880e4d910fc4c88d842a770af3852644101b32a32c2adc37b5326e7f9",
+     "bytes": 4056
+    },
+    {
+     "root": "generated",
+     "role": "material-meta",
+     "path": "Materials/DK_Chrome.mat.meta",
+     "sha256": "4c894cf78eb05e94d210de5d4f10603033ae87f67a5ff31c9ac6c3f2371620f7",
+     "bytes": 188
+    },
+    {
+     "root": "generated",
+     "role": "material",
+     "path": "Materials/DK_Enamel_Seafoam.mat",
+     "sha256": "431d3e1a26bf85a6fb1c16687e95c486dc6851f9b84849b854e78b694c45b736",
+     "bytes": 3985
+    },
+    {
+     "root": "generated",
+     "role": "material-meta",
+     "path": "Materials/DK_Enamel_Seafoam.mat.meta",
+     "sha256": "76ed38fd07788956339cae17c5f59888d551ffbccfc4a2b3763688c4034c1820",
+     "bytes": 188
+    },
+    {
+     "root": "generated",
+     "role": "material",
+     "path": "Materials/DK_Enamel_Ivory.mat",
+     "sha256": "86fbae6bdcee94c8d92b60eabf67561c9e19ee7b2196606e5461a682aefa50f0",
+     "bytes": 3983
+    },
+    {
+     "root": "generated",
+     "role": "material-meta",
+     "path": "Materials/DK_Enamel_Ivory.mat.meta",
+     "sha256": "631111bbf64b77d5f6f289e8233a50d23f222070525c881a69d2db9c838992f8",
+     "bytes": 188
+    },
+    {
+     "root": "generated",
+     "role": "material",
+     "path": "Materials/DK_Enamel_Teal.mat",
+     "sha256": "58fa1a89f064b566b89323bf9a72e627a4ff6f23b6eeeb9520b3754b4ffa42d1",
+     "bytes": 3985
+    },
+    {
+     "root": "generated",
+     "role": "material-meta",
+     "path": "Materials/DK_Enamel_Teal.mat.meta",
+     "sha256": "a70a4359fb1102bee640740027c6ccba8b741c65b93f8d4af2acb6db8bd36f5a",
+     "bytes": 188
+    },
+    {
+     "root": "generated",
+     "role": "material",
+     "path": "Materials/DK_Steel.mat",
+     "sha256": "501adb7a2a9c7e4c4a161f9f77654311dbc21727fc0bcd709d932fca33796cc9",
+     "bytes": 4052
+    },
+    {
+     "root": "generated",
+     "role": "material-meta",
+     "path": "Materials/DK_Steel.mat.meta",
+     "sha256": "90705e570329a713c62606f7bc755da3c0463dceb889c5e0e0de8b1dd9e218a9",
+     "bytes": 188
+    },
+    {
+     "root": "generated",
+     "role": "material",
+     "path": "Materials/DK_Beacon_Rose.mat",
+     "sha256": "2dacf9e3914c1fa57a77a28fc9eba82272f04c550bf14f92912a67cfbaf492a8",
+     "bytes": 3947
+    },
+    {
+     "root": "generated",
+     "role": "material-meta",
+     "path": "Materials/DK_Beacon_Rose.mat.meta",
+     "sha256": "59a36a5faa060d3b3897dea4537f7909d9a555e8fe4512338129eb9eb0844347",
+     "bytes": 188
+    },
+    {
+     "role": "texture",
+     "path": "Textures/facade_panel_v1_mask.png",
+     "sha256": "06b88718b39837b5229f3fb20de9756e46c6e95cd60bd1a056a09b2ccea2a88d",
+     "bytes": 974447
+    },
+    {
+     "role": "texture-meta",
+     "path": "Textures/facade_panel_v1_mask.png.meta",
+     "sha256": "a58d4e958ddacf146aadb10a18b9e1502bcd77f235a2e29af3fb3209a289af93",
+     "bytes": 2714
+    },
+    {
+     "role": "texture",
+     "path": "Textures/facade_panel_v1_normal.png",
+     "sha256": "af57c53efdeb3bc4dca92ce8eb4c0f86c7ba6f08710115e61dc6f701b78d9465",
+     "bytes": 987621
+    },
+    {
+     "role": "texture-meta",
+     "path": "Textures/facade_panel_v1_normal.png.meta",
+     "sha256": "276cdae04b563c96228b2dcb3170f5ca04031d1d5382c064131945bcfd8557b5",
+     "bytes": 2714
+    },
+    {
+     "root": "generated",
+     "role": "texture",
+     "path": "Textures/surface_enamel_detail_v1.png",
+     "sha256": "a407da57c4a52fc85b1946b9f33f91f2ae1a1c5ff3d31fd2bebcc210d60fd147",
+     "bytes": 474006
+    },
+    {
+     "root": "generated",
+     "role": "texture-meta",
+     "path": "Textures/surface_enamel_detail_v1.png.meta",
+     "sha256": "30eb7058ac45ff6a9f483843d9f9118b13b98ab96576ef30bd3233c6b64dd0d6",
+     "bytes": 2718
+    },
+    {
+     "root": "generated",
+     "role": "texture",
+     "path": "Textures/surface_enamel_detail_v1_normal.png",
+     "sha256": "45e4c502424bb43719e315020ffb03d7ac8dd5fb85658f978cd099d8d7d6af45",
+     "bytes": 1964610
+    },
+    {
+     "root": "generated",
+     "role": "texture-meta",
+     "path": "Textures/surface_enamel_detail_v1_normal.png.meta",
+     "sha256": "ff1f0ca0ac42c65a890f56d5f8aee70ad346771c991ed17c4174132622d09279",
+     "bytes": 2718
+    },
+    {
+     "root": "generated",
+     "role": "texture",
+     "path": "Textures/surface_metal_detail_v1.png",
+     "sha256": "b4e253548eb27ad5b9c6541e73e8a3ec743deef73aed90c8b25a491a51cecc18",
+     "bytes": 491305
+    },
+    {
+     "root": "generated",
+     "role": "texture-meta",
+     "path": "Textures/surface_metal_detail_v1.png.meta",
+     "sha256": "1e8a51bb2ee18bdcdf08c2cc7cc9cb9c38873a5bf40b59d5971300f590bbe376",
+     "bytes": 2718
+    },
+    {
+     "root": "generated",
+     "role": "texture",
+     "path": "Textures/surface_metal_detail_v1_normal.png",
+     "sha256": "5848fec158580a1bb23686e7112e59ee09bee832cc86f8e1a11532836f0a3891",
+     "bytes": 1613297
+    },
+    {
+     "root": "generated",
+     "role": "texture-meta",
+     "path": "Textures/surface_metal_detail_v1_normal.png.meta",
+     "sha256": "818ae432cca438c26b951fcf6aef34251cd221041a400a710e920a89f4de6d42",
+     "bytes": 2718
+    },
+    {
+     "root": "generated",
+     "role": "texture",
+     "path": "Textures/wall_panel_neutral_v1.png",
+     "sha256": "69e32933789c067f894986f0104c4daddfb019b5c0cf88d5878c8d5f58ebfe79",
+     "bytes": 1030928
+    },
+    {
+     "root": "generated",
+     "role": "texture-meta",
+     "path": "Textures/wall_panel_neutral_v1.png.meta",
+     "sha256": "cec1064be22b52d7cc7a6c9f39658568961badf0731ee9bb6b309a57747be9a0",
+     "bytes": 2714
+    },
+    {
+     "root": "generated",
+     "role": "lod",
+     "path": "Models/Facades/DK_StreamCornerStack_Top_L1.fbx",
+     "sha256": "27abd45890dd14ec6c8ec80cdc4b7ddc02ba09a77a5dc7ed8b1cd38d8d8dd016",
+     "bytes": 40124
+    },
+    {
+     "root": "generated",
+     "role": "lod",
+     "path": "Models/Facades/DK_StreamCornerStack_Top_L2.fbx",
+     "sha256": "5ce94b639273ace263ce7ac710f7f0358dbf61e4e30296f7d696a54000eb2008",
+     "bytes": 28236
+    }
+   ],
+   "tags": {
+    "use": [
+     "face:stream-corner"
+    ],
+    "form": "corner",
+    "scale": [
+     0.9,
+     1.1
+    ],
+    "squash": 1,
+    "wave": 2
+   },
+   "status": "adopted"
+  },
+  {
+   "id": "StreamEndStack_Base",
+   "category": "Facades",
+   "size": [
+    7.63,
+    5.65,
+    15.63
+   ],
+   "pivot": "origin-ground",
+   "pivotOffset": [
+    0.815,
+    -6.185
+   ],
+   "front": "+Z",
+   "tris": 4148,
+   "materials": [
+    "DK_Limestone_Tex",
+    "DK_Window_Film",
+    "DK_Gold",
+    "DK_Chrome",
+    "DK_Stone_Dark",
+    "DK_Enamel_Teal",
+    "DK_Enamel_Ivory"
+   ],
+   "lods": [
+    {
+     "file": "Models/Facades/DK_StreamEndStack_Base_L1.fbx",
+     "tris": 348,
+     "screen": 0.2
+    },
+    {
+     "file": "Models/Facades/DK_StreamEndStack_Base_L2.fbx",
+     "tris": 244,
+     "screen": 0.07
+    }
+   ],
+   "lodCategory": "facades",
+   "source": "generated",
+   "lodClass": "cornerStorey",
+   "files": [
+    {
+     "root": "generated",
+     "role": "fbx",
+     "path": "Models/Facades/DK_StreamEndStack_Base.fbx",
+     "sha256": "ab58076ec97350ae508140d7ea4abf3b19417f0b90009e3472ad2a0e149d1891",
+     "bytes": 118428
+    },
+    {
+     "root": "generated",
+     "role": "material",
+     "path": "Materials/DK_Limestone_Tex.mat",
+     "sha256": "8b31e541d549a854b28e8fe0093142a7c4c3d022c541f953c19b47bea813b307",
+     "bytes": 4272
+    },
+    {
+     "root": "generated",
+     "role": "material-meta",
+     "path": "Materials/DK_Limestone_Tex.mat.meta",
+     "sha256": "ae76f47b08ffe2a83dcaf6efeaf41bdcdab4b24c4280b18c81d9e98f88f7498f",
+     "bytes": 188
+    },
+    {
+     "root": "generated",
+     "role": "material",
+     "path": "Materials/DK_Window_Film.mat",
+     "sha256": "bf97bfa5afa5348a63e9738c865972b382ca38881e0c87a38c7409d353a2f550",
+     "bytes": 3833
+    },
+    {
+     "root": "generated",
+     "role": "material-meta",
+     "path": "Materials/DK_Window_Film.mat.meta",
+     "sha256": "723148604413474bc1198056d880c25c2dd68439da5b77e0bcf2eb82c30a47d4",
+     "bytes": 188
+    },
+    {
+     "root": "generated",
+     "role": "material",
+     "path": "Materials/DK_Gold.mat",
+     "sha256": "c71f203ce4de7b01bf12a1ede0030bb2bfd14dbe28bb56344398c9d5260975f0",
+     "bytes": 4035
+    },
+    {
+     "root": "generated",
+     "role": "material-meta",
+     "path": "Materials/DK_Gold.mat.meta",
+     "sha256": "37b495884bcdf20273ddc0bd8a24391478df009364b6ead9845267bb58b06498",
+     "bytes": 188
+    },
+    {
+     "root": "generated",
+     "role": "material",
+     "path": "Materials/DK_Chrome.mat",
+     "sha256": "5dc81d1880e4d910fc4c88d842a770af3852644101b32a32c2adc37b5326e7f9",
+     "bytes": 4056
+    },
+    {
+     "root": "generated",
+     "role": "material-meta",
+     "path": "Materials/DK_Chrome.mat.meta",
+     "sha256": "4c894cf78eb05e94d210de5d4f10603033ae87f67a5ff31c9ac6c3f2371620f7",
+     "bytes": 188
+    },
+    {
+     "root": "generated",
+     "role": "material",
+     "path": "Materials/DK_Stone_Dark.mat",
+     "sha256": "4885ec7fa5d343f65b414d79e0aed172e8fa8b204ebed001fe13d839cabe0dc8",
+     "bytes": 4068
+    },
+    {
+     "root": "generated",
+     "role": "material-meta",
+     "path": "Materials/DK_Stone_Dark.mat.meta",
+     "sha256": "bdc4995270128e90866a2b2b838d236f22c2ca47a79debff8e33869ed88f6fad",
+     "bytes": 188
+    },
+    {
+     "root": "generated",
+     "role": "material",
+     "path": "Materials/DK_Enamel_Teal.mat",
+     "sha256": "58fa1a89f064b566b89323bf9a72e627a4ff6f23b6eeeb9520b3754b4ffa42d1",
+     "bytes": 3985
+    },
+    {
+     "root": "generated",
+     "role": "material-meta",
+     "path": "Materials/DK_Enamel_Teal.mat.meta",
+     "sha256": "a70a4359fb1102bee640740027c6ccba8b741c65b93f8d4af2acb6db8bd36f5a",
+     "bytes": 188
+    },
+    {
+     "root": "generated",
+     "role": "material",
+     "path": "Materials/DK_Enamel_Ivory.mat",
+     "sha256": "86fbae6bdcee94c8d92b60eabf67561c9e19ee7b2196606e5461a682aefa50f0",
+     "bytes": 3983
+    },
+    {
+     "root": "generated",
+     "role": "material-meta",
+     "path": "Materials/DK_Enamel_Ivory.mat.meta",
+     "sha256": "631111bbf64b77d5f6f289e8233a50d23f222070525c881a69d2db9c838992f8",
+     "bytes": 188
+    },
+    {
+     "role": "texture",
+     "path": "Textures/facade_panel_v1_mask.png",
+     "sha256": "06b88718b39837b5229f3fb20de9756e46c6e95cd60bd1a056a09b2ccea2a88d",
+     "bytes": 974447
+    },
+    {
+     "role": "texture-meta",
+     "path": "Textures/facade_panel_v1_mask.png.meta",
+     "sha256": "a58d4e958ddacf146aadb10a18b9e1502bcd77f235a2e29af3fb3209a289af93",
+     "bytes": 2714
+    },
+    {
+     "role": "texture",
+     "path": "Textures/facade_panel_v1_normal.png",
+     "sha256": "af57c53efdeb3bc4dca92ce8eb4c0f86c7ba6f08710115e61dc6f701b78d9465",
+     "bytes": 987621
+    },
+    {
+     "role": "texture-meta",
+     "path": "Textures/facade_panel_v1_normal.png.meta",
+     "sha256": "276cdae04b563c96228b2dcb3170f5ca04031d1d5382c064131945bcfd8557b5",
+     "bytes": 2714
+    },
+    {
+     "root": "generated",
+     "role": "texture",
+     "path": "Textures/surface_enamel_detail_v1.png",
+     "sha256": "a407da57c4a52fc85b1946b9f33f91f2ae1a1c5ff3d31fd2bebcc210d60fd147",
+     "bytes": 474006
+    },
+    {
+     "root": "generated",
+     "role": "texture-meta",
+     "path": "Textures/surface_enamel_detail_v1.png.meta",
+     "sha256": "30eb7058ac45ff6a9f483843d9f9118b13b98ab96576ef30bd3233c6b64dd0d6",
+     "bytes": 2718
+    },
+    {
+     "root": "generated",
+     "role": "texture",
+     "path": "Textures/surface_enamel_detail_v1_normal.png",
+     "sha256": "45e4c502424bb43719e315020ffb03d7ac8dd5fb85658f978cd099d8d7d6af45",
+     "bytes": 1964610
+    },
+    {
+     "root": "generated",
+     "role": "texture-meta",
+     "path": "Textures/surface_enamel_detail_v1_normal.png.meta",
+     "sha256": "ff1f0ca0ac42c65a890f56d5f8aee70ad346771c991ed17c4174132622d09279",
+     "bytes": 2718
+    },
+    {
+     "root": "generated",
+     "role": "texture",
+     "path": "Textures/surface_limestone_detail_v1.png",
+     "sha256": "a8dbee7fa54175ca65d121a2c9f26845b277011c3e46322f5c8a1d7ddb4c0fa1",
+     "bytes": 886792
+    },
+    {
+     "root": "generated",
+     "role": "texture-meta",
+     "path": "Textures/surface_limestone_detail_v1.png.meta",
+     "sha256": "f2a2621861633f71259aa27ec765333390c198302ff40887d8a13894580ce3c3",
+     "bytes": 2718
+    },
+    {
+     "root": "generated",
+     "role": "texture",
+     "path": "Textures/surface_limestone_detail_v1_normal.png",
+     "sha256": "c35393574e0aafc33677535adad7890499f177090f42071d993199ca6acfd8f9",
+     "bytes": 2674711
+    },
+    {
+     "root": "generated",
+     "role": "texture-meta",
+     "path": "Textures/surface_limestone_detail_v1_normal.png.meta",
+     "sha256": "82938cc6e790f442a64f634fb847462a50ef174b137374a34a03f1461ac6e686",
+     "bytes": 2718
+    },
+    {
+     "root": "generated",
+     "role": "texture",
+     "path": "Textures/surface_metal_detail_v1.png",
+     "sha256": "b4e253548eb27ad5b9c6541e73e8a3ec743deef73aed90c8b25a491a51cecc18",
+     "bytes": 491305
+    },
+    {
+     "root": "generated",
+     "role": "texture-meta",
+     "path": "Textures/surface_metal_detail_v1.png.meta",
+     "sha256": "1e8a51bb2ee18bdcdf08c2cc7cc9cb9c38873a5bf40b59d5971300f590bbe376",
+     "bytes": 2718
+    },
+    {
+     "root": "generated",
+     "role": "texture",
+     "path": "Textures/surface_metal_detail_v1_normal.png",
+     "sha256": "5848fec158580a1bb23686e7112e59ee09bee832cc86f8e1a11532836f0a3891",
+     "bytes": 1613297
+    },
+    {
+     "root": "generated",
+     "role": "texture-meta",
+     "path": "Textures/surface_metal_detail_v1_normal.png.meta",
+     "sha256": "818ae432cca438c26b951fcf6aef34251cd221041a400a710e920a89f4de6d42",
+     "bytes": 2718
+    },
+    {
+     "root": "generated",
+     "role": "texture",
+     "path": "Textures/wall_panel_neutral_v1.png",
+     "sha256": "69e32933789c067f894986f0104c4daddfb019b5c0cf88d5878c8d5f58ebfe79",
+     "bytes": 1030928
+    },
+    {
+     "root": "generated",
+     "role": "texture-meta",
+     "path": "Textures/wall_panel_neutral_v1.png.meta",
+     "sha256": "cec1064be22b52d7cc7a6c9f39658568961badf0731ee9bb6b309a57747be9a0",
+     "bytes": 2714
+    },
+    {
+     "root": "generated",
+     "role": "lod",
+     "path": "Models/Facades/DK_StreamEndStack_Base_L1.fbx",
+     "sha256": "0279e7f6e639fdef21de2ac2a4f95b1cb88a29fef1a7da8fdf502e2bbc0754a5",
+     "bytes": 32716
+    },
+    {
+     "root": "generated",
+     "role": "lod",
+     "path": "Models/Facades/DK_StreamEndStack_Base_L2.fbx",
+     "sha256": "6605279da545fe395f0c2f510326aafe2f49e515ce1a5d71037ecec81ef707a9",
+     "bytes": 29420
+    }
+   ],
+   "tags": {
+    "use": [
+     "face:stream-end"
+    ],
+    "form": "end",
+    "scale": [
+     0.9,
+     1.1
+    ],
+    "squash": 1,
+    "wave": 2
+   },
+   "status": "adopted"
+  },
+  {
+   "id": "StreamEndStack_Mid",
+   "category": "Facades",
+   "size": [
+    6.45,
+    3.6,
+    14.45
+   ],
+   "pivot": "origin-ground",
+   "pivotOffset": [
+    0.225,
+    -6.775
+   ],
+   "front": "+Z",
+   "tris": 1688,
+   "materials": [
+    "DK_Limestone_Tex",
+    "DK_Window_Film",
+    "DK_Chrome",
+    "DK_Enamel_Seafoam",
+    "DK_Enamel_Ivory"
+   ],
+   "lods": [
+    {
+     "file": "Models/Facades/DK_StreamEndStack_Mid_L1.fbx",
+     "tris": 392,
+     "screen": 0.2
+    },
+    {
+     "file": "Models/Facades/DK_StreamEndStack_Mid_L2.fbx",
+     "tris": 144,
+     "screen": 0.07
+    }
+   ],
+   "lodCategory": "facades",
+   "source": "generated",
+   "lodClass": "cornerStorey",
+   "files": [
+    {
+     "root": "generated",
+     "role": "fbx",
+     "path": "Models/Facades/DK_StreamEndStack_Mid.fbx",
+     "sha256": "ee15455f052b7cea57ed2b937d54374e62a9cb3ef53287b034a1d9bdf8b3596b",
+     "bytes": 59900
+    },
+    {
+     "root": "generated",
+     "role": "material",
+     "path": "Materials/DK_Limestone_Tex.mat",
+     "sha256": "8b31e541d549a854b28e8fe0093142a7c4c3d022c541f953c19b47bea813b307",
+     "bytes": 4272
+    },
+    {
+     "root": "generated",
+     "role": "material-meta",
+     "path": "Materials/DK_Limestone_Tex.mat.meta",
+     "sha256": "ae76f47b08ffe2a83dcaf6efeaf41bdcdab4b24c4280b18c81d9e98f88f7498f",
+     "bytes": 188
+    },
+    {
+     "root": "generated",
+     "role": "material",
+     "path": "Materials/DK_Window_Film.mat",
+     "sha256": "bf97bfa5afa5348a63e9738c865972b382ca38881e0c87a38c7409d353a2f550",
+     "bytes": 3833
+    },
+    {
+     "root": "generated",
+     "role": "material-meta",
+     "path": "Materials/DK_Window_Film.mat.meta",
+     "sha256": "723148604413474bc1198056d880c25c2dd68439da5b77e0bcf2eb82c30a47d4",
+     "bytes": 188
+    },
+    {
+     "root": "generated",
+     "role": "material",
+     "path": "Materials/DK_Chrome.mat",
+     "sha256": "5dc81d1880e4d910fc4c88d842a770af3852644101b32a32c2adc37b5326e7f9",
+     "bytes": 4056
+    },
+    {
+     "root": "generated",
+     "role": "material-meta",
+     "path": "Materials/DK_Chrome.mat.meta",
+     "sha256": "4c894cf78eb05e94d210de5d4f10603033ae87f67a5ff31c9ac6c3f2371620f7",
+     "bytes": 188
+    },
+    {
+     "root": "generated",
+     "role": "material",
+     "path": "Materials/DK_Enamel_Seafoam.mat",
+     "sha256": "431d3e1a26bf85a6fb1c16687e95c486dc6851f9b84849b854e78b694c45b736",
+     "bytes": 3985
+    },
+    {
+     "root": "generated",
+     "role": "material-meta",
+     "path": "Materials/DK_Enamel_Seafoam.mat.meta",
+     "sha256": "76ed38fd07788956339cae17c5f59888d551ffbccfc4a2b3763688c4034c1820",
+     "bytes": 188
+    },
+    {
+     "root": "generated",
+     "role": "material",
+     "path": "Materials/DK_Enamel_Ivory.mat",
+     "sha256": "86fbae6bdcee94c8d92b60eabf67561c9e19ee7b2196606e5461a682aefa50f0",
+     "bytes": 3983
+    },
+    {
+     "root": "generated",
+     "role": "material-meta",
+     "path": "Materials/DK_Enamel_Ivory.mat.meta",
+     "sha256": "631111bbf64b77d5f6f289e8233a50d23f222070525c881a69d2db9c838992f8",
+     "bytes": 188
+    },
+    {
+     "role": "texture",
+     "path": "Textures/facade_panel_v1_mask.png",
+     "sha256": "06b88718b39837b5229f3fb20de9756e46c6e95cd60bd1a056a09b2ccea2a88d",
+     "bytes": 974447
+    },
+    {
+     "role": "texture-meta",
+     "path": "Textures/facade_panel_v1_mask.png.meta",
+     "sha256": "a58d4e958ddacf146aadb10a18b9e1502bcd77f235a2e29af3fb3209a289af93",
+     "bytes": 2714
+    },
+    {
+     "role": "texture",
+     "path": "Textures/facade_panel_v1_normal.png",
+     "sha256": "af57c53efdeb3bc4dca92ce8eb4c0f86c7ba6f08710115e61dc6f701b78d9465",
+     "bytes": 987621
+    },
+    {
+     "role": "texture-meta",
+     "path": "Textures/facade_panel_v1_normal.png.meta",
+     "sha256": "276cdae04b563c96228b2dcb3170f5ca04031d1d5382c064131945bcfd8557b5",
+     "bytes": 2714
+    },
+    {
+     "root": "generated",
+     "role": "texture",
+     "path": "Textures/surface_enamel_detail_v1.png",
+     "sha256": "a407da57c4a52fc85b1946b9f33f91f2ae1a1c5ff3d31fd2bebcc210d60fd147",
+     "bytes": 474006
+    },
+    {
+     "root": "generated",
+     "role": "texture-meta",
+     "path": "Textures/surface_enamel_detail_v1.png.meta",
+     "sha256": "30eb7058ac45ff6a9f483843d9f9118b13b98ab96576ef30bd3233c6b64dd0d6",
+     "bytes": 2718
+    },
+    {
+     "root": "generated",
+     "role": "texture",
+     "path": "Textures/surface_enamel_detail_v1_normal.png",
+     "sha256": "45e4c502424bb43719e315020ffb03d7ac8dd5fb85658f978cd099d8d7d6af45",
+     "bytes": 1964610
+    },
+    {
+     "root": "generated",
+     "role": "texture-meta",
+     "path": "Textures/surface_enamel_detail_v1_normal.png.meta",
+     "sha256": "ff1f0ca0ac42c65a890f56d5f8aee70ad346771c991ed17c4174132622d09279",
+     "bytes": 2718
+    },
+    {
+     "root": "generated",
+     "role": "texture",
+     "path": "Textures/surface_metal_detail_v1.png",
+     "sha256": "b4e253548eb27ad5b9c6541e73e8a3ec743deef73aed90c8b25a491a51cecc18",
+     "bytes": 491305
+    },
+    {
+     "root": "generated",
+     "role": "texture-meta",
+     "path": "Textures/surface_metal_detail_v1.png.meta",
+     "sha256": "1e8a51bb2ee18bdcdf08c2cc7cc9cb9c38873a5bf40b59d5971300f590bbe376",
+     "bytes": 2718
+    },
+    {
+     "root": "generated",
+     "role": "texture",
+     "path": "Textures/surface_metal_detail_v1_normal.png",
+     "sha256": "5848fec158580a1bb23686e7112e59ee09bee832cc86f8e1a11532836f0a3891",
+     "bytes": 1613297
+    },
+    {
+     "root": "generated",
+     "role": "texture-meta",
+     "path": "Textures/surface_metal_detail_v1_normal.png.meta",
+     "sha256": "818ae432cca438c26b951fcf6aef34251cd221041a400a710e920a89f4de6d42",
+     "bytes": 2718
+    },
+    {
+     "root": "generated",
+     "role": "texture",
+     "path": "Textures/wall_panel_neutral_v1.png",
+     "sha256": "69e32933789c067f894986f0104c4daddfb019b5c0cf88d5878c8d5f58ebfe79",
+     "bytes": 1030928
+    },
+    {
+     "root": "generated",
+     "role": "texture-meta",
+     "path": "Textures/wall_panel_neutral_v1.png.meta",
+     "sha256": "cec1064be22b52d7cc7a6c9f39658568961badf0731ee9bb6b309a57747be9a0",
+     "bytes": 2714
+    },
+    {
+     "root": "generated",
+     "role": "lod",
+     "path": "Models/Facades/DK_StreamEndStack_Mid_L1.fbx",
+     "sha256": "f92912f372d2c86e6f832d072ad05c6992fc600047d21728cf808ffc1aa42378",
+     "bytes": 31900
+    },
+    {
+     "root": "generated",
+     "role": "lod",
+     "path": "Models/Facades/DK_StreamEndStack_Mid_L2.fbx",
+     "sha256": "f40dd62842c8b0d431be0a376487f741577a0a6c520cc9cc559833361576bc6c",
+     "bytes": 24764
+    }
+   ],
+   "tags": {
+    "use": [
+     "face:stream-end"
+    ],
+    "form": "end",
+    "scale": [
+     0.9,
+     1.1
+    ],
+    "squash": 1,
+    "wave": 2
+   },
+   "status": "adopted"
+  },
+  {
+   "id": "StreamEndStack_Top",
+   "category": "Facades",
+   "size": [
+    6.45,
+    3.95,
+    14.45
+   ],
+   "pivot": "origin-ground",
+   "pivotOffset": [
+    0.225,
+    -6.775
+   ],
+   "front": "+Z",
+   "tris": 3108,
+   "materials": [
+    "DK_Limestone_Tex",
+    "DK_Window_Film",
+    "DK_Chrome",
+    "DK_Enamel_Seafoam",
+    "DK_Enamel_Ivory"
+   ],
+   "lods": [
+    {
+     "file": "Models/Facades/DK_StreamEndStack_Top_L1.fbx",
+     "tris": 564,
+     "screen": 0.2
+    },
+    {
+     "file": "Models/Facades/DK_StreamEndStack_Top_L2.fbx",
+     "tris": 224,
+     "screen": 0.07
+    }
+   ],
+   "lodCategory": "facades",
+   "source": "generated",
+   "lodClass": "cornerStorey",
+   "files": [
+    {
+     "root": "generated",
+     "role": "fbx",
+     "path": "Models/Facades/DK_StreamEndStack_Top.fbx",
+     "sha256": "89c12dcbdb72d0af2da39d580f39a7f267065baa0eea9d2fd756b9df7ef35fab",
+     "bytes": 91388
+    },
+    {
+     "root": "generated",
+     "role": "material",
+     "path": "Materials/DK_Limestone_Tex.mat",
+     "sha256": "8b31e541d549a854b28e8fe0093142a7c4c3d022c541f953c19b47bea813b307",
+     "bytes": 4272
+    },
+    {
+     "root": "generated",
+     "role": "material-meta",
+     "path": "Materials/DK_Limestone_Tex.mat.meta",
+     "sha256": "ae76f47b08ffe2a83dcaf6efeaf41bdcdab4b24c4280b18c81d9e98f88f7498f",
+     "bytes": 188
+    },
+    {
+     "root": "generated",
+     "role": "material",
+     "path": "Materials/DK_Window_Film.mat",
+     "sha256": "bf97bfa5afa5348a63e9738c865972b382ca38881e0c87a38c7409d353a2f550",
+     "bytes": 3833
+    },
+    {
+     "root": "generated",
+     "role": "material-meta",
+     "path": "Materials/DK_Window_Film.mat.meta",
+     "sha256": "723148604413474bc1198056d880c25c2dd68439da5b77e0bcf2eb82c30a47d4",
+     "bytes": 188
+    },
+    {
+     "root": "generated",
+     "role": "material",
+     "path": "Materials/DK_Chrome.mat",
+     "sha256": "5dc81d1880e4d910fc4c88d842a770af3852644101b32a32c2adc37b5326e7f9",
+     "bytes": 4056
+    },
+    {
+     "root": "generated",
+     "role": "material-meta",
+     "path": "Materials/DK_Chrome.mat.meta",
+     "sha256": "4c894cf78eb05e94d210de5d4f10603033ae87f67a5ff31c9ac6c3f2371620f7",
+     "bytes": 188
+    },
+    {
+     "root": "generated",
+     "role": "material",
+     "path": "Materials/DK_Enamel_Seafoam.mat",
+     "sha256": "431d3e1a26bf85a6fb1c16687e95c486dc6851f9b84849b854e78b694c45b736",
+     "bytes": 3985
+    },
+    {
+     "root": "generated",
+     "role": "material-meta",
+     "path": "Materials/DK_Enamel_Seafoam.mat.meta",
+     "sha256": "76ed38fd07788956339cae17c5f59888d551ffbccfc4a2b3763688c4034c1820",
+     "bytes": 188
+    },
+    {
+     "root": "generated",
+     "role": "material",
+     "path": "Materials/DK_Enamel_Ivory.mat",
+     "sha256": "86fbae6bdcee94c8d92b60eabf67561c9e19ee7b2196606e5461a682aefa50f0",
+     "bytes": 3983
+    },
+    {
+     "root": "generated",
+     "role": "material-meta",
+     "path": "Materials/DK_Enamel_Ivory.mat.meta",
+     "sha256": "631111bbf64b77d5f6f289e8233a50d23f222070525c881a69d2db9c838992f8",
+     "bytes": 188
+    },
+    {
+     "role": "texture",
+     "path": "Textures/facade_panel_v1_mask.png",
+     "sha256": "06b88718b39837b5229f3fb20de9756e46c6e95cd60bd1a056a09b2ccea2a88d",
+     "bytes": 974447
+    },
+    {
+     "role": "texture-meta",
+     "path": "Textures/facade_panel_v1_mask.png.meta",
+     "sha256": "a58d4e958ddacf146aadb10a18b9e1502bcd77f235a2e29af3fb3209a289af93",
+     "bytes": 2714
+    },
+    {
+     "role": "texture",
+     "path": "Textures/facade_panel_v1_normal.png",
+     "sha256": "af57c53efdeb3bc4dca92ce8eb4c0f86c7ba6f08710115e61dc6f701b78d9465",
+     "bytes": 987621
+    },
+    {
+     "role": "texture-meta",
+     "path": "Textures/facade_panel_v1_normal.png.meta",
+     "sha256": "276cdae04b563c96228b2dcb3170f5ca04031d1d5382c064131945bcfd8557b5",
+     "bytes": 2714
+    },
+    {
+     "root": "generated",
+     "role": "texture",
+     "path": "Textures/surface_enamel_detail_v1.png",
+     "sha256": "a407da57c4a52fc85b1946b9f33f91f2ae1a1c5ff3d31fd2bebcc210d60fd147",
+     "bytes": 474006
+    },
+    {
+     "root": "generated",
+     "role": "texture-meta",
+     "path": "Textures/surface_enamel_detail_v1.png.meta",
+     "sha256": "30eb7058ac45ff6a9f483843d9f9118b13b98ab96576ef30bd3233c6b64dd0d6",
+     "bytes": 2718
+    },
+    {
+     "root": "generated",
+     "role": "texture",
+     "path": "Textures/surface_enamel_detail_v1_normal.png",
+     "sha256": "45e4c502424bb43719e315020ffb03d7ac8dd5fb85658f978cd099d8d7d6af45",
+     "bytes": 1964610
+    },
+    {
+     "root": "generated",
+     "role": "texture-meta",
+     "path": "Textures/surface_enamel_detail_v1_normal.png.meta",
+     "sha256": "ff1f0ca0ac42c65a890f56d5f8aee70ad346771c991ed17c4174132622d09279",
+     "bytes": 2718
+    },
+    {
+     "root": "generated",
+     "role": "texture",
+     "path": "Textures/surface_metal_detail_v1.png",
+     "sha256": "b4e253548eb27ad5b9c6541e73e8a3ec743deef73aed90c8b25a491a51cecc18",
+     "bytes": 491305
+    },
+    {
+     "root": "generated",
+     "role": "texture-meta",
+     "path": "Textures/surface_metal_detail_v1.png.meta",
+     "sha256": "1e8a51bb2ee18bdcdf08c2cc7cc9cb9c38873a5bf40b59d5971300f590bbe376",
+     "bytes": 2718
+    },
+    {
+     "root": "generated",
+     "role": "texture",
+     "path": "Textures/surface_metal_detail_v1_normal.png",
+     "sha256": "5848fec158580a1bb23686e7112e59ee09bee832cc86f8e1a11532836f0a3891",
+     "bytes": 1613297
+    },
+    {
+     "root": "generated",
+     "role": "texture-meta",
+     "path": "Textures/surface_metal_detail_v1_normal.png.meta",
+     "sha256": "818ae432cca438c26b951fcf6aef34251cd221041a400a710e920a89f4de6d42",
+     "bytes": 2718
+    },
+    {
+     "root": "generated",
+     "role": "texture",
+     "path": "Textures/wall_panel_neutral_v1.png",
+     "sha256": "69e32933789c067f894986f0104c4daddfb019b5c0cf88d5878c8d5f58ebfe79",
+     "bytes": 1030928
+    },
+    {
+     "root": "generated",
+     "role": "texture-meta",
+     "path": "Textures/wall_panel_neutral_v1.png.meta",
+     "sha256": "cec1064be22b52d7cc7a6c9f39658568961badf0731ee9bb6b309a57747be9a0",
+     "bytes": 2714
+    },
+    {
+     "root": "generated",
+     "role": "lod",
+     "path": "Models/Facades/DK_StreamEndStack_Top_L1.fbx",
+     "sha256": "c1e0fa80dcb331732ac70baf7df1c3aff7c22ced6fbf961a652f899c05e5b88e",
+     "bytes": 35916
+    },
+    {
+     "root": "generated",
+     "role": "lod",
+     "path": "Models/Facades/DK_StreamEndStack_Top_L2.fbx",
+     "sha256": "9af6afefecd1b0ebd3bc0fd2fa9ea55309133dbbbbb1355658638e4d91f12524",
+     "bytes": 26732
+    }
+   ],
+   "tags": {
+    "use": [
+     "face:stream-end"
+    ],
+    "form": "end",
+    "scale": [
+     0.9,
+     1.1
+    ],
+    "squash": 1,
+    "wave": 2
+   },
+   "status": "adopted"
   },
   {
    "id": "StreetLampGlobe",

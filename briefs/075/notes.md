@@ -43,3 +43,12 @@ Splice: please key landmarks.json slots on these three keys and bases. The old r
   - Splice: landmarks.json can key slots by these names; if your export lists a subset (placed pieces only), each row should match kit.json `landmarks.pieces[id][base]`.
   - Latch: per instance, for each renderer slot whose material is `base`, swap to `keys[pieces[id][base]].material` (same as the colourway swap).
   - C5: the Portal regen kept the tower's bands. The red bands in the old reel are the DK_Steel_Ivory shaft rings painted by livery (DK_Enamel_Coral is only trim: 72 m2 Portal vs 78 m2 legacy). The Portal lost the back service gantry (DK_Steel_Ivory 3173 vs 3832 m2), not the bands. The legacy FBX and our generated Skyport_Tower have identical slot areas. Renders: briefs/075/landmarks/sheet.png, slots.json.
+
+## Vela 075-E (streamline stack modules; CornerTower_12), 13:49
+- Files I touch: tools/decokit/streamstack.py (new: StreamBayStack / StreamCornerStack / StreamEndStack _Base/_Mid/_Top), kit.py FAMILIES (+streamstack), facades_tower.py (CornerTower_12's door canopy and columns: brass -> ivory / chrome), tools/kit/lod.ts + tags.ts (the stack modules' distance class and face:stream-* use), kit.json status (adoptions).
+- 13:49 START Vela 075-E: bun run guard bun run decokit --only <9 stack ids>,CornerTower_12
+- 13:50 END   Vela 075-E decokit --only (ok, 55 s)
+- 13:50 Vela 075-E: bun run guard bun run kit --catalogue, adopt (status), bun run guard bun run kit
+- 13:51 Vela 075-E: bun run guard bun run collide; collide --check
+- 13:51 Vela 075-E: bun run guard bun run cover; cover --check
+- 14:06 Vela 075-E done with tools/decokit (READY-E-vela). Contract for Splice: briefs/072/pieces/pieces.md "075-E"; sheet briefs/075/stream/contact_sheet.png.

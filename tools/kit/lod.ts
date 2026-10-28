@@ -67,5 +67,7 @@ export function lodClassOf(id: string): KitLodClass | undefined {
   if (/^(SideBay|AlleyWall|SidePilaster|ShopFill)_4D?$|^CornerPier_(Out|In)_4$/.test(id)) return 'bay4';
   if (/^SideBayStack_(Base|Mid|Top)$|^SidePilaster_(Base|Mid|Top)$|^ShopStack_Base$/.test(id)) return 'storey';
   if (/^CornerPier_(Out|In)_(Base|Mid|Top)$/.test(id)) return 'cornerStorey';
+  if (/^StreamBayStack_(Base|Mid|Top)$/.test(id)) return 'storey'; // brief 075-E (Vela): the streamline stack modules switch by distance like the every-face stacks
+  if (/^Stream(Corner|End)Stack_(Base|Mid|Top)$/.test(id)) return 'cornerStorey';
   return undefined;
 }
