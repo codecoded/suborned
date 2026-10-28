@@ -1,0 +1,38 @@
+{
+  "note": "Redline 075 Perf A/B (2026-10-29): the old-built town (Assets/Scenes/OldTown.unity, OldTownSwap at cc903ae0) against our district (Assets/Scenes/HarbourDistrict.unity), warm, uncapped, 1920x1080 windowed, against brief 064 A5 (warm mean <= 13.0 ms, p99 <= 16.7 ms). SPEC, NOT RUN: an Air run needs Sky's OK (Aster asks). Two development players from ONE commit, both built by PerfBuild (briefs/075/notes.md, 'Perf A/B', item B). Stops are given in PLAN coordinates (x, level, y); PerfBuild resolves them per scene: HarbourDistrict focus = (x, level, y); OldTown focus = (x, level, y + 206) (OldTownSwap.DZ: plan (x, y) = old Unity (x, z - 206)). The four switches marked PENDING (pipeline, oldCrowd, msaa, oldLens, fogPass) do not exist in PerfVariant yet: JsonUtility drops unknown keys, so until Latch adds them and the player echoes them, every variant below runs as `as-built` against itself. run-air-075ab.sh refuses a result that does not echo them. Verdict: the as-built warm mean and p99 per stop per scene against 13.0 / 16.7; the old town's cuts (variants) give each cut's measured saving for the ranked list in briefs/075/oldbuild/perf.md.",
+  "content": "world as built, people layer stripped (PerfStrip, both players). OldTown keeps its baked glTF crowd (District / Southside crowd and traffic roots, 2,590 static instances): it is world, not the people layer, and is switched by oldCrowd.",
+  "width": 1920,
+  "height": 1080,
+  "warmup": { "minSeconds": 600, "maxSeconds": 900, "dwellSeconds": 10, "plateau": 0.02 },
+  "variants": [
+    { "name": "as-built", "why": "each scene as Sky saw it: OldTown with the old pipeline (PC_RPAsset of OldTownArt: MSAA 4, depth + opaque texture, GRD off, old renderer with Harbour fog and depth-normals SSAO), its lens (Gaussian DOF, sun flare with occlusion, bloom 0.8/0.6) and its crowd; HarbourDistrict as shipped" },
+    { "name": "old-no-crowd", "why": "OldTown only: the glTF crowd and cars hidden (renderers off under 'District crowd and traffic' and 'Southside crowd and traffic'). as-built - this = cut 1", "oldCrowd": "off" },
+    { "name": "old-no-msaa", "why": "OldTown only: crowd off and MSAA 1. old-no-crowd - this = cut 2", "oldCrowd": "off", "msaa": 1 },
+    { "name": "old-lean-lens", "why": "OldTown only: crowd off, MSAA 1, DOF and the flare off at play, depth and opaque textures by request. old-no-msaa - this = cut 3", "oldCrowd": "off", "msaa": 1, "oldLens": "off" },
+    { "name": "old-our-pipeline", "why": "OldTown only: crowd off, rendered through OUR pipeline asset and renderer (MSAA 1, GRD on, no Harbour fog pass, our lens). Content-only difference against HarbourDistrict as-built", "oldCrowd": "off", "pipeline": "ours" }
+  ],
+  "passes": [
+    {
+      "name": "ab075",
+      "why": "per player: its variants interleaved and rotated per stop, 3 repeats, the first segment again at the end (noise gate: within 3 %). HarbourDistrict runs as-built only (the old-* variants refuse to run there: PerfSwitches throws on a switch the scene has no target for)",
+      "vSync": 0, "window": "Windowed", "settleSeconds": 2, "recordSeconds": 10, "missMs": 17.5, "repeats": 3,
+      "stops": ["cell-open-30", "office-front-30", "office-front-210", "cafe-square-210", "circus-30", "harbour-terrace-30", "harbour-station-30", "southside-30"],
+      "variants": ["as-built", "old-no-crowd", "old-no-msaa", "old-lean-lens", "old-our-pipeline"],
+      "repeatFirst": true,
+      "shots": true
+    }
+  ],
+  "stops": [
+    { "name": "cell-open-30", "why": "the opening (HandoverHost OpeningFocus); same pixels as cafe-square-30. Inside the Handover zone: both scenes hold OUR content here, so the difference is pipeline and lens only (the control)", "focus": [-170.5, 0, -227.5], "zoom": 0, "yaw": 30 },
+    { "name": "office-front-30", "why": "Records Office front, inside the zone (control)", "focus": [-160, 0, -281], "zoom": 0, "yaw": 30 },
+    { "name": "office-front-210", "why": "the Records Office as played (yaw 210), inside the zone (control)", "focus": [-160, 0, -281], "zoom": 0, "yaw": 210 },
+    { "name": "cafe-square-210", "why": "the cafe turned, inside the zone (control)", "focus": [-170.5, 0, -227.5], "zoom": 0, "yaw": 210 },
+    { "name": "circus-30", "why": "old content: the circus (SwapShots play-circus), 42 static people + 4 cars in the ground footprint", "focus": [0, 0, -30], "zoom": 0, "yaw": 30 },
+    { "name": "harbour-terrace-30", "why": "old content: the harbour terrace, 51 people + 1 car in the footprint (the densest non-Southside view)", "focus": [60, 0, -120], "zoom": 0, "yaw": 30 },
+    { "name": "harbour-station-30", "why": "old content with our S2 station: the sky-rail view, 3 people", "focus": [117, 0, -140], "zoom": 0, "yaw": 30 },
+    { "name": "southside-30", "why": "old content: the worst crowd view, 68 people + 5 cars in the footprint", "focus": [30, 0, -280], "zoom": 0, "yaw": 30 }
+  ],
+  "street": {
+    "note": "Street level (GDD section 11's ground view) through the tp-long rows (TpLongRun), not this plan: tp-street and tp-worst for HarbourDistrict as in tplong-072; for OldTown the same rows plus tp-circus (walker at plan (0, -30)) and tp-harbour (plan (60, -120)), OldTown z + 206. Rows need oldCrowd on|off echoed like the perf variants. Latch writes tplong-075ab.resolved.json from a player that has the switches."
+  }
+}

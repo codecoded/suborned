@@ -953,6 +953,53 @@ Proposed schema for Latch's export, `briefs/075/oldbuild/built.json`: **`suborne
 - Heights are reported (`heights.byKind`, tall > 17 m vs low), not compared: they are Sky's flagship/domestic rule, not mission maths.
 - Overlap rule: OV-1 (tools/world/rules/overlap.ts + overlap.test.ts) is finished and registered; `bun run plan`: OV-1 PASS, 0 faults outside the Handover (79 among the zone's protected buildings, reported). The frontage fix that goes with it is `OLD_BLOCK.intoWalls` (off) in tools/world/gen/oldblocks.ts: that file's working-tree diff is only this OV-1 fix, not palette work, and should be committed with overlap.* (Aster).
 
+### Plan match: Latch's export read as is (Splice, 2026-10-29, after cc903ae0) · for Latch, Datum
+- **Schema agreed by adapting the reader**, not Latch's file. `briefs/075/oldbuild/swap/built.json` (`latch.oldbuilt/1`) is read by `tools/world/oldmatch/latch.ts` into `suborned.oldbuilt/1`; `bun run oldbuild:match` takes it by default when `oldbuild/built.json` is absent. The schema gained four optional fields (`contracts/world/oldbuilt.schema.ts`):
+  - entrance kind `bay` (with `normal`, `w`);
+  - `coverage` (where ground was laid piece by piece);
+  - `zone: 'ours'`;
+  - `notes`.
+- How the pieces are read:
+  - **Points** are already in the plan frame (offset 0, 0).
+  - **Buildings**: kind mass → domestic, frontage → commercial, building → flagship, landmark → landmark. Height = top − base.
+  - **Bay fronts stand in for doors** outside the zone. A door of ours within w/2 + 1 m along a bay and 1 m across it, at the same level, is matched. An old building (run segment) none of whose bays carries a door of ours is built-only, one per building. Inside the zone the check uses our real doors.
+  - **Kerbs** come from the stones: 2 m along the stone, square to its forward. Corners are R 2 arcs about the cell's walk-side corner, noses R 1 half-rounds. Stones are joined end to end into lines.
+  - **Asphalt meshes are not used**: they are decks laid under the pavements, not carriageway extents (Street road deck is x −8..10, its kerbs are at ±8).
+  - **Flags** are 2 m modules turned to their grid. The file has no yaw, so the turn is read from each module's 2 m neighbour (Southside's grid is turned).
+  - **Levels**: old/road and old/walk = the street level. Ringed levels = our decks and platforms. old/water is not compared. old/promenade is reported.
+  - **The zone** is taken from our export, clipped to the zone rectangle. Any old piece strictly inside it is an `intrusion`, a hard failure.
+  - **Where ground is compared**: only inside the coverage (each stone or flag cell grown 6 m) and on the plan sheet (x −460..380, y −560..300). Beyond the sheet the old CityMass is backdrop and is counted as not compared.
+- **Asks of Latch** (optional, they sharpen the check):
+  - (1) a `yaw` on each pavement module;
+  - (2) real ground-storey outlines for masses and bays, not bounds boxes. OV-1 can't give a verdict on boxes (below);
+  - (3) re-export the swap on the 0.5.3 export: built.json was made from v0.5.2 (sha d9262e4f…), so S1 Crown Circus's platforms and banks are plan-only.
+- **Result** (`bun run oldbuild:match`, exit 1): **0 Handover-zone hard failures, 0 intrusions**. Outside the zone, 1273 mismatches. Areas: core = the old builders' piece-laid streets, district = the rest of the sheet.
+
+  | kind | built-only | plan-only |
+  |---|---|---|
+  | footprints | 261 runs, 7469 m (core 127, district 134) | 189 runs, 10316 m (core 57, district 132) |
+  | kerbs | 226 runs, 3057 m (core) | 83 runs, 2078 m (core) |
+  | pavement edges | 196 runs, 4078 m (core) | 103 runs, 2469 m (core) |
+  | doors / bays | 102 old buildings with no door of ours on their bays (core 76, district 26) | 106 doors of ours on no bay (core) |
+  | levels | promenade −0.85 (not a plan level) | none |
+  | decks | none | 4 (Crown Circus, stale export) |
+
+  - **Levels differ**: the street is z −0.002 / walk 0.15, the plan's is 0 / 0.18.
+  - **Pavement tops**: all 2661 flags are at 0.15, ours at 0.18 (one grouped mismatch).
+  - **Not compared**: 70.6 km of old footprint outline beyond the sheet, 5.0 km of our kerb and 9.3 km of our pavement edge outside the coverage, 384 of our doors outside the coverage.
+- **Road widths** read from the stones (patch `to`): boulevard and crown-avenue are 16 m built against 20 m planned (kerbs at ±8). harbour-market 16 and sunset-east 12 agree. apron-road is 12 m but shifted 4 m. market-street's 26 m reading is low confidence: Southside's diagonal kerbs fall inside its search band.
+- **OV-1 on the old-built footprints: 1299 faults over 1927 footprints. Treat these as box artefacts, not a verdict.**
+  - 876 are beyond the sheet: CityMass component axis boxes.
+  - 423 are on the sheet:
+    - 235 bay × bay: prefab bounds 14 m deep crossing at corners and back to back; 27 of them are within one run;
+    - 78 bay × a tower standing on its podium: the tower base is 16.32, under the bay box top of 16.45;
+    - 66 bay × CityMass;
+    - 44 CityMass boxes.
+- **Plan patch** for Datum: `briefs/075/oldbuild/plan-patch.json`, 175 ops plus 7 builder fixes for Latch.
+  - Ops: 42 block/plot rect sets, 36 new plots grouped by old building group, 14 removes, 61 block/plot reviews (pavement edges and doors), 11 road reviews, 1 circus review, 8 landmark/signature reviews, 2 general reviews.
+  - Builder fixes: street level and pavement tops 0.15 → 0.18, the promenade, 4 Crown Circus decks (stale).
+  - The plan is not edited.
+
 ## SpaceHQ switch (Datum, brief 075 remap step 2, 2026-10-29) · oldbuild/READY-spacehq-datum
 The setting is `plan.spacehq.form`, `"old"` (the default) or `"ours"`. To flip it, run `bun tools/plan/oldtown/transcribe.ts --spacehq ours|old --out <plan>`; without the flag it keeps the form already in `--out`. It writes the chosen form into `signatures[space-hq]`, `skyrail[0]` (S1), Crown Walk (`foot`), the Sphere Park and Crown Forecourt plots and `standards.skyline.dominant`. Both forms are kept in full in `plan.spacehq.forms.{old,ours}` (signature, S1, forecourt, dominant). The old → ours → old round trip comes back byte for byte, and Pulse's 8 journeys are kept in both forms.
 
@@ -1013,3 +1060,59 @@ I did not touch either file (not mine). The plan already carries `kit: SpaceHQ`,
 - Handover zone unchanged: ZK-1 PASS, zone-stable test PASS, C-0/C-3/M-1 as before (getaway 447, official 1124, service 126, rivals 593), `bun run sim:site` left sim/data byte-identical (site sha c9b862c3… unchanged, so missions:check not rerun); civic-block.cover.json changed only its kit/plan provenance hashes.
 - "ours" (`transcribe --spacehq ours`): exit 1, 151 PASS. Datum's: S-P1, S-S1, S-C1. Generator side (L-1, L-5, SF-9, SF-12) all come from one gap: the drum's ground hall (x ±40, y 224..264, between the legs) is not public ground for the bank search (connectors.ts `publicOk` takes only park/open/square plots, foot ways and quays; Crown Walk's 12 m covers ±6 m of the line, a bank needs 4.75..15 m off it). Either the plan gives the hall an open/square plot, or the generator takes a signature's ground less its legs as bank ground. Not done: kept as data until Sky picks "ours".
 Evidence: `bun run world` ×2 exit 0, same sha 7ffe56b9…; `bun run world:faces` exit 0 (every wall face is kit); `bun run plan` exit 0, 158 PASS (NP-1, SG-1, SK-1 pass); with the overlay exit 0, 163 PASS; `bun run cover` and `--check` exit 0; typecheck clean; tests tools/world tools/plan tools/kit tools/missions 750 (1 skip, 0 fail after the kit test was updated for the adoption), tools/sim 56 pass; new tools/world/gen/signatures.test.ts (2 pass).
+
+## Perf A/B (Redline, brief 075, 2026-10-29) · for Latch · Aster routes · old-built town vs our district
+Sky asked "what's the performance difference in rendering?" between OldTown.unity (OldTownSwap, cc903ae0) and HarbourDistrict.unity. My static census (YAML only, no Unity) and the table are in `oldbuild/perf.md`; the census data is in `redline/oldtown-census-075ab.json`. Two asks, both from the same commit, nothing saved into either scene.
+
+**A. Studio counts (batchmode offscreen; no Air).** Use After072's estimator, the same one behind `latch/billboards/counts.md` (a `-tag 075ab` beside `075f1`), on **both** scenes. Add Baseline072's UnityStats (Game view) only if the Studio's Editor is free. Run four configurations:
+1. HarbourDistrict, GRD on (as built).
+2. HarbourDistrict, GRD off.
+3. OldTown inside `OldTownSwap.WithOldSettings`, as Sky saw it: the old PC_RPAsset with GRD off as built, then the same with GRD on.
+4. OldTown under **our** pipeline asset and renderer. This one separates content from pipeline.
+
+- **Views:** cell-open-30 (= cafe-square-30), office-front 30/210, cafe-square 210, circus 30, harbour-terrace 30, harbour-station 30, southside 30. These are SwapShots.PlayViews at play zoom (ortho 14, pitch 38, stand-off 160). Add the golden view (SwapShots' reel t 10, perspective) and one street-level tp-street pose per scene. OldTown foci are plan y + 206.
+- **Per view:**
+  - SetPass estimate (forward, depth-normals, shadow per cascade).
+  - Draws (main and shadow), main tris and shadow tris, casters.
+  - Visible renderers, distinct materials, distinct shader variants.
+  - The share of renderers and tris under `District crowd and traffic` + `Southside crowd and traffic`.
+  - The share under the DK_Tile_TramRail / DK_Pave_Flags / DK_Kerb_Granite ground instances.
+  - Reflection probes touching the frame.
+  - Batchmode ms (indicative).
+- **Per scene:** texmem (After072 `texmem`), plus the probe cubemaps and the glTF textures listed separately.
+- **Write to:** `briefs/075/latch/ab/counts.md` and `.json`.
+- **Check first:** does the play camera in OldTown carry TacticalShadows (cascade refit, SSAO off at ortho)? Does the sun's LensFlareComponentSRP stay active at play? Say which.
+
+**B. The Air build (make it, don't send it: the run needs Sky's OK).** Spec: `redline/perf-075ab.json`; script: `redline/run-air-075ab.sh`.
+1. `PerfBuild` gains `-perfScene <path>` (default HarbourDistrict) and resolves stops given in plan coordinates per scene (OldTown z = plan y + 206; WorldStamp and fingerprint checks as now).
+2. Build two development players from one commit, people layer stripped in both:
+   - "The Suborned Perf Ours.app" (HarbourDistrict).
+   - "The Suborned Perf OldTown.app" (OldTown). Its build carries the old PC_RPAsset as the quality level's pipeline (in memory, restored, both settings files byte-checked as OldTownSwap does), with lodBias 2, realtime probes on and mip streaming off. Both pipeline assets go in the build.
+3. New PerfVariant switches. Each must be echoed in the result, and each must throw on a scene without its target:
+   - `oldCrowd` on|off: renderers off under the two crowd roots.
+   - `msaa` 1|4: the active asset's msaaSampleCount.
+   - `oldLens` on|off: DOF and the sun flare off, depth and opaque textures by request.
+   - `pipeline` old|ours: swaps QualitySettings.renderPipeline at start.
+4. Resolve `perf-075ab.ours.resolved.json` and `perf-075ab.old.resolved.json` beside the script.
+- **Done-check:** both players open on the Studio with `-perf <plan> -perfNoWarm`, the results echo all four switches, and the stops frame the same plan points as SwapShots' play-*.png.
+- **Next owner:** Redline reads A and fills perf.md's Studio rows. Aster asks Sky about B.
+
+## Civic restyle (Vela, brief 075, 2026-10-29) · civic/READY-vela · for Latch, then Waymark
+Sky: "could we bring the civic block into looking more aligned without ruining the game logic?" This is a visual-only restyle of the Records Office, café and square in the old town's materials. Table: `civic/restyle.md`. Data for Latch: `civic/restyle.json`.
+- **No decokit run and no piece regenerated.** A mesh's sha256 keys `kit.collide.json`, so every change is one of: a material slot on an existing renderer, a ground material, or a scene-only overlay with no collider.
+- **Blender runs (renders only, none at the same moment as anyone else's; no headless Blender was running):** `tools/decokit/review075_civic.py`, run as:
+  - `before`
+  - `after` ×3 (round 1: terrazzo inlays and flagged forecourt, rejected; round 2: blade signs, dropped; round 3: final)
+  - `after cafe-stone`
+
+  Output in `civic/*.png`, with the strip in `civic/compare-before-after-alt.png`.
+- **Proposal:**
+  - Records Office: DK_Limestone → DK_Limestone_Tex (the old 2 m panel sheet); charcoal spandrels → DK_GlassDark (ribbon windows).
+  - Café: Circus render (DK_Render_White__circus) with coral sill ribbons (DK_Enamel_Seafoam__circus) and a teal shop fascia (DK_Enamel_Teal__circus).
+  - Planters, terrace edge and bed kerbs: DK_Limestone_Tex.
+  - Square and forecourt: DK_Terrazzo_Ivory (the old plaza floor). Inlays keep their enamel, for readability.
+  - Two HangingBaskets on the café's outer piers.
+- **Locks:**
+  - `bun run sim:site`: sim/data byte-identical (8 files, sha256 compared before and after).
+  - `git diff` on kit.collide.json, civic-block.json and sim/data: empty.
+  - `bun run collide --check`: exit 1 on **SpaceHQ only**. This predates the restyle: Splice's adoption (5bb7109d) has no volumes yet. The fix is `bun run collide --only SpaceHQ`, which adds one entry and changes no existing hash. It is not run here because kit.collide.json is locked for this task; Aster to route.
