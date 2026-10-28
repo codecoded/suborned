@@ -134,7 +134,8 @@ export function dressRoadFinish(ctx: Ctx, o: { crossings: { strip: V[] }[]; /** 
   const addB = (kind: string, ring: V[], owner?: string, except?: string) => { if (ring.length >= 3) blockers.push({ kind, ring, bb: bboxOf(ring), owner, except }); };
   for (const c of o.crossings) addB('crossing', c.strip);
   for (const d of ctx.civ.drives ?? []) addB('drive', d.poly as V[]);
-  for (const p of o.platforms ?? []) addB('platform', p);
+  const islands = !!(ctx.S as { sections?: { tramStreet?: unknown } }).sections?.tramStreet; // brief 075: on a tram street a stop is a boarding island in the carriageway: its kerb takes the ribbon all round (below), so it is not a break for its own faces
+  (o.platforms ?? []).forEach((p, i) => addB('platform', p, islands ? `island/${i}` : undefined));
   const fwStd = footwayStd(ctx.S);
   if (fwStd) for (const m of o.mouths ?? []) addB('footway', blockRing(m, fwStd), undefined, m.road); // brief 061: the table and the ramp to its foot band: the lane's ribbon, lozenges and seams stop short of it; the higher road's lines run through
   /** A track's swept strip: 1.825 m either side of a track centre line (streetscape.sections.primary.tram.swept 2.375..9.625 about the two tracks 3.6 m apart); a double path is two tracks 1.8 m either side of its line. */
@@ -194,6 +195,15 @@ export function dressRoadFinish(ctx: Ctx, o: { crossings: { strip: V[] }[]; /** 
       if ((c[0] - p[0]) * nn[0] + (c[1] - p[1]) * nn[1] > 0) nn = [-nn[0], -nn[1]]; // away from the zone's centre: into the carriageway
       if (noses.length === 2) { if (shortEdge(i)) return; p = [p[0] + u[0] * r0, p[1] + u[1] * r0]; q = [q[0] - u[0] * r0, q[1] - u[1] * r0]; } // brief 028: the end is a bullnose (swept in step 1c): the long side stops where the half round starts
       face(`median/${zi}/${i}`, 'median', host, p, q, nn, { edge: `roadfinish/median/${zi}` });
+    });
+  });
+  // brief 075 (sections.tramStreet.district.island, Datum's note 3): a boarding island's kerb all round, the carriageway outside it (its track side is cut by the track's swept strip, as every face)
+  if (islands) (o.platforms ?? []).forEach((P, pi) => {
+    const c: V = [P.reduce((s, p) => s + p[0], 0) / P.length, P.reduce((s, p) => s + p[1], 0) / P.length], host = ctx.d.roads.filter(r => !r.gyratory).map(r => ({ id: r.id, d: lineDist(c, r.line) })).sort((a, b) => a.d - b.d)[0]?.id ?? 'island';
+    P.forEach((p, i) => {
+      const q = P[(i + 1) % P.length]!, u = norm2([q[0] - p[0], q[1] - p[1]]); let nn: V = [u[1], -u[0]];
+      if ((c[0] - p[0]) * nn[0] + (c[1] - p[1]) * nn[1] > 0) nn = [-nn[0], -nn[1]];
+      face(`island/${pi}/${i}`, 'island', host, p, q, nn, { bay: `island/${pi}`, edge: `roadfinish/island/${pi}` });
     });
   });
   // the faces with no plot edge (roads.kerbs): the plan lists the circus and foot-way mouths; a kerbed bay is read from the block; beyond, quay and reservation are read from the plan's own geometry

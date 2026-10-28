@@ -523,7 +523,8 @@
       "smoothness": 0.2,
       "material": "DK_Ground_Gutter",
       "tile": 1
-    }
+    },
+    "setts": {"palette":"harbour.asphalt","value":0.8,"smoothness":0.2,"material":"DK_Gutter_Setts","tile":1,"note":"brief 075 (Splice, tramstreet.ts): the tram lanes' granite setts (ground.flats surface setts); the granite kerb's gutter setts for now, Vela's own setts sheet when it lands"}
   },
   "details": {
     "note": "brief 072-F (Vela's design, briefs/072/texture/design.md): the kit detail pairs a colour surface's `detail` names. Colourless (albedo x2 about 128 and a tangent normal), laid in URP Lit's own detail slots with _DETAIL_MULX2 on box-projected UVs in metres, so the colour stays the surface's. tile = metres per repeat, bump = _DetailNormalMapScale [S]. glass, water and crossing take none (transparent glazing, the Water shader, the signal-adjacent crossing).",

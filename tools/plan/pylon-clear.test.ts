@@ -121,7 +121,9 @@ describe('standards.skyrail.pylonClear', () => {
 
   test('remnant: the last pylon before a portal stands where the greedy left it when the stand-off pylon would leave a stub', () => {
     const had = withClear({ landmark: pc.landmark, span: pc.span }), now = derive(live);
-    for (const x of [53, 261, 520]) { // each 3 m outside a portal's jamb: stubs of 5, 2 and 12 m beside 48, 259 and 508
+    // re-pinned 2026-10-28 (brief 075, the tram street section: Harbour Road's median is gone, so S1 takes no pylon in it and restarts at the quay, x 312): the greedy now reaches 520 from 492 on a 28 m span, so the third example (a 12 m stub at 520 beside 508) no longer arises; 520 stands with the rule as without it
+    expect(trunk(now).find(p => p.p[0] === 520)?.span).toBe(28); expect(trunk(had).find(p => p.p[0] === 520)?.span).toBe(28);
+    for (const x of [53, 261]) { // each 3 m outside a portal's jamb: stubs of 5 and 2 m beside 48 and 259
       expect(trunk(had).some(p => p.p[0] === x)).toBe(true);
       expect(trunk(now).some(p => p.p[0] === x)).toBe(false);
     }

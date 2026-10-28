@@ -106,7 +106,7 @@ describe('end to end on a scratch copy', () => {
     rmSync(box, { recursive: true, force: true }); mkdirSync(box, { recursive: true });
     for (const p of ['tools', 'contracts', 'runs', 'GDD', '.claude/agents']) cpSync(resolve(root, p), resolve(box, p), { recursive: true, filter: s => !/\/node_modules(\/|$)/.test(s) });
     mkdirSync(resolve(box, 'sim'), { recursive: true }); mkdirSync(resolve(box, '.claude'), { recursive: true }); cpSync(resolve(root, 'sim/data'), resolve(box, 'sim/data'), { recursive: true });
-    for (const f of ['package.json', 'tsconfig.json', 'bunfig.toml']) cpSync(resolve(root, f), resolve(box, f));
+    for (const f of ['package.json', 'tsconfig.json', 'bunfig.toml', 'unity/Assets/Suborned/Editor/World/facade.json']) { mkdirSync(resolve(box, f, '..'), { recursive: true }); cpSync(resolve(root, f), resolve(box, f)); } // brief 074: the world generator reads the facade spec when it loads (colourways.ts): without it every replay in the copy dies at import
     symlinkSync(resolve(root, 'node_modules'), resolve(box, 'node_modules'));
     writeFileSync(resolve(box, '.gitignore'), 'node_modules\nout\n');
     for (const c of [['init', '-q'], ['add', '-A'], ['-c', 'user.name=t', '-c', 'user.email=t@t', 'commit', '-q', '-m', 'base']]) expect(sh(['git', ...c]).code).toBe(0);

@@ -36,10 +36,10 @@ const git = (...a: string[]) => { const r = Bun.spawnSync(['git', ...a], { cwd: 
 /** The commit that last changed a file (a ledger: the state a person last declared a code state at), or '' when git has none. */
 const lastChange = (file: string): string => { try { return git('log', '-1', '--format=%h', '--', file); } catch { return ''; } };
 
-/** The tree at `rev`, enough to replay in: tools, contracts, runs, GDD, the crew cards (a run pins their hashes) and the sim's data, with this tree's node_modules. Cached by commit. */
+/** The tree at `rev`, enough to replay in: tools, contracts, runs, GDD, the crew cards (a run pins their hashes), the sim's data and the facade spec (brief 074: tools/world/gen/colourways.ts reads unity/.../facade.json when it loads), with this tree's node_modules. Cached by commit. */
 export function materialize(rev: string): { dir: string; label: string } {
   const commit = git('rev-parse', `${rev}^{commit}`), dir = resolve(root, 'out/drift-auto/base', commit.slice(0, 12));
-  const have = ['tools', 'contracts', 'runs', 'GDD', '.claude/agents', 'sim/data', 'package.json', 'tsconfig.json', 'bunfig.toml'].filter(p => git('ls-tree', commit, '--', p) !== '');
+  const have = ['tools', 'contracts', 'runs', 'GDD', '.claude/agents', 'sim/data', 'unity/Assets/Suborned/Editor/World/facade.json', 'package.json', 'tsconfig.json', 'bunfig.toml'].filter(p => git('ls-tree', commit, '--', p) !== '');
   if (!existsSync(resolve(dir, '.ready'))) {
     rmSync(dir, { recursive: true, force: true }); mkdirSync(dir, { recursive: true });
     const tar = Bun.spawnSync(['sh', '-c', `git archive ${commit} ${have.join(' ')} | tar -x -C '${dir}'`], { cwd: root, stdout: 'pipe', stderr: 'pipe' });

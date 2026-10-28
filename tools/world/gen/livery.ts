@@ -33,8 +33,8 @@ const baseOf = (id: string) => id.split('@')[0]!;
 /** A piece's livery: slot -> material key, only slots the piece has; null if it takes none. */
 export function liveryOf(a: Pick<KitAsset, 'id' | 'category' | 'materials'>): Record<string, string> | null {
   const out: Record<string, string> = {};
-  if (LIVERY.categories.includes(a.category) && a.materials.includes(LIVERY.lattice.slot)) out[LIVERY.lattice.slot] = liveryKey(LIVERY.lattice.slot, LIVERY.lattice.colour);
-  for (const o of LIVERY.own[baseOf(a.id)] ?? []) if (a.materials.includes(o.slot)) out[o.slot] = liveryKey(o.slot, o.colour);
+  if (LIVERY.categories.includes(a.category) && (a.materials ?? []).includes(LIVERY.lattice.slot)) out[LIVERY.lattice.slot] = liveryKey(LIVERY.lattice.slot, LIVERY.lattice.colour);
+  for (const o of LIVERY.own[baseOf(a.id)] ?? []) if ((a.materials ?? []).includes(o.slot)) out[o.slot] = liveryKey(o.slot, o.colour);
   return Object.keys(out).length ? out : null;
 }
 

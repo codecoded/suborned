@@ -46,7 +46,7 @@ describe('SF-21 on the live world', () => {
     const { check } = sf21();
     expect(check.ok, check.detail).toBe(true);
     const parts = brassParts(base.w);
-    expect(parts.length).toBeGreaterThan(1000);
+    expect(parts.length).toBeGreaterThan(900); // re-pinned 2026-10-28 (brief 075, the tram street section): 925, the tram primaries' medians and their brass-edged furniture are gone; was > 1000
     expect(parts.filter(p => /\/dress\/fin$/.test(p.id)).length).toBe(8); // 0.3 x 0.6 x 29 m
     expect(parts.filter(p => /\/rib-\d+$/.test(p.id)).length).toBe(42);
     expect(parts.filter(p => /\/mullion-\d$/.test(p.id)).length).toBe(44);
@@ -67,9 +67,9 @@ describe('SF-21 on the live world', () => {
     expect(all.check.detail).toContain('220 fail: mega/parade-galleries/range-0-0/canopy (megastructure prim box 121.4 x 2.5 x 0.3 m, face 2.5 x 121 m)'); // the first six are named, the rest counted
   });
 
-  test('brief 009, 061: a crossing\'s signal heads (41) are broad faces and need their own key; its dot rows (0.43 wide) would pass in trim (the arcs and the lit strip are gone: brief 061)', () => {
+  test('brief 009, 061: a crossing\'s signal heads (40) are broad faces and need their own key; its dot rows (0.43 wide) would pass in trim (the arcs and the lit strip are gone: brief 061)', () => {
     const orbs = sf21(w => { for (const x of owned(w, [ORB])) { x.surface = 'trim'; delete (x as { kit?: unknown }).kit; } }); // unbound: a part with its kit piece carries the piece's own materials
-    expect(broadParts(orbs.w).length).toBe(41);
+    expect(broadParts(orbs.w).length).toBe(40); // re-pinned 2026-10-28 (brief 075): Sunset Way's median refuge is gone; was 41
     expect(orbs.check.ok).toBe(false);
     const rows = sf21(w => { for (const x of owned(w, [GLOW])) { x.surface = 'trim'; delete (x as { kit?: unknown }).kit; } });
     expect(broadParts(rows.w).length).toBe(0); // a 0.43 m row is a frame, not a broad face
@@ -94,7 +94,7 @@ describe('SF-21 what it leaves out, and why', () => {
 
   test('frontage prims: ProcShop paints the door and the bay from swatches, never from their surface', () => {
     const bays = base.w.frontages.filter(f => f.service?.surface === 'trim' && broad(faceOf(f.service.shape, f.service.size)));
-    expect(bays.length).toBe(32); // 4.5 x 4.6 m service bays
+    expect(bays.length).toBe(31); // 4.5 x 4.6 m service bays (re-pinned 2026-10-28, brief 075: the Boulevard's plots moved 4 m out to the new kerb, one service bay fewer; was 32)
     expect(sf21().check.ok).toBe(true);
   });
 

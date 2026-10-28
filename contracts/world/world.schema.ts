@@ -18,9 +18,15 @@ export type World = {
     pieces?: StreetItem[]; // brief 026: the capstone programme's flat ground pieces, each with a kit ref (kinds kerb, pave-flags, tree-pit, drain, manhole, tactile, terrazzo): paving laid on the plot slabs and the carriageway, not furniture; z = the piece's base. Brief 028 Road: and the road finish (kinds road-ribbon, road-shoulder, road-lozenge, road-seam; ids street/roadfinish/<kind>-<n>; road-pinstripe retired 072-G, never exported): ribbon and shoulder lie along their kerb face with `yaw` = atan2(n.x, -n.y) for n the unit normal into the carriageway and `kit.scale[0]` stretching the 6 m piece to its span (z 0, a kerbed bay's floor 0.02); a lozenge lies along its carriageway's middle line, a seam across it (`kit.scale[2]`). Only road finish and capstone kinds are drawn from here; ground.roads[].surface and kerbSurface carry the look keys of the carriageway and its kerb cap (streetscape.roads.finish)
     plots: Mass[]; // one 0.18 m pavement slab per plot (the ground a plot stands on, courts and setback strips included)
     footways?: Footway[]; // brief 061: the continuous footway at each gate's lane mouth (present when the plan carries streetscape.continuousFootway): the table is also a flat in `flats` (id `<footway id>/table` under ground/), at the pavement top, so the walk floor and the audits read it as floor
+    /** Brief 075 (the 1950s tram street, tools/world/gen/street/tramstreet.ts): the kerbside strip's bays on every tram street (plan streetscape.sections.tramStreet): `parallel` (the Boulevard, 6.0 x 2.4 against the kerb), `loading` (12 m, at a serviceBay trade) and `angle` (the primaries' 30-degree stalls 2.6 x 4.8; `yaw` = the stall's axis, the way a car noses in). Marks only, at `level` on the carriageway: parked cars are life's (Keel, Pulse). Not in counts.ground until the Unity reader draws them. */
+    kerbside?: KerbBay[];
+    /** Brief 075: the primaries' kerbed palm islands in the kerbside strip (2.0 along x 4.8, pavement top, ids ground/island/<road>/<n>), each carrying a palm (and a lamp on alternate ones) in `street`. Not in counts.ground until the Unity reader draws them. */
+    islands?: Mass[];
     drives?: Drive[]; // brief 023: the vehicle crossings from a carriageway over a plot's pavement to a bay that touches no road (present when the civic block states drives); not in counts.ground until the Unity reader draws them
   };
-  transit: { tram: Track[]; skyRail: SkyRail[]; stops: Mass[]; stations: Mass[] };
+  transit: { tram: Track[]; skyRail: SkyRail[]; stops: Mass[]; stations: Mass[]; /** brief 075: the overhead (tramstreet.ts); present when the plan carries sections.tramStreet.wires */ wires?: TramWires };
+  /** Brief 075: presentation dressing only, never sim data (the sim reads the plan, the mission and the civic block, never this export; live trams are Pulse's timetable and Latch's mover): one parked Tram per line at its first stop. */
+  dressing?: { trams: ParkedTram[] };
   buildings: Mass[]; // generated building parts (podium, body, upper, tower-lower, tower-upper), id bld/<plot>/<n>/<part>; none under a megastructure
   roofs: Roof[]; // one programme per building roof
   skins: Skin[]; // the procedural facade of every plot building (grammar §2-3): window family, accent and per-face bay rhythm; Unity draws walls the kit does not cover from these, never a glass grid
@@ -46,6 +52,17 @@ export type World = {
   horizon: Horizon; // derived (grammar §9): the sea plane and the distant band of kit pieces beyond the district; nothing here is in the plan
   counts: Record<string, number>; // elements per layer, as the Unity build must report them
 };
+
+/** Brief 075: a kerbside bay (ground.kerbside). */
+export type KerbBay = { id: string; kind: 'parallel' | 'angle' | 'loading'; road: string; ring: V[]; yaw: number; level: number };
+/** Brief 075: the tram overhead. `contact`: one wire per track at `z` (5.8), `pts` its zig-zag (+-0.2 at each span). `spans`: a steel wire at `z` (7.0) from `a` to `b`, each end on a wall
+ *  rosette (a chrome boss in a 0.6 m deco disc on the facade, `at` on the wall) or a slim side pole (`item` = its street item, kind span-pole, 0.3 x 0.3 x 8.5). Wires thin: about 12 mm contact, 20 mm span (Glint judges at play zoom). */
+export type TramWires = { contact: { id: string; line: string; pts: V[]; z: number }[]; spans: { id: string; line: string; a: V; b: V; z: number; ends: [WireEnd, WireEnd] }[];
+  /** Vela's kit pieces (tram075.py), drawn as they stand: `contact` (TramWire_Contact) and `span` (TramWire_Span) are 1 m strands along kit X stretched by kit.scale[0] to the run, at their midpoint; `hanger` (TramWire_Hanger) on the contact point under each span (its top +1.2 = the span); `rosette` (TramWire_Rosette) on the wall face at the span height, kit +Z out of the wall. `z` = the piece's height. The poles are street items (kind span-pole, TramWire_Pole). Span `a`/`b` are the eyes (rosette disc + 0.17, pole collar 0.16 toward the street). */
+  pieces: { id: string; kind: 'contact' | 'span' | 'hanger' | 'rosette'; kit: KitRef & { at: V }; z: number }[] };
+export type WireEnd = { kind: 'rosette' | 'pole'; at: V; item?: string };
+/** Brief 075: a parked tram (dressing.trams): the kit Tram with its pivot at `kit.at` (the footprint centre 0.108 m ahead of it along the track), +Z the nose, on the rail top `z`. */
+export type ParkedTram = { id: string; line: string; stop: string; kit: KitRef & { at: V }; z: number };
 
 /** Carriageway ribbon along `line` at `level`, with kerb strips either side. Foot paths use kerbWidth 0. */
 export type Road = { id: string; surface: string; kerbSurface: string; line: V[]; width: number; level: number; kerbWidth: number; kerbHeight: number };

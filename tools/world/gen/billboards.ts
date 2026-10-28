@@ -208,7 +208,7 @@ export function wallBoards(ctx: Ctx, o: { masses: Mass[]; facades: Facade[]; roo
 
 /** Is anything over this footprint lower than `top` + 1.5 (plan keepClear.underDeckOrBridge): a deck, a bridge, a megastructure part above the ground? */
 function overhead(ring: V[], top: number, decks: DeckRec[], megas: MegaOut[], L: Layer): boolean {
-  const zOf = (lv: string) => (L.ctx.L.list as { id: string; walk: number }[] | undefined)?.find(x => x.id === lv)?.walk ?? 0;
+  const zOf = (lv: string) => { const x = (L.ctx.L.list as { id: string; walk?: number; z?: number }[] | undefined)?.find(q => q.id === lv); return x?.walk ?? x?.z ?? 0; }; // a plan whose levels carry no `walk` (before brief 055) gives the level's z, as BB-3 reads it
   for (const d of decks) if (zOf(d.level) > 1 && zOf(d.level) < top + 1.5 && ringGap(ring, d.ring as V[]) < 0.5) return true;
   for (const m of megas) for (const p of m.parts) if (p.base > 1 && p.base < top + 1.5 && ringGap(ring, p.ring) < 0.5) return true;
   return false;

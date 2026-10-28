@@ -26,7 +26,7 @@ from pathlib import Path
 LIVERY = {  # key -> (base material, sRGB hex, the old source, pieces: a list of ids or {"categories": [...]})
     "vermilion": ("DK_Steel_Ivory", "#B8432E", "DecoKitColourways.Vermilion (Paint/DK_Steel_Ivory_B8432E.mat)", {"categories": ["Landmarks", "Skyport", "Sky"]}),
     "brick": ("DK_Hull_Ivory", "#9C2E2B", "DecoKitColourways.Signature[SphereStation] (Paint/DK_Hull_Ivory_9C2E2B.mat)", ["SphereStation"]),
-    "gold": ("DK_Crown_Gold", "#F2C14E", "DecoKitColourways.Signature[SpaceHQ] on DK_Gold, metallic 1 smoothness 0.45 (Paint/DK_Gold_F2C14E_m100s45.mat); base colour only here", ["SpaceHQ_Portal"]),
+    "gold": ("DK_Crown_Gold", "#F2C14E", "DecoKitColourways.Signature[SpaceHQ] on DK_Gold, metallic 1 smoothness 0.45 (Paint/DK_Gold_F2C14E_m100s45.mat); base colour only here", ["SpaceHQ_Portal", "DiscTower@crown-vista"]),  # brief 075 golden: the Crown Vista tower's gold shaft (vista075.py)
 }
 OLD_PAINT = {"vermilion": "DK_Steel_Ivory_B8432E", "brick": "DK_Hull_Ivory_9C2E2B", "gold": "DK_Gold_F2C14E_m100s45"}
 

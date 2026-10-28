@@ -29,13 +29,13 @@ register("DK_Steel_Ivory", "enamel", "#E4DFD2")  # painted lattice steel
 
 # ----------------------------------------------------------------- SpaceHQ
 
-def fluted_shaft(s, r, z0, z1, ribs=24, rib=None):
-    """Cylinder with proud ribs (limestone unless `rib`) and dark slot windows between them."""
-    s.lathe([(r, z0), (r, z1)], pal.Window_Tower, seg=ribs * 2, cap_bottom=False, cap_top=False)
+def fluted_shaft(s, r, z0, z1, ribs=24, rib=None, core=None, half=0.35):
+    """Cylinder with proud ribs (limestone unless `rib`) and dark slot windows (or `core`) between them; ribs 2 x `half` wide."""
+    s.lathe([(r, z0), (r, z1)], core or pal.Window_Tower, seg=ribs * 2, cap_bottom=False, cap_top=False)
     for k in range(ribs):
         a = 360 * k / ribs
         with s.at((0, 0, 0), (0, 0, a)):
-            s.box((r - 0.2, -0.35, z0), (r + 0.55, 0.35, z1), rib or pal.Limestone_Tex)
+            s.box((r - 0.2, -half, z0), (r + 0.55, half, z1), rib or pal.Limestone_Tex)
 
 
 def grand_stair(s, w=14.0, run=(48.0, 30.0), rise=5.0, n=31):
@@ -205,12 +205,13 @@ def disc_tower(s):
     disc_tower_at(s, DT_TOP)
 
 
-def disc_tower_at(s, DT_TOP=DT_TOP):
-    """DT_TOP = the shaft top / disc floor (kit 112; a regen order puts it on the storey grid)."""
+def disc_tower_at(s, DT_TOP=DT_TOP, shaft=None):
+    """DT_TOP = the shaft top / disc floor (kit 112; a regen order puts it on the storey grid). shaft = fluted_shaft overrides
+    (ribs, rib, core, half) for a livery variant (vista075.DiscTower@crown-vista); None = the kit's own shaft."""
     s.lathe([(11.0, 0.0), (11.0, 2.0), (10.2, 4.0), (9.5, 10.0), (DT_R, 16.0)], pal.Limestone_Tex, seg=48,
             cap_bottom=False, cap_top=False)
     s.lathe([(11.03, 2.4), (11.03, 3.2)], pal.Enamel_Teal, seg=48, cap_bottom=False, cap_top=False)
-    fluted_shaft(s, DT_R, 16.0, DT_TOP, ribs=20)
+    fluted_shaft(s, DT_R, 16.0, DT_TOP, **({"ribs": 20} | (shaft or {})))
     for z in range(28, int(DT_TOP) - 4, 12):
         lens(s, float(z), DT_R + 0.3, DT_R + 1.5, 0.7, pal.Enamel_Ivory, glaze=False, seg=48)
     lens(s, DT_TOP, DT_R + 0.3, 20.0, 5.0, pal.Hull_Ivory)

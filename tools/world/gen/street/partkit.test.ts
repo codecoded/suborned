@@ -41,10 +41,10 @@ test('the pieces are adopted in the live kit: every part is bound to one, none s
   expect(bound(gone).every(s => s.source === 'procedural' && !s.kit)).toBe(true);
 });
 
-test('adopted, each part takes its piece by use and size: 212 + 62 dot rows, 41 signal heads (SignalLens), no bars; none scaled', () => {
+test('adopted, each part takes its piece by use and size: 218 + 58 dot rows, 40 signal heads (SignalLens), no bars; none scaled', () => {
   const out = bound(catalogue()), by = (id: string) => out.filter(s => s.kit?.id === id).length;
-  expect([by('LightDotRow_2'), by('LightDotRow_1'), by('SignalLens'), by('LightBar_4')]).toEqual([212, 62, 41, 0]);
-  expect(out.length).toBe(315);
+  expect([by('LightDotRow_2'), by('LightDotRow_1'), by('SignalLens'), by('LightBar_4')]).toEqual([218, 58, 40, 0]); // re-pinned 2026-10-28 (brief 075, the tram street section: Sunset Way's median and its refuge are gone, the stop islands stand at the section's 3.2-6.2 m): was 212, 62, 41
+  expect(out.length).toBe(316);
   expect(out.every(s => s.source === 'kit' && s.kit!.scale.every(v => v === 1))).toBe(true);
 });
 

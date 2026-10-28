@@ -1,0 +1,104 @@
+// Brief 075, the 1950s tram street (tramstreet.ts; plan standards.streetscape.sections.tramStreet): setts, rails, islands, kerbside, wires and the parked trams, with failing examples.
+import { expect, setDefaultTimeout, test } from 'bun:test';
+import { readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
+import type { V } from '../../../plan/geom';
+import { inPoly, lineDist } from '../../../plan/geom';
+import { civic } from '../../../plan/civic';
+import { derive, type Plan } from '../../../plan/plan';
+import { worldOf } from '../../build';
+
+setDefaultTimeout(180000);
+const root = resolve(import.meta.dir, '../../../..'), read = (p: string) => JSON.parse(readFileSync(resolve(root, p), 'utf8'));
+const plan: Plan = read('contracts/world/harbour-district.plan.json'), d = derive(plan), civ = civic(plan.civic, read(plan.civic.block));
+const { world: w, gen } = worldOf(plan, d, civ);
+const ts = (plan.standards as any).streetscape.sections.tramStreet, tramRoads = new Set<string>([...ts.district.roads, ...ts.primary.roads]);
+const setts = w.ground.flats.filter(f => f.surface === 'setts'), rails = (w.ground.pieces ?? []).filter(p => p.kind === 'tram-rail');
+const inSetts = (p: V) => setts.some(f => inPoly(p, f.ring as V[]));
+const roadOf = (id: string) => d.roads.find(r => r.id === id)!;
+
+test('setts: the two tram lanes of every tram street, nothing beyond |offset| 3.6, and the T1 x T2 flat crossing square', () => {
+  expect(setts.length).toBeGreaterThan(5);
+  for (const id of tramRoads) { // a point on the road line midway along each tram street lies in the setts; one 4.5 m off it does not
+    const r = roadOf(id), a = r.line[0]!, b = r.line[r.line.length - 1]!, m: V = [(a[0] + b[0]) / 2, (a[1] + b[1]) / 2];
+    if (m[1] > plan.sheet.y[1] || m[1] < plan.sheet.y[0]) continue;
+    const u = [b[0] - a[0], b[1] - a[1]], L = Math.hypot(u[0]!, u[1]!), n: V = [-u[1]! / L, u[0]! / L];
+    expect(inSetts(m)).toBe(true);
+    expect(inSetts([m[0] + n[0] * 4.5, m[1] + n[1] * 4.5])).toBe(false);
+  }
+  expect(setts.some(f => f.id === 'ground/tram/square/T1-T2')).toBe(true);
+  expect(inSetts([8, -728])).toBe(true); // the junction box corner, outside both bands
+  // failing example: a lawn track (the old reservation) would show as a median flat under the rails
+  expect(w.ground.flats.some(f => f.id.startsWith('reservation/'))).toBe(false);
+});
+
+test('road finish: no lozenge, seam or dash inside the setts (the material edge is the lane line)', () => {
+  const marks = (w.ground.pieces ?? []).filter(p => ['road-lozenge', 'road-seam', 'road-lane-dash'].includes(p.kind));
+  expect(marks.length).toBeGreaterThan(100);
+  const bad = marks.filter(p => inSetts(p.at as V));
+  expect(bad.map(p => p.id)).toEqual([]);
+});
+
+test('rails: Tile_TramRail_12m on straights, Tile_TramRail on curves, every tile on a track centre line, flush at the setts top', () => {
+  const by = (id: string) => rails.filter(r => r.kit!.id === id);
+  expect(by('Tile_TramRail_12m').length).toBeGreaterThan(300);
+  expect(by('Tile_TramRail').length).toBeGreaterThan(100);
+  for (const r of rails) if (r.size[0] > 1.2) expect(Math.abs(r.kit!.scale[0] - 1)).toBeLessThan(0.08); // a tile stretched under 8 % (a segment under 2 m, the loop's 0.59 m lead-in, takes one short tile)
+  // every boulevard tile is 1.8 m off the road line (the two tracks), none on it
+  const blv = roadOf('boulevard'), onBlv = rails.filter(r => r.at[1] < -100 && r.at[1] > -700 && Math.abs(r.at[0]) < 5);
+  expect(onBlv.length).toBeGreaterThan(50);
+  for (const r of onBlv) expect(Math.abs(lineDist(r.at as V, blv.line) - 1.8)).toBeLessThan(0.01);
+  for (const r of onBlv) expect(r.z).toBe(0.02);
+});
+
+test('islands: every stop on a tram street at the section span 3.2-6.2 m off the road line, ribbon all round its carriageway side', () => {
+  for (const s of w.transit.stops) {
+    const ds = s.ring.map(p => Math.min(...d.roads.filter(r => tramRoads.has(r.id)).map(r => lineDist(p as V, r.line))));
+    expect(Math.min(...ds)).toBeCloseTo(3.2, 2);
+    expect(Math.max(...ds)).toBeCloseTo(6.2, 2);
+  }
+  expect(gen.roadFinish!.kerb.faceM.island).toBeGreaterThan(500);
+});
+
+test('kerbside: bays only in the kerbside strip, never on an island, a crossing or within 10 m of a junction; palm islands carry their palm', () => {
+  const bays = w.ground.kerbside ?? [], strips = (w.crossings ?? []).map(c => c.strip as V[]);
+  expect(bays.filter(b => b.kind === 'parallel').length).toBeGreaterThan(50);
+  expect(bays.filter(b => b.kind === 'angle').length).toBeGreaterThan(100);
+  expect(bays.filter(b => b.kind === 'loading').length).toBeGreaterThan(0);
+  for (const b of bays) {
+    const r = roadOf(b.road), c: V = [b.ring.reduce((s, p) => s + p[0], 0) / 4, b.ring.reduce((s, p) => s + p[1], 0) / 4], off = lineDist(c, r.line);
+    expect(off).toBeGreaterThan(7.2 - 0.01); // outside the traffic lane
+    expect(off).toBeLessThan(r.w / 2);       // inside the kerb
+    expect(w.transit.stops.some(s => inPoly(c, s.ring as V[]))).toBe(false);
+    expect(strips.some(s => inPoly(c, s))).toBe(false);
+  }
+  const isl = w.ground.islands ?? [];
+  expect(isl.length).toBeGreaterThan(40);
+  const palms = w.street.filter(s => s.kind === 'tree' && s.edge.startsWith('ground/island/'));
+  expect(palms.length).toBeGreaterThanOrEqual(isl.length - 5);
+  // failing example: a bay laid across a stop island would sit in the carriageway the trams' passengers cross
+  const stop = w.transit.stops[0]!, c0: V = [stop.ring.reduce((s, p) => s + p[0], 0) / stop.ring.length, stop.ring.reduce((s, p) => s + p[1], 0) / stop.ring.length];
+  expect(bays.some(b => inPoly(c0, b.ring as V[]))).toBe(false);
+});
+
+test('wires: spans at 7.0 on rosettes (walls both ends) or pole pairs, contact at 5.8 over each track; poles are kerb-zone street items 3 m off trees and lamps', () => {
+  const W = w.transit.wires!;
+  expect(W.spans.length).toBeGreaterThan(80);
+  expect(W.spans.every(s => s.z === 7)).toBe(true);
+  expect(W.contact.every(c => c.z === 5.8)).toBe(true);
+  for (const s of W.spans) expect(s.ends[0].kind).toBe(s.ends[1].kind); // a rosette span has walls at both ends; else both ends are poles
+  const poles = w.street.filter(s => s.kind === 'span-pole'), near = w.street.filter(s => (s.kind === 'tree' || s.kind === 'lamp') && s.z < 1); // ground items (a deck's lamps stand 9.43 m up)
+  expect(poles.length).toBe(W.spans.filter(s => s.ends[0].kind === 'pole').length * 2);
+  for (const p of poles) expect(near.some(t => Math.hypot(t.at[0] - p.at[0], t.at[1] - p.at[1]) < 3 - 1e-6)).toBe(false);
+  // the boulevard's walls carry its spans (the 1950s street: no poles where the walls can carry the wires)
+  expect(W.spans.filter(s => s.ends[0].kind === 'rosette' && Math.abs(s.a[0]) < 25).length).toBeGreaterThan(15);
+});
+
+test('parked trams: one per line, on a track at its first stop, presentation dressing only (never a street item, transit or sim datum)', () => {
+  const t = w.dressing!.trams;
+  expect(t.map(x => `${x.line}/${x.stop}`)).toEqual(['T1/circus', 'T2/harbour']);
+  for (const x of t) { expect(x.kit.id).toBe('Tram'); expect(w.street.some(s => s.kind === 'tram' || s.id === x.id)).toBe(false); }
+  // the sim never reads the world export: its site builder reads the plan, the mission and the block
+  const site = readFileSync(resolve(root, 'tools/sim/site.ts'), 'utf8');
+  expect(/world\.json|worldOf|dressing/.test(site)).toBe(false);
+});

@@ -17,6 +17,7 @@ import { withKit } from '../kitrefs';
 import { json } from '../../roadfinish-kit';
 import { dressRoadFinish } from './roadfinish';
 import { withFinishSet } from '../../../plan/finish-set';
+import { reservationPlan } from '../reservation.fixture';
 
 const plan0: Plan = json('contracts/world/harbour-district.plan.json'), plan = plan0, d = derive(plan), civ = civic(plan.civic, json(plan.civic.block));
 const exported = resolve(import.meta.dir, '../../../../out/world/harbour-district.world.json');
@@ -26,6 +27,9 @@ const kitFile = resolve(import.meta.dir, '../../../../contracts/world/kit.json')
 const writeKit = (k: unknown) => { const f = resolve(mkdtempSync(resolve(tmpdir(), 'roadfinish-')), 'kit.json'); writeFileSync(f, JSON.stringify(k)); return f; };
 const run = (p: Plan = plan, kit: string | undefined = kitFile) => withKit(kit, () => dressRoadFinish(ctxOf(p, d, civ), { crossings: strips.map(strip => ({ strip })), platforms }));
 const res = run()!;
+// brief 075: the reservation fixture (the old 10 m reservation on today's Boulevard, no tram street section), for the lawn rules the committed plan no longer exercises
+const resP = reservationPlan(plan), resD = derive(resP), resW = worldOf(resP, resD, civ).world;
+const resRes = withKit(kitFile, () => dressRoadFinish(ctxOf(resP, resD, civ), { crossings: resW.crossings!.map(c => ({ strip: c.strip as V[] })), platforms: resW.transit.stops.map(s => s.ring as V[]) }))!;
 // brief 048 (Vela, Sky 2026-10-24): the committed enamel set drops the pearl shoulder (strip light at the kerb face, not a white band); the shoulder rules below hold it laid by clearing that one key
 const planBand = structuredClone(plan) as any; planBand.standards.streetscape.roads.finish.sets.enamel.drop = [];
 const resBand = run(planBand)!;
@@ -83,9 +87,11 @@ describe('the road finish', () => {
     expect(r.items).toEqual([]);
     expect(r.log.gaps[0]!.why).toMatch(/not adopted/);
   });
-  test('every kind of kerb face is laid: plot, circus, median, mouths, a kerbed bay, beyond, quay, reservation', () => {
+  // re-pinned 2026-10-28 (brief 075, the 1950s tram street): the committed plan has no reservation (its faces are on the reservation fixture, below) and its stops are boarding islands with a kerb all round (`island`)
+  test('every kind of kerb face is laid: plot, circus, median, mouths, a kerbed bay, beyond, quay, island (and reservation on a plan that has one)', () => {
     const m = res.log.kerb.faceM;
-    for (const k of ['plot', 'circus', 'median', 'mouth', 'bay', 'beyond', 'quay', 'reservation', 'return']) expect(m[k], k).toBeGreaterThan(k === 'bay' ? 10 : 30); // brief 028: the bay's straight faces are the 0.2 m ends and the 6 m back of a lay-by whose corners are 1.4 m arcs (`return`: the arcs)
+    expect(resRes.log.kerb.faceM.reservation).toBeGreaterThan(1000);
+    for (const k of ['plot', 'circus', 'median', 'mouth', 'bay', 'beyond', 'quay', 'island', 'return']) expect(m[k], k).toBeGreaterThan(k === 'bay' ? 10 : 30); // brief 028: the bay's straight faces are the 0.2 m ends and the 6 m back of a lay-by whose corners are 1.4 m arcs (`return`: the arcs)
     expect(m.beyond!).toBeGreaterThan(2500); expect(m.quay!).toBeGreaterThan(1000); // Datum: about 2.6 km beyond, Harbour Road's east kerb about 1.03 km
     expect(res.items.filter(i => i.edge.startsWith('roadfinish/bay/')).length).toBeGreaterThan(0);
   });
@@ -98,10 +104,11 @@ describe('the road finish', () => {
     expect(r.items.some(i => i.kind === 'road-pinstripe' || i.kit?.id === 'PaveEdge_Pinstripe_6m')).toBe(false);
     expect(JSON.stringify(r.items)).toBe(JSON.stringify(resBand.items));
   });
-  test('the Boulevard\'s lawn track ends in quarter rounds (kerbReturn.nose): each stretch is rounded at its ends except on the sheet\'s edge, the kerb ribbon is swept round them, and the rounds keep the swept envelope clear', () => {
-    const lawn = res.log.lawn.filter(l => l.ring.length > 4), arcs = res.items.filter(i => i.edge.startsWith('roadfinish/lawn/'));
+  test('a lawn track ends in quarter rounds (kerbReturn.nose): each stretch is rounded at its ends except on the sheet\'s edge, the kerb ribbon is swept round them, and the rounds keep the swept envelope clear (the reservation fixture; the committed plan lays no lawn)', () => {
+    expect(res.log.lawn).toEqual([]);
+    const lawn = resRes.log.lawn.filter(l => l.ring.length > 4), arcs = resRes.items.filter(i => i.edge.startsWith('roadfinish/lawn/'));
     expect(lawn.length).toBeGreaterThan(5); expect(arcs.length).toBeGreaterThan(40); expect(arcs.some(i => i.kind === 'road-ribbon')).toBe(true);
-    const sq = res.log.lawn.filter(l => l.ring.length === 4); expect(sq.length).toBeLessThanOrEqual(1); // the stretch that runs on to the sheet's edge at one end keeps that end square
+    const sq = resRes.log.lawn.filter(l => l.ring.length === 4); expect(sq.length).toBeLessThanOrEqual(1); // the stretch that runs on to the sheet's edge at one end keeps that end square
     for (const l of lawn) for (const q of l.ring) { const x = Math.abs(q[0] - 0); expect(x).toBeLessThanOrEqual(5.0001); } // never wider than the reservation
     // the swept envelope (the double track 1.8 either side + 1.825) stays inside every rounded stretch's outline
     for (const l of lawn) for (const x of [-3.625, 3.625]) for (const y of [(Math.min(...l.ring.map(q => q[1])) + Math.max(...l.ring.map(q => q[1]))) / 2]) expect(inPoly([x, y], l.ring)).toBe(true);
@@ -111,7 +118,7 @@ describe('the road finish', () => {
     const bay = res.items.filter(i => (i.edge.startsWith('roadfinish/bay/') || i.edge.startsWith('roadfinish/return/layby/')));
     expect(bay.length).toBeGreaterThan(0); expect(bay.every(i => i.z === 0.02)).toBe(true);
     expect(res.log.kerb.cutM.bay ?? 0).toBe(0); // no break: the geometry stops the run (capstone.kerbRuns)
-    expect(res.log.returns.returns).toBe(returnsOf(ctxOf(plan, d, civ)).filter(r => ((plan.standards as any).streetscape.roads.ribbon.classes as string[]).includes(r.cls)).length); expect(res.log.returns.chords).toBeGreaterThan(1500); // every return the road finish sweeps (brief 061: a gate's lane mouth has none once gen/kerbreturn.ts leaves it square)
+    expect(res.log.returns.returns).toBe(returnsOf(ctxOf(plan, d, civ)).filter(r => ((plan.standards as any).streetscape.roads.ribbon.classes as string[]).includes(r.cls)).length); expect(res.log.returns.chords).toBeGreaterThan(1400); /* re-pinned 2026-10-28 (brief 075): 1459, the 18 median ends of the three tram primaries are gone; was > 1500 */ // every return the road finish sweeps (brief 061: a gate's lane mouth has none once gen/kerbreturn.ts leaves it square)
     for (const b of baysOf(ctxOf(plan, d, civ))) for (const i of res.items.filter(x => x.kind === 'road-ribbon' && /^roadfinish\/(rocket-lane|apron-road)/.test(x.edge))) expect(segDist(i.at, b.M[0], b.M[1]), `${i.id} on the mouth of ${b.id}`).toBeGreaterThan(0.5); // no ribbon on a mouth
   });
   test('no two pieces of one kind stand at the same place and heading (a kerb face is laid once)', () => {

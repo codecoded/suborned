@@ -6,6 +6,7 @@ import { resolve } from 'node:path';
 import { civic, toPlanFn } from '../../plan/civic';
 import { derive, type Plan } from '../../plan/plan';
 import { civicMasses, worldOf } from '../build';
+import { reservationPlan } from './reservation.fixture';
 
 setDefaultTimeout(120000);
 const root = resolve(import.meta.dir, '../../..'), read = (p: string) => JSON.parse(readFileSync(resolve(root, p), 'utf8'));
@@ -44,14 +45,17 @@ test('the civic block\'s two buildings carry a roof terrace of their own (the of
   }
 });
 
-test('the Boulevard\'s tram reservation is lawn track: one flat per stretch between its breaks, 10 m wide, under the rails', () => {
-  const lawn = w.ground.flats.filter(f => f.id.startsWith('reservation/'));
+// re-pinned 2026-10-28 (brief 075, the 1950s tram street): the committed Boulevard has no reservation (tracks in setts, sections.tramStreet), so it lays no lawn (tools/world/gen/street/tramstreet.test.ts holds that); the rule still holds for a plan with one, on the reservation fixture
+test('a tram reservation is lawn track: one flat per stretch between its breaks, 10 m wide, under the rails (the reservation fixture: the old 10 m on today\'s Boulevard)', () => {
+  expect(w.ground.flats.some(f => f.id.startsWith('reservation/'))).toBe(false);
+  const rp = reservationPlan(plan), rw = worldOf(rp, derive(rp), civ).world;
+  const lawn = rw.ground.flats.filter(f => f.id.startsWith('reservation/'));
   expect(lawn.length).toBeGreaterThan(5);
   for (const f of lawn) {
     const xs = f.ring.map(p => p[0]), ys = f.ring.map(p => p[1]);
     expect(Math.max(...xs) - Math.min(...xs), f.id).toBeCloseTo(10, 1);
     expect(Math.max(...ys) - Math.min(...ys), f.id).toBeGreaterThanOrEqual(2);
-    expect(f.level, f.id).toBeLessThan(w.transit.tram[0]!.level); // the rails (level 0.04) lie on it
+    expect(f.level, f.id).toBeLessThan(rw.transit.tram[0]!.level); // the rails (level 0.04) lie on it
     expect(f.surface).toBe('median'); // look.json ground/median: DK_Ground_Lawn
   }
 });

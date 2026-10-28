@@ -10,7 +10,8 @@ The list is data: move a piece between the two here and rebuild it. The swap run
 
 SWAP = {"DK_Gold": "DK_Crown_Gold", "DK_Gold17": "DK_Crown_Gold17"}
 CROWN_CATS = {"Crowns", "Highrise", "Skyline", "Horizon"}
-CROWN_LANDMARKS = {"SpaceHQ_Portal", "Skyport_Tower", "Skyport_Tower_Portal", "LinerDock", "LinerDock@liner-berth", "ParabolicArch"}
+CROWN_LANDMARKS = {"SpaceHQ_Portal", "Skyport_Tower", "Skyport_Tower_Portal", "LinerDock", "LinerDock@liner-berth", "ParabolicArch",
+                    "ParabolicArch@crown-avenue", "DiscTower@crown-vista"}  # brief 075 golden: the Crown Avenue arch and the gold Crown Vista tower (vista075.py)
 
 
 def is_crown(name, cat):

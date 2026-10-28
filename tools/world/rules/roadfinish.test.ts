@@ -22,7 +22,7 @@ describe('the road finish rule RF-3', () => {
   test('the live world passes, and the finish is there: three kinds, thousands of pieces (the enamel set drops the pearl shoulder, brief 048; the brass pinstripe is retired, 072-G)', () => {
     expect(failing()).toBe('');
     const n = (k: string) => base.w.ground.pieces!.filter(s => s.kind === k).length;
-    for (const k of ['road-ribbon', 'road-lozenge', 'road-seam']) expect(n(k), k).toBeGreaterThan(1000);
+    for (const k of ['road-ribbon', 'road-lozenge', 'road-seam']) expect(n(k), k).toBeGreaterThan(700); // re-pinned 2026-10-28 (brief 075): 776 lozenges, the four tram streets carry none in their setts (the material edge is the lane line, sections.tramStreet.setts); was > 1000
     expect(n('road-shoulder')).toBe(0);
     expect(n('road-pinstripe')).toBe(0); // brief 061, Sky 2026-10-25: no brass on the road edge; retired 072-G
     expect(base.gen.roadFinish!.gaps.every(g => g.rule && g.where && g.why)).toBe(true);

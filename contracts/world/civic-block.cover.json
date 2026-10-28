@@ -4,9 +4,9 @@
  "frame": "civic-block.json block frame in integer centimetres: x south, y east (as sim/data/handover.site.json). Mission clock in seconds from 0:00.",
  "from": {
   "block": "912f0272db1ceb6d8aea988a54a2243d1437151d7989ed9c704e8012441e06ff",
-  "site": "11d4b6b5336091733e0b8c861f292d00521ebfe124a8f25434e2bd94fc7288f0",
-  "kit": "709e26b325f8c7e2d1ac07469435d811867aa45063c9409aee3825de9093bd1b",
-  "plan": "48e18cc220dde8a615d5bc2f82339e9933fa1f22acb5327a74aea7c62175078e"
+  "site": "12fbbd877e0ed35900f6806a9db14432d38ba5a14a157bcedbe23fb81384a3c6",
+  "kit": "75d5696a739ddc2b1f6f4d876ba34bd2450b63800ec5f4b25bc3bcfa485509e0",
+  "plan": "3080f2cf989a5aab0902e4c9231c7ef3720262eb2ac65be94968ea7df6dca376"
  },
  "rules": {
   "eyeCm": 160,

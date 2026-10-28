@@ -76,26 +76,27 @@ test('every phone booth draws `booth` and every street palm tub `tub`; roof tubs
   expect(tubs.length).toBe(198); for (const s of tubs) expect(s.surface, s.id).toBe(TUB);
   expect(withKey(TUB).length).toBe(198); // nothing else in the world: not the 418 roof tubs
   const roofTubs = w.roofs.flatMap(r => r.parts).filter(p => /\/(tub|palm)-\d+$/.test(p.id));
-  expect(roofTubs.length).toBe((w.facades.some(f => f.form === 'side') ? 430 : 418) * 2); // brief 075: 430, the boulevard's old storey codes (oldstreet.ts) re-height its walls and three roofs lose a tub; was 433 // brief 072-C: 433 roof tubs on the plain tiers the every-face kit stands on for (const p of roofTubs) expect(p.surface, p.id).toBe('trim');
+  expect(roofTubs.length).toBe((w.facades.some(f => f.form === 'side') ? 430 : 418) * 2); // brief 075: 430, the boulevard's old storey codes (oldstreet.ts) re-height its walls and three roofs lose a tub; was 433 (brief 072-C: 433 roof tubs on the plain tiers the every-face kit stands on)
+  for (const p of roofTubs) expect(p.surface, p.id).toBe('trim');
 });
 
 test('a crossing\'s lights draw `glow` and its signal heads `orb`; no edge line, stud, arc or lit strip stands any more (brief 061); no slab is left to draw `crossing`', () => {
   const part = (kind: string) => w.street.filter(s => s.kind === kind);
-  expect(part('crossing-bar').length).toBe(0); expect(part('crossing-dots').length).toBe(274); for (const s of part('crossing-dots')) expect(s.surface, s.id).toBe(GLOW);
-  expect(part('signal-orb').length).toBe(41); for (const s of part('signal-orb')) expect(s.surface, s.id).toBe(ORB);
+  expect(part('crossing-bar').length).toBe(0); expect(part('crossing-dots').length).toBe(276); /* re-pinned 2026-10-28 (brief 075): was 274 dot rows, 41 heads */ for (const s of part('crossing-dots')) expect(s.surface, s.id).toBe(GLOW);
+  expect(part('signal-orb').length).toBe(40); for (const s of part('signal-orb')) expect(s.surface, s.id).toBe(ORB);
   for (const k of ['crossing-edge', 'crossing-field', 'crossing-stud', 'crossing-arc']) expect(part(k).length, k).toBe(0);
   expect(part('crossing')).toEqual([]);
-  expect(withKey(GLOW).length).toBe(274); expect(withKey(ORB).length).toBe(41);
+  expect(withKey(GLOW).length).toBe(276); expect(withKey(ORB).length).toBe(40);
   expect(w.street.filter(s => s.surface === 'inlay')).toEqual([]); // the seafoam arcs' key is retired
 });
 
-test('the canopy, plate, hoop, booth, tub, crane and girder keys, and a crossing\'s glow and orb, are the whole of OWN_KEYS, and the export carries 478 + 315 parts in them', () => {
+test('the canopy, plate, hoop, booth, tub, crane and girder keys, and a crossing\'s glow and orb, are the whole of OWN_KEYS, and the export carries 478 + 316 parts in them', () => {
   const keys: string[] = [...OWN_KEYS], named: string[] = [BOOTH, CANOPY, CRANE, GIRDER, HOOP, PLATE, TUB, GLOW, ORB];
   expect(keys.sort()).toEqual(named.sort());
   const count = (ks: string[]) => ks.reduce((n, k) => n + withKey(k).length, 0);
   expect(count([BOOTH, CANOPY, CRANE, GIRDER, HOOP, PLATE, TUB])).toBe(478); // brief 075: + the 2 boulevard booths
-  expect(count([GLOW, ORB])).toBe(315);
-  expect(count(OWN_KEYS as unknown as string[])).toBe(793); // brief 075: 478 + 315
+  expect(count([GLOW, ORB])).toBe(316); // re-pinned 2026-10-28 (brief 075, the tram street section: Sunset Way's median and its refuge are gone, the stop islands stand at the section's 3.2-6.2 m): was 315
+  expect(count(OWN_KEYS as unknown as string[])).toBe(794); // brief 075: 478 + 316
 });
 
 test('nothing else moved: every other street kind keeps the surface it drew before', () => {
@@ -104,11 +105,11 @@ test('nothing else moved: every other street kind keeps the surface it drew befo
     hydrant: 'trim', 'kiosk-food': 'enamel', 'kiosk-pavilion': 'enamel', 'kiosk-tickets': 'enamel', lamp: 'trim', mailbox: 'enamel', 'mast-camera': 'trim', newsstand: 'enamel',
     dumpster: 'enamel', 'phone-booth': 'booth', planter: 'park', 'police-post': 'enamel', 'pole-camera': 'trim', 'public-clock': 'trim', 'signal-orb': 'orb', 'station-entrance': 'enamel', 'ticket-machine': 'trim', 'timetable-column': 'trim',
     'tram-shelter': 'enamel', tree: 'park', 'tub-palm': 'tub', 'vending-robot': 'enamel',
-    'billboard-pylon': 'trim', 'billboard-wall': 'trim', // brief 075-F (billboards.ts BB-2, BB-3): the boards draw their own materials; the look key is the default, as the capstone pieces'
+    'billboard-pylon': 'trim', 'billboard-wall': 'trim', 'span-pole': 'trim', // brief 075 (tramstreet.ts): the tram's span poles draw Vela's TramWire_Pole // brief 075-F (billboards.ts BB-2, BB-3): the boards draw their own materials; the look key is the default, as the capstone pieces'
     ...Object.fromEntries(CAPSTONE_KINDS.size ? [...CAPSTONE_KINDS].map(k => [k, 'trim']) : []), // brief 026: the capstone programme's kit pieces draw their own materials; the look key is the default
   };
   const seen = new Map<string, Set<string>>();
   for (const s of w.street) seen.set(s.kind, (seen.get(s.kind) ?? new Set()).add(s.surface));
   for (const [kind, surfaces] of seen) expect([...surfaces], kind).toEqual([was[kind]!]);
-  expect(w.street.length - w.street.filter(s => s.id.startsWith('street/capstone/') || s.id.startsWith('street/footway/')).length).toBe(2941); // brief 075 (golden view): 2876 on the plan's new boulevard section (Datum, 2026-10-28 16:22: street-running T1, no lawn reservation, road 20 m) + 65 from the old-street rules (oldstreet.ts: + 19 palms at the old 10 m, and the kerb furniture on the palm grid's midpoints: + 16 lamps, 9 benches, 17 bins, 2 hydrants, 2 booths, 2 mailboxes; − 2 wall boards, the old storey codes); was 3094 // brief 075-F: + 9 wall boards, 9 pylons and 18 advertising columns (BB-2..BB-4), standing last on what everything else left; was 3058 // (the lane posts of the continuous footways, street/footway/<gate>/post-a|b, are counted apart: 28 once gen/kerbreturn.ts leaves the gates' corners square) // brief 061 (2026-10-25): 315 crossing parts stand (5515 before) and the dropped plot-edge landings take their bollards and beacons with them; 8559 / 8201 until 11 booth pairs became twins and 3 curved kiosks came (brief 026); (2026-10-19, the walk grid takes the pavement off the built plots (brief 023, Sky: add pavement): +2 call boxes and +1 police post on the pavements now in reach, two boxes where one stood by a post; before that: call boxes where a real city puts them: the call boxes are four again, one at each of the corner pavements that reach the block's ground, the same four as before the siting rule in number only; brief 023 drives: the street keeps 2 m off the service drive, no item moved; brief 013: +10 on the civic block: 1 stash container, 5 police posts, 4 call boxes; 2026-10-19, door option b: +1, a sixth police post, because the public door moved to the Office's west face and the Office doors are the response origins that cover the block) 3101 without the 5,096 crossing parts (1,464 dot rows, 747 lit strip modules, 1,652 edge line modules, 207 orbs, 704 studs, 322 arcs): the 86 beacons gone where an eye stands, 6 trees and lamps moved out of the coverage sites' landings, and their bollards; the landing slabs are keep-clear footprints
+  expect(w.street.length - w.street.filter(s => s.id.startsWith('street/capstone/') || s.id.startsWith('street/footway/')).length).toBe(3264); // brief 075 (the tram street, 2026-10-28): 2938 + 326 (tramstreet.ts: 212 span poles, 73 palms and 41 lamps on the primaries' palm islands); 2941 -> 2938, the stop islands at the section's 3.2-6.2 m bring their end crossing patches 0.1 m nearer the kerb, which takes three kerb bins' ground (SF-2's 2 m). Was: brief 075 (golden view): 2876 on the plan's new boulevard section (Datum, 2026-10-28 16:22: street-running T1, no lawn reservation, road 20 m) + 65 from the old-street rules (oldstreet.ts: + 19 palms at the old 10 m, and the kerb furniture on the palm grid's midpoints: + 16 lamps, 9 benches, 17 bins, 2 hydrants, 2 booths, 2 mailboxes; − 2 wall boards, the old storey codes); was 3094 // brief 075-F: + 9 wall boards, 9 pylons and 18 advertising columns (BB-2..BB-4), standing last on what everything else left; was 3058 // (the lane posts of the continuous footways, street/footway/<gate>/post-a|b, are counted apart: 28 once gen/kerbreturn.ts leaves the gates' corners square) // brief 061 (2026-10-25): 315 crossing parts stand (5515 before) and the dropped plot-edge landings take their bollards and beacons with them; 8559 / 8201 until 11 booth pairs became twins and 3 curved kiosks came (brief 026); (2026-10-19, the walk grid takes the pavement off the built plots (brief 023, Sky: add pavement): +2 call boxes and +1 police post on the pavements now in reach, two boxes where one stood by a post; before that: call boxes where a real city puts them: the call boxes are four again, one at each of the corner pavements that reach the block's ground, the same four as before the siting rule in number only; brief 023 drives: the street keeps 2 m off the service drive, no item moved; brief 013: +10 on the civic block: 1 stash container, 5 police posts, 4 call boxes; 2026-10-19, door option b: +1, a sixth police post, because the public door moved to the Office's west face and the Office doors are the response origins that cover the block) 3101 without the 5,096 crossing parts (1,464 dot rows, 747 lit strip modules, 1,652 edge line modules, 207 orbs, 704 studs, 322 arcs): the 86 beacons gone where an eye stands, 6 trees and lamps moved out of the coverage sites' landings, and their bollards; the landing slabs are keep-clear footprints
 });

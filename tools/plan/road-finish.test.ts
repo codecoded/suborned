@@ -83,7 +83,7 @@ describe('RF-1 and the asphalt finish set (brief 055 road test)', () => {
   const f = (m: (p: any) => void, re: RegExp) => { const c = run(m)['RF-1']!; expect(c.ok).toBe(false); expect(c.detail).toMatch(re); };
   test('the committed plan lists the asphalt set, off by default, and its marks pass', () => {
     const s = R(plan); expect(s.finish.set).toBe('enamel'); expect(Object.keys(s.finish.sets)).toEqual(['enamel', 'asphalt']); expect(s.finish.sets.enamel.drop).toEqual(['shoulder']); // brief 048: strip light, not the pearl band; the pinstripe is retired outright (072-G), not dropped
-    expect(Object.keys(s.marks.lanes).sort()).toEqual(['boulevard', 'comet-row', 'crown-road', 'harbour-road', 'sunset-way']);
+    expect(Object.keys(s.marks.lanes).sort()).toEqual(['crown-road']); // re-pinned 2026-10-28 (brief 075): the tram streets are undivided now (no median, no reservation), so RF-1's lane count names only Crown Road, the one divided primary left; was boulevard, comet-row, crown-road, harbour-road, sunset-way
     expect(run()['RF-1']!.ok).toBe(true);
   });
   test('a set the plan does not list', () => f(p => { R(p).finish.set = 'gravel'; }, /finish\.set is "gravel"/));

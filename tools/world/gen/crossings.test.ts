@@ -43,7 +43,7 @@ test('the live plan has crossings: 16 kerb pairs, 10 tram stop patches (one end 
   expect(kerb.length).toBe(16);
   expect(w.crossings!.filter(c => c.kind === 'stop').length).toBe(10);
   expect(w.crossings!.filter(c => c.kind === 'bank').length).toBe(0);
-  expect(w.crossings!.reduce((n, c) => n + c.refuges.length, 0)).toBe(9);
+  expect(w.crossings!.reduce((n, c) => n + c.refuges.length, 0)).toBe(8); // re-pinned 2026-10-28 (brief 075, the tram street section: Sunset Way's median and its refuge are gone, the stop islands stand at the section's 3.2-6.2 m): was 9
   expect(w.counts.crossings).toBe(26);
   expect(gen.crossingLog!.landings).toBe(171); // 168 plot-edge landings and the civic block's 3 (the landings the rules do not keep are dropped with their bollards and beacons: 171 of them)
 });
@@ -52,10 +52,10 @@ test('every part is in exactly one crossing and names it; no landing slab is lef
   const owner = new Map<string, string[]>();
   for (const c of w.crossings!) for (const id of c.items) owner.set(id, [...(owner.get(id) ?? []), c.id]);
   const parts = w.street.filter(s => s.crossing);
-  expect(parts.length).toBe(315); // 274 dot rows and 41 signal heads: no brass edge line, stud, arc or lit strip (brief 061)
+  expect(parts.length).toBe(316); // re-pinned 2026-10-28 (brief 075, the tram street section: Sunset Way's median and its refuge are gone, the stop islands stand at the section's 3.2-6.2 m): was 315 = 274 + 41. 276 dot rows and 40 signal heads: no brass edge line, stud, arc or lit strip (brief 061)
   expect(new Set(parts.map(s => s.kind))).toEqual(new Set(['crossing-dots', 'signal-orb'])); // dot rows, not bars, by the plan's form
   for (const s of parts) expect(owner.get(s.id), s.id).toEqual([s.crossing!]);
-  expect(w.crossings!.reduce((n, c) => n + c.items.length, 0)).toBe(315);
+  expect(w.crossings!.reduce((n, c) => n + c.items.length, 0)).toBe(316);
   expect(w.street.filter(s => s.kind === 'crossing')).toEqual([]);
   expect(w.street.filter(s => /^crossing-(edge|field|stud|arc)$/.test(s.kind))).toEqual([]);
   const lands = landingsOf(w);
@@ -74,13 +74,14 @@ test('every part is in exactly one crossing and names it; no landing slab is lef
   }
 });
 
-test('the parts, in counts: 274 dot-row modules (212 in a 2 m module = LightDotRow_2 1.8 m, 62 in a 1 m module = _1 0.8 m), 41 signal heads (32 kerb ends and 9 refuges), no bars, no edge lines, studs, arcs or lit strip; every orb found clear ground for its halo', () => {
+test('the parts, in counts: 276 dot-row modules (218 in a 2 m module = LightDotRow_2 1.8 m, 58 in a 1 m module = _1 0.8 m), 40 signal heads (32 kerb ends and 8 refuges), no bars, no edge lines, studs, arcs or lit strip; every orb found clear ground for its halo', () => {
   expect(ofKind(w, 'crossing-bar').length).toBe(0);
-  expect(ofKind(w, 'crossing-dots').length).toBe(274);
-  expect(ofKind(w, 'crossing-dots').filter(s => s.size[0] === 1.8).length).toBe(212);
-  expect(ofKind(w, 'crossing-dots').filter(s => s.size[0] === 0.8).length).toBe(62);
-  expect(ofKind(w, 'signal-orb').length).toBe(41);
-  expect(ofKind(w, 'signal-orb').filter(s => /\/signal\/r\d+$/.test(s.id)).length).toBe(9);
+  // re-pinned 2026-10-28 (brief 075, the tram street section: Sunset Way's median and its refuge are gone, the stop islands stand at the section's 3.2-6.2 m): was 274 (212 + 62), 41 heads, 9 refuge heads
+  expect(ofKind(w, 'crossing-dots').length).toBe(276);
+  expect(ofKind(w, 'crossing-dots').filter(s => s.size[0] === 1.8).length).toBe(218);
+  expect(ofKind(w, 'crossing-dots').filter(s => s.size[0] === 0.8).length).toBe(58);
+  expect(ofKind(w, 'signal-orb').length).toBe(40);
+  expect(ofKind(w, 'signal-orb').filter(s => /\/signal\/r\d+$/.test(s.id)).length).toBe(8);
   for (const k of ['crossing-edge', 'crossing-field', 'crossing-stud', 'crossing-arc']) expect(ofKind(w, k).length, k).toBe(0);
   expect(gen.crossingLog!.skipped).toEqual([]);
   for (const c of w.crossings!) expect(c.items.some(id => id.includes('/dots/')), c.id).toBe(true); // every crossing, tram stop ways included, has light along it
@@ -174,7 +175,7 @@ test('the default form is dots: a plan with no lights.form draws dot rows', () =
   const p2: Plan = structuredClone(plan);
   delete p2.standards.streetscape.crossings.strip.lights.form;
   const x = worldOf(p2, derive(p2), civ).world;
-  expect(ofKind(x, 'crossing-dots').length).toBe(274);
+  expect(ofKind(x, 'crossing-dots').length).toBe(276); // re-pinned 2026-10-28 (brief 075): was 274
   expect(ofKind(x, 'crossing-bar').length).toBe(0);
 });
 
@@ -207,14 +208,14 @@ const lawnless = (flats: { id: string }[]) => flats.filter(f => !f.id.startsWith
 test('with the standard on, nothing but crossings (their slabs gone, their parts added) and the bollards and beacons that flank them changes', () => {
   const was = new Map(old.street.map(s => [s.id, s])), moves = new Set(['crossing', 'bollard', 'beacon', ...kindsOf]), moved = new Set(w.crossingRules!.moved); // furniture a coverage site took out of a landing's way (its trees and lamps)
   const noKit = (x: StreetItem) => JSON.stringify({ ...x, kit: undefined }); // brief 028: which kit piece a street item draws is chosen against its neighbours' picks (kitrefs.ts choose): where a site moves furniture, a neighbour's piece may change; where it stands may not
-  const civicQuiet = (x: { id: string; kind: string }) => x.id.startsWith('street/civic/') || x.id.startsWith('street/capstone/') || BOARD_KINDS.has(x.kind) || x.kind === 'advertising-column'; // + brief 075-F: the pylons, wall boards and advertising columns (billboards.ts) stand last, on what the crossings left; // + brief 026: the capstone programme stands last, on what everything else left // brief 013: the stash container, call boxes and police posts the civic block's rules stand AFTER the crossings, on what they leave, so they follow the standard
+  const civicQuiet = (x: { id: string; kind: string; edge?: string }) => x.kind === 'span-pole' || !!x.edge?.startsWith('ground/island/') || x.id.startsWith('street/civic/') || x.id.startsWith('street/capstone/') || BOARD_KINDS.has(x.kind) || x.kind === 'advertising-column'; // + brief 075 (tramstreet.ts): the span poles and the palm islands' palms and lamps stand last of all, on what the crossings left // + brief 075-F: the pylons, wall boards and advertising columns (billboards.ts) stand last, on what the crossings left; // + brief 026: the capstone programme stands last, on what everything else left // brief 013: the stash container, call boxes and police posts the civic block's rules stand AFTER the crossings, on what they leave, so they follow the standard
   for (const s of w.street) { if (civicQuiet(s)) continue; const o = was.get(s.id); if (o) expect(noKit(s), s.id).toBe(noKit(o)); else expect(moves.has(s.kind), s.id).toBe(true); }
   for (const o of old.street) if (!items.has(o.id) && !civicQuiet(o)) expect(moves.has(o.kind) || moved.has(o.id), o.id).toBe(true);
   const keep = (x: { street: { id: string; kind: string }[] }) => x.street.filter(s => !moves.has(s.kind) && !civicQuiet(s)).length;
   expect(keep(w) + moved.size).toBe(keep(old));
   // brief 075-F: `posters` names its boards by element id, so it follows the street's ids (compared above, item by item)
-  expect(moved.size).toBe(1); // the circus island's four sites take one tree out of their way (brief 061; seven sites and eleven pieces of furniture before)
-  for (const k of Object.keys(old).filter(k => k !== 'street' && k !== 'counts' && k !== 'takedown' && k !== 'posters')) expect(JSON.stringify(k === 'ground' ? { ...(w as any).ground, pieces: undefined, flats: lawnless((w as any).ground.flats) } : (w as any)[k]), k).toBe(JSON.stringify(k === 'ground' ? { ...(old as any).ground, pieces: undefined, flats: lawnless((old as any).ground.flats) } : (old as any)[k])); // every other layer (the ground less the capstone's flat pieces) is the same (the takedown section lists the call boxes and posts the rules stood on what the crossings left: it follows the standard)
+  expect(moved.size).toBe(2); // the circus island's sites take two trees out of their way (re-pinned 2026-10-28, brief 075: the Boulevard at 20 m brings the circus mouth's kerbs to x +-10 and a second island tree into a site's way; was one; brief 061: seven sites and eleven pieces of furniture before)
+  for (const k of Object.keys(old).filter(k => k !== 'street' && k !== 'counts' && k !== 'takedown' && k !== 'posters')) expect(JSON.stringify(k === 'ground' ? { ...(w as any).ground, pieces: undefined, kerbside: undefined, islands: undefined, flats: lawnless((w as any).ground.flats) } : k === 'transit' ? { ...(w as any).transit, wires: undefined } : (w as any)[k]), k).toBe(JSON.stringify(k === 'ground' ? { ...(old as any).ground, pieces: undefined, kerbside: undefined, islands: undefined, flats: lawnless((old as any).ground.flats) } : k === 'transit' ? { ...(old as any).transit, wires: undefined } : (old as any)[k])); // brief 075 (tramstreet.ts): the kerbside bays, palm islands and span wires stand last, on what the crossings left (bays keep 5 m off a crossing, poles take the ground the furniture left): they follow the standard // every other layer (the ground less the capstone's flat pieces) is the same (the takedown section lists the call boxes and posts the rules stood on what the crossings left: it follows the standard)
 });
 
 test('every kerb crossing is a signal crossing on every road class; a stop or a bank crossing has no control (and no orb)', () => {

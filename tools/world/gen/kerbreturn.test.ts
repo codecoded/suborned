@@ -73,7 +73,7 @@ describe('the corners', () => {
     const E = returnsOf(live.ctx).filter(r => r.edge);
     expect(E.length).toBe(7); expect(E.every(r => r.convex && r.plot === 'edge' && Math.abs(r.r - r.want) < 0.01 && !r.bay && !r.mouth && !r.bend)).toBe(true);
     for (const r of E) { expect(r.want).toBe(r.cls === 'district' ? 8 : 6); expect(Math.abs(dist(r.a, r.c) - r.r)).toBeLessThan(1e-6); expect(dist(r.a, r.at)).toBeCloseTo(r.t, 6); }
-    expect(E.map(r => r.at.map(Math.round).join(',')).sort()).toEqual(['-14,-732', '-328,-732', '-352,-9', '-352,268', '-352,9', '14,-732', '288,292'].sort());
+    expect(E.map(r => r.at.map(Math.round).join(',')).sort()).toEqual(['-10,-732', '-328,-732', '-352,-9', '-352,268', '-352,9', '10,-732', '288,292'] /* re-pinned 2026-10-28 (brief 075): the Boulevard is 20 m, its kerbs at x +-10; was +-14 */.sort());
   });
   test('where two roads meet end to end at a bend the outside of the turn is laid to the outside arc: a hole fill from the node to the arc, 2 of them (junction NE, the ring\'s south-east corner)', () => {
     const H = returnsOf(live.ctx).filter(r => r.hole);
@@ -166,9 +166,10 @@ describe('the outside of a bend and the median noses', () => {
   test('a bend\'s two tangent points lie on one line across the road, so landings pair square', () => {
     for (const o of returnsOf(live.ctx).filter(r => r.bend)) { const i = returnsOf(live.ctx).find(r => r.id === o.bend)!; expect(Math.abs((o.a[0] - i.a[0]) * (o.b[1] - i.b[1]) - 0)).toBeGreaterThan(-1); expect(dist(o.a, i.a)).toBeCloseTo(o.r - i.r, 6); expect(dist(o.b, i.b)).toBeCloseTo(o.r - i.r, 6); }
   });
-  test('every median end is a bullnose: 25 medians, 50 half rounds of half the width (R 2 on a 4 m median, R 3 on a 6 m one), the ring a stadium of the same width', () => {
-    const noses = returnsOf(live.ctx).filter(r => r.nose); expect(noses.length).toBe(50);
-    expect(noses.filter(r => r.r === 2).length).toBe(24); expect(noses.filter(r => r.r === 3).length).toBe(26);
+  // re-pinned 2026-10-28 (brief 075, the tram street section): Sunset Way, Comet Row and Harbour Road lose their medians: 25 -> 16 medians, 50 -> 32 noses
+  test('every median end is a bullnose: 16 medians, 32 half rounds of half the width (R 2 on a 4 m median, R 3 on a 6 m one), the ring a stadium of the same width', () => {
+    const noses = returnsOf(live.ctx).filter(r => r.nose); expect(noses.length).toBe(32);
+    expect(noses.filter(r => r.r === 2).length).toBe(6); /* was 24: Crown Road keeps its 4 m median (and the beyond's stubs) */ expect(noses.filter(r => r.r === 3).length).toBe(26);
     live.d.zones.filter(z => z.kind === 'median' && z.poly).forEach((z, zi) => {
       const ring = noseRing(live.ctx, zi, z.poly as V[]), w0 = ringWidth(z.poly as V[]);
       expect(ring.length).toBeGreaterThan(30); expect(ringWidth(ring)).toBeCloseTo(w0, 6);

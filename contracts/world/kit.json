@@ -1159,7 +1159,8 @@
      0.305882
     ],
     "pieces": [
-     "SpaceHQ_Portal"
+     "SpaceHQ_Portal",
+     "DiscTower@crown-vista"
     ]
    }
   },
@@ -1172,6 +1173,10 @@
    },
    "DiscTower@avenue-gate-w": {
     "DK_Steel_Ivory": "vermilion"
+   },
+   "DiscTower@crown-vista": {
+    "DK_Steel_Ivory": "vermilion",
+    "DK_Crown_Gold": "gold"
    },
    "LinerDock": {
     "DK_Steel_Ivory": "vermilion"
@@ -70796,6 +70801,377 @@
    }
   },
   {
+   "id": "DiscTower@crown-vista",
+   "category": "Landmarks",
+   "size": [
+    44.2,
+    156.6,
+    40.2
+   ],
+   "pivot": "origin-ground",
+   "pivotOffset": [
+    -2,
+    0
+   ],
+   "front": "+Z",
+   "tris": 8596,
+   "materials": [
+    "DK_Limestone_Tex",
+    "DK_Enamel_Teal",
+    "DK_Crown_Gold",
+    "DK_Enamel_Ivory",
+    "DK_Hull_Ivory",
+    "DK_Window_Tower",
+    "DK_Chrome",
+    "DK_Steel_Ivory",
+    "DK_Concrete",
+    "DK_Steel"
+   ],
+   "lods": [
+    {
+     "file": "Models/Landmarks/DK_DiscTower@crown-vista_L1.fbx",
+     "tris": 2149,
+     "screen": 0.15
+    },
+    {
+     "file": "Models/Landmarks/DK_DiscTower@crown-vista_L2.fbx",
+     "tris": 515,
+     "screen": 0.05
+    }
+   ],
+   "lodCategory": "signatures",
+   "files": [
+    {
+     "root": "generated",
+     "role": "fbx",
+     "path": "Models/Landmarks/DK_DiscTower@crown-vista.fbx",
+     "sha256": "3c212662cfcd802a4b274cec36bda623cecbcb24151bae5f4997d580a915bc7c",
+     "bytes": 208268
+    },
+    {
+     "root": "generated",
+     "role": "material",
+     "path": "Materials/DK_Limestone_Tex.mat",
+     "sha256": "8b31e541d549a854b28e8fe0093142a7c4c3d022c541f953c19b47bea813b307",
+     "bytes": 4272
+    },
+    {
+     "root": "generated",
+     "role": "material-meta",
+     "path": "Materials/DK_Limestone_Tex.mat.meta",
+     "sha256": "ae76f47b08ffe2a83dcaf6efeaf41bdcdab4b24c4280b18c81d9e98f88f7498f",
+     "bytes": 188
+    },
+    {
+     "root": "generated",
+     "role": "material",
+     "path": "Materials/DK_Enamel_Teal.mat",
+     "sha256": "58fa1a89f064b566b89323bf9a72e627a4ff6f23b6eeeb9520b3754b4ffa42d1",
+     "bytes": 3985
+    },
+    {
+     "root": "generated",
+     "role": "material-meta",
+     "path": "Materials/DK_Enamel_Teal.mat.meta",
+     "sha256": "a70a4359fb1102bee640740027c6ccba8b741c65b93f8d4af2acb6db8bd36f5a",
+     "bytes": 188
+    },
+    {
+     "root": "generated",
+     "role": "material",
+     "path": "Materials/DK_Crown_Gold.mat",
+     "sha256": "4f2a4a98c2f7d2a2cb4608d7b635badd03856326f7ea88e826cc67d1653c84ac",
+     "bytes": 4039
+    },
+    {
+     "root": "generated",
+     "role": "material-meta",
+     "path": "Materials/DK_Crown_Gold.mat.meta",
+     "sha256": "7586674edc1dc2ed3bce532fa7ec61ebe7c5247d9142b3ea7e3e0348ce5d7e27",
+     "bytes": 188
+    },
+    {
+     "root": "generated",
+     "role": "material",
+     "path": "Materials/DK_Enamel_Ivory.mat",
+     "sha256": "86fbae6bdcee94c8d92b60eabf67561c9e19ee7b2196606e5461a682aefa50f0",
+     "bytes": 3983
+    },
+    {
+     "root": "generated",
+     "role": "material-meta",
+     "path": "Materials/DK_Enamel_Ivory.mat.meta",
+     "sha256": "631111bbf64b77d5f6f289e8233a50d23f222070525c881a69d2db9c838992f8",
+     "bytes": 188
+    },
+    {
+     "role": "material",
+     "path": "Materials/DK_Hull_Ivory.mat",
+     "sha256": "cebe6f0d6b03c302ad80c68438c2a683b5fdb1c43eba4c0539edc689c70f1be9",
+     "bytes": 4134
+    },
+    {
+     "role": "material-meta",
+     "path": "Materials/DK_Hull_Ivory.mat.meta",
+     "sha256": "393363b2a41129e279c1170247fa548860345afb304aec9ef57514f69c20f631",
+     "bytes": 188
+    },
+    {
+     "role": "material",
+     "path": "Materials/DK_Window_Tower.mat",
+     "sha256": "924ee5d002ed8956c3f4c06ad67b5e472296e44544183d165c8393c824ca09d9",
+     "bytes": 3854
+    },
+    {
+     "role": "material-meta",
+     "path": "Materials/DK_Window_Tower.mat.meta",
+     "sha256": "6d5b6b1854f0c91560a0123867bfd616a88fd71775517eedb256d098f6733691",
+     "bytes": 188
+    },
+    {
+     "root": "generated",
+     "role": "material",
+     "path": "Materials/DK_Chrome.mat",
+     "sha256": "5dc81d1880e4d910fc4c88d842a770af3852644101b32a32c2adc37b5326e7f9",
+     "bytes": 4056
+    },
+    {
+     "root": "generated",
+     "role": "material-meta",
+     "path": "Materials/DK_Chrome.mat.meta",
+     "sha256": "4c894cf78eb05e94d210de5d4f10603033ae87f67a5ff31c9ac6c3f2371620f7",
+     "bytes": 188
+    },
+    {
+     "root": "generated",
+     "role": "material",
+     "path": "Materials/DK_Steel_Ivory.mat",
+     "sha256": "223cb96f2593d8c01e3b65c16f482044d8cf19a4e8b5c33c2cfae8f17ec98d5d",
+     "bytes": 3983
+    },
+    {
+     "root": "generated",
+     "role": "material-meta",
+     "path": "Materials/DK_Steel_Ivory.mat.meta",
+     "sha256": "bcaf6197023e483d28b5cb93f6b25c38ac99e9140f59b02cdfa48852d88b615b",
+     "bytes": 188
+    },
+    {
+     "root": "generated",
+     "role": "material",
+     "path": "Materials/DK_Concrete.mat",
+     "sha256": "8353463385f2c0123b392d115c6e065a8c54ab1ad5b8288dcb0696b2bc19460b",
+     "bytes": 4065
+    },
+    {
+     "root": "generated",
+     "role": "material-meta",
+     "path": "Materials/DK_Concrete.mat.meta",
+     "sha256": "3e3df5bee94f714b242e78ad087708c17c3d895b2998df3f4f7233b9e353e267",
+     "bytes": 188
+    },
+    {
+     "root": "generated",
+     "role": "material",
+     "path": "Materials/DK_Steel.mat",
+     "sha256": "501adb7a2a9c7e4c4a161f9f77654311dbc21727fc0bcd709d932fca33796cc9",
+     "bytes": 4052
+    },
+    {
+     "root": "generated",
+     "role": "material-meta",
+     "path": "Materials/DK_Steel.mat.meta",
+     "sha256": "90705e570329a713c62606f7bc755da3c0463dceb889c5e0e0de8b1dd9e218a9",
+     "bytes": 188
+    },
+    {
+     "role": "texture",
+     "path": "Textures/facade_panel_v1_mask.png",
+     "sha256": "06b88718b39837b5229f3fb20de9756e46c6e95cd60bd1a056a09b2ccea2a88d",
+     "bytes": 974447
+    },
+    {
+     "role": "texture-meta",
+     "path": "Textures/facade_panel_v1_mask.png.meta",
+     "sha256": "a58d4e958ddacf146aadb10a18b9e1502bcd77f235a2e29af3fb3209a289af93",
+     "bytes": 2714
+    },
+    {
+     "role": "texture",
+     "path": "Textures/facade_panel_v1_normal.png",
+     "sha256": "af57c53efdeb3bc4dca92ce8eb4c0f86c7ba6f08710115e61dc6f701b78d9465",
+     "bytes": 987621
+    },
+    {
+     "role": "texture-meta",
+     "path": "Textures/facade_panel_v1_normal.png.meta",
+     "sha256": "276cdae04b563c96228b2dcb3170f5ca04031d1d5382c064131945bcfd8557b5",
+     "bytes": 2714
+    },
+    {
+     "role": "texture",
+     "path": "Textures/hull_panels_v1.png",
+     "sha256": "4f0d70bf2ee055a38609d635056506400882eb645ab43edd97af6ae56beda2fc",
+     "bytes": 37249
+    },
+    {
+     "role": "texture-meta",
+     "path": "Textures/hull_panels_v1.png.meta",
+     "sha256": "9152e2415ed64f5cf7697ebd029434a686c70a7260929c7199a6669affd9827e",
+     "bytes": 2714
+    },
+    {
+     "role": "texture",
+     "path": "Textures/hull_panels_v1_mask.png",
+     "sha256": "d8e088bb09177cd9655d3323dfb3aca7ae4aa7c64f5155066149c6f0a4427e88",
+     "bytes": 24324
+    },
+    {
+     "role": "texture-meta",
+     "path": "Textures/hull_panels_v1_mask.png.meta",
+     "sha256": "7341dc02bbc7828ece7c86047b9e73ea2f380dabf887d59db3730005ca0c8ad1",
+     "bytes": 2714
+    },
+    {
+     "role": "texture",
+     "path": "Textures/hull_panels_v1_normal.png",
+     "sha256": "212d1215d78042da3bdff4e36e685a89c5e7640ea90a6899d257c6bd062aa8fb",
+     "bytes": 2105345
+    },
+    {
+     "role": "texture-meta",
+     "path": "Textures/hull_panels_v1_normal.png.meta",
+     "sha256": "d5593dd03e1ac3ca4ebb7f44c4b2d9d1e9c6492a2a0d608793651e2f386ac183",
+     "bytes": 2714
+    },
+    {
+     "root": "generated",
+     "role": "texture",
+     "path": "Textures/surface_enamel_detail_v1.png",
+     "sha256": "a407da57c4a52fc85b1946b9f33f91f2ae1a1c5ff3d31fd2bebcc210d60fd147",
+     "bytes": 474006
+    },
+    {
+     "root": "generated",
+     "role": "texture-meta",
+     "path": "Textures/surface_enamel_detail_v1.png.meta",
+     "sha256": "30eb7058ac45ff6a9f483843d9f9118b13b98ab96576ef30bd3233c6b64dd0d6",
+     "bytes": 2718
+    },
+    {
+     "root": "generated",
+     "role": "texture",
+     "path": "Textures/surface_enamel_detail_v1_normal.png",
+     "sha256": "45e4c502424bb43719e315020ffb03d7ac8dd5fb85658f978cd099d8d7d6af45",
+     "bytes": 1964610
+    },
+    {
+     "root": "generated",
+     "role": "texture-meta",
+     "path": "Textures/surface_enamel_detail_v1_normal.png.meta",
+     "sha256": "ff1f0ca0ac42c65a890f56d5f8aee70ad346771c991ed17c4174132622d09279",
+     "bytes": 2718
+    },
+    {
+     "root": "generated",
+     "role": "texture",
+     "path": "Textures/surface_limestone_detail_v1.png",
+     "sha256": "a8dbee7fa54175ca65d121a2c9f26845b277011c3e46322f5c8a1d7ddb4c0fa1",
+     "bytes": 886792
+    },
+    {
+     "root": "generated",
+     "role": "texture-meta",
+     "path": "Textures/surface_limestone_detail_v1.png.meta",
+     "sha256": "f2a2621861633f71259aa27ec765333390c198302ff40887d8a13894580ce3c3",
+     "bytes": 2718
+    },
+    {
+     "root": "generated",
+     "role": "texture",
+     "path": "Textures/surface_limestone_detail_v1_normal.png",
+     "sha256": "c35393574e0aafc33677535adad7890499f177090f42071d993199ca6acfd8f9",
+     "bytes": 2674711
+    },
+    {
+     "root": "generated",
+     "role": "texture-meta",
+     "path": "Textures/surface_limestone_detail_v1_normal.png.meta",
+     "sha256": "82938cc6e790f442a64f634fb847462a50ef174b137374a34a03f1461ac6e686",
+     "bytes": 2718
+    },
+    {
+     "root": "generated",
+     "role": "texture",
+     "path": "Textures/surface_metal_detail_v1.png",
+     "sha256": "b4e253548eb27ad5b9c6541e73e8a3ec743deef73aed90c8b25a491a51cecc18",
+     "bytes": 491305
+    },
+    {
+     "root": "generated",
+     "role": "texture-meta",
+     "path": "Textures/surface_metal_detail_v1.png.meta",
+     "sha256": "1e8a51bb2ee18bdcdf08c2cc7cc9cb9c38873a5bf40b59d5971300f590bbe376",
+     "bytes": 2718
+    },
+    {
+     "root": "generated",
+     "role": "texture",
+     "path": "Textures/surface_metal_detail_v1_normal.png",
+     "sha256": "5848fec158580a1bb23686e7112e59ee09bee832cc86f8e1a11532836f0a3891",
+     "bytes": 1613297
+    },
+    {
+     "root": "generated",
+     "role": "texture-meta",
+     "path": "Textures/surface_metal_detail_v1_normal.png.meta",
+     "sha256": "818ae432cca438c26b951fcf6aef34251cd221041a400a710e920a89f4de6d42",
+     "bytes": 2718
+    },
+    {
+     "root": "generated",
+     "role": "texture",
+     "path": "Textures/wall_panel_neutral_v1.png",
+     "sha256": "69e32933789c067f894986f0104c4daddfb019b5c0cf88d5878c8d5f58ebfe79",
+     "bytes": 1030928
+    },
+    {
+     "root": "generated",
+     "role": "texture-meta",
+     "path": "Textures/wall_panel_neutral_v1.png.meta",
+     "sha256": "cec1064be22b52d7cc7a6c9f39658568961badf0731ee9bb6b309a57747be9a0",
+     "bytes": 2714
+    },
+    {
+     "root": "generated",
+     "role": "lod",
+     "path": "Models/Landmarks/DK_DiscTower@crown-vista_L1.fbx",
+     "sha256": "b5d3460048b530e537e0a166f177a70bd6323633b59e197768d610e7e7d7f8e8",
+     "bytes": 111580
+    },
+    {
+     "root": "generated",
+     "role": "lod",
+     "path": "Models/Landmarks/DK_DiscTower@crown-vista_L2.fbx",
+     "sha256": "eba0c1683d5510b909978da4509682e5033dd027155b03c7c90d18c67344109f",
+     "bytes": 60492
+    }
+   ],
+   "tags": {
+    "use": [
+     "landmark:crown-vista"
+    ],
+    "scale": [
+     0.9,
+     1.1
+    ],
+    "squash": 1,
+    "wave": 2
+   },
+   "status": "adopted",
+   "source": "generated"
+  },
+  {
    "id": "FanPalm_Play",
    "category": "Plants",
    "size": [
@@ -75675,6 +76051,223 @@
     "wave": 2
    },
    "status": "candidate",
+   "source": "generated"
+  },
+  {
+   "id": "ParabolicArch@crown-avenue",
+   "category": "Landmarks",
+   "size": [
+    34,
+    75.7438,
+    11.6395
+   ],
+   "pivot": "footprint-centre-ground",
+   "front": "+Z",
+   "tris": 8156,
+   "materials": [
+    "DK_Limestone_Tex",
+    "DK_Enamel_Teal",
+    "DK_Crown_Gold",
+    "DK_Chrome"
+   ],
+   "lods": [
+    {
+     "file": "Models/Landmarks/DK_ParabolicArch@crown-avenue_L1.fbx",
+     "tris": 2038,
+     "screen": 0.15
+    },
+    {
+     "file": "Models/Landmarks/DK_ParabolicArch@crown-avenue_L2.fbx",
+     "tris": 480,
+     "screen": 0.05
+    }
+   ],
+   "lodCategory": "signatures",
+   "files": [
+    {
+     "root": "generated",
+     "role": "fbx",
+     "path": "Models/Landmarks/DK_ParabolicArch@crown-avenue.fbx",
+     "sha256": "745ad8697cd51b3dc2d137de4e1290e5a12c2bd11bb3401181f4de616f4160b9",
+     "bytes": 229324
+    },
+    {
+     "root": "generated",
+     "role": "material",
+     "path": "Materials/DK_Limestone_Tex.mat",
+     "sha256": "8b31e541d549a854b28e8fe0093142a7c4c3d022c541f953c19b47bea813b307",
+     "bytes": 4272
+    },
+    {
+     "root": "generated",
+     "role": "material-meta",
+     "path": "Materials/DK_Limestone_Tex.mat.meta",
+     "sha256": "ae76f47b08ffe2a83dcaf6efeaf41bdcdab4b24c4280b18c81d9e98f88f7498f",
+     "bytes": 188
+    },
+    {
+     "root": "generated",
+     "role": "material",
+     "path": "Materials/DK_Enamel_Teal.mat",
+     "sha256": "58fa1a89f064b566b89323bf9a72e627a4ff6f23b6eeeb9520b3754b4ffa42d1",
+     "bytes": 3985
+    },
+    {
+     "root": "generated",
+     "role": "material-meta",
+     "path": "Materials/DK_Enamel_Teal.mat.meta",
+     "sha256": "a70a4359fb1102bee640740027c6ccba8b741c65b93f8d4af2acb6db8bd36f5a",
+     "bytes": 188
+    },
+    {
+     "root": "generated",
+     "role": "material",
+     "path": "Materials/DK_Crown_Gold.mat",
+     "sha256": "4f2a4a98c2f7d2a2cb4608d7b635badd03856326f7ea88e826cc67d1653c84ac",
+     "bytes": 4039
+    },
+    {
+     "root": "generated",
+     "role": "material-meta",
+     "path": "Materials/DK_Crown_Gold.mat.meta",
+     "sha256": "7586674edc1dc2ed3bce532fa7ec61ebe7c5247d9142b3ea7e3e0348ce5d7e27",
+     "bytes": 188
+    },
+    {
+     "root": "generated",
+     "role": "material",
+     "path": "Materials/DK_Chrome.mat",
+     "sha256": "5dc81d1880e4d910fc4c88d842a770af3852644101b32a32c2adc37b5326e7f9",
+     "bytes": 4056
+    },
+    {
+     "root": "generated",
+     "role": "material-meta",
+     "path": "Materials/DK_Chrome.mat.meta",
+     "sha256": "4c894cf78eb05e94d210de5d4f10603033ae87f67a5ff31c9ac6c3f2371620f7",
+     "bytes": 188
+    },
+    {
+     "role": "texture",
+     "path": "Textures/facade_panel_v1_mask.png",
+     "sha256": "06b88718b39837b5229f3fb20de9756e46c6e95cd60bd1a056a09b2ccea2a88d",
+     "bytes": 974447
+    },
+    {
+     "role": "texture-meta",
+     "path": "Textures/facade_panel_v1_mask.png.meta",
+     "sha256": "a58d4e958ddacf146aadb10a18b9e1502bcd77f235a2e29af3fb3209a289af93",
+     "bytes": 2714
+    },
+    {
+     "role": "texture",
+     "path": "Textures/facade_panel_v1_normal.png",
+     "sha256": "af57c53efdeb3bc4dca92ce8eb4c0f86c7ba6f08710115e61dc6f701b78d9465",
+     "bytes": 987621
+    },
+    {
+     "role": "texture-meta",
+     "path": "Textures/facade_panel_v1_normal.png.meta",
+     "sha256": "276cdae04b563c96228b2dcb3170f5ca04031d1d5382c064131945bcfd8557b5",
+     "bytes": 2714
+    },
+    {
+     "root": "generated",
+     "role": "texture",
+     "path": "Textures/surface_enamel_detail_v1.png",
+     "sha256": "a407da57c4a52fc85b1946b9f33f91f2ae1a1c5ff3d31fd2bebcc210d60fd147",
+     "bytes": 474006
+    },
+    {
+     "root": "generated",
+     "role": "texture-meta",
+     "path": "Textures/surface_enamel_detail_v1.png.meta",
+     "sha256": "30eb7058ac45ff6a9f483843d9f9118b13b98ab96576ef30bd3233c6b64dd0d6",
+     "bytes": 2718
+    },
+    {
+     "root": "generated",
+     "role": "texture",
+     "path": "Textures/surface_enamel_detail_v1_normal.png",
+     "sha256": "45e4c502424bb43719e315020ffb03d7ac8dd5fb85658f978cd099d8d7d6af45",
+     "bytes": 1964610
+    },
+    {
+     "root": "generated",
+     "role": "texture-meta",
+     "path": "Textures/surface_enamel_detail_v1_normal.png.meta",
+     "sha256": "ff1f0ca0ac42c65a890f56d5f8aee70ad346771c991ed17c4174132622d09279",
+     "bytes": 2718
+    },
+    {
+     "root": "generated",
+     "role": "texture",
+     "path": "Textures/surface_metal_detail_v1.png",
+     "sha256": "b4e253548eb27ad5b9c6541e73e8a3ec743deef73aed90c8b25a491a51cecc18",
+     "bytes": 491305
+    },
+    {
+     "root": "generated",
+     "role": "texture-meta",
+     "path": "Textures/surface_metal_detail_v1.png.meta",
+     "sha256": "1e8a51bb2ee18bdcdf08c2cc7cc9cb9c38873a5bf40b59d5971300f590bbe376",
+     "bytes": 2718
+    },
+    {
+     "root": "generated",
+     "role": "texture",
+     "path": "Textures/surface_metal_detail_v1_normal.png",
+     "sha256": "5848fec158580a1bb23686e7112e59ee09bee832cc86f8e1a11532836f0a3891",
+     "bytes": 1613297
+    },
+    {
+     "root": "generated",
+     "role": "texture-meta",
+     "path": "Textures/surface_metal_detail_v1_normal.png.meta",
+     "sha256": "818ae432cca438c26b951fcf6aef34251cd221041a400a710e920a89f4de6d42",
+     "bytes": 2718
+    },
+    {
+     "root": "generated",
+     "role": "texture",
+     "path": "Textures/wall_panel_neutral_v1.png",
+     "sha256": "69e32933789c067f894986f0104c4daddfb019b5c0cf88d5878c8d5f58ebfe79",
+     "bytes": 1030928
+    },
+    {
+     "root": "generated",
+     "role": "texture-meta",
+     "path": "Textures/wall_panel_neutral_v1.png.meta",
+     "sha256": "cec1064be22b52d7cc7a6c9f39658568961badf0731ee9bb6b309a57747be9a0",
+     "bytes": 2714
+    },
+    {
+     "root": "generated",
+     "role": "lod",
+     "path": "Models/Landmarks/DK_ParabolicArch@crown-avenue_L1.fbx",
+     "sha256": "17490f5b42f4429fc938f4a9dae2a32150ae7b070df47176e2c17d8276aa226e",
+     "bytes": 89452
+    },
+    {
+     "root": "generated",
+     "role": "lod",
+     "path": "Models/Landmarks/DK_ParabolicArch@crown-avenue_L2.fbx",
+     "sha256": "250d0e62cc404067a29d3e9942454948bbab9a3436deaf3d354df1b8a3dd166c",
+     "bytes": 40940
+    }
+   ],
+   "tags": {
+    "use": [
+     "gateway:crown-avenue"
+    ],
+    "scale": [
+     1,
+     1
+    ],
+    "squash": 1,
+    "wave": 2
+   },
+   "status": "adopted",
    "source": "generated"
   },
   {
@@ -99499,6 +100092,554 @@
     "scale": [
      0.8,
      1.1
+    ],
+    "squash": 1,
+    "wave": 2
+   },
+   "status": "adopted",
+   "source": "generated"
+  },
+  {
+   "id": "TramWire_Contact",
+   "category": "Structures",
+   "size": [
+    1,
+    0.0104,
+    0.012
+   ],
+   "pivot": "footprint-centre-ground",
+   "front": "+Z",
+   "tris": 12,
+   "materials": [
+    "DK_Iron"
+   ],
+   "lodCategory": "street",
+   "files": [
+    {
+     "root": "generated",
+     "role": "fbx",
+     "path": "Models/Structures/DK_TramWire_Contact.fbx",
+     "sha256": "01fd3d2bb36d71e11704450824062f496339ac7d21cf69b73aa463566fe89cbc",
+     "bytes": 15100
+    },
+    {
+     "root": "generated",
+     "role": "material",
+     "path": "Materials/DK_Iron.mat",
+     "sha256": "1c488ef74fd8b2da43766cba86eba799d43cf9d9598ce37b6e3a5219fd0ba8e2",
+     "bytes": 4053
+    },
+    {
+     "root": "generated",
+     "role": "material-meta",
+     "path": "Materials/DK_Iron.mat.meta",
+     "sha256": "017b21e643b2a1b1ec1e8a27030904b51d74563821a4853aa4f0901143c8b750",
+     "bytes": 188
+    },
+    {
+     "root": "generated",
+     "role": "texture",
+     "path": "Textures/surface_metal_detail_v1.png",
+     "sha256": "b4e253548eb27ad5b9c6541e73e8a3ec743deef73aed90c8b25a491a51cecc18",
+     "bytes": 491305
+    },
+    {
+     "root": "generated",
+     "role": "texture-meta",
+     "path": "Textures/surface_metal_detail_v1.png.meta",
+     "sha256": "1e8a51bb2ee18bdcdf08c2cc7cc9cb9c38873a5bf40b59d5971300f590bbe376",
+     "bytes": 2718
+    },
+    {
+     "root": "generated",
+     "role": "texture",
+     "path": "Textures/surface_metal_detail_v1_normal.png",
+     "sha256": "5848fec158580a1bb23686e7112e59ee09bee832cc86f8e1a11532836f0a3891",
+     "bytes": 1613297
+    },
+    {
+     "root": "generated",
+     "role": "texture-meta",
+     "path": "Textures/surface_metal_detail_v1_normal.png.meta",
+     "sha256": "818ae432cca438c26b951fcf6aef34251cd221041a400a710e920a89f4de6d42",
+     "bytes": 2718
+    }
+   ],
+   "tags": {
+    "use": [
+     "tram-wire:contact"
+    ],
+    "scale": [
+     1,
+     1
+    ],
+    "squash": 1,
+    "wave": 2
+   },
+   "status": "adopted",
+   "source": "generated"
+  },
+  {
+   "id": "TramWire_Hanger",
+   "category": "Structures",
+   "size": [
+    0.08,
+    1.212,
+    0.052
+   ],
+   "pivot": "footprint-centre-ground",
+   "front": "+Z",
+   "tris": 60,
+   "materials": [
+    "DK_Iron",
+    "DK_Enamel_Ivory",
+    "DK_Chrome"
+   ],
+   "lodCategory": "street",
+   "files": [
+    {
+     "root": "generated",
+     "role": "fbx",
+     "path": "Models/Structures/DK_TramWire_Hanger.fbx",
+     "sha256": "3237cb24242182c99861622ee9188b6952bc5701bada26a5e06c149d3cf026f9",
+     "bytes": 18108
+    },
+    {
+     "root": "generated",
+     "role": "material",
+     "path": "Materials/DK_Iron.mat",
+     "sha256": "1c488ef74fd8b2da43766cba86eba799d43cf9d9598ce37b6e3a5219fd0ba8e2",
+     "bytes": 4053
+    },
+    {
+     "root": "generated",
+     "role": "material-meta",
+     "path": "Materials/DK_Iron.mat.meta",
+     "sha256": "017b21e643b2a1b1ec1e8a27030904b51d74563821a4853aa4f0901143c8b750",
+     "bytes": 188
+    },
+    {
+     "root": "generated",
+     "role": "material",
+     "path": "Materials/DK_Enamel_Ivory.mat",
+     "sha256": "86fbae6bdcee94c8d92b60eabf67561c9e19ee7b2196606e5461a682aefa50f0",
+     "bytes": 3983
+    },
+    {
+     "root": "generated",
+     "role": "material-meta",
+     "path": "Materials/DK_Enamel_Ivory.mat.meta",
+     "sha256": "631111bbf64b77d5f6f289e8233a50d23f222070525c881a69d2db9c838992f8",
+     "bytes": 188
+    },
+    {
+     "root": "generated",
+     "role": "material",
+     "path": "Materials/DK_Chrome.mat",
+     "sha256": "5dc81d1880e4d910fc4c88d842a770af3852644101b32a32c2adc37b5326e7f9",
+     "bytes": 4056
+    },
+    {
+     "root": "generated",
+     "role": "material-meta",
+     "path": "Materials/DK_Chrome.mat.meta",
+     "sha256": "4c894cf78eb05e94d210de5d4f10603033ae87f67a5ff31c9ac6c3f2371620f7",
+     "bytes": 188
+    },
+    {
+     "root": "generated",
+     "role": "texture",
+     "path": "Textures/surface_enamel_detail_v1.png",
+     "sha256": "a407da57c4a52fc85b1946b9f33f91f2ae1a1c5ff3d31fd2bebcc210d60fd147",
+     "bytes": 474006
+    },
+    {
+     "root": "generated",
+     "role": "texture-meta",
+     "path": "Textures/surface_enamel_detail_v1.png.meta",
+     "sha256": "30eb7058ac45ff6a9f483843d9f9118b13b98ab96576ef30bd3233c6b64dd0d6",
+     "bytes": 2718
+    },
+    {
+     "root": "generated",
+     "role": "texture",
+     "path": "Textures/surface_enamel_detail_v1_normal.png",
+     "sha256": "45e4c502424bb43719e315020ffb03d7ac8dd5fb85658f978cd099d8d7d6af45",
+     "bytes": 1964610
+    },
+    {
+     "root": "generated",
+     "role": "texture-meta",
+     "path": "Textures/surface_enamel_detail_v1_normal.png.meta",
+     "sha256": "ff1f0ca0ac42c65a890f56d5f8aee70ad346771c991ed17c4174132622d09279",
+     "bytes": 2718
+    },
+    {
+     "root": "generated",
+     "role": "texture",
+     "path": "Textures/surface_metal_detail_v1.png",
+     "sha256": "b4e253548eb27ad5b9c6541e73e8a3ec743deef73aed90c8b25a491a51cecc18",
+     "bytes": 491305
+    },
+    {
+     "root": "generated",
+     "role": "texture-meta",
+     "path": "Textures/surface_metal_detail_v1.png.meta",
+     "sha256": "1e8a51bb2ee18bdcdf08c2cc7cc9cb9c38873a5bf40b59d5971300f590bbe376",
+     "bytes": 2718
+    },
+    {
+     "root": "generated",
+     "role": "texture",
+     "path": "Textures/surface_metal_detail_v1_normal.png",
+     "sha256": "5848fec158580a1bb23686e7112e59ee09bee832cc86f8e1a11532836f0a3891",
+     "bytes": 1613297
+    },
+    {
+     "root": "generated",
+     "role": "texture-meta",
+     "path": "Textures/surface_metal_detail_v1_normal.png.meta",
+     "sha256": "818ae432cca438c26b951fcf6aef34251cd221041a400a710e920a89f4de6d42",
+     "bytes": 2718
+    }
+   ],
+   "tags": {
+    "use": [
+     "tram-wire:hanger"
+    ],
+    "scale": [
+     1,
+     1
+    ],
+    "squash": 1,
+    "wave": 2
+   },
+   "status": "adopted",
+   "source": "generated"
+  },
+  {
+   "id": "TramWire_Pole",
+   "category": "Structures",
+   "size": [
+    0.52,
+    8.5,
+    0.52
+   ],
+   "pivot": "footprint-centre-ground",
+   "front": "+Z",
+   "tris": 216,
+   "materials": [
+    "DK_Enamel_Teal",
+    "DK_Chrome"
+   ],
+   "lodCategory": "street",
+   "files": [
+    {
+     "root": "generated",
+     "role": "fbx",
+     "path": "Models/Structures/DK_TramWire_Pole.fbx",
+     "sha256": "79e3f45b9bf027873f4f810eb5c17ff89d285a0ed4a0809a852ca2a8df8a02bb",
+     "bytes": 20668
+    },
+    {
+     "root": "generated",
+     "role": "material",
+     "path": "Materials/DK_Enamel_Teal.mat",
+     "sha256": "58fa1a89f064b566b89323bf9a72e627a4ff6f23b6eeeb9520b3754b4ffa42d1",
+     "bytes": 3985
+    },
+    {
+     "root": "generated",
+     "role": "material-meta",
+     "path": "Materials/DK_Enamel_Teal.mat.meta",
+     "sha256": "a70a4359fb1102bee640740027c6ccba8b741c65b93f8d4af2acb6db8bd36f5a",
+     "bytes": 188
+    },
+    {
+     "root": "generated",
+     "role": "material",
+     "path": "Materials/DK_Chrome.mat",
+     "sha256": "5dc81d1880e4d910fc4c88d842a770af3852644101b32a32c2adc37b5326e7f9",
+     "bytes": 4056
+    },
+    {
+     "root": "generated",
+     "role": "material-meta",
+     "path": "Materials/DK_Chrome.mat.meta",
+     "sha256": "4c894cf78eb05e94d210de5d4f10603033ae87f67a5ff31c9ac6c3f2371620f7",
+     "bytes": 188
+    },
+    {
+     "root": "generated",
+     "role": "texture",
+     "path": "Textures/surface_enamel_detail_v1.png",
+     "sha256": "a407da57c4a52fc85b1946b9f33f91f2ae1a1c5ff3d31fd2bebcc210d60fd147",
+     "bytes": 474006
+    },
+    {
+     "root": "generated",
+     "role": "texture-meta",
+     "path": "Textures/surface_enamel_detail_v1.png.meta",
+     "sha256": "30eb7058ac45ff6a9f483843d9f9118b13b98ab96576ef30bd3233c6b64dd0d6",
+     "bytes": 2718
+    },
+    {
+     "root": "generated",
+     "role": "texture",
+     "path": "Textures/surface_enamel_detail_v1_normal.png",
+     "sha256": "45e4c502424bb43719e315020ffb03d7ac8dd5fb85658f978cd099d8d7d6af45",
+     "bytes": 1964610
+    },
+    {
+     "root": "generated",
+     "role": "texture-meta",
+     "path": "Textures/surface_enamel_detail_v1_normal.png.meta",
+     "sha256": "ff1f0ca0ac42c65a890f56d5f8aee70ad346771c991ed17c4174132622d09279",
+     "bytes": 2718
+    },
+    {
+     "root": "generated",
+     "role": "texture",
+     "path": "Textures/surface_metal_detail_v1.png",
+     "sha256": "b4e253548eb27ad5b9c6541e73e8a3ec743deef73aed90c8b25a491a51cecc18",
+     "bytes": 491305
+    },
+    {
+     "root": "generated",
+     "role": "texture-meta",
+     "path": "Textures/surface_metal_detail_v1.png.meta",
+     "sha256": "1e8a51bb2ee18bdcdf08c2cc7cc9cb9c38873a5bf40b59d5971300f590bbe376",
+     "bytes": 2718
+    },
+    {
+     "root": "generated",
+     "role": "texture",
+     "path": "Textures/surface_metal_detail_v1_normal.png",
+     "sha256": "5848fec158580a1bb23686e7112e59ee09bee832cc86f8e1a11532836f0a3891",
+     "bytes": 1613297
+    },
+    {
+     "root": "generated",
+     "role": "texture-meta",
+     "path": "Textures/surface_metal_detail_v1_normal.png.meta",
+     "sha256": "818ae432cca438c26b951fcf6aef34251cd221041a400a710e920a89f4de6d42",
+     "bytes": 2718
+    }
+   ],
+   "tags": {
+    "use": [
+     "tram-wire:pole"
+    ],
+    "scale": [
+     1,
+     1
+    ],
+    "squash": 1,
+    "wave": 2
+   },
+   "status": "adopted",
+   "source": "generated"
+  },
+  {
+   "id": "TramWire_Rosette",
+   "category": "Structures",
+   "size": [
+    0.6,
+    0.6,
+    0.17
+   ],
+   "pivot": "origin-ground",
+   "pivotOffset": [
+    0,
+    0.085
+   ],
+   "front": "+Z",
+   "tris": 120,
+   "materials": [
+    "DK_Enamel_Teal",
+    "DK_Chrome"
+   ],
+   "lodCategory": "street",
+   "files": [
+    {
+     "root": "generated",
+     "role": "fbx",
+     "path": "Models/Structures/DK_TramWire_Rosette.fbx",
+     "sha256": "ea683ea38f58bfcb67f088d499e6b5e61ce34851650babed05ba880c7e4fb6ce",
+     "bytes": 18828
+    },
+    {
+     "root": "generated",
+     "role": "material",
+     "path": "Materials/DK_Enamel_Teal.mat",
+     "sha256": "58fa1a89f064b566b89323bf9a72e627a4ff6f23b6eeeb9520b3754b4ffa42d1",
+     "bytes": 3985
+    },
+    {
+     "root": "generated",
+     "role": "material-meta",
+     "path": "Materials/DK_Enamel_Teal.mat.meta",
+     "sha256": "a70a4359fb1102bee640740027c6ccba8b741c65b93f8d4af2acb6db8bd36f5a",
+     "bytes": 188
+    },
+    {
+     "root": "generated",
+     "role": "material",
+     "path": "Materials/DK_Chrome.mat",
+     "sha256": "5dc81d1880e4d910fc4c88d842a770af3852644101b32a32c2adc37b5326e7f9",
+     "bytes": 4056
+    },
+    {
+     "root": "generated",
+     "role": "material-meta",
+     "path": "Materials/DK_Chrome.mat.meta",
+     "sha256": "4c894cf78eb05e94d210de5d4f10603033ae87f67a5ff31c9ac6c3f2371620f7",
+     "bytes": 188
+    },
+    {
+     "root": "generated",
+     "role": "texture",
+     "path": "Textures/surface_enamel_detail_v1.png",
+     "sha256": "a407da57c4a52fc85b1946b9f33f91f2ae1a1c5ff3d31fd2bebcc210d60fd147",
+     "bytes": 474006
+    },
+    {
+     "root": "generated",
+     "role": "texture-meta",
+     "path": "Textures/surface_enamel_detail_v1.png.meta",
+     "sha256": "30eb7058ac45ff6a9f483843d9f9118b13b98ab96576ef30bd3233c6b64dd0d6",
+     "bytes": 2718
+    },
+    {
+     "root": "generated",
+     "role": "texture",
+     "path": "Textures/surface_enamel_detail_v1_normal.png",
+     "sha256": "45e4c502424bb43719e315020ffb03d7ac8dd5fb85658f978cd099d8d7d6af45",
+     "bytes": 1964610
+    },
+    {
+     "root": "generated",
+     "role": "texture-meta",
+     "path": "Textures/surface_enamel_detail_v1_normal.png.meta",
+     "sha256": "ff1f0ca0ac42c65a890f56d5f8aee70ad346771c991ed17c4174132622d09279",
+     "bytes": 2718
+    },
+    {
+     "root": "generated",
+     "role": "texture",
+     "path": "Textures/surface_metal_detail_v1.png",
+     "sha256": "b4e253548eb27ad5b9c6541e73e8a3ec743deef73aed90c8b25a491a51cecc18",
+     "bytes": 491305
+    },
+    {
+     "root": "generated",
+     "role": "texture-meta",
+     "path": "Textures/surface_metal_detail_v1.png.meta",
+     "sha256": "1e8a51bb2ee18bdcdf08c2cc7cc9cb9c38873a5bf40b59d5971300f590bbe376",
+     "bytes": 2718
+    },
+    {
+     "root": "generated",
+     "role": "texture",
+     "path": "Textures/surface_metal_detail_v1_normal.png",
+     "sha256": "5848fec158580a1bb23686e7112e59ee09bee832cc86f8e1a11532836f0a3891",
+     "bytes": 1613297
+    },
+    {
+     "root": "generated",
+     "role": "texture-meta",
+     "path": "Textures/surface_metal_detail_v1_normal.png.meta",
+     "sha256": "818ae432cca438c26b951fcf6aef34251cd221041a400a710e920a89f4de6d42",
+     "bytes": 2718
+    }
+   ],
+   "tags": {
+    "use": [
+     "tram-wire:rosette"
+    ],
+    "scale": [
+     1,
+     1
+    ],
+    "squash": 1,
+    "wave": 2
+   },
+   "status": "adopted",
+   "source": "generated"
+  },
+  {
+   "id": "TramWire_Span",
+   "category": "Structures",
+   "size": [
+    1,
+    0.0173,
+    0.02
+   ],
+   "pivot": "footprint-centre-ground",
+   "front": "+Z",
+   "tris": 12,
+   "materials": [
+    "DK_Iron"
+   ],
+   "lodCategory": "street",
+   "files": [
+    {
+     "root": "generated",
+     "role": "fbx",
+     "path": "Models/Structures/DK_TramWire_Span.fbx",
+     "sha256": "a4ca1191447ee7b132ff2fb0f9b9ca52907e4f8e8e0700a3527f626df6e0d84c",
+     "bytes": 15100
+    },
+    {
+     "root": "generated",
+     "role": "material",
+     "path": "Materials/DK_Iron.mat",
+     "sha256": "1c488ef74fd8b2da43766cba86eba799d43cf9d9598ce37b6e3a5219fd0ba8e2",
+     "bytes": 4053
+    },
+    {
+     "root": "generated",
+     "role": "material-meta",
+     "path": "Materials/DK_Iron.mat.meta",
+     "sha256": "017b21e643b2a1b1ec1e8a27030904b51d74563821a4853aa4f0901143c8b750",
+     "bytes": 188
+    },
+    {
+     "root": "generated",
+     "role": "texture",
+     "path": "Textures/surface_metal_detail_v1.png",
+     "sha256": "b4e253548eb27ad5b9c6541e73e8a3ec743deef73aed90c8b25a491a51cecc18",
+     "bytes": 491305
+    },
+    {
+     "root": "generated",
+     "role": "texture-meta",
+     "path": "Textures/surface_metal_detail_v1.png.meta",
+     "sha256": "1e8a51bb2ee18bdcdf08c2cc7cc9cb9c38873a5bf40b59d5971300f590bbe376",
+     "bytes": 2718
+    },
+    {
+     "root": "generated",
+     "role": "texture",
+     "path": "Textures/surface_metal_detail_v1_normal.png",
+     "sha256": "5848fec158580a1bb23686e7112e59ee09bee832cc86f8e1a11532836f0a3891",
+     "bytes": 1613297
+    },
+    {
+     "root": "generated",
+     "role": "texture-meta",
+     "path": "Textures/surface_metal_detail_v1_normal.png.meta",
+     "sha256": "818ae432cca438c26b951fcf6aef34251cd221041a400a710e920a89f4de6d42",
+     "bytes": 2718
+    }
+   ],
+   "tags": {
+    "use": [
+     "tram-wire:span"
+    ],
+    "scale": [
+     1,
+     1
     ],
     "squash": 1,
     "wave": 2

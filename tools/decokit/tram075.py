@@ -140,3 +140,53 @@ def timetable_column(s):
     s.lathe([(0.0, z - 0.06), (0.05, z - 0.06), (0.04, z), (0.02, z + 0.06)], pal.Chrome, seg=16, cap_top=False)
     s.lathe([(0.0, z + 0.04)] + [(0.07 * math.sin(math.pi * k / 10), z + 0.11 - 0.07 * math.cos(math.pi * k / 10)) for k in range(1, 10)] + [(0.0, z + 0.18)],
             pal.Accent_Coral, seg=16)
+
+
+# ----------------------------------------------------------------- overhead wires (brief 075 golden: the tram street's span wires, plan standards.streetscape.sections.tramStreet.wires)
+# Five cheap pieces, two materials shared by all (DK_Iron the wire, DK_Chrome the fittings; the rosette disc and the pole skirt DK_Enamel_Teal). They cross the play
+# camera's view, so the wire is a 6-sided strand at the plan's sizes (contact 12 mm, span 20 mm), no caps (the ends butt): Glint judges them at play zoom.
+#   TramWire_Contact  the contact wire, 1.0 m along X, Ø 0.012, centreline on the pivot (x -0.5..0.5, z 0): stretched along X only to a run's length (scale [L, 1, 1]).
+#   TramWire_Span     the span wire, 1.0 m along X, Ø 0.020, the same frame: stretched along X to the span (anchor eye to anchor eye).
+#   TramWire_Hanger   the drop from the span (7.0) to the contact wire (5.8): pivot on the contact wire centreline, top 1.2 on the span wire centreline; an ivory
+#                     bobbin insulator and a chrome ear on the wire.
+#   TramWire_Rosette  the wall rosette: a 0.6 m teal deco disc with a chrome boss; pivot on the facade at the span height (the disc's centre), the boss out along
+#                     -Y (the facade's normal, Unity +Z); the span wire's end (the eye) at (0, -0.17, 0).
+#   TramWire_Pole     the slim side pole: chrome, Ø 0.3 shaft on a teal fluted skirt, 8.5 m to the ball top; the span eye is a collar all round at 7.0 (yaw free).
+WIRE_C, WIRE_S, HANG = 0.006, 0.010, 1.2
+
+
+def _strand(s, a, b, r, up):
+    tube(s, [a, b], [(r * math.cos(t), r * math.sin(t)) for t in (2 * math.pi * k / 6 for k in range(6))], pal.Iron, up=up, caps=False)
+
+
+@asset("TramWire_Contact", "Structures", bevel=0.0)
+def tram_wire_contact(s):
+    _strand(s, (-0.5, 0.0, 0.0), (0.5, 0.0, 0.0), WIRE_C, (0, 0, 1))
+
+
+@asset("TramWire_Span", "Structures", bevel=0.0)
+def tram_wire_span(s):
+    _strand(s, (-0.5, 0.0, 0.0), (0.5, 0.0, 0.0), WIRE_S, (0, 0, 1))
+
+
+@asset("TramWire_Hanger", "Structures", bevel=0.0)
+def tram_wire_hanger(s):
+    _strand(s, (0.0, 0.0, 0.012), (0.0, 0.0, 0.95), 0.005, (1, 0, 0))
+    _strand(s, (0.0, 0.0, 1.1), (0.0, 0.0, HANG), 0.005, (1, 0, 0))
+    s.lathe([(0.0, 0.95), (0.03, 0.97), (0.03, 1.08), (0.0, 1.1)], pal.Enamel_Ivory, seg=6)   # bobbin insulator
+    s.box((-0.04, -0.012, -0.012), (0.04, 0.012, 0.016), pal.Chrome)                          # ear clamp on the contact wire
+
+
+@asset("TramWire_Rosette", "Structures", bevel=0.0)
+def tram_wire_rosette(s):
+    with s.at((0, 0, 0), FRONT):  # lathe axis -> world -Y, out of the wall
+        s.lathe([(0.30, 0.0), (0.30, 0.03), (0.26, 0.055), (0.0, 0.055)], pal.Enamel_Teal, seg=12, cap_bottom=False)
+        s.lathe([(0.10, 0.055), (0.10, 0.10), (0.07, 0.15), (0.0, 0.17)], pal.Chrome, seg=12, cap_bottom=False)
+
+
+@asset("TramWire_Pole", "Structures", bevel=0.0)
+def tram_wire_pole(s):
+    s.lathe([(0.0, 0.0), (0.26, 0.0), (0.26, 0.1), (0.21, 0.3), (0.17, 1.0)], pal.Enamel_Teal, seg=8, cap_top=False)
+    s.lathe([(0.17, 1.0), (0.15, 1.04), (0.10, 8.24)], pal.Chrome, seg=8, cap_bottom=False, cap_top=False)
+    s.lathe([(0.10, 6.9), (0.16, 6.96), (0.16, 7.04), (0.10, 7.1)], pal.Chrome, seg=8, cap_bottom=False, cap_top=False)   # span eye collar
+    s.lathe([(0.0, 8.22)] + [(0.14 * math.sin(math.pi * k / 6), 8.36 - 0.14 * math.cos(math.pi * k / 6)) for k in range(1, 6)] + [(0.0, 8.5)], pal.Chrome, seg=8)

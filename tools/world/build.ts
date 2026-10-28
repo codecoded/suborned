@@ -23,6 +23,7 @@ import { civicRoofs } from './civic/roof';
 import { finishSet } from '../plan/finish-set';
 import { baysOf, fillRing, noseRing, returnsOf } from './gen/kerbreturn';
 import { footwaysOf } from './gen/street/footway';
+import { newTramLog, parkedTrams, tramGround } from './gen/street/tramstreet';
 import { CIVIC, assignColourways, civicHost, hostOf, oldStreetFamilies } from './gen/colourways';
 
 /** Provisional numbers: TODO each moves into the plan's standards (Datum) and is then read from there. */
@@ -107,8 +108,13 @@ export function transit(plan: Plan, d: Derived): World['transit'] {
     const quad: V[] = [[c[0] - a[0] - b[0], c[1] - a[1] - b[1]], [c[0] + a[0] - b[0], c[1] + a[1] - b[1]], [c[0] + a[0] + b[0], c[1] + a[1] + b[1]], [c[0] - a[0] + b[0], c[1] - a[1] + b[1]]];
     return { id, surface: 'platform', ring: ring(platEnds > 0 && id.startsWith('stop/') ? roundFar(quad, platEnds) : quad), base: r3(base), height: r3(h) };
   };
-  const stops = sides('tram').flatMap(({ line, s }) => ([1, -1] as const).map(side =>
-    platform(`stop/${line.id}/${s.id}/${side > 0 ? 'l' : 'r'}`, s, side, tstd.trackCentres / 2 + PROV.track.width / 2 + PROV.platform.tram.width / 2 + 0.5, PROV.platform.tram.width, s.length ?? tstd.platform, 0, PROV.platform.tram.height)));
+  // brief 075 (the 1950s tram street): a stop on a tram street (streetscape.sections.tramStreet.<class>.roads names the road it fronts) is a boarding island at the section's island span (3.2-6.2 m off the road line: track 1.8 + tramStop.edge 1.4, 3.0 wide); a plan without the section keeps the provisional offset
+  const islandOf = (road: string | undefined): [number, number] | undefined => { const ts = (plan.standards as any).streetscape?.sections?.tramStreet; for (const k of ['district', 'primary']) { const c = ts?.[k]; if (road && c?.roads?.includes(road) && Array.isArray(c.island?.span)) return c.island.span as [number, number]; } return undefined; };
+  const stops = sides('tram').flatMap(({ line, s }) => ([1, -1] as const).map(side => {
+    const isl = islandOf((line.stops?.find(x => x.id === s.id) as { fronts?: string } | undefined)?.fronts);
+    const off = isl ? (isl[0] + isl[1]) / 2 : tstd.trackCentres / 2 + PROV.track.width / 2 + PROV.platform.tram.width / 2 + 0.5, w = isl ? isl[1] - isl[0] : PROV.platform.tram.width;
+    return platform(`stop/${line.id}/${s.id}/${side > 0 ? 'l' : 'r'}`, s, side, off, w, s.length ?? tstd.platform, 0, PROV.platform.tram.height);
+  }));
   const edge = sstd.beamCentres / 2 + PROV.beam.width / 2, sw = PROV.platform.sky.width;
   const stations = sides('sky').flatMap(({ line, s }) => ([1, -1] as const).map(side =>
     platform(`station/${line.id}/${s.id}/${side > 0 ? 'l' : 'r'}`, s, side, edge + sw / 2, sw, s.length ?? PROV.platform.sky.length, sstd.height - lv.structureDepth.deck, lv.structureDepth.deck)));
@@ -313,6 +319,12 @@ export function worldOf(plan: Plan, d: Derived, civ: Civic): { world: World; gen
   if (fw.length) { g.footways = fw; for (const f of fw) g.flats.push({ id: f.table.id, surface: f.table.surface, ring: f.table.ring, level: f.level }); }
   for (const l of gen.roadFinish?.lawn ?? []) g.flats.push({ id: `reservation/${l.id}`, surface: 'median', ring: l.ring.map(rv), level: 0.02 }); // brief 028 (Vela): the tram reservation's lawn track, kerb face to kerb face, under the rails (level 0.04) and over the carriageway (0)
   if (gen.groundPieces?.length) g.pieces = gen.groundPieces; // brief 026: flat ground pieces (kerb, flags, pits, drains, manholes, tactile, terrazzo)
+  // brief 075 (the 1950s tram street, tramstreet.ts): setts under the tram lanes and the flat crossing's square (flats), the rails flush in them (ground pieces), the kerbside bays and palm islands, the overhead; the parked trams are dressing, never sim data
+  const tlog = gen.tram?.log ?? newTramLog(), tg = tramGround(gctx, tlog, PROV.foot);
+  if (tg) { g.flats.push(...tg.flats); g.pieces = [...(g.pieces ?? []), ...tg.rails]; }
+  if (gen.tram) { if (gen.tram.bays.length) g.kerbside = gen.tram.bays; if (gen.tram.islands.length) g.islands = gen.tram.islands; if (gen.tram.wires) t.wires = gen.tram.wires; }
+  const trams = tg ? parkedTrams(gctx, tlog, PROV.foot) : [];
+  if (gen.tram) gen.tram.log = tlog; else if (tg) gen.tram = { bays: [], islands: [], log: tlog };
   const civicM = recordsTower(plan, civicMasses(civ, toPlanFn(plan.civic)));
   if (gen.capstone) { gen.street.push(...civicRobots(ctxOf(plan, d, civ, PROV.pavement), civicM, gen.capstone)); civicPorterGap(gen.capstone, civ); } // brief 026: after the civic masses exist
   // brief 074 (Sky 2026-10-28, "Do building colors"): each building's colourway (a facade.json wall family) on every mass and facade piece of it; the civic block's are `civic`
@@ -328,6 +340,7 @@ export function worldOf(plan: Plan, d: Derived, civ: Civic): { world: World; gen
     ground: g, transit: t, buildings: gen.buildings, roofs: [...gen.roofs, ...civicRoofs(civicM)], skins: gen.skins, fabric: gen.fabric, facades: gen.facades.map(f => dressFields(f, catalogued(f.kit.id), plotOf)), frontages: gen.frontages, connectors: gen.connectors, street: gen.street, ...(gen.crossings ? { crossings: gen.crossings } : {}), ...(gen.crossingLog?.coverage ? { crossingRules: { sites: gen.crossingLog.coverage.sites, twins: gen.crossingLog.coverage.dedupe, moved: gen.crossingLog.coverage.moved, left: gen.crossingLog.coverage.skipped, served: gen.crossingLog.coverage.served } } : {}),
     levels: levelsOf(plan, gen.decks), megastructures: gen.megas, civic: civicW, ...(gen.takedown ? { takedown: gen.takedown } : {}), landmarks: landmarks(plan), signatures: gen.signatures, gates: gates(plan, d), horizon: horizonOf(plan, PROV.water, { level: PROV.beyond, bankBase: PROV.quayBase, bankDepth: 4 }),
   };
+  if (trams.length) w.dressing = { trams };
   const liveries = liveriesOf(w, catalogued, adopted()); // brief 075-C: landmark livery, after every kit ref is placed
   const posters = postersOf(w, kitPosters()); // brief 075-F: the ad each board shows (Vela's posters), after every kit ref is placed
   const counts = {

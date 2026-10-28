@@ -1,0 +1,141 @@
+{
+ "arch/old": {
+  "file": "~/Projects/the-suborned/game/Assets/TheSuborned/Art/DecoKit/Models/Landmarks/DK_ParabolicArch.fbx",
+  "tris": 7124,
+  "size": [
+   38.5,
+   11.639,
+   75.791
+  ]
+ },
+ "arch/pier": {
+  "file": "~/Projects/suborned/out/decokit/Models/Landmarks/DK_ParabolicArch.fbx",
+  "tris": 7124,
+  "size": [
+   38.5,
+   11.639,
+   75.791
+  ]
+ },
+ "arch/L0": {
+  "file": "~/Projects/suborned/out/decokit/Models/Landmarks/DK_ParabolicArch@crown-avenue.fbx",
+  "tris": 8156,
+  "size": [
+   34.0,
+   11.639,
+   75.744
+  ]
+ },
+ "arch/L1": {
+  "file": "~/Projects/suborned/out/decokit/Models/Landmarks/DK_ParabolicArch@crown-avenue_L1.fbx",
+  "tris": 2038,
+  "size": [
+   33.985,
+   11.71,
+   75.748
+  ]
+ },
+ "arch/L2": {
+  "file": "~/Projects/suborned/out/decokit/Models/Landmarks/DK_ParabolicArch@crown-avenue_L2.fbx",
+  "tris": 474,
+  "size": [
+   34.381,
+   12.078,
+   76.145
+  ]
+ },
+ "tower/old": {
+  "file": "~/Projects/the-suborned/game/Assets/TheSuborned/Art/DecoKit/Models/Landmarks/DK_DiscTower.fbx",
+  "tris": 8276,
+  "size": [
+   44.2,
+   40.2,
+   156.6
+  ]
+ },
+ "tower/kit": {
+  "file": "~/Projects/suborned/out/decokit/Models/Landmarks/DK_DiscTower@avenue-gate-w.fbx",
+  "tris": 8276,
+  "size": [
+   44.2,
+   40.2,
+   156.2
+  ]
+ },
+ "tower/L0": {
+  "file": "~/Projects/suborned/out/decokit/Models/Landmarks/DK_DiscTower@crown-vista.fbx",
+  "tris": 8596,
+  "size": [
+   44.2,
+   40.2,
+   156.6
+  ]
+ },
+ "tower/L1": {
+  "file": "~/Projects/suborned/out/decokit/Models/Landmarks/DK_DiscTower@crown-vista_L1.fbx",
+  "tris": 2107,
+  "size": [
+   44.448,
+   40.695,
+   156.598
+  ]
+ },
+ "tower/L2": {
+  "file": "~/Projects/suborned/out/decokit/Models/Landmarks/DK_DiscTower@crown-vista_L2.fbx",
+  "tris": 473,
+  "size": [
+   44.95,
+   40.399,
+   156.593
+  ]
+ },
+ "tower/L0-livery": {
+  "file": "~/Projects/suborned/out/decokit/Models/Landmarks/DK_DiscTower@crown-vista.fbx",
+  "tris": 8596,
+  "size": [
+   44.2,
+   40.2,
+   156.6
+  ]
+ },
+ "wire/Contact": {
+  "tris": 12,
+  "size": [
+   1.0,
+   0.012,
+   0.0104
+  ]
+ },
+ "wire/Span": {
+  "tris": 12,
+  "size": [
+   1.0,
+   0.02,
+   0.0173
+  ]
+ },
+ "wire/Hanger": {
+  "tris": 60,
+  "size": [
+   0.08,
+   0.052,
+   1.212
+  ]
+ },
+ "wire/Rosette": {
+  "tris": 120,
+  "size": [
+   0.6,
+   0.17,
+   0.6
+  ]
+ },
+ "wire/Pole": {
+  "tris": 216,
+  "size": [
+   0.52,
+   0.52,
+   8.5
+  ]
+ }
+}

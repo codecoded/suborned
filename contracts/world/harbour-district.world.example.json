@@ -1,7 +1,7 @@
 {
  "schema": "suborned.world/2",
  "source": "harbour-district v0.2.0 (2026-10-12)",
- "note": "Trimmed example of suborned.world/2: the first element of each generated list (plus a kit facade bay and corner, a crowned roof, a civic kit piece, the horizon sea sector, land and two banks and three horizon pieces, one procedural skin (three faces and its fin: grammar §2a colour life), one balcony awning, banner and Parade flag, a dressed stair tower and the Skyport leg lift and stem tube, the three landmarks, a kit roof and a kit lamp, and the Skyport Tower with its gateway), the civic stash container, a police post and a call box (brief 013: `stash`, and the whole `takedown` section as exported), for the schema in world.schema.ts. Written from out/world by Splice; the full export is out/world/<plan id>.world.json.",
+ "note": "Trimmed example of suborned.world/2: the first element of each generated list (plus a kit facade bay and corner, a crowned roof, a civic kit piece, the horizon sea sector, land and two banks and three horizon pieces, one procedural skin (three faces and its fin: grammar §2a colour life), one balcony awning, banner and Parade flag, a dressed stair tower and the Skyport leg lift and stem tube, the three landmarks, a kit roof and a kit lamp, and the Skyport Tower with its gateway), the civic stash container, a police post and a call box (brief 013: `stash`, and the whole `takedown` section as exported), for the schema in world.schema.ts. Written from out/world by Splice; the full export is out/world/<plan id>.world.json. Brief 075 (the tram street): ground.kerbside and ground.islands, transit.wires and dressing.trams, the first of each, from the export (Splice 2026-10-28).",
  "view": {
   "yaw": 30,
   "pitch": 38,
@@ -268,6 +268,59 @@
      ]
     ]
    }
+  ],
+  "kerbside": [
+   {
+    "id": "ground/kerbside/sunset-way/0",
+    "kind": "angle",
+    "road": "sunset-way",
+    "ring": [
+     [
+      -330.474,
+      -209.757
+     ],
+     [
+      -328.074,
+      -205.6
+     ],
+     [
+      -330.326,
+      -204.3
+     ],
+     [
+      -332.726,
+      -208.457
+     ]
+    ],
+    "yaw": 1.0472,
+    "level": 0
+   }
+  ],
+  "islands": [
+   {
+    "id": "ground/island/sunset-way/0",
+    "surface": "pavement",
+    "ring": [
+     [
+      -328,
+      -202
+     ],
+     [
+      -328,
+      -204
+     ],
+     [
+      -332.8,
+      -204
+     ],
+     [
+      -332.8,
+      -202
+     ]
+    ],
+    "base": 0,
+    "height": 0.18
+   }
   ]
  },
  "transit": {
@@ -334,6 +387,159 @@
     ],
     "base": 22.8,
     "height": 1.2
+   }
+  ],
+  "wires": {
+   "contact": [
+    {
+     "id": "tram/T1/trunk/contact-l",
+     "line": "T1",
+     "pts": [
+      [
+       -1.6,
+       -780
+      ],
+      [
+       -2,
+       -749.833
+      ],
+      [
+       -1.6,
+       -689.5
+      ]
+     ],
+     "z": 5.8
+    }
+   ],
+   "spans": [
+    {
+     "id": "tram/T1/trunk/span-0",
+     "line": "T1",
+     "a": [
+      -10.44,
+      -780
+     ],
+     "b": [
+      10.44,
+      -780
+     ],
+     "z": 7,
+     "ends": [
+      {
+       "kind": "pole",
+       "at": [
+        -10.6,
+        -780
+       ],
+       "item": "street/tram/T1/trunk/span-0/pole-a"
+      },
+      {
+       "kind": "pole",
+       "at": [
+        10.6,
+        -780
+       ],
+       "item": "street/tram/T1/trunk/span-0/pole-b"
+      }
+     ]
+    }
+   ],
+   "pieces": [
+    {
+     "id": "tram/T1/trunk/span-0/span",
+     "kind": "span",
+     "kit": {
+      "id": "TramWire_Span",
+      "scale": [
+       20.88,
+       1,
+       1
+      ],
+      "yaw": 0,
+      "at": [
+       0,
+       -780
+      ]
+     },
+     "z": 7
+    },
+    {
+     "id": "tram/T1/trunk/span-0/hanger-l",
+     "kind": "hanger",
+     "kit": {
+      "id": "TramWire_Hanger",
+      "scale": [
+       1,
+       1,
+       1
+      ],
+      "yaw": 1.5708,
+      "at": [
+       -1.6,
+       -780
+      ]
+     },
+     "z": 5.8
+    },
+    {
+     "id": "tram/T1/trunk/span-0/hanger-r",
+     "kind": "hanger",
+     "kit": {
+      "id": "TramWire_Hanger",
+      "scale": [
+       1,
+       1,
+       1
+      ],
+      "yaw": 1.5708,
+      "at": [
+       2,
+       -780
+      ]
+     },
+     "z": 5.8
+    },
+    {
+     "id": "tram/T1/trunk/span-1/span",
+     "kind": "span",
+     "kit": {
+      "id": "TramWire_Span",
+      "scale": [
+       20.88,
+       1,
+       1
+      ],
+      "yaw": 0,
+      "at": [
+       0,
+       -749.833
+      ]
+     },
+     "z": 7
+    }
+   ]
+  }
+ },
+ "dressing": {
+  "trams": [
+   {
+    "id": "dressing/tram/T1/circus",
+    "line": "T1",
+    "stop": "circus",
+    "kit": {
+     "id": "Tram",
+     "scale": [
+      1,
+      1,
+      1
+     ],
+     "yaw": 0,
+     "at": [
+      1.8,
+      -72.108
+     ]
+    },
+    "z": 0.02
    }
   ]
  },
@@ -2967,22 +3173,81 @@
  ],
  "liveries": {
   "colours": {
-   "brick": { "hex": "#9C2E2B" },
-   "vermilion": { "hex": "#B8432E" },
-   "gold": { "hex": "#F2C14E", "metallic": 1, "smoothness": 0.45 }
+   "brick": {
+    "hex": "#9C2E2B"
+   },
+   "vermilion": {
+    "hex": "#B8432E"
+   },
+   "gold": {
+    "hex": "#F2C14E",
+    "metallic": 1,
+    "smoothness": 0.45
+   }
   },
   "placed": [
-   { "host": "landmark/sphere", "ref": "kit", "piece": "SphereStation", "slots": { "DK_Steel_Ivory": "DK_Steel_Ivory__vermilion", "DK_Hull_Ivory": "DK_Hull_Ivory__brick" } },
-   { "host": "signature/space-hq", "ref": "kit", "piece": "SpaceHQ_Portal", "slots": { "DK_Crown_Gold": "DK_Crown_Gold__gold" } },
-   { "host": "mega/skyport-tower", "ref": "use", "piece": "Skyport_Tower_Portal", "slots": { "DK_Steel_Ivory": "DK_Steel_Ivory__vermilion" } }
+   {
+    "host": "landmark/sphere",
+    "ref": "kit",
+    "piece": "SphereStation",
+    "slots": {
+     "DK_Steel_Ivory": "DK_Steel_Ivory__vermilion",
+     "DK_Hull_Ivory": "DK_Hull_Ivory__brick"
+    }
+   },
+   {
+    "host": "signature/space-hq",
+    "ref": "kit",
+    "piece": "SpaceHQ_Portal",
+    "slots": {
+     "DK_Crown_Gold": "DK_Crown_Gold__gold"
+    }
+   },
+   {
+    "host": "mega/skyport-tower",
+    "ref": "use",
+    "piece": "Skyport_Tower_Portal",
+    "slots": {
+     "DK_Steel_Ivory": "DK_Steel_Ivory__vermilion"
+    }
+   }
   ]
  },
- "posters": { "placed": [
-   { "host": "bld/avenue-court/27/roof", "piece": "Billboard_Rooftop_B", "key": "cruise", "slots": { "DK_Billboard_Ads": "DK_Billboard_Ads__cruise" } },
-   { "host": "street/foot/crown-parade/billboard-pylon-2065", "piece": "Billboard_Pylon_A", "key": "luna", "back": "suds", "slots": { "DK_Billboard_Ads_Lit": "DK_Billboard_Ads_Lit__luna" } },
-   { "host": "street/avenue-court/e17/advertising-column-2080", "piece": "AdColumn", "key": "A", "slots": {} },
-   { "host": "street/avenue-court/e0/advertising-column-2082", "piece": "AdColumn", "key": "B", "slots": { "DK_Billboard_Ads": "DK_Billboard_Ads__sheetB" } }
- ] },
+ "posters": {
+  "placed": [
+   {
+    "host": "bld/avenue-court/27/roof",
+    "piece": "Billboard_Rooftop_B",
+    "key": "cruise",
+    "slots": {
+     "DK_Billboard_Ads": "DK_Billboard_Ads__cruise"
+    }
+   },
+   {
+    "host": "street/foot/crown-parade/billboard-pylon-2065",
+    "piece": "Billboard_Pylon_A",
+    "key": "luna",
+    "back": "suds",
+    "slots": {
+     "DK_Billboard_Ads_Lit": "DK_Billboard_Ads_Lit__luna"
+    }
+   },
+   {
+    "host": "street/avenue-court/e17/advertising-column-2080",
+    "piece": "AdColumn",
+    "key": "A",
+    "slots": {}
+   },
+   {
+    "host": "street/avenue-court/e0/advertising-column-2082",
+    "piece": "AdColumn",
+    "key": "B",
+    "slots": {
+     "DK_Billboard_Ads": "DK_Billboard_Ads__sheetB"
+    }
+   }
+  ]
+ },
  "gates": [
   {
    "id": "gate/rocket-gate",

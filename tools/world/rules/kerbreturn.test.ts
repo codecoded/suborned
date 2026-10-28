@@ -9,6 +9,7 @@ import { ctxOf, generated } from '../../plan/world-ctx';
 import { ctxOf as genCtx } from '../gen/common';
 import { returnsOf } from '../gen/kerbreturn';
 import { kerbReturnRules } from './kerbreturn';
+import { reservationPlan } from '../gen/reservation.fixture';
 
 setDefaultTimeout(120000);
 const root = resolve(import.meta.dir, '../../..'), read = (p: string) => JSON.parse(readFileSync(resolve(root, p), 'utf8'));
@@ -57,9 +58,12 @@ describe('KR-2 and KR-3', () => {
     expect(run(cut(five), logged)['KR-2']).toBe(''); expect(gone).toBeLessThan(len);
   });
   test('KR-5 fails on a reservation kerb piece lying alone in the road (Glyph 0.2.113: the two cream arcs at the circus mouth)', () => {
-    expect(run()['KR-5' as 'KR-2']).toBe('');
-    const r = run(w => { const k = w.ground.pieces!.find(s => /^roadfinish\/boulevard\/reservation\//.test(s.edge))!; k.at = [k.at[0] + 12, k.at[1]]; });
-    expect(r['KR-5' as 'KR-2']).toMatch(/beside no lawn track: a lone kerb piece in the road/);
+    expect(run()['KR-5' as 'KR-2']).toBe(''); // re-pinned 2026-10-28 (brief 075): the committed plan has no reservation (KR-5 has nothing to judge); the failing example runs on the reservation fixture
+    const rp = reservationPlan(plan), rd = derive(rp), rb = generated(rp, rd, civ);
+    const runR = (mutate: (w: World) => void = () => {}) => { const w = structuredClone(rb.w) as World; mutate(w); return Object.fromEntries(kerbReturnRules(ctxOf(rp, rd, civ, { w, gen: rb.gen })).map(c => [c.id, c.ok ? '' : (c.detail ?? 'fail')])); };
+    expect(runR()['KR-5']).toBe('');
+    const r = runR(w => { const k = w.ground.pieces!.find(s => /^roadfinish\/boulevard\/reservation\//.test(s.edge))!; k.at = [k.at[0] + 12, k.at[1]]; });
+    expect(r['KR-5']).toMatch(/beside no lawn track: a lone kerb piece in the road/);
   });
   test('KR-2 fails on a plot slab that still covers the old corner', () => {
     const r = convex();
