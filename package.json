@@ -37,6 +37,7 @@
     "world:occlusion": "bun tools/world/occlusion-cli.ts",
     "life": "bun tools/life/cli.ts",
     "life:presentation": "bun tools/life/presentation.ts",
+    "life:journeys": "bun tools/life/journeys.ts",
     "crew": "bun tools/crew/cards.ts",
     "art:bible": "bun tools/art-bible/generate.ts",
     "ingest": "bun tools/rag/ingest.ts",
