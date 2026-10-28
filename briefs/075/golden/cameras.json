@@ -6,8 +6,16 @@
     "reel": "briefs/074/flyby/old-flyby.mp4",
     "t_s": 10.0,
     "frame": "old-world Unity space: boulevard along +z near x 0, circus centre (0, 0, 206)",
-    "eye": [1.9381, 9.7175, 85.2224],
-    "look": [0.0434, 10.8547, 185.1979],
+    "eye": [
+      1.9381,
+      9.7175,
+      85.2224
+    ],
+    "look": [
+      0.0434,
+      10.8547,
+      185.1979
+    ],
     "yaw_deg": -1.086,
     "pitch_deg": 0.652,
     "fov_deg": 58,
@@ -20,11 +28,45 @@
   },
   "ours": {
     "source": "unity (HarbourDistrict.unity as built), Golden075.Cli; flight = Flyby074 through briefs/074/flyby/new-keys.json",
+    "reel": "none: the old camera carried into the remapped plan",
+    "t_s": null,
+    "frame": "Unity x, y, z = plan x, height, plan y: boulevard x 0 heading +z to Crown Circus (0, 0)",
+    "eye": [
+      1.9381,
+      9.7175,
+      -120.7776
+    ],
+    "look": [
+      0.0434,
+      10.8547,
+      -20.8021
+    ],
+    "yaw_deg": -1.086,
+    "pitch_deg": 0.652,
+    "fov_deg": 58,
+    "width": 1920,
+    "height": 1080,
+    "supersample": 2,
+    "downsample": "3840x2160 HDR capture -> ffmpeg lanczos 1920x1080 (as Flyby074 -ss 2)",
+    "shadow_distance_m": 120,
+    "lens": "runtime lens + haze installed (Flyby074 -lens on: LightPhase OnEnable, Glint075.InstallLens, Glint075.InstallHaze)",
+    "refit": "Brief 075 remap (Latch, 2026-10-28): the plan is now the old town in the old frame (plan x, y = old Unity x, z - 206; Datum, remap/READY-swap), so the 074 eye at y -214.6 framed a different street block (215 m short of the circus against old's 121 m). Re-fit = the old camera translated by z - 206, same yaw, pitch and fov: eye (1.938, 9.718, -120.778), 121 m short of the circus as old. Checked by eye against old.png (probe out/scratch/latch/075remap/probe-oldframe.png): walls at x +-18 frame alike, the Crown Avenue arch and the monument stand where old's do."
+  },
+  "ours_074": {
+    "source": "unity (HarbourDistrict.unity as built), Golden075.Cli; flight = Flyby074 through briefs/074/flyby/new-keys.json",
     "reel": "briefs/074/flyby/new-on.mp4",
     "t_s": 6.0,
     "frame": "Unity x, y, z = plan x, height, plan y: boulevard x 0 heading +z to Crown Circus (0, 0)",
-    "eye": [1.9297, 8.1094, -214.5703],
-    "look": [0.4271, 9.0026, -114.5856],
+    "eye": [
+      1.9297,
+      8.1094,
+      -214.5703
+    ],
+    "look": [
+      0.4271,
+      9.0026,
+      -114.5856
+    ],
     "yaw_deg": -0.861,
     "pitch_deg": 0.512,
     "fov_deg": 58,
@@ -33,6 +75,7 @@
     "supersample": 2,
     "downsample": "3840x2160 HDR capture -> ffmpeg lanczos 1920x1080 (as Flyby074 -ss 2)",
     "shadow_distance_m": 120,
-    "lens": "runtime lens + haze installed (Flyby074 -lens on: LightPhase OnEnable, Glint075.InstallLens, Glint075.InstallHaze)"
+    "lens": "runtime lens + haze installed (Flyby074 -lens on: LightPhase OnEnable, Glint075.InstallLens, Glint075.InstallHaze)",
+    "until": "s5-remap (2026-10-28): steps before 075 remap used this eye"
   }
 }

@@ -21,8 +21,8 @@ let preV: { w: ReturnType<typeof worldOf>['world']; gen: ReturnType<typeof world
 const pv = () => (preV ??= (({ world: w, gen: g }) => ({ w, gen: g }))(worldOf(pre, preD, preCiv)));
 const preAll = (p: Plan = pre, x = pv()) => kitFitChecks(ctxOf(p, preD, preCiv, x)), preRun = (p: Plan = pre, x = pv()) => preAll(p, x)[0]!;
 const k2 = (p: Plan = pre, x = pv()) => preAll(p, x).find(c => c.id === 'K-2')!;
-// the Crown Avenue arch as the remap carries it (landmarks.disc-west.archWas: not placed until Datum moves it to a gateway), placed for its checks
-const arch: Plan = structuredClone(plan); { const l = arch.landmarks.find(x => x.id === 'disc-west') as any; const { status: _s, name: _n, ...g } = l.archWas; l.gateway = g; }
+// the Crown Avenue arch as the plan places it (landmarks.disc-west.gateway), cloned so its failing examples can move its feet
+const arch: Plan = structuredClone(plan);
 const archD = derive(arch);
 let archV: typeof preV;
 const av = () => (archV ??= (({ world: w, gen: g }) => ({ w, gen: g }))(worldOf(arch, archD, civ)));

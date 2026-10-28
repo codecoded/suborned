@@ -83,10 +83,12 @@ export function signatureChecks(c: WCtx): Check[] {
           if (h > vista.tip + TIP_TOL) bad.push(`${t.id} tip ${f1(h)} over the vista tip ${vista.tip}`);
           if (h >= sk.dominant.tip || t.tip >= dom.tip) bad.push(`${t.id} tip ${f1(t.tip)} not under the dominant ${sk.dominant.id} ${f1(dom.tip)}`);
         } else if (t.tip > sk.rivalMax + TIP_TOL) bad.push(`${t.id} tip ${f1(t.tip)} over rivalMax ${sk.rivalMax}`);
-        if (t.at[0] >= quayX - sk.harbour.within && t.tip > sk.harbour.tip + TIP_TOL) bad.push(`${t.id} tip ${f1(t.tip)} within ${sk.harbour.within} m of the quay, over ${sk.harbour.tip}`);
+        // standards.skyline.harbour.exceptions [{ id, tip }] (brief 075 remap): a named landmark held to its own tip in the band, every other tip to harbour.tip
+        const hx = (sk.harbour.exceptions as { id: string; tip: number }[] | undefined)?.find(e => `landmark/${e.id}` === t.id), htip = hx ? hx.tip : sk.harbour.tip;
+        if (t.at[0] >= quayX - sk.harbour.within && t.tip > htip + TIP_TOL) bad.push(`${t.id} tip ${f1(t.tip)} within ${sk.harbour.within} m of the quay, over ${htip}`);
       }
     }
-    out.push(rule('SK-1', G, `One dominant tip (${sk.dominant.id} ${sk.dominant.tip}); every other tip ≤ rivalMax ${sk.rivalMax}${sk.vista ? ` (but ${sk.vista.id} ≤ ${sk.vista.tip}, under the dominant)` : ''}, and ≤ ${sk.harbour.tip} within ${sk.harbour.within} m of the quay`, tips.length, bad, 'all', 'standards.skyline · brief 007 · failing examples: LinerDock as built (205.1 m) on the liner berth; world-rules.test.ts (a second landmark at 210, crown-vista at 252)'));
+    out.push(rule('SK-1', G, `One dominant tip (${sk.dominant.id} ${sk.dominant.tip}); every other tip ≤ rivalMax ${sk.rivalMax}${sk.vista ? ` (but ${sk.vista.id} ≤ ${sk.vista.tip}, under the dominant)` : ''}, and ≤ ${sk.harbour.tip} within ${sk.harbour.within} m of the quay${sk.harbour.exceptions?.length ? ` (but ${sk.harbour.exceptions.map((e: { id: string; tip: number }) => `${e.id} ≤ ${e.tip}`).join(', ')})` : ''}`, tips.length, bad, 'all', 'standards.skyline · brief 007 · failing examples: LinerDock as built (205.1 m) on the liner berth; world-rules.test.ts (a second landmark at 210, crown-vista at 252)'));
   }
 
   // SK-2 every tower site and signature names a crown type; within 150 m no two crowns of one type (matched pairs excepted)

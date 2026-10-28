@@ -1,0 +1,15 @@
+{
+  "schema": "latch.golden075-frame/1",
+  "step": "s5-remap",
+  "rendered": "2026-10-28T16:15:46Z",
+  "scene": "Assets/Scenes/HarbourDistrict.unity",
+  "export": "out/scratch/latch/golden075/pin/s5-remap.world.json",
+  "export_sha256": "f41a0df93416f9bb144e1ddf883286e004fa1217091743afbd4b66c2efca70fb",
+  "eye": [1.9381, 9.7175, -120.7776],
+  "look": [0.0434, 10.8547, -20.8021],
+  "fov_deg": 58,
+  "size": [1920, 1080],
+  "supersample": 2,
+  "lens": "runtime lens + haze (Flyby074 -lens on)",
+  "life_t": 77
+}

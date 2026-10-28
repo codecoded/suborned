@@ -29,8 +29,10 @@ Found by matching Sky's frames against every frame of the 074 reels:
 | | world | reel time | eye | look (eye + 100 m) | yaw / pitch |
 |---|---|---|---|---|---|
 | old | old DecoKit street (circus at z 206) | old-flyby.mp4 t 10.0 s | (1.938, 9.718, 85.222) | (0.043, 10.855, 185.198) | −1.09° / +0.65° |
-| ours | Harbour District (circus at 0, 0) | new-on.mp4 t 6.0 s | (1.930, 8.109, −214.570) | (0.427, 9.003, −114.586) | −0.86° / +0.51° |
+| ours (to s4) | Harbour District (circus at 0, 0) | new-on.mp4 t 6.0 s | (1.930, 8.109, −214.570) | (0.427, 9.003, −114.586) | −0.86° / +0.51° |
 
 Both fov 58 (vertical), 1920 × 1080, shadow distance 120 m, no roll. Ours renders with the runtime lens and long haze installed (as Flyby074 `-lens on`). The old eye is 121 m short of its circus and 1.6 m higher; ours is 215 m short: the flights are each reel's own, as Sky saw them.
+
+**Re-fit at s5-remap (2026-10-28):** the remapped plan is the old town in the old frame (plan y = old z − 206), so `ours` is now the old camera translated: eye (1.938, 9.718, −120.778), look (0.043, 10.855, −20.802), yaw −1.09°, pitch +0.65°, 121 m short of the circus as old. The 074 eye is kept as `ours_074` in `cameras.json`; steps s1–s4 were rendered from it.
 
 `golden.ts` reads the ours camera from `cameras.json`; change it there (and say so in the step's `--what`) only if Sky asks for a different view.

@@ -1,0 +1,11 @@
+{
+  "schema": "latch.overhead075/1",
+  "rendered": "2026-10-28T16:18:26Z",
+  "export": "out/scratch/latch/golden075/pin/s5-remap.world.json",
+  "export_sha256": "f41a0df93416f9bb144e1ddf883286e004fa1217091743afbd4b66c2efca70fb",
+  "plan_extent": { "x": [-460, 380], "y": [-560, 300] },
+  "px_per_m": 2,
+  "size": [1680, 1720],
+  "supersample": 2,
+  "projection": "orthographic, straight down; image up = plan +y (north), right = plan +x; pixel (0, 0) = plan (x0, y1)"
+}

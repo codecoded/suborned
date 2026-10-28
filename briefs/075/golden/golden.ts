@@ -6,6 +6,7 @@
 //        -> briefs/075/golden/<step>.png + <step>.json, steps.json entry (replaced if the step exists), index.html
 //        --no-build: render the scene as it is now (no export, no kit copy, no Unity build)
 //        --life t: Pulse's presentation life (bun run life:presentation from this export) posed at presentation time t
+//        --life-cmd f.ts: make the life with bun f.ts instead of bun run life:presentation (a scratch copy while Pulse's tool lags the plan, e.g. 075 remap: T2 gone)
 //   bun briefs/075/golden/golden.ts --old      render the old frame once from out/scratch/latch/oldworld/unity -> old.png
 //   bun briefs/075/golden/golden.ts --index    rebuild index.html from steps.json only
 //
@@ -129,7 +130,7 @@ if (has('--old')) {
   process.exit(0);
 }
 
-const step = args.find(a => !a.startsWith('--') && a !== opt('--what') && a !== opt('--by') && a !== opt('--life'));
+const step = args.find(a => !a.startsWith('--') && a !== opt('--what') && a !== opt('--by') && a !== opt('--life') && a !== opt('--life-cmd'));
 const lifeT = opt('--life'); // brief 075 s3: Pulse's presentation life posed at presentation time t (Golden075 -life t)
 if (lifeT !== undefined && !/^[0-9]+(\.[0-9]+)?$/.test(lifeT)) { console.error(`golden: --life wants seconds, got ${lifeT}`); process.exit(2); }
 const what = opt('--what');
@@ -149,7 +150,7 @@ if (!has('--no-build')) {
   run('kit copy', ['bun', 'tools/game/playing.ts', 'bun', 'run', 'kit']);
   unity('scene build', 'unity', 'Suborned.World.HarbourWorldBuilder.Build', ['-world', pin], join(scratch, `${step}-build.log`));
 }
-if (lifeT !== undefined) run('presentation life', ['bun', 'tools/game/playing.ts', 'bun', 'run', 'life:presentation']); // from this world export (git-ignored, regenerated)
+if (lifeT !== undefined) run('presentation life', ['bun', 'tools/game/playing.ts', 'bun', ...(opt('--life-cmd') ? [opt('--life-cmd')!] : ['run', 'life:presentation'])]); // from this world export (git-ignored, regenerated)
 unity('golden render', 'unity', 'Suborned.World.Review.Golden075.Cli', ['-tag', step, ...(lifeT !== undefined ? ['-life', lifeT] : [])], join(scratch, `${step}-render.log`));
 
 const frame = JSON.parse(readFileSync(join(here, `${step}.json`), 'utf8'));

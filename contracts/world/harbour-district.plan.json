@@ -129,12 +129,24 @@
     "icon": "skyport-tower",
     "tip": 108,
     "within": 150,
-    "why": "the Skyport Tower stays the harbour's icon (brief 007 Fixed): nothing standing within 150 m of the quay edge (x 312) tops 108; the rival spires stand inland, north of Crown Circus"
+    "why": "the Skyport Tower stays the harbour's icon (brief 007 Fixed): nothing standing within 150 m of the quay edge (SK-1 takes the quay's westmost point, x 46 in the remap) tops 108, save the exceptions below",
+    "exceptions": [
+     {
+      "id": "disc-west",
+      "tip": 156.8
+     },
+     {
+      "id": "disc-east",
+      "tip": 156.8
+     }
+    ],
+    "exceptionsWhy": "brief 075 remap (Aster, under Sky's scope: only the Handover is protected): the Crown Avenue gate towers stand as the old reel stood them, the kit DiscTower × 1.0 (156.6 on the 0.2 landmark base, tip 156.8), not a × 0.69 stand-in the fit rejects (tags.scale 0.9–1.1). In the remap the quay runs to x 46, so the 150 m band reaches x −104 and takes the whole axis; the pair stands inland of the harbour front at (±44, 166), under rivalMax 200 and under the dominant. Scoped to these two landmarks only; every other tip within the band keeps 108. Bends GDD §10's harbour line for this pair: the note goes in the next GDD version (Aster)"
    },
    "tiers": [
     "dominant 252: space-hq (signatures)",
     "vista 250: crown-vista (landmarks: the gold banded tower closing the Boulevard and Crown Avenue axis past the sheet edge, brief 075 golden vista 2; standards.skyline.vista; today the DiscTower@crown-vista × 1.1 at 172.4 stands until Vela's regen)",
     "rival spires 120–200: avenue-starburst 194.3, avenue-needle 167.8, avenue-gate-w / -e 165.6 (DiscTower pair + SkyBridge), crescent-terrace 122.7",
+    "gate pair 156.8: disc-west / disc-east (landmarks, the kit DiscTower × 1.0 either side of Crown Avenue at (±44, 166); standards.skyline.harbour.exceptions)",
     "harbour icon 108: skyport-tower; under it on the water liner-berth 103.7 (its terminal tower) and the ocean-liner 34.0 alongside, and the harbour front (harbour-hotel 106, crescent-tower 99.4, parade gates 75)",
     "marks 80–106: skylon 100, sphere 80, lantern-beacon 86.1",
     "street wall 20–50: H(4)–H(12), every building ≥ 9 storeys crowned (grammar §6)"
@@ -7558,8 +7570,8 @@
    ],
    "r": 20.5,
    "kit": "DiscTower",
-   "top": 108,
-   "scale": 0.69,
+   "top": 156.6,
+   "scale": 1,
    "oldPut": {
     "kit": "DiscTower",
     "at": [
@@ -7571,10 +7583,9 @@
     "scale": 1,
     "src": "foreach (var x in new[] { -44f, 44f }) p.Put(\"DiscTower\", new Vector3(x, 0f, L.Z.y - 8f), x * 2f);"
    },
-   "kitFit": "the old DecoKitStreetSkyline pair framing the arch (x ±44, z 372): the old stood DiscTower × 1.0 (156.6); here capped at 108, standards.skyline.harbour (nothing within 150 m of the quay tops the Skyport Tower), so × 0.69; r 20.5 ≥ 40.2 / 2; no crown type (SK-2 has no landmark pairs; the pair is matched)",
-   "archWas": {
+   "kitFit": "the old DecoKitStreetSkyline pair framing the arch (x ±44, z 372): the old stood DiscTower × 1.0 (156.6); here the same, the kit DiscTower as built (40.2 × 156.6 × 40.2, × 1.0: inside the disc Ø 41 and the top 156.6, tip 156.8 on the 0.2 landmark base), under rivalMax 200; within 150 m of the quay, so it passes the harbour icon (108) by standards.skyline.harbour.exceptions (brief 075 remap, Aster: back to the old reel); r 20.5 ≥ 40.2 / 2; no crown type (SK-2 has no landmark pairs; the pair is matched)",
+   "gateway": {
     "name": "Crown Avenue arch",
-    "status": "the old ParabolicArch across Crown Avenue (old (0, 250) → plan (0,44)), carried as the west gate tower's gateway (the generator places a landmark's gateway, kitrefs.ts gatewayRef)",
     "kit": "ParabolicArch@crown-avenue",
     "c": [
      0,
@@ -7601,10 +7612,10 @@
     "zones": [
      "frontage"
     ],
-    "piece": "a regen of ParabolicArch, gold as the pier's (DK_Crown_Gold): outer span 34.0 (foot to foot, the avenue's building lines), foot centres ±15.5, clear 28.0 between the plinths, plinths 3.0 across × 6.0 along, depth ≤ 11.6, crest 95.2 and top 105.3 (brief 075 golden vista 2: the vista 1 piece, crest 68 and top 75.2, × 1.4 in height only: the span and plinths cannot widen, the depth may grow with the rise, the plinths stay 3 × 6)",
-    "whyNot38": "the adopted ParabolicArch is 38.5 m across (foot centres ±16, plinths 6.4 → x 12.8–19.2): its feet stand on the clear walk (x 11–14, SF-1) and 2.2 m into the buildings past the building line (x 17). At its tag floor × 0.9 (34.65, plinths x 11.5–17.3) the feet are still on the walk and 0.3 m past the line. A plain 30 m version (× 0.78, plinths 5 m, x 10–15) also lands on the walk; the only zone that takes a foot here is the 3 m frontage zone (x 14–17), so the regen is sized to it",
-    "siteWhy": "brief 075 golden vista 2: the old reel's arch stood just past the circus, 165 m from its eye at 21.7°; ours was at y 160, 375 m off at 10.2°. y 53 is the first place the avenue's frontage zone (x ±14–17) is whole past the circus: the circus pavement (r 43–51, the plots' notch r 51) leaves x 14–17 at y 48.1–49.0 and the mouth's kerb returns end at (±9, 48.1); the plinths (y 50–56) stand on the avenue pavement's frontage zone with no building behind them (the mouth's corner forecourts: buildings from y 62 east, x ≤ −42 west), 12 m clear of the circus crossing's landing (crown-circus/1, (−20.7, 37.7)) and the avenue's only crossing (y 203); nothing standing within 1.5 m (pavement palms at y 60.1 and 65.1, kerb zone x ±10.2). 53 m from S1 (y 0) and its pylons; the arch's depth (≤ 16.3, y 44.9–61.2) stays off the line and the circus ring. 57 m before the Crescent S gate (g_cres_s, y 110), so it reads as the avenue's gate from the circus. Outside the play-street cap (gardens and crescent carry none; 311 m from the civic block) and 312 m from the quay",
-    "keep": "the generator, when it places it: the plinths only in the frontage zone (never the walk, kerb zone or carriageway); no doorway, spill or vending inside 1.5 m of a plinth; no palm or lamp whose crown or head comes within 1 m of a leg (the leg is at about x ±14.8 at 8 m up); any shopfront behind the plinths (x ±17, y 50–56; none today) keeps its doors (a door moves along its facade, never under a plinth)"
+    "piece": "a regen of ParabolicArch, gold as the pier's (DK_Crown_Gold): outer span 34.0 (foot to foot), foot centres ±15.5, clear 28.0 between the plinths, plinths 3.0 across × 6.0 along, depth ≤ 11.6, crest 95.2 and top 105.3 (brief 075 golden vista 2: the vista 1 piece, crest 68 and top 75.2, × 1.4 in height only). At (0, 44) the frontage zone is |x| 13.5–18 (4.5 m), so the plinths at |x| 14–17 stand 0.5 m off the walk's edge and 1 m off the building line; the piece is not widened for it",
+    "whyNot38": "the adopted ParabolicArch is 38.5 m across (foot centres ±16, plinths 6.4 → |x| 12.8–19.2): at (0, 44) its feet stand 0.7 m on the clear walk (the kerb and walk zones run to |x| 13.5) and 1.2 m past the old walls' building line (|x| 18). At its tag floor × 0.9 (34.65, plinths |x| 11.5–17.3) the feet are 2 m on the walk. The only zone that takes a foot here is the frontage zone (|x| 13.5–18), so the regen (plinths |x| 14–17) is sized to it",
+    "siteWhy": "brief 075 remap: the old ParabolicArch's place across Crown Avenue (old (0, 250) → plan (0, 44)), just past the circus mouth, as the old reel. Splice's measure at the site (briefs/075/notes.md, K-1's own test, both sides alike, every y 38–50): Crown Avenue's kerb face at |x| 10, kerb and walk zones to |x| 13.5 (3.5 m), the 6.5 m access pavement to |x| 16.5, then the 1.5 m paved setback to the old walls' building line at |x| 18 (block runs facing access:crown-avenue). So the frontage zone at y 41–47 is |x| 13.5–18 and the plinths (|x| 14–17, y 41–47) stand inside it, with the old walls behind them; the arch's depth (≤ 11.64, y 38.2–49.8) stays on that same avenue section. Outside the play-street cap",
+    "keep": "the generator: the plinths only in the frontage zone (never the walk, kerb zone or carriageway); no doorway, spill or vending inside 1.5 m of a plinth; no palm or lamp whose crown or head comes within 1 m of a leg (the leg is at about x ±14.8 at 8 m up); the shopfronts behind the plinths (the old walls at |x| 18, y 41–47) keep their doors (a door moves along its facade, never under a plinth)"
    }
   },
   {
@@ -7616,8 +7627,8 @@
    ],
    "r": 20.5,
    "kit": "DiscTower",
-   "top": 108,
-   "scale": 0.69,
+   "top": 156.6,
+   "scale": 1,
    "oldPut": {
     "kit": "DiscTower",
     "at": [
@@ -7629,7 +7640,7 @@
     "scale": 1,
     "src": "foreach (var x in new[] { -44f, 44f }) p.Put(\"DiscTower\", new Vector3(x, 0f, L.Z.y - 8f), x * 2f);"
    },
-   "kitFit": "the old DecoKitStreetSkyline pair framing the arch (x ±44, z 372): the old stood DiscTower × 1.0 (156.6); here capped at 108, standards.skyline.harbour (nothing within 150 m of the quay tops the Skyport Tower), so × 0.69; r 20.5 ≥ 40.2 / 2; no crown type (SK-2 has no landmark pairs; the pair is matched)"
+   "kitFit": "the old DecoKitStreetSkyline pair framing the arch (x ±44, z 372): the old stood DiscTower × 1.0 (156.6); here the same, the kit DiscTower as built (40.2 × 156.6 × 40.2, × 1.0: inside the disc Ø 41 and the top 156.6, tip 156.8 on the 0.2 landmark base), under rivalMax 200; within 150 m of the quay, so it passes the harbour icon (108) by standards.skyline.harbour.exceptions (brief 075 remap, Aster: back to the old reel); r 20.5 ≥ 40.2 / 2; no crown type (SK-2 has no landmark pairs; the pair is matched)"
   }
  ],
  "megastructures": [
@@ -8384,6 +8395,7 @@
    "Records Precinct: two vehicle gates (Rocket, Satellite) to seal against cars, but on foot the crew can leave across any street. Is the escape on foot meant to be open like that, with the police sealing stations rather than streets?"
   ],
   "history": [
+   "2026-10-28 (Datum, brief 075 remap, Aster; input edit, version kept at 0.5.0): the gate towers back to the old reel: landmarks disc-west / disc-east top 108 → 156.6, scale 0.69 → 1 (the kit DiscTower as built, tip 156.8; at 108 the fit fell under tags.scale 0.9 and the world drew procedural cylinders). New standards.skyline.harbour.exceptions (the pair, tip 156.8) and exceptionsWhy, as standards.skyline.vista was done: SK-1 to read it (Splice; the one-line read is in signature-checks.ts); bends GDD §10's harbour line for this pair (next GDD version, Aster). The Crown Avenue arch's text (landmarks[disc-west].gateway piece, whyNot38, siteWhy, keep) restated for its site at (0, 44) from Splice's measure (frontage zone |x| 13.5–18 at y 41–47, the old walls behind the plinths); oldtown.manual's arch and gate tower lines updated (the duplicate gate line dropped). No road, plot, line, stop or Handover geometry changed",
    "2026-10-28 (Datum, brief 075 old buildings; input edit, version kept at 0.4.0): Sky: \"where's the rounded corners etc - why can't we just use the old buildings ?\" New standards.blocks: the old DecoKit block grammar (runs of 6 m bays between caps, 8 m corner cells, 14 m bays, 28 back to back, crescents) and top-level blocks: 18 plots outside the Handover zone laid as 44 blocks (32 perimeter, 12 inner), 157 runs, 92 corner cells; circus.crescents: four crescents at R 51 (7, 7, 5, 5 bays). towers avenue-needle rect y 46..66 -> 58..78 (its podium cleared the NW crescent). lamplight-court-w: the L poly -> rect; its 24 m deep arm on Circus Road is the new open plot lamplight-green. Roads, tram, sky rail, the Handover zone's 7 plots (and crown-terraces, the sheds) unchanged. R 2 kerb returns staged in standards.blocks.kerbReturn (SF-22 and the capstone programme need Splice's zone override first). BG-1..BG-5 check it.",
    "2026-10-28 (Datum, brief 075 golden vista 2; input edit, version kept at 0.4.0): toward the old reel's vista (Glint's angles from the golden eye). landmarks[crown-vista].gateway, the Crown Avenue arch, moves from y 160 to the circus mouth (c (0, 53), feet x ±14–17, y 50–56, the avenue's frontage zone) and is to rise × 1.4 (crest 95.2, top 105.3; Vela's regen, span and plinths unchanged): top 20.0° from the eye (was 10.2°). The Crown Vista tower stays at (0, 350) and goes to top 250, r 30 (Vela's regen of the gold banded tower): 23.2° (was 16.0°), the one exception to rivalMax (new standards.skyline.vista; SK-1 to read it: Splice), under SpaceHQ's 252; bends GDD §10's rival ceiling 200 for this one off-sheet landmark (Aster to Sky). standards.streetscape.sections.tramStreet: the overhead clause removed (Sky: \"no overhead wires though!\"): the wires object, the rule's \"Overhead wires on span wires.\" and span wires in checks. No road, plot, line, stop or Handover geometry changed.",
    "2026-10-28 (Datum, brief 075, the street section: Sky's 1950s street-running tram; input edit, version kept at 0.4.0): standards.streetscape.sections.tramStreet (new): every road a tram runs on takes tracks flush in setts in the two centre lanes (± 1.8), mixed traffic, one traffic lane and a kerbside parking or loading strip each way, boarding islands at stops, span wires from wall rosettes or side poles; no median, reservation or lawn. The Boulevard w 28 + reservation 10 → w 20 (tram lane 3.6, traffic 3.6, parking 2.8 a side), its seven fronting plots 4 m out to the new kerb (boulevard-west, lamplight-east, lamplight-south-e, harbour-boulevard, docks-boulevard, lantern-boulevard, lantern-south), circus mouth faces at x ± 10, pavements 8, street wall 36 m. Sunset Way, Comet Row, Harbour Road: median 4 removed, w 24 kept (tram 3.6, traffic 3.6, kerbside 4.8: angle parking with palm islands, [S] proposal), T2 from side-running (offset 6) to the centre lanes: its path on the road lines, stops 6 m in (harbour, harbour-court, docks at x 300; comet at z -720; lantern, rocket, terraces at x -340), corners R 25 (standards.tram.radiusRunning 50 → 25: R 50 swept the corner pavement). Crown Road keeps its median; T2's off-sheet stub keeps the north half. sections.primary.tram (the side-running section) removed; roads.marks.lanes keeps crown-road only. Handover: points, routes (667 / 1064 / 126 / 1473 m), C-0 and V-1 64/65 unchanged",
@@ -8530,9 +8542,8 @@
    "The Sphere stands at the old SphereStation (old (-130, 330) → plan (-130,124), yaw 20) at the plan's ×0.425 (top 80, Aster review 2026-10-12); the old town stood it at ×1 (188 m)",
    "The Skyport is the old Skyport_Tower piece at the old position (plan (170, 0)) as a landmark at 108 m (× 0.94), not today's Skyport Tower megastructure: that portal tower needs a sky line and its station through it, and no line the generator can build reaches the pier (S2 planned); the aircar pad landmark goes (the tower carries the old discs)",
    "The liner berth closes old Market Street's vista at the Market Pier's head (old LinerDock at x 270 on the pier's axis; plan (270,-138), the pier 152 m long)",
-   "The gate towers (old DiscTower pair at x ±44, z 372) stand at 108 (× 0.69), not the old 156.6: they are within 150 m of the quay and standards.skyline.harbour holds that for the Skyport Tower (Sky's call to lift)",
-   "The gate towers (old DiscTower pair at x ±44, z 372) stand at 108 (× 0.69), not the old 156.6: they are within 150 m of the quay and standards.skyline.harbour holds that for the Skyport Tower (Sky's call to lift)",
-   "The ParabolicArch across Crown Avenue (old (0, 250) → plan (0, 44)) is not placed: its feet (plinths at x 14–17) need a district street's 8 m pavement frontage zone and Crown Avenue is access (6.5 m), so the circus stays sealed at c_s; it is in oldtown.props for Splice and Vela",
+   "The gate towers (old DiscTower pair at x ±44, z 372) stand at the old 156.6 (× 1.0, tip 156.8): within 150 m of the quay, so standards.skyline.harbour.exceptions names the pair (brief 075 remap, Aster); every other tip there keeps 108",
+   "The ParabolicArch across Crown Avenue (old (0, 250) → plan (0, 44)) stands as landmarks[disc-west].gateway: its plinths (x ±14–17, y 41–47) in the avenue's frontage zone, which here runs to the old walls' building line at |x| 18 (K-1, Splice's measure, briefs/075/notes.md)",
    "The old SkyBridge between the gate towers (60 m up) is in oldtown.props, not placed: no plan structure carries it yet",
    "SpaceHQ: at the old position (plan (0, 244)), closing the axis; its drum keeps the regenerated SpaceHQ_Portal but carries no beam (portalWas): the plan's signature portal reads a line on y 0, and the old main loop turned west before the HQ",
    "Lantern Terraces (a second terraced-housing megastructure, Crown Terraces' kind) on lantern-court, facing south over Lantern Lane: MS-1 keeps 2–4 megastructures and the old town's only one (the Skyport) cannot be today's portal tower without a sky line",
