@@ -5,7 +5,7 @@ Share of pavement the play camera (orthographic, zoom 14, pitch 38°, yaws 30/12
 | world | district pavement hidden | kerbside (≤ 8 m from a kerb) | Handover streets | figures (district) |
 |---|---|---|---|---|
 | our pipeline (pinned export as built, before the swap) | 29.4% | 43.2% | 41.6% | 28.2% |
-| old-built, heights "old" | 28.3% | 37.4% | 53.3% | 27.0% |
-| old-built, heights "rule" | 27.0% | 36.2% | 53.1% | 25.7% |
+| old-built, heights "old" | 26.6% | 34.4% | 43.9% | 25.2% |
+| old-built, heights "rule" | 25.3% | 33.2% | 43.6% | 23.9% |
 
 Command: `bun briefs/075/oldbuild/swap/tools/occlusion.ts` (kit sizes: out/scratch/latch/075swap/head/contracts/world/kit.json).

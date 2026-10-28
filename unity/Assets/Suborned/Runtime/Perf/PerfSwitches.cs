@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Reflection;
 using UnityEngine;
 using UnityEngine.Rendering;
@@ -24,6 +25,11 @@ namespace Suborned.Perf
         readonly object builtSource, depthSource, normalsSource;
         readonly bool builtAfterOpaque, builtActive, builtFade, builtWhole;
         readonly int builtCascades;
+        // brief 075 Perf A/B: the old town's switches
+        readonly OldTargets old;
+
+        /// <summary>What the four 075ab switches found: crowd renderers, pipelines, MSAA, DOF and flare.</summary>
+        public string AsBuilt075 => old.Describe();
 
         /// <summary>What the player's SSAO is as built ("on, after opaque True, source Depth"), or why it cannot be switched.</summary>
         public string SsaoAsBuilt { get; }
@@ -32,7 +38,10 @@ namespace Suborned.Perf
         {
             this.shadows = shadows; this.fade = fade; this.proxies = proxies; this.everyFace = everyFace;
             data = cam.GetUniversalAdditionalCameraData();
-            builtCascades = shadows.cascades; builtFade = fade.fade; builtWhole = fade.wholeTiles;
+            old = new OldTargets();
+            // brief 075 Perf A/B: the old-built town's camera has no TacticalShadows or ArchitectureFade; the switches that need them refuse there
+            if (shadows) builtCascades = shadows.cascades;
+            if (fade) { builtFade = fade.fade; builtWhole = fade.wholeTiles; }
             try
             {
                 var urp = (UniversalRenderPipelineAsset)GraphicsSettings.currentRenderPipeline;
@@ -44,13 +53,17 @@ namespace Suborned.Perf
                 builtActive = ssao.isActive; builtAfterOpaque = (bool)afterOpaque.GetValue(ssaoSettings); builtSource = source.GetValue(ssaoSettings);
                 depthSource = Enum.ToObject(source.FieldType, 0); // DepthSource.Depth
                 normalsSource = Enum.ToObject(source.FieldType, 1); // DepthSource.DepthNormals
-                SsaoAsBuilt = $"{(ssao.isActive ? "on" : "off")}, after opaque {builtAfterOpaque}, source {builtSource}; the orthographic play camera {(shadows.orthoSsao ? "keeps it" : "turns it off (064 A3 item 1; ssao depth|normals turns it back on)")}";
+                SsaoAsBuilt = $"{(ssao.isActive ? "on" : "off")}, after opaque {builtAfterOpaque}, source {builtSource}; " + (shadows ? $"the orthographic play camera {(shadows.orthoSsao ? "keeps it" : "turns it off (064 A3 item 1; ssao depth|normals turns it back on)")}" : "no TacticalShadows on this camera: SSAO runs on the orthographic view as on any other");
             }
             catch (Exception e) { SsaoAsBuilt = "cannot switch: " + e.Message; ssaoSettings = null; }
         }
 
         public void Apply(PerfVariant v)
         {
+            // brief 075 Perf A/B first: the pipeline decides which asset the MSAA and texture switches act on
+            old.Apply(v);
+            if ((!shadows || !fade) && (!string.IsNullOrEmpty(v.ssao) && v.ssao != "on" || v.cascades > 0 || !string.IsNullOrEmpty(v.fade) || v.fadeOff))
+                throw new InvalidOperationException($"Perf: variant `{v.name}` switches SSAO, cascades or the fade, but this camera has no TacticalShadows / ArchitectureFade (the old-built town)");
             string mode = string.IsNullOrEmpty(v.ssao) ? "on" : v.ssao;
             if (mode != "on" && mode != "depth" && mode != "normals" && mode != "off") throw new InvalidOperationException($"Perf: variant `{v.name}` ssao `{mode}`: on, depth, normals or off");
             if (mode != "on" && ssaoSettings == null) throw new InvalidOperationException($"Perf: variant `{v.name}` switches SSAO, but {SsaoAsBuilt}");
@@ -62,13 +75,19 @@ namespace Suborned.Perf
             }
             // brief 064 A3 item 1: as built, TacticalShadows turns SSAO off while the orthographic play camera renders; an explicit depth or
             // normals variant (Redline's every-ssao) brings it back there, so the variant measures the item's saving
-            shadows.orthoSsao = mode is "depth" or "normals";
-            shadows.cascades = v.cascades > 0 ? v.cascades : builtCascades;
+            if (shadows)
+            {
+                shadows.orthoSsao = mode is "depth" or "normals";
+                shadows.cascades = v.cascades > 0 ? v.cascades : builtCascades;
+            }
             data.renderShadows = !v.shadowsOff;
             string f = string.IsNullOrEmpty(v.fade) ? "on" : v.fade;
             if (f != "on" && f != "tile" && f != "reach" && f != "off") throw new InvalidOperationException($"Perf: variant `{v.name}` fade `{f}`: on, tile, reach or off");
-            fade.fade = builtFade && !v.fadeOff && f != "off";
-            fade.wholeTiles = f switch { "tile" => true, "reach" => false, _ => builtWhole };
+            if (fade)
+            {
+                fade.fade = builtFade && !v.fadeOff && f != "off";
+                fade.wholeTiles = f switch { "tile" => true, "reach" => false, _ => builtWhole };
+            }
             if (v.UsesProxies && proxies is not { Count: > 0 }) throw new InvalidOperationException($"Perf: variant `{v.name}` switches shadow proxies, but this scene has none");
             if (proxies != null) proxies.Set(v.proxies == "on" || (v.proxies != "off" && proxies.BuiltOn));
             // brief 072-E: the every-face A/B
@@ -86,5 +105,76 @@ namespace Suborned.Perf
         }
 
         public void Restore() => Apply(new PerfVariant { name = "as built" });
+    }
+
+    /// <summary>Brief 075 Perf A/B (Redline, perf-075ab.json): the switches for the old-built town, each echoed by the report (PerfVariant is
+    /// serialized whole) and each refused on a scene without its target, so a cut is never measured as the build against itself.</summary>
+    sealed class OldTargets
+    {
+        public static readonly string[] CrowdRoots = { "District crowd and traffic", "Southside crowd and traffic" };
+        readonly List<(Renderer r, bool on)> crowd = new();
+        readonly List<(DepthOfField dof, bool active)> dofs = new();
+        readonly LensFlareComponentSRP flare; readonly bool flareOn;
+        readonly RenderPipelineAsset builtPipeline, ours;
+        readonly Dictionary<UniversalRenderPipelineAsset, (int msaa, bool depth, bool opaque)> assets = new();
+        readonly int crowdRoots;
+
+        public OldTargets()
+        {
+            foreach (var name in CrowdRoots)
+            {
+                var root = GameObject.Find(name); if (!root) continue;
+                crowdRoots++;
+                foreach (var r in root.GetComponentsInChildren<Renderer>(true)) crowd.Add((r, r.enabled));
+            }
+            foreach (var vol in UnityEngine.Object.FindObjectsByType<Volume>(FindObjectsInactive.Include))
+                if (vol.sharedProfile && vol.sharedProfile.TryGet<DepthOfField>(out var d) && d.active && d.mode.value != DepthOfFieldMode.Off) dofs.Add((d, d.active));
+            var sun = RenderSettings.sun;
+            if (!sun) foreach (var l in UnityEngine.Object.FindObjectsByType<Light>(FindObjectsInactive.Exclude)) if (l.type == LightType.Directional && l.enabled) { sun = l; break; }
+            if (sun && sun.TryGetComponent(out flare)) flareOn = flare.enabled;
+            builtPipeline = QualitySettings.renderPipeline ? QualitySettings.renderPipeline : GraphicsSettings.defaultRenderPipeline;
+            ours = GraphicsSettings.defaultRenderPipeline;
+            Remember(builtPipeline as UniversalRenderPipelineAsset); Remember(ours as UniversalRenderPipelineAsset);
+        }
+
+        void Remember(UniversalRenderPipelineAsset a) { if (a && !assets.ContainsKey(a)) assets[a] = (a.msaaSampleCount, a.supportsCameraDepthTexture, a.supportsCameraOpaqueTexture); }
+
+        bool HasOldPipeline => builtPipeline && ours && builtPipeline != ours;
+
+        public string Describe() =>
+            $"oldCrowd: {crowdRoots} roots, {crowd.Count} renderers ({crowd.FindAll(c => c.on).Count} on as built); pipeline: built {(builtPipeline ? builtPipeline.name : "none")}, ours {(ours ? ours.name : "none")}{(HasOldPipeline ? "" : " (no old pipeline in this player)")}; " +
+            $"msaa as built {string.Join(", ", ListAssets())}; oldLens: {dofs.Count} DOF overrides, sun flare {(flare ? (flareOn ? "on" : "off") : "none")}";
+
+        IEnumerable<string> ListAssets() { foreach (var kv in assets) yield return $"{kv.Key.name} {kv.Value.msaa}x, depth {kv.Value.depth}, opaque {kv.Value.opaque}"; }
+
+        public void Apply(PerfVariant v)
+        {
+            // pipeline: the quality level's pipeline as built, or ours
+            string p = string.IsNullOrEmpty(v.pipeline) ? "" : v.pipeline;
+            if (p != "" && p != "old" && p != "ours") throw new InvalidOperationException($"Perf: variant `{v.name}` pipeline `{p}`: old or ours");
+            if (p == "old" && !HasOldPipeline) throw new InvalidOperationException($"Perf: variant `{v.name}` asks for the old pipeline, but this player carries none (quality {(builtPipeline ? builtPipeline.name : "none")} = default {(ours ? ours.name : "none")})");
+            if (p == "ours" && !ours) throw new InvalidOperationException($"Perf: variant `{v.name}` asks for our pipeline, but GraphicsSettings has no default pipeline");
+            var want = p == "ours" ? ours : builtPipeline;
+            if (QualitySettings.renderPipeline != want) QualitySettings.renderPipeline = want;
+            var urp = (UniversalRenderPipelineAsset)GraphicsSettings.currentRenderPipeline; Remember(urp);
+            var built = assets[urp];
+            // put every asset back first, then switch the active one
+            foreach (var kv in assets) { kv.Key.msaaSampleCount = kv.Value.msaa; kv.Key.supportsCameraDepthTexture = kv.Value.depth; kv.Key.supportsCameraOpaqueTexture = kv.Value.opaque; }
+            // msaa
+            if (v.msaa != 0 && v.msaa != 1 && v.msaa != 2 && v.msaa != 4 && v.msaa != 8) throw new InvalidOperationException($"Perf: variant `{v.name}` msaa {v.msaa}: 1, 2, 4 or 8");
+            urp.msaaSampleCount = v.msaa > 0 ? v.msaa : built.msaa;
+            // old crowd
+            string c = string.IsNullOrEmpty(v.oldCrowd) ? "" : v.oldCrowd;
+            if (c != "" && c != "on" && c != "off") throw new InvalidOperationException($"Perf: variant `{v.name}` oldCrowd `{c}`: on or off");
+            if (c != "" && crowdRoots == 0) throw new InvalidOperationException($"Perf: variant `{v.name}` switches the old crowd, but this scene has no {string.Join(" / ", CrowdRoots)}");
+            foreach (var (r, on) in crowd) if (r) r.enabled = c == "off" ? false : on;
+            // old lens
+            string l = string.IsNullOrEmpty(v.oldLens) ? "" : v.oldLens;
+            if (l != "" && l != "on" && l != "off") throw new InvalidOperationException($"Perf: variant `{v.name}` oldLens `{l}`: on or off");
+            if (l != "" && dofs.Count == 0 && !flare) throw new InvalidOperationException($"Perf: variant `{v.name}` switches the old lens, but this scene has no depth-of-field override and no sun flare");
+            foreach (var (d, a) in dofs) d.active = l == "off" ? false : a;
+            if (flare) flare.enabled = l == "off" ? false : flareOn;
+            if (l == "off") { urp.supportsCameraDepthTexture = false; urp.supportsCameraOpaqueTexture = false; }
+        }
     }
 }

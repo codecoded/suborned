@@ -126,6 +126,55 @@ namespace Suborned.World.Perf
             return plan;
         }
 
+        /// <summary>Brief 075 Perf A/B (Redline, briefs/075/redline/perf-075ab.json): a spec whose stops are in PLAN coordinates (x, level, y),
+        /// resolved against the open scene. HarbourDistrict: focus (x, level, y), stand-offs by Rig.StandOff on the real rig, as Plan; the
+        /// variants that switch the old town (oldCrowd, oldLens, pipeline old) are dropped from this plan (they refuse to run here). OldTown
+        /// (OldTownSwap's scene): focus (x, level, y + 206) (OldTownSwap.DZ), the "DK street study camera" posed as SwapShots' play views
+        /// (orthographic, pitch 38, the stop's yaw, stand-off 160, far + 1500); no WorldStamp (PerfPlan.NoStamp).</summary>
+        public static PerfPlan Resolve075(string specPath)
+        {
+            var spec = JsonUtility.FromJson<SpecDto>(File.ReadAllText(specPath));
+            if (spec.stops == null || spec.stops.Length == 0 || spec.width <= 0 || spec.height <= 0) throw new InvalidDataException($"Perf: {specPath} needs stops, width and height");
+            var scene = EditorSceneManager.GetActiveScene();
+            if (scene.isDirty) throw new InvalidOperationException("Perf: the scene has unsaved changes");
+            bool old = scene.path == OldTownScene;
+            if (!old && scene.path != HarbourWorldBuilder.ScenePath) throw new InvalidOperationException($"Perf: Resolve075 runs on {HarbourWorldBuilder.ScenePath} or {OldTownScene} (active: {scene.path})");
+            var stops = spec.stops.Select(st => new StopDto { name = st.name, why = st.why, zoom = st.zoom, yaw = st.yaw, speed = st.speed, path = st.path,
+                focus = new[] { st.focus[0], st.focus[1], st.focus[2] + (old ? OldDZ : 0f) } }).ToList();
+            var variants = spec.variants ?? Array.Empty<PerfVariant>(); var passes = spec.passes ?? Array.Empty<PerfPass>();
+            if (!old)
+            {
+                bool OldOnly(PerfVariant v) => !string.IsNullOrEmpty(v.oldCrowd) || !string.IsNullOrEmpty(v.oldLens) || v.pipeline == "old";
+                var dropped = variants.Where(OldOnly).Select(v => v.name).ToHashSet();
+                variants = variants.Where(v => !OldOnly(v)).ToArray();
+                foreach (var ps in passes) ps.variants = (ps.variants ?? Array.Empty<string>()).Where(n => !dropped.Contains(n)).ToArray();
+                if (dropped.Count > 0) Debug.Log($"Perf: Resolve075 on {scene.path}: dropped the old-town variants {string.Join(", ", dropped)}");
+                var plan = Plan(spec, stops, spec.warmup, passes, variants);
+                plan.content = $"{spec.content}; {plan.content}";
+                return plan;
+            }
+            var (kept, stripped, people) = Roots();
+            var cam = GameObject.Find(OldCamera) is { } go && go.TryGetComponent<Camera>(out var c) ? c : throw new InvalidOperationException($"Perf: {OldTownScene} has no `{OldCamera}`");
+            var stamp = UnityEngine.Object.FindAnyObjectByType<WorldStamp>();
+            var res = new PerfPlan
+            {
+                fingerprint = Inspect.Fingerprint(kept), sceneFingerprint = Inspect.Fingerprint(kept), roots = kept.Select(t => t.name).ToArray(), stripped = stripped, people = people,
+                exportSha256 = stamp ? stamp.exportSha256 : PerfPlan.NoStamp, source = stamp ? stamp.source : "OldTownSwap (Editor/OldTown/Swap)", scene = OldTownScene, camera = OldCamera,
+                content = $"{spec.content}; roots built: {string.Join(", ", kept.Select(t => t.name))}; people: none (the old town's baked crowd is world, switched by oldCrowd)",
+                pitch = 38f, yaw = 30f, aspect = (float)spec.width / spec.height, farMargin = 1500f,
+                width = spec.width, height = spec.height, warmup = spec.warmup ?? new PerfWarmup(), passes = passes, variants = variants,
+                stops = stops.Select(st =>
+                {
+                    if (st.path is { Length: > 0 }) throw new InvalidDataException($"Perf: Resolve075 on the old town has no pans (`{st.name}`)");
+                    return new PerfStop { name = st.name, why = st.why, zoom = st.zoom > 0f ? st.zoom : 14f, yaw = st.yaw >= 0f ? Mathf.Repeat(st.yaw, 360f) : -1f, focus = Vec(st.focus, st.name), standOff = OldStandOff };
+                }).ToArray(),
+            };
+            return res;
+        }
+
+        public const string OldTownScene = "Assets/Scenes/OldTown.unity", OldCamera = "DK street study camera";
+        const float OldDZ = 206f, OldStandOff = 160f;
+
         /// <summary>A polyline (flattened [x, y, z] triples) sampled every PathStep metres, its corners kept.</summary>
         static PerfPathPoint[] Sample(PointDto[] points, Func<Vector3, float> standOff)
         {

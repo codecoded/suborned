@@ -20,7 +20,7 @@ namespace Suborned.OldTown.Editor.Swap
     internal static class SwapCut
     {
         static readonly HashSet<string> FlagCats = new() { "Landmarks", "Skyport", "Highrise" };
-        static readonly HashSet<string> FlagPieces = new() { "CornerTower_12", "Tower_Setback", "Tower_Stepped", "Tower_Saucer", "SpaceHQ" };
+        internal static readonly HashSet<string> FlagPieces = new() { "CornerTower_12", "Tower_Setback", "Tower_Stepped", "Tower_Saucer", "SpaceHQ" };
 
         public static void Run(OldTownSwap.Report rep, WorldDto w, SwapOurs ours, SwapNetwork net, string hq)
         {

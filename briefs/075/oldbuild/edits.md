@@ -44,8 +44,9 @@ shaders (only CrowdTest and CitizenLineup use them; the street build doesn't).
 | E6 | shader-name literals `"DecoKit/…"` → `"OldTown/DecoKit/…"` | DecoKitMaterials (3), GroundMesh (2), Harbour, Sky, SkyTraffic, Studio | 9 | our project has its own shaders under the same names (see A1) |
 | E7 | `DecoKitStreetDemo.SceneName` `"DecoKitStreet"` → `"OldTownProof"` | DecoKitStreetDemo | 1 | scene is `Assets/Scenes/OldTownProof.unity` (OpenSaved and Flyby follow) |
 | E8 | the one height parameter: `internal static Func<DecoKitPlacer, string, Piece, Piece> Lower` (null = the old builders as they were); `Of` returns `Lower(p, cls, Raw(p, cls))`, the old switch is now `Raw`; `Crescent` reads `Raw` (the circus crescents keep their height) | DecoKitFrontage | 3 | brief 075 swap, Sky's height rule (OldTownSwap sets it for "rule", clears it after) |
+| E9 | the "no tower here" parameter: `internal static Func<string, string, GameObject, bool> Stands` (null = the old builders as they were); `Build` asks it of each roof-programme piece as placed and destroys the piece when it answers false (`continue`, so the deck's people treat the spot as free) | DecoKitHighrise | 2 | brief 075 swap, Aster 2026-10-29 after Vantage's sightlines.md: the old rule of DecoKitDecks' header ("towers would bury the square") extended to the Handover zone; the rule is `Swap/SwapTowers.cs`, set by OldTownSwap.Build for both heights, cleared after |
 
-No logic, number, colour, material or layout was changed by E1-E7. E8 changes nothing while `Lower` is null (the proof's builds and the swap's "old" heights).
+No logic, number, colour, material or layout was changed by E1-E7. E8 changes nothing while `Lower` is null (the proof's builds and the swap's "old" heights). E9 changes nothing while `Stands` is null (the proof's builds).
 
 ## Art edits (in the git-ignored copy only; our Kit untouched)
 | id | change | files | sites |

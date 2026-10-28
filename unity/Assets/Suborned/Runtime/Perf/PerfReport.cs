@@ -11,6 +11,8 @@ namespace Suborned.Perf
     {
         public string harness = "PerfHarness (brief 008 B6, Redline M1-M8 and item 0)", content, date, error;
         public string unityVersion, build, quality, pipeline, gpuResidentDrawer, commandLine, ssaoAsBuilt;
+        /// <summary>Brief 075 Perf A/B: what the oldCrowd, msaa, oldLens and pipeline switches found in this player (their targets as built).</summary>
+        public string switchesAsBuilt;
         public int screenWidth, screenHeight, renderWidth, renderHeight, memoryMB, proxyRenderers, proxyTriangles;
         public bool proxiesAsBuilt;
         public string fullScreenMode, device, gpu, graphicsApi, cpu, os, missingCounters;

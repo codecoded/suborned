@@ -173,7 +173,7 @@ namespace Suborned.OldTown.Editor.Swap
                 ["schema"] = "latch.oldtown-swap/1", ["scene"] = $"Assets/Scenes/{scene}.unity", ["heights"] = heights, ["spacehq"] = hq,
                 ["export"] = new Dictionary<string, object> { ["source"] = w.Source, ["sha256"] = w.Sha256 },
                 ["log"] = rep.Lines, ["gaveWay"] = rep.GaveWay.ToDictionary(k => k.Key, k => (object)k.Value.ToDictionary(x => x.Key, x => (object)x.Value)),
-                ["gaveWayList"] = rep.GaveWayList, ["census"] = Census,
+                ["gaveWayList"] = rep.GaveWayList, ["census"] = Census, ["towers"] = rep.Towers,
             }));
         }
 

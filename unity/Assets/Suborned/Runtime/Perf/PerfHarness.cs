@@ -72,14 +72,26 @@ namespace Suborned.Perf
             {
                 plan = JsonUtility.FromJson<PerfPlan>(File.ReadAllText(planPath));
                 if (plan?.stops == null || plan.stops.Length == 0) throw new InvalidDataException($"Perf: no stops in {planPath}");
-                cam = Camera.main ? Camera.main : throw new InvalidOperationException("Perf: no main camera (cameras/play)");
-                if (!cam.TryGetComponent(out shadows)) throw new InvalidOperationException("Perf: the play camera has no TacticalShadows");
-                if (!cam.TryGetComponent(out fade)) throw new InvalidOperationException("Perf: the play camera has no ArchitectureFade");
+                if (string.IsNullOrEmpty(plan.camera))
+                {
+                    cam = Camera.main ? Camera.main : throw new InvalidOperationException("Perf: no main camera (cameras/play)");
+                    if (!cam.TryGetComponent(out shadows)) throw new InvalidOperationException("Perf: the play camera has no TacticalShadows");
+                    if (!cam.TryGetComponent(out fade)) throw new InvalidOperationException("Perf: the play camera has no ArchitectureFade");
+                }
+                else
+                {
+                    // brief 075 Perf A/B: a named camera without the play rig (the old-built town's study camera), posed orthographically by Place
+                    var go = GameObject.Find(plan.camera) ?? throw new InvalidOperationException($"Perf: no camera `{plan.camera}` in this scene");
+                    cam = go.TryGetComponent<Camera>(out var c) ? c : throw new InvalidOperationException($"Perf: `{plan.camera}` has no Camera");
+                    foreach (var other in FindObjectsByType<Camera>(FindObjectsInactive.Exclude)) if (other != cam && other.targetTexture == null) other.enabled = false;
+                    cam.enabled = true; cam.orthographic = true; cam.nearClipPlane = 0.3f; cam.useOcclusionCulling = false;
+                    cam.TryGetComponent(out shadows); cam.TryGetComponent(out fade);
+                }
                 var stamp = FindAnyObjectByType<WorldStamp>();
                 report.content = plan.content; report.fingerprint = plan.fingerprint; report.exportSha256 = plan.exportSha256; report.source = plan.source;
                 report.sceneExportSha256 = stamp ? stamp.exportSha256 : "no WorldStamp";
                 report.pitch = plan.pitch; report.yaw = plan.yaw;
-                if (!stamp || stamp.exportSha256 != plan.exportSha256)
+                if (stamp ? stamp.exportSha256 != plan.exportSha256 : plan.exportSha256 != PerfPlan.NoStamp) // the old-built town has no WorldStamp: its plan says so
                     throw new InvalidDataException($"Perf: plan resolved on export {plan.exportSha256}, this player's scene is {report.sceneExportSha256}");
                 report.sceneFingerprint = plan.sceneFingerprint; report.roots = plan.roots; report.stripped = plan.stripped;
                 report.people = FindObjectsByType<Suborned.People.PersonRecord>(FindObjectsInactive.Include).Length;
@@ -97,7 +109,7 @@ namespace Suborned.Perf
                 var proxies = new PerfProxies(); // the scene's baked shadow proxies (ShadowProxy), as built on or off
                 report.proxyRenderers = proxies.Count; report.proxyTriangles = proxies.Triangles; report.proxiesAsBuilt = proxies.BuiltOn;
                 switches = new PerfSwitches(cam, shadows, fade, proxies, FindAnyObjectByType<EveryFace>(FindObjectsInactive.Include));
-                report.ssaoAsBuilt = switches.SsaoAsBuilt;
+                report.ssaoAsBuilt = switches.SsaoAsBuilt; report.switchesAsBuilt = switches.AsBuilt075;
                 nan = new PerfNaN(cam, plan.width, plan.height);
                 drawer = new PerfDrawer();
                 float longest = 0f;
@@ -272,8 +284,8 @@ namespace Suborned.Perf
             cam.transform.SetPositionAndRotation(focus - rot * Vector3.forward * standOff, rot);
             cam.orthographicSize = zoom;
             cam.farClipPlane = standOff + plan.farMargin;
-            shadows.focusDepth = standOff;
-            fade.focus = focus;
+            if (shadows) shadows.focusDepth = standOff;
+            if (fade) fade.focus = focus;
         }
 
         void End(float seconds)

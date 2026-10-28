@@ -17,6 +17,11 @@ namespace Suborned.OldTown.Editor.DecoKit
     {
         const float Inset = .3f, Corner = 6f, Lift = .02f, Lawn = .08f, Bay = 14f;
 
+        /// Brief 075 swap (Latch), edit E9 of the verbatim copy: the "no tower here" parameter. Null (the old builders as they were) or a
+        /// test on each roof-programme piece as placed (block, piece, instance): false = it does not stand (Editor/OldTown/Swap: the towers
+        /// that would bury the Handover zone from the play camera, the old rule of DecoKitDecks' header extended to the zone).
+        internal static System.Func<string, string, GameObject, bool> Stands;
+
         /// Decks, towers and programme for every block; returns spots for people on the decks (world).
         internal static List<Vector3> Build(DecoKitPlacer p, Transform root, IEnumerable<DecoKitBlock> blocks)
         {
@@ -42,6 +47,7 @@ namespace Suborned.OldTown.Editor.DecoKit
                     bool onLawn = q.Lawns.Any(l => it.U > l.u0 && it.U < l.u1 && it.V > l.v0 && it.V < l.v1);
                     var go = p.Put(it.Asset, b.At(it.U, it.V) + Vector3.up * (y + Lift + (onLawn ? Lawn : 0f)), b.Phi + it.Yaw,
                                    scale: it.Scale);
+                    if (go && Stands != null && !Stands(b.Name, it.Asset, go)) { Object.DestroyImmediate(go); continue; }
                     if (go) placed.Add((go.transform, Foot(go, 2.5f)));
                 }
                 people.AddRange(People(b, holes, placed, y + Lift));

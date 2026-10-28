@@ -301,7 +301,7 @@ namespace Suborned.World.Review
 
         // ---------------------------------------------------------------- 2. counts
 
-        sealed class Cascade { public int casters; public long tris; public int variants; public float radius; }
+        sealed class Cascade { public int casters, draws; public long tris; public int variants; public float radius; }  // draws (075ab): caster sub-meshes, no batching
 
         sealed class Count
         {
@@ -444,7 +444,7 @@ namespace Suborned.World.Review
                     var d = b.center - centre; float along = Vector3.Dot(d, lightDir); var across = d - along * lightDir; float reach = b.extents.magnitude;
                     if (across.magnitude > sphere.w + reach || along - reach > sphere.w) continue;
                     cs.casters++; unique.Add(r);
-                    var t = Tris(r, meshTris); foreach (var x in t) cs.tris += x;
+                    var t = Tris(r, meshTris); foreach (var x in t) cs.tris += x; cs.draws += t.Length;
                     foreach (var m in r.sharedMaterials) if (m && m.shader) vars.Add(Variant(m, new[] { "_ALPHATEST_ON" }));
                 }
                 cs.variants = vars.Count; allVariants += vars.Count;

@@ -50,6 +50,8 @@ namespace Suborned.OldTown.Editor.Swap
         public static void Shoot() => Batch(() => WithOldSettings(SwapShots.Run));
         public static void Flyby() => Batch(() => WithOldSettings(SwapShots.Flyby));
         public static void Verify() => Batch(SwapVerify.Run);
+        /// <summary>Brief 075 Perf A/B item A (SwapPerf): -abScene OldTown|HarbourDistrict, -abPipeline old|ours (OldTown; old = inside WithOldSettings).</summary>
+        public static void PerfAB() => Batch(() => { if (Arg("abScene", "OldTown") == "OldTown" && Arg("abPipeline", "old") == "old") WithOldSettings(SwapPerf.Run); else SwapPerf.Run(); });
 
         static void Batch(Action body)
         {
@@ -105,6 +107,7 @@ namespace Suborned.OldTown.Editor.Swap
             public readonly List<string> Lines = new();
             public readonly Dictionary<string, Dictionary<string, int>> GaveWay = new();  // reason -> piece -> count
             public readonly List<object> GaveWayList = new();
+            public readonly List<object> Towers = new();  // SwapTowers: every roof-programme tower tested, standing or not
             public void Log(string s) { Lines.Add(s); Debug.Log("[Swap] " + s); }
             public void Gave(string reason, string piece, Vector3 at, string by)
             {
@@ -131,6 +134,7 @@ namespace Suborned.OldTown.Editor.Swap
             rep.Log($"export {Path.GetRelativePath(Repo, worldPath)} sha256 {world.Sha256} ({world.Source}); heights {heights}; SpaceHQ {hq}; scene Assets/Scenes/{scene}.unity; ours from {oursScene}");
 
             DecoKitFrontage.Lower = heights == "rule" ? Rule : null;
+            DecoKitHighrise.Stands = SwapTowers.Rule(rep, rep.Towers);  // both height settings: no roof tower where it buries the Handover zone
             try
             {
                 // ---- 1. the old builders, in DecoKitStreetDemo.Build's order (its private tunables read by reflection, so they stay the old ones)
@@ -219,7 +223,7 @@ namespace Suborned.OldTown.Editor.Swap
                 rep.Log($"built Assets/Scenes/{scene}.unity in {(DateTime.UtcNow - t0).TotalSeconds:0} s");
                 SwapExport.WriteReport(rep, Path.Combine(outDir, $"swap-{heights}.json"), heights, hq, scene, world);
             }
-            finally { DecoKitFrontage.Lower = null; }
+            finally { DecoKitFrontage.Lower = null; DecoKitHighrise.Stands = null; }
         }
 
         /// <summary>DecoKitRoadMarkings paints the zebras into the one "Road markings" mesh with the dashes: a stripe is a 3 x 0.5 m quad (1.5 m²),

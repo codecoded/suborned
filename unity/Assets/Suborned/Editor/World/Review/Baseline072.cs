@@ -330,7 +330,9 @@ namespace Suborned.World.Review
                 if (!g.enabled) continue;
                 var lods = g.GetLODs(); if (lods.Length == 0) continue;
                 var s = g.transform.lossyScale; float size = g.size * Mathf.Max(Mathf.Abs(s.x), Mathf.Abs(s.y), Mathf.Abs(s.z));
-                float rel = size / (2f * cam.orthographicSize) * QualitySettings.lodBias;
+                // brief 075ab: a perspective camera (golden, street) picks by distance to the group's reference point, as Unity does
+                float rel = (cam.orthographic ? size / (2f * cam.orthographicSize)
+                    : size / (2f * Mathf.Max(0.01f, Vector3.Distance(cam.transform.position, g.transform.TransformPoint(g.localReferencePoint))) * Mathf.Tan(0.5f * cam.fieldOfView * Mathf.Deg2Rad))) * QualitySettings.lodBias;
                 int pick = -1; for (int i = 0; i < lods.Length; i++) if (rel >= lods[i].screenRelativeTransitionHeight) { pick = i; break; }
                 for (int i = 0; i < lods.Length; i++) foreach (var r in lods[i].renderers) if (r) { if (i != pick) pickedOut.Add(r); else { pickedOut.Remove(r); lodOf[r] = i; } }
             }

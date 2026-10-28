@@ -11,6 +11,11 @@ namespace Suborned.Perf
     public sealed class PerfPlan
     {
         public string fingerprint, exportSha256, source, scene, content;
+        /// <summary>Brief 075 Perf A/B: the camera the harness drives, by GameObject name; "" = Camera.main (cameras/play, the real rig).
+        /// The old-built town has no play rig: its "DK street study camera" is posed orthographically at a fixed stand-off (SwapShots' pose).</summary>
+        public string camera = "";
+        /// <summary>exportSha256 of a scene without a WorldStamp (the old-built town).</summary>
+        public const string NoStamp = "no WorldStamp";
         /// <summary>Perf honesty (Redline 2026-10-15 M3): `fingerprint` is the world's (root, batches, cameras: the builder's log);
         /// sceneFingerprint covers every scene root the player is built with, sorted by name (`roots`); `stripped` names the roots
         /// the perf build left out (PerfStrip), with what they held; `people` is the person capsules built into the player, which
@@ -68,12 +73,20 @@ namespace Suborned.Perf
         /// array and the DecoKit detail slots (kit rows and builder Look rows) skipped at runtime by the global _SubornedSurfaceDetailOff
         /// (LookLab): same materials, same variants; measures the fetches and their ALU, not a different build. "" = as built (on).</summary>
         public string surfaceDetail = "";
+        /// <summary>Brief 075 Perf A/B (Redline, perf-075ab.json), each "" (or 0) = as built, each refused on a scene without its target:
+        /// oldCrowd "on" | "off" = renderers under the old town's baked glTF crowd roots (District / Southside crowd and traffic) on or off;
+        /// msaa 1 | 2 | 4 | 8 = the active pipeline asset's msaaSampleCount; oldLens "on" | "off" = the old town's Gaussian DOF (scene volumes)
+        /// and the sun's LensFlareComponentSRP, and the asset's depth and opaque textures always (on) or by request (off); pipeline
+        /// "old" | "ours" = QualitySettings.renderPipeline: the player's quality-level pipeline as built (the old PC_RPAsset in the old-town
+        /// player) or the project's own (GraphicsSettings.defaultRenderPipeline). All four are serialized, so the report's variants echo them.</summary>
+        public string oldCrowd = "", oldLens = "", pipeline = "";
+        public int msaa;
         public int cascades;
         public bool shadowsOff, fadeOff;
 
         public bool UsesProxies => proxies == "on" || proxies == "off";
 
-        public string Describe() => $"ssao {(string.IsNullOrEmpty(ssao) ? "as built" : ssao)}, cascades {(cascades > 0 ? cascades.ToString() : "as built")}, shadows {(shadowsOff ? "off" : "on")}, fade {(fadeOff ? "off" : string.IsNullOrEmpty(fade) ? "as built" : fade)}, proxies {(string.IsNullOrEmpty(proxies) ? "as built" : proxies)}, every face {(string.IsNullOrEmpty(everyFace) ? "as built" : everyFace)}, module shadows {(string.IsNullOrEmpty(moduleShadows) ? "as built" : moduleShadows)}, surface detail {(string.IsNullOrEmpty(surfaceDetail) ? "as built" : surfaceDetail)}";
+        public string Describe() => $"ssao {(string.IsNullOrEmpty(ssao) ? "as built" : ssao)}, cascades {(cascades > 0 ? cascades.ToString() : "as built")}, shadows {(shadowsOff ? "off" : "on")}, fade {(fadeOff ? "off" : string.IsNullOrEmpty(fade) ? "as built" : fade)}, proxies {(string.IsNullOrEmpty(proxies) ? "as built" : proxies)}, every face {(string.IsNullOrEmpty(everyFace) ? "as built" : everyFace)}, module shadows {(string.IsNullOrEmpty(moduleShadows) ? "as built" : moduleShadows)}, surface detail {(string.IsNullOrEmpty(surfaceDetail) ? "as built" : surfaceDetail)}, old crowd {(string.IsNullOrEmpty(oldCrowd) ? "as built" : oldCrowd)}, msaa {(msaa > 0 ? msaa.ToString() : "as built")}, old lens {(string.IsNullOrEmpty(oldLens) ? "as built" : oldLens)}, pipeline {(string.IsNullOrEmpty(pipeline) ? "as built" : pipeline)}";
     }
 
     [Serializable]
