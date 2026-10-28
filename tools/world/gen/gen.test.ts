@@ -1,6 +1,7 @@
 // Checks on the generated world: the brief's five (no primary frontage, nothing under a megastructure, every deck has its
 // connectors, the café and office keep their size, byte-identical reruns) and the roof and cap rules the generators follow.
 import { expect, setDefaultTimeout, test } from 'bun:test';
+import { THEME_BY_NAME } from './roofline';
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import type { World } from '../../../contracts/world/world.schema';
@@ -82,6 +83,7 @@ test('café and Records Office keep their size', () => {
 test('heights follow H(n) and the area caps; every roof has a programme that fits', () => {
   const B = plan.standards.buildings, kit = B.roofs.kit.programmes;
   for (const r of w.roofs) {
+    if (r.programme === 'roofline') { for (const p of r.plots!) { const t = THEME_BY_NAME.get(p.theme)!; expect(p.size[0] >= t.minL - 1e-6 && p.size[1] >= t.minD - 1e-6, `${p.id} ${p.theme}`).toBe(true); } continue; } // brief 075 remap: the old roofline fits plot by plot (roofline.ts RL-2)
     expect(B.roofs.programmes).toContain(r.programme);
     if (r.form === 'terrace') continue;
     const [mw, md] = kit[r.programme].minRoof as [number, number], [W, D] = r.size;

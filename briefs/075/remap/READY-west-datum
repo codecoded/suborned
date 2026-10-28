@@ -1,0 +1,5 @@
+Datum 2026-10-28: remap follow-up, West Row: the strip west of Sunset Way (the first remap's beyond hatch, drawn as bare sand) laid as an access street off Circus Road (gate west-row-gate), 4 lanes and 10 old-grammar blocks; Western Park runs on to Crown Road. Handover zone untouched.
+plan contracts/world/harbour-district.plan.json v0.5.1 sha256 7cd629d8c21167169104ee8ba4235be54fa2a65ac455713d3e7a1feaa1de45d7 (= harbour-district.oldtown.plan.json); reproducible: bun tools/plan/oldtown/transcribe.ts --out contracts/world/harbour-district.plan.json (byte-identical, Pulse's journeys kept)
+bun tools/plan/cli.ts exit 0 (144 PASS) · --overlay tools/missions/handover/overlay.ts exit 0 (149 PASS, V-1 64/65, M-1 447/1124/126/593 = HEAD)
+pins to move: kerb-return.test.ts KR-1 69 -> 73 (Splice); quiet.test.ts + sim/data/handover.takedown.json id counters +1 (Splice; Keel bun run sim:site)
+notes: briefs/075/notes.md "Remap: Southside west"

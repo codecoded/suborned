@@ -1,0 +1,6 @@
+brief 075 remap rooftops (Splice-roofs) 2026-10-29
+tools/world/gen/roofline.ts (RL-1..RL-4) + tools/world/gen/roofs.ts oldRoof; Roof.plots/kits in contracts/world/world.schema.ts; SF-15 + K-1 extended.
+export sha256 bf1d4143360bce06... (bun run world twice, identical); plan 0 FAIL with and without the Handover overlay; cover + cover --check ok.
+counts (240 roofs, roofline off -> on): masts 164 -> 11 (4 Handover zone, 7 hero), pools 1 -> 22, gardens 26 -> 53, cafes 0 -> 39, sun decks 0 -> 36.
+sim:site: takedown ids shifted (street counter, not roofs: street[] identical with roofline off); missions:check handover --inputs tree SHIPS (893 plays).
+Latch: draw roofs[].kits[] (z per piece) in RoofKit.cs, then rebuild. Notes: briefs/075/notes.md "Remap: roofs".

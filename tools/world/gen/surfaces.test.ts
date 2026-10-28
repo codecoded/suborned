@@ -78,7 +78,7 @@ test('every phone booth draws `booth` and every street palm tub `tub`; roof tubs
   expect(tubs.length).toBe(198); for (const s of tubs) expect(s.surface, s.id).toBe(TUB);
   expect(withKey(TUB).length).toBe(198); // nothing else in the world: not the 418 roof tubs
   const roofTubs = w.roofs.flatMap(r => r.parts).filter(p => /\/(tub|palm)-\d+$/.test(p.id));
-  expect(roofTubs.length).toBe((w.facades.some(f => f.form === 'side') ? 394 : 418) * 2); // brief 075 (the old buildings): 394, the plan's old blocks' roofs; was 430, the boulevard's old storey codes (oldstreet.ts) re-height its walls and three roofs lose a tub; was 433 (brief 072-C: 433 roof tubs on the plain tiers the every-face kit stands on)
+  expect(roofTubs.length).toBe((w.facades.some(f => f.form === 'side') ? 385 : 418) * 2); // brief 075 remap (rooftops): 385, the roof-garden programme's tubs stay on the Handover zone's roofs and the terraces, the rest take the old roofline's kit pieces; was 394, the plan's old blocks' roofs; was 430, the boulevard's old storey codes (oldstreet.ts) re-height its walls and three roofs lose a tub; was 433 (brief 072-C: 433 roof tubs on the plain tiers the every-face kit stands on)
   for (const p of roofTubs) expect(p.surface, p.id).toBe('trim');
 });
 

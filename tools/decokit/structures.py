@@ -176,6 +176,9 @@ def deco_pavilion(s):
     top = fillet([(2.95, 0), (2.95, 5.2), (1.95, 5.2), (1.95, 6.45), (1.2, 6.45), (1.2, 7.05), (0.62, 7.05),
                   (0.62, 7.4), (-0.62, 7.4), (-0.62, 7.05), (-1.2, 7.05), (-1.2, 6.45), (-1.95, 6.45), (-1.95, 5.2),
                   (-2.95, 5.2), (-2.95, 0)], 0.28, n=6, closed=False)
+    # brief 075 remap (Vela): the 0.35 m step at x +-0.62 takes two 0.28 fillets that meet at its middle; the doubled point there made the bevel emit 4 NaN vertices
+    # (the manifest read the piece 2.3 m deep, the collapse LODs stalled). Drop a point that repeats its predecessor: the outline is unchanged.
+    top = [p for i, p in enumerate(top) if i == 0 or math.dist(p, top[i - 1]) > 1e-6]
     screen = top + [(-RO, 0)] + arc(0, SP, RO, 180, 0, 24) + [(RO, 0)]
     with s.at((0, YF, 0), FRONT):
         soft_extrude(s, screen, -(YB - YF), 0, pal.Enamel_Ivory, 0.12)

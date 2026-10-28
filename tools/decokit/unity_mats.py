@@ -14,7 +14,7 @@ from pathlib import Path
 
 LIT = "2529b42165e1d45a8bcfb0013bb5aba3"       # the shader guid every kit .mat uses (Complex Lit for enamel: 206122...)
 COMPLEX = "206122040e60d470e92cddeccf1aacf6"
-SUPPORTED = ("enamel", "metal", "brass", "emit", "ceramic", "stone", "chrome", "rubber", "roadmetal")
+SUPPORTED = ("enamel", "metal", "brass", "emit", "ceramic", "stone", "chrome", "rubber", "roadmetal", "roadpaint")
 
 
 def legacy_roots():

@@ -65,7 +65,7 @@ describe('the takedown places of the civic block', () => {
     const placed = t.report.filter(r => /^street\/civic\/call-box-\d+$/.test(r.id));
     expect(placed.length).toBeGreaterThanOrEqual(3);
     expect(placed.length).toBeLessThanOrEqual(8); // Pulse measured 7 from the doors alone; the street's own booths take some
-    expect(t.origins.filter(o => o.kind === 'dock').map(o => o.id)).toEqual(['street/records-square/civic-robot-dock-165']);
+    expect(t.origins.filter(o => o.kind === 'dock').map(o => o.id)).toEqual(['street/records-square/civic-robot-dock-166']); // the counter only (2026-10-29: Datum's Southside west plots lay one more street item before the takedown; -165 before)
     expect(t.origins.filter(o => o.door).map(o => o.door)).toEqual(['office-entrance', 'official-entrance']); // the Records Office's doors are posts
     expect(t.coverage.report.within).toBe(1000);
     expect(t.coverage.origin.within).toBe(1000);

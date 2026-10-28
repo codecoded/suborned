@@ -2,7 +2,7 @@
  "schema": "suborned.plan/1",
  "id": "harbour-district",
  "name": "Harbour District",
- "version": "0.5.0",
+ "version": "0.5.2",
  "date": "2026-10-28",
  "status": "brief 075 remap (Sky 2026-10-28: \"why can't we just remap the world around d handover using old buildings\"): the old DecoKit town transcribed by tools/plan/oldtown/transcribe.ts from /Users/sky/Projects/the-suborned/game/Assets/TheSuborned/Editor/DecoKit (sources sha256 in oldtown.sources), the Handover zone kept byte for byte. transit from A04 run r008, accepted; world program brief 004; skyline and threaded sky rail brief 007 A; skyline text (why, crownWhy, conceptTiles, station kitWhy) from skyline run r011, accepted; play-street height cap brief 066 (Sky 2026-10-26)",
  "frame": {
@@ -129,12 +129,24 @@
     "icon": "skyport-tower",
     "tip": 108,
     "within": 150,
-    "why": "the Skyport Tower stays the harbour's icon (brief 007 Fixed): nothing standing within 150 m of the quay edge (x 312) tops 108; the rival spires stand inland, north of Crown Circus"
+    "why": "the Skyport Tower stays the harbour's icon (brief 007 Fixed): nothing standing within 150 m of the quay edge (SK-1 takes the quay's westmost point, x 46 in the remap) tops 108, save the exceptions below",
+    "exceptions": [
+     {
+      "id": "disc-west",
+      "tip": 156.8
+     },
+     {
+      "id": "disc-east",
+      "tip": 156.8
+     }
+    ],
+    "exceptionsWhy": "brief 075 remap (Aster, under Sky's scope: only the Handover is protected): the Crown Avenue gate towers stand as the old reel stood them, the kit DiscTower × 1.0 (156.6 on the 0.2 landmark base, tip 156.8), not a × 0.69 stand-in the fit rejects (tags.scale 0.9–1.1). In the remap the quay runs to x 46, so the 150 m band reaches x −104 and takes the whole axis; the pair stands inland of the harbour front at (±44, 166), under rivalMax 200 and under the dominant. Scoped to these two landmarks only; every other tip within the band keeps 108. Bends GDD §10's harbour line for this pair: the note goes in the next GDD version (Aster)"
    },
    "tiers": [
     "dominant 252: space-hq (signatures)",
     "vista 250: crown-vista (landmarks: the gold banded tower closing the Boulevard and Crown Avenue axis past the sheet edge, brief 075 golden vista 2; standards.skyline.vista; today the DiscTower@crown-vista × 1.1 at 172.4 stands until Vela's regen)",
     "rival spires 120–200: avenue-starburst 194.3, avenue-needle 167.8, avenue-gate-w / -e 165.6 (DiscTower pair + SkyBridge), crescent-terrace 122.7",
+    "gate pair 156.8: disc-west / disc-east (landmarks, the kit DiscTower × 1.0 either side of Crown Avenue at (±44, 166); standards.skyline.harbour.exceptions)",
     "harbour icon 108: skyport-tower; under it on the water liner-berth 103.7 (its terminal tower) and the ocean-liner 34.0 alongside, and the harbour front (harbour-hotel 106, crescent-tower 99.4, parade gates 75)",
     "marks 80–106: skylon 100, sphere 80, lantern-beacon 86.1",
     "street wall 20–50: H(4)–H(12), every building ≥ 9 storeys crowned (grammar §6)"
@@ -913,7 +925,17 @@
     "ss3",
     "ss4",
     "lantern-west",
-    "lantern-south"
+    "lantern-south",
+    "west-row-w1",
+    "west-row-e1",
+    "west-row-w2",
+    "west-row-e2",
+    "west-row-w3",
+    "west-row-e3",
+    "west-row-w4",
+    "west-row-e4",
+    "west-row-w5",
+    "west-row-e5"
    ],
    "exempt": {
     "garden-row-east": "handover: inside the Handover zone",
@@ -1974,6 +1996,19 @@
      "soda-fountain": 8
     },
     "southside": {
+     "lobby": 22,
+     "soda-fountain": 10,
+     "florist": 8,
+     "diner": 10,
+     "automat": 6,
+     "record-shop": 8,
+     "grocer": 10,
+     "cinema": 6,
+     "hotel-lobby": 6,
+     "launderette": 6,
+     "beauty-salon": 8
+    },
+    "westrow": {
      "lobby": 22,
      "soda-fountain": 10,
      "florist": 8,
@@ -3228,7 +3263,7 @@
     "source": "brief 026/028 (Sky 2026-10-20: the 2.5D testbed's road, finish B, Vela's briefs/026/vela/testbed-vs-now.html) · testbed civic-road-guides.js (ribbon lip 0.048–0.080, lens 0.064–0.12 from the kerb face, warm #ffe6b5, auto/on/off), civic-road-finish.js (markerSpacing 8.5, panelSpacing 9), civic-roads.js (lozenges on the carriageway's middle line, 4.6 m chrome seams across it, no zebra) · Vela's pieces tools/decokit/road_ribbon.py (lens 0.12 between 0.02 brass hairlines, 1.0 pool) · GDD §15 design test (light set in the road, never paint)",
     "rule": "The carriageway is drawn by light and stone, never paint. Rules the generator applies per carriageway (kerb face to kerb face, or kerb to a median or reservation kerb), seeded by road id; nothing is placed item by item. Order: finish → ribbons along every kerb face → breaks cut → lozenges on the middle line → seams across. Anything that does not fit is dropped, never squeezed (SF-6).",
     "finish": {
-     "set": "enamel",
+     "set": "asphalt",
      "sets": {
       "enamel": {
        "byClass": {
@@ -3250,10 +3285,9 @@
        },
        "marks": "lanes",
        "drop": [
-        "ribbon",
         "shoulder"
        ],
-       "why": "brief 055 road test, clean variant (Vela 2026-10-24; Sky on the first board: 'soooo messy'): the old city's dark road with a few clean white lines, as the flyby still draws it (briefs/028/palm/ref-flyby-boulevard-old-city.png). Only the pearl kerb beside the road: no light ribbon (it read as one more bright line beside the dashes; drop `ribbon` from this list to bring it back), no pearl shoulder band, no white edge lines (the first try stacked 4-5 parallel stripes along every kerb). The lozenges and seams give way to roads.marks (one dashed centre line; thinner dashed dividers only on the roads roads.marks.lanes names). Not the default: switch with finish.set (or the export's --road-finish asphalt)"
+       "why": "brief 075 review (Sky 2026-10-28: the old asphalt road back, overriding 'keep powdblue'; Vela ported the old DK_Asphalt_Road): the old city's dark road with a few clean white lines (roads.marks: one dashed centre line, dividers only where roads.marks.lanes names a road), the pearl kerb, and the light ribbon at the kerb face, which GDD §14 (Datum: every road class carries the light ribbon) and §15 keep on every class: so a gate's lane mouth keeps its strip straight on (SF-24) and nothing is loosened. No pearl shoulder band, no white edge lines. Was (brief 055 road test): ribbon dropped too, as one more bright line beside the dashes; the old road had none, so dropping it again is Sky's call through Aster with a GDD change, then SF-24 reads the set (notes \"Remap: Skyport and reach\")"
       }
      },
      "setNote": "`set` is the one switch: 'enamel' (the base: byClass below, pearl lozenges and chrome seams) or a name in `sets`. A set lists its own byClass and its `marks` ('lozenges' | 'lanes'); everything else (kerb, shoulder, ribbon, breaks) is shared. tools/plan/finish-set.ts reads it for the checker, the export and the generator.",
@@ -3272,10 +3306,10 @@
       },
       "road-asphalt": {
        "material": "DK_Ground_RoadAsphalt",
-       "hex": "#505359",
-       "tile": 4,
+       "hex": "#817B75",
+       "tile": 16,
        "surface": "road-asphalt",
-       "why": "brief 055 road test: a made sheet (tools/decokit/road_tex.py asphalt()): slate binder, three sizes of aggregate in the city's stone colours, worn and tar-sealed patches, slightly glossy where polished; dark enough to carry white lines, cool slate so it is not grey-black mud against the cream and peach"
+       "why": "brief 075 review (Sky 2026-10-28: the old asphalt road back): the old DecoKit DK_Asphalt_Road, ported byte for byte by Vela (tools/decokit/road_tex.py asphalt(), road_ribbon.py DK_Ground_RoadAsphalt: the old asphalt_road_v1 sheet and normal, smoothness .28, no mask); hex = the sheet's mean (look.json harbour.road-asphalt); tile 16 = the sheet's repeat in metres, the old .mat's 16 m (look.json road-asphalt tile 1 = UV in world metres, the repeat lives in the material). Was (brief 055 road test): a made slate sheet, #505359, tile 4"
       },
       "asphalt": {
        "material": "DK_Ground_Asphalt",
@@ -3535,9 +3569,10 @@
      "dash": {
       "length": 2,
       "spacing": 6,
-      "width": 0.2,
+      "width": 0.12,
       "dividerWidth": 0.12,
-      "on": "the centre line (the road line) of every UNDIVIDED carriageway (no median, no reservation): the access roads, 12 and 13 m, two ways, 0.2 m wide; and each lane divider below, 0.12 m wide"
+      "on": "the centre line (the road line) of every UNDIVIDED carriageway (no median, no reservation): the access roads, 12 and 13 m, two ways, 0.12 m wide; and each lane divider below, as wide",
+      "why": "brief 075 review: the old reel's dashes (DecoKit road paint DK_Road_Paint #E8E2D2, matte): 0.12 m wide, 2 m on and 4 m off (length 2, spacing 6 = the pitch, centre to centre); was 0.2 m centre lines (brief 055)"
      },
      "edgeOff": {
       "offset": 1.25,
@@ -3891,6 +3926,14 @@
   "l_se": [
    -100,
    -120
+  ],
+  "w_row": [
+   -416,
+   0
+  ],
+  "w_row_s": [
+   -416,
+   -548
   ]
  },
  "links": [
@@ -4085,6 +4128,7 @@
    "median": 6,
    "path": [
     "off_circus_west",
+    "w_row",
     "w_circus",
     "g_lamp_w",
     "c_end"
@@ -4192,6 +4236,17 @@
     "e_se",
     "g_satellite"
    ]
+  },
+  {
+   "id": "west-row",
+   "name": "West Row",
+   "class": "access",
+   "w": 12,
+   "path": [
+    "w_row",
+    "w_row_s"
+   ],
+   "why": "the strip west of Sunset Way (old: procedural massing, DecoKitCityMass) reached from Circus Road (district), its only distributor that does not run along a primary: x -416 puts a 28 m block on the sheet-edge side and the deepest grammar block on Sunset Way's; it ends at the district's south plot line (y -548), as Crown Avenue ends at its forecourt"
   }
  ],
  "gates": [
@@ -4257,6 +4312,13 @@
    "node": "g_lamp_w",
    "road": "lamplight-lane",
    "area": "lamplight"
+  },
+  {
+   "id": "west-row-gate",
+   "name": "West Row",
+   "node": "w_row",
+   "road": "west-row",
+   "area": "westrow"
   }
  ],
  "areas": [
@@ -4299,7 +4361,7 @@
    "id": "westend",
    "name": "West Terraces",
    "rect": [
-    -460,
+    -352,
     -157,
     -126,
     -9
@@ -4327,7 +4389,7 @@
    "id": "sphere",
    "name": "Sphere Park",
    "rect": [
-    -460,
+    -352,
     -54,
     9,
     300
@@ -4409,6 +4471,20 @@
    "size": 7,
    "securityBase": 1,
    "securityWhy": "A working quarter: routine (S1). The response dial's base level for the area (GDD v0.23 §05; briefs/013/motive-takedowns.md §5.3, Sky 2026-10-16: harbour 1)."
+  },
+  {
+   "id": "westrow",
+   "name": "West Row",
+   "rect": [
+    -460,
+    -352,
+    -548,
+    268
+   ],
+   "label": [
+    -406,
+    -300
+   ]
   }
  ],
  "plots": [
@@ -4802,21 +4878,21 @@
   {
    "id": "western-park-n",
    "use": "park",
-   "area": "sphere",
+   "area": "westrow",
    "rect": [
     -460,
     -352,
     9,
-    60
+    268
    ],
-   "name": "Western Park"
+   "name": "Western Park (run on north to Crown Road)"
   },
   {
    "id": "western-park-s",
    "use": "park",
-   "area": "westend",
+   "area": "westrow",
    "rect": [
-    -460,
+    -410,
     -352,
     -60,
     -9
@@ -4975,6 +5051,126 @@
     204
    ],
    "name": "Crown Forecourt"
+  },
+  {
+   "id": "west-row-w1",
+   "use": "residential",
+   "area": "westrow",
+   "rect": [
+    -460,
+    -422,
+    -548,
+    -436
+   ],
+   "name": "West Row west 1"
+  },
+  {
+   "id": "west-row-e1",
+   "use": "mixed",
+   "area": "westrow",
+   "rect": [
+    -410,
+    -352,
+    -548,
+    -436
+   ],
+   "name": "West Row east 1 (Sunset Way)"
+  },
+  {
+   "id": "west-row-w2",
+   "use": "residential",
+   "area": "westrow",
+   "rect": [
+    -460,
+    -422,
+    -428,
+    -316
+   ],
+   "name": "West Row west 2"
+  },
+  {
+   "id": "west-row-e2",
+   "use": "mixed",
+   "area": "westrow",
+   "rect": [
+    -410,
+    -352,
+    -428,
+    -316
+   ],
+   "name": "West Row east 2 (Sunset Way)"
+  },
+  {
+   "id": "west-row-w3",
+   "use": "residential",
+   "area": "westrow",
+   "rect": [
+    -460,
+    -422,
+    -308,
+    -196
+   ],
+   "name": "West Row west 3"
+  },
+  {
+   "id": "west-row-e3",
+   "use": "mixed",
+   "area": "westrow",
+   "rect": [
+    -410,
+    -352,
+    -308,
+    -196
+   ],
+   "name": "West Row east 3 (Sunset Way)"
+  },
+  {
+   "id": "west-row-w4",
+   "use": "residential",
+   "area": "westrow",
+   "rect": [
+    -460,
+    -422,
+    -188,
+    -130
+   ],
+   "name": "West Row west 4"
+  },
+  {
+   "id": "west-row-e4",
+   "use": "mixed",
+   "area": "westrow",
+   "rect": [
+    -410,
+    -352,
+    -188,
+    -130
+   ],
+   "name": "West Row east 4 (Sunset Way)"
+  },
+  {
+   "id": "west-row-w5",
+   "use": "residential",
+   "area": "westrow",
+   "rect": [
+    -460,
+    -422,
+    -122,
+    -9
+   ],
+   "name": "West Row west 5"
+  },
+  {
+   "id": "west-row-e5",
+   "use": "mixed",
+   "area": "westrow",
+   "rect": [
+    -410,
+    -352,
+    -122,
+    -60
+   ],
+   "name": "West Row east 5 (Sunset Way)"
   }
  ],
  "blocks": [
@@ -7052,6 +7248,1176 @@
      -502.5
     ]
    ]
+  },
+  {
+   "id": "west-row-w1",
+   "plot": "west-row-w1",
+   "kind": "perimeter",
+   "rect": [
+    -456.5,
+    -428.5,
+    -548,
+    -436
+   ],
+   "depth": 14,
+   "court": "solid",
+   "runs": [
+    {
+     "face": "w",
+     "a": [
+      -456.5,
+      -548
+     ],
+     "b": [
+      -456.5,
+      -436
+     ],
+     "n": [
+      -1,
+      0
+     ],
+     "faces": "none",
+     "caps": [
+      "corner",
+      "corner"
+     ],
+     "bays": 16
+    },
+    {
+     "face": "e",
+     "a": [
+      -428.5,
+      -548
+     ],
+     "b": [
+      -428.5,
+      -436
+     ],
+     "n": [
+      1,
+      0
+     ],
+     "faces": "access:west-row",
+     "caps": [
+      "corner",
+      "corner"
+     ],
+     "bays": 16
+    },
+    {
+     "face": "s",
+     "a": [
+      -456.5,
+      -548
+     ],
+     "b": [
+      -428.5,
+      -548
+     ],
+     "n": [
+      0,
+      -1
+     ],
+     "faces": "none",
+     "caps": [
+      "corner",
+      "corner"
+     ],
+     "bays": 2
+    },
+    {
+     "face": "n",
+     "a": [
+      -456.5,
+      -436
+     ],
+     "b": [
+      -428.5,
+      -436
+     ],
+     "n": [
+      0,
+      1
+     ],
+     "faces": "walk:west-row-lane-1",
+     "caps": [
+      "corner",
+      "corner"
+     ],
+     "bays": 2
+    }
+   ],
+   "corners": [
+    [
+     -456.5,
+     -548
+    ],
+    [
+     -456.5,
+     -436
+    ],
+    [
+     -428.5,
+     -548
+    ],
+    [
+     -428.5,
+     -436
+    ]
+   ]
+  },
+  {
+   "id": "west-row-e1",
+   "plot": "west-row-e1",
+   "kind": "perimeter",
+   "rect": [
+    -403,
+    -357,
+    -548,
+    -436
+   ],
+   "depth": 14,
+   "court": "open",
+   "runs": [
+    {
+     "face": "w",
+     "a": [
+      -403,
+      -548
+     ],
+     "b": [
+      -403,
+      -436
+     ],
+     "n": [
+      -1,
+      0
+     ],
+     "faces": "access:west-row",
+     "caps": [
+      "corner",
+      "corner"
+     ],
+     "bays": 16
+    },
+    {
+     "face": "e",
+     "a": [
+      -357,
+      -548
+     ],
+     "b": [
+      -357,
+      -436
+     ],
+     "n": [
+      1,
+      0
+     ],
+     "faces": "primary:sunset-way",
+     "caps": [
+      "corner",
+      "corner"
+     ],
+     "bays": 16
+    },
+    {
+     "face": "s",
+     "a": [
+      -403,
+      -548
+     ],
+     "b": [
+      -357,
+      -548
+     ],
+     "n": [
+      0,
+      -1
+     ],
+     "faces": "none",
+     "caps": [
+      "corner",
+      "corner"
+     ],
+     "bays": 5
+    },
+    {
+     "face": "n",
+     "a": [
+      -403,
+      -436
+     ],
+     "b": [
+      -357,
+      -436
+     ],
+     "n": [
+      0,
+      1
+     ],
+     "faces": "walk:west-row-lane-1",
+     "caps": [
+      "corner",
+      "corner"
+     ],
+     "bays": 5
+    }
+   ],
+   "corners": [
+    [
+     -403,
+     -548
+    ],
+    [
+     -403,
+     -436
+    ],
+    [
+     -357,
+     -548
+    ],
+    [
+     -357,
+     -436
+    ]
+   ]
+  },
+  {
+   "id": "west-row-w2",
+   "plot": "west-row-w2",
+   "kind": "perimeter",
+   "rect": [
+    -456.5,
+    -428.5,
+    -428,
+    -316
+   ],
+   "depth": 14,
+   "court": "solid",
+   "runs": [
+    {
+     "face": "w",
+     "a": [
+      -456.5,
+      -428
+     ],
+     "b": [
+      -456.5,
+      -316
+     ],
+     "n": [
+      -1,
+      0
+     ],
+     "faces": "none",
+     "caps": [
+      "corner",
+      "corner"
+     ],
+     "bays": 16
+    },
+    {
+     "face": "e",
+     "a": [
+      -428.5,
+      -428
+     ],
+     "b": [
+      -428.5,
+      -316
+     ],
+     "n": [
+      1,
+      0
+     ],
+     "faces": "access:west-row",
+     "caps": [
+      "corner",
+      "corner"
+     ],
+     "bays": 16
+    },
+    {
+     "face": "s",
+     "a": [
+      -456.5,
+      -428
+     ],
+     "b": [
+      -428.5,
+      -428
+     ],
+     "n": [
+      0,
+      -1
+     ],
+     "faces": "walk:west-row-lane-1",
+     "caps": [
+      "corner",
+      "corner"
+     ],
+     "bays": 2
+    },
+    {
+     "face": "n",
+     "a": [
+      -456.5,
+      -316
+     ],
+     "b": [
+      -428.5,
+      -316
+     ],
+     "n": [
+      0,
+      1
+     ],
+     "faces": "walk:west-row-lane-2",
+     "caps": [
+      "corner",
+      "corner"
+     ],
+     "bays": 2
+    }
+   ],
+   "corners": [
+    [
+     -456.5,
+     -428
+    ],
+    [
+     -456.5,
+     -316
+    ],
+    [
+     -428.5,
+     -428
+    ],
+    [
+     -428.5,
+     -316
+    ]
+   ]
+  },
+  {
+   "id": "west-row-e2",
+   "plot": "west-row-e2",
+   "kind": "perimeter",
+   "rect": [
+    -403,
+    -357,
+    -428,
+    -316
+   ],
+   "depth": 14,
+   "court": "open",
+   "runs": [
+    {
+     "face": "w",
+     "a": [
+      -403,
+      -428
+     ],
+     "b": [
+      -403,
+      -316
+     ],
+     "n": [
+      -1,
+      0
+     ],
+     "faces": "access:west-row",
+     "caps": [
+      "corner",
+      "corner"
+     ],
+     "bays": 16
+    },
+    {
+     "face": "e",
+     "a": [
+      -357,
+      -428
+     ],
+     "b": [
+      -357,
+      -316
+     ],
+     "n": [
+      1,
+      0
+     ],
+     "faces": "primary:sunset-way",
+     "caps": [
+      "corner",
+      "corner"
+     ],
+     "bays": 16
+    },
+    {
+     "face": "s",
+     "a": [
+      -403,
+      -428
+     ],
+     "b": [
+      -357,
+      -428
+     ],
+     "n": [
+      0,
+      -1
+     ],
+     "faces": "walk:west-row-lane-1",
+     "caps": [
+      "corner",
+      "corner"
+     ],
+     "bays": 5
+    },
+    {
+     "face": "n",
+     "a": [
+      -403,
+      -316
+     ],
+     "b": [
+      -357,
+      -316
+     ],
+     "n": [
+      0,
+      1
+     ],
+     "faces": "walk:west-row-lane-2",
+     "caps": [
+      "corner",
+      "corner"
+     ],
+     "bays": 5
+    }
+   ],
+   "corners": [
+    [
+     -403,
+     -428
+    ],
+    [
+     -403,
+     -316
+    ],
+    [
+     -357,
+     -428
+    ],
+    [
+     -357,
+     -316
+    ]
+   ]
+  },
+  {
+   "id": "west-row-w3",
+   "plot": "west-row-w3",
+   "kind": "perimeter",
+   "rect": [
+    -456.5,
+    -428.5,
+    -308,
+    -196
+   ],
+   "depth": 14,
+   "court": "solid",
+   "runs": [
+    {
+     "face": "w",
+     "a": [
+      -456.5,
+      -308
+     ],
+     "b": [
+      -456.5,
+      -196
+     ],
+     "n": [
+      -1,
+      0
+     ],
+     "faces": "none",
+     "caps": [
+      "corner",
+      "corner"
+     ],
+     "bays": 16
+    },
+    {
+     "face": "e",
+     "a": [
+      -428.5,
+      -308
+     ],
+     "b": [
+      -428.5,
+      -196
+     ],
+     "n": [
+      1,
+      0
+     ],
+     "faces": "access:west-row",
+     "caps": [
+      "corner",
+      "corner"
+     ],
+     "bays": 16
+    },
+    {
+     "face": "s",
+     "a": [
+      -456.5,
+      -308
+     ],
+     "b": [
+      -428.5,
+      -308
+     ],
+     "n": [
+      0,
+      -1
+     ],
+     "faces": "walk:west-row-lane-2",
+     "caps": [
+      "corner",
+      "corner"
+     ],
+     "bays": 2
+    },
+    {
+     "face": "n",
+     "a": [
+      -456.5,
+      -196
+     ],
+     "b": [
+      -428.5,
+      -196
+     ],
+     "n": [
+      0,
+      1
+     ],
+     "faces": "walk:west-row-lane-3",
+     "caps": [
+      "corner",
+      "corner"
+     ],
+     "bays": 2
+    }
+   ],
+   "corners": [
+    [
+     -456.5,
+     -308
+    ],
+    [
+     -456.5,
+     -196
+    ],
+    [
+     -428.5,
+     -308
+    ],
+    [
+     -428.5,
+     -196
+    ]
+   ]
+  },
+  {
+   "id": "west-row-e3",
+   "plot": "west-row-e3",
+   "kind": "perimeter",
+   "rect": [
+    -403,
+    -357,
+    -308,
+    -196
+   ],
+   "depth": 14,
+   "court": "open",
+   "runs": [
+    {
+     "face": "w",
+     "a": [
+      -403,
+      -308
+     ],
+     "b": [
+      -403,
+      -196
+     ],
+     "n": [
+      -1,
+      0
+     ],
+     "faces": "access:west-row",
+     "caps": [
+      "corner",
+      "corner"
+     ],
+     "bays": 16
+    },
+    {
+     "face": "e",
+     "a": [
+      -357,
+      -308
+     ],
+     "b": [
+      -357,
+      -196
+     ],
+     "n": [
+      1,
+      0
+     ],
+     "faces": "primary:sunset-way",
+     "caps": [
+      "corner",
+      "corner"
+     ],
+     "bays": 16
+    },
+    {
+     "face": "s",
+     "a": [
+      -403,
+      -308
+     ],
+     "b": [
+      -357,
+      -308
+     ],
+     "n": [
+      0,
+      -1
+     ],
+     "faces": "walk:west-row-lane-2",
+     "caps": [
+      "corner",
+      "corner"
+     ],
+     "bays": 5
+    },
+    {
+     "face": "n",
+     "a": [
+      -403,
+      -196
+     ],
+     "b": [
+      -357,
+      -196
+     ],
+     "n": [
+      0,
+      1
+     ],
+     "faces": "walk:west-row-lane-3",
+     "caps": [
+      "corner",
+      "corner"
+     ],
+     "bays": 5
+    }
+   ],
+   "corners": [
+    [
+     -403,
+     -308
+    ],
+    [
+     -403,
+     -196
+    ],
+    [
+     -357,
+     -308
+    ],
+    [
+     -357,
+     -196
+    ]
+   ]
+  },
+  {
+   "id": "west-row-w4",
+   "plot": "west-row-w4",
+   "kind": "perimeter",
+   "rect": [
+    -456.5,
+    -428.5,
+    -188,
+    -130
+   ],
+   "depth": 14,
+   "court": "solid",
+   "runs": [
+    {
+     "face": "w",
+     "a": [
+      -456.5,
+      -188
+     ],
+     "b": [
+      -456.5,
+      -130
+     ],
+     "n": [
+      -1,
+      0
+     ],
+     "faces": "none",
+     "caps": [
+      "corner",
+      "corner"
+     ],
+     "bays": 7
+    },
+    {
+     "face": "e",
+     "a": [
+      -428.5,
+      -188
+     ],
+     "b": [
+      -428.5,
+      -130
+     ],
+     "n": [
+      1,
+      0
+     ],
+     "faces": "access:west-row",
+     "caps": [
+      "corner",
+      "corner"
+     ],
+     "bays": 7
+    },
+    {
+     "face": "s",
+     "a": [
+      -456.5,
+      -188
+     ],
+     "b": [
+      -428.5,
+      -188
+     ],
+     "n": [
+      0,
+      -1
+     ],
+     "faces": "walk:west-row-lane-3",
+     "caps": [
+      "corner",
+      "corner"
+     ],
+     "bays": 2
+    },
+    {
+     "face": "n",
+     "a": [
+      -456.5,
+      -130
+     ],
+     "b": [
+      -428.5,
+      -130
+     ],
+     "n": [
+      0,
+      1
+     ],
+     "faces": "walk:west-row-lane-4",
+     "caps": [
+      "corner",
+      "corner"
+     ],
+     "bays": 2
+    }
+   ],
+   "corners": [
+    [
+     -456.5,
+     -188
+    ],
+    [
+     -456.5,
+     -130
+    ],
+    [
+     -428.5,
+     -188
+    ],
+    [
+     -428.5,
+     -130
+    ]
+   ]
+  },
+  {
+   "id": "west-row-e4",
+   "plot": "west-row-e4",
+   "kind": "perimeter",
+   "rect": [
+    -403,
+    -357,
+    -188,
+    -130
+   ],
+   "depth": 14,
+   "court": "open",
+   "runs": [
+    {
+     "face": "w",
+     "a": [
+      -403,
+      -188
+     ],
+     "b": [
+      -403,
+      -130
+     ],
+     "n": [
+      -1,
+      0
+     ],
+     "faces": "access:west-row",
+     "caps": [
+      "corner",
+      "corner"
+     ],
+     "bays": 7
+    },
+    {
+     "face": "e",
+     "a": [
+      -357,
+      -188
+     ],
+     "b": [
+      -357,
+      -130
+     ],
+     "n": [
+      1,
+      0
+     ],
+     "faces": "primary:sunset-way",
+     "caps": [
+      "corner",
+      "corner"
+     ],
+     "bays": 7
+    },
+    {
+     "face": "s",
+     "a": [
+      -403,
+      -188
+     ],
+     "b": [
+      -357,
+      -188
+     ],
+     "n": [
+      0,
+      -1
+     ],
+     "faces": "walk:west-row-lane-3",
+     "caps": [
+      "corner",
+      "corner"
+     ],
+     "bays": 5
+    },
+    {
+     "face": "n",
+     "a": [
+      -403,
+      -130
+     ],
+     "b": [
+      -357,
+      -130
+     ],
+     "n": [
+      0,
+      1
+     ],
+     "faces": "walk:west-row-lane-4",
+     "caps": [
+      "corner",
+      "corner"
+     ],
+     "bays": 5
+    }
+   ],
+   "corners": [
+    [
+     -403,
+     -188
+    ],
+    [
+     -403,
+     -130
+    ],
+    [
+     -357,
+     -188
+    ],
+    [
+     -357,
+     -130
+    ]
+   ]
+  },
+  {
+   "id": "west-row-w5",
+   "plot": "west-row-w5",
+   "kind": "perimeter",
+   "rect": [
+    -456.5,
+    -428.5,
+    -117,
+    -17
+   ],
+   "depth": 14,
+   "court": "solid",
+   "runs": [
+    {
+     "face": "w",
+     "a": [
+      -456.5,
+      -117
+     ],
+     "b": [
+      -456.5,
+      -17
+     ],
+     "n": [
+      -1,
+      0
+     ],
+     "faces": "none",
+     "caps": [
+      "corner",
+      "corner"
+     ],
+     "bays": 14
+    },
+    {
+     "face": "e",
+     "a": [
+      -428.5,
+      -117
+     ],
+     "b": [
+      -428.5,
+      -17
+     ],
+     "n": [
+      1,
+      0
+     ],
+     "faces": "access:west-row",
+     "caps": [
+      "corner",
+      "corner"
+     ],
+     "bays": 14
+    },
+    {
+     "face": "s",
+     "a": [
+      -456.5,
+      -117
+     ],
+     "b": [
+      -428.5,
+      -117
+     ],
+     "n": [
+      0,
+      -1
+     ],
+     "faces": "walk:west-row-lane-4",
+     "caps": [
+      "corner",
+      "corner"
+     ],
+     "bays": 2
+    },
+    {
+     "face": "n",
+     "a": [
+      -456.5,
+      -17
+     ],
+     "b": [
+      -428.5,
+      -17
+     ],
+     "n": [
+      0,
+      1
+     ],
+     "faces": "district:circus-road",
+     "caps": [
+      "corner",
+      "corner"
+     ],
+     "bays": 2
+    }
+   ],
+   "corners": [
+    [
+     -456.5,
+     -117
+    ],
+    [
+     -456.5,
+     -17
+    ],
+    [
+     -428.5,
+     -117
+    ],
+    [
+     -428.5,
+     -17
+    ]
+   ]
+  },
+  {
+   "id": "west-row-e5",
+   "plot": "west-row-e5",
+   "kind": "perimeter",
+   "rect": [
+    -403,
+    -357,
+    -122,
+    -64
+   ],
+   "depth": 14,
+   "court": "open",
+   "runs": [
+    {
+     "face": "w",
+     "a": [
+      -403,
+      -122
+     ],
+     "b": [
+      -403,
+      -64
+     ],
+     "n": [
+      -1,
+      0
+     ],
+     "faces": "access:west-row",
+     "caps": [
+      "corner",
+      "corner"
+     ],
+     "bays": 7
+    },
+    {
+     "face": "e",
+     "a": [
+      -357,
+      -122
+     ],
+     "b": [
+      -357,
+      -64
+     ],
+     "n": [
+      1,
+      0
+     ],
+     "faces": "primary:sunset-way",
+     "caps": [
+      "corner",
+      "corner"
+     ],
+     "bays": 7
+    },
+    {
+     "face": "s",
+     "a": [
+      -403,
+      -122
+     ],
+     "b": [
+      -357,
+      -122
+     ],
+     "n": [
+      0,
+      -1
+     ],
+     "faces": "walk:west-row-lane-4",
+     "caps": [
+      "corner",
+      "corner"
+     ],
+     "bays": 5
+    },
+    {
+     "face": "n",
+     "a": [
+      -403,
+      -64
+     ],
+     "b": [
+      -357,
+      -64
+     ],
+     "n": [
+      0,
+      1
+     ],
+     "faces": "park:western-park-s",
+     "caps": [
+      "corner",
+      "corner"
+     ],
+     "bays": 5
+    }
+   ],
+   "corners": [
+    [
+     -403,
+     -122
+    ],
+    [
+     -403,
+     -64
+    ],
+    [
+     -357,
+     -122
+    ],
+    [
+     -357,
+     -64
+    ]
+   ]
   }
  ],
  "foot": [
@@ -7068,6 +8434,70 @@
     [
      -160,
      -9
+    ]
+   ]
+  },
+  {
+   "id": "west-row-lane-1",
+   "name": "West Row lane 1",
+   "kind": "walk",
+   "w": 8,
+   "pts": [
+    [
+     -460,
+     -432
+    ],
+    [
+     -352,
+     -432
+    ]
+   ]
+  },
+  {
+   "id": "west-row-lane-2",
+   "name": "West Row lane 2",
+   "kind": "walk",
+   "w": 8,
+   "pts": [
+    [
+     -460,
+     -312
+    ],
+    [
+     -352,
+     -312
+    ]
+   ]
+  },
+  {
+   "id": "west-row-lane-3",
+   "name": "West Row lane 3",
+   "kind": "walk",
+   "w": 8,
+   "pts": [
+    [
+     -460,
+     -192
+    ],
+    [
+     -352,
+     -192
+    ]
+   ]
+  },
+  {
+   "id": "west-row-lane-4",
+   "name": "West Row lane 4",
+   "kind": "walk",
+   "w": 8,
+   "pts": [
+    [
+     -460,
+     -126
+    ],
+    [
+     -352,
+     -126
     ]
    ]
   },
@@ -7114,7 +8544,7 @@
      0
     ],
     [
-     132,
+     140,
      0
     ]
    ]
@@ -7146,7 +8576,7 @@
      -138
     ],
     [
-     248,
+     254,
      -138
     ]
    ]
@@ -7299,35 +8729,51 @@
    ],
    [
     96,
-    6
+    30
    ],
    [
-    132,
-    6
+    140,
+    30
    ],
    [
-    132,
-    -6
-   ],
-   [
-    96,
-    -6
+    140,
+    -30
    ],
    [
     96,
+    -30
+   ],
+   [
+    96,
+    -106
+   ],
+   [
+    140,
+    -106
+   ],
+   [
+    140,
     -130
    ],
    [
-    248,
+    254,
     -130
    ],
    [
-    248,
+    254,
     -146
    ],
    [
-    96,
+    140,
     -146
+   ],
+   [
+    140,
+    -196
+   ],
+   [
+    96,
+    -196
    ]
   ]
  ],
@@ -7361,37 +8807,53 @@
   [
    [
     96,
-    -6
+    -30
    ],
    [
-    132,
-    -6
+    140,
+    -30
    ],
    [
-    132,
-    6
+    140,
+    30
    ],
    [
     96,
-    6
+    30
    ]
   ],
   [
    [
     96,
+    -196
+   ],
+   [
+    140,
+    -196
+   ],
+   [
+    140,
     -146
    ],
    [
-    248,
+    254,
     -146
    ],
    [
-    248,
+    254,
     -130
+   ],
+   [
+    140,
+    -130
+   ],
+   [
+    140,
+    -106
    ],
    [
     96,
-    -130
+    -106
    ]
   ]
  ],
@@ -7399,11 +8861,11 @@
   [
    [
     -460,
-    -560
+    292
    ],
    [
     -352,
-    -560
+    292
    ],
    [
     -352,
@@ -7434,7 +8896,7 @@
   ],
   [
    [
-    -352,
+    -460,
     -560
    ],
    [
@@ -7446,7 +8908,7 @@
     -552
    ],
    [
-    -352,
+    -460,
     -552
    ]
   ]
@@ -7558,8 +9020,8 @@
    ],
    "r": 20.5,
    "kit": "DiscTower",
-   "top": 108,
-   "scale": 0.69,
+   "top": 156.6,
+   "scale": 1,
    "oldPut": {
     "kit": "DiscTower",
     "at": [
@@ -7571,10 +9033,9 @@
     "scale": 1,
     "src": "foreach (var x in new[] { -44f, 44f }) p.Put(\"DiscTower\", new Vector3(x, 0f, L.Z.y - 8f), x * 2f);"
    },
-   "kitFit": "the old DecoKitStreetSkyline pair framing the arch (x ±44, z 372): the old stood DiscTower × 1.0 (156.6); here capped at 108, standards.skyline.harbour (nothing within 150 m of the quay tops the Skyport Tower), so × 0.69; r 20.5 ≥ 40.2 / 2; no crown type (SK-2 has no landmark pairs; the pair is matched)",
-   "archWas": {
+   "kitFit": "the old DecoKitStreetSkyline pair framing the arch (x ±44, z 372): the old stood DiscTower × 1.0 (156.6); here the same, the kit DiscTower as built (40.2 × 156.6 × 40.2, × 1.0: inside the disc Ø 41 and the top 156.6, tip 156.8 on the 0.2 landmark base), under rivalMax 200; within 150 m of the quay, so it passes the harbour icon (108) by standards.skyline.harbour.exceptions (brief 075 remap, Aster: back to the old reel); r 20.5 ≥ 40.2 / 2; no crown type (SK-2 has no landmark pairs; the pair is matched)",
+   "gateway": {
     "name": "Crown Avenue arch",
-    "status": "the old ParabolicArch across Crown Avenue (old (0, 250) → plan (0,44)), carried as the west gate tower's gateway (the generator places a landmark's gateway, kitrefs.ts gatewayRef)",
     "kit": "ParabolicArch@crown-avenue",
     "c": [
      0,
@@ -7601,10 +9062,10 @@
     "zones": [
      "frontage"
     ],
-    "piece": "a regen of ParabolicArch, gold as the pier's (DK_Crown_Gold): outer span 34.0 (foot to foot, the avenue's building lines), foot centres ±15.5, clear 28.0 between the plinths, plinths 3.0 across × 6.0 along, depth ≤ 11.6, crest 95.2 and top 105.3 (brief 075 golden vista 2: the vista 1 piece, crest 68 and top 75.2, × 1.4 in height only: the span and plinths cannot widen, the depth may grow with the rise, the plinths stay 3 × 6)",
-    "whyNot38": "the adopted ParabolicArch is 38.5 m across (foot centres ±16, plinths 6.4 → x 12.8–19.2): its feet stand on the clear walk (x 11–14, SF-1) and 2.2 m into the buildings past the building line (x 17). At its tag floor × 0.9 (34.65, plinths x 11.5–17.3) the feet are still on the walk and 0.3 m past the line. A plain 30 m version (× 0.78, plinths 5 m, x 10–15) also lands on the walk; the only zone that takes a foot here is the 3 m frontage zone (x 14–17), so the regen is sized to it",
-    "siteWhy": "brief 075 golden vista 2: the old reel's arch stood just past the circus, 165 m from its eye at 21.7°; ours was at y 160, 375 m off at 10.2°. y 53 is the first place the avenue's frontage zone (x ±14–17) is whole past the circus: the circus pavement (r 43–51, the plots' notch r 51) leaves x 14–17 at y 48.1–49.0 and the mouth's kerb returns end at (±9, 48.1); the plinths (y 50–56) stand on the avenue pavement's frontage zone with no building behind them (the mouth's corner forecourts: buildings from y 62 east, x ≤ −42 west), 12 m clear of the circus crossing's landing (crown-circus/1, (−20.7, 37.7)) and the avenue's only crossing (y 203); nothing standing within 1.5 m (pavement palms at y 60.1 and 65.1, kerb zone x ±10.2). 53 m from S1 (y 0) and its pylons; the arch's depth (≤ 16.3, y 44.9–61.2) stays off the line and the circus ring. 57 m before the Crescent S gate (g_cres_s, y 110), so it reads as the avenue's gate from the circus. Outside the play-street cap (gardens and crescent carry none; 311 m from the civic block) and 312 m from the quay",
-    "keep": "the generator, when it places it: the plinths only in the frontage zone (never the walk, kerb zone or carriageway); no doorway, spill or vending inside 1.5 m of a plinth; no palm or lamp whose crown or head comes within 1 m of a leg (the leg is at about x ±14.8 at 8 m up); any shopfront behind the plinths (x ±17, y 50–56; none today) keeps its doors (a door moves along its facade, never under a plinth)"
+    "piece": "a regen of ParabolicArch, gold as the pier's (DK_Crown_Gold): outer span 34.0 (foot to foot), foot centres ±15.5, clear 28.0 between the plinths, plinths 3.0 across × 6.0 along, depth ≤ 11.6, crest 95.2 and top 105.3 (brief 075 golden vista 2: the vista 1 piece, crest 68 and top 75.2, × 1.4 in height only). At (0, 44) the frontage zone is |x| 13.5–18 (4.5 m), so the plinths at |x| 14–17 stand 0.5 m off the walk's edge and 1 m off the building line; the piece is not widened for it",
+    "whyNot38": "the adopted ParabolicArch is 38.5 m across (foot centres ±16, plinths 6.4 → |x| 12.8–19.2): at (0, 44) its feet stand 0.7 m on the clear walk (the kerb and walk zones run to |x| 13.5) and 1.2 m past the old walls' building line (|x| 18). At its tag floor × 0.9 (34.65, plinths |x| 11.5–17.3) the feet are 2 m on the walk. The only zone that takes a foot here is the frontage zone (|x| 13.5–18), so the regen (plinths |x| 14–17) is sized to it",
+    "siteWhy": "brief 075 remap: the old ParabolicArch's place across Crown Avenue (old (0, 250) → plan (0, 44)), just past the circus mouth, as the old reel. Splice's measure at the site (briefs/075/notes.md, K-1's own test, both sides alike, every y 38–50): Crown Avenue's kerb face at |x| 10, kerb and walk zones to |x| 13.5 (3.5 m), the 6.5 m access pavement to |x| 16.5, then the 1.5 m paved setback to the old walls' building line at |x| 18 (block runs facing access:crown-avenue). So the frontage zone at y 41–47 is |x| 13.5–18 and the plinths (|x| 14–17, y 41–47) stand inside it, with the old walls behind them; the arch's depth (≤ 11.64, y 38.2–49.8) stays on that same avenue section. Outside the play-street cap",
+    "keep": "the generator: the plinths only in the frontage zone (never the walk, kerb zone or carriageway); no doorway, spill or vending inside 1.5 m of a plinth; no palm or lamp whose crown or head comes within 1 m of a leg (the leg is at about x ±14.8 at 8 m up); the shopfronts behind the plinths (the old walls at |x| 18, y 41–47) keep their doors (a door moves along its facade, never under a plinth)"
    }
   },
   {
@@ -7616,8 +9077,8 @@
    ],
    "r": 20.5,
    "kit": "DiscTower",
-   "top": 108,
-   "scale": 0.69,
+   "top": 156.6,
+   "scale": 1,
    "oldPut": {
     "kit": "DiscTower",
     "at": [
@@ -7629,7 +9090,7 @@
     "scale": 1,
     "src": "foreach (var x in new[] { -44f, 44f }) p.Put(\"DiscTower\", new Vector3(x, 0f, L.Z.y - 8f), x * 2f);"
    },
-   "kitFit": "the old DecoKitStreetSkyline pair framing the arch (x ±44, z 372): the old stood DiscTower × 1.0 (156.6); here capped at 108, standards.skyline.harbour (nothing within 150 m of the quay tops the Skyport Tower), so × 0.69; r 20.5 ≥ 40.2 / 2; no crown type (SK-2 has no landmark pairs; the pair is matched)"
+   "kitFit": "the old DecoKitStreetSkyline pair framing the arch (x ±44, z 372): the old stood DiscTower × 1.0 (156.6); here the same, the kit DiscTower as built (40.2 × 156.6 × 40.2, × 1.0: inside the disc Ø 41 and the top 156.6, tip 156.8 on the 0.2 landmark base), under rivalMax 200; within 150 m of the quay, so it passes the harbour icon (108) by standards.skyline.harbour.exceptions (brief 075 remap, Aster: back to the old reel); r 20.5 ≥ 40.2 / 2; no crown type (SK-2 has no landmark pairs; the pair is matched)"
   }
  ],
  "megastructures": [
@@ -8257,6 +9718,95 @@
      "kit": "SkyRailStation_Twin"
     }
    ]
+  },
+  {
+   "id": "S2",
+   "name": "Harbour Line",
+   "beyond": "south off-sheet over the harbour; the terminal loop round the Skyport Tower",
+   "paths": [
+    {
+     "id": "trunk",
+     "role": "line",
+     "double": true,
+     "pts": [
+      [
+       117,
+       -560
+      ],
+      [
+       117,
+       -105
+      ]
+     ]
+    },
+    {
+     "id": "loop",
+     "role": "loop",
+     "pts": [
+      [
+       120,
+       -105
+      ],
+      [
+       120,
+       -60,
+       40
+      ],
+      [
+       225,
+       -60,
+       40
+      ],
+      [
+       225,
+       75,
+       40
+      ],
+      [
+       114,
+       75,
+       40
+      ],
+      [
+       114,
+       -105
+      ]
+     ]
+    }
+   ],
+   "order": [
+    "trunk",
+    "loop"
+   ],
+   "stations": [
+    {
+     "id": "harbour",
+     "name": "Harbour",
+     "path": "trunk",
+     "at": [
+      117,
+      -140
+     ],
+     "length": 50,
+     "interchange": "T1/circus",
+     "fronts": "market-pier",
+     "kit": "SkyRailStation_Twin",
+     "kitWhy": "open-air over the Market Pier's landing stage (x 96–140, y -196..-106), north–south; banks on the stage either side; the pier walk runs under it to the liner berth"
+    },
+    {
+     "id": "skyport",
+     "name": "Skyport",
+     "path": "loop",
+     "at": [
+      114,
+      0
+     ],
+     "length": 50,
+     "fronts": "skyport-pier",
+     "kit": "SkyRailStation_Twin",
+     "kitWhy": "open-air on the loop's west leg over the Skyport apron (x 96–140, y ±30), north–south; banks on the apron either side; the Skyport Pier walk runs on through the apron onto the tower's caisson"
+    }
+   ]
   }
  ],
  "civic": {
@@ -8370,8 +9920,10 @@
    "The Handover zone byte for byte: the civic block, its streets (Rocket Lane, Starline Street, Garden Row, Orbit Walk, Pylon Row, Apron Road, Satellite Street, Lantern Lane), its plots and gates, and today's neighbours on every edge of the plots in its walk window.",
    "Seams: Satellite Street's east pavement is the boulevard's west wall (boulevard-west, old W1); Starline Street runs on as the old west lane through it; Market Street meets the boulevard at (0, -410); Lamplight Lane (today's line) fronts the garden terrace and the West Terraces; the garden walk crosses Circus Road into Sphere Park.",
    "The boulevard runs through to the Sea Gates (old Comet Row and Satellite Street on its axis); Southside east of it (Constellation N2, Orbit Square, Starline Green, SS1–SS4); the Lantern Quarter south of Market Street.",
+   "West Row west of Sunset Way (the old procedural massing's place): an access street off Circus Road, lanes, old-grammar blocks; Western Park north of Circus Road to Crown Road.",
    "T1 tram: street running from the West End down Sunset Way and Market Street, up the boulevard to the circus, where it turns on the ring road (R 25). No overhead wires.",
-   "S1 sky rail on the circus axis from the West End (Western Park and Orbit Gardens stations), north past the Sphere; the old main loop and harbour line are planned data (oldtown.skyrail) until the generator lays north-south station banks.",
+   "S1 sky rail on the circus axis from the West End (Western Park and Orbit Gardens stations), north past the Sphere; the old main loop is planned data (oldtown.skyrail).",
+   "S2 sky rail (Harbour Line) from the south over the water, Harbour station on the Market Pier's landing stage (the T1 interchange at Crown Circus), and a terminal loop round the Skyport Tower with the Skyport station on the Skyport apron: the old harbour line's sweep round the Skyport.",
    "SpaceHQ closes the axis at the old place (0, 244), the gate towers either side of the forecourt, the Skylon, the Sphere, the Skyport on its caisson at the pier head, the liner at the Market Pier."
   ],
   "questions": [
@@ -8384,6 +9936,9 @@
    "Records Precinct: two vehicle gates (Rocket, Satellite) to seal against cars, but on foot the crew can leave across any street. Is the escape on foot meant to be open like that, with the police sealing stations rather than streets?"
   ],
   "history": [
+   "2026-10-29 (Datum, brief 075 review, Aster relaying Sky; version 0.5.2): (1) the old asphalt road back (Sky: overriding 'keep powdblue'): roads.finish.set asphalt, road-asphalt = the old DK_Asphalt_Road (Vela's port, #817B75, 16 m repeat), dashes 0.12 m, 2 m on 4 m off; the light ribbon kept on every class (GDD §14/§15), so SF-24 holds unchanged. (2) The Skyport reachable (Sky: 'we need the skytrak to get here'): S2 Harbour Line from the south edge over the water on x 117, Harbour station on the Market Pier's new landing stage (x 96..140, y -196..-106; T1/Crown Circus interchange 137 m), a terminal loop (R 40) round the Skyport Tower with the Skyport station on its west leg over the new Skyport apron (x 96..140, y ±30), 41 pylons in water and on the quays. (3) Every structure reachable (RCH-1 33/33): the Skyport apron runs 8 m onto the tower's caisson, the Market Pier 6 m onto the liner berth's. The Handover zone, its routes (M-1), escape walks (W-1) and V-1 unchanged; Pulse's journeys kept (T1 and S1 unchanged; S2's runs added, its journeys Pulse's). Notes: briefs/075/notes.md 'Remap: Skyport and reach'.",
+   "2026-10-28 (Datum, brief 075 remap follow-up, Aster; version 0.5.1): no bare sand in the district outside water, parks and plazas. The first remap left the strip west of Sunset Way (x -460..-352) as the beyond hatch, which the world draws as bare ground. It is now West Row (area westrow): an access street on x -416 from Circus Road (gate west-row-gate) to the south plot line, 8 m lanes opposite the seams of Sunset Way's east-side plots and at equal spans of at most 140 m, ten plots fitted as old-grammar blocks (28 m solid on the sheet-edge side, 46 m open-court on Sunset Way, the corner block on Circus Road), Western Park run on north to Crown Road; westend and sphere areas start at Sunset Way's west kerb; the beyond hatch keeps only the sheet's slivers. Rule-based in tools/plan/oldtown/transcribe.ts (WR); the Handover zone, its streets, plots, gates, routes and site are unchanged",
+   "2026-10-28 (Datum, brief 075 remap, Aster; input edit, version kept at 0.5.0): the gate towers back to the old reel: landmarks disc-west / disc-east top 108 → 156.6, scale 0.69 → 1 (the kit DiscTower as built, tip 156.8; at 108 the fit fell under tags.scale 0.9 and the world drew procedural cylinders). New standards.skyline.harbour.exceptions (the pair, tip 156.8) and exceptionsWhy, as standards.skyline.vista was done: SK-1 to read it (Splice; the one-line read is in signature-checks.ts); bends GDD §10's harbour line for this pair (next GDD version, Aster). The Crown Avenue arch's text (landmarks[disc-west].gateway piece, whyNot38, siteWhy, keep) restated for its site at (0, 44) from Splice's measure (frontage zone |x| 13.5–18 at y 41–47, the old walls behind the plinths); oldtown.manual's arch and gate tower lines updated (the duplicate gate line dropped). No road, plot, line, stop or Handover geometry changed",
    "2026-10-28 (Datum, brief 075 old buildings; input edit, version kept at 0.4.0): Sky: \"where's the rounded corners etc - why can't we just use the old buildings ?\" New standards.blocks: the old DecoKit block grammar (runs of 6 m bays between caps, 8 m corner cells, 14 m bays, 28 back to back, crescents) and top-level blocks: 18 plots outside the Handover zone laid as 44 blocks (32 perimeter, 12 inner), 157 runs, 92 corner cells; circus.crescents: four crescents at R 51 (7, 7, 5, 5 bays). towers avenue-needle rect y 46..66 -> 58..78 (its podium cleared the NW crescent). lamplight-court-w: the L poly -> rect; its 24 m deep arm on Circus Road is the new open plot lamplight-green. Roads, tram, sky rail, the Handover zone's 7 plots (and crown-terraces, the sheds) unchanged. R 2 kerb returns staged in standards.blocks.kerbReturn (SF-22 and the capstone programme need Splice's zone override first). BG-1..BG-5 check it.",
    "2026-10-28 (Datum, brief 075 golden vista 2; input edit, version kept at 0.4.0): toward the old reel's vista (Glint's angles from the golden eye). landmarks[crown-vista].gateway, the Crown Avenue arch, moves from y 160 to the circus mouth (c (0, 53), feet x ±14–17, y 50–56, the avenue's frontage zone) and is to rise × 1.4 (crest 95.2, top 105.3; Vela's regen, span and plinths unchanged): top 20.0° from the eye (was 10.2°). The Crown Vista tower stays at (0, 350) and goes to top 250, r 30 (Vela's regen of the gold banded tower): 23.2° (was 16.0°), the one exception to rivalMax (new standards.skyline.vista; SK-1 to read it: Splice), under SpaceHQ's 252; bends GDD §10's rival ceiling 200 for this one off-sheet landmark (Aster to Sky). standards.streetscape.sections.tramStreet: the overhead clause removed (Sky: \"no overhead wires though!\"): the wires object, the rule's \"Overhead wires on span wires.\" and span wires in checks. No road, plot, line, stop or Handover geometry changed.",
    "2026-10-28 (Datum, brief 075, the street section: Sky's 1950s street-running tram; input edit, version kept at 0.4.0): standards.streetscape.sections.tramStreet (new): every road a tram runs on takes tracks flush in setts in the two centre lanes (± 1.8), mixed traffic, one traffic lane and a kerbside parking or loading strip each way, boarding islands at stops, span wires from wall rosettes or side poles; no median, reservation or lawn. The Boulevard w 28 + reservation 10 → w 20 (tram lane 3.6, traffic 3.6, parking 2.8 a side), its seven fronting plots 4 m out to the new kerb (boulevard-west, lamplight-east, lamplight-south-e, harbour-boulevard, docks-boulevard, lantern-boulevard, lantern-south), circus mouth faces at x ± 10, pavements 8, street wall 36 m. Sunset Way, Comet Row, Harbour Road: median 4 removed, w 24 kept (tram 3.6, traffic 3.6, kerbside 4.8: angle parking with palm islands, [S] proposal), T2 from side-running (offset 6) to the centre lanes: its path on the road lines, stops 6 m in (harbour, harbour-court, docks at x 300; comet at z -720; lantern, rocket, terraces at x -340), corners R 25 (standards.tram.radiusRunning 50 → 25: R 50 swept the corner pavement). Crown Road keeps its median; T2's off-sheet stub keeps the north half. sections.primary.tram (the side-running section) removed; roads.marks.lanes keeps crown-road only. Handover: points, routes (667 / 1064 / 126 / 1473 m), C-0 and V-1 64/65 unchanged",
@@ -8464,9 +10019,87 @@
       "sec": 17
      }
     ]
+   },
+   {
+    "line": "S2",
+    "headwaySec": 120,
+    "dwellSec": 12,
+    "speed": 12,
+    "runs": [
+     {
+      "from": "S2/harbour",
+      "to": "S2/skyport",
+      "sec": 36
+     }
+    ]
    }
   ],
-  "journeys": [],
+  "journeys": [
+   {
+    "from": "T1/lamplight",
+    "to": "S1/gardens",
+    "sec": 157,
+    "via": [
+     "T1/terraces"
+    ]
+   },
+   {
+    "from": "T1/rocket",
+    "to": "S1/gardens",
+    "sec": 210,
+    "via": [
+     "T1/terraces"
+    ]
+   },
+   {
+    "from": "T1/orbit",
+    "to": "S1/gardens",
+    "sec": 263,
+    "via": [
+     "T1/terraces"
+    ]
+   },
+   {
+    "from": "T1/circus",
+    "to": "S1/gardens",
+    "sec": 316,
+    "via": [
+     "T1/terraces"
+    ]
+   },
+   {
+    "from": "S1/gardens",
+    "to": "T1/lamplight",
+    "sec": 157,
+    "via": [
+     "S1/west-end"
+    ]
+   },
+   {
+    "from": "S1/gardens",
+    "to": "T1/rocket",
+    "sec": 210,
+    "via": [
+     "S1/west-end"
+    ]
+   },
+   {
+    "from": "S1/gardens",
+    "to": "T1/orbit",
+    "sec": 263,
+    "via": [
+     "S1/west-end"
+    ]
+   },
+   {
+    "from": "S1/gardens",
+    "to": "T1/circus",
+    "sec": 316,
+    "via": [
+     "S1/west-end"
+    ]
+   }
+  ],
   "openQuestions": [
    {
     "question": "Is the wait for the next service the full headway, the average (half headway), or modelled from the mission clock?",
@@ -8484,13 +10117,14 @@
     "why": "The timetable assumes continuous service; the GDD travel rule does not cover closures. The plan notes police sealing stations rather than streets."
    },
    {
-    "question": "Does T2 run in both directions, and does a rider choose the shorter way round?",
+    "question": "Does a line without a terminal loop run in both directions, and does a rider choose the shorter way round a looped line?",
     "for": "Motive",
-    "why": "The GDD does not say; journeys here assume either direction on the line."
+    "why": "The GDD does not say; journeys here assume either direction on a line, and the presentation runs a line without a loop both ways (brief 075 remap: T2 is gone, S1 has no loop)."
    }
   ],
   "notes": [
-   "brief 075 remap (Datum): lines regenerated from the remapped plan by tools/plan/oldtown/transcribe.ts at today's speeds, headways and dwells; journeys cleared for Pulse to set again"
+   "brief 075 remap (Datum): lines regenerated from the remapped plan by tools/plan/oldtown/transcribe.ts at today's speeds, headways and dwells; journeys cleared for Pulse to set again",
+   "journeys (Pulse, brief 075 remap): every ride with one change at a plan interchange, both ways, neither end the interchange; sums by tools/levels/timetable.ts (rides + dwells passed + walk at 1.4 m/s; the wait is the headway's, not in the sum). bun run life:journeys"
   ]
  },
  "oldtown": {
@@ -8519,29 +10153,32 @@
    "The east lane (old z 134–140) and the west lane (old z 2–8, on the line of Starline Street) are passages through one plot each (east-wall: old E2 and E3; west-wall: old W1 and W2); old Sunset Way west of the boulevard is the west wall plot's south flags, so the Handover's streets never join the boulevard's",
    "Orbit Gardens are trimmed at the Handover zone's edge (y -148, old z 58): the old lawns, canal and west terrace south of it (old z -40..58) are the Handover zone's; the canal runs from y -148 to -16.6, the pool at (-78, 0), the pavilion at (-101, -110)",
    "The old west terrace (one 286 m wall facing the gardens at x -110, its back to the procedural massing) is one 28 m deep block south of the Gardens Gate at x -138..-110 (terrace-s, fronting Lamplight Lane, the garden walk at its back; the grammar wants 28 back to back, so its back faces Orbit Row); its 37 m north of the gate is lawn (gardens-n), where S1 turns north",
+   "West Row (the strip x -460..-352 west of Sunset Way, the first remap's beyond hatch): an access street on x -416 from Circus Road (gate west-row-gate) south to y -548; 8 m lanes at y -432, -312, -192, -126 (opposite the seams of Sunset Way's east-side plots -192, -126, and each span cut into the fewest equal blocks of at most 140 m); 5 plots each side fitted by the grammar (west residential, east mixed), the last west plot running on to Circus Road as the corner block; Western Park (east of West Row, where S1's station banks stand) runs on north to Crown Road. The beyond hatch keeps only the sheet's slivers",
    "Southside trimmed: the Handover zone is where the old world sited the Handover too (its N4 and W2), and Satellite Street and the Records Office stand on old W1, N1's west half and the Rocket Lane diagonal (RL1, RL2, RB1), which go; Orbit Square keeps its east and west halves either side of the boulevard, which runs through it to the south edge (old Comet Row ended on the square)",
    "The Gardens Gate (old: the circus's west gate promenade to the pool, 12 m) is an 18 m mall from Orbit Row to the circus walk ring: S1's pylons stand on it where it leaves Circus Road",
    "Crown Parade is an 18 m walk on the circus axis to the quay (old: the wedge between the crescents, 24 m at the circus widening to 56 at the terrace): the crescents' 14 m bands, which end ±12 m off the axis, need the plots to reach ±9",
+   "The Skyport apron: the Skyport Pier's head widens to x 96–140 by ±30 (old: the tower on its 22 m apron at the pier head), carrying S2's Skyport station banks and running 8 m onto the tower's caisson (drum edge x 132), the tower's way in on foot; the Market Pier widens at its root to a landing stage (x 96–140, y -196..-106) for S2's Harbour station banks and runs on to x 254, 6 m onto the liner berth's caisson (edge x 248), its way in (RCH-1, brief 075 review)",
    "The harbour: the upper terrace (x 46–74), steps and promenade (to 96) are one quay strip down the whole sheet (old z -300..380, run on to both edges); the sea from x 96; the Skyport Pier on the axis to its apron, the Market Pier (old z 60–76) to the liner berth",
    "The tram: the old line ran on the boulevard's west lane from Sunset Way to short of the circus, one track (old TrackX -2.5), one stop island (old z 100–124). The plan's rules want double track in the centre lanes, a loop at an end inside the sheet and stops 300–500 m apart: T1 runs the boulevard (stop \"Crown Circus\" at y -64, the old island's place) and turns on a loop round the circus island on the ring road (R 25), and its other end runs Market Street and Sunset Way to the West End, joining the sky rail at both ends; no overhead wires (TS-W0)",
-   "The plan's S1 (Sphere Line) is not an old line: the generator lays station banks only for east-west lines on y 0 (the circus axis), so S1 runs from the West End along Circus Road (Western Park and Orbit Gardens stations), north past the Sphere's east side (x -95) and off the sheet; it joins T1 at Sunset Terraces. No line reaches the Skyport (a station there would have to be 200–500 m from another on y 0, and the circus's 14 m island takes no pylon). The old lines stay planned data:",
+   "S2 (Harbour Line, brief 075 review: the Skyport reachable): from the south edge over the water on x 117 (the old sea leg), Harbour station on the Market Pier's landing stage (y -140, the T1/Crown Circus interchange, 136 m), and a terminal loop (R 40) round the Skyport Tower with the Skyport station on its west leg over the Skyport apron: the old harbour line's sweep round the Skyport on pylons, round the old Skyport_Tower as the old reel (not the portal tower)",
+   "The plan's S1 (Sphere Line) is not an old line: the generator lays station banks only for east-west lines on y 0 (the circus axis), so S1 runs from the West End along Circus Road (Western Park and Orbit Gardens stations), north past the Sphere's east side (x -95) and off the sheet; it joins T1 at Sunset Terraces. S1 does not reach the Skyport (a station there would have to be 200–500 m from another on y 0, and the circus's 14 m island takes no pylon): S2 does (brief 075 review). The old lines stay planned data:",
    "The old lines are not in plan.skyrail in this draft: the generator lays station banks for east-west lines only and the old lines run north-south (the main loop over the boulevard's west promenade, x -13; the harbour line on the quay, x 88). S1 (Sphere Line: Circus Road, north on x -218, a loop by the Sphere) and S2 (Harbour Line: up the quay, into the Skyport Tower, round the pad) are planned in oldtown.skyrail.planned with radii, spans and stations, ready for plan.skyrail once the generator lays north-south banks (Splice). The old boulevard leg also needs a pylon zone on the promenade (pylonZones has none) and is drawn as data only",
    "The harbour sky rail (planned) keeps the old quay leg (x 88) and Harbour station (old (88, 110) → plan (88, -96), here 44 m south at -140 so the station spacing to the Skyport holds, 200 m); the old loop round the Skyport (R 48) becomes the plan's line into the Skyport Tower's portal (the tower 15 m east of the old Skyport, x 170 → 170, so the R 70 turn off the quay ends before the portal) and the loop round the pad beyond; the old sea leg (x 122) is not built (the line ends on its loop)",
    "The Sphere stands at the old SphereStation (old (-130, 330) → plan (-130,124), yaw 20) at the plan's ×0.425 (top 80, Aster review 2026-10-12); the old town stood it at ×1 (188 m)",
    "The Skyport is the old Skyport_Tower piece at the old position (plan (170, 0)) as a landmark at 108 m (× 0.94), not today's Skyport Tower megastructure: that portal tower needs a sky line and its station through it, and no line the generator can build reaches the pier (S2 planned); the aircar pad landmark goes (the tower carries the old discs)",
    "The liner berth closes old Market Street's vista at the Market Pier's head (old LinerDock at x 270 on the pier's axis; plan (270,-138), the pier 152 m long)",
-   "The gate towers (old DiscTower pair at x ±44, z 372) stand at 108 (× 0.69), not the old 156.6: they are within 150 m of the quay and standards.skyline.harbour holds that for the Skyport Tower (Sky's call to lift)",
-   "The gate towers (old DiscTower pair at x ±44, z 372) stand at 108 (× 0.69), not the old 156.6: they are within 150 m of the quay and standards.skyline.harbour holds that for the Skyport Tower (Sky's call to lift)",
-   "The ParabolicArch across Crown Avenue (old (0, 250) → plan (0, 44)) is not placed: its feet (plinths at x 14–17) need a district street's 8 m pavement frontage zone and Crown Avenue is access (6.5 m), so the circus stays sealed at c_s; it is in oldtown.props for Splice and Vela",
+   "The gate towers (old DiscTower pair at x ±44, z 372) stand at the old 156.6 (× 1.0, tip 156.8): within 150 m of the quay, so standards.skyline.harbour.exceptions names the pair (brief 075 remap, Aster); every other tip there keeps 108",
+   "The ParabolicArch across Crown Avenue (old (0, 250) → plan (0, 44)) stands as landmarks[disc-west].gateway: its plinths (x ±14–17, y 41–47) in the avenue's frontage zone, which here runs to the old walls' building line at |x| 18 (K-1, Splice's measure, briefs/075/notes.md)",
    "The old SkyBridge between the gate towers (60 m up) is in oldtown.props, not placed: no plan structure carries it yet",
    "SpaceHQ: at the old position (plan (0, 244)), closing the axis; its drum keeps the regenerated SpaceHQ_Portal but carries no beam (portalWas): the plan's signature portal reads a line on y 0, and the old main loop turned west before the HQ",
    "Lantern Terraces (a second terraced-housing megastructure, Crown Terraces' kind) on lantern-court, facing south over Lantern Lane: MS-1 keeps 2–4 megastructures and the old town's only one (the Skyport) cannot be today's portal tower without a sky line",
    "Crown Terraces (megastructure) move to the West Terraces plot (x -244..-164, y -114..-45) facing south over Lamplight Lane, keeping MS-1's 2–4: the old town had procedural massing there (DecoKitCityMass); no bridges",
    "T1's stops: Sunset Terraces (-340, 131, the S1 interchange) and Crown Circus (0, -68, the old island's place) fixed; Lamplight, Rocket and Orbit Square at equal chainage between them (300.38 m)",
+   "Road finish: the asphalt set (Sky 2026-10-28, the old asphalt road back): road-asphalt = the old DK_Asphalt_Road (#817B75, 16 m repeat), dashes 0.12 m, 2 m on 4 m off; the light ribbon kept on every class (GDD §14/§15), so SF-24 holds as written",
    "Kerb faces (streetscape.roads.kerbs): the circus mouths of the Boulevard and Crown Avenue, and the mouths of the garden walk, the west lane, the Sunset Walk, the Gardens Gate and the Sphere Walk on their roads, recomputed for the old town; the Handover's (garden walk on Starline Street) kept. The crossing coverage's hand removals named today's crossings: cleared (the rules still apply)",
    "towers.sites: none. The old town has no frontage towers on the composed district (its towers were Southside podium towers, DecoKitHighrise, and background towers up the coast, oldtown.props.towers); every live site named a plot that is gone",
    "The Crown Vista tower (250 m, standards.skyline.vista) goes: the old axis closes on the SpaceHQ through the arch, between the two DiscTowers, as the old reel",
-   "Frontage mixes for the new areas from today's: the Boulevard takes the Crescent Quarter's, Crown Circus the Records Precinct's, Southside and the West Terraces Sphere Gardens' (their faces on squares and greens), the garden terrace Lamplight's, the Lantern Quarter and the harbour keep theirs",
+   "Frontage mixes for the new areas from today's: the Boulevard takes the Crescent Quarter's, Crown Circus the Records Precinct's, Southside, West Row (Southside's spirit, brief 075 follow-up) and the West Terraces Sphere Gardens' (their faces on squares and greens), the garden terrace Lamplight's, the Lantern Quarter and the harbour keep theirs",
    "W2 starts at y -126 (old -198: the west lane), north of lamplight-south-e: 12 bays off its south end (old civic hall run S6 2, H 12 → H 2), its garden wall the same",
    "W2's garden wall (old: End, Corner at z 178) ends square here: its corner cell at the crescent's back had no perpendicular run (BG-2); 27 bays from the lane as old",
    "W4 and E4's boulevard walls end on their short walls at y 140 (old: they started at CircusNorth 236.017 and ran 110 m, 1.7 cm past the short walls at 346); their garden and terrace walls (old: a corner at z 234 meeting no run) start one cell on with an end",
@@ -10252,7 +11889,7 @@
       }
      ]
     },
-    "status": "not in plan.skyrail: station banks are laid for east-west lines only (generator); S2/harbour and S2/apollo, S1/sphere stand on north-south lines. Checked with tools/plan/oldtown/transcribe.ts --with-skyrail (the transit rules pass on them; the world build stops at the banks)"
+    "status": "the old lines as first planned (S2 here is the old portal-tower variant; the plan's S2 is plan.skyrail[1], brief 075 review). Was: not in plan.skyrail: station banks are laid for east-west lines only (generator); S2/harbour and S2/apollo, S1/sphere stand on north-south lines. Checked with tools/plan/oldtown/transcribe.ts --with-skyrail (the transit rules pass on them; the world build stops at the banks)"
    },
    "beam": {
     "h": 1.6,

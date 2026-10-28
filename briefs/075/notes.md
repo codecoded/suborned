@@ -580,3 +580,222 @@ The old frontage system builds every block Datum lays (plan `blocks`, `circus.cr
 
 ## The Crown Avenue arch's ground (Splice → Datum, brief 075, 2026-10-28)
 `kit-fit.test.ts` now reads the live `landmarks.disc-west.gateway` (no more `archWas`); K-1 and the plan pass. For the arch's text (`piece`, `whyNot38`, `siteWhy`, `keep` still describe the vista-2 site at y 53, plinths y 50–56, frontage x 14–17, building line x 17), the measured ground at its site, both sides alike, every y from 38 to 50 (probe `out/scratch/splice/arch-zone.ts`, K-1's own test): Crown Avenue's kerb face at |x| 10, kerb + walk zones to |x| 13.5 (3.5 m), the 6.5 m access pavement to |x| 16.5, then the 1.5 m paved setback to the old wall's building line at |x| 18 (block runs facing `access:crown-avenue`). So the frontage zone at y 41–47 is |x| 13.5–18 (4.5 m), and the feet at |x| 14–17 stand 0.5 m inside the walk's edge and 1 m off the building line; the plinths have buildings behind them here (the old walls), so the `keep` line about shopfronts behind the plinths now applies (|x| 18, y 41–47).
+
+## Remap: roofs (Splice-roofs, brief 075, 2026-10-28) · remap/READY-roofs-splice
+**What:** the old town's roof programmes (DecoKitRoofline.cs + DecoKitRoofThemes.cs, read only) are generator rules in `tools/world/gen/roofline.ts` (RL-1..RL-4), called from `tools/world/gen/roofs.ts` (`oldRoof`). Every ordinary roof outside the Handover zone (plan programmes antenna-mast, water-sphere, roof-garden, sun-terrace-pool, tennis-court, solar-dish; not towers, crowns, sign-frame, hover-pad, saucer or the industrial forms) takes programme `roofline`: the building's top inset 0.3 m, turned so +v faces its street; the plan's always-items keep their counts in one plant bay (plant house + rocket vents) at the end away from a hero corner; the rest splits at 6 m joints into 12-30 m plots (RL-1), each a weighted theme that fits and is never the plot before's (RL-2: lido 2, tennis 1.5, garden 2, cafe 2, glass 1.5, machine 1.5, sun 1; else planters), laid from the old items at true size on a terrazzo deck (lawn + kerb on gardens) (RL-3). RL-4: no lattice masts; a 4-storey corner of the old frontage gives its corner plot one Roof_Mast, at least 120 m from any other. The Handover zone's roofs (`zoneOf`, building top centroid) are built exactly as before. Seeded by roof id.
+**Counts (same tree, roofline off → on; 240 roofs):** masts 164 → 11 (4 in the Handover zone as before, 7 hero Roof_Mast; Roof_LatticeMast 1 → 0) · pools 1 → 22 (21 lido plots + the zone's one) · gardens 26 → 53 (27 garden plots + the zone's 26 roof-garden roofs) · cafés 0 → 39 · sun decks 0 → 36 · also glass 11, tennis 1, machine 58, planters 15; 182 roofline roofs, 0 repeats in a row.
+**Shared edits (small):** `contracts/world/world.schema.ts` Roof `plots?`, `kits?` (each KitRef with its own `z`); `tools/plan/street-rules.ts` SF-15 checks a roofline roof plot by plot; `tools/plan/kit-fit.ts` K-1 checks each `kits[]` piece in its roof rect and on its slab. Failing examples in `tools/plan/world-rules.test.ts`; rules in `tools/world/gen/roofline.test.ts`. Re-pinned: kit020 (water-sphere 39 → 10, mast roofs only in the zone), surfaces (roof tubs 394 → 385), gen.test (roofline fits plot by plot).
+**For Latch:** `RoofKit.cs` draws `roofs[].kit` and `.crown` only; please also place each `roofs[].kits[]` piece (KitRef at `at`, height `z`, its own `yaw`; the KitLiveries call as for `kit` with role "kits") and rebuild. Until then the roofline roofs show only their decks, lawns, plant and vents. 1322 roof pieces (CafeSet_Tulip 314, Deckchair 265): worth GPU instancing / a perf look on the Air.
+**For Datum:** the plan's `standards.buildings.roofs` doesn't name `roofline`; SF-15 accepts it through the generator's theme table. If you want it in the plan, add a `roofline` programme (setback 0.3, the theme table) and I'll read it from there.
+**For Vela:** every old roof piece the themes name is adopted (Roof_Bandstand, Roof_Radome, Roof_Dish and Roof_Drum too); `STAND_IN` in roofline.ts is only used if one is set back to candidate.
+
+## Remap: pieces (Vela, brief 075, 2026-10-28) · remap/READY-pieces-vela
+- Files I touch: contracts/world/kit.json (statuses + catalogue), tools/kit/tags.ts (USE_075R + scale [1, 1] for the remap's old pieces), tools/decokit/ground_tex.py (lawn: stripes out), tools/kit/kit.test.ts (the remap test). Not tools/world, not the plan.
+- 23:41 START Vela remap: bun run guard bun run decokit --only <the 34 old pieces adopted for the remap; list below>
+- 23:42 END   Vela remap decokit --only (29 assets exported, lawn sheet re-made by ground_tex.py; exit 1 only from the fit table's stale tower / SpaceHQ_Portal orders the remap dropped, as Splice logged, none of them in this run)
+- 23:43 START Vela remap: bun run guard bun run decokit --only DecoPavilion,PlanterBed (the batch run measured DecoPavilion's depth as 2.3 m, the FBX is 6.99 as the old; PlanterBed's LODs did not reduce)
+- 23:46 END   (DecoPavilion still 2.3 m: the screen outline's doubled point at its 0.35 m step made the bevel emit 4 NaN vertices; structures.py drops repeated points, outline unchanged)
+- 23:46 START Vela remap: bun run guard bun run decokit --only DecoPavilion
+- 23:47 END   Vela remap decokit --only DecoPavilion (ok: 7.78 x 7.4 x 6.99 as the old; exit 1 only from the stale tower / SpaceHQ_Portal orders)
+
+## Remap: asphalt road (Vela, brief 075, 2026-10-28) · remap/READY-asphalt-vela
+- Files I touch: tools/decokit/road_tex.py (asphalt(): the old DK_Asphalt_Road sheet + normal byte for byte, hash-pinned; the 055 made sheet retired), road_ribbon.py (DK_Ground_RoadAsphalt = the old .mat: 16 m, smoothness .28, no mask; DK_Road_Mark = the old DK_Road_Paint #E8E2D2 matte), unity_mats.py (SUPPORTED + roadpaint), look.json `road-asphalt` (tile 1, note, palette mean), road_board.py (crops: setts, islands, road flats). Not the plan, not tools/world.
+- 23:50 START Vela asphalt: bun run guard bun run decokit --mats-only (road_tex asphalt = the old sheet; DK_Ground_RoadAsphalt, DK_Road_Mark)
+- 23:52 END   Vela asphalt decokit --mats-only (305 materials written; exit 1 only from the fit table's stale tower / SpaceHQ_Portal orders, as before)
+- Checks: `bun run guard bun run kit` exit 0 (430 assets: adopted 353 → 382, candidate 33, rejected 15; 262 files copied; kit.json changes = the 29 pieces + Ground_Swatches' two lawn maps); `bun run collide` (23 measured) + `--only Roof_Bandstand` after the cylinder clamp, `--check` ok (416 pieces, 5050 volumes); `bun run cover` + `--check` exit 0 (the two getaway-safe ambush warnings as before); `bun tools/plan/cli.ts` exit 0; typecheck: only tools/life/presentation.ts (Pulse's WIP, TS7006); `bun test tools/kit tools/decokit` 45 pass, 2 fail = fit.test.ts's stale tower / SpaceHQ_Portal orders (the remap dropped them; Splice logged it; not this round).
+- Also fixed: tools/decokit/structures.py DecoPavilion (a doubled outline point made the bevel emit 4 NaN vertices: the manifest read it 2.3 m deep, its LODs stalled at 34k; now 6.99 m as the old, LODs 9.5k / 2.2k); tools/decokit/collide.py (a cylinder's radius never wider than the piece; only Roof_Bandstand re-measured).
+- Contact sheet: briefs/075/remap/pieces/contact_sheet.png (old left, ours right, 1.8 m post; `Blender -b -P tools/decokit/review075_remap.py -- briefs/075/remap/pieces 560`, then `python3 -I briefs/075/remap/pieces/compose.py briefs/075/remap/pieces`). AlleyBridge, CableSpan_6 and BackDoorLamp hang from walls, so their tiles show little.
+
+### Remap: roofs (Vela pieces, for Splice-roofs)
+Every piece the old DecoKitRoofThemes / DecoKitDecks name is adopted at the old size (scale [1, 1]). Place them by id; the new use tags are their own, so no older picker draws them.
+
+| old theme | pieces (id) | status | size x × h × z m | use tag |
+|---|---|---|---|---|
+| lido | Roof_LapPool, Roof_Pool, Roof_Cabana, PottedPalm_Small | adopted (before) | 17.44 × 2.63 × 7.92 · 14.8 × 2.63 × 14.44 · 3.11 × 3.3 × 3.11 | roof:pool, roof:garden-shade |
+| tennis | Roof_Tennis, Bench, PottedPalm_Small | adopted (before) | 26 × 3.01 × 12.6 | roof:tennis-court |
+| garden | **Roof_Bandstand** (new), RoundBench, CoconutPalm, FanPalm, Bench, PottedTopiary | **adopted now** / before | 7.76 × 8.6 × 7.76 | roof:garden-bandstand |
+| cafe | CurvedKiosk, Roof_Cabana, CafeSet_Tulip, PottedPalm_Small | adopted (before) | 6.08 × 6.5 × 4.36 (kiosk) | kiosk-pavilion |
+| glass | Roof_Conservatory, Roof_Planter, RoundBench, PottedTopiary | adopted (before) | 12.8 × 6.7 × 8.4 · 6 × 1.25 × 1.4 | roof:garden-house, roof:garden-bed |
+| machine | **Roof_Radome**, **Roof_Dish**, **Roof_Drum** (new), Roof_Tank, Roof_LatticeMast | **adopted now** / before | 6.3 × 7 × 6.3 · 6.64 × 6.51 × 5.44 · 7.4 × 8.4 × 7.4 | roof:machine:radome / :dish / :drum |
+| sun | Deckchair, Planter_Trough, PottedPalm_Small | adopted (before) | | deckchair, planter |
+| Decks extras | **Roof_Fin** (new), Roof_Mast, SkyPad_Roof, Billboard_Rooftop_B | **adopted now** / before | 1.8 × 11 × 3.6 | roof:fin |
+Swap your stand-ins: RoundBench → Roof_Bandstand where l ≥ 18; Roof_Tank-only plant → the old four-piece draw (Radome 6.3, Dish 6.6, Tank 4.8, Drum 7.4 m wide). Roof lawns: the old laid them raised 0.1 m on a limestone kerb 0.2 m wider each side, top 0.08 (DecoKitHighrise: kerb prism DK_Limestone_Tex, lawn DK_Ground_Lawn); procedural, there is no kit piece for it.
+
+### Remap: props (Vela pieces, for Splice-ground)
+| use (old script) | pieces (id) | status | size x × h × z m | use tag |
+|---|---|---|---|---|
+| Orbit Gardens (DecoKitGardens) | **PlazaFountain** (the basin's fountain), **DecoPavilion**, **CafeSet** (its 4 tables) | **adopted now** | 7 × 3.46 × 4 · 7.78 × 7.4 × 6.99 · 2.71 × 2.55 × 2.71 | garden:fountain, garden:pavilion, cafe-set:old |
+| Orbit Gardens, also | Cypress, FanPalm, Bench, PlazaSphereLamp, ShrubMound, FlowerBed, CoffeeCart | adopted (before) | | planter-bed:cypress, tub-palm:full, bench, lamp, planter-bed:shrub / :flowers, kiosk-food:full |
+| Gardens surfaces | lawn DK_Ground_Lawn (now no stripes), paths DK_Terrazzo_Ivory, basin coping DK_Granite_Kerb, water DK_Pool_Water / DK_PoolWater | materials in the kit | | procedural surfaces, as the old (source: procedural) |
+| harbour terrace, steps, promenade (DecoKitHarbour) | flags DK_Pave_Flags (the old's DK_Pave_Flags_Metric = the same at 4 m), risers DK_Limestone_Tex, quay wall DK_Granite_Kerb, Bollard every quay bay | materials + Bollard adopted | | procedural, as the old |
+| plaza (DecoKitPlazaLayout) | **GrandStair**, **PlanterBed**, **PlanterHex**, **FlutedColumn** | **adopted now** | 10.22 × 2.12 × 3.93 · 4 × 0.6 × 1 · 2.1 × 0.56 × 1.82 · 1.28 × 3.85 × 1.28 | stair:grand, plaza:planter-bed, plaza:planter-hex, plaza:column |
+| shelters | **BusShelter**, **TramCanopy** (the full old ones; the _Play copies keep `tram-shelter`) | **adopted now** | 4.7 × 3.6 × 2.69 · 6.59 × 3.21 × 2.48 | tram-shelter:full, tram-shelter:canopy-full |
+| café terraces | **BistroSet**, **CafeTable_Tulip**, **CafeChair_Tulip**; CafeSet_Tulip, Parasol_Stripe, TerraceScreen, SandwichBoard | **adopted now** / before | 2.21 × 2.48 × 2.21 · 0.8 × 0.74 × 0.8 · 0.55 × 0.83 × 0.58 | bistro-set, cafe-table:tulip, cafe-chair:tulip |
+| seaside | **CoinTelescope**, **LifebuoyStand**; Deckchair, Roof_Cabana, Bollard, DrinkingFountain | **adopted now** / before | 0.77 × 1.44 × 0.52 · 0.86 × 1.64 × 0.4 | seaside:telescope, seaside:lifebuoy |
+| street furniture | Streetlamp, PlazaSphereLamp, Bench, RoundBench, StreetClock, AdColumn, Planter_Urn, Planter_Trough, OvalPlanter, Hydrant, RecyclingBins, BikeRack, PhoneBooth, TicketMachine, VendingMachine_Cola / _Snack, Automat, PneumaticPost, HangingBasket, WindowBox, InfoLightbox, Bollard, Barrier, ManholeCover, DrainGrate | adopted (before) | | their existing tags |
+| kiosks | CurvedKiosk, Newsstand, CoffeeCart, TicketKiosk | adopted (before) | | |
+| signage (DistrictDressing) | BladeSign_*, NeonStar_Wall, Marquee_Cinema, Billboard_* | adopted (before) | | |
+| alleys (DistrictDressing) | **AlleyBridge**, **BikeLean**, **CableSpan_6**, **CrateStack**, **MilkCrates**, **Pallet**, **PipeBundle_6**, **SteamVent**, **TrashCans**, **BackDoorLamp** | **adopted now** | e.g. CrateStack 2.6 × 1.25 × 1.04, PipeBundle_6 6.02 × 1.51 × 0.52 | alley:bridge / bike-lean / cable-span / crate-stack / milk-crates / pallet / pipe-bundle / steam-vent / trash-cans / back-door-lamp |
+| left candidate, on purpose | Dumpster (the stash piece: Keel's and Motive's call, kit.test pins it); AlleyWall_6 / 6D / 9 / 10, AlleyStair_9 (6 to 10 storeys: the remap is 3; AlleyWall_3 / 4 / 3D / 4D are adopted); TrafficLight (crossings are the floating eye); Scooter, RocketShip, Tile_Plain, Tile_CornerCurb (not in the remap's rules) | candidate | | |
+Every piece the old rules name exists in kit.json; none is missing. The new ones are the generator's binaries (old meta and prefab kept), the old size to 1 cm (kit.test `brief 075 remap`).
+
+### The lawn (Aster's circus shot)
+- Stripes: the old lawn_v1 sheet itself has 1 m mown bands (the old DecoKitGroundMesh says so), and ours kept them at 45 %. `ground_tex.py lawn_destripe` takes them out: the albedo is divided by its row and column luminance profiles and the normal map loses its row / column tilt, so clover drifts and blade detail stay and the tile is still seamless (row std 0.036 → 0.002). Rides in Ground_Swatches' `ground_lawn_v1(_normal).png`, copied to Unity. Before / after: the lawn tile on the contact sheet.
+- Hard edge: the ragged, stair-stepped border in the orbit-gardens frame is two coplanar ground surfaces z-fighting (lawn and path at the same height), not the texture. The old never had a lawn edging piece: its lawns were laid 3 mm under the walk with the paths 2 mm over (Gardens) or raised 0.1 m with a 0.2 m limestone kerb (roof and podium lawns), all procedural. **Latch / Splice:** draw park and median lawns a few mm under paths and pavement (or raised 0.08–0.1 m with a DK_Limestone_Tex or DK_Granite_Kerb edge strip 0.2 m wide, as the old did) so the border is one clean line; and shrub mounds and flower beds over open lawn (the old Gardens seeded 60), which is the old softness.
+- 23:53 DONE Glint 075 banding: camera dithering on (AtmosphereLens.Begin + Atmosphere.Camera); crops briefs/075/remap/banding/; Glint075 -mode band
+- Result (Vela asphalt): DK_Ground_RoadAsphalt is now the old DecoKit DK_Asphalt_Road as it was: asphalt_road_v1.png + _normal.png from ~/Projects/the-suborned/game/Assets/TheSuborned/Art/DecoKit/Textures, byte for byte (2048 px each, sha256 292e38dd… / 3da4dfe8…, pinned in road_tex.ASPHALT_SRC; road.json `roadasphalt` has the provenance), 16 m tile, smoothness .28 flat, bump 1, white tint, no mask, no detail (= the old .mat). Mean #817B75. The 055 made sheet (#505359, seed 55) is retired. DK_Road_Mark (RoadMark_Dash_2m / EdgeLine) = the old DK_Road_Paint #E8E2D2, smoothness .3, matte (kind roadpaint). look.json road-asphalt: tile 4 -> 1, palette #817B75.
+- What the old road had (DecoKitRoadMarkings.cs): one asphalt deck; a dashed centre line 2 m on / 4 m off, 0.12 m wide, on carriageways 7-17 m kerb to kerb, 6 m clear of run ends; a ZEBRA 3 m in from every paired run's end (stripes 0.5/0.5, 3 m deep) with coral tactile pads #CF7A63 on both walks. No edge lines, no stop lines, no lane dividers. Zebras are not ported: GDD §15 (crossings are the floating eye, never a zebra) and plan crossings.meet = stop; our crossings keep their dot rows and eye heads. No stop or edge lines added (the old had none).
+- Crops (Blender, play camera ortho 14 pitch 38, export with --road-finish asphalt --dev): briefs/075/remap/asphalt/ (Sunset Way tram stop day/night and yaw 210, Records Office front, circus, Market Street, a dashed access run; quad.png). Rails, their granite edge stones and the setts between read on the old asphalt with no retint; islands and kerbs read; dashes crisp.
+- For Datum (plan, not mine): switch roads.finish.set to "asphalt" (it is "enamel"); update keys.road-asphalt (hex #817B75, tile 16, why: the old sheet); old dash width is 0.12 (marks.dash.width says 0.2). With the asphalt set the world fails SF-24 (9 footways: "the higher road's ribbon runs 0 m across its mouth"), because the asphalt set drops `ribbon`: either SF-24 reads the asphalt set, or the set keeps the ribbon (the old road had none). For Latch: rebuild after the plan switch (kit copied, 0 files new). Glint: the old road under today's grade.
+- 23:55 Vela asphalt done with tools/decokit (one run, 23:5x).
+
+## Remap: Southside west (Datum, brief 075, 2026-10-28) · remap/READY-west-datum
+**What the sand was.** Old Southside west of the Boulevard (N1's west half, the Rocket Lane blocks, W1 and W2, the south 66 m of old W2, the gardens' south end) is not empty. It is the Handover zone and the plots kept around it (records-*, rocket-west, lamplight-south-w/-e, Satellite Street, boulevard-west, n1, ss1, orbit-square-w), and all of them are built. The empty sand in `remap/frames/overhead.png` is two other things:
+- the strip west of Sunset Way (x -460..-352), which the first remap left as the `beyond` hatch and the world draws as bare ground (the old town had procedural massing there);
+- `orbit-gardens`, the Handover zone's own open plot (x -180..-66, y -401..-322). It stays byte-identical, so it is a plaza and its paving is ground work (Splice).
+
+**What changed** (plan v0.5.1, sha256 7cd629d8…; `contracts/world/harbour-district.oldtown.plan.json` is the same file):
+- **West Row** (area `westrow`):
+  - The street: access road `west-row` on x -416 (w 12), from a new node `w_row` (-416, 0) on Circus Road south to `w_row_s` (-416, -548). It is gated at `west-row-gate`, the strip's only way in, because Sunset Way and Crown Road are primaries (R-H1).
+  - Lanes: four 8 m walks, `west-row-lane-1..4`, at y -432, -312, -192 and -126, running from the sheet edge to Sunset Way's kerb.
+  - Ten plots, `west-row-w1..w5` (residential, sheet-edge side) and `west-row-e1..e5` (mixed, Sunset Way side). Each is laid as an old-grammar block in `plan.blocks`:
+    - w: 28 m solid blocks;
+    - e: 46 m open-court blocks;
+    - w5 is the corner block on Circus Road.
+  - Frontage mix: Southside's (`mix.gardens`).
+- **Western Park:**
+  - `western-park-n` runs on north to Crown Road (y 9..268).
+  - `western-park-s` is now x -410..-352, east of West Row, where S1's Western Park station banks stand.
+- **Areas:** `westend` and `sphere` now start at Sunset Way's west kerb (x -352). `westrow` covers the strip.
+- **Beyond hatch:** only the sheet's slivers are left (north of Crown Road at the west edge, north of the forecourt, the south edge).
+- **Circus Road** path: `off_circus_west, w_row, w_circus, …`. Its 6 m median now has a nose either side of the new junction.
+- **Unchanged:** the Handover zone, its 8 streets, plots, gates, nodes and mission files. Also unchanged: T1, S1, stops, stations, Pulse's timetable (journeys kept) and every other block.
+
+**Rules, in `tools/plan/oldtown/transcribe.ts` (block `WR`):**
+- Street line: the sheet-edge plot takes one 28 m block behind the sheet edge's 3 m setback and the access pavement. The rest goes to the Sunset Way side.
+- Lanes:
+  - Lanes go opposite each seam between two built plots on Sunset Way's east side (-192, -126).
+  - Each span is then cut into the fewest equal blocks of at most 140 m.
+  - A lane opposite a street that meets Sunset Way would land its axis crossing in that street's mouth, so street axes are not seams. Market Street at -410 failed SF-20 that way.
+- The last west plot runs on to Circus Road. Blocks are fitted by `fit()`.
+
+The transcriber also keeps Pulse's timetable part (journeys, openQuestions, notes) from the plan already at `--out` when the lines are unchanged, and it carries the gate-tower history and skyline tier lines that had been hand-entered. A re-run reproduces the live plan byte for byte. The manual decision is in `plan.oldtown.manual` ("West Row …"), and the frontage-mix line names West Row.
+
+**For Splice (world):**
+1. New ground to build: 10 laid plots, 101 runs and 94 corner cells in all (BG-2), 4 walks across West Row and the West Row gate's lane mouth (footway). The checker's own world build passes every rule: 214 buildings, 615 tenancies, 55 kerb returns, 39 crossings.
+2. Pinned tests that move with the plan (counts and counters only):
+   - `tools/plan/kerb-return.test.ts` KR-1: the base count goes 69 → 73 (+2 median noses at `w_row`, +2 for the new gate mouth's corners; value 55).
+   - `tools/world/rules/quiet.test.ts`: takedown ids shift +1 (`civic-robot-dock-165` → `-166`, `phone-booth-302` → `-303`, `-369` → `-370`, `mast-camera-164` → `-165`).
+   - Cause: the gate pass (`street/transit.ts` §3) numbers each gate's pole camera before the records-square mast and the robots, so any new gate renumbers the zone's watchers. If the zone's ids must never move with the district, number the zone's items first or key them by site.
+3. The beyond kerb run is shorter (Sunset Way's west kerb now faces plots). `roadfinish.test.ts` still passes.
+4. `orbit-gardens` (Handover open plot) still draws as bare sand. It is a plaza: pave it as ground.
+
+**For Keel / Waymark:** `sim/data/handover.site.json` is unchanged (`bun test tools/sim/sim.test.ts`: the site tests pass). Only `handover.takedown.json` fails, on the id counters above; places and items are the same. `bun run sim:site` refreshes it. Check whether the takedown ids enter any replay's start hash: the first remap re-recorded c043 when they renumbered.
+
+**Evidence (2026-10-28):**
+- `bun tools/plan/cli.ts` exit 0 (144 PASS).
+- `--overlay tools/missions/handover/overlay.ts` exit 0 (149 PASS):
+  - V-1 64/65 (+1 hidden by design), C-0, C-1, C-3 and W-1 unchanged;
+  - M-1 getaway 447, official 1124, getaway-service 126, rivals 593 m, identical to HEAD's plan through the same overlay;
+  - R-E1 0 of 8 networks; R-G1 10/10; BG-1 26 laid, 9 exempt.
+- The civic block and the capstone programme inside the zone are identical to HEAD's export (sha of both compared). Six new Automats stand on West Row's automat tenancies, outside the zone.
+- One run in the shared tree failed SF-7, K-1 and CAP-2/4/7 while the generator WIP was mid-edit. HEAD's plan passed at that moment and a re-run passed.
+- Sheets: `remap/plan-sheet.html`, `remap/sheet.html`.
+
+## No placeholders (Splice-checks, brief 075, 2026-10-28) · remap/READY-checks-splice
+Sky: the gate towers' bright-blue procedural cylinders were "ugly blue buildings"; a placeholder never ships.
+- New world rule **NP-1** (`tools/world/rules/placeholders.ts`, registered in `tools/world/rules/index.ts`; runs in `bun run plan`, the overlay and `bun run world`, exits 1). It fails when:
+  - a landmark is not `source: kit` with a piece (or pads), or the gateway arch the plan names isn't placed;
+  - a plan signature, tower site, sky bridge, station with a `kit`, or the Parade gate isn't in the export as `source: kit`. A station or gate the generator skipped for want of its piece now fails; it is no longer silent;
+  - a `pier tower` megastructure has no adopted piece tagged `landmark:<id>` (mega/pier.ts is a stand-in);
+  - any kit ref in the export names a piece that isn't adopted (candidate, rejected or unknown);
+  - any building wall face is undressed (faces-cover.ts, the world:faces rule).
+- Tests: `tools/world/rules/placeholders.test.ts`, 7 tests. The failing examples are a DiscTower that doesn't fit its disc, a skipped station, a missing arch, an untagged pier tower, a candidate facade and an undressed wall. A signature standing as its adopted base piece while its variant is pending is allowed and listed.
+- Procedural geometry that stays allowed (not a placeholder): plain building masses, podiums and roof slabs under their kit dressing; the megastructure kinds built of decks, columns and masses (terraces, arcades, harbour decks); a caisson's drum under its pads; ground, kerbs, roads; the sky track beam ribbon; fascia signs; street items built from their kit.json parts.
+- **Latch, please:** make the Unity builder throw (`InvalidDataException`, as CityLayers/CrossingKit do) on the same case, so no build carries the blue placeholder material:
+  - `Layers.Landmarks`: a landmark with `Kit == null && Kits.Count == 0`. The cylinder/sphere branch stays only as the caisson drum under pads;
+  - a signature with `Kit == null` (any kind);
+  - a `MegaDto` that `StandIns` doesn't cover when the plan kind is a pier tower;
+  - a kit ref whose piece isn't in the imported kit. Today `KitPlacer` may fall back to a box.
+  - Then nothing in a build uses `look.json` `landmark` as a stand-in body.
+
+## Reachability (Splice-checks → Datum, brief 075, 2026-10-28)
+Sky: "we need the skytrak to get here - it's unreachable right now. that's datums job to map the world to make sure everywhere has a real structure."
+- New rule **RCH-1** (`tools/world/rules/reach.ts`). Every landmark, megastructure, plan station, pier (each `quay` polygon), station platform and deck must join the street network by a walkable or rideable path.
+  - Ground is a 1 m raster, flooded from the carriageway centrelines. Water outside quays and piers, beyond, and ground masses are blocked.
+  - Decks and platforms are grouped as the generator groups them. A group is reached by a street connector standing on the network (or inside a building that fronts it), by a connector from a reached group, or by riding: every platform of a line is reached once one of them is.
+  - A thing is joined when at least 9 m² of its footprint (3 × 3 m) lies on the network or on a reached deck. A pier that only touches a caisson at a point is no way in.
+  - Unknown = reject: a plan station with no platform in the export fails.
+- **Informational for now** (`RCH_ENFORCED = false`, shown as WAIVE) because today's plan fails. I flip it to failing once the plan passes.
+- Islands on today's plan (v0.5.x, 2 of 24):
+  1. `landmark/skyport-tower`: the caisson r 38 at (170, 0) stands in the water. The Skyport Pier (x 96–132, y ±6) ends tangent to the drum at x 132, so 0 m² is joined.
+  2. `landmark/liner-berth`: the caisson r 22 at (270, -138) stands in the water. The plan says "no walk to it (tenders)"; the rulebook has no water-only exemption, so it is an island. Datum or Aster: give it a way in, or take it to Sky.
+- Everything else is joined: monument, sphere, skylon, both gate towers, the 3 quay/pier polygons, both terraces and their walks (their stair cores are inside the podium, which fronts the street), the 4 S1 bank groups and mezzanines, and stations S1/west-end and S1/gardens.
+- **Datum:** route the sky track to the Skyport. A station whose platform (or a deck reached from it) covers at least 9 m² of the caisson disc joins it by ride. So does a pier built into the drum. Tests: `tools/world/rules/reach.test.ts`, 7 tests.
+
+## Remap: ground and props (Splice-ground, brief 075, 2026-10-29) · remap/READY-ground-splice
+- New: `tools/world/gen/oldtown/ground.ts` (lawns, Orbit Gardens, harbour terrace), `tools/world/gen/oldtown/props.ts` (old props by the old rules, ids `street/old/<rule>/<n>`), `tools/world/rules/oldtown.ts` (OT-1..OT-3) + test.
+- Shared files I touch (small, additive): `tools/world/gen/index.ts` and `street.ts` (one call each, last in the street layer), `tools/world/build.ts` (old ground into ground.flats / water / quays), `tools/world/report.ts` (two log lines), `tools/world/gen/kitrefs.ts` slotOf (a `street/old/` item's slot is its own size), `tools/world/rules/capstone.ts` (CAP rules skip `street/old/`), `tools/world/rules/index.ts` (register OT; someone re-wrote extraRules at ~00:00 and dropped it: please keep `...oldTownRules(c)` when you edit that line), look.json (`terrazzo`, `flags`, `granite` surfaces). Not roofs.ts / roofline.ts / kit-fit.ts.
+- Landed (export 07deff91…, the same hash twice). Ground (`gen/oldtown/ground.ts`, ids `oldtown/*`): lawns bordered on 5 park plots (1.2 m `bed-kerb` border, lawn corners R 4; sphere-park is not a rectangle: gap); Orbit Gardens: gate terrazzo over the gate mall (x -110..-54, ±6), raised basin r 12 (granite coping 0.6, rim 0.45, water 0.1 under it, terrazzo ring 5 m), canal x -78 ± 3 from y -108 (Datum's -148 runs onto lamplight-east's buildings: clipped, logged) to -16.6, coped, terrazzo walks both sides; harbour: terrace flags x 46..74, steps band 74..80 (limestone, laid flat: gap OG-H2), promenade flags 80..95.4, granite coping 95.4..96 in 3 runs broken at the piers; the circus pavement ring (r 29..35, 2 sectors between the boulevard and avenue mouths and their returns: it was bare land under the circus palms). 16 flats, 13 solids (ground.quays), 2 water.
+- Props (`gen/oldtown/props.ts`, ids `street/old/<rule>/<n>`, placed last: no other street id moves): 341 by rule; gardens 106 (fountain, 21 cypress, 8 benches, 8 lamps, 4 fan palms, pavilion 4 m north of Datum's place + 3 café sets, 60 shrubs/beds), harbour 191 (3 café terraces, 33 + 32 Streetlamps, 16 round benches, 10 lifebuoys, 11 telescopes, 11 benches, 38 mooring bollards, 6 deckchairs, a fountain), parade 7, boulevard 10 + frontage urns/troughs/topiary 27. 20 of ours gave way (in the basin or where the old prop stands; none in the Handover zone + 25 m, no street palm). 127 spots refused by the street layer (SF-1 walk zones on our narrower pavements, doors, BB-4 column spacing, SF-7 food kiosks), logged per rule in `bun run world`.
+- Rules OT-1..OT-3 (`tools/world/rules/oldtown.ts`, failing examples in `oldtown.test.ts`). Handover: sim site and takedown unchanged by this round; missions:check SHIPS.
+- For Datum: (1) the harbour's steps need the quay at two levels (terrace 0.15 / promenade -0.85, water -2 in the old; ours is one slab at 0.18 with the promenade walk and both piers on it); (2) bare ground the plan leaves: x 11..45, y -418..-402 (between starline-green and ss2, no road or plot) and the strip y -552..-498 along the south edge; (3) `kerb-return.test.ts` KR-1 now counts 55 returns (51 expected) on your latest plan; (4) sphere-park's lawn border needs a rectangle or a rule for its shape. For Latch: rebuild; new look keys `terrazzo`, `flags`, `granite` (look.json, kit materials DK_Terrazzo_Ivory, DK_Pave_Flags, DK_Granite_Kerb), new ground.water and ground.quays ids, ~341 street kit refs. For Vela: the lawn flat is `park` on top of the `bed-kerb` slab; DK_Pave_Flags' tiling (the old laid it at 4 m). For Glint: the basin and canal use the sea's `water` material (the old stilled DK_PoolWater).
+
+## Remap: Skyport and reach (Datum, brief 075, 2026-10-29) · remap/READY-reach-datum
+Plan 0.5.2 (`contracts/world/harbour-district.plan.json` = `harbour-district.oldtown.plan.json`, both written by `tools/plan/oldtown/transcribe.ts`; a re-run reproduces the live plan byte for byte, Pulse's journeys kept). Sheet: `briefs/075/remap/plan-sheet.html` (+ `skyport-sheet.png`).
+
+**1. Asphalt (for Splice, Vela, Latch).**
+- `roads.finish.set` = `asphalt`. `keys.road-asphalt`: hex #817B75, tile 16 (the sheet's repeat in metres, the old .mat's 16 m; look.json's `road-asphalt` tile 1 = UV in world metres, so nothing changes there). `marks.dash`: width 0.12, dividerWidth 0.12, length 2, spacing 6 (centre to centre: 2 m on, 4 m off), with a `why`.
+- SF-24 decision: **the asphalt set keeps the light ribbon** (`sets.asphalt.drop` = `['shoulder']`, was `['ribbon','shoulder']`). Reason: GDD §14 (Datum: "every road class carries the light ribbon") and §15 say so on every class. Sky's call overrode the powder-blue colour ("keep powdblue"), not the ribbon. So the mouths keep their strip straight on, SF-24 passes as written (9 of 9) and no rule moves.
+- Splice: SF-24 needs no change. If Sky wants the old road's bare kerb (no ribbon), that is a GDD change through Aster. Only then should SF-24 read the set: a set that drops `ribbon` lays no strip across a mouth, and the mouth's other parts hold.
+- Pinned tests that assumed enamel fail and are Splice's to re-pin: `tools/plan/finish-set.test.ts` (3) and `road-finish.test.ts` ("off by default").
+
+**2. The Skyport reachable: S2, the Harbour Line (for Splice, Pulse, Latch, Vela).**
+- Geometry (`plan.skyrail[1]`):
+  - trunk: double, x 117 from the south edge (y -560) to y -105, over the water. It runs on the old sea leg's line, 21 m off the quay.
+  - loop: single, R 40. Points: (120,-105) → (120,-60) → (225,-60) → (225,75) → (114,75) → (114,-105). It runs east under the tower's south face, north up its east side, west over the water north of it, and south down x 114.
+  - The beam clears the tower's faces (x 144–196, y ±25) by 29 m or more. 41 pylons, all in water or on the quays.
+- Stations:
+  - Harbour (117, -140) on the trunk. Interchange T1/circus, 137 m (T1 unchanged; it names no partner).
+  - Skyport (114, 0) on the loop's west leg.
+  - Spacing 437 m.
+- Platforms and banks (north–south, Splice's turned banks):
+
+  | Station | Platforms (x; y) | Bank towers |
+  |---|---|---|
+  | Harbour | 109.3–113.3 and 120.8–124.8; y -165..-115 | x 102.3–109.3 and 124.8–131.8, y -155.6..-146 |
+  | Skyport | 106.3–110.3 and 117.8–121.8; y ±25 | x 99.3–106.3 and 121.8–128.8, y 8.4..18 |
+
+  Runs A and B and the lifts sit beside each tower (escalators to y -186 at Harbour). The checker's world build shows all of them.
+- New ground (`plan.quay`, `plan.water`):
+  - The Skyport apron: the pier's head widened to x 96–140, y ±30, carrying the Skyport banks. It runs 8 m onto the tower's caisson (drum edge x 132), and `foot.skyport-pier` runs on to x 140.
+  - The Market Pier's landing stage at its root: x 96–140, y -196..-106, carrying the Harbour banks clear of the pier walk (y -146..-130).
+- Tried first and dropped: S2 up the harbour terrace (x 64.5) with Apollo Quay at y -478. **Generator issue for Splice:** `tools/world/gen/street/transit.ts` §2 lays a sky station's bank furniture with `out = [0, ±1]` and `c[0] + s`, i.e. still for an east–west line. On a north–south station the newsstand, phone booths, camera and robot dock step across the line, not along it. On the terrace a booth landed in the promenade walk (SF-1). The two aprons are wide enough to hide it, but Skyport/Harbour bank furniture likely stands off its intended side: please turn it with the bank's frame.
+- The apron sits at quay level (promenade -0.85) and the caisson deck at 1.2. The step where the apron meets the drum is the world builder's to dress (Splice/Vela): steps or a ramp, not a 2 m lip.
+- Pulse: S2's runs are in `timetable.lines` (Harbour → Skyport, 34 s at S1's speed and headway). T1/S1 runs and the 8 journeys are kept; S2 journeys are yours.
+
+**3. Every structure reachable (for Splice).**
+- RCH-1 now reads 34/34 (no island) in both runs:
+  - the Skyport Tower through the apron (8 m onto its caisson);
+  - the liner berth through the Market Pier, which now runs to x 254, 6 m onto its caisson (edge x 248);
+  - both S2 stations through their banks.
+- The pier joins the harbour quay strip (the promenade walk and the terrace), which joins every street ending on it (Crown Parade, Market Street, Sunset Way, Apollo Way).
+- `RCH_ENFORCED` can flip to true. `reach.test.ts`'s "the live plan … stand in the water" is now false: re-pin it to no islands.
+
+**Handover zone.** Nothing in the zone moved, and these numbers match the previous plan through the same overlay:
+- V-1 64/65 (+1 by design); M-1 getaway 447, official 1124, getaway-service 126, rivals 593 m; W-1 Café → Orbit Gardens 243, Office → Orbit Gardens 309; C-0, C-1, C-3 pass.
+- The zone's 592 street items are at the same places (probe `out/scratch/datum/reach/probe/zone-items.ts`).
+- **But** the new stations' items are numbered before the zone's, so the zone's ids shift by +42 (`phone-booth-303` → `-345`, `civic-robot-dock-166` → `-208`, …).
+- The lamp kit pick is seeded by that id, so 8 lamps in the zone swap between Streetlamp and PlazaSphereLamp. That changes the sim walk grid by 10 cells (walkCells 2439 → 2429).
+- So `sim/data/handover.site.json` and `handover.takedown.json` need `bun run sim:site` (Keel), and any replay pinned to the old start hash needs checking (Keel/Waymark). The fix that ends this is the stable-ids ask: number the zone's items first, or key ids and kit picks by place (Splice).
+
+**Evidence (2026-10-29):**
+- `bun tools/plan/cli.ts` exit 0: 156 PASS, no FAIL or WAIVE.
+- `--overlay tools/missions/handover/overlay.ts` exit 0: 161 PASS. S-S2 S2 437 m, S-I1 S2/harbour ↔ T1/circus 137 m, N-C1 1 network of 3 lines, S-P1/S-P2 S2 41 pylons, L-1, L-5, SF-9, SF-12, SF-13 and SK-T3 pass, RCH-1 34/34.
+- `bun run typecheck` clean.
+- `bun test` on tools/plan, the sim tests and quiet/reach: 9 fail.
+  - finish-set ×3 and road-finish ×1: pinned to enamel (Splice).
+  - KR-1 51 vs 55: already stale since West Row (73 base).
+  - sim site and takedown: as above (Keel).
+  - quiet takedown ids: the counters (Splice/Keel).
+  - reach live-plan: now reachable (Splice).

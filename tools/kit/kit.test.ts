@@ -289,3 +289,19 @@ test('brief 075 roll-out: the old sky track kit and the presentation vehicles ad
   try { const r = copyAdopted(only, root, dest, GEN_ROOT); expect(r.errors).toEqual([]); expect(r.copied.length).toBe(cp.files.length); expect(cp.files.length).toBe(Object.keys(cp.colours).length * 2); }
   finally { rmSync(dest, { recursive: true, force: true }); }
 });
+
+test('brief 075 remap: the old roof, garden, plaza, seaside and alley pieces adopted at the old size through the generator, with their own tags (never a generic or older slot), and LODs above the floor', () => {
+  const old = new Map((JSON.parse(readFileSync(join(root, 'decokit_manifest.json'), 'utf8')).assets as { name: string; size: number[] }[]).map(a => [a.name, a.size]));
+  const generic = new Set(['roof', 'plaza', 'street', 'alley', 'structure', 'tram-shelter', 'lamp', 'bench']);
+  const ids = ['Roof_Bandstand', 'Roof_Radome', 'Roof_Dish', 'Roof_Drum', 'Roof_Fin', 'PlazaFountain', 'DecoPavilion', 'CafeSet', 'GrandStair', 'PlanterBed', 'PlanterHex', 'FlutedColumn', 'BusShelter', 'TramCanopy',
+    'BistroSet', 'CafeTable_Tulip', 'CafeChair_Tulip', 'CoinTelescope', 'LifebuoyStand', 'AlleyBridge', 'BikeLean', 'CableSpan_6', 'CrateStack', 'MilkCrates', 'Pallet', 'PipeBundle_6', 'SteamVent', 'TrashCans', 'BackDoorLamp'];
+  for (const id of ids) {
+    const a = kit.assets.find(x => x.id === id)!; expect(a.status, id).toBe('adopted'); expect(a.tags.scale, id).toEqual([1, 1]);
+    expect(a.tags.use.length, id).toBe(1); expect(a.tags.use.some(u => generic.has(u) || u.startsWith('planter-bed')), id).toBe(false);
+    expect(a.files.find(f => f.role === 'fbx')!.root, id).toBe('generated');
+    old.get(id)!.forEach((v, i) => expect(Math.abs(a.size[i]! - v), `${id} size[${i}] ${a.size[i]} vs old ${v}`).toBeLessThan(0.01)); // true size (the DecoPavilion's NaN bevel once read it 2.3 m deep)
+    if (a.tris > 1500) expect(a.lods?.length, id).toBeGreaterThan(0);
+  }
+  expect(kit.assets.find(x => x.id === 'DecoPavilion')!.lods!.map(l => l.tris).every(t => t < 12000)).toBe(true); // the collapse runs (it stalled at 34k on the NaN vertices)
+  expect(kit.assets.find(x => x.id === 'Dumpster')!.status).toBe('candidate'); // the stash piece stays Keel's and Motive's call
+});

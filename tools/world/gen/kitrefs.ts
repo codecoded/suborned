@@ -66,8 +66,9 @@ const NEAR: Record<string, number> = { tree: 16, 'tub-palm': 12, 'tub-palm:plant
 export const kerbZone = (ctx: Ctx): number => Math.min(...Object.values<any>(ctx.S.sections).map(s => s?.kerb).filter((k): k is number => typeof k === 'number'));
 
 /** The slot an item offers a kit piece, or null where the kit has nothing for the kind. */
-export function slotOf(ctx: Ctx, s: Pick<StreetItem, 'kind' | 'variant' | 'size'>): Slot | null {
+export function slotOf(ctx: Ctx, s: Pick<StreetItem, 'kind' | 'variant' | 'size'> & { id?: string }): Slot | null {
   const [w, d, h] = s.size, kerb = kerbZone(ctx);
+  if (s.id?.startsWith('street/old/')) return { h: s.size[2], hTol: 0.01, along: s.size[0] + 0.001, depth: s.size[1] + 0.001 }; // brief 075 remap (oldtown/props.ts): the old prop at its own size, as the old builder put it: the slot is the item
   switch (s.kind) {
     case 'lamp': return { h, along: 2.5, depth: kerb };
     case 'bollard': return { h, hTol: 0.25, along: 0.8, depth: 0.8 };

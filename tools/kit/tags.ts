@@ -51,6 +51,17 @@ const USE_026: Record<string, string[]> = {
   TopiaryCone: ['planter-bed:topiary'], ShrubMound: ['planter-bed:shrub'], FlowerBed: ['planter-bed:flowers'], PottedTopiary: ['planter-bed:potted'], // not 'tree': the street-tree slot would pick them
   PottedPalm_Small: ['planter-bed:palm'], BikeRack: ['bike-rack'], Barrier: ['barrier'], FacetedPot: ['planter-bed:pot'], InfoLightbox: ['info-lightbox'],
 };
+/** Brief 075 remap (Vela, Sky 2026-10-28 "And old props"): the old pieces the old rooftop programmes (DecoKitRoofThemes / Decks), Orbit Gardens (DecoKitGardens), the plaza (DecoKitPlazaLayout),
+ *  the seaside and the alleys (DecoKitDistrictDressing, DecoKitSouthsideLife) name, adopted at their own size (scale [1, 1]) through the generator. Their own tags, never the category's generic
+ *  `roof` / `plaza` / `street` / `alley` / `structure`, and never a slot an older picker reads (`tram-shelter`, `planter-bed:*`, `lamp`): Splice places them by name under the old rules, so adopting moves nothing. */
+const USE_075R: Record<string, string[]> = {
+  Roof_Bandstand: ['roof:garden-bandstand'], Roof_Radome: ['roof:machine:radome'], Roof_Dish: ['roof:machine:dish'], Roof_Drum: ['roof:machine:drum'], Roof_Fin: ['roof:fin'],
+  PlazaFountain: ['garden:fountain'], DecoPavilion: ['garden:pavilion'], CafeSet: ['cafe-set:old'], GrandStair: ['stair:grand'], PlanterBed: ['plaza:planter-bed'], PlanterHex: ['plaza:planter-hex'], FlutedColumn: ['plaza:column'],
+  BusShelter: ['tram-shelter:full'], TramCanopy: ['tram-shelter:canopy-full'], // the full old shelters; the _Play copies keep the `tram-shelter` slot
+  BistroSet: ['bistro-set'], CafeTable_Tulip: ['cafe-table:tulip'], CafeChair_Tulip: ['cafe-chair:tulip'], CoinTelescope: ['seaside:telescope'], LifebuoyStand: ['seaside:lifebuoy'],
+  AlleyBridge: ['alley:bridge'], BikeLean: ['alley:bike-lean'], CableSpan_6: ['alley:cable-span'], CrateStack: ['alley:crate-stack'], MilkCrates: ['alley:milk-crates'], Pallet: ['alley:pallet'],
+  PipeBundle_6: ['alley:pipe-bundle'], SteamVent: ['alley:steam-vent'], TrashCans: ['alley:trash-cans'], BackDoorLamp: ['alley:back-door-lamp'],
+};
 /** What the play camera sees through the pieces that state it (KitSight). */
 const SIGHT: Record<string, 'open' | 'glazed'> = { PhoneBooth: 'glazed', PhoneBooth_Single: 'glazed', Newsstand: 'glazed', CafeBay_v2: 'glazed', CafeInterior: 'glazed', Sedan_Official: 'open', Sedan_Getaway: 'open', Sedan_Rival: 'open', Sedan_Getaway_v2: 'open' };
 const TRADE: Record<string, string[]> = {
@@ -127,9 +138,9 @@ export function tagsOf(name: string, category: string): KitTags {
   if (name === 'RecordsTower') return { use: ['landmark:records-tower'], scale: [1, 1], squash: 1, wave: 2 }; // brief 072: built to the Records Office (build.ts recordsTower), scale 1
   const form = /Corner/.test(name) ? 'corner' : /End/.test(name) ? 'end' : /Bay/.test(name) ? 'bay' : undefined;
   return {
-    use: USE[name] ?? USE_020[name] ?? USE_026[name] ?? PLAIN_USE[name] ?? [USE_BY_CATEGORY[category] ?? category.toLowerCase()],
+    use: USE[name] ?? USE_020[name] ?? USE_026[name] ?? USE_075R[name] ?? PLAIN_USE[name] ?? [USE_BY_CATEGORY[category] ?? category.toLowerCase()],
     ...(TRADE[name] ? { trade: TRADE[name] } : {}), ...(form && ['Facades', 'Skyline'].includes(category) ? { form } : {}),
-    ...(REACH[name] ? { reach: REACH[name] } : {}), ...(STASH[name] ? { stash: STASH[name] } : {}), scale: SCALE[name] ?? [0.9, 1.1], squash: SQUASH[name] ?? 1, wave: WAVE1.has(name) ? 1 : 2,
+    ...(REACH[name] ? { reach: REACH[name] } : {}), ...(STASH[name] ? { stash: STASH[name] } : {}), scale: SCALE[name] ?? (USE_075R[name] ? [1, 1] : [0.9, 1.1]), squash: SQUASH[name] ?? 1, wave: WAVE1.has(name) ? 1 : 2,
     ...(SIGHT[name] ? { sight: SIGHT[name] } : {}),
   };
 }

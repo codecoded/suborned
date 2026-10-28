@@ -426,7 +426,8 @@ def measure(pid, path):
                     st = bool(mine) and sum(1 for c in mine if FL[c]) / len(mine) >= FLAT
                     if circ:
                         cx = lo[0] + (i0 + i1 + 1) * cell / 2; cz = lo[2] + (j0 + j1 + 1) * cell / 2
-                        v = {"shape": "cylinder", "c": [r2(cx), r2(cz)], "r": r2(math.sqrt(len(comp) * cell * cell / math.pi)), "y0": r2(ya), "y1": r2(lv)}
+                        rr = min(math.sqrt(len(comp) * cell * cell / math.pi), cx - lo[0], hi[0] - cx, cz - lo[2], hi[2] - cz)  # brief 075 remap (Vela): the 10 cm raster's area radius can pass the mesh (Roof_Bandstand's octagon plinth, 4.03 on a 3.88 half-width): never wider than the piece
+                        v = {"shape": "cylinder", "c": [r2(cx), r2(cz)], "r": r2(rr), "y0": r2(ya), "y1": r2(lv)}
                     else:
                         mn = [lo[0] + a0 * cell, ya, lo[2] + b0 * cell]
                         mx = [min(lo[0] + (a1 + 1) * cell, hi[0]), lv, min(lo[2] + (b1 + 1) * cell, hi[2])]

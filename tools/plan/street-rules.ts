@@ -3,6 +3,7 @@
 import { ctxOf as genCtx } from '../world/gen/common';
 import { kindOf, plotRing } from '../world/gen/edges';
 import { landingsOf } from '../world/gen/street/crossings';
+import { THEME_BY_NAME } from '../world/gen/roofline';
 import type { Check } from './checks';
 import { type V, lineToPoly } from './geom';
 import { type Spot, indexes, spotsOf, walkBlock } from './street-geo';
@@ -114,7 +115,18 @@ export function streetRules(c: WCtx): Check[] {
   const bad15: string[] = [], kit = c.B.roofs.kit.programmes as Record<string, { minRoof: [number, number]; setback?: number }>, over: Record<string, number> = { 'observation-saucer': 3, 'crane-gantry': 1 };
   for (const r of w.roofs) {
     if (r.form === 'terrace') continue;
-    const k = kit[r.programme], [mw, md] = k?.minRoof ?? [0, 0], [W, D] = r.size;
+    // brief 075 remap: a `roofline` roof (tools/world/gen/roofline.ts, the old DecoKitRoofline) fits plot by plot: each plot inside the roof rect and big enough for its theme (RL-2)
+    if (r.programme === 'roofline') {
+      const [W, D] = r.size, cs = Math.cos(r.yaw), sn = Math.sin(r.yaw);
+      if (!r.plots) { bad15.push(`${r.id}: a roofline roof with no plots`); continue; }
+      for (const pl of r.plots) {
+        const t = THEME_BY_NAME.get(pl.theme), u = (pl.c[0] - r.c[0]) * cs + (pl.c[1] - r.c[1]) * sn, v = -(pl.c[0] - r.c[0]) * sn + (pl.c[1] - r.c[1]) * cs;
+        if (!t) bad15.push(`${pl.id}: unknown theme ${pl.theme}`);
+        else if (pl.size[0] < t.minL - TOL || pl.size[1] < t.minD - TOL) bad15.push(`${pl.id} ${pl.theme} on ${f1(pl.size[0])} × ${f1(pl.size[1])} (needs ${t.minL} × ${t.minD})`);
+        if (Math.abs(u) + pl.size[0] / 2 > W / 2 + TOL || Math.abs(v) + pl.size[1] / 2 > D / 2 + TOL) bad15.push(`${pl.id} reaches past its roof`);
+      }
+    }
+    const k = r.programme === 'roofline' ? { minRoof: [0, 0] } : kit[r.programme], [mw, md] = k?.minRoof ?? [0, 0], [W, D] = r.size;
     if (!k) { bad15.push(`${r.id}: unknown programme ${r.programme}`); continue; }
     if (!((W >= mw - TOL && D >= md - TOL) || (W >= md - TOL && D >= mw - TOL))) bad15.push(`${r.id} ${r.programme} on ${f1(W)} × ${f1(D)} (minRoof ${mw} × ${md})`);
     const ext = over[r.programme] ?? 0, cs = Math.cos(r.yaw), sn = Math.sin(r.yaw);
@@ -125,7 +137,7 @@ export function streetRules(c: WCtx): Check[] {
       if (Math.abs(rel[0]) + hx > W / 2 + ext + TOL || Math.abs(rel[1]) + hy > D / 2 + ext + TOL) { bad15.push(`${p.id} reaches past the ${r.programme} roof's setback`); break; }
     }
   }
-  out.push(rule('SF-15', G, 'Every roof gets a programme whose minRoof fits it; roof items keep their setback from the parapet', w.roofs.length, bad15, 'all', 'standards.buildings.roofs.kit · streetscape.rules SF-15'));
+  out.push(rule('SF-15', G, 'Every roof gets a programme whose minRoof fits it; roof items keep their setback from the parapet', w.roofs.length, bad15, 'all', 'standards.buildings.roofs.kit · streetscape.rules SF-15 · brief 075 remap roofline RL-1..RL-4 (tools/world/gen/roofline.ts; a plot under its theme\'s size fails: street-rules.test.ts)'));
 
   // SF-16 spill depth never exceeds the street section's frontage zone (and the placement's spill depth)
   const bad16: string[] = [], roadBy = new Map(d.roads.map(r => [r.id, r]));

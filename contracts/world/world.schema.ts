@@ -14,7 +14,7 @@ export type World = {
   view: { yaw: number; pitch: number; zoom: number; focus: V }; // play camera: compass yaw (0 = north), pitch, ortho size
   ground: {
     roads: Road[]; foot: Road[]; medians: Mass[]; circuses: Circus[];
-    water: Flat[]; quays: Mass[]; flats: Flat[]; // flats: land under everything and the plan's `beyond`
+    water: Flat[]; quays: Mass[]; flats: Flat[]; // flats: land under everything and the plan's `beyond`. Brief 075 remap (tools/world/gen/oldtown/ground.ts, a plan with `oldtown` only): ids `oldtown/*` are the old town's ground: flats = lawn borders (`bed-kerb`) and lawns (`park`) on every rectangular park plot, Orbit Gardens' terrazzo paths, the harbour terrace and promenade (`flags`) and steps band (`limestone`); water = the gardens' basin and canal (walkers keep off it); quays = solids drawn and read by nothing else: the basin and canal coping and the quay coping (`granite`), the basin's terrazzo ring, the circus pavement ring (`pavement`)
     pieces?: StreetItem[]; // brief 026: the capstone programme's flat ground pieces, each with a kit ref (kinds kerb, pave-flags, tree-pit, drain, manhole, tactile, terrazzo): paving laid on the plot slabs and the carriageway, not furniture; z = the piece's base. Brief 028 Road: and the road finish (kinds road-ribbon, road-shoulder, road-lozenge, road-seam; ids street/roadfinish/<kind>-<n>; road-pinstripe retired 072-G, never exported): ribbon and shoulder lie along their kerb face with `yaw` = atan2(n.x, -n.y) for n the unit normal into the carriageway and `kit.scale[0]` stretching the 6 m piece to its span (z 0, a kerbed bay's floor 0.02); a lozenge lies along its carriageway's middle line, a seam across it (`kit.scale[2]`). Only road finish and capstone kinds are drawn from here; ground.roads[].surface and kerbSurface carry the look keys of the carriageway and its kerb cap (streetscape.roads.finish)
     plots: Mass[]; // one 0.18 m pavement slab per plot (the ground a plot stands on, courts and setback strips included)
     footways?: Footway[]; // brief 061: the continuous footway at each gate's lane mouth (present when the plan carries streetscape.continuousFootway): the table is also a flat in `flats` (id `<footway id>/table` under ground/), at the pavement top, so the walk floor and the audits read it as floor
@@ -132,6 +132,10 @@ export type Roof = {
   kit?: KitRef & { at: V }; // the programme's kit piece (hover-pad: SkyPad_Roof) standing on the slab at `at`; its procedural stand-in is then not in `parts`
   crown?: KitRef & { at: V }; // grammar §6: the kit crown (Crown_*) at the roof centre; absent on plan tower sites (their regen order carries the crown)
   form?: 'terrace'; // a stepped garden terrace: too shallow for the kit's programmes, planted along its length
+  /** Brief 075 remap (tools/world/gen/roofline.ts, the old DecoKitRoofline): programme `roofline` = the roof split along its wall into plots, each with its theme (lido, tennis, garden, cafe, glass, machine, sun, planters, mast) in the roof's frame (`c` its centre, `size` [along, across], `yaw` = the roof's; +across = toward the street). */
+  plots?: { id: string; theme: string; c: V; size: V; yaw: number }[];
+  /** The roofline's kit pieces at true size, each standing at `z` (deck, lawn or bare slab), `at` = pivot as every KitRef; drawn like `kit`. */
+  kits?: (KitRef & { at: V; z: number })[];
 };
 /** A kit facade piece on a building's street face. `a`→`b` is the span of the face it covers (a corner's `a`→`b` is its front cell; its side cell runs 8 m × scale from the vertex along the leaving edge); `kit.at` = footprint centre, `base` = pavement top.
  *  Bay: 6 m × x wide, body 14 m deep behind the face, a canopy (size z − 14) in front. End: closes a run at a party wall or court. Corner: 8 × 8 m quarter round at a convex 90° vertex. `edge` = index of the building ring's edge. */

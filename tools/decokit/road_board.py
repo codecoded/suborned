@@ -342,7 +342,8 @@ def build_world():
             slab("island", ring_in, 0.0, c["islandHeight"], surf("circus/island"), kerb)
     # T1's rails down the Boulevard (two tracks 1.6 m wide, 3.6 m apart, 4 cm proud): the carriageway's own furniture, the same in both variants
     track = flat("track-try", hexrgb(TRACK_COL), 0.8, 0.1) if TRACK_COL else surf("track")
-    for t in W["transit"]["tram"]:
+    flush = any(pc["kind"] == "tram-rail" for pc in G["pieces"])  # brief 075: the export places the flush rail tiles itself (build_pieces); no stand-in strips over them
+    for t in ([] if flush else W["transit"]["tram"]):
         if not any(inside(p, 20) for p in t["line"][::8]):
             continue
         for off in ([-t["spacing"] / 2, t["spacing"] / 2] if t.get("spacing") else [0.0]):
@@ -360,6 +361,12 @@ def build_world():
     for f in G["flats"]:  # brief 028 (Vela): the tram reservation's lawn track (export flats `reservation/*`, surface park), under the rails
         if f["id"].startswith("reservation/") and ring_inside(f["ring"], 20):
             flat_poly(f["id"], f["ring"], f["level"], flat("lawn", hexrgb("#64875A"), 0.85))  # look.json ground/median = DK_Ground_Lawn (mean #64875A)
+    for f in G["flats"]:  # brief 075 remap asphalt (Vela): the road's own flats (junction boxes, the tram street's bed) in the road material; setts in the setts sheet
+        if ring_inside(f["ring"], 20) and (str(f.get("surface", "")).startswith("road-") or f.get("surface") == "setts"):
+            flat_poly(f["id"], f["ring"], f.get("level", 0.0) + 0.001, road_mat if f["surface"].startswith("road-") else mats.get("DK_Ground_Setts"))
+    for i in G.get("islands", []):  # brief 075: the tram stops' boarding islands and the palm islands, kerbed
+        if ring_inside(i["ring"], 20):
+            slab(i["id"], i["ring"], i.get("base", 0.0), i.get("base", 0.0) + i["height"], mats.get("DK_Ground_PaveLimestone"), kerb)
     for m in G["medians"]:
         if ring_inside(m["ring"], 20):
             slab(m["id"], m["ring"], 0.0, m["height"], mats.get("DK_Ground_PaveLimestone"), kerb)
@@ -795,7 +802,7 @@ def main():
     if ROOFS:
         build_roofs()
     lamps = build_pieces()
-    if PROPOSED:
+    if PROPOSED and VARIANT != "asphalt":  # brief 075 remap: the asphalt crops draw only the export's own finish (its marks are ground pieces), never the 028 dev placements
         build_road_finish()
     if X061:
         build_cross061()

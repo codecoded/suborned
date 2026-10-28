@@ -27,10 +27,10 @@
     "road-asphalt": {
       "palette": "harbour.road-asphalt",
       "value": 1,
-      "smoothness": 0.3,
+      "smoothness": 0.28,
       "material": "DK_Ground_RoadAsphalt",
-      "tile": 4,
-      "note": "brief 055 road test (Vela): the asphalt option's carriageway (plan roads.finish.set = asphalt, or the export's --road-finish asphalt); a kit material as it is, like road-enamel. No gutter strip, like the enamel (Layers.NoGutter)"
+      "tile": 1,
+      "note": "brief 055 road test (Vela): the asphalt option's carriageway (plan roads.finish.set = asphalt, or the export's --road-finish asphalt); a kit material as it is, like road-enamel. No gutter strip, like the enamel (Layers.NoGutter). Brief 075 remap (Vela, Sky 2026-10-28: the old asphalt road back): DK_Ground_RoadAsphalt is the old DecoKit DK_Asphalt_Road (asphalt_road_v1 + normal byte for byte, 16 m in the .mat, smoothness .28 flat), so tile 1 (UV = world metres, as road-enamel); was 4 with the 055 made sheet. Palette hex = the sheet's mean (fallback only)"
     },
     "pavement": {
       "detail": "limestone",
@@ -525,7 +525,10 @@
       "tile": 1
     },
     "kerbside/paint": {"palette":"harbour.kerb","value":1,"smoothness":0.1,"note":"brief 075 (Latch, TramStreet.cs): the kerbside bays' lines on a tram street (ground.kerbside), 0.10 m, in the kerb's pearl; Glint and Vela tune. Its own key, not ground/paint, so the centre-line dashes (RoadMarkings) stay off"},
-    "setts": {"palette":"harbour.asphalt","value":0.8,"smoothness":0.2,"material":"DK_Ground_Setts","tile":1,"note":"brief 075 (Splice, tramstreet.ts): the tram lanes' granite setts (ground.flats surface setts); Vela's own setts sheet DK_Ground_Setts (075 golden rails: fan bond, world-metre UVs, the .mat tiles every 2 m), the same material the flush rail tiles carry between the rails"}
+    "setts": {"palette":"harbour.asphalt","value":0.8,"smoothness":0.2,"material":"DK_Ground_Setts","tile":1,"note":"brief 075 (Splice, tramstreet.ts): the tram lanes' granite setts (ground.flats surface setts); Vela's own setts sheet DK_Ground_Setts (075 golden rails: fan bond, world-metre UVs, the .mat tiles every 2 m), the same material the flush rail tiles carry between the rails"},
+    "terrazzo": {"palette":"harbour.foot","value":1,"smoothness":0.35,"material":"DK_Terrazzo_Ivory","tile":1,"note":"brief 075 remap (Splice, gen/oldtown/ground.ts): Orbit Gardens' paths (the gate promenade, the basin's ring, the canal walks) in the old DecoKitGardens terrazzo, DK_Terrazzo_Ivory as the old builder laid it"},
+    "flags": {"palette":"harbour.pavement","value":1,"smoothness":0.25,"material":"DK_Pave_Flags","tile":4,"note":"brief 075 remap (Splice, gen/oldtown/ground.ts): the harbour terrace and the quay promenade in the old DecoKitHarbour flags (the old builder laid DK_Pave_Flags at 4 m: Vela/Latch to match the tiling)"},
+    "granite": {"palette":"harbour.kerb","value":1,"smoothness":0.15,"material":"DK_Granite_Kerb","tile":1,"note":"brief 075 remap (Splice, gen/oldtown/ground.ts): the basin and canal coping, the harbour steps band and the quay coping (ground.quays oldtown/*, ground.flats oldtown/harbour/steps), DK_Granite_Kerb as the old builders laid it"}
   },
   "details": {
     "note": "brief 072-F (Vela's design, briefs/072/texture/design.md): the kit detail pairs a colour surface's `detail` names. Colourless (albedo x2 about 128 and a tangent normal), laid in URP Lit's own detail slots with _DETAIL_MULX2 on box-projected UVs in metres, so the colour stays the surface's. tile = metres per repeat, bump = _DetailNormalMapScale [S]. glass, water and crossing take none (transparent glazing, the Water shader, the signal-adjacent crossing).",
@@ -567,7 +570,7 @@
       "hex": "#8fafc1"
     },
     "harbour.road-asphalt": {
-      "hex": "#505359"
+      "hex": "#817B75"
     },
     "harbour.pavement": {
       "hex": "#f9efdc"

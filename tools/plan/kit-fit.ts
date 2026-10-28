@@ -47,6 +47,14 @@ export function kitFitChecks(c: WCtx): Check[] {
     const off = cs.map(q => [(q[0] - r.c[0]) * ux[0] + (q[1] - r.c[1]) * ux[1], -(q[0] - r.c[0]) * ux[1] + (q[1] - r.c[1]) * ux[0]] as V);
     if (off.some(o => Math.abs(o[0]) > r.size[0] / 2 + TOL || Math.abs(o[1]) > r.size[1] / 2 + TOL)) bad.push(`${r.id}: ${k.a.id} ${k.s.map(f1).join('×')} m outside the roof ${r.size.map(f1).join('×')}`);
   }
+  // roofs (brief 075 remap): each roofline piece inside the roof rect, standing on the roof (z at the slab or just over it)
+  for (const r of w.roofs) for (const [i, kr] of (r.kits ?? []).entries()) {
+    const k = piece(`${r.id}/kits-${i}`, kr); if (!k) continue;
+    const cs = footOf(k.a, kr), ux: V = [Math.cos(r.yaw), Math.sin(r.yaw)];
+    const off = cs.map(q => [(q[0] - r.c[0]) * ux[0] + (q[1] - r.c[1]) * ux[1], -(q[0] - r.c[0]) * ux[1] + (q[1] - r.c[1]) * ux[0]] as V);
+    if (off.some(o => Math.abs(o[0]) > r.size[0] / 2 + TOL || Math.abs(o[1]) > r.size[1] / 2 + TOL)) bad.push(`${r.id}/kits-${i}: ${k.a.id} outside the roof ${r.size.map(f1).join('×')}`);
+    if (kr.z < r.z - TOL || kr.z > r.z + 0.5) bad.push(`${r.id}/kits-${i}: ${k.a.id} at z ${f1(kr.z)}, roof ${f1(r.z)}`);
+  }
   // street: inside the item's slot
   const g = genCtx(plan, d, c.civ);
   for (const s of w.street) if (s.kit) {

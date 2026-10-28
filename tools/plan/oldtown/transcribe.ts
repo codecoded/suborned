@@ -13,7 +13,7 @@
 // lines, the piers, Orbit Gardens (canal, pool, pavilion), the Southside blocks, every landmark Put and the sky rail control points. Decided here (the manual part, each
 // listed in MANUAL below with its reason): where the old town is trimmed to clear the Handover zone, the road classes and the seams, the roads the plan needs that the old
 // town had as pavements, the tram line and the sky rail as the plan's rules allow them, and the old pieces the plan has no room for.
-import { readFileSync, writeFileSync } from 'node:fs';
+import { existsSync, readFileSync, writeFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { readOld, sources, OLD_DIR, type OldWall, type Seg } from './old';
 import { derive, type Plan } from '../plan';
@@ -165,8 +165,9 @@ plots.push({ id: 'sphere-park', name: 'Sphere Park', use: 'park', area: 'sphere'
 plot('west-terraces', 'residential', 'westend', [-244, -164, -114, -45], { name: 'West Terraces' });
 plot('gardens-forecourt', 'open', 'westend', [-244, -164, -45, -9], { name: 'Gardens Forecourt (S1 Orbit Gardens station\'s south banks)' });
 plot('sphere-gate', 'open', 'sphere', [-180, -156, 9, 30], { name: 'Sphere Park gate (the garden walk\'s crossing of Circus Road lands here)' });
-plot('western-park-n', 'park', 'sphere', [sheetX[0], -352, 9, 60], { name: 'Western Park' });
-plot('western-park-s', 'park', 'westend', [sheetX[0], -352, -60, -9], { name: 'Western Park' });
+plot('western-park-n', 'park', 'westrow', [sheetX[0], -352, 9, 268], { name: 'Western Park (run on north to Crown Road)' });
+// Western Park south of Circus Road: West Row (x -422..-410) runs through it; S1's Western Park station banks (x -395..-355) stand on its east part
+plot('western-park-s', 'park', 'westrow', [-410, -352, -60, -9], { name: 'Western Park' });
 // Southside, east of the Handover zone (old DecoKitSouthside), the boulevard through it
 plot('n1', 'mixed', 'southside', [W0, W1, -306, sunset[0]], { name: 'Constellation (old N1, west half)' });
 plot('n2', 'mixed', 'southside', [E0, E1, -306, sunset[0]], { name: 'Constellation (old N2)' });
@@ -181,28 +182,85 @@ plot('lantern-court', 'residential', 'lantern', [-180, -66, -484, -419]);
 plot('lantern-west', 'residential', 'lantern', [-328, -192, -548, -419]);
 plot('lantern-south', 'residential', 'lantern', [-180, -66, -548, -496]);
 plot('crown-forecourt', 'open', 'crown', [W0, E1, north + 4, 204], { name: 'Crown Forecourt' });
+
+// ------------------------------------------------------------------ West Row: the strip between the sheet's west edge and Sunset Way (brief 075 remap follow-up, Aster:
+// "no bare sand is left in the district outside water, parks and plazas"). The old town had procedural massing west of the gardens (DecoKitCityMass); the first remap left
+// the strip x -460..-352 as the beyond hatch, which the world draws as bare ground. Filled by rule, in the old grammar, clear of the Handover zone (x ≥ -226) by 126 m:
+//  - an access street (West Row) from Circus Road south to the sheet's south plot line, the strip's only way in (Sunset Way and Crown Road are primaries: R-H1), gated at Circus Road;
+//    its line puts a 28 m block (8 + 6k + 8) on the sheet-edge side and the deepest grammar block (open court from 40) on the Sunset Way side;
+//  - 8 m lanes (walks, the Garden Walk's section: the old 6 m lanes at the walk standard's minimum) across the strip, opposite every street that meets Sunset Way from the
+//    east and every seam between two built plots there, and at the midpoint of any longer span than the plan's longest old-style block side (WR.maxSpan);
+//  - each plot between lanes is fitted to its building line by the grammar (fit, below); old classes at the remap's heights are the generator's (Splice);
+//  - north of Circus Road the strip is Western Park, run on to Crown Road (S1's Western Park station already stands in it; no access street can reach a block there
+//    without a dead end off a primary).
+const WR = (() => {
+  const sw = byId(roads, 'sunset-way'), xw = r2(live.nodes[sw.path[1]][0] - sw.w / 2), x0 = sheetX[0]; // Sunset Way's west kerb (-352), the sheet edge (-460)
+  const acc = live.standards.streetscape.sections.access.pavement as number, prim = live.standards.streetscape.sections.primary.pavement as number, edgeSet = 3, band = 28, w = 12;
+  // the street's centre: the sheet-edge plot takes one 28 m block behind the sheet edge's 3 m setback and the access pavement; the rest goes to the Sunset Way side
+  const cx = Math.round(x0 + edgeSet + band + acc + w / 2); // -416
+  const yS = -548, yN = -60, laneW = 8, maxSpan = 140; // the district's south plot line (lantern-west, ss3), Western Park's south edge
+  // seams across Sunset Way: the shared edge of two built plots on its east side (a lane opposite a street that meets Sunset Way would land its crossing in that street's
+  // mouth, so street axes are not seams: Market Street's own crossings serve)
+  const eastX = r2(live.nodes[sw.path[1]][0] + sw.w / 2), seams = new Set<number>();
+  const eastPlots = plots.filter(p => p.rect && Math.abs(p.rect[0] - eastX) < .01 && !['park', 'open', 'square'].includes(p.use));
+  for (const a of eastPlots) for (const b of eastPlots) if (a !== b && Math.abs(a.rect[3] - b.rect[2]) < .01) seams.add(a.rect[3]);
+  const cuts = [...seams].filter(y => y > yS + laneW && y < yN - laneW).sort((a, b) => a - b);
+  // spans between the seams, each cut into the fewest equal blocks no longer than maxSpan
+  const spans: [number, number][] = [], lanes: number[] = []; let lo = yS;
+  for (const y of [...cuts, yN]) {
+    const hi = y === yN ? yN : y - laneW / 2, n = Math.ceil((hi - lo) / maxSpan), L = (hi - lo - (n - 1) * laneW) / n;
+    for (let k = 0; k < n; k++) { const a = r2(lo + k * (L + laneW)), b = r2(a + L); spans.push([a, b]); if (k < n - 1) lanes.push(r2(b + laneW / 2)); }
+    if (y !== yN) lanes.push(y);
+    lo = y + laneW / 2;
+  }
+  return { x0, xw, cx, w, yS, yN, laneW, maxSpan, cuts: lanes.sort((a, b) => a - b), spans, seams: [...seams].sort((a, b) => a - b), circusKerb: r2(-byId(roads, 'circus-road').w / 2) };
+})();
+node('w_row', [WR.cx, 0]); node('w_row_s', [WR.cx, WR.yS]);
+{ const cr = roads.find(r => r.id === 'circus-road')!; cr.path = [cr.path[0], 'w_row', ...cr.path.slice(1)]; }
+roads.push({ id: 'west-row', name: 'West Row', class: 'access', w: WR.w, path: ['w_row', 'w_row_s'], why: `the strip west of Sunset Way (old: procedural massing, DecoKitCityMass) reached from Circus Road (district), its only distributor that does not run along a primary: x ${WR.cx} puts a 28 m block on the sheet-edge side and the deepest grammar block on Sunset Way's; it ends at the district's south plot line (y ${WR.yS}), as Crown Avenue ends at its forecourt` });
+gates.push({ id: 'west-row-gate', name: 'West Row', node: 'w_row', road: 'west-row', area: 'westrow' });
+areas.push({ id: 'westrow', name: 'West Row', rect: [WR.x0, WR.xw, WR.yS, 268], label: [-406, -300] });
+for (const a of areas) if (a.id === 'westend' || a.id === 'sphere') a.rect = [WR.xw, ...a.rect.slice(1)];
+const wrLanes = WR.cuts.map((y, i) => ({ id: `west-row-lane-${i + 1}`, name: `West Row lane ${i + 1}`, kind: 'walk', w: WR.laneW, pts: [[WR.x0, y], [WR.xw, y]] }));
+const wrPlots: string[] = [];
+WR.spans.forEach(([a, b], i) => {
+  const top = i === WR.spans.length - 1 ? WR.circusKerb : b; // the last west plot runs on to Circus Road (the corner block), the east one stops at Western Park (S1's station banks)
+  plot(`west-row-w${i + 1}`, 'residential', 'westrow', [WR.x0, r2(WR.cx - WR.w / 2), a, top], { name: `West Row west ${i + 1}` });
+  plot(`west-row-e${i + 1}`, 'mixed', 'westrow', [r2(WR.cx + WR.w / 2), WR.xw, a, b], { name: `West Row east ${i + 1} (Sunset Way)` });
+  wrPlots.push(`west-row-w${i + 1}`, `west-row-e${i + 1}`);
+});
+manual(`West Row (the strip x ${WR.x0}..${WR.xw} west of Sunset Way, the first remap's beyond hatch): an access street on x ${WR.cx} from Circus Road (gate west-row-gate) south to y ${WR.yS}; 8 m lanes at y ${WR.cuts.join(', ')} (opposite the seams of Sunset Way's east-side plots ${WR.seams.join(', ')}, and each span cut into the fewest equal blocks of at most ${WR.maxSpan} m); ${WR.spans.length} plots each side fitted by the grammar (west residential, east mixed), the last west plot running on to Circus Road as the corner block; Western Park (east of West Row, where S1's station banks stand) runs on north to Crown Road. The beyond hatch keeps only the sheet's slivers`);
 manual('Southside trimmed: the Handover zone is where the old world sited the Handover too (its N4 and W2), and Satellite Street and the Records Office stand on old W1, N1\'s west half and the Rocket Lane diagonal (RL1, RL2, RB1), which go; Orbit Square keeps its east and west halves either side of the boulevard, which runs through it to the south edge (old Comet Row ended on the square)');
 
 // ------------------------------------------------------------------ foot paths, water, quay
+// brief 075 review (Sky 2026-10-28: "we need the skytrak to get here - it's unreachable right now. that's datums job to map the world to make sure everywhere has a real
+// structure"): the Skyport Pier's head widens to the Skyport apron (old DecoKitHarbour: the tower stood on its apron at the pier head, skyportApron 22), x quay..140 by
+// ±30, which carries S2's Skyport station banks either side of the line (x 114) and runs 8 m onto the tower's caisson (its drum edge at x 132): the tower's way in on foot.
+// The Market Pier runs 6 m onto the liner berth's caisson (edge x 248), its way in (RCH-1: a joint of at least 9 m²).
+const APRON = { x1: SK - 30, y: 30 }, MPIER_X1 = 254;
+// the Market Pier's landing stage at its root (x quay..140, y -196..-106: the banks clear of the pier walk), carrying S2's Harbour station banks either side of the line (x 117)
+const STAGE = { x1: 140, y: [-196, -106] as V };
 const foot = [
-  byId(live.foot, 'garden-walk'),
+  byId(live.foot, 'garden-walk'), ...wrLanes,
   { id: 'gardens-gate', name: 'Gardens Gate', kind: 'mall', w: 18, pts: [[-146, 0], [-circus.crescent, 0]] },
   { id: 'crown-parade', name: 'Crown Parade', kind: 'walk', w: 18, pts: [[circus.crescent, 0], [harbour.quay, 0]] },
-  { id: 'skyport-pier', name: 'Skyport Pier', kind: 'walk', w: 12, pts: [[harbour.quay, 0], [SK - 38, 0]] },
+  { id: 'skyport-pier', name: 'Skyport Pier', kind: 'walk', w: 12, pts: [[harbour.quay, 0], [APRON.x1, 0]] },
   { id: 'harbour-promenade', name: 'Harbour Promenade', kind: 'walk', w: harbour.promenade[1] - harbour.promenade[0], pts: [[r2((harbour.promenade[0] + harbour.promenade[1]) / 2), sheetY[0]], [r2((harbour.promenade[0] + harbour.promenade[1]) / 2), north + 4]] },
-  { id: 'market-pier', name: 'Market Pier', kind: 'walk', w: piers.market[1] - piers.market[0], pts: [[harbour.quay, r2((piers.market[0] + piers.market[1]) / 2)], [248, r2((piers.market[0] + piers.market[1]) / 2)]] },
+  { id: 'market-pier', name: 'Market Pier', kind: 'walk', w: piers.market[1] - piers.market[0], pts: [[harbour.quay, r2((piers.market[0] + piers.market[1]) / 2)], [MPIER_X1, r2((piers.market[0] + piers.market[1]) / 2)]] },
 ];
 manual('The Gardens Gate (old: the circus\'s west gate promenade to the pool, 12 m) is an 18 m mall from Orbit Row to the circus walk ring: S1\'s pylons stand on it where it leaves Circus Road');
 manual('Crown Parade is an 18 m walk on the circus axis to the quay (old: the wedge between the crescents, 24 m at the circus widening to 56 at the terrace): the crescents\' 14 m bands, which end ±12 m off the axis, need the plots to reach ±9');
 const qy = harbour.quay;
 const quay = [
   [[eb, sheetY[0]], [qy, sheetY[0]], [qy, sheetY[1]], [eb + 2, sheetY[1]], [eb + 2, north + 4], [eb, north + 4]],
-  [[qy, -6], [SK - 38, -6], [SK - 38, 6], [qy, 6]],
-  [[qy, piers.market[0]], [248, piers.market[0]], [248, piers.market[1]], [qy, piers.market[1]]],
+  [[qy, -APRON.y], [APRON.x1, -APRON.y], [APRON.x1, APRON.y], [qy, APRON.y]],
+  [[qy, STAGE.y[0]], [STAGE.x1, STAGE.y[0]], [STAGE.x1, piers.market[0]], [MPIER_X1, piers.market[0]], [MPIER_X1, piers.market[1]], [STAGE.x1, piers.market[1]], [STAGE.x1, STAGE.y[1]], [qy, STAGE.y[1]]],
 ];
-const water = [[[qy, sheetY[0]], [sheetX[1], sheetY[0]], [sheetX[1], sheetY[1]], [qy, sheetY[1]], [qy, 6], [SK - 38, 6], [SK - 38, -6], [qy, -6], [qy, piers.market[1]], [248, piers.market[1]], [248, piers.market[0]], [qy, piers.market[0]]]];
+const water = [[[qy, sheetY[0]], [sheetX[1], sheetY[0]], [sheetX[1], sheetY[1]], [qy, sheetY[1]], [qy, APRON.y], [APRON.x1, APRON.y], [APRON.x1, -APRON.y], [qy, -APRON.y], [qy, STAGE.y[1]], [STAGE.x1, STAGE.y[1]], [STAGE.x1, piers.market[1]], [MPIER_X1, piers.market[1]], [MPIER_X1, piers.market[0]], [STAGE.x1, piers.market[0]], [STAGE.x1, STAGE.y[0]], [qy, STAGE.y[0]]]];
+manual(`The Skyport apron: the Skyport Pier's head widens to x ${qy}–${APRON.x1} by ±${APRON.y} (old: the tower on its 22 m apron at the pier head), carrying S2's Skyport station banks and running 8 m onto the tower's caisson (drum edge x ${SK - 38}), the tower's way in on foot; the Market Pier widens at its root to a landing stage (x ${qy}–${STAGE.x1}, y ${STAGE.y.join('..')}) for S2's Harbour station banks and runs on to x ${MPIER_X1}, 6 m onto the liner berth's caisson (edge x 248), its way in (RCH-1, brief 075 review)`);
 manual(`The harbour: the upper terrace (x ${harbour.terrace.join('–')}), steps and promenade (to ${qy}) are one quay strip down the whole sheet (old z -300..380, run on to both edges); the sea from x ${qy}; the Skyport Pier on the axis to its apron, the Market Pier (old z ${S['MarketPierZ.x']}–${S['MarketPierZ.y']}) to the liner berth`);
-const beyond = [[[sheetX[0], sheetY[0]], [-352, sheetY[0]], [-352, sheetY[1]], [sheetX[0], sheetY[1]]], [[W0, 288], [qy, 288], [qy, sheetY[1]], [W0, sheetY[1]]], [[-352, sheetY[0]], [qy, sheetY[0]], [qy, -552], [-352, -552]]];
+// the beyond hatch: the sheet's slivers only (north of Crown Road at the west edge, north of the forecourt, the south edge); West Row and Western Park took the west strip
+const beyond = [[[sheetX[0], 292], [-352, 292], [-352, sheetY[1]], [sheetX[0], sheetY[1]]], [[W0, 288], [qy, 288], [qy, sheetY[1]], [W0, sheetY[1]]], [[sheetX[0], sheetY[0]], [qy, sheetY[0]], [qy, -552], [sheetX[0], -552]]];
 
 // ------------------------------------------------------------------ transit: T1 (tram), S1 (west sky rail), S2 (harbour sky rail)
 const ap = 25.2, vr = ap / Math.cos(Math.PI / 8), tri = (a: number): V => [r2(vr * Math.cos(a * Math.PI / 180)), r2(vr * Math.sin(a * Math.PI / 180))];
@@ -241,6 +299,30 @@ const S0 = {
     { id: 'gardens', name: 'Orbit Gardens', path: 'trunk', at: [-191, 0], length: 50, fronts: 'circus-road', kit: 'SkyRailStation_Twin' },
   ],
 };
+// S2 in the plan, the Harbour Line (brief 075 review, Sky 2026-10-28: "we need the skytrak to get here - it's unreachable right now"): the old harbour line's sweep out
+// to the Skyport on pylons (DecoKitSkyRail.HarbourRoute: up the quay, round the Skyport at R 48, back over the sea at x 122), laid to the plan's rules. From the south edge
+// over the water on x 117 (the old sea leg's line, 21 m off the quay), Harbour station on the Market Pier's landing stage (y -140; T1's Crown Circus stop 136 m: the
+// interchange); the double track ends at y -105 and the terminal loop (R 40) goes round the Skyport Tower: east under its south face (y -60), north up its east side
+// (x 225), west over the water north of it (y 75) and south down x 114 through the Skyport station on the Skyport apron (platforms y -25..25, banks on the apron either
+// side) to the track's end. The beam clears the tower's faces (x 144..196, y -25..25 at × 0.94) by 29 m or more and the liner berth's caisson by 50 m. The apron runs
+// onto the tower's caisson (its way in on foot). Nothing of it is in the Handover zone (x -236..18, y -428..-176) or nearer it than the quay (x 96): the Handover's escape
+// walks keep their stations (W-1). Tried first: up the harbour terrace (x 64.5) with Apollo Quay at y -478 (T1/Orbit Square); the terrace (x 46..80 between the east blocks
+// and the promenade walk) is 1.5 m too narrow for the generator's north-south bank kit (a phone booth landed in the promenade walk, SF-1; notes "Remap: Skyport and reach").
+const HXS = 117, HY = -140, J = -105;
+const SH = {
+  id: 'S2', name: 'Harbour Line', beyond: 'south off-sheet over the harbour; the terminal loop round the Skyport Tower',
+  paths: [
+    { id: 'trunk', role: 'line', double: true, pts: [[HXS, sheetY[0]], [HXS, J]] },
+    { id: 'loop', role: 'loop', pts: [[HXS + 3, J], [HXS + 3, -60, 40], [SK + 55, -60, 40], [SK + 55, 75, 40], [HXS - 3, 75, 40], [HXS - 3, J]] },
+  ],
+  order: ['trunk', 'loop'],
+  stations: [
+    { id: 'harbour', name: 'Harbour', path: 'trunk', at: [HXS, HY], length: 50, interchange: 'T1/circus', fronts: 'market-pier', kit: 'SkyRailStation_Twin', kitWhy: 'open-air over the Market Pier\'s landing stage (x 96–140, y -196..-106), north–south; banks on the stage either side; the pier walk runs under it to the liner berth' },
+    { id: 'skyport', name: 'Skyport', path: 'loop', at: [HXS - 3, 0], length: 50, fronts: 'skyport-pier', kit: 'SkyRailStation_Twin', kitWhy: 'open-air on the loop\'s west leg over the Skyport apron (x 96–140, y ±30), north–south; banks on the apron either side; the Skyport Pier walk runs on through the apron onto the tower\'s caisson' },
+  ],
+};
+manual('S2 (Harbour Line, brief 075 review: the Skyport reachable): from the south edge over the water on x 117 (the old sea leg), Harbour station on the Market Pier\'s landing stage (y -140, the T1/Crown Circus interchange, 136 m), and a terminal loop (R 40) round the Skyport Tower with the Skyport station on its west leg over the Skyport apron: the old harbour line\'s sweep round the Skyport on pylons, round the old Skyport_Tower as the old reel (not the portal tower)');
+
 // The sky rail. The generator lays a station's stair, escalator and lift banks for an east-west line only (tools/world/gen/connectors.ts: "banks are laid for an east-west
 // line"), and every old sky rail station stood on a north-south line (the main loop on the boulevard's west promenade, the harbour line on the quay). S1 and S2 below are the
 // plan's geometry for the two old lines (radii, spans, stations), kept in oldtown.skyrail.planned and out of plan.skyrail until the generator lays north-south banks
@@ -277,7 +359,7 @@ const S2 = {
     { id: 'skyport', name: 'Skyport', path: 'trunk', at: [SK, 0], length: 50, fronts: 'skyport-pier', in: 'megastructures/skyport-tower', kit: 'SkyRailStation_Twin' },
   ],
 };
-manual('The plan\'s S1 (Sphere Line) is not an old line: the generator lays station banks only for east-west lines on y 0 (the circus axis), so S1 runs from the West End along Circus Road (Western Park and Orbit Gardens stations), north past the Sphere\'s east side (x -95) and off the sheet; it joins T1 at Sunset Terraces. No line reaches the Skyport (a station there would have to be 200–500 m from another on y 0, and the circus\'s 14 m island takes no pylon). The old lines stay planned data:');
+manual('The plan\'s S1 (Sphere Line) is not an old line: the generator lays station banks only for east-west lines on y 0 (the circus axis), so S1 runs from the West End along Circus Road (Western Park and Orbit Gardens stations), north past the Sphere\'s east side (x -95) and off the sheet; it joins T1 at Sunset Terraces. S1 does not reach the Skyport (a station there would have to be 200–500 m from another on y 0, and the circus\'s 14 m island takes no pylon): S2 does (brief 075 review). The old lines stay planned data:');
 manual('The old lines are not in plan.skyrail in this draft: the generator lays station banks for east-west lines only and the old lines run north-south (the main loop over the boulevard\'s west promenade, x -13; the harbour line on the quay, x 88). S1 (Sphere Line: Circus Road, north on x -218, a loop by the Sphere) and S2 (Harbour Line: up the quay, into the Skyport Tower, round the pad) are planned in oldtown.skyrail.planned with radii, spans and stations, ready for plan.skyrail once the generator lays north-south banks (Splice). The old boulevard leg also needs a pylon zone on the promenade (pylonZones has none) and is drawn as data only');
 manual(`The harbour sky rail (planned) keeps the old quay leg (x ${hx}) and Harbour station (old (88, 110) → plan (88, -96), here 44 m south at -140 so the station spacing to the Skyport holds, 200 m); the old loop round the Skyport (R 48) becomes the plan's line into the Skyport Tower's portal (the tower 15 m east of the old Skyport, x 170 → ${SK}, so the R 70 turn off the quay ends before the portal) and the loop round the pad beyond; the old sea leg (x 122) is not built (the line ends on its loop)`);
 
@@ -360,7 +442,7 @@ Object.assign(plan, {
   sheet: { ...live.sheet, x: sheetX, y: sheetY },
   nodes, links, roads, gates, areas, plots, foot, water, quay, beyond,
   circus: { c: circus.c, island: circus.island, garden: 10, ring: [circus.island, RING_OUT], pavement: circus.crescent },
-  landmarks, megastructures, signatures, tram: [T1], skyrail: [S0],
+  landmarks, megastructures, signatures, tram: [T1], skyrail: [S0, SH],
 });
 plan.routes = undefined; delete plan.routes;
 if (args.includes('--with-skyrail')) plan.skyrail = [S1, S2];
@@ -372,15 +454,33 @@ plan.notes = {
     'The Handover zone byte for byte: the civic block, its streets (Rocket Lane, Starline Street, Garden Row, Orbit Walk, Pylon Row, Apron Road, Satellite Street, Lantern Lane), its plots and gates, and today\'s neighbours on every edge of the plots in its walk window.',
     'Seams: Satellite Street\'s east pavement is the boulevard\'s west wall (boulevard-west, old W1); Starline Street runs on as the old west lane through it; Market Street meets the boulevard at (0, -410); Lamplight Lane (today\'s line) fronts the garden terrace and the West Terraces; the garden walk crosses Circus Road into Sphere Park.',
     'The boulevard runs through to the Sea Gates (old Comet Row and Satellite Street on its axis); Southside east of it (Constellation N2, Orbit Square, Starline Green, SS1–SS4); the Lantern Quarter south of Market Street.',
+    'West Row west of Sunset Way (the old procedural massing\'s place): an access street off Circus Road, lanes, old-grammar blocks; Western Park north of Circus Road to Crown Road.',
     'T1 tram: street running from the West End down Sunset Way and Market Street, up the boulevard to the circus, where it turns on the ring road (R 25). No overhead wires.',
-    'S1 sky rail on the circus axis from the West End (Western Park and Orbit Gardens stations), north past the Sphere; the old main loop and harbour line are planned data (oldtown.skyrail) until the generator lays north-south station banks.',
+    'S1 sky rail on the circus axis from the West End (Western Park and Orbit Gardens stations), north past the Sphere; the old main loop is planned data (oldtown.skyrail).',
+    'S2 sky rail (Harbour Line) from the south over the water, Harbour station on the Market Pier\'s landing stage (the T1 interchange at Crown Circus), and a terminal loop round the Skyport Tower with the Skyport station on the Skyport apron: the old harbour line\'s sweep round the Skyport.',
     'SpaceHQ closes the axis at the old place (0, 244), the gate towers either side of the forecourt, the Skylon, the Sphere, the Skyport on its caisson at the pier head, the liner at the Market Pier.',
   ],
   why: ['Sky 2026-10-28 (brief 075): "why can\'t we just remap the world around d handover using old buildings" and "And old props. So the sky trak and other things all planned properly but looking great".', ...MANUAL.slice(0, 0)],
   sources: [...(live.notes?.sources ?? []), `old DecoKit town: ${OLD_DIR} (DecoKitCityPlan, CityBlocks, Block, StreetLayout, Circus, Southside, Gardens, SkyRail, Harbour, StreetSkyline), read by tools/plan/oldtown/old.ts`],
 };
+// history and skyline notes recorded on the live plan after the remap's first transcription (kept here so the output is reproducible from the base)
+plan.version = '0.5.2';
+plan.notes.history = ["2026-10-29 (Datum, brief 075 review, Aster relaying Sky; version 0.5.2): (1) the old asphalt road back (Sky: overriding 'keep powdblue'): roads.finish.set asphalt, road-asphalt = the old DK_Asphalt_Road (Vela's port, #817B75, 16 m repeat), dashes 0.12 m, 2 m on 4 m off; the light ribbon kept on every class (GDD §14/§15), so SF-24 holds unchanged. (2) The Skyport reachable (Sky: 'we need the skytrak to get here'): S2 Harbour Line from the south edge over the water on x 117, Harbour station on the Market Pier's new landing stage (x 96..140, y -196..-106; T1/Crown Circus interchange 137 m), a terminal loop (R 40) round the Skyport Tower with the Skyport station on its west leg over the new Skyport apron (x 96..140, y ±30), 41 pylons in water and on the quays. (3) Every structure reachable (RCH-1 33/33): the Skyport apron runs 8 m onto the tower's caisson, the Market Pier 6 m onto the liner berth's. The Handover zone, its routes (M-1), escape walks (W-1) and V-1 unchanged; Pulse's journeys kept (T1 and S1 unchanged; S2's runs added, its journeys Pulse's). Notes: briefs/075/notes.md 'Remap: Skyport and reach'.", "2026-10-28 (Datum, brief 075 remap follow-up, Aster; version 0.5.1): no bare sand in the district outside water, parks and plazas. The first remap left the strip west of Sunset Way (x -460..-352) as the beyond hatch, which the world draws as bare ground. It is now West Row (area westrow): an access street on x -416 from Circus Road (gate west-row-gate) to the south plot line, 8 m lanes opposite the seams of Sunset Way's east-side plots and at equal spans of at most 140 m, ten plots fitted as old-grammar blocks (28 m solid on the sheet-edge side, 46 m open-court on Sunset Way, the corner block on Circus Road), Western Park run on north to Crown Road; westend and sphere areas start at Sunset Way's west kerb; the beyond hatch keeps only the sheet's slivers. Rule-based in tools/plan/oldtown/transcribe.ts (WR); the Handover zone, its streets, plots, gates, routes and site are unchanged", "2026-10-28 (Datum, brief 075 remap, Aster; input edit, version kept at 0.5.0): the gate towers back to the old reel: landmarks disc-west / disc-east top 108 → 156.6, scale 0.69 → 1 (the kit DiscTower as built, tip 156.8; at 108 the fit fell under tags.scale 0.9 and the world drew procedural cylinders). New standards.skyline.harbour.exceptions (the pair, tip 156.8) and exceptionsWhy, as standards.skyline.vista was done: SK-1 to read it (Splice; the one-line read is in signature-checks.ts); bends GDD §10's harbour line for this pair (next GDD version, Aster). The Crown Avenue arch's text (landmarks[disc-west].gateway piece, whyNot38, siteWhy, keep) restated for its site at (0, 44) from Splice's measure (frontage zone |x| 13.5–18 at y 41–47, the old walls behind the plinths); oldtown.manual's arch and gate tower lines updated (the duplicate gate line dropped). No road, plot, line, stop or Handover geometry changed", ...(live.notes?.history ?? [])];
+{ const t = plan.standards.skyline.tiers as string[]; if (!t.some(x => x.startsWith('gate pair'))) t.splice(3, 0, "gate pair 156.8: disc-west / disc-east (landmarks, the kit DiscTower × 1.0 either side of Crown Avenue at (±44, 166); standards.skyline.harbour.exceptions)"); }
 // standards that name today's roads, plots and lines
 const st = plan.standards;
+// the road finish (brief 075 review, Sky 2026-10-28: the old asphalt road back, overriding "keep powdblue"): the asphalt set is the plan's, on the old DK_Asphalt_Road
+// (Vela: DK_Ground_RoadAsphalt is the old sheet byte for byte, 16 m a repeat), the old reel's dashes (0.12 m, 2 m on, 4 m off); the light ribbon stays (GDD §14 Datum, §15: every
+// road class carries the light ribbon), so SF-24's mouths keep their strip and no rule moves (notes "Remap: Skyport and reach")
+{ const F = st.streetscape.roads.finish, A = F.sets.asphalt, K = F.keys['road-asphalt'], M = st.streetscape.roads.marks;
+  F.set = 'asphalt';
+  A.drop = ['shoulder'];
+  A.why = "brief 075 review (Sky 2026-10-28: the old asphalt road back, overriding 'keep powdblue'; Vela ported the old DK_Asphalt_Road): the old city's dark road with a few clean white lines (roads.marks: one dashed centre line, dividers only where roads.marks.lanes names a road), the pearl kerb, and the light ribbon at the kerb face, which GDD §14 (Datum: every road class carries the light ribbon) and §15 keep on every class: so a gate's lane mouth keeps its strip straight on (SF-24) and nothing is loosened. No pearl shoulder band, no white edge lines. Was (brief 055 road test): ribbon dropped too, as one more bright line beside the dashes; the old road had none, so dropping it again is Sky's call through Aster with a GDD change, then SF-24 reads the set (notes \"Remap: Skyport and reach\")";
+  Object.assign(K, { hex: '#817B75', tile: 16, why: "brief 075 review (Sky 2026-10-28: the old asphalt road back): the old DecoKit DK_Asphalt_Road, ported byte for byte by Vela (tools/decokit/road_tex.py asphalt(), road_ribbon.py DK_Ground_RoadAsphalt: the old asphalt_road_v1 sheet and normal, smoothness .28, no mask); hex = the sheet's mean (look.json harbour.road-asphalt); tile 16 = the sheet's repeat in metres, the old .mat's 16 m (look.json road-asphalt tile 1 = UV in world metres, the repeat lives in the material). Was (brief 055 road test): a made slate sheet, #505359, tile 4" });
+  Object.assign(M.dash, { width: 0.12, dividerWidth: 0.12, length: 2, spacing: 6 });
+  M.dash.on = String(M.dash.on).replace('two ways, 0.2 m wide; and each lane divider below, 0.12 m wide', 'two ways, 0.12 m wide; and each lane divider below, as wide');
+  M.dash.why = 'brief 075 review: the old reel\'s dashes (DecoKit road paint DK_Road_Paint #E8E2D2, matte): 0.12 m wide, 2 m on and 4 m off (length 2, spacing 6 = the pitch, centre to centre); was 0.2 m centre lines (brief 055)';
+  manual('Road finish: the asphalt set (Sky 2026-10-28, the old asphalt road back): road-asphalt = the old DK_Asphalt_Road (#817B75, 16 m repeat), dashes 0.12 m, 2 m on 4 m off; the light ribbon kept on every class (GDD §14/§15), so SF-24 holds as written'); }
 st.streetscape.sections.tramStreet.district.roads = ['boulevard', 'market-street'];
 st.streetscape.sections.tramStreet.primary.roads = ['sunset-way', 'crown-road'];
 delete st.streetscape.sections.tramStreet.notTram;
@@ -406,8 +506,8 @@ manual('The Crown Vista tower (250 m, standards.skyline.vista) goes: the old axi
 st.skyline.harbour.why = "the Skyport Tower stays the harbour's icon (brief 007 Fixed): nothing standing within 150 m of the quay edge (SK-1 takes the quay's westmost point, x 46 in the remap) tops 108, save the exceptions below";
 st.skyline.harbour.exceptions = [{ id: 'disc-west', tip: 156.8 }, { id: 'disc-east', tip: 156.8 }];
 st.skyline.harbour.exceptionsWhy = "brief 075 remap (Aster, under Sky's scope: only the Handover is protected): the Crown Avenue gate towers stand as the old reel stood them, the kit DiscTower × 1.0 (156.6 on the 0.2 landmark base, tip 156.8), not a × 0.69 stand-in the fit rejects (tags.scale 0.9–1.1). In the remap the quay runs to x 46, so the 150 m band reaches x −104 and takes the whole axis; the pair stands inland of the harbour front at (±44, 166), under rivalMax 200 and under the dominant. Scoped to these two landmarks only; every other tip within the band keeps 108. Bends GDD §10's harbour line for this pair: the note goes in the next GDD version (Aster)";
-{ const mx = st.frontage.mix; st.frontage.mix = { records: mx.records, lamplight: mx.lamplight, boulevard: mx.crescent, crown: mx.records, southside: mx.gardens, westend: mx.gardens, gardens: mx.lamplight, lantern: mx.lantern, harbour: mx.harbour };
-  manual('Frontage mixes for the new areas from today\'s: the Boulevard takes the Crescent Quarter\'s, Crown Circus the Records Precinct\'s, Southside and the West Terraces Sphere Gardens\' (their faces on squares and greens), the garden terrace Lamplight\'s, the Lantern Quarter and the harbour keep theirs'); }
+{ const mx = st.frontage.mix; st.frontage.mix = { records: mx.records, lamplight: mx.lamplight, boulevard: mx.crescent, crown: mx.records, southside: mx.gardens, westrow: mx.gardens, westend: mx.gardens, gardens: mx.lamplight, lantern: mx.lantern, harbour: mx.harbour };
+  manual('Frontage mixes for the new areas from today\'s: the Boulevard takes the Crescent Quarter\'s, Crown Circus the Records Precinct\'s, Southside, West Row (Southside\'s spirit, brief 075 follow-up) and the West Terraces Sphere Gardens\' (their faces on squares and greens), the garden terrace Lamplight\'s, the Lantern Quarter and the harbour keep theirs'); }
 if (st.buildings.caps) st.buildings.caps = { records: st.buildings.caps.records, lamplight: st.buildings.caps.lamplight };
 
 // ------------------------------------------------------------------ the old frontage as blocks (standards.blocks, BG-1..BG-5)
@@ -504,8 +604,8 @@ const fit = (id: string, oldSegs?: { long: Seg[] }, anchor?: { y?: 's' | 'n'; x?
   block(id, id, (['w', 'e', 's', 'n'] as const).map(run), court);
 };
 fit('terrace-s', undefined, { y: 's', x: 'e', W: 28, H: 88 }); // the old terrace: 28 deep with its face on the gardens (x -110); 88 long, its north end clear of Circus Road's end and pavement (B-3)
-for (const id of ['lamplight-west', 'n1', 'n2', 'ss1', 'ss2', 'ss3', 'ss4', 'lantern-west', 'lantern-south']) fit(id);
-st.blocks.plots = ['boulevard-west', 'lamplight-east', 'west-wall-n', 'east-wall-s', 'east-wall', 'east-wall-n', 'terrace-s', 'lamplight-west', 'n1', 'n2', 'ss1', 'ss2', 'ss3', 'ss4', 'lantern-west', 'lantern-south'];
+for (const id of ['lamplight-west', 'n1', 'n2', 'ss1', 'ss2', 'ss3', 'ss4', 'lantern-west', 'lantern-south', ...wrPlots]) fit(id);
+st.blocks.plots = ['boulevard-west', 'lamplight-east', 'west-wall-n', 'east-wall-s', 'east-wall', 'east-wall-n', 'terrace-s', 'lamplight-west', 'n1', 'n2', 'ss1', 'ss2', 'ss3', 'ss4', 'lantern-west', 'lantern-south', ...wrPlots];
 st.blocks.exempt = {
   'garden-row-east': live.standards.blocks.exempt['garden-row-east'], 'pylon-row-east': live.standards.blocks.exempt['pylon-row-east'], 'rocket-west': live.standards.blocks.exempt['rocket-west'],
   'lamplight-south-w': 'handover: reaches into the Handover zone (y -192..-148)', 'lamplight-south-e': 'handover: reaches into the Handover zone (x -156..-84, y -192..-148)',
@@ -529,7 +629,7 @@ plan.oldtown = {
     main: { closed: true, spline: 'SkyPath.Set(route, closed: true): a closed spline through these points (x, height, y)', pts: old.skyrail.main.map(([x, h, z]) => [x, r2(h), yOf(z)]), sphereRing: { c: sph, r: old.skyrail.ringR, deg: [90, 225], height: 34 },
       planned: 'S1 (west half: Circus Road, north through Sphere Park, the loop round the Sphere). Not planned: the boulevard leg over the west promenade (x -13, y -906..154 at 24 m): its pylons stood on the promenade, which standards.skyrail.pylonZones does not allow; and the return leg (x -150..-110), which crossed the Handover\'s site. Splice\'s call (notes "Remap: plan")' },
     harbour: { pts: old.skyrail.harbour.map(([x, h, z]) => [r2(x), r2(h), yOf(z)]), station: [old.skyrail.station[0], yOf(old.skyrail.station[2])], railOverGround: old.skyrail.stationRail, planned: 'S2' },
-    planned: { S1, S2, status: 'not in plan.skyrail: station banks are laid for east-west lines only (generator); S2/harbour and S2/apollo, S1/sphere stand on north-south lines. Checked with tools/plan/oldtown/transcribe.ts --with-skyrail (the transit rules pass on them; the world build stops at the banks)' },
+    planned: { S1, S2, status: 'the old lines as first planned (S2 here is the old portal-tower variant; the plan\'s S2 is plan.skyrail[1], brief 075 review). Was: not in plan.skyrail: station banks are laid for east-west lines only (generator); S2/harbour and S2/apollo, S1/sphere stand on north-south lines. Checked with tools/plan/oldtown/transcribe.ts --with-skyrail (the transit rules pass on them; the world build stops at the banks)' },
     beam: { h: old.skyrail.pylon.beamH, halfWidth: old.skyrail.pylon.beamW, pylonStep: old.skyrail.pylon.step, footClear: old.skyrail.pylon.footClear, speed: old.skyrail.pylon.speed },
     levels: { street: 0, deck: 9.43, concourse: 24, oldMain: '24 on the boulevard, rising 1 m per ~35 m to 34 round the Sphere', oldHarbour: '21.15 over the quay (rail 22 over the promenade at -0.85), 24 round the Skyport' },
   },
@@ -542,6 +642,14 @@ plan.oldtown = {
     return { line: l.id, headwaySec: sp.headwaySec, dwellSec: sp.dwellSec, speed: sp.speed, runs: items.slice(1).map((it, i) => ({ from: `${l.id}/${items[i]!.id}`, to: `${l.id}/${it.id}`, sec: Math.round((it.s - items[i]!.s) / sp.speed) })) };
   }), journeys: [], notes: [...(live.timetable?.notes ?? []).slice(0, 0), 'brief 075 remap (Datum): lines regenerated from the remapped plan by tools/plan/oldtown/transcribe.ts at today\'s speeds, headways and dwells; journeys cleared for Pulse to set again'] };
   manual('Timetable: T1 and S1 runs regenerated stop to stop at today\'s speeds; journeys cleared (they named T2 and today\'s stops) for Pulse'); }
+
+// Pulse's part of the timetable (journeys, open questions, notes; bun run life:journeys) is kept from the plan already at --out when the regenerated lines are the same
+// lines (same runs, speeds, headways and dwells), so a re-run of this transcription never wipes it; a change to the lines clears the journeys for Pulse, as above.
+{ const prev: any = existsSync(resolve(ROOT, OUT)) ? JSON.parse(readFileSync(resolve(ROOT, OUT), 'utf8')) : null;
+  const same = (a: any[], b: any[]) => a.every(x => b.some(y => JSON.stringify(x) === JSON.stringify(y)));
+  if (prev?.timetable && same(prev.timetable.lines, plan.timetable.lines)) { // every line the journeys were set on is unchanged (a line may be added: brief 075's S2)
+    for (const k of ['journeys', 'openQuestions', 'notes']) if (prev.timetable[k] !== undefined) plan.timetable[k] = prev.timetable[k]; }
+  else if (prev?.timetable) console.log(`timetable: the lines changed from ${OUT}'s; journeys cleared for Pulse`); }
 
 function bump(v: string) { const p = v.split('.').map(Number); p[1]! += 1; p[2] = 0; return p.join('.'); }
 writeFileSync(resolve(ROOT, OUT), JSON.stringify(plan, null, 1) + '\n');

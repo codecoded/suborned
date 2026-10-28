@@ -139,6 +139,26 @@ def lawn_soften(a, stripes=.45, sat=.78, sigma_px=28):
     return lin_to_srgb(lin)
 
 
+def lawn_destripe(a, n):
+    """Brief 075 remap (Aster: the plan's grass read as a striped, hard-edged lawn in the circus shot; the old Orbit Gardens read as one soft green broken by shrubs and beds):
+    the mown stripes out of the lawn sheet. The sheet's stripes are whole rows (the 1 m bands) with a weaker column term, so each is a 1-D profile: the albedo is divided by its
+    row and column luminance profiles (linear, about the mean) and the normal map loses its row / column mean tilt (then renormalised). Clover drifts, blade detail and the
+    sheet's seamless tiling stay, because a whole-row or whole-column mean is periodic in the tile; nothing low-frequency but the bands is touched."""
+    lin = srgb_to_lin(a)
+    lum = (lin * np.array([.2126, .7152, .0722])).sum(2)
+    mu = lum.mean()
+    row, col = lum.mean(1, keepdims=True), lum.mean(0, keepdims=True)
+    lin = lin * (mu / np.maximum(row, 1e-4))[..., None]
+    lum2 = (lin * np.array([.2126, .7152, .0722])).sum(2)
+    lin = lin * (lum2.mean() / np.maximum(lum2.mean(0, keepdims=True), 1e-4))[..., None]
+    v = n * 2 - 1
+    for c in (0, 1):
+        v[..., c] -= v[..., c].mean(1, keepdims=True) - v[..., c].mean()
+        v[..., c] -= v[..., c].mean(0, keepdims=True) - v[..., c].mean()
+    v[..., 2] = np.sqrt(np.clip(1 - v[..., 0] ** 2 - v[..., 1] ** 2, 0, 1))
+    return lin_to_srgb(lin), np.clip(v * .5 + .5, 0, 1)
+
+
 def lawn_bands(a, amp=.16, bands=2, edge=.12, tilt=.0):
     """Mowing bands for the long view (brief 048, Vela, 2026-10-24; Glint: the lawn was one flat albedo from the air). lawn_soften pulled the sheet's 1 m stripes down to 45 percent so they do not
     read as hard stripes at play zoom, and at 300 m they average out. This adds `bands` broad bands across the 8 m tile (4 m each: a stripe of a mower pass pair) with soft edges `edge` of a band,
@@ -290,6 +310,7 @@ def build():
             before = mean_hex(alb_src)
             ROLE[0] = key
             if role == "lawn":
+                alb_src, nrm_src = lawn_destripe(alb_src, nrm_src)  # brief 075 remap: no mown stripes (the bands were what read as a sports pitch)
                 alb_src = lawn_soften(alb_src)
             if role == "pavement":  # the slab tone drift repeats every 4 m and reads as a motif from the air: keep 70 percent of it (Latch also offsets / mirrors the UV per patch)
                 mu = alb_src.reshape(-1, 3).mean(0)

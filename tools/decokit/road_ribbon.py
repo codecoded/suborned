@@ -5,11 +5,11 @@ What the 2.5D testbed (civic-road-guides.js, civic-road-finish.js, civic-roads.j
   RoadRibbon_Arc90_R4/R8   the same round a 90 degree corner (inner radius 4 or 8 m to the lens centre), for the kerb returns
   RoadMark_Lozenge         the pearl diamond that replaces the dashed lane line (1.7 x 0.48 m, every 8.5 m on the centre line): no paint, no zebra
   RoadMark_Seam            a chrome joint across the enamel (4.6 m, every 9 m): the carriageway reads as panels, not poured
-Brief 055 road test (Vela, 2026-10-24), the asphalt option beside the enamel: the dark carriageway DK_Ground_RoadAsphalt (road_tex.py) with white lane marks that replace the lozenges and seams
+Brief 055 road test (Vela, 2026-10-24), the asphalt option beside the enamel: the dark carriageway DK_Ground_RoadAsphalt (road_tex.py; since brief 075 remap the old DecoKit road sheet as it was) with white lane marks that replace the lozenges and seams
   RoadMark_Dash_2m         the dashed centre line and lane divider: a white enamel inlay 2.0 x 0.20 m, 5 mm proud, laid every 6 m
   RoadMark_EdgeLine_6m     the solid edge line along each kerb: 6.0 x 0.20 m, stretched along to fit a run; the generator keeps it 1.25 m off the kerb face, outside the pearl shoulder
   Ground_RoadAsphaltSwatch carries the asphalt and the mark material into the kit (not placed)
-The marks are white vitreous-enamel inlay, flush with the road, not paint (standard roads.finish.paint stays false).
+The marks are an inlay flush with the road, not paint (standard roads.finish.paint stays false), in the old DK_Road_Paint's off-white #E8E2D2, matte (brief 075 remap).
 Frame (all four): lying along +X, centred, z 0 = the carriageway top (flush: the lens is 4 mm up, the hairlines 7 mm), the carriageway on the +Y side of the ribbon (mirror with yaw 180 for the
 far kerb). The ribbon is light the way the crossings are: emissive, drawn unlit (DK_Road_Lens); its state (off by day, warm at evening and night: testbed `setLighting`, auto / on / off) is the
 lighting rig's, not the piece's. The pool is a `glow` quad (alpha is what it adds; the fade across it is the shader's, as DK_Cross_Pool).
@@ -37,17 +37,22 @@ register("DK_Ground_RoadAsphalt", "ground", "#FFFFFF")
 # smooth 0.95) mirrors the bright sky and reads pale. Scope: this row is used by the road pieces only (the shoulder's two border lines and the seam); every other DK_Chrome user is untouched.
 mats.KIND.setdefault("roadmetal", (0.54, 0.72, 0.0, 0.0, 1.0))
 register("DK_Road_Chrome", "roadmetal", "#9AA9B4")
-register("DK_Road_Mark", "enamel", "#F3EFE4")                 # the lane marks: white enamel inlay (a vitreous strip set in the road), the pearl's neighbour
+# The lane marks (brief 075 remap, Vela; Sky 2026-10-28: the old asphalt road with its lane markings): the old DecoKitRoadMarkings' DK_Road_Paint, #E8E2D2 (look.json road.paint) at smoothness .3, matte, no
+# clear coat; was enamel #F3EFE4 (brief 055), which glossed white in sun. Still an inlay flush in the road, never paint (roads.finish.paint false): only the old colour and finish.
+mats.KIND.setdefault("roadpaint", (0.70, 0.0, 0.0, 0.0, 1.0))
+register("DK_Road_Mark", "roadpaint", "#E8E2D2")
 TEXTURES.setdefault("DK_Ground_RoadEnamel", ("ground_roadenamel_v1.png", 16.0))  # brief 075-B: the old road sheet's 16 m
 TEXTURES.setdefault("DK_Ground_RoadPearl", ("ground_roadpearl_v1.png", 2.0))
-TEXTURES.setdefault("DK_Ground_RoadAsphalt", ("ground_roadasphalt_v1.png", 4.0))  # 4 m tile at 1024 px
+TEXTURES.setdefault("DK_Ground_RoadAsphalt", ("ground_roadasphalt_v1.png", 16.0))  # brief 075 remap: the old road sheet, 16 m at 2048 px
 # Brief 075-B (Vela, Sky 2026-10-28 "back to the old world textures"): the old DecoKit road (DK_Asphalt_Road) in the powder blue: road_tex.py's albedo from asphalt_road_v1, the ground set's asphalt normal and
 # mask (dry asphalt, smoothness .12-.28 x 1.4 = the old road's flat .28 on average; it was the enamel's ~.34) and its fine-aggregate detail pair, as DK_Ground_Asphalt draws them (same keywords: no new variant).
 # 16 m tile as the old road (look.json road-enamel tile 1: the builder's UVs are world metres).
 mats.GROUND.setdefault("DK_Ground_RoadEnamel", dict(albedo="ground_roadenamel_v1.png", normal="ground_asphalt_v1_normal.png", mask="ground_asphalt_v1_mask.png", tile=(16.0, 16.0), smoothness=1.4,
                                                     detail="ground_asphalt_detail_v1.png", detailNormal="ground_asphalt_detail_v1_normal.png", detailTile=1.5, detailBump=0.45))
 mats.GROUND.setdefault("DK_Ground_RoadPearl", dict(albedo="ground_roadpearl_v1.png", normal="ground_roadpearl_v1_normal.png", mask="ground_roadpearl_v1_mask.png", tile=(2.0, 2.0), smoothness=1.0))
-mats.GROUND.setdefault("DK_Ground_RoadAsphalt", dict(albedo="ground_roadasphalt_v1.png", normal="ground_roadasphalt_v1_normal.png", mask="ground_roadasphalt_v1_mask.png", tile=(4.0, 4.0), smoothness=1.0))
+# Brief 075 remap (Vela, Sky 2026-10-28, over 075-B's powder blue): DK_Ground_RoadAsphalt is the old DK_Asphalt_Road as it was (road_tex.asphalt: the sheet and its normal byte for byte; the old .mat's
+# white tint, bump 1, 16 m tile, smoothness .28 flat, no mask, no detail). The asphalt finish set (plan roads.finish.sets.asphalt -> look.json road-asphalt) draws it.
+mats.GROUND.setdefault("DK_Ground_RoadAsphalt", dict(albedo="ground_roadasphalt_v1.png", normal="ground_roadasphalt_v1_normal.png", tile=(16.0, 16.0), smoothness=0.28, bump=1.0))
 
 LENS_W, HAIR_W = 0.12, 0.02
 Z_LENS, Z_HAIR, Z_POOL = 0.004, 0.007, 0.010

@@ -1,0 +1,484 @@
+{
+ "Roof_Bandstand": {
+  "size": [
+   7.7606,
+   8.6,
+   7.7606
+  ],
+  "status": "adopted",
+  "use": [
+   "roof:garden-bandstand"
+  ],
+  "tris_old": 946,
+  "tris_ours": 946,
+  "lods": [
+   236
+  ]
+ },
+ "Roof_Radome": {
+  "size": [
+   6.3,
+   7,
+   6.3
+  ],
+  "status": "adopted",
+  "use": [
+   "roof:machine:radome"
+  ],
+  "tris_old": 952,
+  "tris_ours": 952,
+  "lods": [
+   238
+  ]
+ },
+ "Roof_Dish": {
+  "size": [
+   6.64,
+   6.507,
+   5.4392
+  ],
+  "status": "adopted",
+  "use": [
+   "roof:machine:dish"
+  ],
+  "tris_old": 1680,
+  "tris_ours": 1680,
+  "lods": [
+   419,
+   100
+  ]
+ },
+ "Roof_Drum": {
+  "size": [
+   7.4,
+   8.4,
+   7.4
+  ],
+  "status": "adopted",
+  "use": [
+   "roof:machine:drum"
+  ],
+  "tris_old": 864,
+  "tris_ours": 864,
+  "lods": [
+   216
+  ]
+ },
+ "Roof_Fin": {
+  "size": [
+   1.8,
+   11,
+   3.6
+  ],
+  "status": "adopted",
+  "use": [
+   "roof:fin"
+  ],
+  "tris_old": 248,
+  "tris_ours": 248,
+  "lods": []
+ },
+ "PlazaFountain": {
+  "size": [
+   7,
+   3.4553,
+   4
+  ],
+  "status": "adopted",
+  "use": [
+   "garden:fountain"
+  ],
+  "tris_old": 11106,
+  "tris_ours": 11106,
+  "lods": [
+   2775,
+   666
+  ]
+ },
+ "DecoPavilion": {
+  "size": [
+   7.78,
+   7.4,
+   6.99
+  ],
+  "status": "adopted",
+  "use": [
+   "garden:pavilion"
+  ],
+  "tris_old": 38364,
+  "tris_ours": 38240,
+  "lods": [
+   9544,
+   2248
+  ]
+ },
+ "CafeSet": {
+  "size": [
+   2.7108,
+   2.5521,
+   2.7108
+  ],
+  "status": "adopted",
+  "use": [
+   "cafe-set:old"
+  ],
+  "tris_old": 10264,
+  "tris_ours": 10264,
+  "lods": [
+   2566,
+   609
+  ]
+ },
+ "GrandStair": {
+  "size": [
+   10.22,
+   2.1158,
+   3.93
+  ],
+  "status": "adopted",
+  "use": [
+   "stair:grand"
+  ],
+  "tris_old": 6116,
+  "tris_ours": 6116,
+  "lods": [
+   1528,
+   360
+  ]
+ },
+ "PlanterBed": {
+  "size": [
+   4,
+   0.6,
+   1
+  ],
+  "status": "adopted",
+  "use": [
+   "plaza:planter-bed"
+  ],
+  "tris_old": 2638,
+  "tris_ours": 2638,
+  "lods": [
+   2397,
+   2397
+  ]
+ },
+ "PlanterHex": {
+  "size": [
+   2.0957,
+   0.56,
+   1.82
+  ],
+  "status": "adopted",
+  "use": [
+   "plaza:planter-hex"
+  ],
+  "tris_old": 1060,
+  "tris_ours": 1060,
+  "lods": [
+   264
+  ]
+ },
+ "FlutedColumn": {
+  "size": [
+   1.28,
+   3.85,
+   1.28
+  ],
+  "status": "adopted",
+  "use": [
+   "plaza:column"
+  ],
+  "tris_old": 11864,
+  "tris_ours": 11864,
+  "lods": [
+   2966,
+   711
+  ]
+ },
+ "BusShelter": {
+  "size": [
+   4.6958,
+   3.5966,
+   2.6945
+  ],
+  "status": "adopted",
+  "use": [
+   "tram-shelter:full"
+  ],
+  "tris_old": 12592,
+  "tris_ours": 12592,
+  "lods": [
+   3147,
+   737
+  ]
+ },
+ "TramCanopy": {
+  "size": [
+   6.59,
+   3.2089,
+   2.4774
+  ],
+  "status": "adopted",
+  "use": [
+   "tram-shelter:canopy-full"
+  ],
+  "tris_old": 15028,
+  "tris_ours": 15028,
+  "lods": [
+   3757,
+   901
+  ]
+ },
+ "BistroSet": {
+  "size": [
+   2.2088,
+   2.4794,
+   2.2088
+  ],
+  "status": "adopted",
+  "use": [
+   "bistro-set"
+  ],
+  "tris_old": 3878,
+  "tris_ours": 3878,
+  "lods": [
+   968,
+   232
+  ]
+ },
+ "CafeTable_Tulip": {
+  "size": [
+   0.804,
+   0.74,
+   0.804
+  ],
+  "status": "adopted",
+  "use": [
+   "cafe-table:tulip"
+  ],
+  "tris_old": 846,
+  "tris_ours": 846,
+  "lods": [
+   210
+  ]
+ },
+ "CafeChair_Tulip": {
+  "size": [
+   0.5516,
+   0.83,
+   0.5755
+  ],
+  "status": "adopted",
+  "use": [
+   "cafe-chair:tulip"
+  ],
+  "tris_old": 960,
+  "tris_ours": 960,
+  "lods": [
+   240
+  ]
+ },
+ "CoinTelescope": {
+  "size": [
+   0.77,
+   1.4369,
+   0.5201
+  ],
+  "status": "adopted",
+  "use": [
+   "seaside:telescope"
+  ],
+  "tris_old": 3234,
+  "tris_ours": 3234,
+  "lods": [
+   808,
+   189
+  ]
+ },
+ "LifebuoyStand": {
+  "size": [
+   0.864,
+   1.64,
+   0.3988
+  ],
+  "status": "adopted",
+  "use": [
+   "seaside:lifebuoy"
+  ],
+  "tris_old": 1940,
+  "tris_ours": 1940,
+  "lods": [
+   485,
+   111
+  ]
+ },
+ "AlleyBridge": {
+  "size": [
+   2.7924,
+   5.14,
+   6.5
+  ],
+  "status": "adopted",
+  "use": [
+   "alley:bridge"
+  ],
+  "tris_old": 5398,
+  "tris_ours": 5398,
+  "lods": [
+   1348,
+   343
+  ]
+ },
+ "BikeLean": {
+  "size": [
+   1.8838,
+   1.0901,
+   0.7032
+  ],
+  "status": "adopted",
+  "use": [
+   "alley:bike-lean"
+  ],
+  "tris_old": 2056,
+  "tris_ours": 2056,
+  "lods": [
+   508,
+   123
+  ]
+ },
+ "CableSpan_6": {
+  "size": [
+   0.4,
+   1.2559,
+   5.96
+  ],
+  "status": "adopted",
+  "use": [
+   "alley:cable-span"
+  ],
+  "tris_old": 2476,
+  "tris_ours": 2476,
+  "lods": [
+   618,
+   148
+  ]
+ },
+ "CrateStack": {
+  "size": [
+   2.5967,
+   1.254,
+   1.0419
+  ],
+  "status": "adopted",
+  "use": [
+   "alley:crate-stack"
+  ],
+  "tris_old": 2558,
+  "tris_ours": 2558,
+  "lods": [
+   536,
+   196
+  ]
+ },
+ "MilkCrates": {
+  "size": [
+   0.7804,
+   0.56,
+   0.451
+  ],
+  "status": "adopted",
+  "use": [
+   "alley:milk-crates"
+  ],
+  "tris_old": 2184,
+  "tris_ours": 2184,
+  "lods": [
+   485,
+   162
+  ]
+ },
+ "Pallet": {
+  "size": [
+   1.2,
+   0.144,
+   0.8
+  ],
+  "status": "adopted",
+  "use": [
+   "alley:pallet"
+  ],
+  "tris_old": 2160,
+  "tris_ours": 2160,
+  "lods": [
+   540,
+   104
+  ]
+ },
+ "PipeBundle_6": {
+  "size": [
+   6.024,
+   1.51,
+   0.5156
+  ],
+  "status": "adopted",
+  "use": [
+   "alley:pipe-bundle"
+  ],
+  "tris_old": 3390,
+  "tris_ours": 3390,
+  "lods": [
+   827,
+   214
+  ]
+ },
+ "SteamVent": {
+  "size": [
+   1.69,
+   1.11,
+   1
+  ],
+  "status": "adopted",
+  "use": [
+   "alley:steam-vent"
+  ],
+  "tris_old": 1244,
+  "tris_ours": 1244,
+  "lods": [
+   301
+  ]
+ },
+ "TrashCans": {
+  "size": [
+   1.221,
+   0.9388,
+   1.1135
+  ],
+  "status": "adopted",
+  "use": [
+   "alley:trash-cans"
+  ],
+  "tris_old": 2820,
+  "tris_ours": 2820,
+  "lods": [
+   704,
+   168
+  ]
+ },
+ "BackDoorLamp": {
+  "size": [
+   0.23,
+   0.51,
+   0.42
+  ],
+  "status": "adopted",
+  "use": [
+   "alley:back-door-lamp"
+  ],
+  "tris_old": 642,
+  "tris_ours": 642,
+  "lods": [
+   160
+  ]
+ }
+}
