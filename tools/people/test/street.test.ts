@@ -27,7 +27,7 @@ beforeAll(async () => {
 describe('a door is one person\'s post', () => {
   test('the café door holds one drawn person at every minute it is open, and nobody stands the kiosks\' doors twice', () => {
     for (let t = 6 * 60; t < 24 * 60; t += 1) expect(at(gen.people, 'cafe-entrance', t).length).toBeLessThanOrEqual(1);
-    for (const u of ['t1-records', 's1-gardens']) for (let t = 0; t < 1440; t += 5) expect(at(gen.people, u, t).filter(p => p.work?.unit.endsWith('-kiosk')).length).toBeLessThanOrEqual(1);
+    for (const u of w.scope.stops.map(s => s.place)) for (let t = 0; t < 1440; t += 5) expect(at(gen.people, u, t).filter(p => p.work?.unit.endsWith('-kiosk')).length).toBeLessThanOrEqual(1);
   });
   test('Inez stands it for the whole Handover window, in her place; the other servers of her shift work inside', () => {
     const inez = gen.people.persons.find(p => p.id === 'p-cafe-14')!;

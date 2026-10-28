@@ -135,6 +135,7 @@ namespace Suborned.World
         {
             var d = cam.GetUniversalAdditionalCameraData();
             d.renderPostProcessing = true;
+            d.dithering = true; // brief 075 banding (Glint): no 8-bit steps in the sky and shading gradients; AtmosphereLens sets it at runtime too
             cam.allowHDR = true;
         }
     }

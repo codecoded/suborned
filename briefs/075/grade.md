@@ -56,7 +56,8 @@ The old DecoKit reel's look, ported through our pipeline: the scene keys in `lig
   - the step length stayed at 17–18 px in all three.
 - So the banding is not the HDR buffer and not the LUT. It is the 8-bit encode of slow HDR gradients with no dithering (cameras have dithering off), plus the compressed noise sheet's terraces in the cirrus.
 - Our pipeline is configured exactly like the old one: R11G11B10 HDR, LDR grading mode, LUT 32, no dithering, the noise sheet CompressedHQ. So the ported sky bands the same way by construction.
-- To keep it deliberately: do not turn on camera dithering or HDR output, and keep the noise sheet's import as it is. No posterise was added.
+- (Superseded below.) To keep it deliberately: do not turn on camera dithering or HDR output, and keep the noise sheet's import as it is. No posterise was added.
+- **Reversed, brief 075 banding (2026-10-28):** Sky calls the steps a defect. Every base camera that runs post now dithers (AtmosphereLens.Begin at runtime; Atmosphere.Camera on the built play camera). Probe (`Glint075 -mode band`, remap flyby t6/20/33/50 and the play view at 210): the mean run of one colour down the sky goes from 3.2-6.3 px to 1.25 px; frame means move by at most 0.01 of a level, so the grade and the golden stats are unchanged. HDR grading mode (LUT 32) was tried and rejected: over dithering it gains almost nothing (sky run 1.26 against 1.34 px at t33), and it shifts the sky (red about -13 levels), which would move the grade. The noise sheet loaded uncompressed changed under 0.4 % of sky pixels by at most 8 levels, so its BC7 import stays. LUT 32 and the R11G11B10 buffer stay. Crops: `remap/banding/`.
 
 ## Not ported, and why
 - **The old HDRIs** (city, courtyard, studio, sunrise, sunset). The street reel never used them: its sky is procedural and its reflections come from that sky. The HDRIs lit the old studio and showroom only.

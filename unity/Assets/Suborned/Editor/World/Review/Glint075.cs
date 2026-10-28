@@ -105,7 +105,8 @@ namespace Suborned.World.Review
                 else if (mode == "flyby") Flyby(session, outDir, variant, report);
                 else if (mode == "golden") { UnityEngine.Object.DestroyImmediate(lens.gameObject); lens = Golden(session, cam, shadows, fade, standOff, cellOpen, outDir, report, v => focusNow = v); }
                 else if (mode == "heads") Heads(session, cam, shadows, fade, standOff, outDir, report);
-                else throw new ArgumentException("glint075: -mode play|flyby|heads|golden");
+                else if (mode == "band") Band(session, cam, shadows, fade, standOff, outDir, report, v => focusNow = v);
+                else throw new ArgumentException("glint075: -mode play|flyby|heads|golden|band");
             }
             finally
             {
@@ -367,6 +368,127 @@ namespace Suborned.World.Review
                 UnityEngine.Object.DestroyImmediate(cam.gameObject);
             }
             return lens ? lens : InstallLens(null);
+        }
+
+        /// <summary>Brief 075 banding (Glint, 2026-10-28): the same flyby stills (and play views) under each of -bands (comma list) of render variants,
+        /// set in memory only and restored: `as` = as the camera and URP asset are; `dither` = camera dithering on (every Game camera, as the lens
+        /// sets it); `hdr` = dither + the URP asset's grading mode High Dynamic Range; `raw` = hdr + the sky's noise and skyline sheets loaded
+        /// uncompressed from their PNGs; `nodither` = dithering forced off (the before, once the lens sets it). -pick "t:x,y;..." names the renderer,
+        /// material and normal smoothness under a pixel of a still (x, y from the top left of the 1920 x 1080 frame).</summary>
+        static void Band(RenderSession session, Camera playCam, TacticalShadows shadows, ArchitectureFade fade, float standOff, string outDir, StringBuilder report, Action<Vector3> focus)
+        {
+            var o = Json.Parse(File.ReadAllText(Abs(Arg("-keys", "briefs/075/flyby/remap-keys.json"))));
+            var keys = new List<K>();
+            foreach (var k in J.A(o, "keys"))
+            {
+                var e = J.A(k, "eye"); var l = J.A(k, "look");
+                keys.Add(new K { t = J.F(k, "t"), eye = new Vector3((float)(double)e[0], (float)(double)e[1], (float)(double)e[2]), look = new Vector3((float)(double)l[0], (float)(double)l[1], (float)(double)l[2]) });
+            }
+            var urp = UnityEngine.Rendering.Universal.UniversalRenderPipeline.asset;
+            var mode0 = urp.colorGradingMode;
+            var sky = RenderSettings.skybox; Texture noise0 = sky && sky.HasProperty("_NoiseTex") ? sky.GetTexture("_NoiseTex") : null, line0 = sky && sky.HasProperty("_SkylineTex") ? sky.GetTexture("_SkylineTex") : null;
+            var made = new List<Texture2D>();
+            Texture2D Raw(string p, Texture like)
+            {
+                var t = new Texture2D(2, 2, TextureFormat.RGBA32, true, true) { name = Path.GetFileNameWithoutExtension(p) + " (raw)" };
+                t.LoadImage(File.ReadAllBytes(Abs(p)));
+                if (like) { t.wrapMode = like.wrapMode; t.filterMode = like.filterMode; t.anisoLevel = like.anisoLevel; }
+                made.Add(t); return t;
+            }
+            bool? dither = null;
+            void Hook(UnityEngine.Rendering.ScriptableRenderContext _, Camera c)
+            {
+                if (dither == null || c.cameraType != CameraType.Game) return;
+                if (c.TryGetComponent<UnityEngine.Rendering.Universal.UniversalAdditionalCameraData>(out var ud)) ud.dithering = dither.Value;
+            }
+            RenderPipelineManager.beginCameraRendering += Hook;
+            var cam = RenderSession.TempCamera("band075");
+            cam.fieldOfView = J.Get(o, "fov") is double fv ? (float)fv : 58f;
+            var picks = new Dictionary<string, List<Vector2>>();
+            if (Arg("-pick", null) is { } pk)
+                foreach (var p in pk.Split(';', StringSplitOptions.RemoveEmptyEntries))
+                {
+                    var kv = p.Split(':'); var n = kv[1].Split(',').Select(x => float.Parse(x, CultureInfo.InvariantCulture)).ToArray();
+                    if (!picks.TryGetValue(kv[0], out var l)) picks[kv[0]] = l = new List<Vector2>(); l.Add(new Vector2(n[0], n[1]));
+                }
+            try
+            {
+                foreach (var bv in Arg("-bands", "as,dither,hdr,raw").Split(','))
+                {
+                    urp.colorGradingMode = bv is "hdr" or "raw" ? UnityEngine.Rendering.Universal.ColorGradingMode.HighDynamicRange : mode0;
+                    dither = bv switch { "as" => null, "nodither" => false, _ => true };
+                    if (sky)
+                    {
+                        bool raw = bv == "raw";
+                        if (noise0) sky.SetTexture("_NoiseTex", raw ? Raw("unity/Assets/Suborned/Resources/Atmosphere/dk_sky_noise.png", noise0) : noise0);
+                        if (line0) sky.SetTexture("_SkylineTex", raw ? Raw("unity/Assets/Suborned/Resources/Atmosphere/dk_skyline_far.png", line0) : line0);
+                    }
+                    report.Append($"band {bv}: grading {urp.colorGradingMode} lut {urp.colorGradingLutSize}, dithering {(dither == null ? "as set" : dither.Value ? "on" : "off")}, noise {(sky ? sky.GetTexture("_NoiseTex")?.name + " " + (sky.GetTexture("_NoiseTex") as Texture2D)?.format : "-")}\n");
+                    foreach (var s in Arg("-stills", "6,20,33").Split(',', StringSplitOptions.RemoveEmptyEntries))
+                    {
+                        float t = float.Parse(s, CultureInfo.InvariantCulture);
+                        var eye = Spline(keys, t, i => keys[i].eye); var dir = Spline(keys, t, i => (keys[i].look - keys[i].eye).normalized);
+                        new Pose { Position = eye, Rotation = Quaternion.LookRotation(dir, Vector3.up), Fov = cam.fieldOfView, Near = 0.3f, Far = 12000f }.Apply(cam);
+                        session.ShadowDistance = Mathf.Clamp(eye.y * 8f, 120f, 1200f);
+                        cam.enabled = true;
+                        session.Grab(cam, 64, 64); session.Grab(cam, 64, 64);
+                        File.WriteAllBytes(Path.Combine(outDir, $"{bv}-t{s}.png"), session.Grab(cam, 1920, 1080).EncodeToPNG());
+                        if (bv == "as" && picks.TryGetValue(s, out var pl)) foreach (var px in pl) report.Append($"  pick t{s} ({px.x},{px.y}): {Pick(cam, px, 1920, 1080)}\n");
+                        cam.enabled = false; session.ShadowDistance = 0f;
+                    }
+                    if (Array.IndexOf(Environment.GetCommandLineArgs(), "-bandplay") >= 0)
+                        foreach (var (id, f, yawV) in new[] { ("office-front", Baseline072.OfficeFront, 210f) })
+                        {
+                            focus(new Vector3(f.x, 0f, f.y));
+                            Baseline072.Pose(playCam, shadows, fade, f, yawV, standOff);
+                            session.Grab(playCam, 64, 64);
+                            File.WriteAllBytes(Path.Combine(outDir, $"{bv}-play-{id}-y{yawV:000}.png"), session.Grab(playCam, 1920, 1080).EncodeToPNG());
+                        }
+                }
+            }
+            finally
+            {
+                RenderPipelineManager.beginCameraRendering -= Hook;
+                urp.colorGradingMode = mode0;
+                if (sky) { if (noise0) sky.SetTexture("_NoiseTex", noise0); if (line0) sky.SetTexture("_SkylineTex", line0); }
+                foreach (var t in made) UnityEngine.Object.DestroyImmediate(t);
+                UnityEngine.Object.DestroyImmediate(cam.gameObject);
+            }
+        }
+
+        /// <summary>The nearest mesh triangle under pixel px (top-left origin) of a w x h frame: renderer path, mesh, material, shader, and whether
+        /// the triangle's three vertex normals agree (flat-shaded facet) or differ (smooth).</summary>
+        static string Pick(Camera cam, Vector2 px, int w, int h)
+        {
+            var ray = cam.ViewportPointToRay(new Vector3(px.x / w, 1f - px.y / h, 0f));
+            float best = float.MaxValue; string hit = "nothing";
+            foreach (var r in UnityEngine.Object.FindObjectsByType<MeshRenderer>(FindObjectsSortMode.None))
+            {
+                if (!r.enabled || !r.gameObject.activeInHierarchy || !r.bounds.IntersectRay(ray, out float bd) || bd > best) continue;
+                var mf = r.GetComponent<MeshFilter>(); var m = mf ? mf.sharedMesh : null; if (!m) continue;
+                var tr = r.transform; var lo = tr.InverseTransformPoint(ray.origin); var ld = tr.InverseTransformDirection(ray.direction);
+                var v = m.vertices; var nrm = m.normals;
+                for (int sm = 0; sm < m.subMeshCount; sm++)
+                {
+                    var ix = m.GetTriangles(sm);
+                    for (int i = 0; i < ix.Length; i += 3)
+                    {
+                        Vector3 a = v[ix[i]], b = v[ix[i + 1]], c = v[ix[i + 2]];
+                        Vector3 e1 = b - a, e2 = c - a, p = Vector3.Cross(ld, e2); float det = Vector3.Dot(e1, p); if (Mathf.Abs(det) < 1e-9f) continue;
+                        float inv = 1f / det; Vector3 s = lo - a; float u = Vector3.Dot(s, p) * inv; if (u < 0 || u > 1) continue;
+                        Vector3 q = Vector3.Cross(s, e1); float vv = Vector3.Dot(ld, q) * inv; if (vv < 0 || u + vv > 1) continue;
+                        float tl = Vector3.Dot(e2, q) * inv; if (tl <= 0) continue;
+                        float dw = (tr.TransformPoint(lo + ld * tl) - ray.origin).magnitude; if (dw >= best) continue;
+                        best = dw;
+                        string sh = "no normals";
+                        if (nrm.Length == v.Length) { float d0 = Vector3.Dot(nrm[ix[i]], nrm[ix[i + 1]]), d1 = Vector3.Dot(nrm[ix[i]], nrm[ix[i + 2]]); sh = Mathf.Min(d0, d1) > 0.9999f ? "flat facet (vertex normals equal)" : $"smooth (normal dot {Mathf.Min(d0, d1):F4})"; }
+                        var mats = r.sharedMaterials; var mat = sm < mats.Length ? mats[sm] : null;
+                        string path = tr.name; for (var pp = tr.parent; pp && path.Length < 200; pp = pp.parent) path = pp.name + "/" + path;
+                        hit = $"{path} mesh {m.name} ({m.vertexCount} v, {ix.Length / 3} tris sub {sm}) mat {(mat ? mat.name : "-")} shader {(mat ? mat.shader.name : "-")} dist {dw:F1} m; {sh}";
+                    }
+                }
+            }
+            return hit;
         }
 
         /// <summary>Flyby074's Hermite (non-uniform Catmull-Rom, still at both ends).</summary>

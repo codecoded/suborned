@@ -54,9 +54,10 @@ describe('the day, split out of the expander', () => {
     // re-pinned 2026-10-19 (door option b, cause "door-b" in drift.json): the Records Office's public door moved to the wing's west face, so the walks from the office (and the café seats the lunch hour shares) differ; was ed8704178887d70149d27806b6f0d7eb54798689ca38d9be68a39024b4ab6703
     // re-pinned 2026-10-19 (brief 023, Pulse's leave stagger, cause "leave-stagger" in drift.json): people who work inside linger 0..8 min after their shift before they leave; was e06ec33e83151d3c876db5aefd8d5b6e815879216c46b656e62bd27169b2ac3b
     // re-pinned 2026-10-19 (brief 023, Sky: add pavement; cause "Splice, 2026-10-19, brief 023 (Sky: add pavement ..." in people/drift.json): a built plot blocks walking only behind its building line, so ten people's walks to a stop are a minute shorter; was 4da93f1ba0e67e7fa700e9689adb06260ea1f15eccc76e4819e5405777210af2
-    expect(sha256(JSON.stringify(expand({ ...r013, needs: undefined, rules: legacyRules(w.rules) }).people.persons))).toBe('b32c52df6cf3bbf8a009d2351659dacc89f579e348cc8ea5ec05a788124e75b7');
-    expect(sha256(JSON.stringify(bare(r013)))).toBe('aab7c77774f5be01000bf4630ff4190d318bdb8db0b616212834dff9d741d830');
-    expect(sha256(JSON.stringify(r013Gen.people.persons.map(({ needRecord: _a, secretRecord: _b, ...p }) => p)))).toBe('aab7c77774f5be01000bf4630ff4190d318bdb8db0b616212834dff9d741d830');
+    // re-pinned 2026-10-28 (brief 075 remap, Pulse): the plan is the old town (Datum, v0.5.x): the Records stop is gone, the scope's nearest tram stop is T1/rocket, so the commutes, their walks and the kiosk change; life.json regenerated from that plan; no people rule or expansion code changed; was b32c52df6cf3bbf8a009d2351659dacc89f579e348cc8ea5ec05a788124e75b7 (legacy) and aab7c77774f5be01000bf4630ff4190d318bdb8db0b616212834dff9d741d830
+    expect(sha256(JSON.stringify(expand({ ...r013, needs: undefined, rules: legacyRules(w.rules) }).people.persons))).toBe('06965b87ecb7d6cf86a320040e59aa5de1d5c4854b8fe9d55680b23175492f36');
+    expect(sha256(JSON.stringify(bare(r013)))).toBe('a8131d03e8d1ecc13fdc731b86ab7b76c4e5e67d9bb9890062f127af0f8e47c8');
+    expect(sha256(JSON.stringify(r013Gen.people.persons.map(({ needRecord: _a, secretRecord: _b, ...p }) => p)))).toBe('a8131d03e8d1ecc13fdc731b86ab7b76c4e5e67d9bb9890062f127af0f8e47c8');
   });
   test('a hop of STEP_OFF m or less costs no minute; a longer one is the walk graph\'s', () => {
     const at = (id: string) => w.scope.places.find(p => p.id === id)!.at as V;

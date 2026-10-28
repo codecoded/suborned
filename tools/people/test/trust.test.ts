@@ -39,7 +39,9 @@ describe('the people file carries what it was made from', () => {
   test('another mission or plan text is another file', () => {
     const other = world({ ...texts, mission: texts.mission.replace('"startsAt": "17:24:30"', '"startsAt": "17:00"') }, 'civic-block');
     expect(other.hashes('x').mission).not.toBe(w.hashes('x').mission);
-    expect(world({ ...texts, plan: texts.plan.replace('"version": "0.3.0"', '"version": "0.3.1"') }, 'civic-block').hashes('x').plan).not.toBe(w.hashes('x').plan);
+    const v = JSON.parse(texts.plan).version as string, bumped = texts.plan.replace(`"version": "${v}"`, `"version": "${v}-x"`);
+    expect(bumped).not.toBe(texts.plan); // the plan's own version, whatever it is now (it was 0.3.0 when this was written)
+    expect(world({ ...texts, plan: bumped }, 'civic-block').hashes('x').plan).not.toBe(w.hashes('x').plan);
   });
 });
 

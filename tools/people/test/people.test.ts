@@ -26,8 +26,9 @@ describe('scope', () => {
   test('civic-block is defined from the block and the plan', () => {
     expect(w.scope.areas).toEqual(['records']);
     expect(w.scope.plots.map(p => p.id).sort()).toEqual(['records-office', 'records-square']);
-    expect(w.scope.stops.map(s => s.place)).toEqual(['t1-records', 's1-gardens']);
-    expect(w.scope.units.map(u => u.id)).toEqual(['cafe', 'records-office', 's1-gardens-kiosk', 't1-records-kiosk']);
+    // the nearest tram stop and sky rail station to the scope's plots, read from the plan (brief 075 remap: the Records stop is gone, Rocket is nearest)
+    expect(w.scope.stops.map(s => s.place)).toEqual(['t1-rocket', 's1-gardens']);
+    expect(w.scope.units.map(u => u.id)).toEqual(['cafe', 'records-office', ...w.scope.stops.map(s => `${s.place}-kiosk`).sort()]);
     expect(w.scope.units.find(u => u.id === 'cafe')).toMatchObject({ trade: 'diner', staffPerShift: 8 });
   });
   test('an unknown scope is rejected', () => {

@@ -451,6 +451,11 @@ namespace Suborned
                 ud.renderPostProcessing = true; c.allowHDR = true;
             }
             bool post = on && hasUd && ud.renderPostProcessing && !overlay;
+            // brief 075 banding (Glint, 2026-10-28; Sky calls the stepped sky a defect): the 8-bit encode of the slow sky and shading gradients steps
+            // one level every 4 to 18 px with no dither (075-A kept it on purpose; that is reversed). URP's final-pass dither (blue noise, ±0.5 of an
+            // 8-bit level) on every base camera that runs post, day, evening and night, lens on or off. Signals draw after post (SignalsFeature), so
+            // they are untouched. Cost: one noise tap and an add in the final blit.
+            if (hasUd && !overlay && ud.renderPostProcessing && !ud.dithering) ud.dithering = true;
             if (baseSaturation < -990f && on) ApplyPlayGrade();
             if (!overlay) SunShade(on);
             if (vNight) vNight.weight = hasUd && ud.renderPostProcessing && !overlay && DistanceHaze.Night && AtmosphereSettings.Enabled ? 1f : 0f;
