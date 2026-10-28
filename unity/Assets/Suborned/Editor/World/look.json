@@ -19,10 +19,10 @@
     "road-enamel": {
       "palette": "harbour.road-enamel",
       "value": 1,
-      "smoothness": 0.35,
+      "smoothness": 0.28,
       "material": "DK_Ground_RoadEnamel",
-      "tile": 2,
-      "note": "brief 028 road finish (Vela; Splice's export: every road and the circus): the enamel carriageway, tinted white in the material"
+      "tile": 1,
+      "note": "brief 028 road finish (Vela; Splice's export: every road and the circus): the powder-blue carriageway, tinted white in the material. Brief 075-B (Vela, 2026-10-28): the sheet is the old DecoKit road's (asphalt_road_v1, 16 m in the .mat), so tile 1 (UV = world metres, as every ground/ surface); was 2 x the enamel's 2 m. Smoothness here is documentation only (a kit material draws as it is): the .mat's mask gives the old road's .28"
     },
     "road-asphalt": {
       "palette": "harbour.road-asphalt",

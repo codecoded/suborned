@@ -1,0 +1,240 @@
+{
+  "schema": "suborned.designs-inventory/1",
+  "brief": "075-C",
+  "author": "Splice (tools-engineer), read-only inventory",
+  "date": "2026-10-28",
+  "inputs": {
+    "old_kit": "~/Projects/the-suborned/game/Assets/TheSuborned/Art/DecoKit (decokit_manifest.json, 202 pieces)",
+    "old_editor": "~/Projects/the-suborned/game/Assets/TheSuborned/Editor/DecoKit (DecoKitStreetLayout, DecoKitStreetSkyline, DecoKitCityMass, DecoKitSkyRail, DecoKitColourways, DecoKitDistrictDressing, DecoKitSky)",
+    "old_scene": "Scenes/DecoKitStreet.unity (8340 prefab instances, counted by source-prefab guid)",
+    "reel": "briefs/074/flyby/grid.png, grid/old-*.png, grid/on-*.png, old-keys.json, new-keys.json",
+    "ours": "contracts/world/kit.json (381 pieces: 294 adopted, 77 candidate, 10 rejected), out/world/harbour-district.world.json (2026-10-28 10:58), contracts/world/harbour-district.plan.json v0.4.0, tools/world/gen/*",
+    "probe": "out/scratch/splice/075/why.ts (read-only: wave-2 facade outcome per building group)"
+  },
+  "items": [
+    {
+      "id": "C1",
+      "item": "rounded glass-slab boulevard buildings",
+      "old": {
+        "pieces": ["StreamBay_3/3W/4/6/9/9W", "StreamEnd_*", "StreamCorner_*", "DecoBay_10", "DecoEnd_10", "PortholeBay_7", "BalconyBay_8"],
+        "placed": "DecoKitCityBlocks via DecoKitStreetSkyline.Build: a 36 m face-to-face canyon (kerbs at x +-8, facade plane +-18) with 37-44 m walls (StreamBay_9 36.7, DecoBay_10 43.6); old scene counts StreamBay_6 98, _3 79, _4 74, _9W 35, _9 30, StreamCorner_3 32. Colour by ensemble (DecoKitColourways: one family per wall, one coral fascia ribbon down both sides)."
+      },
+      "ours": {
+        "status": "all adopted (Stream*, Deco*, Porthole*, Balcony*, plus the cap pieces PortholeBay_3L/_4L); CornerTower_12 candidate",
+        "used": "StreamBay_9W 92, StreamBay_6 85, StreamBay_9 70, StreamEnd_9 40, ... but SideBayStack_Mid 9340, SideBayStack_Top 2227, SideBayStack_Base 897"
+      },
+      "why_not_showing": [
+        "Height cap: the flyby's Boulevard (x 0, y -300..0) has boulevard-west at 91-100 m from the civic block (inside reachM 150) at 17.0-20.6 m, so only the east wall (harbour-boulevard, 27.8-42.2 m) is canyon height.",
+        "Wave-2 street bays (tools/world/gen/facades.ts) dress only the street face, one bay piece per building, and neighbour contrast forbids the same bay piece next door, so a street wall is a mix of Stream/Balcony/Porthole/Deco families, never one streamline ensemble.",
+        "The every-face pass (tools/world/gen/faces.ts, brief 072-C) dresses every other face of a tall building (setback uppers, returns, party walls above a lower neighbour) with SideBayStack: punched windows, flat. Outside the cap these are most of the visible wall from the air (docks-boulevard 1438 SideBayStack against 29 StreamBay; lantern-west 2404 against 26 PortholeBay).",
+        "Crown Avenue is not a canyon: its frontage is tower podiums (9.43 m) set back at x -34..-70 on the west and 24-31 m blocks on the east; the 34 m face-to-face is right but the walls are missing."
+      ],
+      "height_cap": "Outside the cap and already 8-10 storeys: harbour-boulevard (Boulevard east, 160-227 m), lantern-boulevard and docks-boulevard (Boulevard south of Market Street, y -410..-720, both sides, 254-527 m), harbour-court, parade-north/south, crescent-*. Inside: records and lamplight areas (all of boulevard-west).",
+      "work": [
+        { "step": "Ensemble rule: a street side picks one facade family (Stream outside the cap, Stream _3/_4 inside); neighbour contrast moves from family to variant (Bay against BayW) and colourway (074), not family. Generator + rule FW-1 with a failing example.", "owner": "Splice", "where": "tools/world/gen/facades.ts, new rule in tools/world/rules" },
+        { "step": "Plan: name the canyon streets and their family (standards.buildings.facade.ensembles: boulevard south, harbour-boulevard, Crown Avenue east) and, if Sky wants the Crown Avenue canyon, continuous slab frontage on its west side.", "owner": "Datum", "where": "contracts/world/harbour-district.plan.json" },
+        { "step": "New streamline side stack: StreamStack_Base/Mid/Top (ribbon glass band per storey, rounded corner piers) so tall non-street faces read as glass slabs, not punched SideBayStack.", "owner": "Vela", "where": "tools/decokit (facades.py / sides.py), adopt through bun run kit" },
+        { "step": "Face rule: a tall face visible from a street or the air, outside the cap, takes StreamStack; SideBayStack stays for the play streets' party walls.", "owner": "Splice", "where": "tools/world/gen/faces.ts" },
+        { "step": "Rebuild, play-zoom compare, flyby grid; Redline costs (StreamStack draws per module like SideBayStack: count should not rise).", "owner": "Latch, Redline" }
+      ]
+    },
+    {
+      "id": "C2",
+      "item": "red spheres",
+      "old": {
+        "pieces": ["SphereStation"],
+        "placed": "DecoKitStreetSkyline: (-130, 0, 330), yaw 20, scale 1.0 (120 m sphere, 188 m tall). DecoKitColourways livery: DK_Hull_Ivory painted brick red #9C2E2B, lattice DK_Steel_Ivory vermilion #B8432E."
+      },
+      "ours": { "status": "adopted, same FBX (sha256 matches the old project)", "used": "landmark/sphere at (-200, 110), scale 0.425 (sphere 51 m, top 80 m)" },
+      "why_not_showing": [
+        "No livery: our kit pieces keep their kit materials, so the sphere is ivory hull and ivory lattice. The 074 colourway swap covers buildings' walls and plinths only.",
+        "Scale 0.425 by the plan's skyline order (landmarks.sphere kitFit: the Skyport Tower, 108 m, leads; a 80 m sphere needs x0.67 and tops 125 m).",
+        "Not on the flyby's line: from the Boulevard it sits 200 m west of the axis behind the Lamplight and Gardens blocks."
+      ],
+      "height_cap": "none (Sphere Gardens, about 370 m from the civic block)",
+      "work": [
+        { "step": "Landmark livery in the export: kit.json `livery` table (piece -> material slot -> tinted material), the export writes it on each landmark, signature and megastructure kit ref; rule LV-1 (every livery material exists in the kit, only listed slots swap).", "owner": "Splice", "where": "contracts/world/kit.schema.ts, tools/world/gen/signatures.ts, tools/world/rules" },
+        { "step": "Tinted materials: DK_Hull_Ivory__brick (#9C2E2B), DK_Steel_Ivory__vermilion (#B8432E), same sheets, base colour only (as 074's colourways).", "owner": "Vela", "where": "tools/decokit/colourways.py, bun run kit" },
+        { "step": "Builder swaps livery materials per instance (the 074 mechanism).", "owner": "Latch" },
+        { "step": "Sky: sphere size (x0.425 top 80 / x0.56 top 105 / x0.67 Ø80 top 125, over the Skyport).", "owner": "Aster -> Sky" }
+      ]
+    },
+    {
+      "id": "C3",
+      "item": "gold arch",
+      "old": { "pieces": ["ParabolicArch"], "placed": "DecoKitStreetSkyline: (0, walk, 250) across the boulevard axis just past the circus, framing SpaceHQ 200 m beyond, the DiscTower pair either side behind it." },
+      "ours": { "status": "adopted (regenerated FBX)", "used": "1, as the Skyport pier gateway (plan megastructures.skyport-tower.gateway, c 482.5, 0; tools/world/gen/mega/pier.ts). My first census missed it: it sits under megastructures[].gateway." },
+      "why_not_showing": [
+        "It is in the world, but on the pier (flyby t44-50), not on the city axis. Nothing frames the Crown Avenue vista: from the circus the view runs straight to the DiscTower gate pair and SkyBridge at y 190.",
+        "Crown Avenue is 34 m face to face; the arch is 38.5 m across (feet +-16 m, outer edge +-19.25) and its tags allow scale 0.9-1.1, so at x0.9 the feet still reach x +-17.3, past the east building line (parade-north/1 at x 17)."
+      ],
+      "height_cap": "none (Crown Avenue is 276-480 m from the civic block)",
+      "work": [
+        { "step": "Plan: a second gateway on Crown Avenue (e.g. y 150-165, between the Starburst podium and the gate pair), feet rects on the pavements' frontage zone, with zones and keep-clears as the pier gateway has.", "owner": "Datum", "where": "plan landmarks or a crown-avenue gateway entry" },
+        { "step": "Piece: ParabolicArch@crown-avenue at a 30 m span (regen; the tag's 0.9 floor stops a plain scale).", "owner": "Vela", "where": "tools/decokit/landmarks.py" },
+        { "step": "Generator and rule: place every plan gateway by kit (pier.ts generalised); feet off the walk zone (SF-1) and crossings (SF-2).", "owner": "Splice" }
+      ]
+    },
+    {
+      "id": "C4",
+      "item": "gold disc towers",
+      "old": {
+        "pieces": ["SpaceHQ (old form: gold fluted legs, three discs, a rocket in the core)", "DiscTower pair", "SkyBridge"],
+        "placed": "SpaceHQ at (0, 0, 450) scale 1.35 (337 m) closing the boulevard; DiscTowers at x +-44 framing the arch; SkyBridge at 60 m between them. Livery: SpaceHQ DK_Gold #F2C14E metallic 1 smoothness 0.45 with its own warm reflection probe (DecoKitShowpiece)."
+      },
+      "ours": {
+        "status": "SpaceHQ rejected (brief 007 round 3; Sky 2026-10-13 'an atom over a needle mast, not a rocket'); SpaceHQ_Portal adopted (cream fluted tiers, gold ribs, atom crown, the S1 circus station runs through it); DiscTower@avenue-gate-w/e adopted; SkyBridge adopted",
+        "used": "SpaceHQ_Portal at (96, 0) on the Parade, off the Boulevard axis; DiscTower pair at (+-44, 190) with SkyBridge at 67 m"
+      },
+      "why_not_showing": [
+        "The gold disc tower Sky remembers is the old SpaceHQ form, which our kit rejected for the portal version on Sky's 2026-10-13 call. The portal version is cream with gold ribs, so nothing reads gold at distance.",
+        "BUG: every tower site exports procedural tower masses (tower/<site>/lower 24 m square to 34.6 m, upper 18 m square to 125 m; tools/world/gen/masses.ts) and the every-face pass dresses them with SideBayStack (avenue-gate-w: 452 SideBayStack + 134 CornerPier up to 121 m). The square punched-window boxes overlap the round kit shafts: in on-t20 the DiscTowers, Needle and Starburst read as square office towers with a saucer on top."
+      ],
+      "height_cap": "none",
+      "work": [
+        { "step": "Fix: where a tower site carries a kit tower, the export keeps the podium but drops the procedural lower/upper masses from the drawn layers (keep them as collision or occlusion only if a rule needs them); rule T-K1: no facade module on a tower mass whose site has a kit tower.", "owner": "Splice", "where": "tools/world/gen/masses.ts, faces.ts, rules" },
+        { "step": "Livery: SpaceHQ_Portal gold (DK_Crown_Gold__showpiece at #F2C14E, metallic 1, smoothness 0.45) via the C2 livery table; SF-21 does not read kit pieces with their own materials, so it allows this.", "owner": "Vela, Splice, Latch" },
+        { "step": "Sky: bring back the old gold disc form? It reverses the 2026-10-13 call and needs a portal regen of the old form (the station runs through SpaceHQ).", "owner": "Aster -> Sky; Vela if yes" }
+      ]
+    },
+    {
+      "id": "C5",
+      "item": "red-and-white striped towers",
+      "old": { "pieces": ["Skyport_Tower", "Tower_Lantern"], "placed": "DecoKitHarbour: Skyport_Tower on the skyport caisson; livery turned its DK_Steel_Ivory lattice vermilion, and its DK_Enamel_Coral bands read as red rings." },
+      "ours": { "status": "Skyport_Tower adopted (unused), Skyport_Tower_Portal adopted (used, regenerated, keeps DK_Enamel_Coral and DK_Steel_Ivory); Tower_Lantern@lantern-beacon adopted (coral bands)", "used": "Skyport_Tower_Portal at (545, 0); Lantern beacon at (-36, -518)" },
+      "why_not_showing": [
+        "No livery: the lattice frame stays ivory, so the tower reads ivory and black (window bands) in on-t50.",
+        "The coral bands may be thinner or fewer in the portal regen than in the old tower (to check on the piece, not visible in on-t50)."
+      ],
+      "height_cap": "none",
+      "work": [
+        { "step": "Livery table (C2): Skyport_Tower_Portal and every Landmarks/Skyport/Sky lattice DK_Steel_Ivory -> vermilion, as the old 'livery' layer did.", "owner": "Splice, Vela, Latch" },
+        { "step": "Check the portal regen's coral band count and height against the old tower; restore if dropped.", "owner": "Vela" }
+      ]
+    },
+    {
+      "id": "C6",
+      "item": "rocket gantry",
+      "old": { "pieces": ["LinerDock (150 m rocket liner in a 176 m lattice gantry)"], "placed": "DecoKitStreetSkyline: (270, water, Market pier middle), yaw -90: it closed Market Street's vista at the end of its pier." },
+      "ours": { "status": "LinerDock adopted (same FBX as the old), unused; LinerDock@liner-berth adopted and used, but it is the brief 007 round-2 liner terminal (Sky: 'LinerDock reads as a lattice rocket gantry, not a liner berth'); RocketShip candidate; Horizon_RocketPad adopted (3 pads at 3.2-4.2 km)", "used": "rockets only at the horizon pads" },
+      "why_not_showing": ["No plan site: brief 007 moved rockets to the horizon and turned the berth into a liner terminal. Sky now asks for the gantry back, which reverses that call."],
+      "height_cap": "none. Skyline order: the gantry is 205 m; the Skyport Tower (108) leads, so x0.5 (102 m, rocket 75 m) fits under it.",
+      "work": [
+        { "step": "Sky: confirm the gantry comes back, and at what size against the Skyport.", "owner": "Aster -> Sky" },
+        { "step": "Plan: a landmark 'rocket-gantry' on its own caisson closing Market Street's eastward vista (about (420, -410), clear of the liner berth at (372, -506)), kit LinerDock, scale by the answer.", "owner": "Datum" },
+        { "step": "Generator: landmark placed by kit as the others (no new code if it is a plain landmark entry); livery vermilion lattice (C2).", "owner": "Splice" }
+      ]
+    },
+    {
+      "id": "C7",
+      "item": "old palms, lush and close to the kerb",
+      "old": { "pieces": ["CoconutPalm"], "placed": "DecoKitStreetLayout.PaveOrPit: a 2 m tree-pit module centred 1.0 m behind the kerb line, every 10 m, staggered (west pits 6 m off the east), random yaw; no LOD group on the old prefab. 166 in the old scene." },
+      "ours": { "status": "CoconutPalm adopted, same FBX; CoconutPalm_Street (median cut) adopted; WashingtoniaPalm_Street candidate", "used": "CoconutPalm 586, CoconutPalm_Street 294, FanPalm_Play 191; random yaw (kitrefs.ts)" },
+      "check": {
+        "spacing": "ours 12 m (standards.streetscape.trees.spacing, kept over 10 m on 2026-10-22 for readability), pairs opposite; old 10 m staggered. Ours 16.7 palms per 100 m of street, old 20 (+20 %).",
+        "kerb_offset": "ours 1.2 m from the kerb face (0.45 SF-5 clearance + half the 1.5 m pit; tools/world/gen/street/roads.ts kerbMid); old 1.0 m with the pit edge on the kerb line, which SF-5 would fail. 0.2 m is not visible; ours is at its rule limit.",
+        "street": "old canyon 36 m face to face with a 16 m road; our Boulevard is 44 m (28 m road with a 10 m lawn tram reservation) and our district pavement 8 m against the old 10 m, so the same palm reads smaller and sparser.",
+        "lod": "trees L1 (1330 tris) at 8 % of screen height, about 90 m at the flyby's fov 58; the old prefab had none. At play zoom palms stay L0."
+      },
+      "why_not_showing": ["Same piece. The difference is spacing (12 vs 10), the wider street, the crown material and light (075-A, 075-B) and L1 from about 90 m in perspective views."],
+      "height_cap": "none",
+      "work": [
+        { "step": "Sky: 10 m staggered (reverses the 2026-10-22 readability call; +20 % palms, crowns roof about 60 % of the kerb line instead of 50 %) or keep 12.", "owner": "Aster -> Sky" },
+        { "step": "If yes: plan spacing 10 and a stagger key (avenue pairs: opposite | staggered); generator reads it; SF-7/8 keep-clears unchanged.", "owner": "Datum, Splice" },
+        { "step": "Crown material against the old reel's frond read; L1 at 90 m checked in the flyby.", "owner": "Vela (075-B), Redline" }
+      ]
+    },
+    {
+      "id": "C8",
+      "item": "billboards, kiosks and street props",
+      "old": {
+        "pieces": ["Billboard_Rooftop_A/B/C", "Billboard_Wall_A/B/C", "Billboard_Pylon_A/B", "AdColumn", "CurvedKiosk", "CoffeeCart", "DecoPavilion", "InfoLightbox", "PhoneBooth", "HoverScooter", "CafeSet_Tulip", "Deckchair"],
+        "placed": "Hand-placed in DecoKitDistrictDressing (rooftop billboards on the civic run and back bays, wall billboards at Market pier, pylon billboards on the promenade); old scene: AdColumn 8, InfoLightbox 14, PhoneBooth 11, HoverScooter 11, CafeSet_Tulip 76, Deckchair 104."
+      },
+      "ours": {
+        "status": "all 8 billboards adopted; AdColumn, CurvedKiosk(_Play), Newsstand, PhoneBooth(_Single), InfoLightbox, CoffeeCart_Play adopted; DecoPavilion candidate",
+        "used": "billboards 0; AdColumn 1, CurvedKiosk 3, Newsstand 15, CoffeeCart_Play 3, InfoLightbox 2, PhoneBooth 58; signs fine (BladeSign_Cafe 99, NeonStar_Wall 55, BladeSign_Hotel 9, BladeSign_Cinema 4)"
+      },
+      "why_not_showing": [
+        "No placement rule names billboard:rooftop, billboard:wall or billboard:pylon, so the adopted pieces are never placed. The roof programme 'sign-frame' (20 roofs) draws a procedural frame instead of the kit piece.",
+        "advertising-column sits behind newsstand in one 30 % corner roll with a 100 m spacing, so it almost never wins."
+      ],
+      "height_cap": "Inside the play streets a rooftop billboard adds 9.2 m on a 16.8-20.4 m roof: only at the roof's back edge, or none. A wall billboard on a party wall above a lower neighbour adds no height.",
+      "work": [
+        { "step": "Plan: roof programme sign-frame gets kit Billboard_Rooftop (as hover-pad has SkyPad_Roof); billboard:wall on party walls above a lower neighbour outside the cap; billboard:pylon at quays, open plots and primaries outside the cap; advertising-column its own roll.", "owner": "Datum" },
+        { "step": "Generator: roofs.ts maps sign-frame to the kit piece facing the street; faces.ts gives a party wall above a lower neighbour one Billboard_Wall before SideBayStack; pylons by the street siting rules; rules with failing examples (BB-1..3).", "owner": "Splice" },
+        { "step": "Billboard art and texture (old billboard_ads_v1.png) under 075-B.", "owner": "Vela" }
+      ]
+    },
+    {
+      "id": "C9",
+      "item": "textured sky rail beam",
+      "old": { "pieces": ["SkyRail_Pylon_Tall/Shaft/Head", "SkyRail_Car_Head/Mid", "SkyRailStation"], "placed": "DecoKitSkyRail: a swept 1.2 x 1.6 m beam with 0.22 m fillets, DK_Enamel_Ivory body and a proud DK_Enamel_Teal stripe each side, UV along the line (s/4); kit pylons every 30 m (122 Tall + 122 Shaft + 122 Head in the old scene); two 3-car trains." },
+      "ours": { "status": "SkyRail_Pylon_* and SkyRail_Car_* candidate; SkyRailStation_Twin/_Decks adopted", "used": "beam procedural from the export (transit.skyRail: width 1.5, depth 1.6, twin beams 6 m apart, surface 'beam' = flat coral #f5849e enamel), square procedural pylons" },
+      "why_not_showing": ["The beam is a flat-shaded box in one coral, with square boxes for pylons. The old kit pylons are candidates, and their head carries one beam where our line carries two."],
+      "height_cap": "none (S1 runs outside the play streets; brief 066 rule c)",
+      "work": [
+        { "step": "Sky (via Aster): colour. GDD §01 says 'coral transit'; the old beam is ivory with a teal stripe. Proposal: ivory beam with a coral stripe.", "owner": "Aster -> Sky" },
+        { "step": "Export: the beam's section profile (filleted, stripe) and pylon kit refs per pylon; rule S-K1 (every pylon a kit pylon, head matched to beam count).", "owner": "Splice", "where": "tools/world/build.ts transit()" },
+        { "step": "Piece: a twin-beam pylon head (SkyRail_Pylon_HeadTwin) and the beam material (enamel sheet with panel joints along the line); adopt Foot/Shaft/Tall.", "owner": "Vela" },
+        { "step": "Builder sweeps the profile along the line with UVs along it, as the old Beam() did.", "owner": "Latch" },
+        { "step": "Trains on the line: 075-D (motion).", "owner": "Latch" }
+      ]
+    },
+    {
+      "id": "C10",
+      "item": "a skyline that does not read as white cut-out boxes",
+      "old": {
+        "pieces": ["DecoKitCityMass (procedural)", "Tower_Setback/Stepped/Saucer", "DK_Skyline_Far.png band in the sky shader"],
+        "placed": "Three layers: (1) mid-ground massing on a 70 m grid from the district edge to 1400 m, one mesh per 420 m chunk, streamline slabs with round ends, 0-2 setbacks, banded drums with cap discs and lanterns, ribbon glass every 3.4 m, five materials (cream, ivory, limestone, dark glass, teal accent), heights 14 -> 48 m rising with distance x cluster noise, 8 % towers x2.6, cap 16 m under the rail and 55/110 m under the air lanes, kept clear of landmarks; (2) six background kit towers at 560-1080 m; (3) the far-city band painted in the sky at -1 to 9 degrees, tinted by the haze."
+      },
+      "ours": {
+        "status": "Horizon_Spire_A-D, Massif, Moon, PlanetRinged, RocketAscent, RocketPad adopted; Tower_Setback/Stepped/Saucer candidate; DK_SpaceSky shader with the far band ported by Glint (075-A)",
+        "used": "horizon rings A (750-1250 m) to shore (5500-8000 m): 212 pieces of tan DK_Far_* spires and massifs on sand land; nothing between the sheet edge and 750 m"
+      },
+      "why_not_showing": [
+        "No mid-ground: from the sheet edge to 750 m there is open sand, then a ring of single-colour tan spires, and nothing hazes them in the flyby (on-t50, on-t61.5).",
+        "Tower sites near the axis read as boxes (the C4 bug).",
+        "Most tall district walls outside the cap are SideBayStack (C1)."
+      ],
+      "height_cap": "none (all beyond the play streets)",
+      "work": [
+        { "step": "Generator: a mid-ground ring in tools/world/gen/horizon.ts after DecoKitCityMass: 70 m grid from 150 m outside the sheet to about 1400 m, seeded by cell id, round-ended slabs, setbacks and drums with ribbon bands, colourway families (cream, sand, peach, mint, ivory) with teal or coral caps, never flat white; heights rising with distance under each ring's elevation limit, clear of the sea sector, the rail and the landmarks; merged per chunk. Rules HZ-M1..3 (elevation, clearances, no white).", "owner": "Splice" },
+        { "step": "Adopt Tower_Setback/Stepped/Saucer as far towers in ring A/B at the elevation limit (Setback 172 m only beyond about 1100 m at 9 degrees).", "owner": "Vela (adopt), Splice (place)" },
+        { "step": "DK_Far_* horizon materials: hue and value from the old reel's far city, not flat tan.", "owner": "Vela (075-B)" },
+        { "step": "Haze over the horizon rings and the far band: the sky and haze come with 075-A, not a new pass here.", "owner": "Glint" },
+        { "step": "Cost the ring: the old CityMass was 1 draw per chunk per material.", "owner": "Redline" }
+      ]
+    }
+  ],
+  "height_cap_tradeoff": {
+    "rule": "plan standards.buildings.playStreets: every area with a plot within 150 m of the civic block is capped at 3-4 storeys (16.8-20.4 m roof); the Records Office (38 m) is the one tall thing in play.",
+    "old_canyon": "36 m face to face, 37-44 m walls (StreamBay_9, DecoBay_10), ratio about 1.0-1.2.",
+    "flyby_boulevard_today": "west wall boulevard-west 17.0-20.6 m at 91-100 m from the civic block (must stay capped); east wall harbour-boulevard 27.8-42.2 m. 44 m face to face: ratio 0.4 west, 0.9 east. A half canyon.",
+    "outside_cap_candidates": [
+      { "street": "The Boulevard south of Market Street (y -410..-720)", "areas": "lantern-boulevard, docks-boulevard", "distance_m": "254-527", "today_m": "35-38.6", "fit": "best: both sides already 8-10 storeys, straight, on the tram axis; needs the ensemble rule and StreamStack only" },
+      { "street": "The Boulevard east side (y -393..-40)", "areas": "harbour-boulevard", "distance_m": "160-227", "today_m": "27.8-42.2", "fit": "the east wall of the flyby's opening shot; same work" },
+      { "street": "Crown Avenue (y 37..280)", "areas": "avenue-*, crescent-*, parade-north", "distance_m": "276-480", "today_m": "24-38.6 plus towers", "fit": "the right width (34 m) and the arch and gate vista, but no continuous walls: needs Datum to plan slab frontage" }
+    ],
+    "inside_cap": "The same streamline language at 3-4 storeys: StreamBay_3/3W/4, StreamEnd_3/4 and StreamCorner_3/4 (the old scene itself used 79 StreamBay_3 and 74 StreamBay_4) as one ensemble per street side, rounded corners at junctions, the coral fascia ribbon unbroken. It reads as the old reel's low streamline terraces, not its canyon; the tall wall stays across the road (harbour-boulevard) and the towers stand behind.",
+    "question_for_sky": "Keep the cap and put the old canyon where the cap does not reach (Boulevard south and east, Crown Avenue), with the capped streets in the same glass-slab language at 3-4 storeys? Needs pictures: Latch renders the Boulevard south after the ensemble rule, against the old t6 frame."
+  },
+  "order": [
+    { "n": 1, "what": "Tower-site boxes off (C4 bug)", "owner": "Splice -> Latch", "why": "a small export fix, the biggest skyline change near the axis" },
+    { "n": 2, "what": "Landmark livery: red sphere, vermilion lattices, gold SpaceHQ (C2, C4, C5)", "owner": "Splice + Vela -> Latch", "why": "materials only, reuses 074's per-instance swap; fits the A/B rebuild" },
+    { "n": 3, "what": "Glass-slab ensembles and StreamStack (C1)", "owner": "Splice + Vela + Datum -> Latch", "why": "the boulevard read; settles the height-cap picture for Sky" },
+    { "n": 4, "what": "Mid-ground massing and far towers (C10)", "owner": "Splice + Vela, after Glint's 075-A haze", "why": "needs 075-A's haze and band to judge" },
+    { "n": 5, "what": "Sky rail beam profile, texture and kit pylons (C9)", "owner": "Splice + Vela + Latch, after Sky's colour call" },
+    { "n": 6, "what": "Billboards and street props (C8)", "owner": "Datum + Splice + Vela" },
+    { "n": 7, "what": "Palms 10 m staggered (C7)", "owner": "Datum + Splice, after Sky's call" },
+    { "n": 8, "what": "Sited landmarks: Crown Avenue arch, rocket gantry, old SpaceHQ form (C3, C6, C4)", "owner": "Datum + Vela + Splice, after Sky's calls" }
+  ],
+  "questions_for_sky": [
+    "Height cap: old canyon only outside the cap (Boulevard south and east, Crown Avenue), streamline terraces inside? (pictures first)",
+    "Sphere size: x0.425 (top 80) / x0.56 (top 105) / x0.67 (Ø80, top 125, over the Skyport)",
+    "Old gold SpaceHQ form back? It reverses 2026-10-13 'atom, not rocket'",
+    "Rocket gantry back (reverses brief 007 round 2), and at what size against the Skyport (x0.5 = 102 m)?",
+    "Sky rail colour: coral (GDD §01 'coral transit') or the old ivory with a stripe (proposal: ivory with a coral stripe)",
+    "Palms at 10 m staggered (reverses the 2026-10-22 12 m readability call)?"
+  ]
+}

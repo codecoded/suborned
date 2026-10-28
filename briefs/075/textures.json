@@ -1,0 +1,279 @@
+{
+ "schema": "suborned.textures075/1",
+ "brief": "075-B",
+ "owner": "Vela",
+ "date": "2026-10-28",
+ "judged": "play zoom 14 / 38 deg (briefs/075/textures) and the 074 flyby grid street view (briefs/074/flyby/grid)",
+ "rule": "texture and material response only; palette colours unchanged (road #8FAFC1 kept)",
+ "surfaces": [
+  {
+   "surface": "walls / panel (FacadeKit modules, SideBay, stacks, AlleyWall, ShopFill: the colourway walls)",
+   "ours": {
+    "material": "DK_Limestone_Tex + DK_Limestone_Tex__<family> (12 colourways, walls and plinths; 074-H)",
+    "maps": "wall_panel_neutral_v1 2048 (old facade_panel_v1's luminance, body grain softened 6.7 -> 2.5 %, WALL_SOFTEN 0.35) + facade_panel_v1 normal/mask",
+    "where": "every kit wall at play zoom, the biggest wall area"
+   },
+   "old": {
+    "material": "DK_Limestone_Tex and its scene paint copies DK_Limestone_Tex_<hex> (base colour white or near white)",
+    "maps": "facade_panel_v1 2048 (albedo, normal, mask) at 2 m, smoothness from mask x1",
+    "values": "URP Lit, untinted cream sheet"
+   },
+   "pick": "ours (074-H owns it)",
+   "why": "Same sheet, normal and mask as the old; only the cream is moved into the tint so a colourway can land. Open for 074-H: the old sheet's tonal cloud (6.7 % body grain) is what gives the old reel's walls life; the neutral sheet's 2.5 % reads flatter. Noted in notes.md; not changed here (colourways.py is 074-H's).",
+   "changed": false
+  },
+  {
+   "surface": "walls / limestone (civic block stone, plinths, cornices)",
+   "ours": {
+    "material": "DK_Limestone (legacy .mat, #E7DECA, smoothness .25) + 072-F limestone detail pair (from limestone_polished_v1) at 2 m, bump .3",
+    "where": "civic block, Records Office"
+   },
+   "old": {
+    "material": "DK_Limestone",
+    "maps": "none (flat)",
+    "values": "#E7DECA, smoothness .25"
+   },
+   "pick": "ours",
+   "why": "Identical material; the detail pair is the old DecoKit's own limestone_polished_v1, which the old flat stone lacked. At play zoom it adds the honed-stone cloud without moving colour.",
+   "changed": false
+  },
+  {
+   "surface": "walls / render (matte walls, far LODs, FacadeLit class 0)",
+   "ours": {
+    "material": "DK_Render_White (legacy) + colourway copies; FacadeLit layer 0 'render' (limestone_polished_v1 turned and softened)",
+    "where": "side walls, far LODs, procedural facades"
+   },
+   "old": {
+    "material": "DK_Render_White and paint copies",
+    "values": "#F6F2EA, smoothness .25, flat"
+   },
+   "pick": "ours",
+   "why": "Same base material and response; texture source is the old sheet.",
+   "changed": false
+  },
+  {
+   "surface": "glass / window film (DK_GlassDark in every facade bay)",
+   "ours": {
+    "material": "DK_GlassDark on Suborned/DecoKit/GlassSky (fake sky, no probe)",
+    "values": "glaze #3F7A8E a .65, edge .92, fresnel 3, sheen .12, sky horizon #D8E6E4 -> zenith #86B8E0"
+   },
+   "old": {
+    "material": "DK_GlassDark, URP Lit transparent premultiplied",
+    "values": "#35585A a .3, smoothness .98, reflections from 17 baked box-projected probes (256 px) of the Skybox/Panoramic street gradient DK_Sky_Street.png"
+   },
+   "pick": "ours, with the old sky",
+   "why": "The old look is its probes and grade, not the material: as URP Lit at a .3 over the charcoal cavity it reads as a black void without probes (brief 048). Ported the old street gradient into the film's fake sky (horizon #D1DBDD, zenith #75A4D6, sampled from DK_Sky_Street.png); glaze and alpha stay. Probes are Glint's (075-A).",
+   "changed": true,
+   "files": [
+    "tools/decokit/mats.py GLASS_FILM"
+   ]
+  },
+  {
+   "surface": "glass / curtain glass and clear glazing (DK_Glass, DK_Glass_Clear, DK_Glass_Sheen; look.json `glass`)",
+   "ours": {
+    "material": "DK_Glass legacy .mat unchanged; caf\u00e9 clear/sheen panes from the legacy GlassDark .mat; builder `glass` surface #86CFF2 a .42 sm .92"
+   },
+   "old": {
+    "material": "DK_Glass",
+    "values": "#CFEDE6 a .3, smoothness .98"
+   },
+   "pick": "ours (already the old)",
+   "why": "DK_Glass is the old .mat byte for byte. The boulevard's glass-slab buildings are a design port (075-C).",
+   "changed": false
+  },
+  {
+   "surface": "paving (footways, plots: DK_Ground_Pavement; legacy pieces Pave_Flags_i, TreePit_Flags_i: DK_Pave_Flags)",
+   "ours": {
+    "material": "DK_Ground_Pavement / DK_Pave_Flags",
+    "maps": "ground_pavement_v1 2048 (from pave_flags_v1) + normal 1024 + mask 512 at 4 m",
+    "values": "recoloured to #D5CBB8 (paintings), mask smoothness x1"
+   },
+   "old": {
+    "material": "DK_Pave_Flags",
+    "maps": "pave_flags_v1 4096 x3 (albedo, normal, mask)",
+    "values": "sheet mean #EAE0C4, mask smoothness x1"
+   },
+   "pick": "old colour at our size",
+   "why": "The old reel's pale cream flags; ours read grey-brown beside the colourway walls (074 grid). Now re-centred on the old sheet's own mean #EAE0C4 (also nearer the palette's pavement #F9EFDC); brief 048's one-curve recolour at the cream hue is kept, and the 2048 size (the old 4096 x3 is 64 MiB).",
+   "changed": true,
+   "files": [
+    "tools/decokit/ground_tex.py TARGET pavement"
+   ]
+  },
+  {
+   "surface": "roads (the carriageway: DK_Ground_RoadEnamel; asphalt option DK_Ground_RoadAsphalt)",
+   "ours": {
+    "material": "DK_Ground_RoadEnamel",
+    "maps": "testbed enamel webp 1024 + normal 1024 + mask 512, 2 m sheet x look tile 2 = 4 m",
+    "values": "#8FAFC1, smoothness .55 x mask .62 = ~.34, env reflection scale .35"
+   },
+   "old": {
+    "material": "DK_Asphalt_Road (scene, Generated/)",
+    "maps": "asphalt_road_v1 2048 + normal 2048 at 16 m",
+    "values": "URP Lit, smoothness .28"
+   },
+   "pick": "old texture, powder-blue colour kept",
+   "why": "The testbed's speckled enamel read as terrazzo; the old reel's road is a matte sheet with soft tonal drift and sealed patches. New albedo = asphalt_road_v1's luminance on #8FAFC1 (stains at 65 %: at full strength they read as dirt at play zoom), 16 m as the old; normal, mask and fine-aggregate detail are the ground set's (shared with DK_Ground_Asphalt, from the same old sheets), smoothness x1.4 = the old .28 on average. Same keywords as DK_Ground_Asphalt: no new variant. Memory unchanged (1536 albedo = the enamel's three maps' texels).",
+   "changed": true,
+   "files": [
+    "tools/decokit/road_tex.py enamel()",
+    "tools/decokit/road_ribbon.py GROUND DK_Ground_RoadEnamel",
+    "tools/decokit/mats.py _pbr_maps (shared maps in Blender)",
+    "unity/Assets/Suborned/Editor/World/look.json road-enamel tile 2 -> 1"
+   ]
+  },
+  {
+   "surface": "kerbs (world kerb: DK_Ground_RoadPearl; legacy Kerb_Granite pieces: DK_Granite_Kerb, DK_Ground_Kerb)",
+   "ours": {
+    "material": "DK_Ground_RoadPearl (testbed marble, #F1EEE6) for the world's kerb line; DK_Granite_Kerb recoloured warm #D0C9BB",
+    "where": "every kerb"
+   },
+   "old": {
+    "material": "DK_Granite_Kerb / _B",
+    "maps": "granite_kerb_v1 1024 x3 at .5 m",
+    "values": "blue-grey #A4ABBA, mask smoothness"
+   },
+   "pick": "ours",
+   "why": "The old reel's kerbs read pale and light; the old granite's blue-grey would sit against the powder-blue road with no edge. The pearl is the capstone's Kerb_Pearl (brief 028); the granite pieces already use the old sheet, re-coloured.",
+   "changed": false
+  },
+  {
+   "surface": "water",
+   "ours": {
+    "material": "sea/harbour: look.json `water` (Look.Water, Glint); kit: DK_Pool_Water, DK_Fountain_Water, DK_Water legacy"
+   },
+   "old": {
+    "material": "DK_Ocean shader + DK_Sea_Normal (sea); DK_Water #6FB7C4 a .3 sm .98; DK_Pool_Water enamel #3CC3C4"
+   },
+   "pick": "split: Glint 075-A owns the sea; kit water stays the old .mats",
+   "why": "The sea's look is shader, sky and grade (075-A). The kit's pool and fountain water mats are the legacy files unchanged. Agreed in notes.md.",
+   "changed": false
+  },
+  {
+   "surface": "metals / chrome (DK_Chrome, DK_Steel, DK_Steel_Brushed)",
+   "ours": {
+    "material": "legacy .mats + 072-F metal detail (brushed_steel_v1) at .5 m, chrome at half bump"
+   },
+   "old": {
+    "material": "DK_Chrome",
+    "values": "#EDEDED metallic 1 smoothness .95; DK_Steel .7; DK_Steel_Brushed brushed_steel_v1 at .5 m"
+   },
+   "pick": "ours (already the old)",
+   "why": "Same values; the detail is the old brushed sheet, faint on chrome. Its mirror look depends on the probes (075-A).",
+   "changed": false
+  },
+  {
+   "surface": "metals / brass-gold (DK_Gold, DK_Gold17, DK_Accent_Gold, DK_Brass_Civic; crowns DK_Crown_Gold)",
+   "ours": {
+    "material": "kind `brass`",
+    "values": "DK_Gold #D6AE62 (the old hex), metallic .6, smoothness .6; crowns #E3D681 metal .7"
+   },
+   "old": {
+    "material": "DK_Gold",
+    "values": "#D6AE62 metallic 1 smoothness .7"
+   },
+   "pick": "ours",
+   "why": "Colour is already the old; full metal mirrored the dark zenith as black studs (brief 009 / 072-G). With 075-A's probes it can be retried. The old gold arch and disc towers are 075-C (crown colour is a palette question, not this pass).",
+   "changed": false
+  },
+  {
+   "surface": "enamel (DK_Enamel_*, DK_Accent_*, bands and fascias)",
+   "ours": {
+    "material": "legacy Complex Lit .mats + 072-F glaze detail (glazed_tile_ivory_v1) at 1 m, bump .25",
+    "values": "smoothness .68, clear coat 1 / .97"
+   },
+   "old": {
+    "material": "DK_Enamel_*",
+    "values": "smoothness .68, clear coat 1 / .97"
+   },
+   "pick": "ours (already the old)",
+   "why": "Identical response; the detail is an old DecoKit sheet.",
+   "changed": false
+  },
+  {
+   "surface": "roofs (flat roofs: FacadeLit roof layer, roof colours by colourway; RoofKit decks)",
+   "ours": {
+    "material": "builder roof surfaces (#F6EBD6) + FacadeLit layer 4 'roof' (asphalt_fine_v1) on up-facing faces"
+   },
+   "old": {
+    "material": "DK_Roof_Felt (#8F8A83, sm .25), roof decks and roof lawns (DK_Lawn)"
+   },
+   "pick": "ours",
+   "why": "Texture source is the old asphalt_fine sheet; the old reel's roofs read pale from above too. Roof lawns and decks are design (075-C).",
+   "changed": false
+  },
+  {
+   "surface": "planters and greens (lawn DK_Ground_Lawn; leaves DK_Leaf_*; planters DK_Faience_Teal)",
+   "ours": {
+    "material": "DK_Ground_Lawn",
+    "maps": "ground_lawn_v1 1536 (lawn_v1, stripes softened to 45 %, hue 108) + 4 m mowing bands (brief 048) + normal 512 at 8 m",
+    "values": "smoothness .2"
+   },
+   "old": {
+    "material": "DK_Lawn (scene)",
+    "maps": "lawn_v1 2048 + normal 2048 at 8 m",
+    "values": "smoothness .12"
+   },
+   "pick": "old response, no added bands",
+   "why": "The added 4 m bands read as a sports pitch down every median in the 074 grid; the old lawn had only its own soft stripes. Bands off, smoothness .12 as DK_Lawn. Leaf cutouts are the old sheets unchanged; the old palms are 075-C.",
+   "changed": true,
+   "files": [
+    "tools/decokit/ground_tex.py LAWN_BANDS",
+    "tools/decokit/mats.py GROUND DK_Ground_Lawn smoothness"
+   ]
+  }
+ ],
+ "memory": {
+  "note": "BC7/BC5 1 byte a texel, mips +1/3; generator reports",
+  "ground": {
+   "totalMiB": 27.24,
+   "budgetMiB": 30.0,
+   "change": "0 (same sizes)"
+  },
+  "road": {
+   "totalMiB": 24.75,
+   "change": "0: roadenamel 3.0 MiB before (1024 + 1024 + 512) and after (1536 albedo; normal/mask/detail shared with DK_Ground_Asphalt)"
+  },
+  "surface072F": {
+   "totalMiB": 15.98,
+   "budgetMiB": 24.0,
+   "change": 0
+  },
+  "kitCopy": "removed ground_roadenamel_v1_normal (1024) and _mask (512), added the 1536 albedo: net 0 texels"
+ },
+ "provenance": {
+  "asphalt_road_v1": {
+   "path": "~/Projects/the-suborned-store/source-art/DecoKit/Textures/derived/asphalt_road_v1.png",
+   "sha256": "292e38ddd19a211b8e02e0817a530da1981dab0375bc413e4c8ce9f5d1c3a11c"
+  },
+  "pave_flags_v1": {
+   "path": "~/Projects/the-suborned-store/source-art/DecoKit/Textures/derived/pave_flags_v1.png",
+   "sha256": "4aa8bd98f16f94c599ba0cab49ff39ea141e6b8434546c415f8e9ff6630a5829"
+  },
+  "lawn_v1": {
+   "path": "~/Projects/the-suborned-store/source-art/DecoKit/Textures/derived/lawn_v1.png",
+   "sha256": "6ff785bc8fdf0f11539c46d6f0278a0db65294b3d51fe9019c9bf47242275398"
+  },
+  "DK_Sky_Street": {
+   "path": "~/Projects/the-suborned/game/Assets/TheSuborned/Art/DecoKit/Textures/Backdrop/DK_Sky_Street.png",
+   "sha256": "31aaf8f2ad4e135bf0c6509c54be75d853245701d74402d411fbd4b669c0f639"
+  },
+  "DK_Asphalt_Road_mat": {
+   "path": "~/Projects/the-suborned/game/Assets/TheSuborned/Art/DecoKit/Generated/DK_Asphalt_Road.mat",
+   "sha256": "5893e48bd94545b21c978695acdce77ce892b2b785035c64cefad80b0d3a4145"
+  },
+  "DK_Lawn_mat": {
+   "path": "~/Projects/the-suborned/game/Assets/TheSuborned/Art/DecoKit/Generated/DK_Lawn.mat",
+   "sha256": "317dc32aa76a522705376758c36c001289f1ce500daaf403f51f1133f462a243"
+  },
+  "DK_Pave_Flags_mat": {
+   "path": "~/Projects/the-suborned/game/Assets/TheSuborned/Art/DecoKit/Materials/DK_Pave_Flags.mat",
+   "sha256": "ffb55336394e856f26cde65d9ef2ca5872223557fd995273958e578040f13841"
+  },
+  "DK_GlassDark_mat": {
+   "path": "~/Projects/the-suborned/game/Assets/TheSuborned/Art/DecoKit/Materials/DK_GlassDark.mat",
+   "sha256": "35a0ddd5b9c9ab07fe4a414545e03a96409d33885c605396671f38c861149be5"
+  }
+ },
+ "newShaderVariants": 0
+}

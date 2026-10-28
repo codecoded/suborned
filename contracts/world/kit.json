@@ -3123,7 +3123,7 @@
      "root": "generated",
      "role": "material",
      "path": "Materials/DK_GlassDark.mat",
-     "sha256": "7f878c76c41b68cb6c06e203e2b2b7c93fb74e3bff81b3e9f5abb66fe29e79ad",
+     "sha256": "ab907cd9d0b9c80c2d0fabd08d79cdb37f41458792100cdbeb0b7cf183cec48c",
      "bytes": 1176
     },
     {
@@ -3355,7 +3355,7 @@
      "root": "generated",
      "role": "material",
      "path": "Materials/DK_GlassDark.mat",
-     "sha256": "7f878c76c41b68cb6c06e203e2b2b7c93fb74e3bff81b3e9f5abb66fe29e79ad",
+     "sha256": "ab907cd9d0b9c80c2d0fabd08d79cdb37f41458792100cdbeb0b7cf183cec48c",
      "bytes": 1176
     },
     {
@@ -5232,7 +5232,7 @@
      "root": "generated",
      "role": "material",
      "path": "Materials/DK_GlassDark.mat",
-     "sha256": "7f878c76c41b68cb6c06e203e2b2b7c93fb74e3bff81b3e9f5abb66fe29e79ad",
+     "sha256": "ab907cd9d0b9c80c2d0fabd08d79cdb37f41458792100cdbeb0b7cf183cec48c",
      "bytes": 1176
     },
     {
@@ -8297,7 +8297,7 @@
      "root": "generated",
      "role": "material",
      "path": "Materials/DK_GlassDark.mat",
-     "sha256": "7f878c76c41b68cb6c06e203e2b2b7c93fb74e3bff81b3e9f5abb66fe29e79ad",
+     "sha256": "ab907cd9d0b9c80c2d0fabd08d79cdb37f41458792100cdbeb0b7cf183cec48c",
      "bytes": 1176
     },
     {
@@ -8623,7 +8623,7 @@
      "root": "generated",
      "role": "material",
      "path": "Materials/DK_GlassDark.mat",
-     "sha256": "7f878c76c41b68cb6c06e203e2b2b7c93fb74e3bff81b3e9f5abb66fe29e79ad",
+     "sha256": "ab907cd9d0b9c80c2d0fabd08d79cdb37f41458792100cdbeb0b7cf183cec48c",
      "bytes": 1176
     },
     {
@@ -10843,7 +10843,7 @@
      "root": "generated",
      "role": "material",
      "path": "Materials/DK_GlassDark.mat",
-     "sha256": "7f878c76c41b68cb6c06e203e2b2b7c93fb74e3bff81b3e9f5abb66fe29e79ad",
+     "sha256": "ab907cd9d0b9c80c2d0fabd08d79cdb37f41458792100cdbeb0b7cf183cec48c",
      "bytes": 1176
     },
     {
@@ -11178,7 +11178,7 @@
      "root": "generated",
      "role": "material",
      "path": "Materials/DK_GlassDark.mat",
-     "sha256": "7f878c76c41b68cb6c06e203e2b2b7c93fb74e3bff81b3e9f5abb66fe29e79ad",
+     "sha256": "ab907cd9d0b9c80c2d0fabd08d79cdb37f41458792100cdbeb0b7cf183cec48c",
      "bytes": 1176
     },
     {
@@ -11604,7 +11604,7 @@
      "root": "generated",
      "role": "material",
      "path": "Materials/DK_GlassDark.mat",
-     "sha256": "7f878c76c41b68cb6c06e203e2b2b7c93fb74e3bff81b3e9f5abb66fe29e79ad",
+     "sha256": "ab907cd9d0b9c80c2d0fabd08d79cdb37f41458792100cdbeb0b7cf183cec48c",
      "bytes": 1176
     },
     {
@@ -12784,8 +12784,8 @@
      "root": "generated",
      "role": "texture",
      "path": "Textures/ground_pavement_v1.png",
-     "sha256": "02d2450cb2f4c90e10a43710fd157e51be4b785d8ea27d03dd7f322edb91432a",
-     "bytes": 5258744
+     "sha256": "1365aa721a1a5e2c6b426c7b0f95f13e1c3de057f0fb7d5bd375d3944cb43338",
+     "bytes": 4670212
     },
     {
      "root": "generated",
@@ -12895,8 +12895,8 @@
      "root": "generated",
      "role": "texture",
      "path": "Textures/ground_pavement_v1.png",
-     "sha256": "02d2450cb2f4c90e10a43710fd157e51be4b785d8ea27d03dd7f322edb91432a",
-     "bytes": 5258744
+     "sha256": "1365aa721a1a5e2c6b426c7b0f95f13e1c3de057f0fb7d5bd375d3944cb43338",
+     "bytes": 4670212
     },
     {
      "root": "generated",
@@ -13006,8 +13006,8 @@
      "root": "generated",
      "role": "texture",
      "path": "Textures/ground_pavement_v1.png",
-     "sha256": "02d2450cb2f4c90e10a43710fd157e51be4b785d8ea27d03dd7f322edb91432a",
-     "bytes": 5258744
+     "sha256": "1365aa721a1a5e2c6b426c7b0f95f13e1c3de057f0fb7d5bd375d3944cb43338",
+     "bytes": 4670212
     },
     {
      "root": "generated",
@@ -13117,8 +13117,8 @@
      "root": "generated",
      "role": "texture",
      "path": "Textures/ground_pavement_v1.png",
-     "sha256": "02d2450cb2f4c90e10a43710fd157e51be4b785d8ea27d03dd7f322edb91432a",
-     "bytes": 5258744
+     "sha256": "1365aa721a1a5e2c6b426c7b0f95f13e1c3de057f0fb7d5bd375d3944cb43338",
+     "bytes": 4670212
     },
     {
      "root": "generated",
@@ -13806,8 +13806,8 @@
      "root": "generated",
      "role": "texture",
      "path": "Textures/ground_pavement_v1.png",
-     "sha256": "02d2450cb2f4c90e10a43710fd157e51be4b785d8ea27d03dd7f322edb91432a",
-     "bytes": 5258744
+     "sha256": "1365aa721a1a5e2c6b426c7b0f95f13e1c3de057f0fb7d5bd375d3944cb43338",
+     "bytes": 4670212
     },
     {
      "root": "generated",
@@ -14045,8 +14045,8 @@
      "root": "generated",
      "role": "texture",
      "path": "Textures/ground_pavement_v1.png",
-     "sha256": "02d2450cb2f4c90e10a43710fd157e51be4b785d8ea27d03dd7f322edb91432a",
-     "bytes": 5258744
+     "sha256": "1365aa721a1a5e2c6b426c7b0f95f13e1c3de057f0fb7d5bd375d3944cb43338",
+     "bytes": 4670212
     },
     {
      "root": "generated",
@@ -14284,8 +14284,8 @@
      "root": "generated",
      "role": "texture",
      "path": "Textures/ground_pavement_v1.png",
-     "sha256": "02d2450cb2f4c90e10a43710fd157e51be4b785d8ea27d03dd7f322edb91432a",
-     "bytes": 5258744
+     "sha256": "1365aa721a1a5e2c6b426c7b0f95f13e1c3de057f0fb7d5bd375d3944cb43338",
+     "bytes": 4670212
     },
     {
      "root": "generated",
@@ -14523,8 +14523,8 @@
      "root": "generated",
      "role": "texture",
      "path": "Textures/ground_pavement_v1.png",
-     "sha256": "02d2450cb2f4c90e10a43710fd157e51be4b785d8ea27d03dd7f322edb91432a",
-     "bytes": 5258744
+     "sha256": "1365aa721a1a5e2c6b426c7b0f95f13e1c3de057f0fb7d5bd375d3944cb43338",
+     "bytes": 4670212
     },
     {
      "root": "generated",
@@ -14736,8 +14736,8 @@
      "root": "generated",
      "role": "texture",
      "path": "Textures/ground_pavement_v1.png",
-     "sha256": "02d2450cb2f4c90e10a43710fd157e51be4b785d8ea27d03dd7f322edb91432a",
-     "bytes": 5258744
+     "sha256": "1365aa721a1a5e2c6b426c7b0f95f13e1c3de057f0fb7d5bd375d3944cb43338",
+     "bytes": 4670212
     },
     {
      "root": "generated",
@@ -15005,8 +15005,8 @@
      "root": "generated",
      "role": "texture",
      "path": "Textures/ground_pavement_v1.png",
-     "sha256": "02d2450cb2f4c90e10a43710fd157e51be4b785d8ea27d03dd7f322edb91432a",
-     "bytes": 5258744
+     "sha256": "1365aa721a1a5e2c6b426c7b0f95f13e1c3de057f0fb7d5bd375d3944cb43338",
+     "bytes": 4670212
     },
     {
      "root": "generated",
@@ -15274,8 +15274,8 @@
      "root": "generated",
      "role": "texture",
      "path": "Textures/ground_pavement_v1.png",
-     "sha256": "02d2450cb2f4c90e10a43710fd157e51be4b785d8ea27d03dd7f322edb91432a",
-     "bytes": 5258744
+     "sha256": "1365aa721a1a5e2c6b426c7b0f95f13e1c3de057f0fb7d5bd375d3944cb43338",
+     "bytes": 4670212
     },
     {
      "root": "generated",
@@ -15543,8 +15543,8 @@
      "root": "generated",
      "role": "texture",
      "path": "Textures/ground_pavement_v1.png",
-     "sha256": "02d2450cb2f4c90e10a43710fd157e51be4b785d8ea27d03dd7f322edb91432a",
-     "bytes": 5258744
+     "sha256": "1365aa721a1a5e2c6b426c7b0f95f13e1c3de057f0fb7d5bd375d3944cb43338",
+     "bytes": 4670212
     },
     {
      "root": "generated",
@@ -15838,8 +15838,8 @@
      "root": "generated",
      "role": "texture",
      "path": "Textures/ground_pavement_v1.png",
-     "sha256": "02d2450cb2f4c90e10a43710fd157e51be4b785d8ea27d03dd7f322edb91432a",
-     "bytes": 5258744
+     "sha256": "1365aa721a1a5e2c6b426c7b0f95f13e1c3de057f0fb7d5bd375d3944cb43338",
+     "bytes": 4670212
     },
     {
      "root": "generated",
@@ -15975,7 +15975,7 @@
      "root": "generated",
      "role": "material",
      "path": "Materials/DK_GlassDark.mat",
-     "sha256": "7f878c76c41b68cb6c06e203e2b2b7c93fb74e3bff81b3e9f5abb66fe29e79ad",
+     "sha256": "ab907cd9d0b9c80c2d0fabd08d79cdb37f41458792100cdbeb0b7cf183cec48c",
      "bytes": 1176
     },
     {
@@ -16369,7 +16369,7 @@
      "root": "generated",
      "role": "material",
      "path": "Materials/DK_GlassDark.mat",
-     "sha256": "7f878c76c41b68cb6c06e203e2b2b7c93fb74e3bff81b3e9f5abb66fe29e79ad",
+     "sha256": "ab907cd9d0b9c80c2d0fabd08d79cdb37f41458792100cdbeb0b7cf183cec48c",
      "bytes": 1176
     },
     {
@@ -16763,7 +16763,7 @@
      "root": "generated",
      "role": "material",
      "path": "Materials/DK_GlassDark.mat",
-     "sha256": "7f878c76c41b68cb6c06e203e2b2b7c93fb74e3bff81b3e9f5abb66fe29e79ad",
+     "sha256": "ab907cd9d0b9c80c2d0fabd08d79cdb37f41458792100cdbeb0b7cf183cec48c",
      "bytes": 1176
     },
     {
@@ -17114,7 +17114,7 @@
      "root": "generated",
      "role": "material",
      "path": "Materials/DK_GlassDark.mat",
-     "sha256": "7f878c76c41b68cb6c06e203e2b2b7c93fb74e3bff81b3e9f5abb66fe29e79ad",
+     "sha256": "ab907cd9d0b9c80c2d0fabd08d79cdb37f41458792100cdbeb0b7cf183cec48c",
      "bytes": 1176
     },
     {
@@ -17501,7 +17501,7 @@
      "root": "generated",
      "role": "material",
      "path": "Materials/DK_GlassDark.mat",
-     "sha256": "7f878c76c41b68cb6c06e203e2b2b7c93fb74e3bff81b3e9f5abb66fe29e79ad",
+     "sha256": "ab907cd9d0b9c80c2d0fabd08d79cdb37f41458792100cdbeb0b7cf183cec48c",
      "bytes": 1176
     },
     {
@@ -20790,7 +20790,7 @@
      "root": "generated",
      "role": "material",
      "path": "Materials/DK_GlassDark.mat",
-     "sha256": "7f878c76c41b68cb6c06e203e2b2b7c93fb74e3bff81b3e9f5abb66fe29e79ad",
+     "sha256": "ab907cd9d0b9c80c2d0fabd08d79cdb37f41458792100cdbeb0b7cf183cec48c",
      "bytes": 1176
     },
     {
@@ -21035,7 +21035,7 @@
      "root": "generated",
      "role": "material",
      "path": "Materials/DK_GlassDark.mat",
-     "sha256": "7f878c76c41b68cb6c06e203e2b2b7c93fb74e3bff81b3e9f5abb66fe29e79ad",
+     "sha256": "ab907cd9d0b9c80c2d0fabd08d79cdb37f41458792100cdbeb0b7cf183cec48c",
      "bytes": 1176
     },
     {
@@ -21429,7 +21429,7 @@
      "root": "generated",
      "role": "material",
      "path": "Materials/DK_GlassDark.mat",
-     "sha256": "7f878c76c41b68cb6c06e203e2b2b7c93fb74e3bff81b3e9f5abb66fe29e79ad",
+     "sha256": "ab907cd9d0b9c80c2d0fabd08d79cdb37f41458792100cdbeb0b7cf183cec48c",
      "bytes": 1176
     },
     {
@@ -21823,7 +21823,7 @@
      "root": "generated",
      "role": "material",
      "path": "Materials/DK_GlassDark.mat",
-     "sha256": "7f878c76c41b68cb6c06e203e2b2b7c93fb74e3bff81b3e9f5abb66fe29e79ad",
+     "sha256": "ab907cd9d0b9c80c2d0fabd08d79cdb37f41458792100cdbeb0b7cf183cec48c",
      "bytes": 1176
     },
     {
@@ -23652,7 +23652,7 @@
      "root": "generated",
      "role": "material",
      "path": "Materials/DK_GlassDark.mat",
-     "sha256": "7f878c76c41b68cb6c06e203e2b2b7c93fb74e3bff81b3e9f5abb66fe29e79ad",
+     "sha256": "ab907cd9d0b9c80c2d0fabd08d79cdb37f41458792100cdbeb0b7cf183cec48c",
      "bytes": 1176
     },
     {
@@ -23819,7 +23819,7 @@
      "root": "generated",
      "role": "material",
      "path": "Materials/DK_GlassDark.mat",
-     "sha256": "7f878c76c41b68cb6c06e203e2b2b7c93fb74e3bff81b3e9f5abb66fe29e79ad",
+     "sha256": "ab907cd9d0b9c80c2d0fabd08d79cdb37f41458792100cdbeb0b7cf183cec48c",
      "bytes": 1176
     },
     {
@@ -24012,7 +24012,7 @@
      "root": "generated",
      "role": "material",
      "path": "Materials/DK_GlassDark.mat",
-     "sha256": "7f878c76c41b68cb6c06e203e2b2b7c93fb74e3bff81b3e9f5abb66fe29e79ad",
+     "sha256": "ab907cd9d0b9c80c2d0fabd08d79cdb37f41458792100cdbeb0b7cf183cec48c",
      "bytes": 1176
     },
     {
@@ -28495,7 +28495,7 @@
      "root": "generated",
      "role": "material",
      "path": "Materials/DK_GlassDark.mat",
-     "sha256": "7f878c76c41b68cb6c06e203e2b2b7c93fb74e3bff81b3e9f5abb66fe29e79ad",
+     "sha256": "ab907cd9d0b9c80c2d0fabd08d79cdb37f41458792100cdbeb0b7cf183cec48c",
      "bytes": 1176
     },
     {
@@ -29061,7 +29061,7 @@
      "root": "generated",
      "role": "material",
      "path": "Materials/DK_GlassDark.mat",
-     "sha256": "7f878c76c41b68cb6c06e203e2b2b7c93fb74e3bff81b3e9f5abb66fe29e79ad",
+     "sha256": "ab907cd9d0b9c80c2d0fabd08d79cdb37f41458792100cdbeb0b7cf183cec48c",
      "bytes": 1176
     },
     {
@@ -29567,7 +29567,7 @@
      "root": "generated",
      "role": "material",
      "path": "Materials/DK_GlassDark.mat",
-     "sha256": "7f878c76c41b68cb6c06e203e2b2b7c93fb74e3bff81b3e9f5abb66fe29e79ad",
+     "sha256": "ab907cd9d0b9c80c2d0fabd08d79cdb37f41458792100cdbeb0b7cf183cec48c",
      "bytes": 1176
     },
     {
@@ -29921,7 +29921,7 @@
      "root": "generated",
      "role": "material",
      "path": "Materials/DK_GlassDark.mat",
-     "sha256": "7f878c76c41b68cb6c06e203e2b2b7c93fb74e3bff81b3e9f5abb66fe29e79ad",
+     "sha256": "ab907cd9d0b9c80c2d0fabd08d79cdb37f41458792100cdbeb0b7cf183cec48c",
      "bytes": 1176
     },
     {
@@ -30292,7 +30292,7 @@
      "root": "generated",
      "role": "material",
      "path": "Materials/DK_GlassDark.mat",
-     "sha256": "7f878c76c41b68cb6c06e203e2b2b7c93fb74e3bff81b3e9f5abb66fe29e79ad",
+     "sha256": "ab907cd9d0b9c80c2d0fabd08d79cdb37f41458792100cdbeb0b7cf183cec48c",
      "bytes": 1176
     },
     {
@@ -30729,7 +30729,7 @@
      "root": "generated",
      "role": "material",
      "path": "Materials/DK_GlassDark.mat",
-     "sha256": "7f878c76c41b68cb6c06e203e2b2b7c93fb74e3bff81b3e9f5abb66fe29e79ad",
+     "sha256": "ab907cd9d0b9c80c2d0fabd08d79cdb37f41458792100cdbeb0b7cf183cec48c",
      "bytes": 1176
     },
     {
@@ -31150,7 +31150,7 @@
      "root": "generated",
      "role": "material",
      "path": "Materials/DK_GlassDark.mat",
-     "sha256": "7f878c76c41b68cb6c06e203e2b2b7c93fb74e3bff81b3e9f5abb66fe29e79ad",
+     "sha256": "ab907cd9d0b9c80c2d0fabd08d79cdb37f41458792100cdbeb0b7cf183cec48c",
      "bytes": 1176
     },
     {
@@ -36527,7 +36527,7 @@
      "root": "generated",
      "role": "material",
      "path": "Materials/DK_GlassDark.mat",
-     "sha256": "7f878c76c41b68cb6c06e203e2b2b7c93fb74e3bff81b3e9f5abb66fe29e79ad",
+     "sha256": "ab907cd9d0b9c80c2d0fabd08d79cdb37f41458792100cdbeb0b7cf183cec48c",
      "bytes": 1176
     },
     {
@@ -36994,7 +36994,7 @@
      "root": "generated",
      "role": "material",
      "path": "Materials/DK_GlassDark.mat",
-     "sha256": "7f878c76c41b68cb6c06e203e2b2b7c93fb74e3bff81b3e9f5abb66fe29e79ad",
+     "sha256": "ab907cd9d0b9c80c2d0fabd08d79cdb37f41458792100cdbeb0b7cf183cec48c",
      "bytes": 1176
     },
     {
@@ -39251,7 +39251,7 @@
      "root": "generated",
      "role": "material",
      "path": "Materials/DK_GlassDark.mat",
-     "sha256": "7f878c76c41b68cb6c06e203e2b2b7c93fb74e3bff81b3e9f5abb66fe29e79ad",
+     "sha256": "ab907cd9d0b9c80c2d0fabd08d79cdb37f41458792100cdbeb0b7cf183cec48c",
      "bytes": 1176
     },
     {
@@ -39504,7 +39504,7 @@
      "root": "generated",
      "role": "material",
      "path": "Materials/DK_GlassDark.mat",
-     "sha256": "7f878c76c41b68cb6c06e203e2b2b7c93fb74e3bff81b3e9f5abb66fe29e79ad",
+     "sha256": "ab907cd9d0b9c80c2d0fabd08d79cdb37f41458792100cdbeb0b7cf183cec48c",
      "bytes": 1176
     },
     {
@@ -46048,7 +46048,7 @@
      "root": "generated",
      "role": "material",
      "path": "Materials/DK_GlassDark.mat",
-     "sha256": "7f878c76c41b68cb6c06e203e2b2b7c93fb74e3bff81b3e9f5abb66fe29e79ad",
+     "sha256": "ab907cd9d0b9c80c2d0fabd08d79cdb37f41458792100cdbeb0b7cf183cec48c",
      "bytes": 1176
     },
     {
@@ -46429,7 +46429,7 @@
      "root": "generated",
      "role": "material",
      "path": "Materials/DK_GlassDark.mat",
-     "sha256": "7f878c76c41b68cb6c06e203e2b2b7c93fb74e3bff81b3e9f5abb66fe29e79ad",
+     "sha256": "ab907cd9d0b9c80c2d0fabd08d79cdb37f41458792100cdbeb0b7cf183cec48c",
      "bytes": 1176
     },
     {
@@ -46810,7 +46810,7 @@
      "root": "generated",
      "role": "material",
      "path": "Materials/DK_GlassDark.mat",
-     "sha256": "7f878c76c41b68cb6c06e203e2b2b7c93fb74e3bff81b3e9f5abb66fe29e79ad",
+     "sha256": "ab907cd9d0b9c80c2d0fabd08d79cdb37f41458792100cdbeb0b7cf183cec48c",
      "bytes": 1176
     },
     {
@@ -47159,7 +47159,7 @@
      "root": "generated",
      "role": "material",
      "path": "Materials/DK_GlassDark.mat",
-     "sha256": "7f878c76c41b68cb6c06e203e2b2b7c93fb74e3bff81b3e9f5abb66fe29e79ad",
+     "sha256": "ab907cd9d0b9c80c2d0fabd08d79cdb37f41458792100cdbeb0b7cf183cec48c",
      "bytes": 1176
     },
     {
@@ -47553,7 +47553,7 @@
      "root": "generated",
      "role": "material",
      "path": "Materials/DK_GlassDark.mat",
-     "sha256": "7f878c76c41b68cb6c06e203e2b2b7c93fb74e3bff81b3e9f5abb66fe29e79ad",
+     "sha256": "ab907cd9d0b9c80c2d0fabd08d79cdb37f41458792100cdbeb0b7cf183cec48c",
      "bytes": 1176
     },
     {
@@ -47947,7 +47947,7 @@
      "root": "generated",
      "role": "material",
      "path": "Materials/DK_GlassDark.mat",
-     "sha256": "7f878c76c41b68cb6c06e203e2b2b7c93fb74e3bff81b3e9f5abb66fe29e79ad",
+     "sha256": "ab907cd9d0b9c80c2d0fabd08d79cdb37f41458792100cdbeb0b7cf183cec48c",
      "bytes": 1176
     },
     {
@@ -48305,7 +48305,7 @@
      "root": "generated",
      "role": "material",
      "path": "Materials/DK_GlassDark.mat",
-     "sha256": "7f878c76c41b68cb6c06e203e2b2b7c93fb74e3bff81b3e9f5abb66fe29e79ad",
+     "sha256": "ab907cd9d0b9c80c2d0fabd08d79cdb37f41458792100cdbeb0b7cf183cec48c",
      "bytes": 1176
     },
     {
@@ -48729,7 +48729,7 @@
      "root": "generated",
      "role": "material",
      "path": "Materials/DK_GlassDark.mat",
-     "sha256": "7f878c76c41b68cb6c06e203e2b2b7c93fb74e3bff81b3e9f5abb66fe29e79ad",
+     "sha256": "ab907cd9d0b9c80c2d0fabd08d79cdb37f41458792100cdbeb0b7cf183cec48c",
      "bytes": 1176
     },
     {
@@ -49151,7 +49151,7 @@
      "root": "generated",
      "role": "material",
      "path": "Materials/DK_GlassDark.mat",
-     "sha256": "7f878c76c41b68cb6c06e203e2b2b7c93fb74e3bff81b3e9f5abb66fe29e79ad",
+     "sha256": "ab907cd9d0b9c80c2d0fabd08d79cdb37f41458792100cdbeb0b7cf183cec48c",
      "bytes": 1176
     },
     {
@@ -49522,7 +49522,7 @@
      "root": "generated",
      "role": "material",
      "path": "Materials/DK_GlassDark.mat",
-     "sha256": "7f878c76c41b68cb6c06e203e2b2b7c93fb74e3bff81b3e9f5abb66fe29e79ad",
+     "sha256": "ab907cd9d0b9c80c2d0fabd08d79cdb37f41458792100cdbeb0b7cf183cec48c",
      "bytes": 1176
     },
     {
@@ -52437,7 +52437,7 @@
      "root": "generated",
      "role": "material",
      "path": "Materials/DK_GlassDark.mat",
-     "sha256": "7f878c76c41b68cb6c06e203e2b2b7c93fb74e3bff81b3e9f5abb66fe29e79ad",
+     "sha256": "ab907cd9d0b9c80c2d0fabd08d79cdb37f41458792100cdbeb0b7cf183cec48c",
      "bytes": 1176
     },
     {
@@ -52831,7 +52831,7 @@
      "root": "generated",
      "role": "material",
      "path": "Materials/DK_GlassDark.mat",
-     "sha256": "7f878c76c41b68cb6c06e203e2b2b7c93fb74e3bff81b3e9f5abb66fe29e79ad",
+     "sha256": "ab907cd9d0b9c80c2d0fabd08d79cdb37f41458792100cdbeb0b7cf183cec48c",
      "bytes": 1176
     },
     {
@@ -53227,7 +53227,7 @@
      "root": "generated",
      "role": "material",
      "path": "Materials/DK_GlassDark.mat",
-     "sha256": "7f878c76c41b68cb6c06e203e2b2b7c93fb74e3bff81b3e9f5abb66fe29e79ad",
+     "sha256": "ab907cd9d0b9c80c2d0fabd08d79cdb37f41458792100cdbeb0b7cf183cec48c",
      "bytes": 1176
     },
     {
@@ -54373,7 +54373,7 @@
      "root": "generated",
      "role": "material",
      "path": "Materials/DK_GlassDark.mat",
-     "sha256": "7f878c76c41b68cb6c06e203e2b2b7c93fb74e3bff81b3e9f5abb66fe29e79ad",
+     "sha256": "ab907cd9d0b9c80c2d0fabd08d79cdb37f41458792100cdbeb0b7cf183cec48c",
      "bytes": 1176
     },
     {
@@ -54744,7 +54744,7 @@
      "root": "generated",
      "role": "material",
      "path": "Materials/DK_GlassDark.mat",
-     "sha256": "7f878c76c41b68cb6c06e203e2b2b7c93fb74e3bff81b3e9f5abb66fe29e79ad",
+     "sha256": "ab907cd9d0b9c80c2d0fabd08d79cdb37f41458792100cdbeb0b7cf183cec48c",
      "bytes": 1176
     },
     {
@@ -59000,7 +59000,7 @@
      "root": "generated",
      "role": "material",
      "path": "Materials/DK_GlassDark.mat",
-     "sha256": "7f878c76c41b68cb6c06e203e2b2b7c93fb74e3bff81b3e9f5abb66fe29e79ad",
+     "sha256": "ab907cd9d0b9c80c2d0fabd08d79cdb37f41458792100cdbeb0b7cf183cec48c",
      "bytes": 1176
     },
     {
@@ -59540,7 +59540,7 @@
      "root": "generated",
      "role": "material",
      "path": "Materials/DK_GlassDark.mat",
-     "sha256": "7f878c76c41b68cb6c06e203e2b2b7c93fb74e3bff81b3e9f5abb66fe29e79ad",
+     "sha256": "ab907cd9d0b9c80c2d0fabd08d79cdb37f41458792100cdbeb0b7cf183cec48c",
      "bytes": 1176
     },
     {
@@ -62944,7 +62944,7 @@
      "root": "generated",
      "role": "material",
      "path": "Materials/DK_GlassDark.mat",
-     "sha256": "7f878c76c41b68cb6c06e203e2b2b7c93fb74e3bff81b3e9f5abb66fe29e79ad",
+     "sha256": "ab907cd9d0b9c80c2d0fabd08d79cdb37f41458792100cdbeb0b7cf183cec48c",
      "bytes": 1176
     },
     {
@@ -63312,7 +63312,7 @@
      "root": "generated",
      "role": "material",
      "path": "Materials/DK_GlassDark.mat",
-     "sha256": "7f878c76c41b68cb6c06e203e2b2b7c93fb74e3bff81b3e9f5abb66fe29e79ad",
+     "sha256": "ab907cd9d0b9c80c2d0fabd08d79cdb37f41458792100cdbeb0b7cf183cec48c",
      "bytes": 1176
     },
     {
@@ -64082,7 +64082,7 @@
      "root": "generated",
      "role": "material",
      "path": "Materials/DK_GlassDark.mat",
-     "sha256": "7f878c76c41b68cb6c06e203e2b2b7c93fb74e3bff81b3e9f5abb66fe29e79ad",
+     "sha256": "ab907cd9d0b9c80c2d0fabd08d79cdb37f41458792100cdbeb0b7cf183cec48c",
      "bytes": 1176
     },
     {
@@ -69682,8 +69682,8 @@
      "root": "generated",
      "role": "material",
      "path": "Materials/DK_Ground_RoadEnamel.mat",
-     "sha256": "530f415284821a10fc3dc4a925d30be8d43c4393a37eabbb8e21cdbdabb64f71",
-     "bytes": 4220
+     "sha256": "1673c1d5e4ac66738bed1d5b2ba6c4398b6127b07c5d53f53ad430c6cb92fbdf",
+     "bytes": 4416
     },
     {
      "root": "generated",
@@ -69709,43 +69709,71 @@
     {
      "root": "generated",
      "role": "texture",
-     "path": "Textures/ground_roadenamel_v1.png",
-     "sha256": "d97f161515e3cd6168335b533fe314d554afed0ecc3cce3d7610952901eefb90",
-     "bytes": 1812794
+     "path": "Textures/ground_asphalt_detail_v1.png",
+     "sha256": "fa5bd6b3aea05369d83064f04e895c54084fbeb20d08597bf78e9edb479127b4",
+     "bytes": 209864
     },
     {
      "root": "generated",
      "role": "texture-meta",
-     "path": "Textures/ground_roadenamel_v1.png.meta",
-     "sha256": "927acd600c4cc7c42e6ef842ca8c1734df8dc2cc5ec18e1de8e32766c085ff57",
-     "bytes": 2718
-    },
-    {
-     "root": "generated",
-     "role": "texture",
-     "path": "Textures/ground_roadenamel_v1_mask.png",
-     "sha256": "2627a06e9cd358656fdeb52c8fdcc6eb522f82eed3aa8a3ab64dc9a9327c63bb",
-     "bytes": 135789
-    },
-    {
-     "root": "generated",
-     "role": "texture-meta",
-     "path": "Textures/ground_roadenamel_v1_mask.png.meta",
-     "sha256": "db7e2095e22420bb7c8695a6941486e858b4fa7e5e647456e1766d97ed892f20",
+     "path": "Textures/ground_asphalt_detail_v1.png.meta",
+     "sha256": "a3cf29d7f5a2ac57181c7b311a2d1558bfa987b09619a21aa8eb3def3677ecd4",
      "bytes": 2715
     },
     {
      "root": "generated",
      "role": "texture",
-     "path": "Textures/ground_roadenamel_v1_normal.png",
-     "sha256": "3d350b447cce3f37a428d5167a7330319be9980441e5bf8a98201a35b2c27b16",
-     "bytes": 659658
+     "path": "Textures/ground_asphalt_detail_v1_normal.png",
+     "sha256": "2b7e4771f504d21db70d271d1150da6dc7784c5f752e77ce51d95b8a1ed8a761",
+     "bytes": 1349807
     },
     {
      "root": "generated",
      "role": "texture-meta",
-     "path": "Textures/ground_roadenamel_v1_normal.png.meta",
-     "sha256": "e1b0b208e94c5e0cc944b1d16cd14ac867fd3e2ab3f53eceff6a783e8e44d97b",
+     "path": "Textures/ground_asphalt_detail_v1_normal.png.meta",
+     "sha256": "71218b819e4088dddc046b19bc58bb7781e8b1e929876e016de2979128676754",
+     "bytes": 2718
+    },
+    {
+     "root": "generated",
+     "role": "texture",
+     "path": "Textures/ground_asphalt_v1_mask.png",
+     "sha256": "122daca06b9177e7e771403ffe8fad0f20311f241f54aef96aba7ba1c6f82076",
+     "bytes": 136978
+    },
+    {
+     "root": "generated",
+     "role": "texture-meta",
+     "path": "Textures/ground_asphalt_v1_mask.png.meta",
+     "sha256": "6cdee511085873a9c8fa5977090df254b2aba088c60760829ea2b436e3080ad0",
+     "bytes": 2715
+    },
+    {
+     "root": "generated",
+     "role": "texture",
+     "path": "Textures/ground_asphalt_v1_normal.png",
+     "sha256": "a596df0ad8e44abab6b8c941249719e985c3d552afeadf7c1ff4a8bf4a73be65",
+     "bytes": 114176
+    },
+    {
+     "root": "generated",
+     "role": "texture-meta",
+     "path": "Textures/ground_asphalt_v1_normal.png.meta",
+     "sha256": "b16677d869d214d2c8df926fb9d02d9e23759ffd9382625abdd81fccc6729b93",
+     "bytes": 2715
+    },
+    {
+     "root": "generated",
+     "role": "texture",
+     "path": "Textures/ground_roadenamel_v1.png",
+     "sha256": "44bd55158aed32f22ce7e2bf5182394ef3e65b70f117645db88637d93b02bfbe",
+     "bytes": 2364040
+    },
+    {
+     "root": "generated",
+     "role": "texture-meta",
+     "path": "Textures/ground_roadenamel_v1.png.meta",
+     "sha256": "c07803090d70250a2dbf33cdb01950ec8f136a9e86d9ea97b761f6da5d6f7523",
      "bytes": 2718
     },
     {
@@ -69871,8 +69899,8 @@
      "root": "generated",
      "role": "material",
      "path": "Materials/DK_Ground_Lawn.mat",
-     "sha256": "61a332d0b46e8fd9c6ef1928f80f5ae1fe22f988214d314d9b26f67ca1663910",
-     "bytes": 4060
+     "sha256": "b4aed43de4e8fd917237d5073d9032f1c396df2e3ef8218b2ebbe3ca1c8dc532",
+     "bytes": 4061
     },
     {
      "root": "generated",
@@ -70105,8 +70133,8 @@
      "root": "generated",
      "role": "texture",
      "path": "Textures/ground_lawn_v1.png",
-     "sha256": "2787f37ce7898b603f67e8b42b2ce102815c716195149e288227417787907f7c",
-     "bytes": 5659937
+     "sha256": "a468a199bed4c4deb810c2e43f6c00647de16895bd46cab579c0cab6f4c48f92",
+     "bytes": 5663841
     },
     {
      "root": "generated",
@@ -70161,8 +70189,8 @@
      "root": "generated",
      "role": "texture",
      "path": "Textures/ground_pavement_v1.png",
-     "sha256": "02d2450cb2f4c90e10a43710fd157e51be4b785d8ea27d03dd7f322edb91432a",
-     "bytes": 5258744
+     "sha256": "1365aa721a1a5e2c6b426c7b0f95f13e1c3de057f0fb7d5bd375d3944cb43338",
+     "bytes": 4670212
     },
     {
      "root": "generated",
@@ -79345,7 +79373,7 @@
      "root": "generated",
      "role": "material",
      "path": "Materials/DK_GlassDark.mat",
-     "sha256": "7f878c76c41b68cb6c06e203e2b2b7c93fb74e3bff81b3e9f5abb66fe29e79ad",
+     "sha256": "ab907cd9d0b9c80c2d0fabd08d79cdb37f41458792100cdbeb0b7cf183cec48c",
      "bytes": 1176
     },
     {
@@ -79557,7 +79585,7 @@
      "root": "generated",
      "role": "material",
      "path": "Materials/DK_GlassDark.mat",
-     "sha256": "7f878c76c41b68cb6c06e203e2b2b7c93fb74e3bff81b3e9f5abb66fe29e79ad",
+     "sha256": "ab907cd9d0b9c80c2d0fabd08d79cdb37f41458792100cdbeb0b7cf183cec48c",
      "bytes": 1176
     },
     {
@@ -79896,7 +79924,7 @@
      "root": "generated",
      "role": "material",
      "path": "Materials/DK_GlassDark.mat",
-     "sha256": "7f878c76c41b68cb6c06e203e2b2b7c93fb74e3bff81b3e9f5abb66fe29e79ad",
+     "sha256": "ab907cd9d0b9c80c2d0fabd08d79cdb37f41458792100cdbeb0b7cf183cec48c",
      "bytes": 1176
     },
     {
@@ -80578,7 +80606,7 @@
      "root": "generated",
      "role": "material",
      "path": "Materials/DK_GlassDark.mat",
-     "sha256": "7f878c76c41b68cb6c06e203e2b2b7c93fb74e3bff81b3e9f5abb66fe29e79ad",
+     "sha256": "ab907cd9d0b9c80c2d0fabd08d79cdb37f41458792100cdbeb0b7cf183cec48c",
      "bytes": 1176
     },
     {
@@ -80936,7 +80964,7 @@
      "root": "generated",
      "role": "material",
      "path": "Materials/DK_GlassDark.mat",
-     "sha256": "7f878c76c41b68cb6c06e203e2b2b7c93fb74e3bff81b3e9f5abb66fe29e79ad",
+     "sha256": "ab907cd9d0b9c80c2d0fabd08d79cdb37f41458792100cdbeb0b7cf183cec48c",
      "bytes": 1176
     },
     {
@@ -81214,7 +81242,7 @@
      "root": "generated",
      "role": "material",
      "path": "Materials/DK_GlassDark.mat",
-     "sha256": "7f878c76c41b68cb6c06e203e2b2b7c93fb74e3bff81b3e9f5abb66fe29e79ad",
+     "sha256": "ab907cd9d0b9c80c2d0fabd08d79cdb37f41458792100cdbeb0b7cf183cec48c",
      "bytes": 1176
     },
     {
@@ -84580,7 +84608,7 @@
      "root": "generated",
      "role": "material",
      "path": "Materials/DK_GlassDark.mat",
-     "sha256": "7f878c76c41b68cb6c06e203e2b2b7c93fb74e3bff81b3e9f5abb66fe29e79ad",
+     "sha256": "ab907cd9d0b9c80c2d0fabd08d79cdb37f41458792100cdbeb0b7cf183cec48c",
      "bytes": 1176
     },
     {
@@ -84882,7 +84910,7 @@
      "root": "generated",
      "role": "material",
      "path": "Materials/DK_GlassDark.mat",
-     "sha256": "7f878c76c41b68cb6c06e203e2b2b7c93fb74e3bff81b3e9f5abb66fe29e79ad",
+     "sha256": "ab907cd9d0b9c80c2d0fabd08d79cdb37f41458792100cdbeb0b7cf183cec48c",
      "bytes": 1176
     },
     {
@@ -85182,7 +85210,7 @@
      "root": "generated",
      "role": "material",
      "path": "Materials/DK_GlassDark.mat",
-     "sha256": "7f878c76c41b68cb6c06e203e2b2b7c93fb74e3bff81b3e9f5abb66fe29e79ad",
+     "sha256": "ab907cd9d0b9c80c2d0fabd08d79cdb37f41458792100cdbeb0b7cf183cec48c",
      "bytes": 1176
     },
     {
@@ -86007,7 +86035,7 @@
      "root": "generated",
      "role": "material",
      "path": "Materials/DK_GlassDark.mat",
-     "sha256": "7f878c76c41b68cb6c06e203e2b2b7c93fb74e3bff81b3e9f5abb66fe29e79ad",
+     "sha256": "ab907cd9d0b9c80c2d0fabd08d79cdb37f41458792100cdbeb0b7cf183cec48c",
      "bytes": 1176
     },
     {
@@ -86347,7 +86375,7 @@
      "root": "generated",
      "role": "material",
      "path": "Materials/DK_GlassDark.mat",
-     "sha256": "7f878c76c41b68cb6c06e203e2b2b7c93fb74e3bff81b3e9f5abb66fe29e79ad",
+     "sha256": "ab907cd9d0b9c80c2d0fabd08d79cdb37f41458792100cdbeb0b7cf183cec48c",
      "bytes": 1176
     },
     {
@@ -86685,7 +86713,7 @@
      "root": "generated",
      "role": "material",
      "path": "Materials/DK_GlassDark.mat",
-     "sha256": "7f878c76c41b68cb6c06e203e2b2b7c93fb74e3bff81b3e9f5abb66fe29e79ad",
+     "sha256": "ab907cd9d0b9c80c2d0fabd08d79cdb37f41458792100cdbeb0b7cf183cec48c",
      "bytes": 1176
     },
     {
@@ -90925,7 +90953,7 @@
      "root": "generated",
      "role": "material",
      "path": "Materials/DK_GlassDark.mat",
-     "sha256": "7f878c76c41b68cb6c06e203e2b2b7c93fb74e3bff81b3e9f5abb66fe29e79ad",
+     "sha256": "ab907cd9d0b9c80c2d0fabd08d79cdb37f41458792100cdbeb0b7cf183cec48c",
      "bytes": 1176
     },
     {
@@ -91195,7 +91223,7 @@
      "root": "generated",
      "role": "material",
      "path": "Materials/DK_GlassDark.mat",
-     "sha256": "7f878c76c41b68cb6c06e203e2b2b7c93fb74e3bff81b3e9f5abb66fe29e79ad",
+     "sha256": "ab907cd9d0b9c80c2d0fabd08d79cdb37f41458792100cdbeb0b7cf183cec48c",
      "bytes": 1176
     },
     {

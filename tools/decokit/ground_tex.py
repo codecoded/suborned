@@ -37,7 +37,8 @@ TARGET = {
     "asphalt": ("#79757A", "painting road samples #797374 / #696970: warm-leaning violet grey; the old sheet was #807B74"),
     "kerb": ("#D0C9BB", "the paintings' kerb is the pavement stone, a touch greyer for form; the old granite was blue-grey #A2A9B7"),
     "gutter": ("#8D8A88", "darker than the kerb, a trace of the old setts' blue (#738497) kept so the kerb line reads"),
-    "pavement": ("#D5CBB8", "painting paving #D3CAB5 / #CCBEAC / #E2D4C0; the old flags were #DFD5C7"),
+    "pavement": ("#EAE0C4", "brief 075-B (Sky 2026-10-28, back to the old world): the old flags' own mean (pave_flags_v1 measures #EAE0C4), the old reel's cream pavement; was #D5CBB8 (painting paving "
+                 "#D3CAB5 / #CCBEAC / #E2D4C0), which read grey-brown beside the colourway walls. recolour_grey keeps brief 048's fix: one luminance curve at the cream hue, half the sheet's own chroma"),
     "lawn": ("#64875A", "hue 108 (brief 048, Glint: the long view sampled hue 71, olive; the old #74875A sat at hue 85): same value and saturation, hue turned toward the palms and hedges. Before: painted foliage olive, less saturated (round 2): the old #638449 and round 1 #6D8A4B read loud; stripes softened to 45 percent in lawn_soften"),
     "path": ("#D8CAAB", "warm sand hoggin, one step darker than the paving so a path reads against it"),
 }
@@ -118,6 +119,9 @@ def recolour_grey(a, target_hex, keep=.25):
 
 
 ROLE = [""]  # the role being built (recolour_grey reads its KEEP)
+# Brief 075-B (Vela, Sky 2026-10-28 "back to the old world"): the broad 4 m mowing bands (brief 048, for the long view) are off: the old DecoKit lawn (DK_Lawn, lawn_v1 at 8 m) had only its own 1 m
+# stripes, which lawn_soften still holds at 45 percent; in the 074 flyby grid the added bands read as a striped sports pitch down every median.
+LAWN_BANDS = False
 
 
 def lawn_soften(a, stripes=.45, sat=.78, sigma_px=28):
@@ -293,7 +297,7 @@ def build():
             # pavement (brief 048, Vela): the per-channel power curve drove the flags' darkest 5 percent to hue 52 (olive grey #8A8879) while the mean sat at hue 39; in shade that
             # multiplied into the dark olive-brown Glint measured. One luminance curve with the target's hue and half the sheet's own chroma holds every tone at the cream hue.
             alb = alb_src if role == "asphalt_detail" else (recolour_grey if key in ("kerb", "gutter", "asphalt", "pavement") else recolour)(alb_src, TARGET[key][0])
-            if role == "lawn":
+            if role == "lawn" and LAWN_BANDS:
                 alb = lawn_bands(alb)
             srcs = {"a": alb, "n": nrm_src, "m": mask_src}
         files = []

@@ -114,7 +114,10 @@ WORLD_RETUNE = ("DK_Enamel_Mustard", "DK_Gold", "DK_Enamel_Red", "DK_Signal_Red"
 # GLASS_SHADER_GUID is the .shader.meta guid (unity/Assets/Suborned/Shaders/DecoKit/DK_GlassSky.shader.meta).
 GLASS_SHADER_GUID = "0a6625b81c13d56024a16fdc589a1954"
 # 27 Oct (brief 072-G): the glaze a step bluer and a touch clearer (#4A8588 a0.72 -> #3F7A8E a0.65: blue-teal glass with more sky, toward DecoKit's #35585A a0.3 mirror).
-GLASS_FILM = {"DK_GlassDark": dict(alpha=0.65, glaze="#3F7A8E", edge=0.92, fresnel=3.0, sheen=0.12, glow=0.85, horizon="#D8E6E4", zenith="#86B8E0", street="#A78F78")}
+# 28 Oct (brief 075-B, Sky "back to the old world textures"): the film's fake sky is the old street's own (DecoKit DK_Sky_Street.png, the Skybox/Panoramic gradient the old windows reflected through
+# their baked probes): horizon #D1DBDD (the texel above the horizon), zenith #75A4D6 (5 % from the top). Was #D8E6E4 / #86B8E0. Glaze, alpha and the rest stay (the old a0.3 over the charcoal cavity is
+# brief 048's black void without probes; the old reel's green-teal windows are its probes and grade, Glint's 075-A).
+GLASS_FILM = {"DK_GlassDark": dict(alpha=0.65, glaze="#3F7A8E", edge=0.92, fresnel=3.0, sheen=0.12, glow=0.85, horizon="#D1DBDD", zenith="#75A4D6", street="#A78F78")}
 
 LIB.setdefault("DK_Beacon_Rose", ("emit", ACCENT["flamingo"], 4.0))  # obstruction / status lamps: pink, never signal red
 ALIAS = {"Signal_Red": "DK_Beacon_Rose"}  # generated pieces never use DK_Signal_Red on a world surface
@@ -151,7 +154,7 @@ GROUND = {
     "DK_Ground_Kerb": dict(albedo="ground_kerb_v1.png", normal="ground_kerb_v1_normal.png", mask="ground_kerb_v1_mask.png", tile=(0.5, 0.5), smoothness=1.0),
     "DK_Ground_Gutter": dict(albedo="ground_gutter_v1.png", normal="ground_gutter_v1_normal.png", mask="ground_gutter_v1_mask.png", tile=(4.0, 0.375), smoothness=1.0),
     "DK_Ground_Pavement": dict(albedo="ground_pavement_v1.png", normal="ground_pavement_v1_normal.png", mask="ground_pavement_v1_mask.png", tile=(4.0, 4.0), smoothness=1.0),
-    "DK_Ground_Lawn": dict(albedo="ground_lawn_v1.png", normal="ground_lawn_v1_normal.png", tile=(8.0, 8.0), smoothness=0.2),
+    "DK_Ground_Lawn": dict(albedo="ground_lawn_v1.png", normal="ground_lawn_v1_normal.png", tile=(8.0, 8.0), smoothness=0.12),  # brief 075-B: the old DK_Lawn's .12 (was .2: a sheen on turf)
     "DK_Ground_Path": dict(albedo="ground_path_v1.png", normal="ground_path_v1_normal.png", tile=(2.0, 2.0), smoothness=0.12),
     # Round 2: the legacy ground pieces (Pave_Flags_i, Kerb_Granite*, TreePit_Flags_i, Tile_*, gutters) bind these four names by their FBX materials and UV conventions (sheet
     # quadrants 0..1 over the 4 m sheet; kerb stone 0.5 m metric). The generator's .mat of the same name wins over the legacy one and keeps its guid, so the same pieces now use the
@@ -394,7 +397,8 @@ def get(name):
 def _pbr_maps(nt, b, tex, file):
     """A pave_sheet.py set (<stem>_mask.png beside it) also drives normal + roughness, as Unity's Lit reads them."""
     stem = file[:-4]
-    maps = [tex_path(f"{stem}_{k}.png") for k in ("normal", "mask")]
+    g = next((e for e in GROUND.values() if e.get("albedo") == file and e.get("normal") and e.get("mask")), None)  # brief 075-B: a GROUND row may share another set's maps
+    maps = [tex_path(g["normal"]), tex_path(g["mask"])] if g else [tex_path(f"{stem}_{k}.png") for k in ("normal", "mask")]
     if not all(maps):
         return
     vec = tex.inputs["Vector"].links[0].from_socket if tex.inputs["Vector"].is_linked else None

@@ -1,4 +1,5 @@
 """Road surface textures from the 2.5D testbed (brief 026, Vela): the powder-blue "streamline" enamel and the white pearl marble of the testbed's road, ported to the budget.
+Brief 075-B (2026-10-28): the powder-blue carriageway (roadenamel) is no longer the testbed's enamel webp but the old DecoKit road sheet in the same colour: see ENAMEL and enamel().
 
 python3 tools/decokit/road_tex.py [out_dir]     (no bpy; default out/decokit-ground, beside ground_tex.py's set: export_kit copies every ground_* file there, and mats.tex_path finds them). Each PNG gets its .meta from ground_tex.meta_text.
 
@@ -27,9 +28,14 @@ STORE = Path(os.environ.get("SUBORNED_STORE", "~/Projects/the-suborned-store")).
 OUT = Path(sys.argv[1] if len(sys.argv) > 1 else REPO / "out/decokit-ground")
 
 ROLES = {  # role -> (source stem, version, albedo px, normal px, mask px, target hex)
-    "roadenamel": ("enamel", "v1", 1024, 1024, 512, "#8FAFC1"),  # was #AED0E6, the testbed's nominal tint: the testbed's three.js lit road read #9FADAA, the game's lit road #C0CAD0 (45% brighter); 0.83 of it, hue kept (brief 028, Sky 2026-10-24)
     "roadpearl": ("marble", "v2", 1024, 512, 256, "#F1EEE6"),
 }
+# roadenamel (brief 075-B, Vela; Sky 2026-10-28 "back to the old world textures", Aster: "keeping the powder-blue colour but maybe the old texture"): the carriageway keeps #8FAFC1 (brief 028: 0.83 x the
+# testbed's #AED0E6, hue kept) but its sheet is the old DecoKit road's (DK_Asphalt_Road: asphalt_road_v1, 16 m tile, the old reel's matte road with its soft stains and sealed patches) instead of the
+# testbed's speckled enamel webp, which read as terrazzo at play zoom. Luminance only (lum / mean x the target), so the stains are darker powder blue, never brown. The normal, mask and the fine
+# aggregate detail pair are the ground set's own (ground_tex.py: ground_asphalt_v1_normal / _mask, ground_asphalt_detail_v1 from the same old sheets), shared, so only the albedo is new:
+# 1536 px (1.04 cm a texel over 16 m; play zoom is ~2.6 cm a pixel) = the texels the enamel's three maps had (3.0 MiB with mips), no memory added.
+ENAMEL = dict(src="asphalt_road_v1", px=1536, target="#8FAFC1", tile=16.0, contrast=0.65)  # contrast: the old sheet's stains and sealed patches at 65 percent: at full strength the oil spots read as dirt at play zoom (briefs/075/textures)
 
 
 def s2l(c):
@@ -70,6 +76,7 @@ def main():
             (OUT / f"ground_{role}_v1{suffix}.png.meta").write_text(meta_text(f"ground_{role}_v1{suffix}.png", kind, (px, px)))
         texels = a_px * a_px + n_px * n_px + m_px * m_px
         report[role] = dict(source=f"{stem}-*-{ver}.webp", target=target, tile=[2.0, 2.0], texels=texels, bc7MiBWithMips=round(texels * 4 / 3 / 2 ** 20, 2))
+    report.update(enamel())
     report.update(extra())
     report.update(asphalt())
     (OUT / "road.json").write_text(json.dumps(report, indent=1))
@@ -144,6 +151,27 @@ def asphalt():
         (OUT / f"ground_roadasphalt_v1{suffix}.png.meta").write_text(meta_text(f"ground_roadasphalt_v1{suffix}.png", kind, (px, px)))
     t = N * N + N * N + M * M
     return {"roadasphalt": dict(source="generated (seed 55)", target=ASPHALT_HEX, tile=[ASPHALT_TILE, ASPHALT_TILE], texels=t, bc7MiBWithMips=round(t * 4 / 3 / 2 ** 20, 2))}
+
+
+def enamel():
+    """roadenamel from the old DecoKit road sheet (see ENAMEL). Writes ground_roadenamel_v1.png (+ .meta) only; returns its report row with the source's sha256."""
+    import hashlib
+    src = Path(os.environ.get("SUBORNED_STORE", "~/Projects/the-suborned-store")).expanduser() / "source-art/DecoKit/Textures/derived" / f"{ENAMEL['src']}.png"
+    a = np.asarray(Image.open(src).convert("RGB").resize((ENAMEL["px"], ENAMEL["px"]), Image.LANCZOS)).astype(np.float32) / 255
+    lum = (s2l(a) * np.array([.2126, .7152, .0722])).sum(2)
+    rel = 1 + (lum / lum.mean() - 1) * ENAMEL["contrast"]
+    out = rel[..., None] * s2l(hexrgb(ENAMEL["target"]))
+    Image.fromarray((l2s(out) * 255 + 0.5).astype(np.uint8)).save(OUT / "ground_roadenamel_v1.png")
+    (OUT / "ground_roadenamel_v1.png.meta").write_text(meta_text("ground_roadenamel_v1.png", "a", (ENAMEL["px"], ENAMEL["px"])))
+    for stale in ("ground_roadenamel_v1_normal.png", "ground_roadenamel_v1_mask.png"):  # the enamel webp's own maps: no longer made (the ground set's asphalt pair is shared)
+        for f in (OUT / stale, OUT / f"{stale}.meta"):
+            f.unlink(missing_ok=True)
+    t = ENAMEL["px"] ** 2
+    m = l2s(s2l(np.asarray(Image.open(OUT / "ground_roadenamel_v1.png").convert("RGB")).astype(np.float32) / 255).reshape(-1, 3).mean(0))
+    return {"roadenamel": dict(source=f"source-art/DecoKit/Textures/derived/{ENAMEL['src']}.png (the old DecoKit DK_Asphalt_Road sheet)", sha256=hashlib.sha256(src.read_bytes()).hexdigest(),
+                               brief="075-B", target=ENAMEL["target"], meanAfter="#%02X%02X%02X" % tuple(int(round(x * 255)) for x in m), tile=[ENAMEL["tile"], ENAMEL["tile"]],
+                               shared=["ground_asphalt_v1_normal.png", "ground_asphalt_v1_mask.png", "ground_asphalt_detail_v1.png", "ground_asphalt_detail_v1_normal.png"],
+                               texels=t, bc7MiBWithMips=round(t * 4 / 3 / 2 ** 20, 2))}
 
 
 def extra():

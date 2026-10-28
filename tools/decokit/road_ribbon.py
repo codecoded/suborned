@@ -38,10 +38,14 @@ register("DK_Ground_RoadAsphalt", "ground", "#FFFFFF")
 mats.KIND.setdefault("roadmetal", (0.54, 0.72, 0.0, 0.0, 1.0))
 register("DK_Road_Chrome", "roadmetal", "#9AA9B4")
 register("DK_Road_Mark", "enamel", "#F3EFE4")                 # the lane marks: white enamel inlay (a vitreous strip set in the road), the pearl's neighbour
-for _role in ("RoadEnamel", "RoadPearl"):
-    TEXTURES.setdefault(f"DK_Ground_{_role}", (f"ground_{_role.lower()}_v1.png", 2.0))
+TEXTURES.setdefault("DK_Ground_RoadEnamel", ("ground_roadenamel_v1.png", 16.0))  # brief 075-B: the old road sheet's 16 m
+TEXTURES.setdefault("DK_Ground_RoadPearl", ("ground_roadpearl_v1.png", 2.0))
 TEXTURES.setdefault("DK_Ground_RoadAsphalt", ("ground_roadasphalt_v1.png", 4.0))  # 4 m tile at 1024 px
-mats.GROUND.setdefault("DK_Ground_RoadEnamel", dict(albedo="ground_roadenamel_v1.png", normal="ground_roadenamel_v1_normal.png", mask="ground_roadenamel_v1_mask.png", tile=(2.0, 2.0), smoothness=0.55))  # x the mask's ~0.62 = ~0.34 (was 1.0: sky reflection washed the road white at grazing angles; testbed roughness 0.36 + envMap 0.35)
+# Brief 075-B (Vela, Sky 2026-10-28 "back to the old world textures"): the old DecoKit road (DK_Asphalt_Road) in the powder blue: road_tex.py's albedo from asphalt_road_v1, the ground set's asphalt normal and
+# mask (dry asphalt, smoothness .12-.28 x 1.4 = the old road's flat .28 on average; it was the enamel's ~.34) and its fine-aggregate detail pair, as DK_Ground_Asphalt draws them (same keywords: no new variant).
+# 16 m tile as the old road (look.json road-enamel tile 1: the builder's UVs are world metres).
+mats.GROUND.setdefault("DK_Ground_RoadEnamel", dict(albedo="ground_roadenamel_v1.png", normal="ground_asphalt_v1_normal.png", mask="ground_asphalt_v1_mask.png", tile=(16.0, 16.0), smoothness=1.4,
+                                                    detail="ground_asphalt_detail_v1.png", detailNormal="ground_asphalt_detail_v1_normal.png", detailTile=1.5, detailBump=0.45))
 mats.GROUND.setdefault("DK_Ground_RoadPearl", dict(albedo="ground_roadpearl_v1.png", normal="ground_roadpearl_v1_normal.png", mask="ground_roadpearl_v1_mask.png", tile=(2.0, 2.0), smoothness=1.0))
 mats.GROUND.setdefault("DK_Ground_RoadAsphalt", dict(albedo="ground_roadasphalt_v1.png", normal="ground_roadasphalt_v1_normal.png", mask="ground_roadasphalt_v1_mask.png", tile=(4.0, 4.0), smoothness=1.0))
 
