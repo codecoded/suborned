@@ -1,4 +1,10 @@
-"""Building colourways (brief 074-B, Vela; Sky 2026-10-28: "Do building colors"). No bpy.
+"""Building colourways (brief 074-B, Vela; Sky 2026-10-28: "Do building colors"; 074-H, Sky 2026-10-28: walls and plinths only, "back to the old world"). No bpy.
+
+074-H: a colourway tints only the walls (DK_Limestone_Tex, DK_Render_White) and the plinth (DK_Stone_Dark). The band (DK_Enamel_Seafoam) and fascia
+(DK_Enamel_Teal) are seafoam and teal on every building, no variants (Redline: this meets every draw mark). The wall is softened: each family's wall swatch
+lerped in CIELAB toward the old reel's cream (the old facade_panel_v1 sheet's mean colour, what the old DecoKit city's walls read as) by WALL_SOFTEN, so a
+street of colourways holds together the way the old reel's cream does. The table below is 074-B's; band and fascia are no longer slots (BAND_*/FASCIA_* kept
+for the record, unused).
 
 The every-face kit modules (SideBay*, SidePilaster*, CornerPier*, AlleyWall*, ShopFill*, ShopStack*, and the street fronts: StreamBay/End/Corner, PortholeBay, BalconyBay,
 DecoBay, ArcadeBay ...) draw every building in one colourway: cream stone, deep teal fascia, seafoam bands, granite plinth. A colourway is one of the 12 wall families of
@@ -43,7 +49,9 @@ SRC_SHEET = "derived/facade_panel_v1.png"
 NEUTRAL = "wall_panel_neutral_v1.png"
 REPORT = "colourways-tex.json"
 FAMILIES = ("cream", "peach", "mint", "sky", "sand", "ivory", "blush", "powder", "butter", "lilac", "apricot", "seagreen")  # facade.json order; `civic` keeps the base
-SLOTS = {"DK_Limestone_Tex": "wall", "DK_Render_White": "wall", "DK_Enamel_Seafoam": "band", "DK_Enamel_Teal": "fascia", "DK_Stone_Dark": "plinth"}
+SLOTS = {"DK_Limestone_Tex": "wall", "DK_Render_White": "wall", "DK_Stone_Dark": "plinth"}  # 074-H: band and fascia stay seafoam and teal everywhere
+RETIRED = ("DK_Enamel_Seafoam", "DK_Enamel_Teal")  # 074-B's band and fascia slots: their old <base>__<family>.mats are removed from the generator's output
+WALL_SOFTEN = 0.35  # 074-H: how far each family's wall moves toward the old reel's cream (CIELAB lerp; 0 = the facade.json swatch, 1 = all cream)
 BAND_LIFT, BAND_CHROMA = 0.55, 0.8
 FASCIA_DROP, FASCIA_L = 14.0, (28.0, 50.0)
 KNEE = 0.9  # luminance ratio (to the sheet's mean) above which the slab grain is softened into the shoulder
@@ -106,14 +114,27 @@ def fascia_of(p):
     return from_lab(min(max(Lp - FASCIA_DROP, FASCIA_L[0]), FASCIA_L[1]), ap, bp)
 
 
-def family_colours():
-    """family -> {wall, band, fascia, plinth} (sRGB hex), from facade.json's swatches."""
+def soften(w, cream, s=WALL_SOFTEN):
+    """The wall swatch `w` lerped toward `cream` by s in CIELAB (perceptual: L, a, b move together, no hue swing through grey)."""
+    if not s:
+        return w.upper()
+    a, b = to_lab(w), to_lab(cream)
+    return from_lab(*[x + s * (y - x) for x, y in zip(a, b)])
+
+
+def old_cream(old_mean_linear):
+    """The old reel's cream: the old facade_panel_v1 sheet's mean colour (linear per channel -> sRGB hex)."""
+    return rgb_hex([gam(c) for c in old_mean_linear])
+
+
+def family_colours(cream=None, s=WALL_SOFTEN):
+    """family -> {wall, plinth, wallSwatch} (sRGB hex), from facade.json's swatches; the wall softened toward `cream` by s (none = the swatch)."""
     fac = json.loads(FACADE.read_text())
     sw, fam = fac["swatches"], fac["families"]
     out = {}
     for f in FAMILIES:
         w, p = sw[fam[f][0]].upper(), sw[fam[f][1]].upper()
-        out[f] = dict(wall=w, band=band_of(w, p), fascia=fascia_of(p), plinth=p, swatches=dict(w=fam[f][0], p=fam[f][1]))
+        out[f] = dict(wall=soften(w, cream, s) if cream else w, plinth=p, wallSwatch=w, swatches=dict(w=fam[f][0], p=fam[f][1]))
     return out
 
 
@@ -164,7 +185,7 @@ def build_tex(out=GROUND):
     om = al.reshape(al.shape[0] // k, k, al.shape[1] // k, k, 3).mean(axis=(1, 3)).reshape(-1, 3)
     nm = ql.reshape(ql.shape[0] // k, k, ql.shape[1] // k, k).mean(axis=(1, 3)).reshape(-1)
     dm = sorted(deltae.de(rgb_hex([gam(c) for c in o]), rgb_hex([gam(n * t) for t in base_tint])) for o, n in zip(om[::5], nm[::5]))
-    fam = family_colours()
+    fam = family_colours(old_cream(omean))
     tints = {f: [lin(c) / nmean for c in hex_rgb(v["wall"])] for f, v in fam.items()}
     over = {f: round(max(t), 4) for f, t in tints.items() if max(t) > 1.0}
     if over or max(base_tint) > 1.0:
@@ -219,7 +240,12 @@ def write_mats(dst, legacy, meta_text):
     (d / "DK_Limestone_Tex.mat").write_text(limestone_text((legacy / "DK_Limestone_Tex.mat").read_text(), rep))
     (d / "DK_Limestone_Tex.mat.meta").write_text(meta_text("DK_Limestone_Tex", legacy))
     out = ["DK_Limestone_Tex"]
-    fam = family_colours()
+    cream = old_cream(rep["oldMeanLinear"])
+    fam = family_colours(cream)
+    for b in RETIRED:  # 074-B's band and fascia sets, left by an earlier run: gone, so nothing stale is catalogued or copied
+        for f in FAMILIES:
+            for x in (d / f"{b}__{f}.mat", d / f"{b}__{f}.mat.meta"):
+                x.unlink(missing_ok=True)
     mapping, hexes = {}, {}
     for base, slot in SLOTS.items():
         src = d / f"{base}.mat" if (d / f"{base}.mat").exists() else legacy / f"{base}.mat"
@@ -234,13 +260,14 @@ def write_mats(dst, legacy, meta_text):
             mapping[base][f] = name
             out.append(name)
     for f in FAMILIES:
-        hexes[f] = {k: fam[f][k] for k in ("wall", "band", "fascia", "plinth")} | dict(swatches=fam[f]["swatches"])
-    data = dict(schema="suborned.colourways/1", brief="074-B", source="tools/decokit/colourways.py",
+        hexes[f] = {k: fam[f][k] for k in ("wall", "plinth", "wallSwatch")} | dict(swatches=fam[f]["swatches"])
+    data = dict(schema="suborned.colourways/1", brief="074-B, 074-H", source="tools/decokit/colourways.py",
                 rule="A module's colourway (export `colourway`, a facade.json family) swaps each base material below for its family's; `base` and `civic` keep the base. "
-                     "Same shader, keywords and textures as the base: only the base colour differs.",
-                families=list(FAMILIES), keep=["base", "civic"], slots=SLOTS, materials=mapping, colours=hexes,
-                derivation=dict(wall="_w (DK_Limestone_Tex: tint = linear _w / the neutral sheet's linear mean)", band=f"Lab: L_p + {BAND_LIFT} (L_w - L_p), chroma x {BAND_CHROMA}",
-                                fascia=f"Lab: L = clamp(L_p - {FASCIA_DROP:g}, {FASCIA_L[0]:g}, {FASCIA_L[1]:g}), a, b of _p", plinth="_p"),
+                     "Same shader, keywords and textures as the base: only the base colour differs. 074-H: walls and plinth only; band (DK_Enamel_Seafoam) and fascia (DK_Enamel_Teal) "
+                     "keep the base seafoam and teal on every building.",
+                families=list(FAMILIES), keep=["base", "civic"], slots=SLOTS, materials=mapping, colours=hexes, wallSoften=WALL_SOFTEN, oldCream=cream,
+                derivation=dict(wall=f"Lab lerp of _w toward the old reel's cream {cream} (the old facade_panel_v1 mean) by {WALL_SOFTEN:g} (DK_Limestone_Tex: tint = linear wall / the neutral sheet's linear mean)",
+                                plinth="_p", band="none: the base DK_Enamel_Seafoam everywhere (074-H)", fascia="none: the base DK_Enamel_Teal everywhere (074-H)"),
                 neutral=dict(file=rep["file"], guid=rep["guid"], baseTint=rep["baseTint"], baseDrift=rep["baseDrift"], baseDriftPlayMip=rep["baseDriftPlayMip"], grain=rep["grain"], memory=rep["memory"]))
     (Path(dst) / "Data").mkdir(parents=True, exist_ok=True)
     (Path(dst) / "Data" / "colourways.json").write_text(json.dumps(data, indent=1) + "\n")

@@ -23,6 +23,14 @@ TEXD = [REPO + "/out/decokit/Textures", REPO + "/unity/Assets/Suborned/Kit/Textu
 HOSTS = ["bld/lamplight-south-w/4", "bld/lamplight-south-w/5"]   # 3 storeys, 4 storeys
 PAIRS = [("base", "base"), ("lilac", "sky"), ("butter", "powder"), ("apricot", "mint"), ("blush", "seagreen")]
 NMEAN = TEXREP["neutralMeanLinear"]
+# 074-H: --soften S re-derives every family's wall with colourways.py at that WALL_SOFTEN (0 = the facade.json swatch); slots come from colourways.json
+# (074-H: walls and plinth only, so band and fascia draw their base seafoam and teal). Frames are suffixed -s<S>.
+SOFT = None
+if "--soften" in A:
+    SOFT = float(A[A.index("--soften") + 1])
+    sys.path.insert(0, REPO + "/tools/decokit"); import colourways as _cwm
+    for _f, _v in _cwm.family_colours(_cwm.old_cream(TEXREP["oldMeanLinear"]), SOFT).items(): CW["colours"][_f]["wall"] = _v["wall"]
+SUFFIX = f"-s{SOFT:g}" if SOFT is not None else ""
 
 def lin(c): return ((c + 0.055) / 1.055) ** 2.4 if c > 0.04045 else c / 12.92
 def rgb(h): h = h.lstrip("#"); return tuple(lin(int(h[i:i + 2], 16) / 255) for i in (0, 2, 4))
@@ -190,5 +198,5 @@ for yaw in YAWS:
     for i, (ca, cb) in enumerate(PAIRS):
         if i not in ONLY: continue
         for j, c in FRAMES.items(): c.hide_render = j != i
-        sc.render.filepath = os.path.join(OUT, f"blocks-{yaw}-{i}-{ca}-{cb}.png"); bpy.ops.render.render(write_still=True); print("wrote", sc.render.filepath)
+        sc.render.filepath = os.path.join(OUT, f"blocks-{yaw}-{i}-{ca}-{cb}{SUFFIX}.png"); bpy.ops.render.render(write_still=True); print("wrote", sc.render.filepath)
 print("DONE"); sys.exit(0)

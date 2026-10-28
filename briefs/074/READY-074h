@@ -1,0 +1,6 @@
+074-H (Vela, 2026-10-28): colourways tint walls (DK_Limestone_Tex, DK_Render_White) and plinth (DK_Stone_Dark) only; band and fascia are base seafoam/teal everywhere.
+WALL_SOFTEN = 0.35 (tools/decokit/colourways.py): each family's wall swatch lerped in CIELAB toward the old reel's cream #E6D7C2 (old facade_panel_v1 mean).
+kit.json colourways: 3 slots, 36 materials, 72 files; wallSoften, oldCream, colours[f].wallSwatch added.
+Check: briefs/074/vela/h/sheet-h-210.jpg (074-B / 074-H soften 0 / 074-H soften 0.35), sheet-h-30.jpg.
+Passed: decokit --mats-only, kit (unchanged on rerun), collide --check, cover, cover --check (CV-1, CV-2 ok), typecheck, kit+decokit tests 43/43.
+Next: Latch rebuilds (stale DK_Enamel_{Seafoam,Teal}__*.mat x48 remain in unity/Assets/Suborned/Kit/Materials, unreferenced), re-shoots flyby grid + play-zoom compare; Redline re-runs the draw model.
