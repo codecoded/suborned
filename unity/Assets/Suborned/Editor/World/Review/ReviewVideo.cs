@@ -19,7 +19,13 @@ namespace Suborned.World.Review
 
         /// <summary>The conversion of a flipped RGB frame to YUV at the output size, BT.709 limited range; setparams stamps the frames
         /// (ffmpeg 8 writes the stream's colour tags from the frames, so the -color_* options alone leave primaries and transfer unset).</summary>
+        /// Reel banding (Glint, brief 075, 2026-10-29): two steps, so the dither comes after the downscale. Step 1 is the lanczos
+        /// downscale into 16-bit RGB (rgb48le): the 2x frame's four 8-bit samples each carry the camera's own dither, so their average
+        /// holds the sky gradient between 8-bit steps. Step 2 is the BT.709 conversion from that 16-bit source to 8-bit YUV, and
+        /// swscale dithers when it reduces a 16-bit source (it never does from rgb24, which is why one step rounded the
+        /// average back into bands). The synthetic test cut low-frequency banding 0.124 to 0.020 LSB rms (briefs/075/parity/reelband).
         public static string Scale(int w, int h) =>
+            $"scale={w}:{h}:flags=lanczos+accurate_rnd+full_chroma_int+full_chroma_inp,format=rgb48le," +
             $"scale={w}:{h}:flags=lanczos+accurate_rnd+full_chroma_int+full_chroma_inp:in_range=pc:out_range=tv:out_color_matrix=bt709," +
             "setparams=range=tv:colorspace=bt709:color_primaries=bt709:color_trc=bt709";
 

@@ -1,0 +1,22 @@
+{
+ "source": "/Users/sky/Projects/suborned/out/scratch/glint/075bloom/r1/b100-golden.png",
+ "crop_xywh_1080": [
+  1200,
+  20,
+  320,
+  180
+ ],
+ "contrast": 6,
+ "banding_rms_luma_levels": {
+  "before-frame": 0.264,
+  "after-frame": 0.117,
+  "before-share": 0.298,
+  "after-share": 0.21
+ },
+ "unique_colours": {
+  "before-frame": 32,
+  "after-frame": 63,
+  "before-share": 83,
+  "after-share": 106
+ }
+}
