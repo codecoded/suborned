@@ -127,6 +127,7 @@ namespace Suborned.World
                 Id = Id(l), Surface = J.S(l, "surface"), Shape = J.S(l, "shape"), Centre = J.P(l, "centre"), Radius = J.F(l, "radius"), Base = J.F(l, "base"), Height = J.F(l, "height"), Source = J.S(l, "source"), Kit = Kit(J.Get(l, "kit")), Kits = Each(l, "kits", Kit),
             });
             w.Gates = Each(o, "gates", Mass);
+            w.Liveries = J.Get(o, "liveries"); // brief 075-C
             w.Facades = Each(o, "facades", f => new FacadeDto
             {
                 Id = Id(f), Building = J.S(f, "building"), Form = J.S(f, "form"), Storeys = (int)J.F(f, "storeys"), Edge = (int)J.F(f, "edge"),

@@ -70,6 +70,9 @@ namespace Suborned.World
             return slots.TryGetValue(own.name, out var to) ? to : own;
         }
 
+        /// <summary>Brief 075-C: KitLiveries registers its tinted landmark materials here, so Base maps them back too.</summary>
+        public static void AddBase(Material tinted, Material from) { if (tinted && from) toBase[tinted] = from; }
+
         /// <summary>The base material of a tinted one (itself otherwise).</summary>
         public static Material Base(Material m) => m && toBase.TryGetValue(m, out var b) ? b : m;
 

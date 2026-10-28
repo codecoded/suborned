@@ -1,0 +1,480 @@
+{
+ "before": "out/scratch/latch/074/pin/074.world.json",
+ "after": "out/world/harbour-district.world.json",
+ "district": {
+  "roots": [
+   5578,
+   5226
+  ],
+  "L0": [
+   16361638,
+   14532598
+  ],
+  "L1": [
+   2980538,
+   2629114
+  ],
+  "L2": [
+   1794576,
+   1469312
+  ]
+ },
+ "views": {
+  "office-front@30/14": {
+   "before": {
+    "roots": 8,
+    "tris": 22848,
+    "draws": 7
+   },
+   "after": {
+    "roots": 8,
+    "tris": 22848,
+    "draws": 7
+   }
+  },
+  "office-front@120/14": {
+   "before": {
+    "roots": 18,
+    "tris": 24822,
+    "draws": 9
+   },
+   "after": {
+    "roots": 18,
+    "tris": 24822,
+    "draws": 9
+   }
+  },
+  "office-front@210/14": {
+   "before": {
+    "roots": 1,
+    "tris": 14170,
+    "draws": 1
+   },
+   "after": {
+    "roots": 1,
+    "tris": 14170,
+    "draws": 1
+   }
+  },
+  "office-front@300/14": {
+   "before": {
+    "roots": 2,
+    "tris": 24604,
+    "draws": 1
+   },
+   "after": {
+    "roots": 2,
+    "tris": 24604,
+    "draws": 1
+   }
+  },
+  "cell-open@30/14": {
+   "before": {
+    "roots": 22,
+    "tris": 29948,
+    "draws": 11
+   },
+   "after": {
+    "roots": 22,
+    "tris": 29948,
+    "draws": 11
+   }
+  },
+  "cell-open@120/14": {
+   "before": {
+    "roots": 35,
+    "tris": 59992,
+    "draws": 11
+   },
+   "after": {
+    "roots": 35,
+    "tris": 59992,
+    "draws": 11
+   }
+  },
+  "cell-open@210/14": {
+   "before": {
+    "roots": 17,
+    "tris": 33020,
+    "draws": 7
+   },
+   "after": {
+    "roots": 17,
+    "tris": 33020,
+    "draws": 7
+   }
+  },
+  "cell-open@300/14": {
+   "before": {
+    "roots": 9,
+    "tris": 37006,
+    "draws": 4
+   },
+   "after": {
+    "roots": 9,
+    "tris": 37006,
+    "draws": 4
+   }
+  },
+  "cafe-square@30/14": {
+   "before": {
+    "roots": 6,
+    "tris": 6346,
+    "draws": 4
+   },
+   "after": {
+    "roots": 6,
+    "tris": 6346,
+    "draws": 4
+   }
+  },
+  "cafe-square@120/14": {
+   "before": {
+    "roots": 21,
+    "tris": 22344,
+    "draws": 7
+   },
+   "after": {
+    "roots": 21,
+    "tris": 22344,
+    "draws": 7
+   }
+  },
+  "cafe-square@210/14": {
+   "before": {
+    "roots": 16,
+    "tris": 37734,
+    "draws": 9
+   },
+   "after": {
+    "roots": 16,
+    "tris": 37734,
+    "draws": 9
+   }
+  },
+  "cafe-square@300/14": {
+   "before": {
+    "roots": 9,
+    "tris": 61860,
+    "draws": 3
+   },
+   "after": {
+    "roots": 9,
+    "tris": 61860,
+    "draws": 3
+   }
+  },
+  "heaviest@30/14": {
+   "before": {
+    "roots": 41,
+    "tris": 178996,
+    "draws": 10
+   },
+   "after": {
+    "roots": 41,
+    "tris": 178996,
+    "draws": 10
+   }
+  },
+  "heaviest@120/14": {
+   "before": {
+    "roots": 54,
+    "tris": 159440,
+    "draws": 17
+   },
+   "after": {
+    "roots": 54,
+    "tris": 159440,
+    "draws": 17
+   }
+  },
+  "heaviest@210/14": {
+   "before": {
+    "roots": 58,
+    "tris": 183840,
+    "draws": 19
+   },
+   "after": {
+    "roots": 58,
+    "tris": 183840,
+    "draws": 19
+   }
+  },
+  "heaviest@300/14": {
+   "before": {
+    "roots": 43,
+    "tris": 168346,
+    "draws": 13
+   },
+   "after": {
+    "roots": 43,
+    "tris": 168346,
+    "draws": 13
+   }
+  },
+  "parade@30/14": {
+   "before": {
+    "roots": 19,
+    "tris": 38052,
+    "draws": 6
+   },
+   "after": {
+    "roots": 19,
+    "tris": 38052,
+    "draws": 6
+   }
+  },
+  "parade@120/14": {
+   "before": {
+    "roots": 2,
+    "tris": 988,
+    "draws": 1
+   },
+   "after": {
+    "roots": 2,
+    "tris": 988,
+    "draws": 1
+   }
+  },
+  "parade@210/14": {
+   "before": {
+    "roots": 26,
+    "tris": 40832,
+    "draws": 8
+   },
+   "after": {
+    "roots": 23,
+    "tris": 32404,
+    "draws": 6
+   }
+  },
+  "parade@300/14": {
+   "before": {
+    "roots": 31,
+    "tris": 95096,
+    "draws": 9
+   },
+   "after": {
+    "roots": 8,
+    "tris": 9334,
+    "draws": 5
+   }
+  },
+  "crown-circus@30/14": {
+   "before": {
+    "roots": 6,
+    "tris": 15042,
+    "draws": 3
+   },
+   "after": {
+    "roots": 6,
+    "tris": 15042,
+    "draws": 3
+   }
+  },
+  "crown-circus@120/14": {
+   "before": {
+    "roots": 25,
+    "tris": 139938,
+    "draws": 9
+   },
+   "after": {
+    "roots": 12,
+    "tris": 40710,
+    "draws": 5
+   }
+  },
+  "crown-circus@210/14": {
+   "before": {
+    "roots": 1,
+    "tris": 4428,
+    "draws": 1
+   },
+   "after": {
+    "roots": 1,
+    "tris": 4428,
+    "draws": 1
+   }
+  },
+  "crown-circus@300/14": {
+   "before": {
+    "roots": 6,
+    "tris": 22052,
+    "draws": 3
+   },
+   "after": {
+    "roots": 6,
+    "tris": 22052,
+    "draws": 3
+   }
+  },
+  "north-edge@30/14": {
+   "before": {
+    "roots": 0,
+    "tris": 0,
+    "draws": 0
+   },
+   "after": {
+    "roots": 0,
+    "tris": 0,
+    "draws": 0
+   }
+  },
+  "north-edge@120/14": {
+   "before": {
+    "roots": 0,
+    "tris": 0,
+    "draws": 0
+   },
+   "after": {
+    "roots": 0,
+    "tris": 0,
+    "draws": 0
+   }
+  },
+  "north-edge@210/14": {
+   "before": {
+    "roots": 0,
+    "tris": 0,
+    "draws": 0
+   },
+   "after": {
+    "roots": 0,
+    "tris": 0,
+    "draws": 0
+   }
+  },
+  "north-edge@300/14": {
+   "before": {
+    "roots": 0,
+    "tris": 0,
+    "draws": 0
+   },
+   "after": {
+    "roots": 0,
+    "tris": 0,
+    "draws": 0
+   }
+  },
+  "harbour-quay@30/14": {
+   "before": {
+    "roots": 0,
+    "tris": 0,
+    "draws": 0
+   },
+   "after": {
+    "roots": 0,
+    "tris": 0,
+    "draws": 0
+   }
+  },
+  "harbour-quay@120/14": {
+   "before": {
+    "roots": 0,
+    "tris": 0,
+    "draws": 0
+   },
+   "after": {
+    "roots": 0,
+    "tris": 0,
+    "draws": 0
+   }
+  },
+  "harbour-quay@210/14": {
+   "before": {
+    "roots": 0,
+    "tris": 0,
+    "draws": 0
+   },
+   "after": {
+    "roots": 0,
+    "tris": 0,
+    "draws": 0
+   }
+  },
+  "harbour-quay@300/14": {
+   "before": {
+    "roots": 0,
+    "tris": 0,
+    "draws": 0
+   },
+   "after": {
+    "roots": 0,
+    "tris": 0,
+    "draws": 0
+   }
+  },
+  "wide-lamplight@30/14": {
+   "before": {
+    "roots": 62,
+    "tris": 158230,
+    "draws": 20
+   },
+   "after": {
+    "roots": 62,
+    "tris": 158230,
+    "draws": 20
+   }
+  },
+  "wide-lamplight@120/14": {
+   "before": {
+    "roots": 61,
+    "tris": 115908,
+    "draws": 18
+   },
+   "after": {
+    "roots": 61,
+    "tris": 115908,
+    "draws": 18
+   }
+  },
+  "wide-lamplight@210/14": {
+   "before": {
+    "roots": 62,
+    "tris": 149862,
+    "draws": 20
+   },
+   "after": {
+    "roots": 62,
+    "tris": 149862,
+    "draws": 20
+   }
+  },
+  "wide-lamplight@300/14": {
+   "before": {
+    "roots": 64,
+    "tris": 142570,
+    "draws": 22
+   },
+   "after": {
+    "roots": 64,
+    "tris": 142570,
+    "draws": 22
+   }
+  },
+  "tp-street": {
+   "before": {
+    "roots": 633,
+    "tris": 208730,
+    "draws": 89
+   },
+   "after": {
+    "roots": 597,
+    "tris": 188394,
+    "draws": 86
+   }
+  },
+  "tp-worst": {
+   "before": {
+    "roots": 703,
+    "tris": 229785,
+    "draws": 93
+   },
+   "after": {
+    "roots": 703,
+    "tris": 229785,
+    "draws": 93
+   }
+  }
+ }
+}

@@ -27,7 +27,7 @@ namespace Suborned.World
             {
                 var el = Nodes.Element(layer, m.Id);
                 var h = HostOf(m.Id);
-                if (m.Gateway != null) placer.Place(el, layer.name, m.Gateway, m.Gateway.At, QuayTop(m.Gateway.At), 0f);
+                if (m.Gateway != null) KitLiveries.Apply(placer.Place(el, layer.name, m.Gateway, m.Gateway.At, QuayTop(m.Gateway.At), 0f), m.Id, "gateway", m.Gateway.Id);
                 if (standIns.Covers(m)) { standIns.Mega(layer, el, m); continue; }
                 var peers = m.Parts.Select(p => new FacadeKit.Peer(p.Id, Poly.Clean(p.Ring), p.Base, p.Base + p.Height)).ToList();
                 for (int i = 0; i < m.Parts.Count; i++)

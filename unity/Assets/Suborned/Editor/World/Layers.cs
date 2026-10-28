@@ -294,7 +294,7 @@ namespace Suborned.World
         {
             foreach (var l in landmarks)
             {
-                if (l.Kit != null) { placer.Place(Nodes.Element(layer, l.Id), layer.name, l.Kit, l.Centre, l.Base, 0f); continue; }
+                if (l.Kit != null) { KitLiveries.Apply(placer.Place(Nodes.Element(layer, l.Id), layer.name, l.Kit, l.Centre, l.Base, 0f), l.Id, "kit", l.Kit.Id); continue; }
                 var kit = new MeshKit();
                 if (l.Shape == "sphere")
                 {
@@ -307,7 +307,7 @@ namespace Suborned.World
                 }
                 else kit.Prism(Poly.Circle(l.Centre, l.Radius, 48), l.Base, l.Base + l.Height);
                 var el = nodes.Solid(layer, l.Id, kit, l.Surface);
-                foreach (var k in l.Kits) placer.Place(el, layer.name, k, k.At, l.Base + l.Height, 0f);
+                for (int i = 0; i < l.Kits.Count; i++) { var k = l.Kits[i]; KitLiveries.Apply(placer.Place(el, layer.name, k, k.At, l.Base + l.Height, 0f), l.Id, $"kits[{i}]", k.Id); }
             }
         }
 

@@ -67,7 +67,7 @@ namespace Suborned.World
             Bounds? b = null;
             foreach (var p in m.Parts) { var pb = Prism(p.Ring, p.Base, p.Base + p.Height); if (b is { } have) { have.Encapsulate(pb); b = have; } else b = pb; }
             var c = b ?? throw new InvalidDataException($"World: {m.Id} has no parts to stand its kit piece on");
-            placer.Place(el, layer.name, megas[m.Id], new Vector2(c.center.x, c.center.z), c.min.y, 0f);
+            KitLiveries.Apply(placer.Place(el, layer.name, megas[m.Id], new Vector2(c.center.x, c.center.z), c.min.y, 0f), m.Id, "use", megas[m.Id]); // brief 075-C: the `use` row
         }
 
         static Bounds Prism(Vector2[] ring, float z0, float z1)

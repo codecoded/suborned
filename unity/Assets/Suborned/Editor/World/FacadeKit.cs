@@ -114,7 +114,12 @@ namespace Suborned.World
         /// <summary>Every building mass by the procedural grammar (ProcFacade), except tower masses a generated piece stands in for.</summary>
         public void Buildings(Transform layer, List<MassDto> masses, StandIns standIns)
         {
-            foreach (var m in masses) { if (standIns.Covers(m)) standIns.Mass(layer, m); else Building(layer, m, false); }
+            foreach (var m in masses)
+            {
+                if (standIns.Covers(m)) { standIns.Mass(layer, m); continue; }
+                if (J.Get(m.Raw, "hidden") is true) throw new System.IO.InvalidDataException($"World: building mass {m.Id} is `hidden` (T-K1) but no kit piece stands in for it");
+                Building(layer, m, false);
+            }
         }
 
         /// <summary>Civic block: limestone buildings by the style kit, objects with a kit ref (grammar §11: fountain, pavilions and

@@ -153,7 +153,7 @@ namespace Suborned.World.Review
         }
 
         /// <summary>AtmosphereLens as Glint072.InstallLens does, from `path` (a variant lens.json) or Resources/Atmosphere/lens.json.</summary>
-        static AtmosphereLens InstallLens(string path)
+        internal static AtmosphereLens InstallLens(string path)
         {
             var text = path != null ? File.ReadAllText(Abs(path)) : (Resources.Load<TextAsset>(AtmosphereLens.ResourcePath) ?? throw new InvalidOperationException("glint075: no lens.json")).text;
             var d = JsonUtility.FromJson<AtmosphereLens.Lens>(text);
@@ -171,7 +171,7 @@ namespace Suborned.World.Review
         }
 
         /// <summary>DistanceHaze as its Install does (edit mode: no DontDestroyOnLoad), from Resources/Atmosphere/haze.json.</summary>
-        static DistanceHaze InstallHaze()
+        internal static DistanceHaze InstallHaze()
         {
             var text = Resources.Load<TextAsset>("Atmosphere/haze") ?? throw new InvalidOperationException("glint075: no haze.json");
             var d = JsonUtility.FromJson<DistanceHaze.Data>(text.text);

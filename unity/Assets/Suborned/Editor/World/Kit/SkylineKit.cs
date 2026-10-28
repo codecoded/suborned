@@ -41,7 +41,7 @@ namespace Suborned.World
             foreach (var s in signatures)
             {
                 var el = Nodes.Element(layer, s.Id);
-                if (s.Kit != null) { placer.Place(el, layer.name, s.Kit, s.Kit.At, SignatureZ(placer, s), 0f); continue; }
+                if (s.Kit != null) { KitLiveries.Apply(placer.Place(el, layer.name, s.Kit, s.Kit.At, SignatureZ(placer, s), 0f), s.Id, "kit", s.Kit.Id); continue; }
                 // no adopted piece yet: its ground as a plain mass to its tip, so the skyline keeps the volume (and the gap is visible)
                 if (s.Ground is not { Length: 4 } g) throw new InvalidDataException($"World: signature {s.Id} has neither a kit piece nor a ground ({s.Why})");
                 Debug.LogWarning($"World: signature {s.Id} is procedural: {s.Why}");

@@ -59,6 +59,16 @@ namespace Suborned.World.Review
             }
             if (sun) Debug.Log($"074 flyby: sun euler {sun.transform.eulerAngles}, intensity {sun.intensity}");
 
+            // brief 075: `-lens on` installs the runtime look the player's perspective views get (lens.json tiers, haze.json's long haze),
+            // as Glint075's flyby grid does; off (the default) = the 074 renders' setup
+            AtmosphereLens lens = null; DistanceHaze haze = null;
+            if (Arg("-lens", "off") == "on")
+            {
+                var phase = UnityEngine.Object.FindAnyObjectByType<Suborned.Play.LightPhase>(FindObjectsInactive.Include);
+                if (phase) typeof(Suborned.Play.LightPhase).GetMethod("OnEnable", System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)?.Invoke(phase, null);
+                lens = Glint075.InstallLens(null); haze = Glint075.InstallHaze();
+                Debug.Log("074 flyby: runtime lens and haze installed (-lens on)");
+            }
             using var session = new RenderSession();
             var cam = RenderSession.TempCamera("flyby074");
             cam.fieldOfView = fov;
@@ -112,7 +122,13 @@ namespace Suborned.World.Review
                 if (ff.ExitCode != 0) throw new IOException($"074 flyby: ffmpeg exit {ff.ExitCode}: {log}");
                 Debug.Log($"074 flyby: {outArg} {frames} frames ({from:F1}-{to:F1} s, ss {ss}) in {clock.Elapsed.TotalMinutes:0.0} min");
             }
-            finally { UnityEngine.Object.DestroyImmediate(cam.gameObject); }
+            finally
+            {
+                UnityEngine.Object.DestroyImmediate(cam.gameObject);
+                const System.Reflection.BindingFlags Any = System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance;
+                if (lens) { typeof(AtmosphereLens).GetMethod("OnDisable", Any)?.Invoke(lens, null); UnityEngine.Object.DestroyImmediate(lens.gameObject); }
+                if (haze) { typeof(DistanceHaze).GetMethod("OnDisable", Any)?.Invoke(haze, null); UnityEngine.Object.DestroyImmediate(haze.gameObject); }
+            }
         });
 
         /// <summary>Colourways off: every tinted kit material back to its base, in memory only.</summary>

@@ -118,6 +118,7 @@ namespace Suborned.World
             KitColourways.Load(KitCataloguePath); // brief 074: Vela's colourway material sets, swapped per placed piece and column instance
             skyline.Facades(Nodes.Group(root, "facades"), world.Facades);
             Debug.Log(KitColourways.Summary());
+            KitLiveries.Load(KitCataloguePath, world.Liveries); // brief 075-C: landmark livery, swapped per placed piece by host and ref
             roofs.Roofs(Nodes.Group(root, "roofs"), world.Roofs, placer, standIns);
             var frontages = Nodes.Group(root, "frontages");
             shops.Frontages(frontages, world.Frontages);
@@ -139,6 +140,7 @@ namespace Suborned.World
             megas.Gates(Nodes.Group(root, "gates"), world.Gates);
             layers.Landmarks(Nodes.Group(root, "landmarks"), world.Landmarks, placer);
             skyline.Signatures(Nodes.Group(root, "signatures"), world.Signatures, nodes);
+            Debug.Log(KitLiveries.Finish()); // every listed livery placed exactly once
             var batches = Nodes.Group(null, "batches");
             long verts = Combine.Flush(batches);
             // brief 072-E: the every-face A/B switch (EveryFace, Redline's plan 5): `today` built off, the rest as built

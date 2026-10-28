@@ -69,8 +69,10 @@ namespace Suborned.World.Review
             string countsDir = Path.Combine(root, "briefs", "072", "latch", tag == null ? "after" : g ? "g" : "textured");
             string areaFile = g ? Path.Combine(countsDir, "area-g.json") : Path.Combine(root, "briefs", "072", "texture", tag == "textured" ? "area-after.json" : "area.json");
             // brief 074-C: `-tag 074before` / `-tag 074` (After072.C074.cs): shots and counts of the play views at yaw 30 / 210 plus the wide street view, and the colourway census
-            bool c074 = tag == "074before" || tag == "074";
+            // brief 075 (the A/B/C1-2 rebuild): `-tag 075` = the same views, counts and census → briefs/075/shots/after and briefs/075/latch
+            bool c074 = tag == "074before" || tag == "074" || tag == "075";
             if (c074) { only = new HashSet<string> { "shots", "counts", "c074" }; shotsDir = Path.Combine(root, "briefs", "074", "shots", tag == "074" ? "after" : "before"); countsDir = Path.Combine(root, "briefs", "074", "latch", tag == "074" ? "after" : "before"); }
+            if (tag == "075") { shotsDir = Path.Combine(root, "briefs", "075", "shots", "after"); countsDir = Path.Combine(root, "briefs", "075", "latch"); }
             if (tag == "a3") only = new HashSet<string> { "a3" }; // brief 064 A3 items 1, 5, 7: the no-look check (After072.A3.cs)
             EditorSceneManager.OpenScene(HarbourWorldBuilder.ScenePath, OpenSceneMode.Single);
             var c = new Ctx();

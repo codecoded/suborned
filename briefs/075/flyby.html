@@ -1,0 +1,58 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>075 · flyby: old DecoKit reel against the 075 rebuild</title>
+<style>
+body{background:#15181d;color:#dde3e2;font:15px/1.5 system-ui,sans-serif;margin:24px;max-width:1400px}
+h1{font-size:22px;margin:0 0 6px}h2{font-size:17px;margin:28px 0 6px;color:#b0cdc7}
+video{width:100%;background:#000;display:block}img{width:100%;display:block}
+code{background:#222a2c;padding:1px 4px;border-radius:3px}
+.clip{margin:14px 0 22px}.clip p{margin:4px 0}
+ul{margin:4px 0 0 18px;padding:0}li{margin:3px 0}
+.dim{color:#9aa9a6;font-size:13px}
+.two{display:grid;grid-template-columns:1fr;gap:10px}
+</style>
+<h1>Brief 075 · the old boulevard flyby against the rebuild</h1>
+<p class="dim">Latch, 2026-10-28. The rebuild is <code>Assets/Scenes/HarbourDistrict.unity</code>, built from export ec0339f9 (HEAD 61698d63). It includes:</p>
+<ul class="dim">
+<li>074-H: colourways on walls and plinths only, softened toward the old cream;</li>
+<li>075-B: the old road texture in powder blue, the pavement cream, no lawn bands, the old sky in the glass;</li>
+<li>075-A: Glint's port of the old reel's grade, sun, DK_SpaceSky, haze and DK_Ocean;</li>
+<li>075-C steps 1 and 2: the stand-in tower boxes hidden, and the landmark livery (vermilion lattices, the brick-red sphere hull, gold on SpaceHQ_Portal).</li>
+</ul>
+<p class="dim">The flight is the same as 074's: Flyby074 with <code>briefs/074/flyby/new-keys.json</code>, 62 s, 1080p30, rendered offscreen at 2x supersampling. One change from 074: this flight runs with the runtime lens and haze the player's perspective views get (<code>-lens on</code>, the same setup as Glint's grid), because the layered haze is part of 075-A. The 074 column was rendered without it.</p>
+
+<h2>Clips</h2>
+<div class="clip">
+<p><b>Old against new</b>: <a href="flyby/old-vs-new.mp4">old-vs-new.mp4</a>. 2560 x 720: the old reel on the left, the rebuild on the right, aligned frame for frame.</p>
+<video src="flyby/old-vs-new.mp4" controls preload="metadata"></video>
+</div>
+<div class="clip">
+<p><b>Full size:</b> <a href="flyby/new.mp4">new.mp4</a> (the rebuild, 1920 x 1080, 1861 frames). The old reel is <a href="../074/flyby/old-flyby.mp4">074/flyby/old-flyby.mp4</a>; 074's new flight is <a href="../074/flyby/new-on.mp4">074/flyby/new-on.mp4</a>.</p>
+</div>
+
+<h2>Stills at matching moments</h2>
+<p>The columns are the old reel, 074's new flight (colourways on) and the 075 rebuild. The rows are the boulevard (6 s), Crown Circus (20 s), the Parade (33 s), the Skyport tower (50 s) and the skyline across the water (61.5 s). The single frames are in <code>flyby/grid/</code>, and <code>latch/compare.py</code> makes the sheet.</p>
+<a href="flyby/grid.png"><img src="flyby/grid.png" alt="old / 074 / 075 at five matching moments"></a>
+
+<h2>Play zoom, before and after</h2>
+<p>The play-zoom pairs are in <code>shots/compare/</code>.</p>
+<ul>
+<li><code>player-day-*</code> and <code>player-night-*</code> show the player's look, with the runtime lens installed (Glint075 harness). The left half is the 074 scene from <code>grade/today</code>; the right half is the rebuild.</li>
+<li><code>day-*</code> pairs 074's "before" frames with the same harness on the rebuild (After072). That harness installs no runtime lens, so the new scene-level bloom (threshold 0.6) veils those frames. The game applies <code>bloomPlay</code> at play zoom. Read the <code>player-*</code> pairs for the look.</li>
+</ul>
+<div class="two">
+<img src="shots/compare/player-day-office-front-y210.png" alt="">
+<img src="shots/compare/player-day-cafe-square-y030.png" alt="">
+<img src="shots/compare/player-night-cafe-square-y030.png" alt="">
+</div>
+
+<h2>Old against new now (Latch's read)</h2>
+<ul>
+<li><b>Better: the landmarks.</b> The Skyport tower's lattice is vermilion (50 s), and the red sphere and gold SpaceHQ crown are in place. The tower sites no longer stand in square punched-window boxes: at 20 s the disc towers and needles read as round shafts. This is the closest the frame has come to the old reel's heroes.</li>
+<li><b>Better: colour.</b> The wall tint now holds the street together, as the old cream did. The boulevard at 6 s reads as one family with accents rather than candy blocks. The bands are back to seafoam and teal.</li>
+<li><b>Better: road and pavement.</b> At play zoom the powder-blue road carries the old asphalt grain, and the pavement is the old cream. Shade is deeper under the old trilight, which gives the street the old reel's contrast. Night is effectively unchanged.</li>
+<li><b>Worse: the haze is too strong for our flight.</b> At 33, 50 and 61.5 s the long-tier haze washes the far city and the horizon ring into a cream fog. The skyline that the old reel builds its last shot on disappears; the old reel keeps crisp mid-ground detail under its haze. Our far ring sits 750 m and more out, behind an empty band (C10), so the haze gets nothing to layer and only erases. The likely fixes are the mid-ground massing (C10) or a lighter long haze for this flight: Glint's call.</li>
+<li><b>Different: the sky is pale cyan, not teal.</b> The sky is the old one, but our flight looks level or down, where the old sky is pale. Glint noted this, and lowering <code>_MidHeight</code> would be a design change.</li>
+<li><b>Different: the sea.</b> The sea is a deeper blue-teal, closer to the old reel than 074's flat teal. There is still no glitter, because our sun is behind the camera (Glint's note).</li>
+<li><b>Still missing:</b> the 8 to 10 storey glass-slab canyon (C1, the height-cap question for Sky), the lush close palms (C7), people and traffic (075-D), and a textured sky-rail beam. The pink box beam still reads as the flattest thing in every frame (C9).</li>
+</ul>
