@@ -157,6 +157,21 @@
         "leftThirdMedian": 159.2,
         "rightThirdMedian": 75.4
       }
+    },
+    {
+      "step": "g2-vista",
+      "date": "2026-10-28 12:09Z",
+      "what": "the vista: long-tier far blur starts at 900 m (was 300; end 2500, was 1800) so the arch (375 m) and gold tower (565 m) stay sharp; long haze a per-distance linear curve 250 to 6000 m (was exp 0.0005: 25 percent cream at the tower, now 5); long grade exposure +0.45 EV (was +0.15), saturation +36 (was +25). lens.json, haze.json",
+      "by": "Glint",
+      "export_sha256": "25429f9940472be19f330a717ce040a35d78d549dfb684edb106b77a01a6128a",
+      "stats": {
+        "satMean": 103.1,
+        "lumaMedian": 114.9,
+        "p5": 36.3,
+        "p95": 232.6,
+        "leftThirdMedian": 174.5,
+        "rightThirdMedian": 86.3
+      }
     }
   ],
   "old_stats": {

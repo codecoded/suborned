@@ -1,0 +1,23 @@
+[
+ {
+  "name": "x1",
+  "lens": "briefs/075/golden/glint/lens/x1.json",
+  "haze": "briefs/075/golden/glint/haze/h5.json",
+  "play": true
+ },
+ {
+  "name": "x2",
+  "lens": "briefs/075/golden/glint/lens/x2.json",
+  "haze": "briefs/075/golden/glint/haze/h5.json"
+ },
+ {
+  "name": "x3",
+  "lens": "briefs/075/golden/glint/lens/x1.json",
+  "haze": "briefs/075/golden/glint/haze/h6.json"
+ },
+ {
+  "name": "x4",
+  "lens": "briefs/075/golden/glint/lens/x4.json",
+  "haze": "briefs/075/golden/glint/haze/h5.json"
+ }
+]

@@ -222,6 +222,22 @@ namespace Suborned.World.Review
             return h;
         }
 
+        /// <summary>Golden variant `haze` (Glint 075 vista, 2026-10-28): swap the installed DistanceHaze's data for another haze.json (path; null = Resources'), in memory.</summary>
+        static void HazeVariant(string path)
+        {
+            var h = DistanceHaze.Instance; if (!h) return;
+            var text = path != null ? File.ReadAllText(Abs(path)) : Resources.Load<TextAsset>("Atmosphere/haze").text;
+            var d = JsonUtility.FromJson<DistanceHaze.Data>(text);
+            var args = new object[] { d, null };
+            var why = (string)typeof(DistanceHaze).GetMethod("Check", Any, null, new[] { typeof(DistanceHaze.Data), typeof(Color).MakeByRefType() }, null).Invoke(null, args);
+            if (why != null) throw new InvalidDataException($"glint075: haze {path} rejected: {why}");
+            void S(string n, object val) => typeof(DistanceHaze).GetField(n, Any).SetValue(h, val);
+            S("data", d); S("colour", (Color)args[1]);
+            Color lc = default; bool lcs = !string.IsNullOrEmpty(d.@long.colour) && ColorUtility.TryParseHtmlString(d.@long.colour, out lc);
+            S("longColourSet", lcs); if (lcs) S("longColour", lc);
+            S("followEnd", d.follow.mode == "linear" ? d.follow.end : d.follow.farClip);
+        }
+
         struct K { public float t; public Vector3 eye, look; }
 
         static void Flyby(RenderSession session, string outDir, string variant, StringBuilder report)
@@ -324,6 +340,7 @@ namespace Suborned.World.Review
                     }
                     if (lens) { typeof(AtmosphereLens).GetMethod("OnDisable", Any)?.Invoke(lens, null); UnityEngine.Object.DestroyImmediate(lens.gameObject); }
                     lens = InstallLens(J.S(v, "lens"));
+                    HazeVariant(J.S(v, "haze"));
                     var eye = Spline(keys, t, i => keys[i].eye); var dir = Spline(keys, t, i => (keys[i].look - keys[i].eye).normalized);
                     new Pose { Position = eye, Rotation = Quaternion.LookRotation(dir, Vector3.up), Fov = cam.fieldOfView, Near = 0.3f, Far = 12000f }.Apply(cam);
                     session.ShadowDistance = Mathf.Clamp(eye.y * 8f, 120f, 1200f);
