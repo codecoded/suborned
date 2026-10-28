@@ -76,6 +76,18 @@ namespace Suborned.World.Review
                 if (mode == "play")
                 {
                     var views = new List<(string id, Vector2 f, float yaw)> { ("office-front", Baseline072.OfficeFront, 30f), ("office-front", Baseline072.OfficeFront, 210f), ("cafe-square", cellOpen, 30f), ("cafe-square", cellOpen, 210f) };
+                    // brief 075-F1 (Latch): -spots "id:x,y,yaw;..." adds play-zoom views (plan x, y = world x, z); -posters off puts every board back on its
+                    // base material in memory (the canonical "mars" cell everywhere: the scene as it was before the per-instance swap), never saved
+                    if (Arg("-spots", null) is { } spots)
+                    {
+                        if (Array.IndexOf(Environment.GetCommandLineArgs(), "-spotsonly") >= 0) views.Clear();
+                        foreach (var sp in spots.Split(';', StringSplitOptions.RemoveEmptyEntries))
+                        {
+                            var kv = sp.Split(':'); var n = kv[1].Split(',').Select(x => float.Parse(x, CultureInfo.InvariantCulture)).ToArray();
+                            views.Add((kv[0], new Vector2(n[0], n[1]), n[2]));
+                        }
+                    }
+                    if (Arg("-posters", "on") == "off") report.Append($"posters off: {PostersOff()} slots back on their base\n");
                     foreach (var night in Array.IndexOf(Environment.GetCommandLineArgs(), "-nonight") >= 0 ? new[] { false } : new[] { false, true })
                     {
                         phase.Set(night);
@@ -104,6 +116,26 @@ namespace Suborned.World.Review
             }
             File.WriteAllText(Path.Combine(outDir, $"glint075-{variant}-{mode}.txt"), report.ToString());
             Debug.Log($"glint075: {variant} {mode} → {outDir}\n{report}");
+        }
+
+        /// <summary>Brief 075-F1: every DK_Billboard_Ads(_Lit)__key slot back on its base, in memory (the canonical cell on every board).</summary>
+        static int PostersOff()
+        {
+            var bases = new Dictionary<string, Material>(StringComparer.Ordinal); int n = 0;
+            foreach (var r in UnityEngine.Object.FindObjectsByType<MeshRenderer>(FindObjectsInactive.Include))
+            {
+                var mats = r.sharedMaterials; bool changed = false;
+                for (int i = 0; i < mats.Length; i++)
+                {
+                    if (!mats[i] || !mats[i].name.StartsWith("DK_Billboard_Ads", StringComparison.Ordinal)) continue;
+                    int cut = mats[i].name.IndexOf("__", StringComparison.Ordinal); if (cut < 0) continue;
+                    var bn = mats[i].name.Substring(0, cut);
+                    if (!bases.TryGetValue(bn, out var b)) bases[bn] = b = AssetDatabase.LoadAssetAtPath<Material>($"{Look.KitMaterials}/{bn}.mat");
+                    if (!b) continue; mats[i] = b; changed = true; n++;
+                }
+                if (changed) r.sharedMaterials = mats;
+            }
+            return n;
         }
 
         /// <summary>light.json's day keys onto the open scene, through the builder's code; the day State LightPhase restores is updated too.</summary>

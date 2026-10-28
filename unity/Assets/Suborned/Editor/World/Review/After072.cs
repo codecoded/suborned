@@ -71,10 +71,12 @@ namespace Suborned.World.Review
             // brief 074-C: `-tag 074before` / `-tag 074` (After072.C074.cs): shots and counts of the play views at yaw 30 / 210 plus the wide street view, and the colourway census
             // brief 075 (the A/B/C1-2 rebuild): `-tag 075` = the same views, counts and census → briefs/075/shots/after and briefs/075/latch
             // brief 075-E step 1 (the streamline rebuild): `-tag 075e` = the same views, counts and census → briefs/075/shots/stream/after072 and briefs/075/latch/stream
-            bool c074 = tag == "074before" || tag == "074" || tag == "075" || tag == "075e";
+            // brief 075-F1 (billboards and posters): `-tag 075f1` = the same views, counts and census → briefs/075/shots/billboards/after072 and briefs/075/latch/billboards
+            bool c074 = tag == "074before" || tag == "074" || tag == "075" || tag == "075e" || tag == "075f1";
             if (c074) { only = new HashSet<string> { "shots", "counts", "c074" }; shotsDir = Path.Combine(root, "briefs", "074", "shots", tag == "074" ? "after" : "before"); countsDir = Path.Combine(root, "briefs", "074", "latch", tag == "074" ? "after" : "before"); }
             if (tag == "075") { shotsDir = Path.Combine(root, "briefs", "075", "shots", "after"); countsDir = Path.Combine(root, "briefs", "075", "latch"); }
             if (tag == "075e") { shotsDir = Path.Combine(root, "briefs", "075", "shots", "stream", "after072"); countsDir = Path.Combine(root, "briefs", "075", "latch", "stream"); }
+            if (tag == "075f1") { shotsDir = Path.Combine(root, "briefs", "075", "shots", "billboards", "after072"); countsDir = Path.Combine(root, "briefs", "075", "latch", "billboards"); }
             if (tag == "a3") only = new HashSet<string> { "a3" }; // brief 064 A3 items 1, 5, 7: the no-look check (After072.A3.cs)
             EditorSceneManager.OpenScene(HarbourWorldBuilder.ScenePath, OpenSceneMode.Single);
             var c = new Ctx();

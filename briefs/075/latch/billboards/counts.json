@@ -1,0 +1,551 @@
+{
+ "schema": "suborned.075f1-counts/1",
+ "before": {
+  "export": "out/scratch/latch/075e/pin/075e.world.json sha256 a6c76f6a9f041e1b6f542631ad01f2797ddb85397e429e01eeba562f83e782f5",
+  "when": "2026-10-28 14:37"
+ },
+ "after": {
+  "export": "out/scratch/latch/075f1/pin/075f1.world.json sha256 2de0d88e618ccbe5ab34ad33a93ed37a10413901e359da30de0ff905de13f254",
+  "when": "2026-10-28 15:21"
+ },
+ "note": "No number here is UnityStats (that needs the visible Game view; queued for when the Studio is free). census* = Baseline072's census method (16:9 frustum + LOD pick; counts shadows-only renderers as visible, as the baseline did). main* = the same without shadows-only renderers. setPassEstimate = distinct shader variants: forward (every visible material, its keywords) + SSAO depth-normals prepass (opaque, _ALPHATEST_ON/_NORMALMAP) + shadow (per cascade, its casters, _ALPHATEST_ON); fullscreen passes (sky, SSAO, post, copies) not counted. shadow* = casters per cascade by URP's split for this camera reproduced (CullingResults culling planes and sphere, bounds test; LOD-picked meshes): an estimate. frameMs = batchmode offscreen Camera.Render, GPU waited on, indicative only.",
+ "views": [
+  {
+   "view": "office-front y030",
+   "materials": [
+    89,
+    89,
+    0
+   ],
+   "setPass": [
+    36,
+    36,
+    0
+   ],
+   "fwd": [
+    20,
+    20,
+    0
+   ],
+   "shadowVariants": [
+    11,
+    11,
+    0
+   ],
+   "mainRenderers": [
+    232,
+    232,
+    0
+   ],
+   "mainTris": [
+    639464,
+    639464,
+    0
+   ],
+   "shadowTris": [
+    353890,
+    353890,
+    0
+   ],
+   "casters": [
+    152,
+    152,
+    0
+   ],
+   "frameMsMedian": [
+    5.4,
+    2.43,
+    -2.97
+   ],
+   "modules": [
+    8,
+    8,
+    0
+   ]
+  },
+  {
+   "view": "office-front y210",
+   "materials": [
+    86,
+    86,
+    0
+   ],
+   "setPass": [
+    37,
+    37,
+    0
+   ],
+   "fwd": [
+    19,
+    19,
+    0
+   ],
+   "shadowVariants": [
+    12,
+    12,
+    0
+   ],
+   "mainRenderers": [
+    213,
+    213,
+    0
+   ],
+   "mainTris": [
+    635710,
+    635710,
+    0
+   ],
+   "shadowTris": [
+    353609,
+    353609,
+    0
+   ],
+   "casters": [
+    144,
+    144,
+    0
+   ],
+   "frameMsMedian": [
+    2.91,
+    2.41,
+    -0.5
+   ],
+   "modules": [
+    0,
+    0,
+    0
+   ]
+  },
+  {
+   "view": "cell-open y030",
+   "materials": [
+    142,
+    142,
+    0
+   ],
+   "setPass": [
+    43,
+    43,
+    0
+   ],
+   "fwd": [
+    23,
+    23,
+    0
+   ],
+   "shadowVariants": [
+    13,
+    13,
+    0
+   ],
+   "mainRenderers": [
+    293,
+    293,
+    0
+   ],
+   "mainTris": [
+    768971,
+    768971,
+    0
+   ],
+   "shadowTris": [
+    758691,
+    758691,
+    0
+   ],
+   "casters": [
+    333,
+    333,
+    0
+   ],
+   "frameMsMedian": [
+    6.4,
+    6.12,
+    -0.28000000000000025
+   ],
+   "modules": [
+    19,
+    19,
+    0
+   ]
+  },
+  {
+   "view": "cell-open y210",
+   "materials": [
+    142,
+    142,
+    0
+   ],
+   "setPass": [
+    43,
+    43,
+    0
+   ],
+   "fwd": [
+    23,
+    23,
+    0
+   ],
+   "shadowVariants": [
+    13,
+    13,
+    0
+   ],
+   "mainRenderers": [
+    273,
+    273,
+    0
+   ],
+   "mainTris": [
+    752718,
+    752718,
+    0
+   ],
+   "shadowTris": [
+    654201,
+    654201,
+    0
+   ],
+   "casters": [
+    315,
+    315,
+    0
+   ],
+   "frameMsMedian": [
+    6.17,
+    6.15,
+    -0.019999999999999574
+   ],
+   "modules": [
+    15,
+    15,
+    0
+   ]
+  },
+  {
+   "view": "wide-lamplight y030",
+   "materials": [
+    76,
+    76,
+    0
+   ],
+   "setPass": [
+    36,
+    36,
+    0
+   ],
+   "fwd": [
+    18,
+    18,
+    0
+   ],
+   "shadowVariants": [
+    12,
+    12,
+    0
+   ],
+   "mainRenderers": [
+    254,
+    254,
+    0
+   ],
+   "mainTris": [
+    460052,
+    460052,
+    0
+   ],
+   "shadowTris": [
+    434074,
+    434074,
+    0
+   ],
+   "casters": [
+    330,
+    330,
+    0
+   ],
+   "frameMsMedian": [
+    6.65,
+    3.97,
+    -2.68
+   ],
+   "modules": [
+    87,
+    87,
+    0
+   ]
+  }
+ ],
+ "census": {
+  "before": {
+   "columns": {
+    "placed": 1821,
+    "singleModules": 2467,
+    "layoutPrefabsPlaced": 151,
+    "layoutPrefabsInFolder": 151,
+    "meshAssetsInFolder": 453,
+    "distinctMeshesPlaced": 453,
+    "trianglesAllLodsOfPlacedMeshes": 429558
+   },
+   "materials": {
+    "scene": 330,
+    "modules": 48,
+    "shadowProxies": 33,
+    "sceneShaderVariants": 30,
+    "moduleShaderVariants": 8
+   }
+  },
+  "after": {
+   "columns": {
+    "placed": 1823,
+    "singleModules": 2467,
+    "layoutPrefabsPlaced": 151,
+    "layoutPrefabsInFolder": 151,
+    "meshAssetsInFolder": 453,
+    "distinctMeshesPlaced": 453,
+    "trianglesAllLodsOfPlacedMeshes": 429558
+   },
+   "materials": {
+    "scene": 358,
+    "modules": 48,
+    "shadowProxies": 33,
+    "sceneShaderVariants": 30,
+    "moduleShaderVariants": 8
+   }
+  },
+  "columnMeshesPlaced": {
+   "before": 453,
+   "after": 453
+  },
+  "proxyMaterialsAfter": [
+   "DK_Bark_Fibre",
+   "DK_Bark_Palm",
+   "DK_Beacon_Rose",
+   "DK_Bronze",
+   "DK_Chrome",
+   "DK_Coconut",
+   "DK_Crown_Gold",
+   "DK_Enamel_Charcoal",
+   "DK_Enamel_Coral",
+   "DK_Enamel_Ivory",
+   "DK_Enamel_Mustard",
+   "DK_Enamel_Seafoam",
+   "DK_Enamel_Teal",
+   "DK_Glass",
+   "DK_GlassDark",
+   "DK_Gold",
+   "DK_Hull_Ivory",
+   "DK_Iron",
+   "DK_Lamp",
+   "DK_Leaf_PalmFeather",
+   "DK_Leaf_Shrub",
+   "DK_Limestone_Tex",
+   "DK_Lobby",
+   "DK_Neon_Coral",
+   "DK_Render_White",
+   "DK_Signal_Amber",
+   "DK_Soil",
+   "DK_Steel",
+   "DK_Steel_Ivory",
+   "DK_Stone_Dark",
+   "DK_Terrazzo_Ivory",
+   "DK_Window_Film",
+   "DK_Window_Tower"
+  ],
+  "moduleRootsByWallMaterialAfter": {
+   "DK_Limestone_Tex__apricot": 225,
+   "DK_Limestone_Tex__blush": 339,
+   "DK_Limestone_Tex__butter": 560,
+   "DK_Limestone_Tex__cream": 478,
+   "DK_Limestone_Tex__ivory": 266,
+   "DK_Limestone_Tex__lilac": 347,
+   "DK_Limestone_Tex__mint": 500,
+   "DK_Limestone_Tex__peach": 323,
+   "DK_Limestone_Tex__powder": 362,
+   "DK_Limestone_Tex__sand": 229,
+   "DK_Limestone_Tex__seagreen": 395,
+   "DK_Limestone_Tex__sky": 240,
+   "DK_Render_White__butter": 6,
+   "DK_Render_White__cream": 4,
+   "DK_Render_White__powder": 13,
+   "DK_Render_White__sand": 3
+  },
+  "moduleShaderVariants": {
+   "before": [
+    "DecoKit/Complex Lit Cutaway|_CLEARCOAT",
+    "DecoKit/Complex Lit Cutaway|_CLEARCOAT,_DETAIL_MULX2",
+    "DecoKit/Lit Cutaway|_DETAIL_MULX2",
+    "DecoKit/Lit Cutaway|_EMISSION",
+    "DecoKit/Lit Cutaway|_METALLICSPECGLOSSMAP,_NORMALMAP,_OCCLUSIONMAP",
+    "DecoKit/Lit Cutaway|_NORMALMAP",
+    "Suborned/DecoKit/GlassSky|",
+    "Universal Render Pipeline/Lit|"
+   ],
+   "after": [
+    "DecoKit/Complex Lit Cutaway|_CLEARCOAT",
+    "DecoKit/Complex Lit Cutaway|_CLEARCOAT,_DETAIL_MULX2",
+    "DecoKit/Lit Cutaway|_DETAIL_MULX2",
+    "DecoKit/Lit Cutaway|_EMISSION",
+    "DecoKit/Lit Cutaway|_METALLICSPECGLOSSMAP,_NORMALMAP,_OCCLUSIONMAP",
+    "DecoKit/Lit Cutaway|_NORMALMAP",
+    "Suborned/DecoKit/GlassSky|",
+    "Universal Render Pipeline/Lit|"
+   ]
+  }
+ },
+ "posterPieces": {
+  "perPiece": {
+   "DK_AdColumn": {
+    "instances": 19,
+    "renderers": 19,
+    "lod0Renderers": 19,
+    "lod0Tris": 91010,
+    "allLodTris": 91010
+   },
+   "DK_Billboard_Pylon_A": {
+    "instances": 2,
+    "renderers": 4,
+    "lod0Renderers": 2,
+    "lod0Tris": 15672,
+    "allLodTris": 19560
+   },
+   "DK_Billboard_Pylon_B": {
+    "instances": 7,
+    "renderers": 14,
+    "lod0Renderers": 7,
+    "lod0Tris": 53508,
+    "allLodTris": 66794
+   },
+   "DK_Billboard_Rooftop_A": {
+    "instances": 6,
+    "renderers": 12,
+    "lod0Renderers": 6,
+    "lod0Tris": 34848,
+    "allLodTris": 43404
+   },
+   "DK_Billboard_Rooftop_B": {
+    "instances": 7,
+    "renderers": 14,
+    "lod0Renderers": 7,
+    "lod0Tris": 40656,
+    "allLodTris": 50638
+   },
+   "DK_Billboard_Rooftop_C": {
+    "instances": 6,
+    "renderers": 12,
+    "lod0Renderers": 6,
+    "lod0Tris": 34848,
+    "allLodTris": 43404
+   },
+   "DK_Billboard_Wall_A": {
+    "instances": 5,
+    "renderers": 5,
+    "lod0Renderers": 5,
+    "lod0Tris": 13470,
+    "allLodTris": 13470
+   },
+   "DK_Billboard_Wall_B": {
+    "instances": 3,
+    "renderers": 3,
+    "lod0Renderers": 3,
+    "lod0Tris": 8082,
+    "allLodTris": 8082
+   },
+   "DK_Billboard_Wall_C": {
+    "instances": 1,
+    "renderers": 1,
+    "lod0Renderers": 1,
+    "lod0Tris": 2694,
+    "allLodTris": 2694
+   },
+   "DK_SandwichBoard": {
+    "instances": 11,
+    "renderers": 11,
+    "lod0Renderers": 11,
+    "lod0Tris": 23276,
+    "allLodTris": 23276
+   }
+  },
+  "totals": {
+   "instances": 67,
+   "renderers": 95,
+   "lod0Renderers": 67,
+   "lod0Tris": 318064,
+   "allLodTris": 362332,
+   "shadowCastingRenderers": 95
+  },
+  "materials": 46,
+  "posterMaterials": [
+   "DK_Billboard_Ads",
+   "DK_Billboard_Ads_Lit__aircar",
+   "DK_Billboard_Ads_Lit__cinema",
+   "DK_Billboard_Ads_Lit__luna",
+   "DK_Billboard_Ads_Lit__robot",
+   "DK_Billboard_Ads_Lit__skyrail",
+   "DK_Billboard_Ads_Lit__suds",
+   "DK_Billboard_Ads_Lit__venus",
+   "DK_Billboard_Ads__cinema",
+   "DK_Billboard_Ads__coral",
+   "DK_Billboard_Ads__cruise",
+   "DK_Billboard_Ads__fizz",
+   "DK_Billboard_Ads__luna",
+   "DK_Billboard_Ads__mints",
+   "DK_Billboard_Ads__pearls",
+   "DK_Billboard_Ads__planetarium",
+   "DK_Billboard_Ads__range",
+   "DK_Billboard_Ads__robot",
+   "DK_Billboard_Ads__sheetB",
+   "DK_Billboard_Ads__skyrail",
+   "DK_Billboard_Ads__suds",
+   "DK_Billboard_Ads__tidy",
+   "DK_Billboard_Ads__venus"
+  ],
+  "shaderVariants": [
+   "DecoKit/Complex Lit Cutaway|_CLEARCOAT",
+   "DecoKit/Complex Lit Cutaway|_CLEARCOAT,_DETAIL_MULX2",
+   "DecoKit/Lit Cutaway|_DETAIL_MULX2",
+   "DecoKit/Lit Cutaway|_EMISSION",
+   "DecoKit/Lit Cutaway|_METALLICSPECGLOSSMAP,_NORMALMAP,_OCCLUSIONMAP",
+   "Universal Render Pipeline/Lit|_EMISSION"
+  ],
+  "shaderVariantsOnlyOnPosterPieces": []
+ },
+ "urpLitInModules": [
+  {
+   "material": "DK_Crown_Gold @ Assets/Suborned/Kit/Models/Skyline/DK_StreamBay_6.fbx",
+   "embedded": true,
+   "renderers": 174,
+   "moduleRenderers": 49,
+   "pieces": [
+    "DK_StreamBay_6"
+   ]
+  },
+  {
+   "material": "DK_Crown_Gold @ Assets/Suborned/Kit/Models/Skyline/DK_StreamBay_9.fbx",
+   "embedded": true,
+   "renderers": 104,
+   "moduleRenderers": 16,
+   "pieces": [
+    "DK_StreamBay_9"
+   ]
+  },
+  {
+   "material": "DK_Crown_Gold @ Assets/Suborned/Kit/Models/Skyline/DK_StreamBay_9W.fbx",
+   "embedded": true,
+   "renderers": 135,
+   "moduleRenderers": 10,
+   "pieces": [
+    "DK_StreamBay_9W"
+   ]
+  },
+  {
+   "material": "DK_Crown_Gold @ Assets/Suborned/Kit/Models/Skyline/DK_StreamCorner_9.fbx",
+   "embedded": true,
+   "renderers": 13,
+   "moduleRenderers": 1,
+   "pieces": [
+    "DK_StreamCorner_9"
+   ]
+  }
+ ]
+}

@@ -26,6 +26,7 @@ namespace Suborned.World
         public List<FacadeDto> Facades = new();
         public List<SignatureDto> Signatures = new();
         public object Liveries; // brief 075-C: the export's `liveries` (raw; KitLiveries reads it), null when absent
+        public object Posters; // brief 075-F1: the export's `posters` (raw; KitPosters reads it), null when absent
         public List<SkinDto> Skins = new(); // the procedural facade of every plot building (window family, accent, per-face bays)
         public FabricDto Fabric = new(); // grammar §2a colour life: balcony awnings, banners, flag masts
         public HorizonDto Horizon; // null when the export has none (the sample)

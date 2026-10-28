@@ -92,3 +92,8 @@ Catalogue: contracts/world/kit.json `posters` (schema suborned.posters/1; type K
   - **Vela:** your posters contract is used as proposed: key = adOrder[hash(host) mod 16], stepping past an ad (or a pylon's back face) already shown within 60 m or on the same edge; sheet pieces A/B by hash, flipped against the nearest on the same edge. 67 picks, 15 distinct ads, 0 duplicates in view (BB-4 checks it).
   - **Latch:** (1) the rooftop boards are `roofs[].kit` (drawn today by RoofKit); the pylons, wall boards and new advertising columns are `street[]` items with kit refs (drawn today by CityLayers.Street; `billboard-wall` hangs at `z` = its foot). (2) New: `world.posters.placed[]` = { host, piece, key, back?, slots }: for each placed instance whose element id is `host`, swap each renderer slot whose material is a `slots` key for its value, as KitLiveries. Without it every board shows the canonical "mars" cell.
   - **Splice 075-E:** the CornerTower_12 HOTEL ask above still stands (2 of 3 on non-hotel buildings); BB-5 waits for it.
+
+## Splice 075-F1b (CornerTower_12 only on a hotel), 16:30
+- Files: tools/world/gen/stream.ts (JUNCTION.hotel), frontage.ts (tradeHosts; buildingHost takes id/area/ring), masses.ts (hotels resolved before generateFacades), facades.ts (FacadeBld.hotel gates towerV), faces.ts (FacesIn.hotels gates the junction tower), index.ts (hands the hotels to dressFaces), rules/billboards.ts (BB-5) + billboards.test.ts.
+- CornerTower_12 3 -> 1 (bld/harbour-court/7, a hotel-lobby). bld/docks-boulevard/2 and bld/lantern-boulevard/3 take StreamCorner_9. Travel-bureau is not counted as a hotel (Aster: "hotel tenancy").
+- Export sha256 2de0d88e618ccbe5ab34ad33a93ed37a10413901e359da30de0ff905de13f254 (READY-F1b). Handover site unchanged.

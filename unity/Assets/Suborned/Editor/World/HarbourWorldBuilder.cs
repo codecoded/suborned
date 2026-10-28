@@ -83,6 +83,7 @@ namespace Suborned.World
             var nodes = new Nodes(look);
             var layers = new Layers(nodes);
             var placer = new KitPlacer(KitCataloguePath);
+            KitPosters.Load(KitCataloguePath, world.Posters); // brief 075-F1: each board's ad, swapped as KitPlacer places it (before any piece is placed)
             KitImport.Generated(placer);
             KitImport.Check(placer);
             KitLods.Build(placer);
@@ -141,6 +142,7 @@ namespace Suborned.World
             layers.Landmarks(Nodes.Group(root, "landmarks"), world.Landmarks, placer);
             skyline.Signatures(Nodes.Group(root, "signatures"), world.Signatures, nodes);
             Debug.Log(KitLiveries.Finish()); // every listed livery placed exactly once
+            Debug.Log(KitPosters.Finish()); // every pick taken by a placed board exactly once; variants mapped to their base for the shadow proxies
             var batches = Nodes.Group(null, "batches");
             long verts = Combine.Flush(batches);
             // brief 072-E: the every-face A/B switch (EveryFace, Redline's plan 5): `today` built off, the rest as built

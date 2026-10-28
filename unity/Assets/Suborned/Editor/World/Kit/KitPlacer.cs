@@ -175,6 +175,7 @@ namespace Suborned.World
             Combine.Kit(el, b.Value, n);
             placed[layer] = Placed(layer) + 1;
             tris[layer] = (tris.TryGetValue(layer, out var k) ? k : 0) + n;
+            KitPosters.Placed(t, el ? el.name : "", r.Id); // brief 075-F1: a board takes its ad (the export's pick or its default) on every instance
             return t;
         }
 
@@ -190,6 +191,7 @@ namespace Suborned.World
         /// slots: this piece's material slots drawn in another kit material (KitSlots).</summary>
         public void Bake(Transform el, string layer, string id, KitRefDto r, Vector2 at, float z, IReadOnlyDictionary<string, string> slots, float elementYaw = 0f, System.Func<Material, Material> remap = null)
         {
+            KitPosters.Baked(id, r.Id); // brief 075-F1: a board baked into batches could not take its ad
             var root = Prefab(r.Id).transform; var used = new HashSet<string>(); int n = 0;
             var trs = Matrix4x4.TRS(new Vector3(at.x, z, at.y), Quaternion.Euler(0f, -(float.IsNaN(r.Yaw) ? elementYaw : r.Yaw) * Mathf.Rad2Deg, 0f), r.Scale) * root.worldToLocalMatrix;
             int orbit = 0;

@@ -17,7 +17,7 @@ const clone = (w: World): World => structuredClone(w);
 
 test('the live export: BB-1..BB-4 pass; every sign-frame roof outside the play streets has its board, the one in the Records Precinct is left out for the cap', () => {
   const r = run(base.w);
-  for (const id of ['BB-1', 'BB-2', 'BB-3', 'BB-4']) expect(r[id]!.ok, `${id}: ${r[id]!.detail}`).toBe(true);
+  for (const id of ['BB-1', 'BB-2', 'BB-3', 'BB-4', 'BB-5']) expect(r[id]!.ok, `${id}: ${r[id]!.detail}`).toBe(true);
   const log = base.gen.billboards!;
   expect(log.rooftop.roofs).toBe(20);
   expect(log.rooftop.placed + log.rooftop.left.length + log.rooftop.cap.length).toBe(20);
@@ -88,4 +88,15 @@ test('failing example (BB-4, posters): two boards in one view showing the same a
   expect(run(w)['BB-4']!.detail).toContain('show the same ad in one view');
   const w2 = clone(base.w); w2.posters!.placed = w2.posters!.placed.filter(p => !p.host.startsWith('bld/'));
   expect(run(w2)['BB-4']!.detail).toContain('has no poster pick');
+});
+
+test('BB-5: every CornerTower_12 stands on a building with a hotel tenancy; failing example: one moved onto a building without', () => {
+  const w = clone(base.w), hotels = new Set(w.frontages.filter(f => f.level === 'street' && f.trade === 'hotel-lobby').map(f => f.host)), towers = w.facades.filter(f => f.kit.id === 'CornerTower_12');
+  expect(towers.length).toBeGreaterThan(0);
+  expect(towers.every(f => hotels.has(f.building))).toBe(true);
+  const other = w.buildings.map(m => m.id.split('/').slice(0, 3).join('/')).find(id => id.startsWith('bld/') && !hotels.has(id))!;
+  towers[0]!.building = other;
+  const r = run(w)['BB-5']!;
+  expect(r.ok).toBe(false);
+  expect(r.detail).toContain(other);
 });

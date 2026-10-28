@@ -9,6 +9,8 @@ import { signatureGrounds, towerKit } from './signatures';
 import { GRAMMAR, isStreetClass, roundRing } from './grammar';
 import { type FacadeOut, adjacent, generateFacades } from './facades';
 import { faceKitReady } from './faces';
+import { tradeHosts } from './frontage';
+import { JUNCTION } from './stream';
 
 /** A generated building, kept for roofs and frontages. `ring` = ground footprint with edge classes; `top` = highest roof polygon at z. */
 export type Bld = { id: string; plot: string; area: string; use: string; kind: string; n: number; ring: Ring; top: V[]; z: number; tower: boolean; open: boolean };
@@ -252,7 +254,8 @@ export function generateMasses(ctx: Ctx, sites: Site[]): MassOut {
   }
   // wave 2: kit facades on the street faces, then each building's tiers (plain behind a kit facade, the space-age grammar otherwise)
   const solid = pend.filter(p => !p.shed), nearOf = (id: string) => { const me = solid.find(p => p.id === id)!; return solid.filter(p => p.id !== id && p.plot === me.plot && adjacent(me.ring, p.ring)).map(p => p.id); };
-  const fac = generateFacades(ctx, solid.map(p => ({ id: p.id, use: p.use, n: p.n, ring: p.ring, play: !!ctx.B.caps?.[p.area]?.play })), ctx.pav, nearOf);
+  const hotels = tradeHosts(ctx, solid, JUNCTION.hotel); // brief 075-F1b: the trades come before the corner pick (CornerTower_12 reads HOTEL)
+  const fac = generateFacades(ctx, solid.map(p => ({ id: p.id, use: p.use, n: p.n, ring: p.ring, play: !!ctx.B.caps?.[p.area]?.play, hotel: hotels.has(p.id) })), ctx.pav, nearOf);
   const whole = faceKitReady(); // brief 072-C: every face is kit, so every building takes plain tiers (the kit is the wall; no grammar)
   for (const p of pend) {
     const kit = whole || fac.kitFaced.has(p.id), t = !kit && !p.shed && p.n >= GRAMMAR.roundFrom ? grammarTiers(ctx, p) : tiers(ctx, { use: p.use, ring: p.ring, n: p.n, shed: p.shed, whole });

@@ -265,7 +265,7 @@ export const cotAcute = (t0: V, t1: V): number => { const tn = turnDeg(t0, t1); 
 
 /** An own-shopfront street tenancy (a street-level frontage of a plot building not linked to a street piece): host = its building id, a→b its shopfront line. */
 export type Tenancy = { host: string; a: V; b: V };
-export type FacesIn = { blds: FaceBld[]; masses: Mass[]; occ: Occ[]; facades: Facade[]; catalogue: (id: string) => KitAsset | undefined; tenancies?: Tenancy[] };
+export type FacesIn = { blds: FaceBld[]; masses: Mass[]; occ: Occ[]; facades: Facade[]; catalogue: (id: string) => KitAsset | undefined; tenancies?: Tenancy[]; hotels?: Set<string> }; // hotels: the buildings with a street-level hotel tenancy (brief 075-F1b: only they take CornerTower_12)
 
 /** The shop rule's widths: k fillers of the piece's own 3 m nearest R / 3, at sx = R / (3k) (always within 0.5-1.7 for R ≥ 1.5). */
 export const shopTile = (R: number): { k: number; sx: number } => { const k = Math.max(1, Math.round(R / FACES.shopModule)); return { k, sx: R / (k * FACES.shopModule) }; };
@@ -434,7 +434,7 @@ export function dressFaces(ctx: Ctx, inp: FacesIn): FacesOut {
           let capped = false;
           if (streamy(r) && streamy(nx)) { // the rounded corner: the junction pieces, the classes' whole-wall corners, else the corner stack
             const junction = isStreetClass(clsOf(b, ring[e0]!, vtx)) && isStreetClass(clsOf(b, vtx, ring[(v + 1) % N]!)), street0 = z0 <= pav + FACES.topTol;
-            const tries: (Cap | null)[] = [...(junction && street0 && wholeFoot(r) && wholeFoot(nx) && !b.play && b.n >= JUNCTION.towerMin ? [fitCap(JUNCTION.tower, 1)] : []), ...(junction && wholeFoot(r) && wholeFoot(nx) && (!b.play || b.n === 10) ? [fitCap(JUNCTION.deco)] : []),
+            const tries: (Cap | null)[] = [...(junction && street0 && wholeFoot(r) && wholeFoot(nx) && !b.play && b.n >= JUNCTION.towerMin && !!inp.hotels?.has(b.id) ? [fitCap(JUNCTION.tower, 1)] : []), ...(junction && wholeFoot(r) && wholeFoot(nx) && (!b.play || b.n === 10) ? [fitCap(JUNCTION.deco)] : []),
               ...(r.st && nx.st ? [r.st.row, nx.st.row].filter(row => !b.play || row.code === b.n).map(row => fitCap(row.corner)) : []), stackCap(STREAM_STACK.corner)];
             for (const cap of tries) {
               if (!cap?.length) continue;

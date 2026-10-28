@@ -23,7 +23,7 @@ function spillZone(ctx: Ctx, kind: string, area = ''): number {
 }
 
 /** Facade runs of a building that tenancies may use: street kinds only, never a primary road; short arc edges are merged into chords. */
-export function buildingHost(ctx: Ctx, b: Bld): Host | null {
+export function buildingHost(ctx: Ctx, b: Pick<Bld, 'id' | 'area' | 'ring'>): Host | null {
   const { p, c } = b.ring, n = p.length, edges: HostEdge[] = [];
   const street = (i: number) => !OPEN.has(kindOf(c[i]!));
   for (let i = 0; i < n;) {
@@ -70,6 +70,13 @@ function prims(ctx: Ctx, h: Host, id: string, t: string, T: Trade, a: V, u: V, n
   if (bays && w >= 4.5 + 3) service = mk('bay', 'box', 'trim', at(depth + 0.1, -(w / 2 - 2.8)), [4.5, 0.2, 4.6], z);
   void r;
   return { front, entrance, canopy, sign, service };
+}
+
+/** The buildings with a street-level tenancy of `trade` (brief 075-F1b: the HOTEL corner tower). Each host's tenancies are drawn from its own seed
+ *  (rng frontage/<id>) and nothing else, so this is the trade the frontage pass gives the same building later. */
+export function tradeHosts(ctx: Ctx, blds: Pick<Bld, 'id' | 'area' | 'ring'>[], trade: string): Set<string> {
+  const hosts = blds.flatMap(b => buildingHost(ctx, b) ?? []);
+  return new Set(generateFrontages(ctx, hosts).filter(f => f.level === 'street' && f.trade === trade).map(f => f.host));
 }
 
 export function generateFrontages(ctx: Ctx, hosts: Host[]): Frontage[] {

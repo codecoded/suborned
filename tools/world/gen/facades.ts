@@ -17,7 +17,7 @@ import { isStreetClass } from './grammar';
 import { END_SIDE, JUNCTION, classOf, cornerPlace, endPlace, recipePick } from './stream';
 
 /** What the generator knows of a building before its masses are built. */
-export type FacadeBld = { id: string; use: string; n: number; ring: Ring; /** in a play-street area (standards.buildings.playStreets): storey-true pieces only */ play?: boolean };
+export type FacadeBld = { id: string; use: string; n: number; ring: Ring; /** in a play-street area (standards.buildings.playStreets): storey-true pieces only */ play?: boolean; /** a street-level hotel tenancy (brief 075-F1b): only then CornerTower_12, whose blade sign reads HOTEL */ hotel?: boolean };
 export type FacadeOut = { facades: Facade[]; kitFaced: Set<string>; metres: Map<string, { street: number; kit: number }>; why: Map<string, string> };
 
 const BODY = 14, BAY = 6, CELL = 8; // m: body depth, bay width, corner cell (kit frame)
@@ -111,7 +111,7 @@ export function generateFacades(ctx: Ctx, blds: FacadeBld[], pav: number, near: 
     });
     // two corners on one face need room for both cells; else the face's head keeps its corner only if the tail has none
     for (let e = 0; e < N; e++) if (cornerAt[e] && cornerAt[(e + 1) % N] && edgeLen(e) < 2 * CELL * kc![1] + CORNER_SPARE) cornerAt[(e + 1) % N] = false;
-    const plotId = b.id.split('/')[1] ?? b.id, towerV = tower && kc && !b.play && b.n >= JUNCTION.towerMin && !towered.has(plotId) && tower.tags.scale[0] <= kc[1] + 1e-6 && kc[1] <= tower.tags.scale[1] + 1e-6 ? cornerAt.indexOf(true) : -1;
+    const plotId = b.id.split('/')[1] ?? b.id, towerV = tower && kc && !b.play && b.hotel && b.n >= JUNCTION.towerMin && !towered.has(plotId) && tower.tags.scale[0] <= kc[1] + 1e-6 && kc[1] <= tower.tags.scale[1] + 1e-6 ? cornerAt.indexOf(true) : -1;
     const endAt = (i: number): boolean => { // head of edge e: next face is a party wall or court, square, convex
       if (!ke) return false;
       const e = (i + N - 1) % N, v = p[i]!, t0 = norm(sub(v, p[e]!)), t1 = norm(sub(p[(i + 1) % N]!, v)), tn = turn(t0, t1);

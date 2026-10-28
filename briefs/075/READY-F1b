@@ -1,0 +1,6 @@
+075-F1b (CornerTower_12 only on a hotel), Splice, 2026-10-28
+export out/world/harbour-district.world.json sha256 2de0d88e618ccbe5ab34ad33a93ed37a10413901e359da30de0ff905de13f254 (was 9adb1389...b126a)
+rule: CornerTower_12 (neon HOTEL blade sign) only on a building with a street-level hotel-lobby tenancy; trades resolved before the corner pick (frontage.ts tradeHosts, seeded per host, so the same trades the frontage pass gives later)
+CornerTower_12 3 -> 1: bld/harbour-court/7 keeps it (hotel-lobby); bld/docks-boulevard/2 and bld/lantern-boulevard/3 now StreamCorner_9
+check: BB-5 (tools/world/rules/billboards.ts), 1/1 pass; failing example in billboards.test.ts
+checks: world x2 same hash, world:faces (every wall face is kit, 0 gaps), plan 145 pass 0 fail, plan + handover overlay 150 pass 0 fail, cover + cover --check (cover file unchanged), sim:site (sim/data byte-identical to HEAD, so missions:check not needed), typecheck, tools/world tests 323 pass 0 fail, tools/plan tests 227 pass 0 fail

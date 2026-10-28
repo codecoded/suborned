@@ -7,6 +7,7 @@
 //        every crossing landing and doorway, 6 m off every junction corner (it blocks sight), and nothing is over it below its top + 1.5 m.
 //   BB-4 spacing and trade: advertising columns 60 m apart, pylons 60 m apart but for a vista pair, wall boards BB.wallGap apart and one per building, no BB piece
 //        in the Handover window, and a blade or wall sign only on a trade its piece names.
+//   BB-5 (brief 075-F1b) CornerTower_12 carries a neon HOTEL blade sign: it stands only on a building with a street-level hotel tenancy (stream.ts JUNCTION.hotel).
 import type { KitAsset } from '../../../contracts/world/kit.schema';
 import type { StreetItem, World } from '../../../contracts/world/world.schema';
 import type { Check } from '../../plan/checks';
@@ -15,6 +16,7 @@ import { quayBlock, roadAt, samples9, tramBlock, walkBlock } from '../../plan/st
 import { type WCtx, boxRing, ringGap, rule, f1 } from '../../plan/world-ctx';
 import { footOf } from '../civic/foot';
 import { BB, BOARD_KINDS, POSTER_VIEW, streetEdgesOf } from '../gen/billboards';
+import { JUNCTION } from '../gen/stream';
 import { ctxOf as genCtx } from '../gen/common';
 import { SIGHT_CLEAR, junctionCorners, plotRing } from '../gen/edges';
 import { areaOf, edgeN, pointInRing } from '../gen/geo';
@@ -140,13 +142,20 @@ export function spacingFaults(c: WCtx): { n: number; bad: string[] } {
   return { n: cols.length + pyl.length + wal.length + signs + posters, bad };
 }
 
+/** BB-5 faults: every CornerTower_12 (its blade sign reads HOTEL) on a building with a street-level hotel tenancy. */
+export function hotelTowerFaults(w: World): { n: number; bad: string[] } {
+  const hotels = new Set(w.frontages.filter(f => f.level === 'street' && f.trade === JUNCTION.hotel).map(f => f.host)), towers = w.facades.filter(f => f.kit.id === JUNCTION.tower);
+  return { n: towers.length, bad: towers.filter(f => !hotels.has(f.building)).map(f => `${f.id}: ${JUNCTION.tower} (neon HOTEL blade sign) on ${f.building}, which has no street-level ${JUNCTION.hotel} tenancy`) };
+}
+
 export function billboardRules(c: WCtx): Check[] {
-  const r1 = rooftopFaults(c), r2 = wallFaults(c.w), r3 = groundFaults(c), r4 = spacingFaults(c);
+  const r1 = rooftopFaults(c), r2 = wallFaults(c.w), r3 = groundFaults(c), r4 = spacingFaults(c), r5 = hotelTowerFaults(c.w);
   void BOARD_KINDS;
   return [
     rule('BB-1', G, 'A rooftop board stands on a sign-frame roof in place of its frame, faces a street its building fronts, keeps clear of the plant, and never lifts a play-street roof past its cap or any roof past the crown tip; a sign-frame roof without one is logged with why', r1.n, r1.bad, 'none', `${SOURCE} · standards.buildings.roofs.kit.programmes.sign-frame · standards.buildings.caps (brief 066) · failing example: the board on bld/boulevard-west/3 (records, roof 20.58 m) tops out at 29.75 m over the 20.4 m cap`),
     rule('BB-2', G, 'A wall board hangs in front of a wall of a building taller than its top, facing out, its foot clear of the lower neighbour\'s roof, parapet and everything on that roof', r2.n, r2.bad, 'none', `${SOURCE} · failing example: a wall board lifted past the top of its wall`),
     rule('BB-3', G, `A pylon or advertising column, on its kit piece's own footprint, stands out of the clear walking zone, the tram's space and 1.5 m of the quay edge, in the kerb zone 0.45 m off the kerb face (a kerb-zone item), 2 m off every crossing landing and doorway, ${SIGHT_CLEAR} m off every junction corner, and under nothing lower than its top + 1.5 m`, r3.n, r3.bad, 'none', `${SOURCE} · streetscape SF-1, SF-2, SF-3, SF-8, SF-14 and keepClear.underDeckOrBridge, on the piece rather than the plan's catalogue box · failing example: the Parade's vista pylon moved into the mall's walk band`),
     rule('BB-4', G, `Advertising columns ${BB.columnGap} m apart, pylons 60 m apart but for a vista pair (quay pylons ${BB.quayGap}), wall boards ${BB.wallGap} m apart and one per building; no board in the Handover window; a blade or wall sign only on a trade its piece names; every board and poster piece has its poster pick (kit.json posters) and no two boards in one view show the same ad`, r4.n, r4.bad, 'none', `${SOURCE} · streetscape.catalogue.advertising-column.count · kit.json tags.trade · failing example: a BladeSign_Hotel on a diner`),
+    rule('BB-5', G, `${JUNCTION.tower} (its blade sign reads HOTEL in neon) stands only on a building with a street-level ${JUNCTION.hotel} tenancy; elsewhere the junction takes ${JUNCTION.deco} or the class's StreamCorner`, r5.n, r5.bad, 'none', `brief 075-F1b (Aster); briefs/072/pieces/pieces.md 075-E (Vela: the tower's sign reads HOTEL); tools/decokit/facades_tower.py · failing example: ${JUNCTION.tower} on bld/docks-boulevard/2 (no hotel), as 075-E placed it`),
   ];
 }

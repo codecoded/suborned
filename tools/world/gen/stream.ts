@@ -101,4 +101,6 @@ export const STREAM_STACK = {
 };
 /** The street-junction pieces (brief 075-E): CornerTower_12 where it is adopted and the building stands at least `towerMin` storeys outside the play streets,
  *  DecoCorner_10 where the wall's height fits code 10. */
-export const JUNCTION = { tower: 'CornerTower_12', deco: 'DecoCorner_10', decoEnd: 'DecoEnd_10', towerMin: 9 };
+// brief 075-F1b: CornerTower_12's blade sign reads HOTEL in neon (facades_tower.py), so it stands only on a building with a street-level hotel tenancy (trade `hotel`);
+// elsewhere the junction takes DecoCorner_10 or the class's StreamCorner. BB-5 checks it on the export.
+export const JUNCTION = { tower: 'CornerTower_12', deco: 'DecoCorner_10', decoEnd: 'DecoEnd_10', towerMin: 9, hotel: 'hotel-lobby' };

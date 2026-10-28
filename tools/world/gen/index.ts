@@ -18,6 +18,7 @@ import { type KerbArcLog, dressKerbArcs } from './street/kerbarcs';
 import { activeMouths } from './street/footway';
 import { dressConnectors } from './dress';
 import { generateSkins } from './skins';
+import { JUNCTION } from './stream';
 import { adjacent } from './facades';
 import { type FacesOut, SHOP_PIECE, clip, dressFaces, occOf, quadOf } from './faces';
 import { catalogued } from './kitrefs';
@@ -54,7 +55,7 @@ export function generate(ctx: Ctx, stops: Mass[], stations: Mass[]): Generated {
   const hosts: Host[] = [...blds.filter(b => !b.tower).flatMap(b => buildingHost(ctx, b) ?? []), ...megaOut.flatMap(m => m.hosts)];
   const fronts = generateFrontages(ctx, hosts);
   const tenancies = linkFacades(fronts, fac.facades).filter(t => !t.facade && t.level === 'street').map(t => ({ host: t.host, a: t.a, b: t.b }));
-  const faces = dressFaces(ctx, { blds: blds.map(b => ({ id: b.id, plot: b.plot, area: b.area, use: b.use, kind: b.kind, n: b.n, ring: b.ring, tower: b.tower, play: !!ctx.B.caps?.[b.area]?.play, top: b.z })), masses: masses.filter(m => !m.hidden), occ, facades: fac.facades, catalogue: catalogued, tenancies });
+  const faces = dressFaces(ctx, { blds: blds.map(b => ({ id: b.id, plot: b.plot, area: b.area, use: b.use, kind: b.kind, n: b.n, ring: b.ring, tower: b.tower, play: !!ctx.B.caps?.[b.area]?.play, top: b.z })), masses: masses.filter(m => !m.hidden), occ, facades: fac.facades, catalogue: catalogued, tenancies, hotels: new Set(fronts.filter(f => f.level === 'street' && f.trade === JUNCTION.hotel).map(f => f.host)) });
   fac.facades.push(...faces.facades);
   const solids: V[][] = [...masses.filter(m => m.base < 1).map(m => m.ring), ...megaOut.flatMap(m => m.parts.filter(p => p.base < 1).map(p => p.ring))];
   const conn0 = generateConnectors(ctx, megaOut, stations, solids);

@@ -128,6 +128,7 @@ namespace Suborned.World
             });
             w.Gates = Each(o, "gates", Mass);
             w.Liveries = J.Get(o, "liveries"); // brief 075-C
+            w.Posters = J.Get(o, "posters"); // brief 075-F1
             w.Facades = Each(o, "facades", f => new FacadeDto
             {
                 Id = Id(f), Building = J.S(f, "building"), Form = J.S(f, "form"), Storeys = (int)J.F(f, "storeys"), Edge = (int)J.F(f, "edge"),
