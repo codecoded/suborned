@@ -17,6 +17,7 @@ export function copyAdopted(kit: Kit, root: string, dest: string, gen?: string):
   for (const f of kit.colourways?.files ?? []) { const o = want.get(f.path); if (o && o.sha256 !== f.sha256) errors.push(`${f.path}: two hashes in the catalogue`); want.set(f.path, f); } // brief 074-B: the colourway material sets
   for (const f of kit.landmarks?.files ?? []) { const o = want.get(f.path); if (o && o.sha256 !== f.sha256) errors.push(`${f.path}: two hashes in the catalogue`); want.set(f.path, f); } // brief 075-C: the landmark livery variants
   for (const f of kit.posters?.files ?? []) { const o = want.get(f.path); if (o && o.sha256 !== f.sha256) errors.push(`${f.path}: two hashes in the catalogue`); want.set(f.path, f); } // brief 075-F1: the billboard and poster variants + sheet B
+  for (const f of kit.carPaints?.files ?? []) { const o = want.get(f.path); if (o && o.sha256 !== f.sha256) errors.push(`${f.path}: two hashes in the catalogue`); want.set(f.path, f); } // brief 075 roll-out: the 1950s car paints
   const staged: [string, string][] = [], r: CopyResult = { copied: [], skipped: [], bytes: 0, errors, assets, pruned: [] };
   for (const [path, f] of [...want].sort(([a], [b]) => a.localeCompare(b))) { // f.root = 'generated': from the generator's output
     const src = join(f.root === 'generated' ? (gen ?? root) : root, path), out = join(dest, path);

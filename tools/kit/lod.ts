@@ -22,7 +22,7 @@ const BY_CATEGORY: Record<string, KitLodCategory> = {
 /** A piece's LOD category: Vela's per-category defaults, with the Skyline bays (facades) and towers (towers), the Plaza hall bays (facades) and DiscTower (signatures) by id. */
 export function lodCategoryOf(id: string, category: string): KitLodCategory {
   if (/^Tower_/.test(id)) return 'towers';
-  if (/^(Stream|Deco|Porthole|Balcony|Arcade)(Bay|End|Corner)_|^Hall(Bay|CornerWing|EntranceTower)$|^CornerTower_/.test(id)) return 'facades';
+  if (/^(Stream|Deco|Porthole|Balcony|Arcade)(Bay|End|Corner)_|^Hall(Bay|CornerWing|EntranceTower)(_M)?$|^CornerTower_/.test(id)) return 'facades';
   if (/^(SideBay_[34]|SideBayStack_(Base|Mid|Top)|CornerPier_(Out|In)_(3|4|Base|Mid|Top)|AlleyWall_[34]D?|SidePilaster_(3|4|Base|Mid|Top)|ShopFill_[34]|ShopStack_Base)$/.test(id)) return 'facades'; // brief 072-C: the every-face modules (6 m bays like the street bays)
   if (id === 'RecordsTower') return 'signatures'; // brief 072: the Records Office landmark
   if (/^DiscTower|^SkyBridge|^Skylon|^SkyRailStation/.test(id)) return 'signatures';
@@ -68,6 +68,6 @@ export function lodClassOf(id: string): KitLodClass | undefined {
   if (/^SideBayStack_(Base|Mid|Top)$|^SidePilaster_(Base|Mid|Top)$|^ShopStack_Base$/.test(id)) return 'storey';
   if (/^CornerPier_(Out|In)_(Base|Mid|Top)$/.test(id)) return 'cornerStorey';
   if (/^StreamBayStack_(Base|Mid|Top)$/.test(id)) return 'storey'; // brief 075-E (Vela): the streamline stack modules switch by distance like the every-face stacks
-  if (/^Stream(Corner|End)Stack_(Base|Mid|Top)$/.test(id)) return 'cornerStorey';
+  if (/^Stream(Corner|End)Stack_(Base|Mid|Top)(_M)?$/.test(id)) return 'cornerStorey'; // brief 075 old buildings: and their mirrored twins
   return undefined;
 }

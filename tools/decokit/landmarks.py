@@ -10,7 +10,7 @@ the painted hull plating (hull_sheet.py, 8 m repeat) carries the hard-surface de
   Skylon         (skylon_avenue) 90 m silver spindle floating 18 m up on cables from four lattice pylons; its
                  pylons stand +-13 m either side (place over a 26 m wide way).
   ParabolicArch  (atomic_crowns) 68 m gateway, feet +-16 m on X: spans the boulevard, frames the HQ beyond.
-  DiscTower      (sky_bridges) 157 m gate tower: fluted ringed shaft, observation disc, crane jib, mast.
+  DiscTower      (sky_bridges) 157 m gate tower: fluted ringed shaft, observation disc, ringed mast (crane removed, brief 075).
   SkyBridge      72 m enclosed streamline bridge along X between two DiscTowers 88 m apart.
 """
 
@@ -19,7 +19,7 @@ import math
 from geo import circle
 from kit import asset
 from mats import pal, register
-from mega_parts import FRONT, cable, girder, lens, ogive, ring_girder, rocket, strut, truss
+from mega_parts import FRONT, cable, lens, ogive, ring_girder, rocket, strut, truss
 from structures import sec, tube
 
 register("DK_Hull_Ivory", "enamel", "#F4EFE3")
@@ -201,7 +201,7 @@ DT_R, DT_TOP = 9.0, 112.0
 @asset("DiscTower", "Landmarks", bevel=0.0)
 def disc_tower(s):
     """(sky_bridges) Gate tower: flared limestone foot, fluted shaft ringed every 12 m, a panelled observation disc,
-    glazed drum, a lattice crane jib and a ringed mast; 157 m."""
+    glazed drum and a ringed chrome mast on the axis (no crane, brief 075); 157 m."""
     disc_tower_at(s, DT_TOP)
 
 
@@ -219,15 +219,15 @@ def disc_tower_at(s, DT_TOP=DT_TOP, shaft=None):
     lens(s, DT_TOP + 11.0, 0.5, 8.5, 1.6, pal.Enamel_Ivory, glaze=False, seg=48)
     s.lathe([(6.0, DT_TOP + 12.6), (0.0, DT_TOP + 12.6)], pal.Enamel_Ivory, seg=32, cap_bottom=False, cap_top=False)
     z = DT_TOP + 12.6
-    truss(s, (0, 0, z), (0, 0, z + 12.0), 1.2, 1.2, 3, pal.Steel_Ivory, chord=0.4, lace=0.2)  # crane king post
-    girder(s, (-8.0, 0.0, z + 12.0), (24.0, 0.0, z + 12.0), 1.8, 1.6, 12, pal.Steel_Ivory)  # jib + counter-jib
-    s.box((-9.5, -1.4, z + 10.5), (-6.0, 1.4, z + 12.0), pal.Concrete)                  # counterweight
-    for x in (-8.0, 24.0):
-        cable(s, (0.0, 0.0, z + 18.0), (x, 0.0, z + 13.6), 0.08)
-    truss(s, (0, 0, z + 12.0), (0, 0, z + 18.0), 0.5, 0.2, 2, pal.Steel_Ivory, chord=0.2, lace=0.1)
-    truss(s, (4.5, 3.0, z), (4.5, 3.0, z + 28.0), 0.6, 0.18, 8, pal.Steel_Ivory, chord=0.18, lace=0.09)
-    with s.at((4.5, 3.0, 0.0)):
-        s.lathe([(0.0, z + 28.0), (0.1, z + 28.0), (0.02, z + 32.0), (0.0, z + 32.0)], pal.Chrome, seg=6)
+    # brief 075 roll-out (Aster: "remove the red cranes"): the lattice crane (king post, jib, counter-jib, counterweight, stays) and the offset lattice mast are gone:
+    # DK_Steel_Ivory takes the vermilion livery in Landmarks, so they read as a red site crane on a finished tower. In their place one ringed mast on the axis, to the
+    # same tip (z + 32): an ivory tapered stem with chrome collars and a chrome needle, as the Crown Vista tower's. Bounds now symmetric (+-20.1, the disc).
+    s.lathe([(1.6, z), (1.25, z + 6.0), (0.75, z + 14.0), (0.45, z + 20.0), (0.0, z + 20.0)], pal.Enamel_Ivory, seg=24, cap_bottom=False)
+    for zr, rr in ((z + 0.8, 1.68), (z + 6.0, 1.33), (z + 14.0, 0.83)):
+        s.lathe([(rr - 0.12, zr - 0.18), (rr, zr), (rr - 0.12, zr + 0.18)], pal.Chrome, seg=24, cap_bottom=False, cap_top=False)
+    s.lathe([(0.0, z + 19.8), (0.3, z + 19.8), (0.12, z + 28.0), (0.05, z + 31.6), (0.0, z + 32.0)], pal.Chrome, seg=12)
+    with s.at((0, 0, z + 24.0)):
+        s.lathe([(0.32 * math.sin(math.pi * k / 8), -0.32 * math.cos(math.pi * k / 8)) for k in range(9)], pal.Chrome, seg=16)
 
 
 SB_LEN = 72.0

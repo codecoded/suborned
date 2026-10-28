@@ -111,11 +111,11 @@ test('brief 007 round 3 wrap-up: the concept-B liner (hand-built far L2) and Pla
     }
 });
 
-test('brass over gold (Sky, 14 Oct): street level and facades draw brass, the 27 crown and skyline pieces keep the old golds as DK_Crown_Gold and DK_Crown_Gold17', () => {
+test('brass over gold (Sky, 14 Oct): street level and facades draw brass, the 31 crown and skyline pieces (27 + the four mirrored skyline caps, brief 075 old buildings) keep the old golds as DK_Crown_Gold and DK_Crown_Gold17', () => {
   const adopted = kit.assets.filter(a => a.status === 'adopted');
   const crown = adopted.filter(a => a.materials.some(m => /^DK_Crown_Gold/.test(m)));
-  expect(crown.map(a => a.id).sort()).toEqual(['Crown_Atom', 'Crown_Finial', 'Crown_Starburst', 'DecoBay_10', 'DiscTower@crown-vista', 'LinerDock@liner-berth', 'ParabolicArch', 'ParabolicArch@crown-avenue', 'SpaceHQ_Portal', 'Skyport_Tower', 'Skyport_Tower_Portal', 'StreamBay_6', 'StreamBay_9', 'StreamBay_9W', 'StreamCorner_9',
-    'StreamEnd_6', 'StreamEnd_9', 'StreamEnd_9W', 'Tower_Atom@crescent-tower', 'Tower_Lantern@lantern-beacon', 'Tower_Needle', 'Tower_Needle@avenue-needle', 'Tower_Saucer@harbour-hotel', 'Tower_Starburst', 'Tower_Starburst@avenue-starburst', 'Tower_Terrace', 'Tower_Terrace@crescent-terrace'].sort());
+  expect(crown.map(a => a.id).sort()).toEqual(['Crown_Atom', 'Crown_Finial', 'Crown_Starburst', 'DecoBay_10', 'DiscTower@crown-vista', 'LinerDock@liner-berth', 'ParabolicArch', 'ParabolicArch@crown-avenue', 'SpaceHQ_Portal', 'Skyport_Tower', 'Skyport_Tower_Portal', 'StreamBay_6', 'StreamBay_9', 'StreamBay_9W', 'StreamCorner_9', 'StreamCorner_9_M',
+    'StreamEnd_6', 'StreamEnd_9', 'StreamEnd_9W', 'StreamEnd_6_M', 'StreamEnd_9_M', 'StreamEnd_9W_M', 'Tower_Atom@crescent-tower', 'Tower_Lantern@lantern-beacon', 'Tower_Needle', 'Tower_Needle@avenue-needle', 'Tower_Saucer@harbour-hotel', 'Tower_Starburst', 'Tower_Starburst@avenue-starburst', 'Tower_Terrace', 'Tower_Terrace@crescent-terrace'].sort());
   for (const a of crown) expect(a.materials.filter(m => /^DK_(Gold|Gold17|Accent_Gold)$/.test(m)), `${a.id} draws a brass beside its crown gold`).toEqual([]); // the swap is whole: one gold per piece
   const palette = new Map((JSON.parse(readFileSync(resolve(import.meta.dir, '../../contracts/world/civic-look.json'), 'utf8')) as { palette: { materials: { material: string; unlit: string }[] } }).palette.materials.map(m => [m.material, m.unlit]));
   // the dE gate reads the palette rows; the .mat the generator wrote is what Unity draws: they must say the same colour
@@ -162,7 +162,7 @@ test('brief 072-F: the surface-detail array and the three detail pairs ride as k
   for (const f of t) { expect(f.root).toBe('generated'); expect(f.sha256).toMatch(/^[0-9a-f]{64}$/); }
   const meta = join(GEN_ROOT, 'Textures/surface_detail_v1.png.meta');
   if (existsSync(meta)) expect(readFileSync(meta, 'utf8')).toMatch(/textureShape: 4\n/); // Texture2DArray (TextureImporterShape: 2D=1, Cube=2, 2DArray=4)
-  const only: Kit = { ...kit, colourways: undefined, landmarks: undefined, posters: undefined, assets: [] }, dest = mkdtempSync(join(tmpdir(), 'kit-tex-'));
+  const only: Kit = { ...kit, carPaints: undefined, colourways: undefined, landmarks: undefined, posters: undefined, assets: [] }, dest = mkdtempSync(join(tmpdir(), 'kit-tex-'));
   try { const r = copyAdopted(only, root, dest, GEN_ROOT); expect(r.errors).toEqual([]); expect(r.copied.length).toBe(t.length); expect(r.pruned).toEqual([]); }
   finally { rmSync(dest, { recursive: true, force: true }); }
 });
@@ -211,7 +211,7 @@ test('brief 074-B/H: 12 colourway sets over the wall and plinth slots (band and 
   const lime = kit.assets.find(a => a.materials.includes('DK_Limestone_Tex'))!;
   expect(lime.files.some(f => f.path === 'Textures/wall_panel_neutral_v1.png')).toBe(true);
   expect(kit.assets.some(a => a.status === 'adopted' && a.files.some(f => f.path === 'Textures/facade_panel_v1.png'))).toBe(false);
-  const only: Kit = { ...kit, textures: [], landmarks: undefined, posters: undefined, assets: [] }, dest = mkdtempSync(join(tmpdir(), 'kit-cw-'));
+  const only: Kit = { ...kit, carPaints: undefined, textures: [], landmarks: undefined, posters: undefined, assets: [] }, dest = mkdtempSync(join(tmpdir(), 'kit-cw-'));
   try { const r = copyAdopted(only, root, dest, GEN_ROOT); expect(r.errors).toEqual([]); expect(r.copied.length).toBe(cw.files.length); }
   finally { rmSync(dest, { recursive: true, force: true }); }
 });
@@ -237,7 +237,7 @@ test('brief 075-C: landmark livery (old DecoKitColourways `livery`): vermilion l
     const b = mat(v.base) ?? legacy(v.base), m = mat(v.material);
     if (b && m) expect(strip(m), v.material).toBe(strip(b)); // only the name and the base colour differ: no new variant, no new SetPass
   }
-  const only: Kit = { ...kit, textures: [], colourways: undefined, posters: undefined, assets: [] }, dest = mkdtempSync(join(tmpdir(), 'kit-lv-'));
+  const only: Kit = { ...kit, carPaints: undefined, textures: [], colourways: undefined, posters: undefined, assets: [] }, dest = mkdtempSync(join(tmpdir(), 'kit-lv-'));
   try { const r = copyAdopted(only, root, dest, GEN_ROOT); expect(r.errors).toEqual([]); expect(r.copied.length).toBe(lv.files.length); }
   finally { rmSync(dest, { recursive: true, force: true }); }
 });
@@ -265,7 +265,27 @@ test('brief 075-F1: billboard and poster variants: 16 ads on two sheets in one l
     expect(m, n).toContain(`guid: ${ps.sheets[ps.ads[k]!.sheet].guid}, type: 3`);
     const [u, v] = ps.ads[k]!.offset; expect(m, n).toContain(`m_Offset: {x: ${+u.toPrecision(8)}, y: ${+v.toPrecision(8)}}`);
   }
-  const only: Kit = { ...kit, textures: [], colourways: undefined, landmarks: undefined, assets: [] }, dest = mkdtempSync(join(tmpdir(), 'kit-ps-'));
+  const only: Kit = { ...kit, carPaints: undefined, textures: [], colourways: undefined, landmarks: undefined, assets: [] }, dest = mkdtempSync(join(tmpdir(), 'kit-ps-'));
   try { const r = copyAdopted(only, root, dest, GEN_ROOT); expect(r.errors).toEqual([]); expect(r.copied.length).toBe(ps.files.length); }
+  finally { rmSync(dest, { recursive: true, force: true }); }
+});
+
+test('brief 075 roll-out: the old sky track kit and the presentation vehicles adopted at their own size; the gate towers carry no crane; 1950s car paints are base-colour recolours, copied with their metas', () => {
+  const byId = new Map(kit.assets.map(a => [a.id, a]));
+  for (const id of ['SkyRail_Beam_4m', 'SkyRail_Pylon_HeadTwin', 'SkyRail_Pylon_Head', 'SkyRail_Pylon_Foot', 'SkyRail_Pylon_Shaft', 'SkyRail_Pylon_Tall', 'SkyRail_Car_Head', 'SkyRail_Car_Mid', 'AirCar_Coral', 'AirCar_Teal', 'AirCar_Saucer', 'HoverScooter']) {
+    const a = byId.get(id)!; expect(a.status, id).toBe('adopted'); expect(a.tags.scale, id).toEqual([1, 1]); expect(a.tags.use.some(u => u === 'vehicle' || u === 'sky' || u === 'landmark'), id).toBe(false);
+  }
+  const beam = byId.get('SkyRail_Beam_4m')!; expect(beam.size[1]).toBeCloseTo(1.6, 2); expect(beam.size[2]).toBeCloseTo(4, 2); expect(beam.materials).toEqual(expect.arrayContaining(['DK_Hull_Ivory', 'DK_Enamel_Teal']));
+  expect(byId.get('SkyRail_Pylon_HeadTwin')!.size[0]).toBeCloseTo(8, 1); // pads at the plan's beam centres +-3 (beamCentres 6)
+  for (const id of ['DiscTower', 'DiscTower@avenue-gate-e', 'DiscTower@avenue-gate-w']) { const a = byId.get(id)!; expect(a.materials, id).not.toContain('DK_Steel_Ivory'); expect(a.materials, id).not.toContain('DK_Concrete'); }
+  const cp = kit.carPaints!; expect(Object.keys(cp.keys).length).toBeGreaterThanOrEqual(10);
+  for (const [k, v] of Object.entries(cp.keys)) { expect(cp.colours[v.body], k).toBe(v.bodyHex); expect(cp.colours[v.roof], k).toBe(v.roofHex); }
+  for (const s of Object.values(cp.slots)) for (const v of Object.values(cp.keys)) expect([v.bodyHex, v.roofHex]).not.toEqual(s.body === 'DK_CarEnamel_Teal' ? ['#1F6C67', '#EFE8D6'] : ['#F28A70', '#72B5A7']);
+  const gen = (p: string) => { const g = join(GEN_ROOT, p); return existsSync(g) ? readFileSync(g, 'utf8') : undefined; };
+  const strip = (t: string) => t.replace(/  m_Name: \S+\n/, '').replace(/    - _BaseColor: \{[^}]*\}/, '').replace(/    - _Color: \{[^}]*\}/, '');
+  const base = gen(`Materials/${cp.base}.mat`);
+  for (const n of Object.keys(cp.colours)) { const m = gen(`Materials/${n}.mat`); if (base && m) expect(strip(m), n).toBe(strip(base)); }
+  const only: Kit = { ...kit, textures: [], colourways: undefined, landmarks: undefined, posters: undefined, assets: [] }, dest = mkdtempSync(join(tmpdir(), 'kit-cp-'));
+  try { const r = copyAdopted(only, root, dest, GEN_ROOT); expect(r.errors).toEqual([]); expect(r.copied.length).toBe(cp.files.length); expect(cp.files.length).toBe(Object.keys(cp.colours).length * 2); }
   finally { rmSync(dest, { recursive: true, force: true }); }
 });
