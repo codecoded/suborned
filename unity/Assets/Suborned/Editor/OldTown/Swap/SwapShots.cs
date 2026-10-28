@@ -63,6 +63,7 @@ namespace Suborned.OldTown.Editor.Swap
         /// <summary>HandoverHost.PlaceCamera's pose (Baseline072.Pose): orthographic size 14, pitch 38, the eye 160 m back from the focus.</summary>
         internal static void Play(Camera cam, Vector2 focusPlan, float yaw, float size = 14f)
         {
+            if (cam.TryGetComponent<TacticalShadows>(out var ts)) ts.focusDepth = 160f;
             cam.orthographic = true; cam.orthographicSize = size;
             cam.transform.rotation = Quaternion.Euler(38f, yaw, 0f);
             cam.transform.position = OldTownSwap.Old3(focusPlan, 0f) - cam.transform.forward * 160f;
@@ -72,11 +73,12 @@ namespace Suborned.OldTown.Editor.Swap
         internal static void Run()
         {
             var cam = Open(out var tr, out var ro, out var sw);
-            string tag = Arg("swapTag", sw != null ? sw.heights : "rule"), outDir = Path.Combine(Repo, Arg("swapOut", "briefs/075/oldbuild/swap"));
+            string tag = Arg("swapTag", sw != null ? sw.heights : "rule"), outDir = Path.Combine(Repo, Arg("swapOut", "briefs/075/oldbuild/swap2"));
             Directory.CreateDirectory(outDir);
             var shots = new HashSet<string>(Arg("swapShots", "circus,golden,vista,play,district").Split(','));
             int W = 1920, H = 1080; var done = new List<string>();
-            void Cap(string file, float shadow) { DecoKitStage.WithShadows(shadow, () => DecoKitStage.Capture(cam, W, H, Path.Combine(outDir, file), 2)); done.Add(file); }
+            var playCam = SwapPlayLook.Find();  // second build: the play camera with our play look (OldTownPlayLook, TacticalShadows); null in a first-build scene
+            void Cap(string file, float shadow, Camera c = null) { DecoKitStage.WithShadows(shadow, () => DecoKitStage.Capture(c ?? cam, W, H, Path.Combine(outDir, file), 2)); done.Add(file); }
             string hq0 = sw != null ? sw.spaceHq : "old";
             if (shots.Contains("circus")) { Pose(cam, tr, ro, 20f); Cap($"circus-{tag}.png", 120f); }
             if (shots.Contains("golden")) { Pose(cam, tr, ro, 10f); Cap($"golden-{tag}.png", 120f); }
@@ -99,13 +101,18 @@ namespace Suborned.OldTown.Editor.Swap
                     ("aerial", new(-190f, 150f, -110f), new(10f, 50f, 380f), 50f, true),
                     ("aerial_e", new(300f, 140f, -160f), new(0f, 10f, 190f), 50f, true),
                     ("aerial_zone", new(-20f, 160f, -150f), new(-155f, 0f, -54f), 50f, true),
+                    ("aerial_w", new(40f, 170f, -300f), new(-290f, 0f, 110f), 52f, true),   // second build: over the west (plan x -460..-124)
+                    ("aerial_w2", new(-120f, 150f, 520f), new(-300f, 0f, 120f), 52f, true), // the west from the north
                     ("plan", new(0f, 420f, 150f), new(0f, 0f, 151f), 70f, true),
                     ("plan_full", new(0f, 1000f, 180f), new(0f, 0f, 181f), 60f, true),
                 })
                 { Perspective(cam, eye, look, fov); Cap($"district-{id}-{tag}.png", wide ? 1200f : 120f); }
             if (shots.Contains("play"))
                 foreach (var (id, f, yaw) in PlayViews)
-                { Play(cam, f, yaw); Cap($"play-{id}-y{yaw:000}-{tag}.png", 200f); }
+                { var pc = playCam ? playCam : cam; Play(pc, f, yaw); Cap($"play-{id}-y{yaw:000}-{tag}.png", 200f, pc); }
+            if (shots.Contains("playold") && playCam)  // the same frames through the study camera (the old stage's full look), for the before/after
+                foreach (var (id, f, yaw) in PlayViews.Where(v => v.id is "cafe-square" or "office-front"))
+                { Play(cam, f, yaw); Cap($"play-{id}-y{yaw:000}-{tag}-oldlook.png", 200f); }
             cam.orthographic = false;
             Debug.Log($"[Swap] shots ({tag}): {string.Join(", ", done)}");
         }

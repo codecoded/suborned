@@ -26,8 +26,13 @@ namespace Suborned.OldTown.Editor.Swap
     /// mezzanines, the Skyport station, the tram on our routes in the old rail tile with the old tram), and where an old structure clashes
     /// the old one gives way (each removal logged). Not part of the verbatim copy.
     ///   Unity -batchmode -quit -projectPath unity -executeMethod Suborned.OldTown.Editor.Swap.OldTownSwap.Build
-    ///     -swapHeights rule|old (default rule) -swapHq old|ours (default old) -swapScene OldTown
-    ///     -swapOurs Assets/Scenes/probe-oldtown-ours.unity -swapWorld out/scratch/latch/075swap/head.world.json -swapOut briefs/075/oldbuild/swap
+    ///     -swapHeights rule|old (default rule) -swapHq old|ours (default ours, Sky 2026-10-29) -swapScene OldTown
+    ///     -swapOurs Assets/Scenes/probe-oldtown-ours.unity -swapWorld out/scratch/latch/075swap2/harbour.world.json -swapOut briefs/075/oldbuild/swap2
+    ///     -swapPlan contracts/world/harbour-district.plan.json
+    /// Second build (plan 0.5.5): the old builders run with edit E10's parameters set to the plan (walk 0.18, road deck 0, boulevard kerbs +-10,
+    /// the circus ring's outer kerb r 29, the Southside blocks on their plan blocks, the city mass by the plan), the west filled (SwapWest), the
+    /// old gives way to the Handover streets and plots (SwapCut), our SpaceHQ_Portal in the old finish (SwapHq, switch default "ours"), and a
+    /// play camera with our play look (SwapPlayLook: TacticalShadows, no fog, our grade, no crowd, no MSAA, no soft focus or flare).
     ///   ... .OldTownSwap.Shoot  -swapScene OldTown -swapShots circus,golden,vista,play,district -swapTag rule   (offscreen renders)
     ///   ... .OldTownSwap.Flyby  -swapScene OldTown (the old reel's route, ReviewVideo encode)</summary>
     public static class OldTownSwap
@@ -47,6 +52,8 @@ namespace Suborned.OldTown.Editor.Swap
         static string F(float v) => v.ToString("0.###", CultureInfo.InvariantCulture);
 
         public static void Build() => Batch(() => WithOldSettings(BuildBody));
+        /// <summary>The plan the build read (path, sha256, version, SpaceHQ form), for the exports.</summary>
+        internal static Dictionary<string, object> PlanFacts = new();
         public static void Shoot() => Batch(() => WithOldSettings(SwapShots.Run));
         public static void Flyby() => Batch(() => WithOldSettings(SwapShots.Flyby));
         public static void Verify() => Batch(SwapVerify.Run);
@@ -121,20 +128,31 @@ namespace Suborned.OldTown.Editor.Swap
         static void BuildBody()
         {
             var t0 = DateTime.UtcNow;
-            string heights = Arg("swapHeights", "rule"), hq = Arg("swapHq", "old");
+            string heights = Arg("swapHeights", "rule"), hq = Arg("swapHq", "ours");
             string scene = Arg("swapScene", heights == "rule" ? "OldTown" : "OldTown-heights-old");
             string oursScene = Arg("swapOurs", "Assets/Scenes/probe-oldtown-ours.unity");
-            string worldPath = Abs(Arg("swapWorld", "out/scratch/latch/075swap/head.world.json"));
-            string outDir = Abs(Arg("swapOut", "briefs/075/oldbuild/swap"));
+            string worldPath = Abs(Arg("swapWorld", "out/scratch/latch/075swap2/harbour.world.json"));
+            string outDir = Abs(Arg("swapOut", "briefs/075/oldbuild/swap2"));
+            var plan = SwapPlan.Load(Abs(Arg("swapPlan", "contracts/world/harbour-district.plan.json")));
+            PlanFacts = new Dictionary<string, object> { ["path"] = Path.GetRelativePath(Repo, plan.Path), ["sha256"] = plan.Sha256, ["version"] = plan.Version, ["spacehqForm"] = plan.SpaceHqForm };
             if (heights != "rule" && heights != "old") throw new ArgumentException("-swapHeights rule|old");
             if (hq != "old" && hq != "ours") throw new ArgumentException("-swapHq old|ours");
             Directory.CreateDirectory(outDir);
             var rep = new Report();
             var world = WorldReader.Load(worldPath);
             rep.Log($"export {Path.GetRelativePath(Repo, worldPath)} sha256 {world.Sha256} ({world.Source}); heights {heights}; SpaceHQ {hq}; scene Assets/Scenes/{scene}.unity; ours from {oursScene}");
+            rep.Log($"plan {PlanFacts["path"]} {plan.Version} sha256 {plan.Sha256} (SpaceHQ form \"{plan.SpaceHqForm}\"): {plan.Roads.Count} roads, {plan.Plots.Count} plots, {plan.Blocks.Count} blocks");
+            if (!world.Source.Contains(plan.Version ?? "?")) throw new InvalidDataException($"[Swap] export {world.Source} is not from plan {plan.Version}");
 
             DecoKitFrontage.Lower = heights == "rule" ? Rule : null;
             DecoKitHighrise.Stands = SwapTowers.Rule(rep, rep.Towers);  // both height settings: no roof tower where it buries the Handover zone
+            // edit E10: plan 0.5.5's street parameters (Datum, "Swap: patch applied" items 1-3, 6), put back in finally
+            var oldBlocks = DecoKitSouthside.Blocks;
+            L.Walk = .18f; L.BoulevardKerbX = 10f; P.RingR = 29f; DecoKitPlacer.GroundScaleY = .18f / .15f; DecoKitSouthside.SatelliteHalf = 10f;
+            DecoKitSouthside.Blocks = SwapPlan.Southside(oldBlocks, rep);
+            var reserved = new[] { "SS5", "W1" }.Where(n => DecoKitSouthside.Reserved.Add(n)).ToArray();
+            DecoKitCityMass.Rule = plan.MassRule(rep);
+            rep.Log($"plan 0.5.5 parameters (E10): walk {L.Walk}, boulevard kerbs +-{L.BoulevardKerbX} (Crown Avenue +-{L.KerbX}), circus ring outer kerb r {P.RingR}, ground modules x{DecoKitPlacer.GroundScaleY:0.###} in height, Southside on its plan blocks (SS5, W1 stand down), city mass by the plan");
             try
             {
                 // ---- 1. the old builders, in DecoKitStreetDemo.Build's order (its private tunables read by reflection, so they stay the old ones)
@@ -149,6 +167,7 @@ namespace Suborned.OldTown.Editor.Swap
                 var grade = DecoKitStage.Grade("DK_StreetGrade", UnityEngine.Rendering.Universal.TonemappingMode.ACES, exposure, 10f, DecoKitStage.Arg("dkSaturation", 25f));
                 DecoKitLens.SoftFocus(grade, DecoKitStage.Arg("dkSoftStart", 300f), DecoKitStage.Arg("dkSoftEnd", 1800f), DecoKitStage.Arg("dkSoftRadius", 1.2f));
                 DecoKitLens.SunFlare(sun, DecoKitStage.Arg("dkFlare", 1f));
+                Vintage(rep, grade, Arg("swapVintage", "v2s"));  // Glint's pick B (parity/READY-vintage-glint), presentation cameras only (the play camera zeroes this volume)
                 var street = new GameObject("Deco Street").transform;
                 var placer = new DecoKitPlacer(street);
                 L.Build(placer);
@@ -163,8 +182,11 @@ namespace Suborned.OldTown.Editor.Swap
                 var massRoute = s1 != null ? Thin(s1.Line, 20f).Select(v => Old3(v, s1.Top)).ToArray() : DecoKitSkyRail.Route();
                 DecoKitCityMass.Build(massRoute);  // the mid-ground city keeps clear of our S1, as the old kept clear of its own loop
                 rep.Log($"city mass kept clear of {(s1 != null ? s1.Id : "the old loop")} ({massRoute.Length} points)");
+                SwapWest.Build(rep, plan, world, placer);  // before the colourways, so the west's old pieces take them too
                 DecoKitColourways.Apply(DecoKitStage.Arg("dkColour", DecoKitStreetDemo.Colour));
                 demo.GetMethod("Ground", Any).Invoke(null, null);
+                SwapWest.Ground(rep);
+                SwapWest.LiftRoad(rep);
                 DecoKitRoadMarkings.Build(street);
                 if (placer.Missing.Count > 0) throw new InvalidOperationException($"[Swap] old prefabs missing: {string.Join(", ", placer.Missing.OrderBy(n => n))} (NP-1: no placeholders)");
                 HeightCensus(rep, heights);
@@ -185,18 +207,24 @@ namespace Suborned.OldTown.Editor.Swap
 
                 // ---- 5. ours: the Handover zone and the network from our pipeline's scene
                 var ours = SwapOurs.Import(rep, world, oursScene, hq);
+                // our scene carried the plan's (old) SpaceHQ piece: the import drops its meshes, but an emptied "DK_SpaceHQ" would shadow the old
+                // builders' one for the switch and the showpiece probe (both find it by name)
+                int emptied = 0;
+                foreach (var t in ours.Root.GetComponentsInChildren<Transform>(true).Where(t => t.name.StartsWith("DK_SpaceHQ")).ToArray()) { t.name = "ours-emptied " + t.name; emptied++; }
+                if (emptied > 0) rep.Log($"ours: {emptied} emptied SpaceHQ objects from our scene renamed (the old builders' DK_SpaceHQ is the switch's)");
 
                 // ---- 6. the network in the old look on our routes
                 var net = new SwapNetwork(rep, world, placer, kit);
                 net.Beams(); net.Pylons(); net.Rails(); net.Trams();
 
                 // ---- 7. the old gives way: the zone, our structures, the beam corridor, the pylons, the tram corridor
-                SwapCut.Run(rep, world, ours, net, hq);
+                SwapCut.Run(rep, world, ours, net, hq, plan);
 
-                // ---- 8. SpaceHQ switch: both stand, one is off
+                // ---- 8. SpaceHQ switch: both stand, one is off (ours: our SpaceHQ_Portal in the old finish, SwapHq)
+                SwapHq.Place(rep, ours.Root, skyGain);
                 var sw = SwapSwitches.Make(heights, hq);
                 var oldHq = sw.oldSpaceHq; var ourHq = sw.oursSpaceHq;
-                rep.Log($"SpaceHQ: old {(oldHq ? "present" : "MISSING")}, ours {(ourHq ? "present" : "MISSING")}; on: {hq}" + (File.Exists(Path.Combine(Repo, "briefs/075/oldbuild/READY-spacehq-datum")) ? "" : "; the S1 station beside the old HQ waits on Datum's plan (no READY-spacehq-datum)"));
+                rep.Log($"SpaceHQ: old {(oldHq ? "present" : "MISSING")}, ours {(ourHq ? "present" : "MISSING")}; on: {hq}; the plan's form \"{plan.SpaceHqForm}\" (S1 Crown Circus station beside the HQ, as exported)");
 
                 // ---- 9. the old finish: tile merge, cutaway tags, probes, environment bake, the HQ's showpiece probe
                 SwapExport.Ground(rep);  // kerbs, pavement cells and roads as placed, before the merge folds them into tiles
@@ -212,9 +240,10 @@ namespace Suborned.OldTown.Editor.Swap
                 var zc = ZoneOld.center;
                 DecoKitAtmosphere.Probe("Handover zone probe", new Vector3(zc.x, 8f, zc.y), new Vector3(ZoneOld.width, 30f, ZoneOld.height));  // ours had its own probes (light.json); the old look's probe here
                 DecoKitStage.BakeEnvironment(scene);
-                if (oldHq) { bool was = oldHq.activeSelf; oldHq.SetActive(true); DecoKitShowpiece.Apply("SpaceHQ", skyGain); oldHq.SetActive(was); }
+                if (oldHq) { bool was = oldHq.activeSelf; oldHq.SetActive(true); DecoKitShowpiece.Apply("SpaceHQ", skyGain); var pr = GameObject.Find("SpaceHQ showpiece probe"); if (pr) pr.transform.SetParent(oldHq.transform, true); oldHq.SetActive(was); }
                 var cam = DecoKitStage.Camera("DK street study camera", 60f);
                 cam.nearClipPlane = .05f; cam.farClipPlane = 2500f; cam.enabled = false;
+                SwapPlayLook.Make(rep, ours, cam, sun, scene);
                 DecoKitStage.Save();
 
                 // ---- 10. exports: the old-built geometry for Splice's plan-match check, the occlusion measure's occluders, the report
@@ -223,7 +252,26 @@ namespace Suborned.OldTown.Editor.Swap
                 rep.Log($"built Assets/Scenes/{scene}.unity in {(DateTime.UtcNow - t0).TotalSeconds:0} s");
                 SwapExport.WriteReport(rep, Path.Combine(outDir, $"swap-{heights}.json"), heights, hq, scene, world);
             }
-            finally { DecoKitFrontage.Lower = null; DecoKitHighrise.Stands = null; }
+            finally
+            {
+                DecoKitFrontage.Lower = null; DecoKitHighrise.Stands = null; DecoKitCityMass.Rule = null;
+                L.Walk = .15f; L.BoulevardKerbX = L.KerbX; P.RingR = 26f; DecoKitPlacer.GroundScaleY = 1f; DecoKitSouthside.SatelliteHalf = 4f;
+                DecoKitSouthside.Blocks = oldBlocks; foreach (var n in reserved) DecoKitSouthside.Reserved.Remove(n);
+            }
+        }
+
+        /// <summary>Glint's vintage pick (briefs/075/parity/vintage/variants.json, pick B = GlintVintage's "v2s": the old bloom whole, contrast 13, the
+        /// accent lift with the sky and sea hues spared) applied to the old stage's grade profile, by GlintVintage's own Apply (read by reflection,
+        /// so Glint's file stays his). "off" keeps the old grade as built.</summary>
+        static void Vintage(Report rep, UnityEngine.Rendering.VolumeProfile grade, string id)
+        {
+            if (id == "off" || grade == null) { rep.Log("vintage: off (the old stage's grade as built)"); return; }
+            var t = typeof(GlintVintage);
+            var vs = (Array)(t.GetField("Variants", Any)?.GetValue(null) ?? throw new MissingMemberException("GlintVintage.Variants"));
+            var v = vs.Cast<object>().FirstOrDefault(x => (string)x.GetType().GetField("id").GetValue(x) == id) ?? throw new ArgumentException($"-swapVintage {id}: no such GlintVintage variant");
+            (t.GetMethod("Apply", Any) ?? throw new MissingMethodException("GlintVintage.Apply")).Invoke(null, new[] { grade, v });
+            EditorUtility.SetDirty(grade); AssetDatabase.SaveAssets();
+            rep.Log($"vintage: Glint's {id} on {grade.name} (presentation cameras; the play camera renders with our play grade): {v.GetType().GetField("note").GetValue(v)}");
         }
 
         /// <summary>DecoKitRoadMarkings paints the zebras into the one "Road markings" mesh with the dashes: a stripe is a 3 x 0.5 m quad (1.5 m²),

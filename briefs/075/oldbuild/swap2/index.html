@@ -1,0 +1,215 @@
+<!doctype html><meta charset="utf-8"><title>075 swap 2</title><style>body{background:#11141a;color:#f7f4ec;font:15px/1.45 -apple-system,Helvetica,sans-serif;margin:24px;max-width:1700px}img{max-width:100%;border:1px solid #333}pre{background:#0b1615;padding:10px;overflow:auto;white-space:pre-wrap;font-size:12px}figure{display:inline-block;width:32%;margin:4px}figcaption{font-size:12px;color:#b0cdc7}a{color:#60e0ea}</style><h1>Brief 075 swap, second build: plan 0.5.5, our SpaceHQ, the play look, the west</h1>
+<p>Latch, 2026-10-29. <code>Suborned.OldTown.Editor.Swap.OldTownSwap.Build -swapHq ours</code> into Assets/Scenes/OldTown.unity (heights "rule"), then <code>.Shoot</code>; offscreen batchmode. The presentation cameras keep the old stage (sky, sun, haze, lens) with Glint's vintage pick B; the play frames come from the scene's play camera with our play look (TacticalShadows, no fog, our grade, no baked crowd, no MSAA, no soft focus or flare), old materials.</p>
+<h2>Numbers</h2><pre>{
+ &quot;play_vs_c044&quot;: {
+  &quot;cafe-square-y030&quot;: {
+   &quot;now&quot;: {
+    &quot;mad_frame&quot;: 18.58,
+    &quot;mad_centre&quot;: 19.38,
+    &quot;changed_px_pct&quot;: 79.2
+   },
+   &quot;first_swap&quot;: {
+    &quot;mad_frame&quot;: 21.55,
+    &quot;mad_centre&quot;: 22.71,
+    &quot;changed_px_pct&quot;: 39.92
+   }
+  },
+  &quot;cafe-square-y210&quot;: {
+   &quot;now&quot;: {
+    &quot;mad_frame&quot;: 17.96,
+    &quot;mad_centre&quot;: 17.8,
+    &quot;changed_px_pct&quot;: 72.15
+   },
+   &quot;first_swap&quot;: {
+    &quot;mad_frame&quot;: 34.83,
+    &quot;mad_centre&quot;: 24.0,
+    &quot;changed_px_pct&quot;: 72.96
+   }
+  },
+  &quot;office-front-y030&quot;: {
+   &quot;now&quot;: {
+    &quot;mad_frame&quot;: 16.93,
+    &quot;mad_centre&quot;: 16.02,
+    &quot;changed_px_pct&quot;: 64.49
+   },
+   &quot;first_swap&quot;: {
+    &quot;mad_frame&quot;: 41.21,
+    &quot;mad_centre&quot;: 61.66,
+    &quot;changed_px_pct&quot;: 57.75
+   }
+  },
+  &quot;office-front-y210&quot;: {
+   &quot;now&quot;: {
+    &quot;mad_frame&quot;: 15.33,
+    &quot;mad_centre&quot;: 12.01,
+    &quot;changed_px_pct&quot;: 58.03
+   },
+   &quot;first_swap&quot;: {
+    &quot;mad_frame&quot;: 53.6,
+    &quot;mad_centre&quot;: 61.99,
+    &quot;changed_px_pct&quot;: 79.84
+   }
+  }
+ },
+ &quot;look&quot;: {
+  &quot;cafe-square-y030&quot;: {
+   &quot;c044&quot;: {
+    &quot;luma_contrast&quot;: 43.9,
+    &quot;dark_pct&quot;: 4.1,
+    &quot;luma_mean&quot;: 181.7
+   },
+   &quot;first_swap&quot;: {
+    &quot;luma_contrast&quot;: 38.7,
+    &quot;dark_pct&quot;: 2.5,
+    &quot;luma_mean&quot;: 194.9
+   },
+   &quot;now&quot;: {
+    &quot;luma_contrast&quot;: 40.5,
+    &quot;dark_pct&quot;: 2.1,
+    &quot;luma_mean&quot;: 199.3
+   },
+   &quot;now_old_stage&quot;: {
+    &quot;luma_contrast&quot;: 39.9,
+    &quot;dark_pct&quot;: 2.6,
+    &quot;luma_mean&quot;: 197.1
+   }
+  },
+  &quot;cafe-square-y210&quot;: {
+   &quot;c044&quot;: {
+    &quot;luma_contrast&quot;: 50.5,
+    &quot;dark_pct&quot;: 10.7,
+    &quot;luma_mean&quot;: 160.7
+   },
+   &quot;first_swap&quot;: {
+    &quot;luma_contrast&quot;: 67.6,
+    &quot;dark_pct&quot;: 20.1,
+    &quot;luma_mean&quot;: 159.8
+   },
+   &quot;now&quot;: {
+    &quot;luma_contrast&quot;: 49.9,
+    &quot;dark_pct&quot;: 5.7,
+    &quot;luma_mean&quot;: 178.0
+   },
+   &quot;now_old_stage&quot;: {
+    &quot;luma_contrast&quot;: 69.6,
+    &quot;dark_pct&quot;: 20.2,
+    &quot;luma_mean&quot;: 160.9
+   }
+  },
+  &quot;office-front-y030&quot;: {
+   &quot;c044&quot;: {
+    &quot;luma_contrast&quot;: 52.8,
+    &quot;dark_pct&quot;: 17.0,
+    &quot;luma_mean&quot;: 146.2
+   },
+   &quot;first_swap&quot;: {
+    &quot;luma_contrast&quot;: 49.6,
+    &quot;dark_pct&quot;: 8.0,
+    &quot;luma_mean&quot;: 171.0
+   },
+   &quot;now&quot;: {
+    &quot;luma_contrast&quot;: 58.2,
+    &quot;dark_pct&quot;: 14.6,
+    &quot;luma_mean&quot;: 157.7
+   },
+   &quot;now_old_stage&quot;: {
+    &quot;luma_contrast&quot;: 51.2,
+    &quot;dark_pct&quot;: 8.2,
+    &quot;luma_mean&quot;: 172.3
+   }
+  },
+  &quot;office-front-y210&quot;: {
+   &quot;c044&quot;: {
+    &quot;luma_contrast&quot;: 55.1,
+    &quot;dark_pct&quot;: 17.7,
+    &quot;luma_mean&quot;: 147.2
+   },
+   &quot;first_swap&quot;: {
+    &quot;luma_contrast&quot;: 63.7,
+    &quot;dark_pct&quot;: 20.1,
+    &quot;luma_mean&quot;: 143.1
+   },
+   &quot;now&quot;: {
+    &quot;luma_contrast&quot;: 60.5,
+    &quot;dark_pct&quot;: 16.3,
+    &quot;luma_mean&quot;: 151.5
+   },
+   &quot;now_old_stage&quot;: {
+    &quot;luma_contrast&quot;: 65.6,
+    &quot;dark_pct&quot;: 20.3,
+    &quot;luma_mean&quot;: 143.6
+   }
+  }
+ }
+}</pre>
+<h2>Boulevard golden view (the old reel at t 10): old | now</h2><a href="pair-golden.png"><img src="pair-golden.png"></a>
+<h2>Crown Circus (the old reel at t 20): old | now</h2><a href="pair-circus.png"><img src="pair-circus.png"></a>
+<h2>The Boulevard vista: our SpaceHQ_Portal (default) | the old gold HQ (switch off)</h2><a href="pair-vista.png"><img src="pair-vista.png"></a>
+<h2>Golden view: SpaceHQ ours | old</h2><a href="pair-golden-hq.png"><img src="pair-golden-hq.png"></a>
+<h2>Handover cafe-square-y030: c044 | first swap | now. vs c044: now 18.58 (first 21.55); contrast c044 43.9, first 38.7, now 40.5; dark share 4.1 / 2.5 / 2.1 %</h2><a href="pair-play-cafe-square-y030.png"><img src="pair-play-cafe-square-y030.png"></a>
+<h2>Handover cafe-square-y210: c044 | first swap | now. vs c044: now 17.96 (first 34.83); contrast c044 50.5, first 67.6, now 49.9; dark share 10.7 / 20.1 / 5.7 %</h2><a href="pair-play-cafe-square-y210.png"><img src="pair-play-cafe-square-y210.png"></a>
+<h2>Handover office-front-y030: c044 | first swap | now. vs c044: now 16.93 (first 41.21); contrast c044 52.8, first 49.6, now 58.2; dark share 17.0 / 8.0 / 14.6 %</h2><a href="pair-play-office-front-y030.png"><img src="pair-play-office-front-y030.png"></a>
+<h2>Handover office-front-y210: c044 | first swap | now. vs c044: now 15.33 (first 53.6); contrast c044 55.1, first 63.7, now 60.5; dark share 17.7 / 20.1 / 16.3 %</h2><a href="pair-play-office-front-y210.png"><img src="pair-play-office-front-y210.png"></a>
+<h2>The aerial over the west: the first swap | now</h2><a href="pair-aerial.png"><img src="pair-aerial.png"></a>
+<h2>Over the west: from the south-east | from the north</h2><a href="pair-west.png"><img src="pair-west.png"></a>
+<h2>Top-down, the whole sheet: the first swap | now</h2><a href="pair-plan.png"><img src="pair-plan.png"></a>
+<h2>All frames</h2><figure><a href="district-aerial-rule.png"><img src="district-aerial-rule.png"></a><figcaption>district-aerial-rule.png</figcaption></figure><figure><a href="district-aerial_e-rule.png"><img src="district-aerial_e-rule.png"></a><figcaption>district-aerial_e-rule.png</figcaption></figure><figure><a href="district-aerial_w-rule.png"><img src="district-aerial_w-rule.png"></a><figcaption>district-aerial_w-rule.png</figcaption></figure><figure><a href="district-aerial_w2-rule.png"><img src="district-aerial_w2-rule.png"></a><figcaption>district-aerial_w2-rule.png</figcaption></figure><figure><a href="district-aerial_zone-rule.png"><img src="district-aerial_zone-rule.png"></a><figcaption>district-aerial_zone-rule.png</figcaption></figure><figure><a href="district-corner-rule.png"><img src="district-corner-rule.png"></a><figcaption>district-corner-rule.png</figcaption></figure><figure><a href="district-gardens-rule.png"><img src="district-gardens-rule.png"></a><figcaption>district-gardens-rule.png</figcaption></figure><figure><a href="district-harbour-rule.png"><img src="district-harbour-rule.png"></a><figcaption>district-harbour-rule.png</figcaption></figure><figure><a href="district-parade-rule.png"><img src="district-parade-rule.png"></a><figcaption>district-parade-rule.png</figcaption></figure><figure><a href="district-plan-rule.png"><img src="district-plan-rule.png"></a><figcaption>district-plan-rule.png</figcaption></figure><figure><a href="district-plan_full-rule.png"><img src="district-plan_full-rule.png"></a><figcaption>district-plan_full-rule.png</figcaption></figure><figure><a href="district-zone-seam-rule.png"><img src="district-zone-seam-rule.png"></a><figcaption>district-zone-seam-rule.png</figcaption></figure><figure><a href="play-boulevard-east-y030-rule.png"><img src="play-boulevard-east-y030-rule.png"></a><figcaption>play-boulevard-east-y030-rule.png</figcaption></figure><figure><a href="play-cafe-square-y030-rule-oldlook.png"><img src="play-cafe-square-y030-rule-oldlook.png"></a><figcaption>play-cafe-square-y030-rule-oldlook.png</figcaption></figure><figure><a href="play-cafe-square-y030-rule.png"><img src="play-cafe-square-y030-rule.png"></a><figcaption>play-cafe-square-y030-rule.png</figcaption></figure><figure><a href="play-cafe-square-y210-rule-oldlook.png"><img src="play-cafe-square-y210-rule-oldlook.png"></a><figcaption>play-cafe-square-y210-rule-oldlook.png</figcaption></figure><figure><a href="play-cafe-square-y210-rule.png"><img src="play-cafe-square-y210-rule.png"></a><figcaption>play-cafe-square-y210-rule.png</figcaption></figure><figure><a href="play-circus-y030-rule.png"><img src="play-circus-y030-rule.png"></a><figcaption>play-circus-y030-rule.png</figcaption></figure><figure><a href="play-gardens-station-y030-rule.png"><img src="play-gardens-station-y030-rule.png"></a><figcaption>play-gardens-station-y030-rule.png</figcaption></figure><figure><a href="play-harbour-station-y030-rule.png"><img src="play-harbour-station-y030-rule.png"></a><figcaption>play-harbour-station-y030-rule.png</figcaption></figure><figure><a href="play-harbour-terrace-y030-rule.png"><img src="play-harbour-terrace-y030-rule.png"></a><figcaption>play-harbour-terrace-y030-rule.png</figcaption></figure><figure><a href="play-office-front-y030-rule-oldlook.png"><img src="play-office-front-y030-rule-oldlook.png"></a><figcaption>play-office-front-y030-rule-oldlook.png</figcaption></figure><figure><a href="play-office-front-y030-rule.png"><img src="play-office-front-y030-rule.png"></a><figcaption>play-office-front-y030-rule.png</figcaption></figure><figure><a href="play-office-front-y210-rule-oldlook.png"><img src="play-office-front-y210-rule-oldlook.png"></a><figcaption>play-office-front-y210-rule-oldlook.png</figcaption></figure><figure><a href="play-office-front-y210-rule.png"><img src="play-office-front-y210-rule.png"></a><figcaption>play-office-front-y210-rule.png</figcaption></figure><figure><a href="play-skyport-station-y030-rule.png"><img src="play-skyport-station-y030-rule.png"></a><figcaption>play-skyport-station-y030-rule.png</figcaption></figure><figure><a href="play-southside-y030-rule.png"><img src="play-southside-y030-rule.png"></a><figcaption>play-southside-y030-rule.png</figcaption></figure><figure><a href="play-zone-seam-east-y030-rule.png"><img src="play-zone-seam-east-y030-rule.png"></a><figcaption>play-zone-seam-east-y030-rule.png</figcaption></figure>
+<h2>Build log</h2><pre>export out/scratch/latch/075swap2/harbour.world.json sha256 f469704e9df3b7a6ce091d6b05dbcb1edc4f4ad231847307cd4862079e3c5e18 (harbour-district v0.5.5 (2026-10-29)); heights rule; SpaceHQ ours; scene Assets/Scenes/OldTown.unity; ours from Assets/Scenes/probe-oldtown-ours.unity
+plan contracts/world/harbour-district.plan.json 0.5.5 sha256 e168639fac7c1e14c259e9cd111716ff5eea6b1678b88c616e2f7287a5a187d5 (SpaceHQ form &quot;old&quot;): 20 roads, 47 plots, 27 blocks
+southside: N1 from (-50, -282) W 40 D 64 to (-32, -282) W 40 D 28, walks R 8 L 8 H 4 T 4 (plan frame)
+southside: N2 from (32, -282) W 40 D 28 to (32, -284.5) W 40 D 28, walks R 0 L 8 H 6 T 2 (plan frame)
+southside: SS1 from (-22, -427) W 46 D 28 to (-32, -450) W 46 D 28, walks R 8 L 8 H 8 T 4 (plan frame)
+southside: SS3 from (-22, -485) W 34 D 28 to (-32, -508) W 34 D 28, walks R 8 L 8 H 4 T 4 (plan frame)
+southside: SS2 from (22, -427) W 46 D 28 to (32, -439.5) W 40 D 28, walks R 2 L 8 H 0 T 6 (plan frame)
+southside: SS4 from (22, -485) W 34 D 28 to (32, -501.5) W 34 D 28, walks R 2 L 8 H 6 T 4 (plan frame)
+city mass: on the sheet off 42 road quads, the zone and parks; west fill plots (built use, no plan block): garden-row-east, pylon-row-east, rocket-west, lamplight-south-w, lamplight-south-e, west-terraces, lantern-court
+plan 0.5.5 parameters (E10): walk 0.18, boulevard kerbs +-10 (Crown Avenue +-8), circus ring outer kerb r 29, ground modules x1.2 in height, Southside on its plan blocks (SS5, W1 stand down), city mass by the plan
+vintage: Glint&#x27;s v2s on DK_StreetGrade (presentation cameras; the play camera renders with our play grade): v2 with the sky spared: old bloom whole; satVsSat x1 below 0.55, x1.22 from 0.85; hueVsSat cancels the lift over hue 0.44-0.58 (sky and sea); contrast 13
+towers: N1 Tower_Atom at (-54, -271) top 136.3 m, view-shadow 175 m, 21 m from the zone: buries the zone at yaw 210/300, not placed (its deck stays)
+towers: N1 Tower_Starburst at (-32, -273) top 203.3 m, view-shadow 260 m, 42 m from the zone: buries the zone at yaw 210/300, not placed (its deck stays)
+towers: N1 Tower_Lantern at (-10, -272) top 155.8 m, view-shadow 199 m, 65 m from the zone: buries the zone at yaw 210/300, not placed (its deck stays)
+towers: SS2 Tower_Needle at (35, -429) top 192.0 m, view-shadow 246 m, 109 m from the zone: buries the zone at yaw 300, not placed (its deck stays)
+city mass kept clear of skyrail/S1/trunk/beam-0 (35 points)
+west: 13 plan blocks built as old DecoKitBlocks (old frontage pieces, 3-storey classes, heights rule applies), 8 courts as gardens
+west: 38 old palms at our tree pits, 294 old palms and cypresses in the plan&#x27;s parks (14 m jittered grid, 35% gaps, clear of the roads)
+west: 5 old verge slabs cut away over the west (x &lt; -158; x &lt; -124 north of the Southside); old-stone base at -0.03 under our ground there
+levels: 5 old asphalt decks lifted from -0.002 to 0 (plan 0.5.5&#x27;s street level); old flags and kerbs scaled to the 0.18 walk (DecoKitPlacer.GroundScaleY 1.2)
+frontage pieces (rule): ArcadeBay_3 4 (top 21.4), BalconyBay_3 72 (top 16.5), CornerTower_12 2 (top 67.5), DecoBay_10 5 (top 43.8), DecoCorner_10 1 (top 57.6), DecoEnd_10 12 (top 45.8), HallBay 18 (top 11.7), HallCornerWing 3 (top 15.3), PortholeBay_3 142 (top 18.8), StreamBay_3 569 (top 16.5), StreamBay_3W 43 (top 16.5), StreamBay_6 12 (top 26.7), StreamCorner_3 94 (top 24.7), StreamCorner_4 20 (top 28.1), StreamEnd_3 8 (top 16.5), StreamEnd_3W 2 (top 16.5), StreamEnd_6 4 (top 26.7)
+zebras: 433 stripes taken out of the old road markings (dashes and coral tactile pads kept); the floating-eye crossings are ours, at the plan&#x27;s crossings
+heights rule: 12 old alley walls (27-43 m) swapped for our low alley walls (AlleyWall_3/3D/4/4D)
+HEAD materials: off (the kit materials as on disk, HEAD&#x27;s palette since dfda73fa; -swapHeadMats on for the first build&#x27;s copies)
+ours: Assets/Scenes/probe-oldtown-ours.unity built from out/scratch/latch/075swap2/harbour.world.json sha256 f469704e9df3b7a6ce091d6b05dbcb1edc4f4ad231847307cd4862079e3c5e18
+ours: play light read from our scene: sun (44.70, 330.00, 0.00) colour RGBA(1.000, 0.929, 0.800, 1.000) intensity 1.8 shadow 1; ambient Trilight sky RGBA(0.561, 0.576, 0.601, 1.000) equator RGBA(0.595, 0.570, 0.533, 1.000) ground RGBA(0.629, 0.582, 0.508, 1.000) x1, probe dc 0.313/0.288/0.254
+ours: play look read from our scene: TacticalShadows on play (near 60, far 40, 2 cascades, fade 8), grade Assets/Scenes/probe-oldtown-ours-grade.asset
+ours: 5610 kit instances unpacked in the probe scene&#x27;s copy in memory (so the cut can take parts of them; the probe scene is not saved)
+ours kept: 2264 objects (connector 51, crossing 672, deck 4, liner 1, station 87, station-item 76, station-piece 62, stop 57, west-ground 97, zone 1627), dropped 6081; batched meshes: 7685 parts kept, 209 clipped at the zone edge, 35544 dropped; 3742 solids the old gives way to; HEAD material slots 0 (0 materials)
+ours in the west (our ground under the old builders&#x27; west blocks): 97 flat objects, 11511 batched parts kept whole, 69 clipped to the west; old materials by name on 140 slots
+ours: 1 emptied SpaceHQ objects from our scene renamed (the old builders&#x27; DK_SpaceHQ is the switch&#x27;s)
+sky track: 5 beams, 2797 m, swept by the old DecoKitSkyRail.Beam (ivory body, teal stripe) on our route at top 24 m
+pylons: 72 at our points: 65 on the old SkyRail_Pylon_Tall, 7 bare shafts (export: the plan&#x27;s point stands in a walk zone), heads 48 our HeadTwin, 24 old single
+tram rails: 394 of our rail pieces laid as 1364 old Tile_TramRail tiles; 60 pieces on the old boulevard track left to the old rails (old primary there)
+tram: no rail of ours by stop stop/T1/circus (old track there)
+trams: 4 old Tram at our stops and parked tram; 10 old TramCanopy at our stop shelters outside the zone
+cut: 0 small loose renderers (people, cars, primitives) gave way
+old gave way: 1911 of 11264 old pieces, 1302 parts of generated meshes (merged slabs, roofs, city mass), 10 flat parts cut exactly at the zone edge; flagships that clash and stand: 5 (LinerDock at (270, -138) with liner:signature/ocean-liner; SphereStation at (-130, 124) with gardens-gate; CornerTower_12 at (-43, 137) with skyrail/S1/trunk/beam-1#83; CircusMonument at (0, 0) with crossing:crossing/crown-circus/1/signal/b; DiscTower at (-44, 164) with skyrail/S1/trunk/beam-0#80)
+  gave way, Gardens Gate seam (S1 and the gate, plan 0.5.5): 29 (Deckchair 10, StreamBay_3 5, Planter_Trough 5, PottedPalm_Small 3, PottedTopiary 1, StreamBay_3W 1, StreamCorner_3 1, Bench 1, Roof_Tennis 1, Roof_Planter 1)
+  gave way, Handover plot orbit-gardens (plan 0.5.5): 108 (RFM_CityCommuterV1 15, RFM_PeopleElderV2 13, RFM_PeopleDinerOwnerV2 12, RFM_PeopleCourierV2 12, RFM_PeopleTransitOfficerV2 9, RFM_PeopleCommuterV2 8, RFM_PeopleMechanicV2 7, Streetlamp 6, Roof_Planter 4, Cypress 4, CoconutPalm 3, StreamBay_3 3, RFM_CivilianBubbleMicroV1 2, RFM_CivilianStreamlineTaxiV1 2)
+  gave way, Handover street (flat old ground): 824 (mesh:Southside tiles merged/Tiles -2 -5 127, mesh:Southside tiles merged/Tiles -3 -5 82, Kerb_Granite_1 76, mesh:Southside tiles merged/Tiles -2 -2 72, Kerb_Granite_0 71, mesh:Southside tiles merged/Tiles -2 -6 56, mesh:Southside tiles merged/Tiles -1 -5 55, mesh:Southside tiles merged/Tiles -4 -5 40, Pave_Flags_1 38, mesh:Southside tiles merged/Tiles -3 -6 37, Pave_Flags_0 36, Pave_Flags_3 34, Pave_Flags_2 33, mesh:Southside tiles merged/Tiles -2 -4 24)
+  gave way, Handover street (plan 0.5.5): 222 (RFM_PeopleCommuterV2 23, RFM_PeopleElderV2 19, RFM_PeopleCourierV2 15, CoconutPalm 15, RFM_PeopleTransitOfficerV2 14, RFM_CityCommuterV1 14, RFM_PeopleDinerOwnerV2 10, RFM_PeopleMechanicV2 10, StreamBay_3 9, RFM_CivilianBubbleMicroV1 8, Streetlamp 8, Cypress 7, CafeSet_Tulip 6, FlowerBed 5)
+  gave way, Handover zone: 1825 (mesh:Southside tiles merged/Tiles -3 -2 209, mesh:Southside tiles merged/Tiles -3 -3 199, Kerb_Granite_1 102, Kerb_Granite_0 99, mesh:Southside tiles merged/Tiles -3 -4 98, Pave_Flags_0 88, Pave_Flags_2 88, Pave_Flags_1 76, Pave_Flags_3 76, mesh:Southside tiles merged/Tiles -3 -1 74, RFM_PeopleDinerOwnerV2 42, RFM_CityCommuterV1 40, RFM_PeopleCommuterV2 39, mesh:Southside tiles merged/Tiles -2 -3 38)
+  gave way, keep/drop: crossings (floating eye, no present-day lights): 8 (TrafficLight 8)
+  gave way, keep/drop: crossings (no zebras): 433 (zebra stripe 433)
+  gave way, no tower where it buries the Handover (DecoKitDecks rule, extended): 4 (Tower_Atom 1, Tower_Starburst 1, Tower_Lantern 1, Tower_Needle 1)
+  gave way, old sky rail (our S1/S2 replace it): 3 (Sky rail 1, Harbour rail 1, SkyRailStation 1)
+  gave way, our structure (zone edge or network): 82 (Cypress 9, mesh:Harbour/Skyport pier piles 8, RFM_PeopleElderV2 7, RFM_PeopleTransitOfficerV2 6, RFM_PeopleCommuterV2 5, CoconutPalm 5, RFM_PeopleMechanicV2 4, RFM_PeopleCourierV2 4, RFM_CityCommuterV1 4, mesh:Deco City Mass/CityMass_-1_-1 4, RFM_PeopleDinerOwnerV2 3, DecoEnd_10 2, Deckchair 2, PlazaSphereLamp 2)
+  gave way, sky track beam corridor: 1 (Roof_Conservatory 1)
+  gave way, sky track pylon: 9 (FanPalm 2, StreamBay_3W 1, RFM_PeopleCourierV2 1, RFM_PeopleMechanicV2 1, StreamBay_3 1, PottedTopiary 1, mesh:Harbour/Market pier 1, mesh:Orbit Gardens/Gardens basin coping 1)
+  gave way, tram corridor (our route): 113 (RFM_PeopleCourierV2 14, StreamBay_3 11, RFM_PeopleTransitOfficerV2 11, RFM_PeopleElderV2 10, RFM_PeopleDinerOwnerV2 9, RFM_CityCommuterV1 8, RFM_CivilianBubbleMicroV1 7, RFM_PeopleCommuterV2 7, RFM_CivilianFamilyWagonV1 5, RFM_PeopleMechanicV2 5, RoundBench 4, StreamCorner_3 4, RFM_CivilianNeighborhoodShuttleV1 3, Planter_Urn 2)
+SpaceHQ ours: Built/DK_SpaceHQ_Portal at plan (0, 244), yaw -90, base 0.18; top 252.7 m, ground x -40.1..41.6, y 200.6..287.4; 44 material slots to the old materials (DK_Limestone_Tex, DK_Gold, DK_Enamel_Seafoam, DK_Terrazzo_Ivory, DK_Enamel_Ivory, DK_Enamel_Butter, DK_Chrome, DK_GlassDark, DK_Enamel_Coral, DK_Lamp, DK_Enamel_Teal, DK_Enamel_Mint, DK_Neon_Coral); the old showpiece probe
+SpaceHQ: old present, ours present; on: ours; the plan&#x27;s form &quot;old&quot; (S1 Crown Circus station beside the HQ, as exported)
+export: 1287 kerb stones, 3196 pavement modules, 5 asphalt meshes (as placed, before the merge)
+play camera: &quot;Play camera (our play look)&quot; (ortho 14, pitch 38, MSAA off), TacticalShadows from our scene (near 60, far 40, 2 cascades, ortho SSAO off); OldTownPlayLook: fog off, &quot;Harbour fog&quot; off, 1 presentation volumes at 0 (DK grade), play grade Assets/Suborned/OldTownArt/Swap/OldTown-play-grade.asset, 1 sun flares off; our play light on (sun (44.70, 330.00, 0.00) x1.8, ambient Trilight + probe); 63047 crowd and traffic objects on layer 29 (culled by the play camera)
+export: built.json: 2399 building pieces in 1689 buildings, 912 street bays, 1287 kerbs, 3196 pavement modules, 5 road meshes, 30 levels
+export: occluders-rule.json: 2384 occluders
+built Assets/Scenes/OldTown.unity in 106 s</pre>
+<h2>Evidence</h2><ul><li><a href="built.json">built.json</a></li><li><a href="occluders-rule.json">occluders-rule.json</a></li><li><a href="swap-rule.json">swap-rule.json</a></li><li><a href="metrics.json">metrics.json</a></li></ul>

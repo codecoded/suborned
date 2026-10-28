@@ -22,11 +22,27 @@ namespace Suborned.OldTown.Editor.Swap
         static readonly HashSet<string> FlagCats = new() { "Landmarks", "Skyport", "Highrise" };
         internal static readonly HashSet<string> FlagPieces = new() { "CornerTower_12", "Tower_Setback", "Tower_Stepped", "Tower_Saucer", "SpaceHQ" };
 
-        public static void Run(OldTownSwap.Report rep, WorldDto w, SwapOurs ours, SwapNetwork net, string hq)
+        /// <summary>Second build (plan 0.5.5, Datum's "Swap: patch applied" items 4 and 6, "Swap: network" item 3): the old also gives way to the
+        /// Handover streets outside the zone (kerb to kerb + 0.5 m; flat old ground under 30 m too, so the street is street), to the
+        /// orbit-gardens plot (standing pieces), and at the Gardens Gate seam (the old west terrace at x -126..-108 over y -9..50, where S1 and
+        /// the gate cross).</summary>
+        static SwapShapes PlanHoles(SwapPlan plan, out SwapShapes flat)
+        {
+            var h = new SwapShapes(); flat = new SwapShapes();
+            Vector2[] Old(Vector2[] q) => q.Select(OldTownSwap.Old).ToArray();
+            foreach (var (id, q) in plan.Corridors(id => SwapPlan.HandoverStreets.Contains(id), .5f)) { h.Add("street", id, Old(q)); flat.Add("street", id, Old(q)); }
+            if (plan.Plot("orbit-gardens") is { } og) h.Add("plot", "orbit-gardens", Old(og.poly));
+            h.Add("seam", "gardens-gate", Old(SwapPlan.Ring(Rect.MinMaxRect(-126f, -9f, -108f, 50f))));
+            return h;
+        }
+
+        public static void Run(OldTownSwap.Report rep, WorldDto w, SwapOurs ours, SwapNetwork net, string hq, SwapPlan plan)
         {
             var zone = OldTownSwap.ZoneOld;
             var holes = net.Holes;
             foreach (var s in ours.Solids) holes.Rect("ours", s.id, s.box, .2f, s.y0, s.y1);
+            var planHoles = PlanHoles(plan, out var planFlat);
+            foreach (var x in planHoles.All) holes.Add(x.Kind, x.Id, x.Poly);
             var cats = DecoKitData.Assets().assets.GroupBy(a => a.name).ToDictionary(g => g.Key, g => g.First().category);
             var skip = new HashSet<Transform> { ours.Root, net.Root };
             bool Skipped(Transform t) { for (var x = t; x; x = x.parent) if (skip.Contains(x)) return true; return false; }
@@ -54,6 +70,7 @@ namespace Suborned.OldTown.Editor.Swap
                     var h = holes.Hit(box, b.min.y, b.max.y);
                     if (h != null) { why = Reason(h.Kind); by = h.Id; }
                 }
+                else if (planFlat.Hit(new Vector2(b.center.x, b.center.z)) is { } fh) { why = "Handover street (flat old ground)"; by = fh.Id; }
                 if (why == null) continue;
                 if (piece == "SpaceHQ" || flag && why != "Handover zone") { flagClash++; clashKept.Add($"{piece} at ({b.center.x:0}, {b.center.z - OldTownSwap.DZ:0}) with {by}"); continue; }
                 rep.Gave(why, piece, b.center, by);
@@ -109,7 +126,11 @@ namespace Suborned.OldTown.Editor.Swap
                         if (act[k] == 1) rep.Gave("Handover zone", Part(mf), b.center, "zone");
                         any = true; continue;
                     }
-                    if (flat) continue;
+                    if (flat)
+                    {
+                        if (Mathf.Max(b.size.x, b.size.z) < 30f && planFlat.Hit(new Vector2(b.center.x, b.center.z)) is { } fh) { act[k] = 1; any = true; rep.Gave("Handover street (flat old ground)", Part(mf), b.center, fh.Id); }
+                        continue;
+                    }
                     var h = holes.Hit(box, b.min.y, b.max.y);
                     if (h != null) { act[k] = 1; any = true; rep.Gave(Reason(h.Kind), Part(mf), b.center, h.Id); }
                 }
@@ -142,6 +163,9 @@ namespace Suborned.OldTown.Editor.Swap
             "pylon" => "sky track pylon",
             "tram" => "tram corridor (our route)",
             "ours" => "our structure (zone edge or network)",
+            "street" => "Handover street (plan 0.5.5)",
+            "plot" => "Handover plot orbit-gardens (plan 0.5.5)",
+            "seam" => "Gardens Gate seam (S1 and the gate, plan 0.5.5)",
             _ => kind,
         };
     }

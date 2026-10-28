@@ -36,7 +36,7 @@ namespace Suborned.OldTown.Editor.Swap
                 if (InOurs(t)) continue;
                 var piece = OldTownSwap.PieceOf(t.name);
                 if (piece.StartsWith("Kerb_")) kerbs.Add(new Dictionary<string, object> { ["piece"] = piece, ["at"] = Pl(t.position), ["yaw"] = R(t.eulerAngles.y), ["top"] = R(t.position.y + L.Walk) });
-                else if (piece.StartsWith("Pave_") || piece.StartsWith("TreePit_")) pave.Add(new Dictionary<string, object> { ["piece"] = piece, ["at"] = Pl(t.position), ["size"] = 2, ["top"] = R(t.position.y + L.Walk) });
+                else if (piece.StartsWith("Pave_") || piece.StartsWith("TreePit_")) pave.Add(new Dictionary<string, object> { ["piece"] = piece, ["at"] = Pl(t.position), ["size"] = 2, ["yaw"] = R(t.eulerAngles.y), ["top"] = R(t.position.y + L.Walk) });  // yaw: Splice's ask 1 (Unity yaw, degrees)
             }
             var road = DecoKitGroundMesh.Road();
             foreach (var mr in UnityEngine.Object.FindObjectsByType<MeshRenderer>(FindObjectsSortMode.None))
@@ -54,7 +54,50 @@ namespace Suborned.OldTown.Editor.Swap
 
         static bool InOurs(Transform t) { for (var x = t; x; x = x.parent) if (x.name.StartsWith("Ours (") || x.name.StartsWith("Network (")) return true; return false; }
 
-        /// <summary>The oriented footprint of a prefab instance from its renderers' local bounds (plan points, counter-clockwise), with base and top.</summary>
+        // ---------------------------------------------------------------- outlines (second build: Splice's ask 2, real ground-storey outlines)
+        /// <summary>How high above a piece's foot its ground-storey outline is read (m): the shopfront and its piers, under the canopies and signs.</summary>
+        internal const float OutlineBand = 2f;
+        static readonly Dictionary<Mesh, Vector3[]> meshVerts = new();
+        static Vector3[] Verts(Mesh m)
+        {
+            if (meshVerts.TryGetValue(m, out var v)) return v;
+            if (m.isReadable) v = m.vertices;
+            else using (var data = Mesh.AcquireReadOnlyMeshData(m)) { var a = new Unity.Collections.NativeArray<Vector3>(data[0].vertexCount, Unity.Collections.Allocator.Temp); data[0].GetVertices(a); v = a.ToArray(); a.Dispose(); }
+            return meshVerts[m] = v;
+        }
+
+        /// <summary>The convex outline (plan frame, counter-clockwise) of every vertex of these meshes lying below foot + OutlineBand, the foot being their
+        /// lowest vertex; null when there are fewer than three distinct points.</summary>
+        internal static (float[][] ring, float y0, float y1) Outline(IEnumerable<(Mesh mesh, Matrix4x4 l2w)> parts)
+        {
+            var pts = new List<Vector3>(); float y0 = float.MaxValue, y1 = float.MinValue;
+            foreach (var (m, l2w) in parts) foreach (var v in Verts(m)) { var wv = l2w.MultiplyPoint3x4(v); pts.Add(wv); y0 = Mathf.Min(y0, wv.y); y1 = Mathf.Max(y1, wv.y); }
+            if (pts.Count < 3) return (null, 0, 0);
+            var low = pts.Where(q => q.y <= y0 + OutlineBand).Select(q => new Vector2(q.x, q.z)).ToList();
+            var hull = Hull(low);
+            if (hull.Count < 3) return (null, 0, 0);
+            return (hull.Select(q => new[] { R(q.x), R(q.y - OldTownSwap.DZ) }).ToArray(), R(y0), R(y1));
+        }
+
+        static List<Vector2> Hull(List<Vector2> p)
+        {
+            p = p.Select(q => new Vector2(Mathf.Round(q.x * 100f) / 100f, Mathf.Round(q.y * 100f) / 100f)).Distinct().ToList();
+            if (p.Count < 3) return p;
+            p.Sort((a, b) => a.x != b.x ? a.x.CompareTo(b.x) : a.y.CompareTo(b.y));
+            var h = new List<Vector2>();
+            float Cross(Vector2 o, Vector2 a, Vector2 b) => (a.x - o.x) * (b.y - o.y) - (a.y - o.y) * (b.x - o.x);
+            foreach (var q in p) { while (h.Count >= 2 && Cross(h[^2], h[^1], q) <= 0) h.RemoveAt(h.Count - 1); h.Add(q); }
+            int lo = h.Count + 1;
+            for (int i = p.Count - 2; i >= 0; i--) { var q = p[i]; while (h.Count >= lo && Cross(h[^2], h[^1], q) <= 0) h.RemoveAt(h.Count - 1); h.Add(q); }
+            h.RemoveAt(h.Count - 1);
+            return h;
+        }
+
+        static IEnumerable<(Mesh, Matrix4x4)> Parts(Transform t) =>
+            t.GetComponentsInChildren<MeshFilter>().Where(mf => mf.sharedMesh && mf.GetComponent<MeshRenderer>() is { enabled: true }).Select(mf => (mf.sharedMesh, mf.transform.localToWorldMatrix));
+
+        /// <summary>The oriented footprint of a prefab instance from its renderers' local bounds (plan points, counter-clockwise), with base and top.
+        /// (The first build's footprint; the second build exports Outline and keeps this only for pieces with no mesh.)</summary>
         static (float[][] ring, float y0, float y1) Box(Transform t, bool behindFacade)
         {
             var w2l = t.worldToLocalMatrix; bool any = false; Bounds lb = default;
@@ -97,7 +140,9 @@ namespace Suborned.OldTown.Editor.Swap
                 if (cat == "Plaza" && !piece.StartsWith("Hall")) continue;
                 // the occlusion measure counts buildings, as tools/world/occlusion.ts does for an export (no landmarks, roofs, signs or structures)
                 if (forOcclusion && !frontage && (cat == "Landmarks" || cat == "Skyport")) continue;
-                var (ring, y0, y1) = Box(t, frontage); if (ring == null || y1 - y0 < 2.5f) continue;
+                var (ring, y0, y1) = Outline(Parts(t));
+                if (ring == null) (ring, y0, y1) = Box(t, frontage);
+                if (ring == null || y1 - y0 < 2.5f) continue;
                 var d = new Dictionary<string, object> { ["piece"] = piece, ["kind"] = frontage ? "frontage" : cat == "Landmarks" || cat == "Skyport" ? "landmark" : "building", ["ring"] = ring, ["base"] = y0, ["top"] = y1 };
                 if (frontage) { var tag = t.name[(t.name.IndexOf(" #", StringComparison.Ordinal) + 2)..]; d["building"] = "run" + tag; d["front"] = new[] { R(t.forward.x), R(t.forward.z) }; d["at"] = Pl(t.position); }
                 else d["building"] = piece + "@" + string.Join(",", Pl(t.position));
@@ -119,10 +164,20 @@ namespace Suborned.OldTown.Editor.Swap
                         int k = ids[s][t];
                         for (int j = 0; j < 3; j++) { var p = rd.Verts[rd.Subs[s][3 * t + j]].W; if (!has[k]) { cb[k] = new Bounds(p, Vector3.zero); has[k] = true; } else cb[k].Encapsulate(p); }
                     }
+                var low = new List<Vector2>[count];
+                for (int s2 = 0; s2 < rd.Subs.Count; s2++)
+                    for (int t2 = 0; t2 < ids[s2].Length; t2++)
+                    {
+                        int k = ids[s2][t2];
+                        for (int j = 0; j < 3; j++) { var q = rd.Verts[rd.Subs[s2][3 * t2 + j]].W; if (q.y <= cb[k].min.y + OutlineBand) (low[k] ??= new List<Vector2>()).Add(new Vector2(q.x, q.z)); }
+                    }
                 for (int k = 0; k < count; k++)
                 {
                     var b = cb[k]; if (b.size.y < 2.5f || b.size.x < .5f || b.size.z < .5f) continue;
-                    outl.Add(new Dictionary<string, object> { ["piece"] = "mesh:" + mf.name, ["kind"] = "mass", ["building"] = $"{mf.name}#{k}", ["ring"] = new[] { Pl(new Vector3(b.min.x, 0, b.min.z)), Pl(new Vector3(b.max.x, 0, b.min.z)), Pl(new Vector3(b.max.x, 0, b.max.z)), Pl(new Vector3(b.min.x, 0, b.max.z)) }, ["base"] = R(b.min.y), ["top"] = R(b.max.y) });
+                    var hull = low[k] != null ? Hull(low[k]) : null;
+                    var ring = hull != null && hull.Count >= 3 ? hull.Select(q => new[] { R(q.x), R(q.y - OldTownSwap.DZ) }).ToArray()
+                        : new[] { Pl(new Vector3(b.min.x, 0, b.min.z)), Pl(new Vector3(b.max.x, 0, b.min.z)), Pl(new Vector3(b.max.x, 0, b.max.z)), Pl(new Vector3(b.min.x, 0, b.max.z)) };
+                    outl.Add(new Dictionary<string, object> { ["piece"] = "mesh:" + mf.name, ["kind"] = "mass", ["building"] = $"{mf.name}#{k}", ["ring"] = ring, ["base"] = R(b.min.y), ["top"] = R(b.max.y) });
                 }
             }
             return outl;
@@ -135,8 +190,8 @@ namespace Suborned.OldTown.Editor.Swap
             { ["building"] = s["building"], ["piece"] = s["piece"], ["at"] = s["at"], ["normal"] = s["front"], ["w"] = 6, ["kind"] = "bay-front (the old builders model no doors: a ground-storey bay's facade point and outward normal)" }).ToList();
             var levels = new List<object>
             {
-                new Dictionary<string, object> { ["id"] = "old/road", ["height"] = -.002f, ["what"] = "the old asphalt deck (DecoKitGroundMesh.Road)" },
-                new Dictionary<string, object> { ["id"] = "old/walk", ["height"] = L.Walk, ["what"] = "the old pavement, flags and verges (DecoKitStreetLayout.Walk)" },
+                new Dictionary<string, object> { ["id"] = "old/road", ["height"] = 0f, ["what"] = "the old asphalt deck (DecoKitGroundMesh.Road), lifted from -0.002 to plan 0.5.5's 0 (SwapWest.LiftRoad)" },
+                new Dictionary<string, object> { ["id"] = "old/walk", ["height"] = L.Walk, ["what"] = "the old pavement, flags and verges (DecoKitStreetLayout.Walk, plan 0.5.5's 0.18 by edit E10)" },
                 new Dictionary<string, object> { ["id"] = "old/promenade", ["height"] = P.PromenadeY, ["what"] = "the harbour quay promenade (DecoKitCityPlan.PromenadeY)" },
                 new Dictionary<string, object> { ["id"] = "old/water", ["height"] = P.WaterY, ["what"] = "the harbour water" },
             };
@@ -145,7 +200,9 @@ namespace Suborned.OldTown.Editor.Swap
             var doc = new Dictionary<string, object>
             {
                 ["schema"] = "latch.oldbuilt/1",
-                ["status"] = "draft: Splice fixes the schema for the plan-match check (marker briefs/075/oldbuild/READY-match-splice)",
+                ["status"] = "second build (plan 0.5.5): read by tools/world/oldmatch/latch.ts",
+                ["plan"] = OldTownSwap.PlanFacts,
+                ["rings"] = $"buildings: the convex outline of each piece's vertices within {OutlineBand} m of its foot (its ground storey: shopfront and piers, under canopies and signs), not bounds boxes; city mass parts the same per connected part; pavements carry their Unity yaw (deg)",
                 ["brief"] = "075 remap step 2, the swap",
                 ["frame"] = "plan (x, y) = old Unity (x, z - 206), metres; heights in metres above the old road deck's zero",
                 ["scene"] = $"Assets/Scenes/{scene}.unity", ["heights"] = heights, ["spacehq"] = hq,

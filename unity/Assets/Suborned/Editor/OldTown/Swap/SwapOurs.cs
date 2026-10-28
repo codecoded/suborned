@@ -19,11 +19,20 @@ namespace Suborned.OldTown.Editor.Swap
     /// the ocean liner, SpaceHQ_Portal for the "ours" switch). The rest of our district is dropped: the old builders are the look outside the
     /// zone. Sky track beams, pylons and tram rails are drawn again in the old pieces (SwapNetwork). The kept roots move into the old scene
     /// under one root at z +206 (plan to old frame). Kit materials the superseded palette edits changed on disk are swapped for HEAD's
-    /// (out/scratch/latch/075swap/headmats, regenerated in a HEAD worktree and checked by sha256 against HEAD's kit.json).</summary>
+    /// (out/scratch/latch/075swap/headmats, regenerated in a HEAD worktree and checked by sha256 against HEAD's kit.json).
+    /// Second build (plan 0.5.5): in the west (SwapPlan.West, where the old builders laid no ground) our flat ground stays too (roads, kerbs,
+    /// pavements, lawns: flat and under 1 m), batched parts clipped exactly to the west outside the zone and moved to their own renderer, its
+    /// materials the old ones of the same name (asphalt to the old DK_Asphalt). SpaceHQ: the plan's form is "old", so our scene carries the old
+    /// SpaceHQ piece; it is dropped here (the old builders place the old one; SwapHq places our SpaceHQ_Portal for the "ours" switch).</summary>
     internal sealed class SwapOurs
     {
         public Transform Root;
-        public GameObject SpaceHq;
+        /// <summary>Second build: our play camera's look, read from our scene before its cameras and lighting go: the TacticalShadows fit
+        /// (JsonUtility) and the grade volume's profile (the play grade).</summary>
+        public string PlayShadowsJson; public UnityEngine.Rendering.VolumeProfile PlayGrade;
+        public (Quaternion rot, Color colour, float intensity, float shadow)? PlaySun;
+        public (UnityEngine.Rendering.AmbientMode mode, Color sky, Color equator, Color ground, float intensity, float[] probe) PlayAmbient;
+        int westUnits, westParts, westClipped;
         /// <summary>Kept solids, old frame: XZ box, height band, id (each a hole the old gives way to).</summary>
         public readonly List<(Rect box, float y0, float y1, string id)> Solids = new();
         readonly SwapShapes net = new(), exclude = new();
@@ -38,12 +47,26 @@ namespace Suborned.OldTown.Editor.Swap
         {
             var o = new SwapOurs();
             o.Shapes(w);
+            o.KeepFlat = KeepRegions();
             var target = SceneManager.GetActiveScene();
-            var heads = HeadMats(rep);
+            // second build: the palette edits are committed (dfda73fa) and the kit on disk is HEAD's, so HEAD's older copies are no longer swapped in
+            var heads = Suborned.OldTown.Editor.DecoKit.DecoKitStage.Arg("swapHeadMats", "off") == "on" ? HeadMats(rep) : new Dictionary<string, Material>();
+            if (heads.Count == 0) rep.Log("HEAD materials: off (the kit materials as on disk, HEAD's palette since dfda73fa; -swapHeadMats on for the first build's copies)");
             var s = EditorSceneManager.OpenScene(scenePath, OpenSceneMode.Additive);
             var stamp = s.GetRootGameObjects().Select(g => g.GetComponent<WorldStamp>()).FirstOrDefault(x => x);
             rep.Log($"ours: {scenePath} built from {(stamp ? stamp.exportPath : "?")} sha256 {(stamp ? stamp.exportSha256 : "?")}");
             if (stamp && stamp.exportSha256 != w.Sha256) throw new InvalidDataException($"[Swap] {scenePath} was built from export {stamp.exportSha256}, not the pinned {w.Sha256}");
+            var light = s.GetRootGameObjects().SelectMany(r => r.GetComponentsInChildren<Light>(true)).FirstOrDefault(l => l.type == LightType.Directional && l.name == "sun");
+            if (light) o.PlaySun = (light.transform.rotation, light.color, light.intensity, light.shadowStrength);
+            SceneManager.SetActiveScene(s);  // RenderSettings are the active scene's: read ours, then back
+            o.PlayAmbient = (RenderSettings.ambientMode, RenderSettings.ambientSkyColor, RenderSettings.ambientEquatorColor, RenderSettings.ambientGroundColor, RenderSettings.ambientIntensity, Suborned.OldTown.OldTownPlayLook.Flatten(RenderSettings.ambientProbe));
+            SceneManager.SetActiveScene(target);
+            rep.Log($"ours: play light read from our scene: sun {(light ? $"{light.transform.eulerAngles} colour {light.color} intensity {light.intensity} shadow {light.shadowStrength}" : "MISSING")}; ambient {o.PlayAmbient.mode} sky {o.PlayAmbient.sky} equator {o.PlayAmbient.equator} ground {o.PlayAmbient.ground} x{o.PlayAmbient.intensity}, probe dc {o.PlayAmbient.probe[0]:0.###}/{o.PlayAmbient.probe[9]:0.###}/{o.PlayAmbient.probe[18]:0.###}");
+            var ts = s.GetRootGameObjects().SelectMany(r => r.GetComponentsInChildren<TacticalShadows>(true)).FirstOrDefault();
+            if (ts) o.PlayShadowsJson = JsonUtility.ToJson(ts);
+            var vol = s.GetRootGameObjects().SelectMany(r => r.GetComponentsInChildren<UnityEngine.Rendering.Volume>(true)).FirstOrDefault(v => v.isGlobal && v.sharedProfile);
+            if (vol) o.PlayGrade = vol.sharedProfile;
+            rep.Log($"ours: play look read from our scene: TacticalShadows {(ts ? $"on {ts.name} (near {ts.nearBand}, far {ts.farBand}, {ts.cascades} cascades, fade {ts.fade})" : "MISSING")}, grade {(vol ? AssetDatabase.GetAssetPath(vol.sharedProfile) : "MISSING")}");
             foreach (var r in s.GetRootGameObjects()) if (Array.IndexOf(SkipRoots, r.name) >= 0) UnityEngine.Object.DestroyImmediate(r);
             foreach (var r in s.GetRootGameObjects()) { var hz = r.transform.Find("horizon"); if (hz) UnityEngine.Object.DestroyImmediate(hz.gameObject); }
             int unpacked = 0;
@@ -52,7 +75,6 @@ namespace Suborned.OldTown.Editor.Swap
                 { PrefabUtility.UnpackPrefabInstance(t.gameObject, PrefabUnpackMode.Completely, InteractionMode.AutomatedAction); unpacked++; }
             rep.Log($"ours: {unpacked} kit instances unpacked in the probe scene's copy in memory (so the cut can take parts of them; the probe scene is not saved)");
             o.Filter(s);
-            o.FindHq(s);
             var root = new GameObject("Ours (Handover zone + network, our pipeline)");
             SceneManager.MoveGameObjectToScene(root, target);
             root.transform.position = new Vector3(0f, 0f, OldTownSwap.DZ);
@@ -68,7 +90,7 @@ namespace Suborned.OldTown.Editor.Swap
                 if (ch) r.sharedMaterials = mats;
             }
             rep.Log($"ours kept: {o.keptUnits} objects ({string.Join(", ", o.keptBy.OrderBy(k => k.Key).Select(k => $"{k.Key} {k.Value}"))}), dropped {o.droppedUnits}; batched meshes: {o.keptComps} parts kept, {o.clippedComps} clipped at the zone edge, {o.droppedComps} dropped; {o.Solids.Count} solids the old gives way to; HEAD material slots {swapped} ({heads.Count} materials)");
-            rep.Log(o.SpaceHq ? $"ours SpaceHQ_Portal found ({o.SpaceHq.name})" : "ours SpaceHQ_Portal NOT found");
+            rep.Log($"ours in the west (our ground under the old builders' west blocks): {o.westUnits} flat objects, {o.westParts} batched parts kept whole, {o.westClipped} clipped to the west; old materials by name on {o.remapped} slots");
             return o;
         }
 
@@ -130,7 +152,7 @@ namespace Suborned.OldTown.Editor.Swap
                 if (sig.Ground == null || sig.Ground.Length < 4) continue;
                 var r = Rect.MinMaxRect(sig.Ground[0], sig.Ground[2], sig.Ground[1], sig.Ground[3]);
                 if (sig.Id == "signature/ocean-liner") Add(net.Rect("liner", sig.Id, r, 2f), 400f);
-                if (sig.Id == "signature/space-hq") { Add(net.Rect("hq", sig.Id, r, 2f), 400f); hqRect = r; }
+                if (sig.Id == "signature/space-hq") hqRect = r;  // dropped: the old builders place the old HQ, SwapHq ours
             }
             foreach (var p in w.Transit.SkyTrack.Pylons) exclude.Circle("pylon (old pieces instead)", p.Id, p.At, 3f);
         }
@@ -193,11 +215,13 @@ namespace Suborned.OldTown.Editor.Swap
         {
             var c = new Vector2(b.center.x, b.center.z);
             float ext = Mathf.Max(b.size.x, b.size.z);
+            if (SwapMesh.Inside(hqRect, c) && b.max.y > 60f) { droppedUnits++; UnityEngine.Object.DestroyImmediate(go); return; }  // our scene's (old) SpaceHQ piece
             // the zone keeps what reaches into it whole (zoneWhy: "every plot that reaches into it keeps the massing it has"); flat pieces by their centre
             bool inZone = b.size.y < .6f ? SwapMesh.Inside(OldTownSwap.ZonePlan, c) : SwapMesh.Overlaps(SwapMesh.XZ(b), OldTownSwap.ZonePlan, .05f);
             if (inZone) { keptUnits++; Keep("zone"); Solid(b, "zone:" + go.name); return; }
             var n = Network(c, ext, go.name, b.max.y);
             if (n != null) { keptUnits++; Keep(n.Kind); Solid(b, $"{n.Kind}:{n.Id}"); return; }
+            if (FlatGround(b) && SwapPlan.InWest(c)) { keptUnits++; westUnits++; Keep("west-ground"); foreach (var r in go.GetComponentsInChildren<Renderer>(true)) Remap(r); return; }
             droppedUnits++;
             if (lod || go.transform.childCount == 0) UnityEngine.Object.DestroyImmediate(go);
             else { var mr = go.GetComponent<Renderer>(); var mf = go.GetComponent<MeshFilter>(); if (mr) UnityEngine.Object.DestroyImmediate(mr); if (mf) UnityEngine.Object.DestroyImmediate(mf); }
@@ -215,7 +239,7 @@ namespace Suborned.OldTown.Editor.Swap
                     int k = ids[s][t];
                     for (int j = 0; j < 3; j++) { var p = rd.Verts[rd.Subs[s][3 * t + j]].W; if (!has[k]) { cb[k] = new Bounds(p, Vector3.zero); has[k] = true; } else cb[k].Encapsulate(p); }
                 }
-            // per component: 0 drop, 1 keep, 2 clip to inside the zone
+            // per component: 0 drop, 1 keep, 2 clip to inside the zone (and, second build, the west part to its own renderer), 3 west whole
             var act = new int[count];
             var zone = OldTownSwap.ZonePlan;
             for (int k = 0; k < count; k++)
@@ -223,21 +247,36 @@ namespace Suborned.OldTown.Editor.Swap
                 var b = cb[k]; var box = SwapMesh.XZ(b); var c = new Vector2(b.center.x, b.center.z);
                 bool flat = b.size.y < .6f;
                 if (box.xMin >= zone.xMin && box.xMax <= zone.xMax && box.yMin >= zone.yMin && box.yMax <= zone.yMax) { act[k] = 1; Solid(b, "zone:" + mesh.name); continue; }
+                if (FlatGround(b) && SwapPlan.West.Any(r => SwapMesh.Overlaps(box, r)))
+                {
+                    bool whole = !SwapMesh.Overlaps(box, zone) && SwapPlan.West.Any(r => box.xMin >= r.xMin && box.xMax <= r.xMax && box.yMin >= r.yMin && box.yMax <= r.yMax);
+                    act[k] = whole ? 3 : 2; continue;
+                }
                 if (flat && SwapMesh.Overlaps(box, zone)) { act[k] = 2; continue; }
                 if (!flat && SwapMesh.Overlaps(box, zone, .05f)) { act[k] = 1; Solid(b, "zone:" + mesh.name); continue; }
                 var n = Network(c, Mathf.Max(b.size.x, b.size.z), r.name, b.max.y);
                 if (n != null) { act[k] = 1; Keep(n.Kind); Solid(b, $"{n.Kind}:{n.Id}"); }
             }
-            var w = new SwapMesh.Write(rd);
+            var w = new SwapMesh.Write(rd); var ww = new SwapMesh.Write(rd);
             var inside = SwapMesh.Inside(zone);
             for (int s = 0; s < rd.Subs.Count; s++)
                 for (int t = 0; t < ids[s].Length; t++)
                 {
                     int a = rd.Subs[s][3 * t], b = rd.Subs[s][3 * t + 1], c = rd.Subs[s][3 * t + 2], k = ids[s][t];
                     if (act[k] == 1) w.Keep(s, a, b, c);
-                    else if (act[k] == 2) SwapMesh.ClipInto(w, s, rd.Verts[a], rd.Verts[b], rd.Verts[c], inside);
+                    else if (act[k] == 3) ww.Keep(s, a, b, c);
+                    else if (act[k] == 2) { SwapMesh.ClipInto(w, s, rd.Verts[a], rd.Verts[b], rd.Verts[c], inside); SwapMesh.ClipInto(ww, s, rd.Verts[a], rd.Verts[b], rd.Verts[c], KeepFlat); }
                 }
-            for (int k = 0; k < count; k++) { if (act[k] == 1) keptComps++; else if (act[k] == 2) clippedComps++; else droppedComps++; }
+            for (int k = 0; k < count; k++) { if (act[k] == 1) keptComps++; else if (act[k] == 2) clippedComps++; else if (act[k] == 3) westParts++; else droppedComps++; }
+            westClipped += act.Count(x => x == 2) > 0 && ww.Triangles > 0 ? 1 : 0;
+            if (ww.Triangles > 0)
+            {
+                var go = new GameObject(r.name + " (west ground, old materials)");
+                go.transform.SetParent(r.transform, false);
+                go.AddComponent<MeshFilter>().sharedMesh = ww.Mesh(mesh.name + " (swap west)");
+                var nr = go.AddComponent<MeshRenderer>(); nr.sharedMaterials = r.sharedMaterials; nr.shadowCastingMode = r.shadowCastingMode; nr.renderingLayerMask = r.renderingLayerMask;
+                Remap(nr);
+            }
             if (w.Triangles == 0) { UnityEngine.Object.DestroyImmediate(r); UnityEngine.Object.DestroyImmediate(mf); return; }
             if (act.All(x => x == 1)) return;  // untouched
             var m = w.Mesh(mesh.name + " (swap)");
@@ -245,18 +284,34 @@ namespace Suborned.OldTown.Editor.Swap
             var col = r.GetComponent<MeshCollider>(); if (col) col.sharedMesh = m;
         }
 
-        /// <summary>SpaceHQ_Portal: the tall renderers standing on signature/space-hq's ground, gathered under one object so the switch can turn it off.</summary>
-        void FindHq(Scene s)
+        static bool FlatGround(Bounds b) => b.size.y < .6f && b.max.y < 1f;
+
+        /// <summary>The west outside the zone, as disjoint convex regions (each west rect cut by the four regions outside the zone).</summary>
+        SwapMesh.Half[][] KeepFlat;
+        static SwapMesh.Half[][] KeepRegions()
         {
-            if (hqRect.width <= 0f) return;
-            var rs = s.GetRootGameObjects().SelectMany(r => r.GetComponentsInChildren<Renderer>(true))
-                .Where(r => r && SwapMesh.Inside(hqRect, new Vector2(r.bounds.center.x, r.bounds.center.z)) && r.bounds.max.y > 120f).ToList();
-            if (rs.Count == 0) return;
-            var units = rs.Select(r => (r.GetComponentInParent<LODGroup>() is { } g ? g.transform : r.transform)).Distinct().ToList();
-            var hq = new GameObject("Ours SpaceHQ_Portal (signature/space-hq)");
-            SceneManager.MoveGameObjectToScene(hq, s);
-            foreach (var u in units) u.SetParent(hq.transform, true);
-            SpaceHq = hq;
+            var o = new List<SwapMesh.Half[]>();
+            foreach (var r in SwapPlan.West)
+                foreach (var reg in SwapMesh.Outside(OldTownSwap.ZonePlan))
+                    o.Add(reg.Concat(SwapMesh.Inside(r)[0]).ToArray());
+            return o.ToArray();
+        }
+
+        /// <summary>Old materials by name on our west ground (the old kit's DK_* of the same name; our road asphalt to the old DK_Asphalt).</summary>
+        int remapped;
+        static readonly Dictionary<string, string> Alias = new() { ["DK_Ground_RoadAsphalt"] = "DK_Asphalt", ["DK_Asphalt_Road"] = "DK_Asphalt", ["DK_Ground_Setts"] = "DK_Gutter_Setts", ["DK_Granite_Rail"] = "DK_Granite_Kerb" };
+        readonly Dictionary<string, Material> oldMats = new();
+        void Remap(Renderer r)
+        {
+            var mats = r.sharedMaterials; bool ch = false;
+            for (int i = 0; i < mats.Length; i++)
+            {
+                if (!mats[i]) continue;
+                var name = Alias.TryGetValue(mats[i].name, out var a) ? a : mats[i].name;
+                if (!oldMats.TryGetValue(name, out var m)) oldMats[name] = m = AssetDatabase.LoadAssetAtPath<Material>($"{Suborned.OldTown.Editor.DecoKit.DecoKitData.MaterialDir}/{name}.mat");
+                if (m && m != mats[i]) { mats[i] = m; ch = true; remapped++; }
+            }
+            if (ch) r.sharedMaterials = mats;
         }
     }
 }
