@@ -49,7 +49,7 @@ describe('getaway.exit', () => {
     const noEnd = { ...mission, routes: mission.routes.map((r: { id: string }) => (r.id === 'getaway' ? { ...r, to: ['no_such_node'] } : r)) };
     expect(() => buildExit(plan, d, noEnd, 'Getaway bay', rulebook)).toThrow();
     expect(() => buildExit(plan, d, mission, 'Nowhere', rulebook)).toThrow(/no destination/);
-    const other = { ...mission, routes: mission.routes.map((r: { id: string }) => (r.id === 'getaway' ? { ...r, from: 'sw' } : r)) }; // starts on Sunset Way, not the road the car stands by
+    const other = { ...mission, routes: mission.routes.map((r: { id: string }) => (r.id === 'getaway' ? { ...r, from: 'w_market' } : r)) }; // starts on Sunset Way, not the road the car stands by
     expect(() => buildExit(plan, d, other, 'Getaway bay', rulebook)).toThrow(/nearest rocket-lane/);
   });
 
