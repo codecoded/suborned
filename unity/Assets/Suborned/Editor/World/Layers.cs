@@ -446,8 +446,9 @@ namespace Suborned.World
             return new MeshKit().Ribbon(l, width, lo, hi).Ribbon(r, width, lo, hi);
         }
 
-        /// <summary>A landmark with a DecoKit ref is that piece on its centre and base; otherwise spheres are stacked discs (24 slices)
-        /// and cylinders prisms, with any `kits` standing on top at their own place and yaw.</summary>
+        /// <summary>A landmark with a DecoKit ref is that piece on its centre and base. Brief 075 NP-1 (Splice's rule, Sky: "ugly blue buildings"): the
+        /// only procedural landmark left is a caisson's drum (a cylinder, smooth-shaded) under its `kits` (the pads) standing on top at their own place and
+        /// yaw; a landmark with no piece and no pads, or a sphere without its piece, is a placeholder and fails the build.</summary>
         public void Landmarks(Transform layer, System.Collections.Generic.List<LandmarkDto> landmarks, KitPlacer placer)
         {
             foreach (var l in landmarks)
@@ -456,18 +457,9 @@ namespace Suborned.World
                 if (l.Kit != null) { el = Nodes.Element(layer, l.Id); KitLiveries.Apply(placer.Place(el, layer.name, l.Kit, l.Centre, l.Base, 0f), l.Id, "kit", l.Kit.Id); }
                 else
                 {
-                    var kit = new MeshKit();
-                    if (l.Shape == "sphere")
-                    {
-                        const int slices = 24;
-                        for (int i = 0; i < slices; i++)
-                        {
-                            float z0 = -l.Radius + 2 * l.Radius * i / slices, z1 = z0 + 2 * l.Radius / slices, zm = (z0 + z1) * 0.5f;
-                            kit.Prism(Poly.Circle(l.Centre, Mathf.Sqrt(l.Radius * l.Radius - zm * zm), 48), l.Base + l.Radius + z0, l.Base + l.Radius + z1);
-                        }
-                    }
-                    else kit.Prism(Poly.Circle(l.Centre, l.Radius, 48), l.Base, l.Base + l.Height);
-                    el = nodes.Solid(layer, l.Id, kit, l.Surface);
+                    if (l.Kits.Count == 0) throw new System.IO.InvalidDataException($"World: NP-1 {l.Id}: a landmark with no kit piece and no pads would stand as a placeholder ({l.Shape}, source {l.Source ?? "none"})");
+                    if (l.Shape != "cylinder") throw new System.IO.InvalidDataException($"World: NP-1 {l.Id}: only a caisson drum (cylinder) stands procedural under its pads; a {l.Shape} needs its kit piece");
+                    using (Nodes.Drum()) el = nodes.Solid(layer, l.Id, new MeshKit().Prism(Poly.Circle(l.Centre, l.Radius, 64), l.Base, l.Base + l.Height), l.Surface);
                     for (int i = 0; i < l.Kits.Count; i++) { var k = l.Kits[i]; KitLiveries.Apply(placer.Place(el, layer.name, k, k.At, l.Base + l.Height, 0f), l.Id, $"kits[{i}]", k.Id); }
                 }
                 if (l.Gateway != null)

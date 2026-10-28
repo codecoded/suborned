@@ -116,6 +116,23 @@ namespace Suborned.World
         public static float DistanceAt(float s, float h) => s / (K * h);
         public static int Classed;
 
+        /// <summary>Brief 075 remap: a placed piece that stands where the play camera holds it at L0 (the roofline's theme pieces on the 3-storey roofs,
+        /// strict under the play-zoom guard) keeps L0 to at least minD metres: when its group's L1 would switch nearer, every switch of this instance
+        /// is moved out by the same factor (the levels keep their order, the cull moves out with them). The prefab is untouched (the same piece on the
+        /// street keeps its catalogue switches). Returns 1 when the instance was moved, else 0.</summary>
+        public static int Floor(Transform piece, float minD)
+        {
+            if (!piece.TryGetComponent<LODGroup>(out var g)) return 0;
+            var lods = g.GetLODs(); if (lods.Length < 2) return 0;
+            var s = piece.lossyScale; float size = g.size * Mathf.Max(Mathf.Abs(s.x), Mathf.Abs(s.y), Mathf.Abs(s.z));
+            float d = DistanceAt(size, lods[0].screenRelativeTransitionHeight / QualitySettings.lodBias);
+            if (d >= minD) return 0;
+            float f = d / minD;
+            for (int i = 0; i < lods.Length; i++) lods[i].screenRelativeTransitionHeight *= f;
+            g.SetLODs(lods);
+            return 1;
+        }
+
         static void Lod(string id, string category, GameObject go, List<(string file, float screen)> lods, float[] dist = null)
         {
             var r0 = Lod0(go).ToArray();

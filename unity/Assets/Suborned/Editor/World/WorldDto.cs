@@ -240,14 +240,14 @@ namespace Suborned.World
     public sealed class LandmarkDto { public string Id, Surface, Shape, Source; public Vector2 Centre; public float Radius, Base, Height; public KitRefDto Kit; public List<KitRefDto> Kits = new(); public KitRefDto Gateway; } // Gateway (brief 075): a kit arch on the pavement at its At, its Yaw turning the piece's +X (the Crown Avenue arch); null = none
 
     /// <summary>Gateway: a kit arch standing on the quay under its At (its Yaw turns the piece's +X).</summary>
-    public sealed class MegaDto { public string Id; public List<MassDto> Parts = new(); public List<PrimDto> Prims = new(); public KitRefDto Gateway; }
+    public sealed class MegaDto { public string Id, Kind; public List<MassDto> Parts = new(); public List<PrimDto> Prims = new(); public KitRefDto Gateway; }
 
     /// <summary>Primitive solid. Shape: box | cyl | sphere | vault | saucer | wedge. Size = (a along Yaw, b across, h); Base = lowest z; Yaw radians from +x toward +y in plan.</summary>
     public sealed class PrimDto { public string Id, Shape, Surface; public Vector2 Centre; public float Base, Yaw; public Vector3 Size; }
 
     /// <summary>One programme on a roof at Z (top of the roof slab); Parts are in world frame.</summary>
     /// <summary>Kit = the programme's piece (hover-pad: SkyPad_Roof) standing on the slab at its At; its procedural stand-in is then not in Parts.</summary>
-    public sealed class RoofDto { public string Id, Building, Programme, Surface, Form; public float Z, Parapet, Yaw; public Vector2 Centre, Size; public List<PrimDto> Parts = new(); public KitRefDto Kit, Crown; } // Crown: the Crown_* piece at the roof centre
+    public sealed class RoofDto { public string Id, Building, Programme, Surface, Form; public float Z, Parapet, Yaw; public Vector2 Centre, Size; public List<PrimDto> Parts = new(); public KitRefDto Kit, Crown; public List<KitRefDto> Kits = new(); } // Crown: the Crown_* piece at the roof centre; Kits (brief 075 remap, roofline.ts RL-3): the old roof theme pieces, each at its At on its own Z and Yaw
 
     /// <summary>A tenancy a to b on a facade at Z facing Normal; Sign carries Motif, Icon and a palette key (no text).</summary>
     public sealed class FrontageDto
@@ -281,5 +281,5 @@ namespace Suborned.World
     /// <summary>A DecoKit piece (contracts/world/kit.json id) standing in for an element. Scale = (across, up, depth) on the piece's own
     /// size = Unity local (x, y, z). Yaw (plan radians from +x toward +y) turns the piece's +X; its front (+Z) faces Yaw + 90°; NaN = the
     /// element's own yaw. At, Base, Mount only on signs.</summary>
-    public sealed class KitRefDto { public string Id, Mount; public Vector3 Scale; public float Yaw = float.NaN, Base; public Vector2 At; }
+    public sealed class KitRefDto { public string Id, Mount; public Vector3 Scale; public float Yaw = float.NaN, Base, Z = float.NaN; public Vector2 At; } // Z (brief 075 remap): a ref's own pivot height (roofs[].kits[]); NaN = the element's
 }

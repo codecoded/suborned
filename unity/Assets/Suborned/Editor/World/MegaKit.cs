@@ -21,6 +21,9 @@ namespace Suborned.World
 
         public static string Swatch(string surface) => "look:" + surface;
 
+        /// <summary>Plan megastructure kinds whose generator is a stand-in for a kit piece (tools/world/rules/placeholders.ts STAND_IN_KINDS).</summary>
+        static readonly HashSet<string> StandInKinds = new(System.StringComparer.Ordinal) { "pier tower" };
+
         public void Megastructures(Transform layer, List<MegaDto> megas, KitPlacer placer, StandIns standIns)
         {
             foreach (var m in megas)
@@ -29,6 +32,11 @@ namespace Suborned.World
                 var h = HostOf(m.Id);
                 if (m.Gateway != null) KitLiveries.Apply(placer.Place(el, layer.name, m.Gateway, m.Gateway.At, QuayTop(m.Gateway.At), 0f), m.Id, "gateway", m.Gateway.Id);
                 if (standIns.Covers(m)) { standIns.Mega(layer, el, m); continue; }
+                // brief 075 NP-1 (Splice's rule): a pier tower's generator (mega/pier.ts) is a procedural stand-in for its kit piece; with no adopted piece
+                // tagged landmark:<id> to cover it, the build fails. The export's `kind` names it where present; the stand-in's discs and gallery are drawn
+                // in the placeholder surface, which Nodes refuses anyway, and so is any part whose walls would take it here.
+                if (StandInKinds.Contains(m.Kind ?? "")) throw new System.IO.InvalidDataException($"World: NP-1 {m.Id}: a {m.Kind} with no adopted piece tagged landmark:{m.Id.Substring(5)} would stand as its procedural stand-in");
+                foreach (var p in m.Parts) if (p.Surface == Nodes.Placeholder) throw new System.IO.InvalidDataException($"World: NP-1 {p.Id}: a megastructure part in the placeholder surface `{Nodes.Placeholder}` (its kit piece is missing)");
                 var peers = m.Parts.Select(p => new FacadeKit.Peer(p.Id, Poly.Clean(p.Ring), p.Base, p.Base + p.Height)).ToList();
                 for (int i = 0; i < m.Parts.Count; i++)
                 {

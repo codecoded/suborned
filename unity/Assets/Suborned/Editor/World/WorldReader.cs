@@ -99,7 +99,7 @@ namespace Suborned.World
             w.Roofs = Each(o, "roofs", x => new RoofDto
             {
                 Id = Id(x), Building = J.S(x, "building"), Programme = J.S(x, "programme"), Surface = J.S(x, "surface"), Form = J.S(x, "form"), Z = J.F(x, "z"), Parapet = J.F(x, "parapet"), Yaw = J.F(x, "yaw"),
-                Centre = J.P(x, "c"), Size = J.P(x, "size"), Parts = Each(x, "parts", Prim), Kit = Kit(J.Get(x, "kit")), Crown = Kit(J.Get(x, "crown")),
+                Centre = J.P(x, "c"), Size = J.P(x, "size"), Parts = Each(x, "parts", Prim), Kit = Kit(J.Get(x, "kit")), Crown = Kit(J.Get(x, "crown")), Kits = Each(x, "kits", Kit), // brief 075 remap: the roofline pieces
             });
             w.Frontages = Each(o, "frontages", Frontage);
             w.Connectors = Each(o, "connectors", c => new ConnectorDto
@@ -155,7 +155,7 @@ namespace Suborned.World
             });
             if (J.Get(o, "takedown") is { } td)
                 w.Entrances = Each(td, "entrances", x => new EntranceDto { Id = Id(x), Building = J.S(x, "building"), Name = J.S(x, "name"), Kind = J.S(x, "kind"), At = J.P(x, "at"), Z = J.F(x, "z") });
-            w.Megastructures = Each(o, "megastructures", m => new MegaDto { Id = Id(m), Parts = Each(m, "parts", Mass), Prims = Each(m, "prims", Prim), Gateway = Kit(J.Get(m, "gateway")) });
+            w.Megastructures = Each(o, "megastructures", m => new MegaDto { Id = Id(m), Kind = J.S(m, "kind"), Parts = Each(m, "parts", Mass), Prims = Each(m, "prims", Prim), Gateway = Kit(J.Get(m, "gateway")) });
             // Splice (18:0x export): a mass with `hidden: true` is data only (the two PavilionPier_Square supports the walk grid keeps); nothing draws it
             var civic = Each(o, "civic", Mass); w.HiddenCivic = civic.Count(m => J.Get(m.Raw, "hidden") is true); w.Civic = civic.Where(m => !(J.Get(m.Raw, "hidden") is true)).ToList();
             w.Landmarks = Each(o, "landmarks", l => new LandmarkDto
@@ -317,6 +317,7 @@ namespace Suborned.World
             if (J.Get(k, "yaw") is double y) r.Yaw = (float)y;
             if (J.Get(k, "at") != null) r.At = J.P(k, "at");
             if (J.Get(k, "base") is double b) r.Base = (float)b; // signs only; other placed refs stand on their element
+            if (J.Get(k, "z") is double z) r.Z = (float)z; // brief 075 remap: roofs[].kits[] carry their own pivot height
             return r;
         }
 

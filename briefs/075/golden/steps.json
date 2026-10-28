@@ -220,6 +220,22 @@
         "leftThirdMedian": 164.3,
         "rightThirdMedian": 94.7
       }
+    },
+    {
+      "step": "s6-oldtown",
+      "date": "2026-10-28 18:11Z",
+      "what": "asphalt, real gate towers, dithering, roofs, gardens, terrace, props, S2 to the Skyport",
+      "by": "Latch",
+      "export_sha256": "d9262e4f74534a4497f9fa984896297df9bbfc0f818188b3d4a2ff4fc3d2b052",
+      "life_t": 77,
+      "stats": {
+        "satMean": 119.2,
+        "lumaMedian": 135.4,
+        "p5": 41.7,
+        "p95": 227.1,
+        "leftThirdMedian": 146.6,
+        "rightThirdMedian": 94.4
+      }
     }
   ],
   "old_stats": {

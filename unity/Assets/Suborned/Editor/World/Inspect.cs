@@ -87,7 +87,7 @@ namespace Suborned.World
                 ("frontages", w.Frontages.Count(f => f.SignKit != null), w.Frontages.Count, 0),
                 ("landmarks", w.Landmarks.Sum(l => (l.Kit != null ? 1 : 0) + l.Kits.Count + (l.Gateway != null ? 1 : 0)), w.Landmarks.Count(l => l.Kit == null), 0),
                 ("buildings", 0, w.Buildings.Count - coveredMasses, coveredMasses),
-                ("roofs", w.Roofs.Count(r => !s.Covers(r)) == 0 ? 0 : w.Roofs.Where(r => !s.Covers(r)).Sum(r => (r.Kit != null ? 1 : 0) + (r.Crown != null ? 1 : 0)), w.Roofs.Count(r => r.Parts.Count > 0 && !s.Covers(r)), coveredRoofs),
+                ("roofs", w.Roofs.Count(r => !s.Covers(r)) == 0 ? 0 : w.Roofs.Where(r => !s.Covers(r)).Sum(r => (r.Kit != null ? 1 : 0) + (r.Crown != null ? 1 : 0) + r.Kits.Count), w.Roofs.Count(r => r.Parts.Count > 0 && !s.Covers(r)), coveredRoofs),
                 ("facades", w.Facades.Count, 0, 0),
                 ("signatures", w.Signatures.Count(x => x.Kit != null), w.Signatures.Count(x => x.Kit == null), 0),
                 ("horizon", w.Horizon?.Pieces.Count ?? 0, 0, 0),

@@ -42,11 +42,8 @@ namespace Suborned.World
             {
                 var el = Nodes.Element(layer, s.Id);
                 if (s.Kit != null) { KitLiveries.Apply(placer.Place(el, layer.name, s.Kit, s.Kit.At, SignatureZ(placer, s), 0f), s.Id, "kit", s.Kit.Id); continue; }
-                // no adopted piece yet: its ground as a plain mass to its tip, so the skyline keeps the volume (and the gap is visible)
-                if (s.Ground is not { Length: 4 } g) throw new InvalidDataException($"World: signature {s.Id} has neither a kit piece nor a ground ({s.Why})");
-                Debug.LogWarning($"World: signature {s.Id} is procedural: {s.Why}");
-                var ring = new[] { new Vector2(g[0], g[2]), new Vector2(g[1], g[2]), new Vector2(g[1], g[3]), new Vector2(g[0], g[3]) };
-                nodes.Part(el, s.Id, new MeshKit().Prism(ring, s.Base, Mathf.Max(s.Tip, s.Base + 1f)), "landmark");
+                // brief 075 NP-1 (Splice's rule): no adopted piece = a placeholder; the build fails instead of standing a plain mass in the skyline
+                throw new InvalidDataException($"World: NP-1 signature {s.Id} ({s.Kind}) has no kit piece: {s.Why ?? s.Pending ?? "no adopted piece"}");
             }
         }
 

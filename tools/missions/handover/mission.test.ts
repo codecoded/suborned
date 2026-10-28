@@ -277,7 +277,7 @@ describe('handover roles', () => {
       'guard has a regular tie to a server of cafe in place for waitress in this window · and at most one guard of records-office at Office entrance in 1:52-5:30: 6 at 17:26:22 (p-records-office-15, p-records-office-29, p-records-office-30, p-records-office-36, p-records-office-57, p-records-office-67)',
       'councillor has a routine that reaches Meet driver by 6:10 (17:30:40)',
     ]);
-    expect(lines[3]).toContain('p-records-office-61 t1-records@17:34'); // Vale takes the tram home, never the official car
+    expect(lines[3]).toContain('p-records-office-61 t1-rocket@17:34'); // Vale takes the tram home, never the official car (t1-rocket: the stand-in's stop since the 075 remap's tram stops)
   });
 
   test('every role is cast, pinned by id, deterministically; the pinned names land on the pinned people', async () => {

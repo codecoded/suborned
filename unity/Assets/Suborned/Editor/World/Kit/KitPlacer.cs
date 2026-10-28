@@ -235,11 +235,50 @@ namespace Suborned.World
                         layer.name, f.SignKit, f.SignKit.At, f.SignKit.Base, f.Yaw);
         }
 
+        /// <summary>Brief 075 NP-1: every kit ref anywhere in the parsed world names a piece of the imported kit (adopted in kit.json, its prefab on
+        /// disk), checked before anything is built; one unknown, candidate or rejected id fails the build with every offender listed (no box, no stand-in).
+        /// Walks the DTO graph by reflection, so a new field holding refs is checked without being listed here. Returns the refs checked.</summary>
+        public int CheckRefs(WorldDto world)
+        {
+            var bad = new SortedDictionary<string, (int n, string first)>(System.StringComparer.Ordinal); int seen = 0;
+            var visited = new HashSet<object>(RefEq.Instance);
+            void Walk(object o, string path)
+            {
+                if (o == null || o is string || o.GetType().IsPrimitive || o is Vector2 || o is Vector3 || o is System.Enum) return;
+                if (!visited.Add(o)) return;
+                if (o is KitRefDto r)
+                {
+                    seen++;
+                    bool ok = r.Id != null && prefabs.TryGetValue(r.Id, out var path0) && (AssetDatabase.LoadAssetAtPath<GameObject>(path0) || File.Exists(Path.Combine(HarbourWorldBuilder.RepoRoot, "unity", path0)));
+                    if (!ok) bad[r.Id ?? "(null)"] = bad.TryGetValue(r.Id ?? "(null)", out var b) ? (b.n + 1, b.first) : (1, path);
+                    return;
+                }
+                if (o is System.Collections.IDictionary) return; // raw json and lookup tables carry no refs of their own
+                if (o is System.Collections.IEnumerable e) { int i = 0; foreach (var x in e) Walk(x, $"{path}[{i++}]"); return; }
+                var ns = o.GetType().Namespace;
+                if (ns == null || !ns.StartsWith("Suborned", System.StringComparison.Ordinal)) return;
+                foreach (var f in o.GetType().GetFields(System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public))
+                    if (f.Name != "Raw") Walk(f.GetValue(o), path + "." + f.Name);
+            }
+            Walk(world, "world");
+            if (bad.Count > 0)
+                throw new InvalidDataException($"World: NP-1 {bad.Values.Sum(b => b.n)} kit refs name pieces not in the imported kit (not adopted, or no prefab: run `bun run kit`): " +
+                    string.Join("; ", bad.Select(kv => $"{kv.Key} x{kv.Value.n} (e.g. {kv.Value.first})")));
+            return seen;
+        }
+
         public string Summary()
         {
             var sb = new System.Text.StringBuilder("World: kit placed");
             foreach (var kv in placed) sb.Append($" {kv.Key} {kv.Value} ({tris[kv.Key]} tris)");
             return sb.ToString();
+        }
+
+        sealed class RefEq : IEqualityComparer<object>
+        {
+            public static readonly RefEq Instance = new();
+            public new bool Equals(object a, object b) => ReferenceEquals(a, b);
+            public int GetHashCode(object o) => System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(o);
         }
 
         static Bounds Union(Bounds a, Bounds b) { a.Encapsulate(b); return a; }

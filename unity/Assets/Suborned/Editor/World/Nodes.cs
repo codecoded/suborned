@@ -36,9 +36,17 @@ namespace Suborned.World
 
         const float UvInset = 0.1f; // metres: wider than a paving joint
 
+        /// <summary>Brief 075 NP-1: look.json's `landmark` surface was the placeholder body (the blue cylinders and slabs Sky called "ugly blue buildings").
+        /// No part may draw in it except a caisson drum under its pads (Layers.Landmarks, inside a Drum() scope); anything else fails the build.</summary>
+        public const string Placeholder = "landmark";
+        static int drum;
+        sealed class DrumScope : System.IDisposable { public void Dispose() => drum--; }
+        public static System.IDisposable Drum() { drum++; return new DrumScope(); }
+
         /// <summary>Adds a part to element `el` in surface's material; warns on polygon repairs.</summary>
         public void Part(Transform el, string name, MeshKit kit, string surface)
         {
+            if (surface == Placeholder && drum == 0) throw new System.IO.InvalidDataException($"World: NP-1 {el.name}/{name} would draw in the placeholder surface `{Placeholder}` (a procedural stand-in; its kit piece is missing)");
             if (look.Tile(surface) is > 0f and var tile)
             {
                 kit.PlanarUv(tile, UvInset);
@@ -62,6 +70,7 @@ namespace Suborned.World
         {
             if (kit.Repairs > 0) Debug.LogWarning($"World: {el.name}/{name}: {kit.Repairs} polygon repairs");
             if (kit.Empty) return null;
+            if (surface == Placeholder) throw new System.IO.InvalidDataException($"World: NP-1 {el.name}/{name} would draw in the placeholder surface `{Placeholder}`");
             return Combine.Fit(el, layer, kit, look.Mat(surface), reach);
         }
 

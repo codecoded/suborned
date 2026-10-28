@@ -211,8 +211,7 @@ namespace Suborned.World
         {
             var p = Clean(raw);
             Cap(p, hi); Soffit(p, lo);
-            for (int i = 0; i < p.Length; i++) Wall(p[i], p[(i + 1) % p.Length], lo, hi);
-            return this;
+            return Walls(p, lo, hi);
         }
 
         /// <summary>Flat annulus: outer ring minus a hole inside it (any winding).</summary>
@@ -223,18 +222,51 @@ namespace Suborned.World
         {
             var p = Clean(raw);
             Cap(p, hi);
-            for (int i = 0; i < p.Length; i++) Wall(p[i], p[(i + 1) % p.Length], lo, hi);
+            return Walls(p, lo, hi);
+        }
+
+        /// <summary>Brief 075 (Sky: nothing reads as stepped facets): a ring's walls with their normals smoothed across every vertex where the two walls
+        /// turn by less than Crease (a circle's or an arc's segments: a caisson drum, a basin's coping, a rounded kerb return or building corner), and
+        /// hard where they turn more (a square corner stays crisp). The geometry is the same quads Wall lays, facing outward for a counter-clockwise ring.</summary>
+        public MeshKit Walls(Vector2[] p, float lo, float hi)
+        {
+            if (hi - lo < 1e-4f || p.Length < 2) return this;
+            var e = new List<(Vector2 a, Vector2 b, Vector3 n)>(p.Length);
+            for (int i = 0; i < p.Length; i++)
+            {
+                Vector2 a = p[i], b = p[(i + 1) % p.Length];
+                if ((b - a).sqrMagnitude < 1e-8f) continue;
+                var d = (b - a).normalized; e.Add((a, b, new Vector3(d.y, 0f, -d.x))); // the face of Wall's winding (outward on a counter-clockwise ring)
+            }
+            int m = e.Count; float cos = Mathf.Cos(Crease * Mathf.Deg2Rad);
+            PadUv0();
+            for (int k = 0; k < m; k++)
+            {
+                var n = e[k].n; var np = e[(k - 1 + m) % m].n; var nn = e[(k + 1) % m].n;
+                var na = m > 2 && Vector3.Dot(np, n) > cos ? (np + n).normalized : n;
+                var nb = m > 2 && Vector3.Dot(nn, n) > cos ? (nn + n).normalized : n;
+                PadNormals(); int i = v.Count;
+                v.Add(W(e[k].a, lo)); v.Add(W(e[k].a, hi)); v.Add(W(e[k].b, hi)); v.Add(W(e[k].b, lo));
+                nrm.Add(na); nrm.Add(na); nrm.Add(nb); nrm.Add(nb);
+                t.Add(i); t.Add(i + 1); t.Add(i + 2);
+                t.Add(i); t.Add(i + 2); t.Add(i + 3);
+            }
             return this;
         }
+
+        /// <summary>Walls turning by less than this many degrees at a vertex share its normal (Walls).</summary>
+        public const float Crease = 31f;
+
+        void PadUv0() { if (uv != null) PadUv(); }
 
         /// <summary>Solid extrusion of an outer ring minus a hole, from lo to hi; the hole's walls face into the hole.</summary>
         public MeshKit Prism(Vector2[] raw, Vector2[] rawHole, float lo, float hi)
         {
             var p = Clean(raw); var q = Clean(rawHole);
             Cap(Poly.Bridge(p, q), hi);
-            for (int i = 0; i < p.Length; i++) Wall(p[i], p[(i + 1) % p.Length], lo, hi);
-            for (int i = 0; i < q.Length; i++) Wall(q[(i + 1) % q.Length], q[i], lo, hi);
-            return this;
+            Walls(p, lo, hi);
+            var rq = (Vector2[])q.Clone(); System.Array.Reverse(rq); // the hole's walls face into the hole: the same edges walked the other way
+            return Walls(rq, lo, hi);
         }
 
         /// <summary>Annulus between two counter-clockwise loops of equal count whose starts are aligned.</summary>

@@ -87,6 +87,7 @@ namespace Suborned.World
             KitImport.Generated(placer);
             KitImport.Check(placer);
             KitLods.Build(placer);
+            Debug.Log($"World: NP-1 kit refs checked against the imported kit: {placer.CheckRefs(world)} (brief 075: no placeholder)");
             KitCover.Init(world, placer);
             var city = new CityLayers(nodes, kit, placer);
             Poly.Fallbacks = 0; Poly.Repairs = 0; Coplanar.Reset(); Combine.Reset(kit.BatchTile, kit.FadeCell, FadeTags.Layer);
@@ -124,6 +125,7 @@ namespace Suborned.World
             skyline.Facades(Nodes.Group(root, "facades"), world.Facades);
             Debug.Log(KitColourways.Summary());
             roofs.Roofs(Nodes.Group(root, "roofs"), world.Roofs, placer, standIns);
+            Debug.Log($"World: roof theme pieces {RoofKit.Pieces} (roofs[].kits[], brief 075 remap), {RoofKit.Floored} instances held at L0 to 45 m");
             var frontages = Nodes.Group(root, "frontages");
             shops.Frontages(frontages, world.Frontages);
             placer.Signs(frontages, world.Frontages);
