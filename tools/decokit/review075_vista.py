@@ -1,6 +1,7 @@
 """Brief 075 golden view, the vista (Vela): the Crown Avenue arch, the gold Crown Vista tower and the tram's span wires, renders and LOD check.
 
-/Applications/Blender.app/Contents/MacOS/Blender -b -P tools/decokit/review075_vista.py -- <out_dir> [px]
+/Applications/Blender.app/Contents/MacOS/Blender -b -P tools/decokit/review075_vista.py -- <out_dir> [px] [--nowires]
+Vista 2 (2026-10-28): the arch at the gateway's c (0, 53), the tower at scale 1 (tip 250); tower row adds the old DK_SpaceHQ (the reel's gold tower).
 Renders (reads out/decokit and, read only, the old DecoKit's FBX):
   arch_*       old DK_ParabolicArch | the pier's ParabolicArch | ParabolicArch@crown-avenue L0 / L1 / L2, all from the front at the same scale
   tower_*      old DK_DiscTower | DiscTower | DiscTower@crown-vista L0 / L1 / L2 (crown gold), and L0 in the livery gold (#F2C14E, metallic 1, smoothness 0.45)
@@ -21,7 +22,7 @@ from mathutils import Vector
 REPO = Path(__file__).resolve().parents[2]
 A = sys.argv[sys.argv.index("--") + 1:]
 OUT = Path(A[0])
-PX = int(A[1]) if len(A) > 1 else 640
+PX = int(A[1]) if len(A) > 1 and A[1].isdigit() else 640
 OUT.mkdir(parents=True, exist_ok=True)
 GEN = REPO / "out/decokit"
 LEGACY = Path("~/Projects/the-suborned/game/Assets/TheSuborned/Art/DecoKit").expanduser()
@@ -173,10 +174,10 @@ def render(name):
 report = {}
 # ---- pieces from the front, one scale per row (so the arch and tower widths compare)
 ROWS = {
-    "arch": (110.0, [("old", LEGACY / "Models/Landmarks/DK_ParabolicArch.fbx"), ("pier", GEN / "Models/Landmarks/DK_ParabolicArch.fbx"),
+    "arch": (140.0, [("old", LEGACY / "Models/Landmarks/DK_ParabolicArch.fbx"), ("pier", GEN / "Models/Landmarks/DK_ParabolicArch.fbx"),
                      ("L0", GEN / "Models/Landmarks/DK_ParabolicArch@crown-avenue.fbx"), ("L1", GEN / "Models/Landmarks/DK_ParabolicArch@crown-avenue_L1.fbx"),
                      ("L2", GEN / "Models/Landmarks/DK_ParabolicArch@crown-avenue_L2.fbx")]),
-    "tower": (200.0, [("old", LEGACY / "Models/Landmarks/DK_DiscTower.fbx"), ("kit", GEN / "Models/Landmarks/DK_DiscTower@avenue-gate-w.fbx"),
+    "tower": (290.0, [("old", LEGACY / "Models/Landmarks/DK_DiscTower.fbx"), ("oldhq", LEGACY / "Models/Landmarks/DK_SpaceHQ.fbx"), ("kit", GEN / "Models/Landmarks/DK_DiscTower@avenue-gate-w.fbx"),
                       ("L0", GEN / "Models/Landmarks/DK_DiscTower@crown-vista.fbx"), ("L1", GEN / "Models/Landmarks/DK_DiscTower@crown-vista_L1.fbx"),
                       ("L2", GEN / "Models/Landmarks/DK_DiscTower@crown-vista_L2.fbx"), ("L0-livery", GEN / "Models/Landmarks/DK_DiscTower@crown-vista.fbx")]),
 }
@@ -199,10 +200,10 @@ clear(aspect=9 / 16)
 ground(3000.0)
 for x in (-9.0, 9.0):  # the avenue's carriageway edges, as a hint of the street
     block((x - 0.15, -400, 0), (x + 0.15, 300, 0.15), (0.75, 0.73, 0.70))
-imp(GEN / "Models/Landmarks/DK_ParabolicArch@crown-avenue.fbx", (0, 160, 0))
+imp(GEN / "Models/Landmarks/DK_ParabolicArch@crown-avenue.fbx", (0, 53, 0))  # vista 2: the circus mouth of Crown Avenue (plan gateway c)
 for x, side in ((-44.0, "w"), (44.0, "e")):
     imp(GEN / f"Models/Landmarks/DK_DiscTower@avenue-gate-{side}.fbx", (x, 190, 0))
-imp(GEN / "Models/Landmarks/DK_DiscTower@crown-vista.fbx", (0, 350, 0), scale=1.1)
+imp(GEN / "Models/Landmarks/DK_DiscTower@crown-vista.fbx", (0, 350, 0))  # vista 2: scale 1, tip 250
 cam = json.loads((REPO / "briefs/075/golden/cameras.json").read_text())
 print("[075vista] cameras.json keys", list(cam.keys()))
 ours = cam.get("ours") or cam.get("cameras", {}).get("ours")
@@ -210,6 +211,10 @@ eye, at = ours["eye"], ours["look"]
 camera((eye[0], eye[2], eye[1]), (at[0], at[2], at[1]), fov=ours.get("fov_deg", 58))  # Unity (x, y up, z) -> Blender (x, z, y)
 render("vista")
 LIVERY["on"] = False
+if "--nowires" in A:  # vista 2: the wires are gone (Sky, "no overhead wires though!")
+    (OUT / "lods.json").write_text(json.dumps(report, indent=1) + "\n")
+    print("[075vista] done (no wires)")
+    raise SystemExit(0)
 
 # ---- the wires on a 20 m tram street
 W = "Models/Structures/DK_TramWire_{}.fbx"

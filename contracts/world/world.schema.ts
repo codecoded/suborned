@@ -24,7 +24,7 @@ export type World = {
     islands?: Mass[];
     drives?: Drive[]; // brief 023: the vehicle crossings from a carriageway over a plot's pavement to a bay that touches no road (present when the civic block states drives); not in counts.ground until the Unity reader draws them
   };
-  transit: { tram: Track[]; skyRail: SkyRail[]; stops: Mass[]; stations: Mass[]; /** brief 075: the overhead (tramstreet.ts); present when the plan carries sections.tramStreet.wires */ wires?: TramWires };
+  transit: { tram: Track[]; skyRail: SkyRail[]; stops: Mass[]; stations: Mass[]; /** brief 075: no overhead wires (Sky 2026-10-28, "no overhead wires though!"): there is no `wires` key; world rule TS-W0 fails an export that carries one, a TramWire_* kit ref or a span-pole item */ };
   /** Brief 075: presentation dressing only, never sim data (the sim reads the plan, the mission and the civic block, never this export; live trams are Pulse's timetable and Latch's mover): one parked Tram per line at its first stop. */
   dressing?: { trams: ParkedTram[] };
   buildings: Mass[]; // generated building parts (podium, body, upper, tower-lower, tower-upper), id bld/<plot>/<n>/<part>; none under a megastructure
@@ -55,12 +55,6 @@ export type World = {
 
 /** Brief 075: a kerbside bay (ground.kerbside). */
 export type KerbBay = { id: string; kind: 'parallel' | 'angle' | 'loading'; road: string; ring: V[]; yaw: number; level: number };
-/** Brief 075: the tram overhead. `contact`: one wire per track at `z` (5.8), `pts` its zig-zag (+-0.2 at each span). `spans`: a steel wire at `z` (7.0) from `a` to `b`, each end on a wall
- *  rosette (a chrome boss in a 0.6 m deco disc on the facade, `at` on the wall) or a slim side pole (`item` = its street item, kind span-pole, 0.3 x 0.3 x 8.5). Wires thin: about 12 mm contact, 20 mm span (Glint judges at play zoom). */
-export type TramWires = { contact: { id: string; line: string; pts: V[]; z: number }[]; spans: { id: string; line: string; a: V; b: V; z: number; ends: [WireEnd, WireEnd] }[];
-  /** Vela's kit pieces (tram075.py), drawn as they stand: `contact` (TramWire_Contact) and `span` (TramWire_Span) are 1 m strands along kit X stretched by kit.scale[0] to the run, at their midpoint; `hanger` (TramWire_Hanger) on the contact point under each span (its top +1.2 = the span); `rosette` (TramWire_Rosette) on the wall face at the span height, kit +Z out of the wall. `z` = the piece's height. The poles are street items (kind span-pole, TramWire_Pole). Span `a`/`b` are the eyes (rosette disc + 0.17, pole collar 0.16 toward the street). */
-  pieces: { id: string; kind: 'contact' | 'span' | 'hanger' | 'rosette'; kit: KitRef & { at: V }; z: number }[] };
-export type WireEnd = { kind: 'rosette' | 'pole'; at: V; item?: string };
 /** Brief 075: a parked tram (dressing.trams): the kit Tram with its pivot at `kit.at` (the footprint centre 0.108 m ahead of it along the track), +Z the nose, on the rail top `z`. */
 export type ParkedTram = { id: string; line: string; stop: string; kit: KitRef & { at: V }; z: number };
 

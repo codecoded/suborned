@@ -4,22 +4,20 @@
 //   setts     granite setts under both tram lanes: a band |offset| <= setts.band[1] (3.6) about each double path's line (a single path: about its own line), wherever
 //             the path runs in a carriageway (a road, a junction box, the circus ring's carriageway) on the sheet; a flat per segment (ground.flats, surface `setts`)
 //   square    where two lines' paths cross on the flat (T1 x T2 at s_boulevard), the junction box of their two roads in setts
-//   rails     Vela's adopted track tiles flush in the setts (ground.pieces, kind `tram-rail`): Tile_TramRail_12m on straights (every whole 12 m), Tile_TramRail on curves
+//   rails     Vela's adopted track tiles flush in the setts (ground.pieces, kind `tram-rail`): Tile_TramRail_Flush_12m on straights (every whole 12 m), Tile_TramRail_Flush on curves
+//             (the track-bed Tile_TramRail_12m / Tile_TramRail until the flush pair is adopted)
 //             and for a straight's remainder (2 m, stretched along by under 5 % so a run closes on whole tiles); rail heads at +-0.5 = the track centre line
 //   kerbside  the kerbside strip of each tram street (sections.tramStreet.<class>.kerbside): the Boulevard's parallel bays 6.0 x 2.4 and loading bays (12 m) at
 //             trades the frontage catalogue gives a serviceBay; the primaries' 30-degree angle stalls 2.6 x 4.8 with a kerbed palm island (2.0 x 4.8, pavement top) every
 //             24 m, one coconut palm on each and a district lamp on alternate ones. No bay within 10 m of a kerb return's tangent, 5 m of a crossing, along a stop's
 //             island and 15 m before / 10 m after it (by the kerb's own direction of travel, right-hand traffic). Parked cars are life's (Keel, Pulse): only the bays.
-//   wires     span wires at 7.0 every 30 m (12 m on curves) across each double path, contact wires at 5.8 over each track (zig-zag +-0.2 at each span): both ends on
-//             wall rosettes where a ground-floor building wall stands within 2 m behind the building line (kerb + the section's pavement) at both ends; else a slim side
-//             pole pair (street kind `span-pole`, 0.3 x 0.3 x 8.5, the kerb zone 0.45 off the kerb face), each passing the street layer's tests and 3 m off trees and
-//             lamps (SF-11), stepped along the line a metre at a time (up to 4 m) where they do not; round the circus loop the inner pole stands on the island's ring
-//             band (garden + 0.6). A span no pair fits is a gap (never forced). No kit piece for the pole or the rosette yet: Vela's, the catalogue gate draws them
-//             procedural until a piece with the use tag is adopted.
+//   wires     none (Sky 2026-10-28, brief 075: "no overhead wires though!"): no span or contact wire, hanger, rosette or span pole anywhere; the trams draw power another
+//             way. The plan's sections.tramStreet.wires (and its 'Overhead wires on span wires' text) is ignored here until Datum deletes it; world rule TS-W0
+//             (tools/world/rules/overhead.ts) fails an export that carries any wire piece or span item. Vela's TramWire_* pieces are rejected in the catalogue.
 //   trams     one parked Tram per line at its first stop (plan order), on the right-hand track facing along the path: presentation dressing (world.dressing), never
 //             sim data (the sim reads the plan, the mission and the civic block, never the world export; live trams are Pulse's timetable and Latch's mover).
 // A plan without sections.tramStreet gets none of this (a pinned plan replays as it was made). Deterministic: no random choice.
-import type { Flat, KerbBay, Mass, StreetItem, TramWires, ParkedTram } from '../../../../contracts/world/world.schema';
+import type { Flat, KerbBay, Mass, StreetItem, ParkedTram } from '../../../../contracts/world/world.schema';
 import { type V, type Seg, dist, inPoly, lineDist } from '../../../plan/geom';
 import { type Ctx, r3, r4, rv } from '../common';
 import { adoptedBy } from '../kitrefs';
@@ -30,13 +28,13 @@ import { avenueVariant, speciesOf } from '../../../plan/trees';
 import type { Layer } from './kit';
 
 type Section = { roads: string[]; w: number; kerbside: { w: number }; island?: { span: [number, number] } };
-export type TramStreetStd = { band: number; district?: Section; primary?: Section; roads: Set<string>; wires?: { contact: { height: number }; span: { height: number; spacing: number; curveSpacing: number }; poles: unknown } };
-export type TramStreetLog = { setts: { flats: number; m: number; squares: number }; rails: { tiles12: number; tiles2: number; m: number }; kerbside: { parallel: number; angle: number; loading: number; islands: number; palms: number; lamps: number }; wires: { spans: number; rosettes: number; poles: number; contactM: number }; trams: number; gaps: { rule: string; where: string; why: string; at?: V }[] };
+export type TramStreetStd = { band: number; district?: Section; primary?: Section; roads: Set<string> };
+export type TramStreetLog = { setts: { flats: number; m: number; squares: number }; rails: { tiles12: number; tiles2: number; m: number; flush: boolean }; kerbside: { parallel: number; angle: number; loading: number; islands: number; palms: number; lamps: number }; trams: number; gaps: { rule: string; where: string; why: string; at?: V }[] };
 
 export function tramStreetStd(ctx: Ctx): TramStreetStd | undefined {
   const t = (ctx.S as any).sections?.tramStreet; if (!t) return undefined;
   const roads = new Set<string>([...(t.district?.roads ?? []), ...(t.primary?.roads ?? [])]);
-  return { band: t.setts?.band?.[1] ?? 3.6, district: t.district, primary: t.primary, roads, wires: t.wires };
+  return { band: t.setts?.band?.[1] ?? 3.6, district: t.district, primary: t.primary, roads }; // t.wires is never read (no overhead, Sky 2026-10-28)
 }
 
 /** A point, the unit tangent and the left normal at s along a segment. */
@@ -98,14 +96,19 @@ export function tramGround(ctx: Ctx, log: TramStreetLog, level: number): { flats
     }
   }
   // ---- rails: per track (a double path: +-trackCentres / 2; a single: its line), per segment
-  const t12 = adoptedBy('Tile_TramRail_12m'), t2 = adoptedBy('Tile_TramRail');
+  // Vela's flush tiles (brief 075: Tile_TramRail_Flush / _Flush_12m, rails set in the setts, same gauge and pivots) where adopted at the same lengths; the track-bed tiles
+  // (Tile_TramRail / _12m) only until then: a tram street has no separate track bed.
+  const f12 = adoptedBy('Tile_TramRail_Flush_12m'), f2 = adoptedBy('Tile_TramRail_Flush'), flush = !!f2 && f2.size[0] === 2 && (!f12 || f12.size[0] === 12);
+  if (f2 && !flush) log.gaps.push({ rule: 'TS-rail', where: 'kit', why: `the flush tiles are not 2 m / 12 m long (${f2.size[0]} / ${f12?.size[0]}): the track-bed tiles laid` });
+  const t12 = flush ? f12 : adoptedBy('Tile_TramRail_12m'), t2 = flush ? f2 : adoptedBy('Tile_TramRail');
+  log.rails.flush = flush;
   if (!t2) { log.gaps.push({ rule: 'TS-rail', where: 'kit', why: 'Tile_TramRail is not adopted: no rails laid' }); return { flats, rails }; }
   const half = ctx.plan.standards.tram.trackCentres / 2;
   let nr = 0;
   const put = (a: { id: string; size: number[] }, p: V, t: V, k: number, edge: string) => {
     if (!onSheet(ctx, p)) return;
     rails.push({ id: `ground/tram/rail-${nr++}`, kind: 'tram-rail', at: rv(p), yaw: r4(Math.atan2(t[1], t[0])), z: r3(levelOf(ctx, p, level)), size: [r3(a.size[0]! * k), r3(a.size[2]!), r3(a.size[1]!)], surface: 'track', edge, sight: 'open', source: 'kit', kit: { id: a.id, scale: [r4(k), 1, 1] } });
-    if (a.id === 'Tile_TramRail_12m') log.rails.tiles12++; else log.rails.tiles2++;
+    if (a.size[0] === 12) log.rails.tiles12++; else log.rails.tiles2++;
     log.rails.m = r3(log.rails.m + a.size[0]! * k);
   };
   for (const path of ctx.d.tram) for (const d of path.double ? [half, -half] : [0]) path.segs.forEach((sg, si) => {
@@ -219,86 +222,6 @@ export function tramKerbside(ctx: Ctx, L: Layer, log: TramStreetLog, o: { crossi
 }
 const segD = (p: V, a: V, b: V) => { const ab: V = [b[0] - a[0], b[1] - a[1]], l2 = ab[0] * ab[0] + ab[1] * ab[1] || 1, t = Math.max(0, Math.min(1, ((p[0] - a[0]) * ab[0] + (p[1] - a[1]) * ab[1]) / l2)); return Math.hypot(p[0] - a[0] - ab[0] * t, p[1] - a[1] - ab[1] * t); };
 
-/** Span and contact wires, the rosettes on the walls and the side poles (the last street items placed, so no other id moves). */
-export function tramWires(ctx: Ctx, L: Layer, log: TramStreetLog, walls: Mass[]): TramWires | undefined {
-  const T = tramStreetStd(ctx), Wd = T?.wires; if (!T || !Wd) return undefined;
-  const out: TramWires = { contact: [], spans: [], pieces: [] }, zS = Wd.span.height, zC = Wd.contact.height, half = ctx.plan.standards.tram.trackCentres / 2, c = ctx.plan.circus;
-  const ground = walls.filter(m => m.base < 1 && m.height >= zS + 1);
-  const wallAt = (p: V) => ground.some(m => inPoly(p, m.ring));
-  const lamps = () => L.items.filter(x => x.kind === 'tree' || x.kind === 'lamp' || x.kind === 'span-pole');
-  const clearOf = (p: V) => !lamps().some(x => dist(x.at as V, p) < 3);
-  const paveOf = (p: V) => { const r = ctx.d.roads.filter(q => !q.gyratory).sort((x, y) => lineDist(p, x.line) - lineDist(p, y.line))[0]; return (ctx.S.sections as any)[r?.class ?? 'district']?.pavement ?? 8; };
-  // Vela's wire pieces (tram075.py, adopted 16:56): each placed only where adopted; the export's contact and span lines stand either way
-  const cont = adoptedBy('TramWire_Contact'), span = adoptedBy('TramWire_Span'), hanger = adoptedBy('TramWire_Hanger'), rosette = adoptedBy('TramWire_Rosette'), pole = adoptedBy('TramWire_Pole');
-  const piece = (id: string, kind: 'contact' | 'span' | 'hanger' | 'rosette', a: { id: string }, p: V, yaw: number, z: number, sx = 1) => out.pieces.push({ id, kind, kit: { id: a.id, scale: [r4(sx), 1, 1], yaw: r4(Math.atan2(Math.sin(yaw), Math.cos(yaw))), at: rv(p) }, z: r3(z) });
-  /** a strand piece (1 m along kit X) stretched from p to q */
-  const wire = (id: string, kind: 'contact' | 'span', a: { id: string }, p: V, q: V, z: number) => { const Lw = dist(p, q); if (Lw > 0.05) piece(id, kind, a, [(p[0] + q[0]) / 2, (p[1] + q[1]) / 2], Math.atan2(q[1] - p[1], q[0] - p[0]), z, Lw); };
-  let ns = 0;
-  for (const path of ctx.d.tram) {
-    const contact: Record<string, V[]> = {}, loop = !path.double;
-    path.segs.forEach((sg, si) => {
-      const step = sg.kind === 'line' ? Wd.span.spacing : Wd.span.curveSpacing, n = Math.max(1, Math.round(sg.len / step));
-      for (let k = si === 0 ? 0 : 1; k <= n; k++) {
-        const q = at(sg, (sg.len * k) / n); if (!inCarriageway(ctx, q.p) && !(loop && dist(q.p, c.c) < c.ring[0])) continue;
-        const sid = `tram/${path.line}/${path.id}/span-${ns}`;
-        // each side: walk out to the kerb face, then look for a wall within the pavement + 2 m behind it
-        const side = (sg2: 1 | -1): { kerb: V; dk: number; wall?: V; n: V } | null => {
-          const nn: V = [q.n[0] * sg2, q.n[1] * sg2];
-          if (loop && dist(q.p, c.c) < c.ring[1] && ((q.p[0] - c.c[0]) * nn[0] + (q.p[1] - c.c[1]) * nn[1]) < 0) { // toward the circus centre: the island's ring band
-            const rr = c.garden + 1.2, d0 = dist(q.p, c.c) - rr; // the pole (0.6 in from this point) stands at garden + 0.6, on the ring band clear of the garden's edge
-            return d0 > 0 ? { kerb: [q.p[0] + nn[0] * d0, q.p[1] + nn[1] * d0], dk: d0, n: nn } : null;
-          }
-          if (loop && dist(q.p, c.c) < c.ring[0]) { // away from the centre: the ring's outer kerb (a radial road's mouth there has no pavement: the pole then finds no ground and the span is a gap)
-            const d0 = c.ring[1] - dist(q.p, c.c); return { kerb: [q.p[0] + nn[0] * d0, q.p[1] + nn[1] * d0], dk: d0, n: nn };
-          }
-          let dk = -1, d1 = 0; // a station off the carriageway (the circus loop on the island's ring band) first walks out onto it
-          if (!inCarriageway(ctx, q.p)) { while (d1 <= 30 && !inCarriageway(ctx, [q.p[0] + nn[0] * d1, q.p[1] + nn[1] * d1])) d1 += 0.25; if (d1 > 30) return null; }
-          for (let d = d1; d <= d1 + 30; d += 0.25) { const p: V = [q.p[0] + nn[0] * d, q.p[1] + nn[1] * d]; if (!inCarriageway(ctx, p)) { dk = d; break; } }
-          if (dk > 0) { let lo = dk - 0.25, hi = dk; for (let it = 0; it < 12; it++) { const m = (lo + hi) / 2; if (inCarriageway(ctx, [q.p[0] + nn[0] * m, q.p[1] + nn[1] * m])) lo = m; else hi = m; } dk = hi; } // the kerb face to 0.1 mm
-          if (dk < 0) return null;
-          const kerb: V = [q.p[0] + nn[0] * dk, q.p[1] + nn[1] * dk], reach = paveOf(kerb) + 2;
-          for (let d = 0.5; d <= reach; d += 0.25) {
-            if (!wallAt([kerb[0] + nn[0] * d, kerb[1] + nn[1] * d])) continue;
-            let lo = d - 0.25, hi = d; for (let it = 0; it < 12; it++) { const m = (lo + hi) / 2; if (wallAt([kerb[0] + nn[0] * m, kerb[1] + nn[1] * m])) hi = m; else lo = m; } // the wall's face to 0.1 mm
-            return { kerb, dk, wall: rv([kerb[0] + nn[0] * hi, kerb[1] + nn[1] * hi]), n: nn };
-          }
-          return { kerb, dk, n: nn };
-        };
-        const A = side(1), B = side(-1);
-        if (!A || !B) { log.gaps.push({ rule: 'TS-wire', where: sid, why: 'the station is in a junction box (no kerb face within 30 m across the line): no span here', at: rv(q.p) }); continue; }
-        if (A.wall && B.wall) { // the span's eyes: 0.17 m out from each rosette's disc (Vela: TramWire_Rosette's boss)
-          const ea: V = rv([A.wall[0] - A.n[0] * 0.17, A.wall[1] - A.n[1] * 0.17]), eb: V = rv([B.wall[0] - B.n[0] * 0.17, B.wall[1] - B.n[1] * 0.17]);
-          out.spans.push({ id: sid, line: path.line, a: ea, b: eb, z: zS, ends: [{ kind: 'rosette', at: A.wall }, { kind: 'rosette', at: B.wall }] }); log.wires.rosettes += 2;
-          if (rosette) for (const [E, k] of [[A, 'a'], [B, 'b']] as const) piece(`${sid}/rosette-${k}`, 'rosette', rosette, E.wall!, Math.atan2(-E.n[1], -E.n[0]) - Math.PI / 2, zS);
-          if (span) wire(`${sid}/span`, 'span', span, ea, eb, zS);
-        } else {
-          let placed = false;
-          // each pole takes the nearest free spot within 4 m of the station along the line, on its own (a span may skew up to 8 m: the old boulevard's staggered palms leave no spot 3 m off a palm on both walks opposite each other)
-          const SH = [0, 1, -1, 2, -2, 3, -3, 4, -4], spot = (E: { kerb: V; n: V }) => SH.map(sh => [E.kerb[0] + E.n[0] * 0.6 + q.t[0] * sh, E.kerb[1] + E.n[1] * 0.6 + q.t[1] * sh] as V).find(p => clearOf(p) && L.fits('span-pole', p, 0, ctx.pav, sid, { size: [0.3, 0.3, 8.5], r: 0.3 }));
-          for (const _ of [0]) {
-            const pa = spot(A), pb = spot(B);
-            if (!pa || !pb) continue;
-            const pk = pole ? { kit: { id: pole.id, scale: [1, 1, 1] as [number, number, number] } } : {}; // Vela's TramWire_Pole where adopted (else the catalogue gate leaves it procedural)
-            L.add('span-pole', pa, 0, ctx.pav, sid, { size: [0.3, 0.3, 8.5], r: 0.3, id: `street/${sid}/pole-a`, ...pk }); L.add('span-pole', pb, 0, ctx.pav, sid, { size: [0.3, 0.3, 8.5], r: 0.3, id: `street/${sid}/pole-b`, ...pk });
-            const ea: V = rv([pa[0] - A.n[0] * 0.16, pa[1] - A.n[1] * 0.16]), eb: V = rv([pb[0] - B.n[0] * 0.16, pb[1] - B.n[1] * 0.16]); // the eyes: the pole's collar, 0.16 m toward the street
-            if (span) wire(`${sid}/span`, 'span', span, ea, eb, zS);
-            out.spans.push({ id: sid, line: path.line, a: ea, b: eb, z: zS, ends: [{ kind: 'pole', at: rv(pa), item: `street/${sid}/pole-a` }, { kind: 'pole', at: rv(pb), item: `street/${sid}/pole-b` }] }); log.wires.poles += 2;
-            placed = true; break;
-          }
-          if (!placed) { log.gaps.push({ rule: 'TS-wire', where: sid, why: `${A.wall || B.wall ? 'one end has no wall and' : 'no wall at either end and'} no pole pair fits within 4 m (street layer, SF-11 3 m off trees and lamps)`, at: rv(q.p) }); continue; }
-        }
-        ns++; log.wires.spans++;
-        for (const d of path.double ? [half, -half] : [0]) { const key = String(d), z = (contact[key] ??= []).length % 2 ? 0.2 : -0.2, hp = rv(off(q, d + z)); contact[key]!.push(hp); if (hanger) piece(`${sid}/hanger${path.double ? (d > 0 ? '-l' : '-r') : ''}`, 'hanger', hanger, hp, Math.atan2(q.t[1], q.t[0]), zC); }
-      }
-    });
-    for (const [d, line] of Object.entries(contact)) if (line.length >= 2) {
-      out.contact.push({ id: `tram/${path.line}/${path.id}/contact${path.double ? (Number(d) > 0 ? '-l' : '-r') : ''}`, line: path.line, pts: line, z: zC });
-      for (let i = 1; i < line.length; i++) { log.wires.contactM = r3(log.wires.contactM + dist(line[i - 1]!, line[i]!)); if (cont) wire(`tram/${path.line}/${path.id}/contact${path.double ? (Number(d) > 0 ? '-l' : '-r') : ''}/${i - 1}`, 'contact', cont, line[i - 1]!, line[i]!, zC); }
-    }
-  }
-  return out;
-}
-
 /** One parked Tram per line at its first stop (plan order), on the right-hand track of the path, facing along it: presentation dressing only. */
 export function parkedTrams(ctx: Ctx, log: TramStreetLog, level: number): ParkedTram[] {
   if (!tramStreetStd(ctx)) return [];
@@ -314,4 +237,4 @@ export function parkedTrams(ctx: Ctx, log: TramStreetLog, level: number): Parked
   return out;
 }
 
-export const newTramLog = (): TramStreetLog => ({ setts: { flats: 0, m: 0, squares: 0 }, rails: { tiles12: 0, tiles2: 0, m: 0 }, kerbside: { parallel: 0, angle: 0, loading: 0, islands: 0, palms: 0, lamps: 0 }, wires: { spans: 0, rosettes: 0, poles: 0, contactM: 0 }, trams: 0, gaps: [] });
+export const newTramLog = (): TramStreetLog => ({ setts: { flats: 0, m: 0, squares: 0 }, rails: { tiles12: 0, tiles2: 0, m: 0, flush: false }, kerbside: { parallel: 0, angle: 0, loading: 0, islands: 0, palms: 0, lamps: 0 }, trams: 0, gaps: [] });

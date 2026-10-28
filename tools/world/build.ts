@@ -323,7 +323,7 @@ export function worldOf(plan: Plan, d: Derived, civ: Civic): { world: World; gen
   // brief 075 (the 1950s tram street, tramstreet.ts): setts under the tram lanes and the flat crossing's square (flats), the rails flush in them (ground pieces), the kerbside bays and palm islands, the overhead; the parked trams are dressing, never sim data
   const tlog = gen.tram?.log ?? newTramLog(), tg = tramGround(gctx, tlog, PROV.foot);
   if (tg) { g.flats.push(...tg.flats); g.pieces = [...(g.pieces ?? []), ...tg.rails]; }
-  if (gen.tram) { if (gen.tram.bays.length) g.kerbside = gen.tram.bays; if (gen.tram.islands.length) g.islands = gen.tram.islands; if (gen.tram.wires) t.wires = gen.tram.wires; }
+  if (gen.tram) { if (gen.tram.bays.length) g.kerbside = gen.tram.bays; if (gen.tram.islands.length) g.islands = gen.tram.islands; }
   const trams = tg ? parkedTrams(gctx, tlog, PROV.foot) : [];
   if (gen.tram) gen.tram.log = tlog; else if (tg) gen.tram = { bays: [], islands: [], log: tlog };
   const civicM = recordsTower(plan, civicMasses(civ, toPlanFn(plan.civic)));

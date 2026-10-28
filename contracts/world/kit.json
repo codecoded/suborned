@@ -1175,7 +1175,6 @@
     "DK_Steel_Ivory": "vermilion"
    },
    "DiscTower@crown-vista": {
-    "DK_Steel_Ivory": "vermilion",
     "DK_Crown_Gold": "gold"
    },
    "LinerDock": {
@@ -70804,17 +70803,13 @@
    "id": "DiscTower@crown-vista",
    "category": "Landmarks",
    "size": [
-    44.2,
-    156.6,
-    40.2
+    58.2,
+    250,
+    58.2
    ],
-   "pivot": "origin-ground",
-   "pivotOffset": [
-    -2,
-    0
-   ],
+   "pivot": "footprint-centre-ground",
    "front": "+Z",
-   "tris": 8596,
+   "tris": 16976,
    "materials": [
     "DK_Limestone_Tex",
     "DK_Enamel_Teal",
@@ -70822,20 +70817,17 @@
     "DK_Enamel_Ivory",
     "DK_Hull_Ivory",
     "DK_Window_Tower",
-    "DK_Chrome",
-    "DK_Steel_Ivory",
-    "DK_Concrete",
-    "DK_Steel"
+    "DK_Chrome"
    ],
    "lods": [
     {
      "file": "Models/Landmarks/DK_DiscTower@crown-vista_L1.fbx",
-     "tris": 2149,
+     "tris": 9320,
      "screen": 0.15
     },
     {
      "file": "Models/Landmarks/DK_DiscTower@crown-vista_L2.fbx",
-     "tris": 515,
+     "tris": 4172,
      "screen": 0.05
     }
    ],
@@ -70845,8 +70837,8 @@
      "root": "generated",
      "role": "fbx",
      "path": "Models/Landmarks/DK_DiscTower@crown-vista.fbx",
-     "sha256": "3c212662cfcd802a4b274cec36bda623cecbcb24151bae5f4997d580a915bc7c",
-     "bytes": 208268
+     "sha256": "c1795572d8ec1904f4be6cefc3124491ba0832138d08f6279350a5392575b82f",
+     "bytes": 361852
     },
     {
      "root": "generated",
@@ -70943,48 +70935,6 @@
      "bytes": 188
     },
     {
-     "root": "generated",
-     "role": "material",
-     "path": "Materials/DK_Steel_Ivory.mat",
-     "sha256": "223cb96f2593d8c01e3b65c16f482044d8cf19a4e8b5c33c2cfae8f17ec98d5d",
-     "bytes": 3983
-    },
-    {
-     "root": "generated",
-     "role": "material-meta",
-     "path": "Materials/DK_Steel_Ivory.mat.meta",
-     "sha256": "bcaf6197023e483d28b5cb93f6b25c38ac99e9140f59b02cdfa48852d88b615b",
-     "bytes": 188
-    },
-    {
-     "root": "generated",
-     "role": "material",
-     "path": "Materials/DK_Concrete.mat",
-     "sha256": "8353463385f2c0123b392d115c6e065a8c54ab1ad5b8288dcb0696b2bc19460b",
-     "bytes": 4065
-    },
-    {
-     "root": "generated",
-     "role": "material-meta",
-     "path": "Materials/DK_Concrete.mat.meta",
-     "sha256": "3e3df5bee94f714b242e78ad087708c17c3d895b2998df3f4f7233b9e353e267",
-     "bytes": 188
-    },
-    {
-     "root": "generated",
-     "role": "material",
-     "path": "Materials/DK_Steel.mat",
-     "sha256": "501adb7a2a9c7e4c4a161f9f77654311dbc21727fc0bcd709d932fca33796cc9",
-     "bytes": 4052
-    },
-    {
-     "root": "generated",
-     "role": "material-meta",
-     "path": "Materials/DK_Steel.mat.meta",
-     "sha256": "90705e570329a713c62606f7bc755da3c0463dceb889c5e0e0de8b1dd9e218a9",
-     "bytes": 188
-    },
-    {
      "role": "texture",
      "path": "Textures/facade_panel_v1_mask.png",
      "sha256": "06b88718b39837b5229f3fb20de9756e46c6e95cd60bd1a056a09b2ccea2a88d",
@@ -71075,34 +71025,6 @@
     {
      "root": "generated",
      "role": "texture",
-     "path": "Textures/surface_limestone_detail_v1.png",
-     "sha256": "a8dbee7fa54175ca65d121a2c9f26845b277011c3e46322f5c8a1d7ddb4c0fa1",
-     "bytes": 886792
-    },
-    {
-     "root": "generated",
-     "role": "texture-meta",
-     "path": "Textures/surface_limestone_detail_v1.png.meta",
-     "sha256": "f2a2621861633f71259aa27ec765333390c198302ff40887d8a13894580ce3c3",
-     "bytes": 2718
-    },
-    {
-     "root": "generated",
-     "role": "texture",
-     "path": "Textures/surface_limestone_detail_v1_normal.png",
-     "sha256": "c35393574e0aafc33677535adad7890499f177090f42071d993199ca6acfd8f9",
-     "bytes": 2674711
-    },
-    {
-     "root": "generated",
-     "role": "texture-meta",
-     "path": "Textures/surface_limestone_detail_v1_normal.png.meta",
-     "sha256": "82938cc6e790f442a64f634fb847462a50ef174b137374a34a03f1461ac6e686",
-     "bytes": 2718
-    },
-    {
-     "root": "generated",
-     "role": "texture",
      "path": "Textures/surface_metal_detail_v1.png",
      "sha256": "b4e253548eb27ad5b9c6541e73e8a3ec743deef73aed90c8b25a491a51cecc18",
      "bytes": 491305
@@ -71146,15 +71068,15 @@
      "root": "generated",
      "role": "lod",
      "path": "Models/Landmarks/DK_DiscTower@crown-vista_L1.fbx",
-     "sha256": "b5d3460048b530e537e0a166f177a70bd6323633b59e197768d610e7e7d7f8e8",
-     "bytes": 111580
+     "sha256": "7c42422b2af8f98fbece18befd4bec6889d2910b2e7a053d410ff7ab512cd5dd",
+     "bytes": 209564
     },
     {
      "root": "generated",
      "role": "lod",
      "path": "Models/Landmarks/DK_DiscTower@crown-vista_L2.fbx",
-     "sha256": "eba0c1683d5510b909978da4509682e5033dd027155b03c7c90d18c67344109f",
-     "bytes": 60492
+     "sha256": "484cb589c1c8bba98ab7fcb416bcede74d8084e94c7ec204e788a6827df2821d",
+     "bytes": 106444
     }
    ],
    "tags": {
@@ -71162,8 +71084,8 @@
      "landmark:crown-vista"
     ],
     "scale": [
-     0.9,
-     1.1
+     1,
+     1
     ],
     "squash": 1,
     "wave": 2
@@ -76058,12 +75980,12 @@
    "category": "Landmarks",
    "size": [
     34,
-    75.7438,
+    105.7997,
     11.6395
    ],
    "pivot": "footprint-centre-ground",
    "front": "+Z",
-   "tris": 8156,
+   "tris": 9820,
    "materials": [
     "DK_Limestone_Tex",
     "DK_Enamel_Teal",
@@ -76073,12 +75995,12 @@
    "lods": [
     {
      "file": "Models/Landmarks/DK_ParabolicArch@crown-avenue_L1.fbx",
-     "tris": 2038,
+     "tris": 4044,
      "screen": 0.15
     },
     {
      "file": "Models/Landmarks/DK_ParabolicArch@crown-avenue_L2.fbx",
-     "tris": 480,
+     "tris": 1364,
      "screen": 0.05
     }
    ],
@@ -76088,8 +76010,8 @@
      "root": "generated",
      "role": "fbx",
      "path": "Models/Landmarks/DK_ParabolicArch@crown-avenue.fbx",
-     "sha256": "745ad8697cd51b3dc2d137de4e1290e5a12c2bd11bb3401181f4de616f4160b9",
-     "bytes": 229324
+     "sha256": "c1b568ede63e9dcf17dbfadcfba4734ba8df30a4f1994d96ed3fd8e961c82747",
+     "bytes": 268780
     },
     {
      "root": "generated",
@@ -76245,15 +76167,15 @@
      "root": "generated",
      "role": "lod",
      "path": "Models/Landmarks/DK_ParabolicArch@crown-avenue_L1.fbx",
-     "sha256": "17490f5b42f4429fc938f4a9dae2a32150ae7b070df47176e2c17d8276aa226e",
-     "bytes": 89452
+     "sha256": "e6f7f8abf50aeb6122402a0f3443f2a2d9ea7c6074282220786faf716e2d1f72",
+     "bytes": 125324
     },
     {
      "root": "generated",
      "role": "lod",
      "path": "Models/Landmarks/DK_ParabolicArch@crown-avenue_L2.fbx",
-     "sha256": "250d0e62cc404067a29d3e9942454948bbab9a3436deaf3d354df1b8a3dd166c",
-     "bytes": 40940
+     "sha256": "c7ce879c863efaf364fa9224ed0f7de79792cee575b4f8e855baea8bbc69c045",
+     "bytes": 58540
     }
    ],
    "tags": {

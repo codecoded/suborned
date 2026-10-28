@@ -1,7 +1,7 @@
 {
  "schema": "suborned.world/2",
  "source": "harbour-district v0.2.0 (2026-10-12)",
- "note": "Trimmed example of suborned.world/2: the first element of each generated list (plus a kit facade bay and corner, a crowned roof, a civic kit piece, the horizon sea sector, land and two banks and three horizon pieces, one procedural skin (three faces and its fin: grammar §2a colour life), one balcony awning, banner and Parade flag, a dressed stair tower and the Skyport leg lift and stem tube, the three landmarks, a kit roof and a kit lamp, and the Skyport Tower with its gateway), the civic stash container, a police post and a call box (brief 013: `stash`, and the whole `takedown` section as exported), for the schema in world.schema.ts. Written from out/world by Splice; the full export is out/world/<plan id>.world.json. Brief 075 (the tram street): ground.kerbside and ground.islands, transit.wires and dressing.trams, the first of each, from the export (Splice 2026-10-28).",
+ "note": "Trimmed example of suborned.world/2: the first element of each generated list (plus a kit facade bay and corner, a crowned roof, a civic kit piece, the horizon sea sector, land and two banks and three horizon pieces, one procedural skin (three faces and its fin: grammar §2a colour life), one balcony awning, banner and Parade flag, a dressed stair tower and the Skyport leg lift and stem tube, the three landmarks, a kit roof and a kit lamp, and the Skyport Tower with its gateway), the civic stash container, a police post and a call box (brief 013: `stash`, and the whole `takedown` section as exported), for the schema in world.schema.ts. Written from out/world by Splice; the full export is out/world/<plan id>.world.json. Brief 075 (the tram street): ground.kerbside and ground.islands and dressing.trams, the first of each, from the export (Splice 2026-10-28). No transit.wires: no overhead wires (Sky 2026-10-28; world rule TS-W0).",
  "view": {
   "yaw": 30,
   "pitch": 38,
@@ -388,137 +388,7 @@
     "base": 22.8,
     "height": 1.2
    }
-  ],
-  "wires": {
-   "contact": [
-    {
-     "id": "tram/T1/trunk/contact-l",
-     "line": "T1",
-     "pts": [
-      [
-       -1.6,
-       -780
-      ],
-      [
-       -2,
-       -749.833
-      ],
-      [
-       -1.6,
-       -689.5
-      ]
-     ],
-     "z": 5.8
-    }
-   ],
-   "spans": [
-    {
-     "id": "tram/T1/trunk/span-0",
-     "line": "T1",
-     "a": [
-      -10.44,
-      -780
-     ],
-     "b": [
-      10.44,
-      -780
-     ],
-     "z": 7,
-     "ends": [
-      {
-       "kind": "pole",
-       "at": [
-        -10.6,
-        -780
-       ],
-       "item": "street/tram/T1/trunk/span-0/pole-a"
-      },
-      {
-       "kind": "pole",
-       "at": [
-        10.6,
-        -780
-       ],
-       "item": "street/tram/T1/trunk/span-0/pole-b"
-      }
-     ]
-    }
-   ],
-   "pieces": [
-    {
-     "id": "tram/T1/trunk/span-0/span",
-     "kind": "span",
-     "kit": {
-      "id": "TramWire_Span",
-      "scale": [
-       20.88,
-       1,
-       1
-      ],
-      "yaw": 0,
-      "at": [
-       0,
-       -780
-      ]
-     },
-     "z": 7
-    },
-    {
-     "id": "tram/T1/trunk/span-0/hanger-l",
-     "kind": "hanger",
-     "kit": {
-      "id": "TramWire_Hanger",
-      "scale": [
-       1,
-       1,
-       1
-      ],
-      "yaw": 1.5708,
-      "at": [
-       -1.6,
-       -780
-      ]
-     },
-     "z": 5.8
-    },
-    {
-     "id": "tram/T1/trunk/span-0/hanger-r",
-     "kind": "hanger",
-     "kit": {
-      "id": "TramWire_Hanger",
-      "scale": [
-       1,
-       1,
-       1
-      ],
-      "yaw": 1.5708,
-      "at": [
-       2,
-       -780
-      ]
-     },
-     "z": 5.8
-    },
-    {
-     "id": "tram/T1/trunk/span-1/span",
-     "kind": "span",
-     "kit": {
-      "id": "TramWire_Span",
-      "scale": [
-       20.88,
-       1,
-       1
-      ],
-      "yaw": 0,
-      "at": [
-       0,
-       -749.833
-      ]
-     },
-     "z": 7
-    }
-   ]
-  }
+  ]
  },
  "dressing": {
   "trams": [

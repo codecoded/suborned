@@ -1,0 +1,4 @@
+Splice 075 golden SK-1 vista exception, 2026-10-28
+export out/world/harbour-district.world.json sha256 8297649696698b39764c168a1dfd0d9b299b6f654f40bb95b82194c32064af11 (bun run world twice, same)
+SK-1 345/345 (crown-vista 250.0 above its 0.2 base, <= vista 250, under SpaceHQ 252.18); plan exit 0; Handover overlay exit 0; cover + --check exit 0; sim:site no diff in sim/data; typecheck 0; tools/plan + tools/world tests 569 pass 0 fail
+look.json setts -> DK_Ground_Setts tile 1

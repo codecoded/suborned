@@ -1,5 +1,5 @@
 // The world generator: one deterministic pass from the plan to every generated layer. Seeded by element id throughout.
-import type { KerbBay, TramWires } from '../../../contracts/world/world.schema';
+import type { KerbBay } from '../../../contracts/world/world.schema';
 import type { TramStreetLog } from './street/tramstreet';
 import type { Connector, Crossing, Deck, Fabric, Facade, Frontage, Skin, SignatureOut, KitRef, Mass, Prim, Roof, StreetItem, Takedown } from '../../../contracts/world/world.schema';
 import { type V, inPoly as inPolyV } from '../../plan/geom';
@@ -42,7 +42,7 @@ export type Generated = {
   kerbArcs?: KerbArcLog; // brief 028: the pearl kerb laid round every kerb return (kind kerb-return)
   colourways?: ColourwayLog; // brief 074: the building colourways' spread (set by build.ts worldOf)
   billboards?: BoardLog; // brief 075-F: what the BB rules placed and left (billboards.ts); the play-street cap's exclusions are Sky's question
-  tram?: { bays: KerbBay[]; islands: Mass[]; wires?: TramWires; log: TramStreetLog }; // brief 075: the tram street's kerbside, islands and overhead (tramstreet.ts); its setts and rails are build.ts's (ground)
+  tram?: { bays: KerbBay[]; islands: Mass[]; log: TramStreetLog }; // brief 075: the tram street's kerbside and islands (tramstreet.ts; no overhead, Sky 2026-10-28); its setts and rails are build.ts's (ground)
   roadFinish?: RoadFinishLog; // brief 028 Road: what the road finish laid (its pieces are in groundPieces, kinds road-ribbon, road-shoulder, road-lozenge, road-seam; the pinstripe retired 072-G) and what it left
 };
 

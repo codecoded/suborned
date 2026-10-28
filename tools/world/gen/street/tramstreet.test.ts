@@ -1,4 +1,4 @@
-// Brief 075, the 1950s tram street (tramstreet.ts; plan standards.streetscape.sections.tramStreet): setts, rails, islands, kerbside, wires and the parked trams, with failing examples.
+// Brief 075, the 1950s tram street (tramstreet.ts; plan standards.streetscape.sections.tramStreet): setts, rails, islands, kerbside, no overhead and the parked trams, with failing examples.
 import { expect, setDefaultTimeout, test } from 'bun:test';
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
@@ -39,10 +39,12 @@ test('road finish: no lozenge, seam or dash inside the setts (the material edge 
   expect(bad.map(p => p.id)).toEqual([]);
 });
 
-test('rails: Tile_TramRail_12m on straights, Tile_TramRail on curves, every tile on a track centre line, flush at the setts top', () => {
+test('rails: Vela\'s flush tiles (no track bed on a tram street), Tile_TramRail_Flush_12m on straights, Tile_TramRail_Flush on curves, every tile on a track centre line, flush at the setts top', () => {
   const by = (id: string) => rails.filter(r => r.kit!.id === id);
-  expect(by('Tile_TramRail_12m').length).toBeGreaterThan(300);
-  expect(by('Tile_TramRail').length).toBeGreaterThan(100);
+  expect(by('Tile_TramRail_Flush_12m').length).toBeGreaterThan(300);
+  expect(by('Tile_TramRail_Flush').length).toBeGreaterThan(100);
+  expect(by('Tile_TramRail_12m').length + by('Tile_TramRail').length).toBe(0); // the track-bed tiles lie nowhere on a tram street (brief 075)
+  expect(gen.tram!.log.rails.flush).toBe(true);
   for (const r of rails) if (r.size[0] > 1.2) expect(Math.abs(r.kit!.scale[0] - 1)).toBeLessThan(0.08); // a tile stretched under 8 % (a segment under 2 m, the loop's 0.59 m lead-in, takes one short tile)
   // every boulevard tile is 1.8 m off the road line (the two tracks), none on it
   const blv = roadOf('boulevard'), onBlv = rails.filter(r => r.at[1] < -100 && r.at[1] > -700 && Math.abs(r.at[0]) < 5);
@@ -81,17 +83,11 @@ test('kerbside: bays only in the kerbside strip, never on an island, a crossing 
   expect(bays.some(b => inPoly(c0, b.ring as V[]))).toBe(false);
 });
 
-test('wires: spans at 7.0 on rosettes (walls both ends) or pole pairs, contact at 5.8 over each track; poles are kerb-zone street items 3 m off trees and lamps', () => {
-  const W = w.transit.wires!;
-  expect(W.spans.length).toBeGreaterThan(80);
-  expect(W.spans.every(s => s.z === 7)).toBe(true);
-  expect(W.contact.every(c => c.z === 5.8)).toBe(true);
-  for (const s of W.spans) expect(s.ends[0].kind).toBe(s.ends[1].kind); // a rosette span has walls at both ends; else both ends are poles
-  const poles = w.street.filter(s => s.kind === 'span-pole'), near = w.street.filter(s => (s.kind === 'tree' || s.kind === 'lamp') && s.z < 1); // ground items (a deck's lamps stand 9.43 m up)
-  expect(poles.length).toBe(W.spans.filter(s => s.ends[0].kind === 'pole').length * 2);
-  for (const p of poles) expect(near.some(t => Math.hypot(t.at[0] - p.at[0], t.at[1] - p.at[1]) < 3 - 1e-6)).toBe(false);
-  // the boulevard's walls carry its spans (the 1950s street: no poles where the walls can carry the wires)
-  expect(W.spans.filter(s => s.ends[0].kind === 'rosette' && Math.abs(s.a[0]) < 25).length).toBeGreaterThan(15);
+test('no overhead (Sky 2026-10-28, "no overhead wires though!"): no transit.wires, no TramWire_* piece, no span pole, though the plan still carries sections.tramStreet.wires (ignored until Datum deletes it)', () => {
+  expect('wires' in w.transit).toBe(false);
+  expect(w.street.some(s => s.kind === 'span-pole' || /\/span-\d+/.test(s.id))).toBe(false);
+  expect(JSON.stringify(w).includes('TramWire_')).toBe(false);
+  expect('wires' in (gen.tram!.log as object)).toBe(false);
 });
 
 test('parked trams: one per line, on a track at its first stop, presentation dressing only (never a street item, transit or sim datum)', () => {

@@ -525,7 +525,7 @@
       "tile": 1
     },
     "kerbside/paint": {"palette":"harbour.kerb","value":1,"smoothness":0.1,"note":"brief 075 (Latch, TramStreet.cs): the kerbside bays' lines on a tram street (ground.kerbside), 0.10 m, in the kerb's pearl; Glint and Vela tune. Its own key, not ground/paint, so the centre-line dashes (RoadMarkings) stay off"},
-    "setts": {"palette":"harbour.asphalt","value":0.8,"smoothness":0.2,"material":"DK_Gutter_Setts","tile":1,"note":"brief 075 (Splice, tramstreet.ts): the tram lanes' granite setts (ground.flats surface setts); the granite kerb's gutter setts for now, Vela's own setts sheet when it lands"}
+    "setts": {"palette":"harbour.asphalt","value":0.8,"smoothness":0.2,"material":"DK_Ground_Setts","tile":1,"note":"brief 075 (Splice, tramstreet.ts): the tram lanes' granite setts (ground.flats surface setts); Vela's own setts sheet DK_Ground_Setts (075 golden rails: fan bond, world-metre UVs, the .mat tiles every 2 m), the same material the flush rail tiles carry between the rails"}
   },
   "details": {
     "note": "brief 072-F (Vela's design, briefs/072/texture/design.md): the kit detail pairs a colour surface's `detail` names. Colourless (albedo x2 about 128 and a tangent normal), laid in URP Lit's own detail slots with _DETAIL_MULX2 on box-projected UVs in metres, so the colour stays the surface's. tile = metres per repeat, bump = _DetailNormalMapScale [S]. glass, water and crossing take none (transparent glazing, the Water shader, the signal-adjacent crossing).",
