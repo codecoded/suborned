@@ -51,10 +51,12 @@ test('failing example: that ShopFill_4 put back at its corner (v3 export, a→b 
 });
 
 test('failing example: a SideBayStack_Mid run to the 80° corner of parade-north/2 (no pull-back) stands its back 0.06 m out', () => {
-  // body ring [[136,40],[136,64],[116,67.304],[116,60]]: the west face meets the slanted north face at 80.6°; the module ran to the vertex in the v3 export
-  const host = base.w.facades.find(f => f.building === 'bld/parade-north/2' && f.kit.id === 'SideBayStack_Mid')!;
-  const bad: Facade = { ...host, id: 'bld/parade-north/2/k5', kit: { id: 'SideBayStack_Mid', scale: [1, 1, 1], yaw: -4.7124, at: [116, 64.304] }, base: 5.83, a: [116, 67.304], b: [116, 61.304], normal: [-1, 0] };
-  const f = faults(one(base.w, bad));
+  // body ring [[136,40],[136,64],[116,67.304],[116,60]]: the west face meets the slanted north face at 80.6°; the module ran to the vertex in the v3 export. Brief 075: the
+  // plan lays parade-north as old blocks now, so the v3 building stands here as it was (its body mass put back beside the world's)
+  const host = base.w.facades.find(f => f.kit.id === 'SideBayStack_Mid')!;
+  const bad: Facade = { ...host, building: 'bld/parade-north/2', id: 'bld/parade-north/2/k5', kit: { id: 'SideBayStack_Mid', scale: [1, 1, 1], yaw: -4.7124, at: [116, 64.304] }, base: 5.83, a: [116, 67.304], b: [116, 61.304], normal: [-1, 0] };
+  const w0 = { ...base.w, buildings: [...base.w.buildings.filter(m => !m.id.startsWith('bld/parade-north/2/')), { id: 'bld/parade-north/2/body', surface: 'mixed', ring: [[136, 40], [136, 64], [116, 67.304], [116, 60]], base: 0, height: 31.38 }] } as World;
+  const f = faults(one(w0, bad));
   expect(f).toHaveLength(1);
   expect(f[0]!.out).toBeGreaterThan(0.05);
   expect(f[0]!.ground).toBe(false);

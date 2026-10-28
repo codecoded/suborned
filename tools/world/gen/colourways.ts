@@ -62,7 +62,7 @@ export const famDE = (p: string, q: string) => { const k = p < q ? `${p}|${q}` :
 /** The building a mass belongs to (FacadeKit.HostOf): `/podium`, `/body`, `/upper`, `/lower` dropped. */
 export function hostOf(massId: string): string {
   const i = massId.lastIndexOf('/');
-  return i > 0 && ['/podium', '/body', '/upper', '/lower'].includes(massId.slice(i)) ? massId.slice(0, i) : massId;
+  return i > 0 && (['/podium', '/body', '/upper', '/lower'].includes(massId.slice(i)) || /^\/wing-\d+$/.test(massId.slice(i))) ? massId.slice(0, i) : massId; // brief 075: an old building's wings (oldblocks.ts)
 }
 /** The civic block's own hosts (facade.json hostAreas → `civic`): the café and the Records Office and their parts. */
 export const civicHost = (id: string) => Object.entries(COLOURWAY_SPEC.hostAreas).some(([k, a]) => a === CIVIC && (id === k || id.startsWith(k + '/')));
@@ -106,6 +106,12 @@ export function assignColourways(blds: { id: string; area?: string }[], frontage
   for (const [id, f] of fixed) if (of.has(id) && of.get(id) !== CIVIC) of.set(id, f); // brief 075: the old high street's families (oldStreetFamilies) stand; the repair never re-draws them
   const pairs = streetNeighbours(frontages, new Set(ids)), nb = new Map<string, string[]>();
   for (const [p, q] of pairs) { (nb.get(p) ?? nb.set(p, []).get(p)!).push(q); (nb.get(q) ?? nb.set(q, []).get(q)!).push(p); }
+  // brief 075: two old-street buildings on different walls that meet as street neighbours (a cross street's faces either side of the boulevard) with one palette
+  // family: the later one takes the next palette family none of its neighbours has (the old walk's order otherwise stands)
+  for (const [p, q] of pairs) if (fixed.has(p) && fixed.has(q) && of.get(p) === of.get(q) && OLD_STREET.colour.palette.includes(of.get(q)!)) {
+    const P = OLD_STREET.colour.palette, i = P.indexOf(of.get(q)!), alt = [1, 2, 3].map(s => P[(i + s) % P.length]!).find(f => !(nb.get(q) ?? []).some(o => of.get(o) === f));
+    if (alt) of.set(q, alt);
+  }
   // a building's worst neighbour: -1 sharing a family, else the smallest wall dE
   const score = (id: string, fam: string) => Math.min(Infinity, ...(nb.get(id) ?? []).map(o => (of.get(o) === fam ? -1 : famDE(fam, of.get(o)!))));
   const changed = new Set<string>(); let passes = 0;

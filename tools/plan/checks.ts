@@ -11,6 +11,7 @@ import { driveChecks } from './drives';
 import { floorChecks } from './floors';
 import { roadFinishChecks } from './road-finish';
 import { kerbReturnChecks } from './kerb-return';
+import { blockGrammarChecks } from './block-grammar';
 import { edges } from './graph';
 import type { Overlay, Route } from './overlay';
 
@@ -215,6 +216,7 @@ export function check(plan: Plan, d: Derived, civic: Civic, strict = false, over
   C.push(...entranceChecks(plan, d, civ));
   C.push(...roadFinishChecks(plan, undefined, { d, civ })); // RF-1, RF-2: opt-in on standards.streetscape.roads / .inlays (brief 026/028)
   C.push(...kerbReturnChecks(plan, d, civ)); // KR-1: opt-in on standards.streetscape.kerbReturn (brief 028)
+  C.push(...blockGrammarChecks(plan, d, civ)); // BG-1..BG-5: opt-in on standards.blocks, the old DecoKit block grammar (brief 075)
   const waived = (std.transit?.waived ?? {}) as Record<string, string>;
   if (!strict) for (const c of C) if (!c.ok && waived[c.id]) { c.ok = true; c.waived = waived[c.id]; c.detail = `WAIVED (${waived[c.id]})${c.detail ? '; ' + c.detail : ''}`; }
   return { checks: C, routes, crossings, stops, stations, walks };

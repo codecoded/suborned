@@ -49,11 +49,11 @@ test('a palm in a planter\'s bed is the bare palm (FanPalm_Play), never a potted
 
 test('roof programmes stand their kit piece in place of the parts it draws: one piece per roof, inside the roof rect, none of its procedural stand-in left', () => {
   const by2 = (p: string) => w.roofs.filter(r => r.programme === p && r.form !== 'terrace');
-  const tanks = by2('water-sphere'); expect(tanks.length).toBe(w.facades.some(f => f.form === 'side') ? 88 : 92); // brief 075: 88, the boulevard's old storey codes (oldstreet.ts) re-height its walls and one roof takes another programme (89 with them off on the 16:22 plan); // brief 072-C: plain tiers under the every-face kit (no podium step, no grammar setback) give 90 sphere roofs for (const r of tanks) { expect(r.kit!.id).toBe('Roof_Tank'); expect(r.parts.some(p => /\/(sphere|leg-\d)$/.test(p.id))).toBe(false); }
+  const tanks = by2('water-sphere'); expect(tanks.length).toBe(w.facades.some(f => f.form === 'side') ? 39 : 92); // brief 075 (the old buildings): 39, the plan's old blocks stand 14 m deep bands at 3 and 4 storeys and their long roofs draw other programmes; was 88, the boulevard's old storey codes (oldstreet.ts) re-height its walls and one roof takes another programme (89 with them off on the 16:22 plan); // brief 072-C: plain tiers under the every-face kit (no podium step, no grammar setback) give 90 sphere roofs for (const r of tanks) { expect(r.kit!.id).toBe('Roof_Tank'); expect(r.parts.some(p => /\/(sphere|leg-\d)$/.test(p.id))).toBe(false); }
   const masts = by2('antenna-mast').filter(r => r.kit); expect(masts.length).toBeGreaterThan(100); expect(new Set(masts.map(r => r.kit!.id))).toEqual(new Set(['Roof_Mast', 'Roof_LatticeMast']));
   for (const r of masts) expect(r.parts.some(p => /\/(mast|ring-\d+)$/.test(p.id))).toBe(false);
-  expect(new Set(by2('sun-terrace-pool').map(r => r.kit?.id))).toEqual(new Set(['Roof_Pool', 'Roof_LapPool']));
-  expect(by2('tennis-court')[0]!.kit!.id).toBe('Roof_Tennis');
+  for (const r of by2('sun-terrace-pool')) expect(['Roof_Pool', 'Roof_LapPool']).toContain(r.kit?.id ?? ''); // brief 075 (the old buildings): fewer pool roofs, not always both pieces (was: both)
+  for (const r of by2('tennis-court')) expect(r.kit!.id).toBe('Roof_Tennis'); // brief 075 (the old buildings): the old blocks' 14 m bands leave no roof wide enough for a court today (was: one)
   for (const r of w.roofs) if (r.kit) { expect(by.get(r.kit.id)!.status).toBe('adopted'); expect(r.kit.scale).toEqual([1, 1, 1]); }
 });
 

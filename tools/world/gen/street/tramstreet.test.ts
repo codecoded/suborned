@@ -7,6 +7,7 @@ import { inPoly, lineDist } from '../../../plan/geom';
 import { civic } from '../../../plan/civic';
 import { derive, type Plan } from '../../../plan/plan';
 import { worldOf } from '../../build';
+import { TRAM_BED } from './tramstreet';
 
 setDefaultTimeout(180000);
 const root = resolve(import.meta.dir, '../../../..'), read = (p: string) => JSON.parse(readFileSync(resolve(root, p), 'utf8'));
@@ -17,29 +18,30 @@ const setts = w.ground.flats.filter(f => f.surface === 'setts'), rails = (w.grou
 const inSetts = (p: V) => setts.some(f => inPoly(p, f.ring as V[]));
 const roadOf = (id: string) => d.roads.find(r => r.id === id)!;
 
-test('setts: the two tram lanes of every tram street, nothing beyond |offset| 3.6, and the T1 x T2 flat crossing square', () => {
-  expect(setts.length).toBeGreaterThan(5);
-  for (const id of tramRoads) { // a point on the road line midway along each tram street lies in the setts; one 4.5 m off it does not
+test('bed (brief 075 roll-out): no setts band under the tram lanes, the road surface runs on kerb to kerb; setts only in the T1 x T2 flat crossing square', () => {
+  expect(TRAM_BED.lanes).toBe(false);
+  expect(setts.map(f => f.id)).toEqual(['ground/tram/square/T1-T2']); // the one sett square the plan's crossing names
+  expect(gen.tram!.log.setts.flats).toBe(0);
+  for (const id of tramRoads) { // a point on the road line midway along each tram street lies on the road surface (its ribbon), in no setts
     const r = roadOf(id), a = r.line[0]!, b = r.line[r.line.length - 1]!, m: V = [(a[0] + b[0]) / 2, (a[1] + b[1]) / 2];
     if (m[1] > plan.sheet.y[1] || m[1] < plan.sheet.y[0]) continue;
-    const u = [b[0] - a[0], b[1] - a[1]], L = Math.hypot(u[0]!, u[1]!), n: V = [-u[1]! / L, u[0]! / L];
-    expect(inSetts(m)).toBe(true);
-    expect(inSetts([m[0] + n[0] * 4.5, m[1] + n[1] * 4.5])).toBe(false);
+    expect(inSetts(m)).toBe(false);
+    expect(w.ground.roads.some(g => g.id === `road/${id}` && lineDist(m, g.line as V[]) <= g.width / 2)).toBe(true);
   }
-  expect(setts.some(f => f.id === 'ground/tram/square/T1-T2')).toBe(true);
-  expect(inSetts([8, -728])).toBe(true); // the junction box corner, outside both bands
+  expect(inSetts([8, -728])).toBe(true); // the junction box corner, outside both tracks
   // failing example: a lawn track (the old reservation) would show as a median flat under the rails
   expect(w.ground.flats.some(f => f.id.startsWith('reservation/'))).toBe(false);
 });
 
-test('road finish: no lozenge, seam or dash inside the setts (the material edge is the lane line)', () => {
+test('road finish: no lozenge, seam or dash inside the setts square or on a rail tile (the tracks\' swept strip stays clear)', () => {
   const marks = (w.ground.pieces ?? []).filter(p => ['road-lozenge', 'road-seam', 'road-lane-dash'].includes(p.kind));
   expect(marks.length).toBeGreaterThan(100);
-  const bad = marks.filter(p => inSetts(p.at as V));
+  const onTile = (p: V) => rails.some(r => { const c = Math.cos(r.yaw), s = Math.sin(r.yaw), dx = p[0] - r.at[0], dy = p[1] - r.at[1]; return Math.abs(dx * c + dy * s) <= r.size[0] / 2 && Math.abs(-dx * s + dy * c) <= r.size[1] / 2; });
+  const bad = marks.filter(p => inSetts(p.at as V) || onTile(p.at as V));
   expect(bad.map(p => p.id)).toEqual([]);
 });
 
-test('rails: Vela\'s flush tiles (no track bed on a tram street), Tile_TramRail_Flush_12m on straights, Tile_TramRail_Flush on curves, every tile on a track centre line, flush at the setts top', () => {
+test('rails: Vela\'s flush tiles (no track bed on a tram street), Tile_TramRail_Flush_12m on straights, Tile_TramRail_Flush on curves, every tile on a track centre line, flush 2 cm proud of the road surface', () => {
   const by = (id: string) => rails.filter(r => r.kit!.id === id);
   expect(by('Tile_TramRail_Flush_12m').length).toBeGreaterThan(300);
   expect(by('Tile_TramRail_Flush').length).toBeGreaterThan(100);

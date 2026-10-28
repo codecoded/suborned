@@ -45,7 +45,8 @@ describe('extra world rules', () => {
   test('SF-18: the pylon put back at 6.5, 0 (the plan before pylonClear) stands in the Crown Circus monument', () => {
     const f = failing(w => { w.transit.skyRail[0]!.pylons[monumentPylon(w)] = [6.5, 0]; });
     expect(f['SF-18']).toContain('1 fail: skyrail/S1/trunk pylon 6.5, 0 stands on the landmark landmark/monument');
-    expect(ids(f)).toEqual(['SF-18']);
+    expect(ids(f)).toEqual(['SF-18', 'SK-T1']); // brief 075 roll-out: the moved plan pylon has lost its old stack too (SK-T1, rules/skytrack.ts)
+    expect(f['SK-T1']).toContain('has no stack');
   });
 
   test('SF-18: the pylon where the plan puts it passes; on a crossing or a bay it fails', () => {

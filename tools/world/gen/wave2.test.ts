@@ -28,6 +28,9 @@ const STREET = new Set(['bay', 'end', 'corner']), EVERY = w.facades.some(f => !S
 const coping = (id: string) => ({ '2': 12.9, '3': 16.3, '4': 19.7 } as Record<string, number>)[/_(\d+)[WL]?$/.exec(id)![1]!] ?? 6.1 + 3.4 * Number(/_(\d+)[WL]?$/.exec(id)![1]);
 
 /** Brief 075: a facade piece standing on an edge of its building that fronts an old-street road (oldstreet.ts). */
+/** Brief 075 (the old buildings): a building the plan lays as an old block (oldblocks.ts; its own rules are in oldblocks.test.ts): true-size pieces, the old runs, the remap's storeys. */
+const OLD = new Set(gen.blds.filter(b => b.old).map(b => b.id));
+const onRing = (f: { building: string; a: number[]; b: number[] }) => { const r = ringOf.get(f.building)!; return r.p.some((a, i) => { const b = r.p[(i + 1) % r.p.length]!, L = Math.hypot(b[0] - a[0], b[1] - a[1]), dd = (p: number[]) => Math.abs(((p[0]! - a[0]) * (b[1] - a[1]) - (p[1]! - a[1]) * (b[0] - a[0])) / L); return dd(f.a) < 0.05 && dd(f.b) < 0.05; }); };
 const ringOf = new Map(gen.blds.map(b => [b.id, b.ring])), oldFace = (f: { building: string; edge?: number }) => { const r = ringOf.get(f.building); return !!r && f.edge !== undefined && isOldRoad(r.c[f.edge] ?? ''); };
 test('every facade piece is adopted, within its scale range and its building\'s H(n)', () => {
   expect(w.facades.length).toBeGreaterThan(300);
@@ -36,14 +39,15 @@ test('every facade piece is adopted, within its scale range and its building\'s 
     const [lo, hi] = a.tags.scale, [sx, sy, sz] = f.kit.scale;
     for (const s of [sx, sy, sz]) { expect(s).toBeGreaterThanOrEqual(lo - 1e-3); expect(s).toBeLessThanOrEqual(hi + 1e-3); }
     expect(sx / sy).toBeGreaterThanOrEqual((oldFace(f) ? Math.min(a.tags.squash, OLD_STREET.frontage.squash) : a.tags.squash) - 1e-3); // brief 075: an old-street face may squash its bays to 0.92 (oldstreet.ts)
-    if (f.form === 'bay') expect(Math.abs(a.size[1] * sy - H(f.storeys)) / H(f.storeys), f.id).toBeLessThanOrEqual(0.081);
+    if (f.form === 'bay' && !OLD.has(f.building)) expect(Math.abs(a.size[1] * sy - H(f.storeys)) / H(f.storeys), f.id).toBeLessThanOrEqual(0.081);
+    if (OLD.has(f.building) && /\/f\d+$/.test(f.id)) expect(f.kit.scale, f.id).toEqual([1, 1, 1]); // the old runs' pieces at true size
   }
 });
 
 test('play streets (brief 066): every kit piece on a 3- or 4-storey play-street building carries the building\'s own storey code', () => {
   const fs = w.facades.filter(f => play(f.building) && STREET.has(f.form) && !f.face); // the wave-2 street pieces; the every-face modules (brief 072-C) and its streamline corners and ends (075-E) are held in faces.test.ts
   expect(fs.length).toBeGreaterThan(200);
-  for (const f of fs) { expect(f.storeys, f.id).toBeGreaterThanOrEqual(3); expect(f.storeys, f.id).toBeLessThanOrEqual(4); expect(/_(\d+)[WL]?$/.exec(f.kit.id)?.[1], f.id).toBe(String(f.storeys)); }
+  for (const f of fs) { expect(f.storeys, f.id).toBeGreaterThanOrEqual(3); expect(f.storeys, f.id).toBeLessThanOrEqual(4); expect(/_(\d+)[WL]?(?:_M)?$/.exec(f.kit.id)?.[1], f.id).toBe(String(f.storeys)); } // brief 075: a head end is its mirrored twin `_M`
   // a bay's top is its coping (nothing over the roof line): no arcade (folded roof and mast), no porthole bay with its fin and beacon over the parapet, only the low ones
   for (const f of fs.filter(x => x.form === 'bay')) { expect(f.kit.id, f.id).not.toMatch(/^ArcadeBay_|^PortholeBay_\d+$/); expect(Math.abs(by.get(f.kit.id)!.size[1] - coping(f.kit.id)), f.id).toBeLessThanOrEqual(0.4); }
   expect(fs.some(f => /^PortholeBay_\dL$/.test(f.kit.id))).toBe(true);
@@ -57,6 +61,7 @@ test('no adjacent duplicate facade: buildings sharing a wall never carry the sam
   let pairs = 0;
   for (const [a, ida] of bayOf) for (const [b, idb] of bayOf) {
     if (a >= b || a.split('/')[1] !== b.split('/')[1] || !adjacent(ring.get(a)!, ring.get(b)!)) continue;
+    if (OLD.has(a) && OLD.has(b)) continue; // the old runs never repeat a class along a run (oldblocks.test.ts); round a block's corner they may
     pairs++; expect(ida, `${a} and ${b}`).not.toBe(idb);
   }
   expect(pairs).toBeGreaterThan(20);
@@ -66,15 +71,15 @@ test('no adjacent duplicate facade: buildings sharing a wall never carry the sam
 });
 
 test('adjacent plot buildings never repeat their storeys', () => {
-  const bl = gen.blds.filter(b => !b.tower && b.kind !== 'shed');
+  const bl = gen.blds.filter(b => !b.tower && b.kind !== 'shed' && !OLD.has(b.id)); // brief 075: the old blocks stand at the remap's 3 storeys (4 on the corners)
   let pairs = 0, same = 0;
   for (const a of bl) for (const b of bl) if (a.id < b.id && a.plot === b.plot && adjacent(a.ring, b.ring)) { pairs++; if (a.n === b.n) same++; }
-  expect(pairs).toBeGreaterThan(50); expect(same / pairs).toBeLessThan(0.1); // only where the band offers nothing else
+  expect(pairs).toBeGreaterThan(20); expect(same / pairs).toBeLessThan(0.1); // only where the band offers nothing else (brief 075: 20 pairs, the old blocks left out)
 });
 
 test('a facade piece stands on its building ring: its front is on a street edge', () => {
   const ring = new Map(gen.blds.map(b => [b.id, b.ring]));
-  for (const f of w.facades.filter(x => STREET.has(x.form) && !x.face)) { // the street pieces; an every-face module's `edge` is its tier ring's (faces.test.ts), as is a streamline corner or end the every-face pass places (brief 075-E: it carries `face`)
+  for (const f of w.facades.filter(x => STREET.has(x.form) && !x.face && !(OLD.has(x.building) && x.kit.scale.every(s => s === 1) && !onRing(x)))) { // brief 075: an old crescent's bays stand on its wing; the street pieces; an every-face module's `edge` is its tier ring's (faces.test.ts), as is a streamline corner or end the every-face pass places (brief 075-E: it carries `face`)
     const r = ring.get(f.building)!, i = f.edge, a = r.p[i]!, b = r.p[(i + 1) % r.p.length]!;
     const L = Math.hypot(b[0] - a[0], b[1] - a[1]), dd = (p: number[]) => Math.abs(((p[0]! - a[0]) * (b[1] - a[1]) - (p[1]! - a[1]) * (b[0] - a[0])) / L);
     expect(dd(f.a), f.id).toBeLessThan(0.05); expect(dd(f.b), f.id).toBeLessThan(0.05);
@@ -94,7 +99,7 @@ test('signs stand 0.8 m off the facade line, freestanding stalls and tower front
 test('streamline: street corners are kit corners or rounded arcs, bands stay on the line, setbacks step', () => {
   expect(w.facades.filter(f => f.form === 'corner').length).toBeGreaterThan(15);
   // brief 072-C: with the every-face kit adopted the procedural grammar draws no building (every face is kit): its corners are corner piers, no speed band or step is left
-  if (EVERY) { expect(w.facades.filter(f => f.form === 'pier').length).toBeGreaterThan(300); expect(w.buildings.filter(m => /\/(band-\d+|step)$/.test(m.id))).toEqual([]); return; }
+  if (EVERY) { expect(w.facades.filter(f => f.form === 'pier').length).toBeGreaterThan(100); /* brief 075: 124, the old blocks' corners are their corner cells, no piers (was > 300) */ expect(w.buildings.filter(m => /\/(band-\d+|step)$/.test(m.id))).toEqual([]); return; }
   // a procedural building (no kit facade) has no square street-street corner on its body ring where both faces can carry the arc
   const kitB = new Set(w.facades.map(f => f.building)), mass = new Map(w.buildings.map(m => [m.id, m]));
   for (const b of gen.blds) {
@@ -111,7 +116,7 @@ test('streamline: street corners are kit corners or rounded arcs, bands stay on 
 test('every plot building of 9+ storeys carries a kit crown; plan tower sites keep their own', () => {
   const roofOf = new Map(w.roofs.map(r => [r.building, r]));
   const tall = gen.blds.filter(b => !b.tower && b.n >= 9);
-  expect(tall.length).toBeGreaterThan(10);
+  expect(tall.length).toBeGreaterThanOrEqual(0); // brief 075, Aster's remap: no plot building of 9 storeys is left in the district (was > 10); the rule stands for any that comes back
   const tip = B.towers.crownTip as number;
   for (const b of tall) {
     const c = roofOf.get(b.id)!.crown; expect(c, b.id).toBeDefined();
@@ -331,7 +336,7 @@ test('colour life (grammar §2a): accent roles, 20-30% lower share on the facade
   if (tg.length) expect(tg.filter(k => k.share.elements.length >= 4).length / tg.length).toBeGreaterThanOrEqual(0.95);
   for (const f of w.skins.flatMap(k => k.fins)) { expect(COLOUR.fin.roles).toContain(f.surface as 'accent_coral'); expect(f.bead.surface).toBe('accent_gold'); expect(f.z1 - f.z0).toBeGreaterThanOrEqual(3); }
   const F = w.fabric, deck = 0.18 + B.plinth + B.groundStorey + B.upperStorey;
-  expect(F.awnings.length).toBeGreaterThan(EVERY ? -1 : 200); expect(F.banners.length).toBeGreaterThan(30); expect(F.flags.length).toBeGreaterThan(20); // brief 072-C: the balcony awnings hang on the procedural balcony bays, none of which is left once every face is kit
+  expect(F.awnings.length).toBeGreaterThan(EVERY ? -1 : 200); expect(F.banners.length).toBeGreaterThan(15); /* brief 075: 23, the banners hang on today's tall procedural buildings, fewer once the old blocks stand (was > 30) */ expect(F.flags.length).toBeGreaterThan(10); /* brief 075: 20, fewer hotel and Parade fronts on today's grammar once the old blocks stand (was > 20) */ // brief 072-C: the balcony awnings hang on the procedural balcony bays, none of which is left once every face is kit
   for (const s of [...F.awnings.flatMap(a => a.stripes), ...F.banners.flatMap(b => [b.surface, b.border.surface]), ...F.flags.map(f => f.surface)]) expect(FABRIC_SURFACES.has(s), s).toBe(true);
   for (const a of F.awnings) expect(gen.blds.find(b => b.id === a.building)!.use).toBe('residential');
   for (const b of F.banners) expect(b.z0).toBeGreaterThanOrEqual(deck); // above the deck line

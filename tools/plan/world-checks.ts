@@ -2,6 +2,7 @@
 // standards.frontage (Datum's A1 hand-off); each rule reads the generator's output in process. Every rule carries its source.
 import { bandFor, ctxOf as genCtx } from '../world/gen/common';
 import { buildingHost } from '../world/gen/frontage';
+import { OLD_BLOCK, copingOf } from '../world/gen/oldblocks';
 import type { Host } from '../world/gen/types';
 import type { Check } from './checks';
 import { type V, lineToPoly, nearLine, lineDist } from './geom';
@@ -42,10 +43,15 @@ export function buildingChecks(c: WCtx): Check[] {
     if (b.tower) { const s = B.towers.sites.find((x: any) => `tower/${x.id}` === b.id); if (!s || b.n < B.towers.storeysMin || Math.abs(H - hOf(B, b.n)) > TOL) bad2.push(`${b.id} H ${f1(H)} n ${b.n}`); continue; }
     if (b.kind === 'shed') { const [lo, hi] = band.heightM as V; if (H < lo - TOL || H > hi + TOL) bad2.push(`${b.id} shed ${f1(H)} outside ${lo}–${hi}`); continue; }
     const cb = bandFor(B, b.use, b.area), [lo, hi] = cb.capped ? [cb.lo, cb.hi - 1] : band.storeys as V, cap = B.caps?.[b.area]?.m as number | undefined; // brief 066: a play-street band has no park-edge storey (hi - 1 + 1)
-    if (b.n < lo || b.n > hi + 1 || Math.abs(H - hOf(B, b.n)) > TOL) bad2.push(`${b.id} n ${b.n} H ${f1(H)} (band ${lo}–${hi})`);
+    // brief 075 (Sky: "why can't we just use the old buildings"): an old-frontage building (tools/world/gen/oldblocks.ts) stands to its class's coping on the old storey
+    // grid (ground 5.0 + code x 3.4 + the 1.1 parapet, DecoKitFrontage.Of), its pieces at true size; its storeys are the class's code
+    const old = (b as { old?: { code: number; top: number } }).old;
+    // and its storeys inside Aster's remap (briefs/075/notes.md: most 3, 4 on the corners), not the use band
+    if (old) { const [ol, oh] = OLD_BLOCK.storeys; if (b.n !== old.code || b.n < ol || b.n > oh || Math.abs(H - copingOf(old.code)) > TOL) bad2.push(`${b.id} old n ${b.n} H ${f1(H)} (coping ${copingOf(old.code)}, storeys ${ol}–${oh})`); }
+    else if (b.n < lo || b.n > hi + 1 || Math.abs(H - hOf(B, b.n)) > TOL) bad2.push(`${b.id} n ${b.n} H ${f1(H)} (band ${lo}–${hi})`);
     if (cap && H > cap + TOL) bad2.push(`${b.id} H ${f1(H)} over the ${b.area} cap ${cap}`);
   }
-  out.push(rule('B-2', G, 'Heights follow H(n) = plinth + ground + (n−1) × upper + crown, n inside the use band; sheds inside heightM; area caps hold', blds.length, bad2, 'all', 'standards.buildings.height · bands · caps'));
+  out.push(rule('B-2', G, 'Heights follow H(n) = plinth + ground + (n−1) × upper + crown (an old-frontage building: its class coping on the old 3.4 m grid, 3–4 storeys by the remap), n inside the use band; sheds inside heightM; area caps hold', blds.length, bad2, 'all', 'standards.buildings.height · bands · caps · brief 075 old frontage (DecoKitFrontage.Of)'));
 
   // B-3 building line: every vertex of a building mass stands in its plot and at least the street section's pavement from the kerb face
   const bad3: string[] = [], roads = d.roads.filter(r => !r.gyratory);

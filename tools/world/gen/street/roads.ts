@@ -8,7 +8,8 @@ import { avenueVariant, speciesOf } from '../../../plan/trees';
 import type { Layer } from './kit';
 import { kerbReturnStd, returnAt } from '../kerbreturn';
 import { footwayTangentAt } from './footway';
-import { OLD_STREET, lampStation, oldRoadOf, palmStations } from '../oldstreet';
+import { OLD_STREET, lampStation, palmStations } from '../oldstreet';
+import { oldPalmEdge } from './palms';
 
 const ROADS = ['primary', 'district', 'access'];
 
@@ -52,7 +53,8 @@ export function dressRoads(ctx: Ctx, L: Layer): void {
       // the tree grid keeps its rhythm (hydrants and benches are set against it); the first tree a rounded corner's kerb, or SF-8's 6 m from its tangent point, crowds out is skipped, never squeezed
       const s0 = 9, s1 = len - 9, nT = s1 > s0 ? Math.floor((s1 - s0) / S.trees.spacing) + 1 : 0, t0 = s0 + (s1 - s0 - (nT - 1) * S.trees.spacing) / 2, kerbMid = 0.45 + 0.75;
       // brief 075 (golden view): an old-street road (oldstreet.ts) takes the old boulevard's palms: 10 m, staggered between the walks by the old phase, 1.2 m off the kerb line (the old 1.0 breaks SF-5)
-      const oldRoad = kind === 'district' ? oldRoadOf(ring.c[i]!) : '', palms = oldRoad ? palmStations(ctx, oldRoad, a, u, at(len / 2, 0), s0, s1) : null;
+      // brief 075 roll-out (palms district-wide): every planted district and access edge (oldstreet.ts OLD_STREET.palms.classes; street/palms.ts: the capstone zone keeps 12 m), not only the old-street roads; an edge not along its road (|t . dir| < 0.9) keeps the 12 m grid
+      const palms = tree && oldPalmEdge(ctx, plot.id, me, kind) ? palmStations(ctx, me, a, u, at(len / 2, 0), s0, s1) : null;
       if (tree && palms) for (const s of palms) L.add('tree', at(s, OLD_STREET.palms.kerb), 0, z, id, { size: [0.5, 0.5, speciesOf(S, avenueVariant(S))!.top], variant: avenueVariant(S), r: 1.5 });
       else if (tree) for (let k = 0; k < nT; k++) L.add('tree', at(t0 + k * S.trees.spacing, kerbMid), 0, z, id, { size: [0.5, 0.5, speciesOf(S, avenueVariant(S))!.top], variant: avenueVariant(S), r: 1.5 });
       else if (kind === 'access' && corners.has(plot.area)) for (const s of [9, len - 9]) L.add('tree', at(s, kerbMid), 0, z, id, { size: [0.5, 0.5, speciesOf(S, avenueVariant(S))!.top], variant: avenueVariant(S), r: 1.5 });
@@ -65,7 +67,7 @@ export function dressRoads(ctx: Ctx, L: Layer): void {
       };
       // lamps: atom rings midway between trees (district 8 m high, every 48 per side; access 6 m, every 36)
       if (kind === 'district') walk(s0 + 6 + (par ? 24 : 0), s1, 48, q => L.add('lamp', at(q, 0.6), lampYaw, z, id, { size: [0.3, 0.3, 8], variant: 'atom-ring', r: 0.6 }));
-      if (kind === 'access') for (let s = s0 + (par ? 18 : 0); s < s1; s += 36) L.add('lamp', at(s, 0.6), lampYaw, z, id, { size: [0.3, 0.3, 6], variant: 'atom-ring', r: 0.6 });
+      if (kind === 'access') walk(s0 + (par ? 18 : 0), s1, 36, q => L.add('lamp', at(q, 0.6), lampYaw, z, id, { size: [0.3, 0.3, 6], variant: 'atom-ring', r: 0.6 }));
       const bench = kind === 'district' ? 36 : avenue.has(plot.area) ? 48 : 0;
       if (bench) walk(18 + par * 6, len - 9, bench, q => { if (!L.add('bench', at(q, 0.8), yaw, z, id, { r: 1 })) return false; L.add('bin', at(q + 1.6, 0.8), 0, z, id, { r: 0.4 }); return true; });
       walk(30 + par * 12, len - 9, dense ? S.catalogue.hydrant.spacing ?? 90 : 150, q => L.add('hydrant', at(q, 0.8), 0, z, id));

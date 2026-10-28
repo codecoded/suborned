@@ -24,7 +24,7 @@ export type World = {
     islands?: Mass[];
     drives?: Drive[]; // brief 023: the vehicle crossings from a carriageway over a plot's pavement to a bay that touches no road (present when the civic block states drives); not in counts.ground until the Unity reader draws them
   };
-  transit: { tram: Track[]; skyRail: SkyRail[]; stops: Mass[]; stations: Mass[]; /** brief 075: no overhead wires (Sky 2026-10-28, "no overhead wires though!"): there is no `wires` key; world rule TS-W0 fails an export that carries one, a TramWire_* kit ref or a span-pole item */ };
+  transit: { tram: Track[]; skyRail: SkyRail[]; stops: Mass[]; stations: Mass[]; /** brief 075 roll-out (the sky track to the old reel's profile, tools/world/gen/street/skytrack.ts): the old pylon stacks at the plan's pylons and the beam sweep data; absent when the stack is not adopted (a builder then draws skyRail's ribbons and posts) */ skyTrack?: SkyTrack; /** brief 075: no overhead wires (Sky 2026-10-28, "no overhead wires though!"): there is no `wires` key; world rule TS-W0 fails an export that carries one, a TramWire_* kit ref or a span-pole item */ };
   /** Brief 075: presentation dressing only, never sim data (the sim reads the plan, the mission and the civic block, never this export; live trams are Pulse's timetable and Latch's mover): one parked Tram per line at its first stop. */
   dressing?: { trams: ParkedTram[] };
   buildings: Mass[]; // generated building parts (podium, body, upper, tower-lower, tower-upper), id bld/<plot>/<n>/<part>; none under a megastructure
@@ -105,6 +105,14 @@ export type Track = { id: string; surface: string; line: V[]; width: number; lev
 export type SkyRail = {
   id: string; surface: string; pylonSurface: string; line: V[]; pylons: V[];
   height: number; width: number; depth: number; pylonSize: number; ground: number; spacing: number; capDepth: number;
+};
+/** Brief 075 roll-out (tools/world/gen/street/skytrack.ts): the old sky track. `beam`: Latch sweeps the section (the kit piece `piece` carries it and its materials, metric UVs: u = metres along x uPerMetre)
+ *  along each beam's centre `line` (plan frame, 2 m steps) with its top at `top`: width x depth, filleted corners `fillet`, a teal stripe band `stripe` [z0, z1] below the top standing `stripeProud` off each flank.
+ *  `pylons`: one per plan pylon (transit.skyRail[].pylons, unmoved), the old stack: `foot` (SkyRail_Pylon_Tall or _Foot) on the ground at `z`, `shaft` (SkyRail_Pylon_Shaft, scale[1] = its height) from the foot's
+ *  top, `head` (SkyRail_Pylon_HeadTwin on a double path, _Head on a single one) hanging from the beam's underside at `z` (its top); kit +Z along the track (yaw as every KitRef). */
+export type SkyTrack = {
+  beam: { piece: string; width: number; depth: number; fillet: number; stripe: [number, number]; stripeProud: number; uPerMetre: number; beams: { id: string; line: V[]; top: number }[] };
+  pylons: { id: string; at: V; yaw: number; ground: number; on: string; /** absent: no plinth fits, the bare shaft runs to the ground */ foot?: KitRef & { at: V; z: number }; shaft: KitRef & { at: V; z: number }; head: KitRef & { at: V; z: number } }[];
 };
 export type Level = { id: string; name: string; height: number; decks: Deck[]; stairs: Stair[] };
 /** Slab with its top at the level height. `group` = the walkable piece the deck belongs to (decks touching at one level share it). */

@@ -94,7 +94,7 @@ describe('SF-21 what it leaves out, and why', () => {
 
   test('frontage prims: ProcShop paints the door and the bay from swatches, never from their surface', () => {
     const bays = base.w.frontages.filter(f => f.service?.surface === 'trim' && broad(faceOf(f.service.shape, f.service.size)));
-    expect(bays.length).toBe(31); // 4.5 x 4.6 m service bays (re-pinned 2026-10-28, brief 075: the Boulevard's plots moved 4 m out to the new kerb, one service bay fewer; was 32)
+    expect(bays.length).toBe(38); // 4.5 x 4.6 m service bays (re-pinned 2026-10-28, brief 075 the old buildings: the plan's old blocks give more buildings on access roads; was 31, and 32 before the Boulevard's plots moved out)
     expect(sf21().check.ok).toBe(true);
   });
 

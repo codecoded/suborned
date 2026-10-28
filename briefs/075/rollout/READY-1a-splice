@@ -1,0 +1,8 @@
+075 roll-out 1a (Splice, 2026-10-28): tram bed + palms district-wide
+export out/world/harbour-district.world.json sha256 65103044d79bd996cc16993e4db1b1c6b394a9292efdef4dbe0c8e903ff72f8d (bun run world x2, same hash)
+tram bed: no setts band under the tram lanes (tramstreet.ts TRAM_BED.lanes false); the road surface runs on kerb to kerb; the flush rail tiles (1.355 m, own granite edges + setts) are the bed; setts only in the T1 x T2 flat-crossing square (ground/tram/square/T1-T2). Rails z 0.02 (2 cm proud of the road).
+palms: the old 10 m staggered grid (1.2 m off the kerb, CoconutPalm x1) on every planted district and access edge (oldstreet.ts OLD_STREET.palms.classes), not only the boulevard; the capstone zone (Handover walk window + 30 m) keeps 12 m (OLD_STREET.palms.keep, street/palms.ts); trees 804 -> 867, lamps +60, benches +21, bins +49, booths +10 (kerb furniture on the palm midpoints); SF-5/7/11 pass.
+palm kit pick and turn now seeded by position (kitrefs.ts), not by the running street id: the Handover's zone no longer moves when the street changes elsewhere.
+sim/data/handover.site.json MOVED (palm turns in the zone, walk solids; one-off from the seed change) sha256 4e95f5b7026fe5ee2352f307407413237bcd765f526604db80cec9c2dfc03ac9; missions:check handover --inputs tree SHIPS (893 plays): c041 needs re-recording (Waymark).
+checks: world:faces ok; plan 146/146, + Handover overlay 151/151; cover + cover --check ok (points unchanged, provenance hashes only); typecheck ok; tools/world + tools/plan tests 570 pass 0 fail.
+Unity: needs Latch's rebuild (HarbourWorldBuilder) + golden re-shot.

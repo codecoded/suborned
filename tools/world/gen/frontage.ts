@@ -120,6 +120,13 @@ export function generateFrontages(ctx: Ctx, hosts: Host[]): Frontage[] {
         const alt = candidates(ctx, h, e.kind, lastMid.w, before, false, false).filter(([t]) => t !== endT && T[t]!.w[0] <= lastMid.w && lastMid.w <= T[t]!.w[1]);
         if (alt.length) lastMid.t = r.weighted(alt, q => q[1])[0];
       }
+      // no middle between the two corner tenancies (brief 075: the old runs' corner-to-corner faces): the one at b must differ from the one at a; else it takes another
+      // anchor trade that fits its width, or the a one keeps the run alone
+      const startT = startSegs[startSegs.length - 1]?.t;
+      if (!lastMid && endT && startT === endT) {
+        const e0 = endSegs[0]!, alt = candidates(ctx, h, e.kind, e0.w, endT, false, true).filter(([t]) => t !== endT && T[t]!.w[0] <= e0.w && e0.w <= T[t]!.w[1]);
+        if (alt.length) e0.t = r.weighted(alt, q => q[1])[0]; else endSegs.length = 0;
+      }
       const ordered = [...startSegs, ...segs, ...endSegs.reverse()];
       // lay out from a: start segments, the middle, the end segments flush with b
       let at = 0; const mid = ordered.length;

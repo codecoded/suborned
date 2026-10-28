@@ -15,7 +15,7 @@ const plan: Plan = read('contracts/world/harbour-district.plan.json'), d = deriv
 const ts = (w: World) => overheadRules(ctxOf(plan, d, civ, { w, gen: base.gen }))[0]!;
 const clone = (w: World): World => structuredClone(w);
 
-test('the live export: TS-W0 passes (no wires, no wire piece, no span pole), and the tram street still has its setts, rails and islands', () => {
+test('the live export: TS-W0 passes (no wires, no wire piece, no span pole), and the tram street still has its setts square, rails and islands', () => {
   const r = ts(base.w);
   expect(r.ok, r.detail).toBe(true);
   expect('wires' in base.w.transit).toBe(false);

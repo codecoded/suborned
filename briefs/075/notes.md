@@ -368,3 +368,180 @@ Fixes s3-life.png (the parked cars nearly all one orange sedan). Presentation on
 ## Vela 075 roll-out step 1 (sky track, cranes, presentation vehicles and car paints)
 - Files I touch: tools/decokit/skyrail075.py (new: SkyRail_Beam_4m, SkyRail_Pylon_HeadTwin), tools/decokit/landmarks.py (disc_tower_at: crane removed), tools/decokit/carpaint.py (new) + unity_mats.py hook, tools/decokit/kit.py (FAMILIES), tools/kit/tags.ts, tools/kit/catalogue.ts + copy.ts + contracts/world/kit.schema.ts (`carPaints`), kit.json (catalogue + statuses).
 - 20:04 START Vela 075 roll-out: bun run guard bun run decokit --only DiscTower,DiscTower@avenue-gate-e,DiscTower@avenue-gate-w,SkyRail_Beam_4m,SkyRail_Pylon_HeadTwin
+- 20:05 END   Vela 075 roll-out decokit --only (ok): DiscTower@avenue-gate-w/e 6768 / 1652 / 406 (22.1 x 22.1 x tip 165.6, fits; was 8276 with the crane), SkyRail_Beam_4m 56, SkyRail_Pylon_HeadTwin 3964 / 990 / 233; DiscTower (plain) rebuilt; carpaint 11 paints
+- 20:08 Vela 075 roll-out: bun run collide (Blender measure of the 15 changed / adopted pieces; reads out/decokit, writes contracts/world/kit.collide.json; not a decokit run)
+
+## Vela 075 old buildings (caps: mirrored twins, the intended P7 / B8 ends, the hall class)
+- Files I touch: tools/decokit/caps075.py (new), kit.py FAMILIES (+caps075), tools/kit/tags.ts (MIRROR_075 + four PLAIN_USE rows), tools/kit/lod.ts (two regexes take _M), kit.json (catalogue + statuses).
+- 20:11 START Vela 075 old buildings: bun run guard bun run decokit --only PortholeEnd_7,BalconyEnd_8,<24 x <cap>_M>
+- 20:12 END   Vela 075 old buildings decokit --only (ok, 26 pieces)
+- 20:12 START Vela 075 old buildings: bun run guard bun run decokit --only HallBay,HallCornerWing (the old hall class H through the generator, so kit.json measures their pivots; tris = the store's)
+- 20:13 END   Vela 075 old buildings decokit --only HallBay,HallCornerWing (ok)
+- 20:14 Vela 075 old buildings: bun run kit (28 adopted: 26 caps + HallBay, HallCornerWing), collide, collide --check, cover, cover --check, typecheck, kit + decokit tests
+
+## Old buildings: pieces (Vela, brief 075) · rollout/READY-old-vela
+Source: the old Editor/DecoKit/DecoKitFrontage.cs `Of` table (every class, its bay / end / corner and fallbacks), DecoKitCityBlocks.cs, DecoKitSouthside.cs, DecoKitCircus.cs, DecoKitBlock.cs; counts placed in the old street (out/scratch/vela075/oldcounts.json). The old placer mirrored ends and corners with a -1 X scale (`mirror:`); our export has none, so every cap now has an explicit twin `<id>_M` (tools/decokit/caps075.py: the same builder under -X about the pivot, so it is the old mirrored instance exactly). True size = the old piece's (ends and corners are 1 cm wider and a few tris more than the old: brief 048's flank walls, 1 cm proud). Nothing is scaled; all adopted, copied to Unity.
+
+| class | storeys / body top m | bay | end (round on kit +X) | end mirrored (kit -X) | corner | corner mirrored | old placed (bay / end / corner) |
+|---|---|---|---|---|---|---|---|
+| S2 | 2 / 12.9 | StreamBay_2 | StreamEnd_2 | StreamEnd_2_M | StreamCorner_2 | StreamCorner_2_M | low-rise table (Southside not in the counted scene) |
+| S3 | 3 / 16.3 | StreamBay_3 | StreamEnd_3 | StreamEnd_3_M | StreamCorner_3 | StreamCorner_3_M | 79 / – / 32 |
+| S3W | 3 / 16.3 white | StreamBay_3W | StreamEnd_3W | StreamEnd_3W_M | StreamCorner_3 | StreamCorner_3_M | table |
+| S4 | 4 / 19.7 | StreamBay_4 | StreamEnd_4 | StreamEnd_4_M | StreamCorner_4 | StreamCorner_4_M | 74 / – / 24 |
+| S6 | 6 / 26.5 | StreamBay_6 | StreamEnd_6 | StreamEnd_6_M | StreamCorner_6 | StreamCorner_6_M | 98 / 12 / 8 |
+| S9 | 9 / 36.7 | StreamBay_9 | StreamEnd_9 | StreamEnd_9_M | StreamCorner_9 | StreamCorner_9_M | 30 / 11 / 6 |
+| S9W | 9 / 36.7 white | StreamBay_9W | StreamEnd_9W | StreamEnd_9W_M | StreamCorner_9 | StreamCorner_9_M | 35 / 14 |
+| D10 | 10 / 43.6 (corner 57.4 spire) | DecoBay_10 | DecoEnd_10 | DecoEnd_10_M | DecoCorner_10 | DecoCorner_10_M | 5 / 12 / 1 |
+| P3 | 3 | PortholeBay_3 (3L) | StreamEnd_3W | StreamEnd_3W_M | StreamCorner_3 | StreamCorner_3_M | 9 |
+| P4 | 4 | PortholeBay_4 (4L) | StreamEnd_4 | StreamEnd_4_M | StreamCorner_4 | StreamCorner_4_M | 9 |
+| P7 | 7 / 29.9 (bay 32.26 with fin) | PortholeBay_7 | old: StreamEnd_6 (fallback, 3.4 m low) · **new PortholeEnd_7** | StreamEnd_6_M · **PortholeEnd_7_M** | StreamCorner_6 | StreamCorner_6_M | 10 |
+| B3 | 3 | BalconyBay_3 | StreamEnd_3 | StreamEnd_3_M | StreamCorner_3 | StreamCorner_3_M | 8 |
+| B4 | 4 | BalconyBay_4 | StreamEnd_4 | StreamEnd_4_M | StreamCorner_4 | StreamCorner_4_M | 1 |
+| B8 | 8 / 33.3 | BalconyBay_8 | old: StreamEnd_9W (fallback, 3.4 m high) · **new BalconyEnd_8** | StreamEnd_9W_M · **BalconyEnd_8_M** | StreamCorner_9 | StreamCorner_9_M | 9 |
+| A3 | 3 / 16 (21.2 roof) | ArcadeBay_3 | HallCornerWing (old: the wing is its end) | HallCornerWing_M | HallCornerWing | HallCornerWing_M | 5 |
+| H (civic hall) | 11.1 parapet, 8.3 deep | **HallBay** (now adopted) | HallCornerWing | HallCornerWing_M | HallCornerWing (now adopted) | HallCornerWing_M | 18 / – / 3 |
+| Tower cap | 12 / 67.3 | (S6 run) | – | – | CornerTower_12 (10 m cell, 2 m proud) | CornerTower_12_M | 2 |
+| stack (075-E) | per band | StreamBayStack_* | StreamEndStack_Base/Mid/Top | StreamEndStack_*_M | StreamCornerStack_Base/Mid/Top | StreamCornerStack_*_M | ours |
+
+For Splice:
+- Mirrors: `<id>_M` = the old `mirror: true`. Pivot as the base with pivotOffset x negated (StreamEnd_n_M [-0.81, -6.19], StreamCorner_n_M [-0.81, -3.19], DecoCorner_10_M [-0.958, -3.042], CornerTower_12_M [-0.062, -4.937], HallCornerWing_M [-0.15, -3.85]). Under your KIT_X -1 frame: a base end closes a run's tail, its `_M` closes the head (the old Run, last == End); a corner at the head of a run (the old Corner(..., n, +dir)) is the `_M`. Tags: the base's tags with every use prefixed `mirror:` (mirror:facade, mirror:skyline, mirror:face:stream-end ...), so no picker draws one by chance; place by name. Crown gold follows the base (StreamEnd_6/9/9W_M, StreamCorner_9_M are Skyline, crown gold).
+- STREAM_ROWS: the old table's real pieces are above. Differences from yours: A3's end and corner are HallCornerWing (old), not StreamEnd_3 / StreamCorner_3; HallCornerWing and HallBay are adopted now (use `stream:hall-corner` / `stream:hall-bay`, category Plaza, so no `form` tag; pivots measured: HallBay [0, -3.85], HallCornerWing [0.15, -3.85]). Old hall-as-end rule: `End` with HallCornerWing places it as a corner cell at bay centre + 3 m toward the end (old DecoKitFrontage.End). The hall is 8.3 m deep against 14 m bays: the old closed the gap with a limestone deck at the parapet (HallFill, 6 x 11 m box, DK_Limestone).
+- P7 / B8 ends: the old used fallbacks (StreamEnd_6, StreamEnd_9W, wrong height by 3.4 m); the old code names PortholeEnd_7 / BalconyEnd_8 as the intended pieces. Both are built now (skyline.py stream_end at 7 floors white render / 8 floors limestone, so the return tops at the bay's 29.9 / 33.3), use `stream-end:porthole-7` / `stream-end:balcony-8`, form end. Your pick: the fallback for "exactly the old", the new end for matching height (I'd take the new ones). ArcadeEnd_3 not built: the old never needed it (A3 mid-run or after a hall corner).
+- Crescents (old Crescent): no special pieces in the old. `count` StreamBay_6 (class S6, 4 bays) on chords of R (old 35) facing the centre, chord angle d = 2 asin(3 / R); bay k at angle phi0 + d (k + 0.5), radius R cos(d / 2), odd bays 5 mm down (the canopies overlap at the joints); the last bay is the end (StreamEnd_6 rounding toward the tangent phi + 90 sign(step): two of the four crescents take StreamEnd_6_M). Behind the facade the chords fan apart: the old filled each joint with a procedural limestone prism (joint, and the two points 14 m back along the neighbouring bays' radials, from walk to walk + height - 0.2, DK_Limestone): keep it procedural (source: procedural), as the old did. Bays tile any R >= 35 (facades.py keeps every trim inside x ±3).
+- Blocks (old DecoKitBlock): long faces corner to corner W = 8 + 6k + 8, depth 16 + 6k (28 back to back), the short ends (D - 16) / 6 bays taking the adjoining long face's class (split half and half when the two differ), both short runs open (no caps).
+- Watch: CornerTower_12_M mirrors the HOTEL blade sign's raised letters (as the old instance did). Where it reads at play zoom, prefer the base on that corner or tell me and I'll make a lettered mirror.
+- Contact sheet: briefs/075/rollout/old/contact_sheet.png (per class: A = corner + 3 bays + end_M, B = end + 3 bays + corner_M, true size; P7 / B8 with the old fallback and the new end side by side; renders + sheet.py / compose.py beside it). Eevee shape check, not the game's lighting.
+- Checks: decokit --only (26 + HallBay, HallCornerWing) ok; `bun run kit` 430 assets, adopted 353, copied, no errors; collide 28 measured, --check ok (396 pieces, 4668 volumes); cover written, --check exit 0 (the two getaway-safe ambush warnings as before); typecheck 0; `bun test tools/kit tools/decokit` 46 pass 0 fail (kit.test crown list + the four mirrored skyline caps).
+- Results: kit catalogue + copy (adopted 313 → 325; copied into unity/Assets/Suborned/Kit); collide 15 measured, --check ok (368 pieces, 4148 volumes); cover written, cover --check exit 0 (the two getaway-safe ambush warnings as before); typecheck 0; kit + decokit tests 46 pass 0 fail (one new test: the roll-out); plan checker exit 0 (K-1 3729/3729, SK-1 345/345). tools/levels/skyline/test/fixtures/kit.digest.json regenerated (the 12 adoptions). Renders: `Blender -b -P tools/decokit/review075_rollout.py -- briefs/075/rollout 960` (renders only, not a decokit run); sheet briefs/075/rollout/contact_sheet.png.
+
+## Roll-out: sky track (Vela, brief 075 step 1), for Splice and Latch
+The old reel's line (old Editor/DecoKit/DecoKitSkyRail.cs, read only): one swept ivory beam with a proud teal stripe each side on the old kit pylons every 30 m. All parts adopted in kit.json, each tagged by its own use and scale [1, 1] (never scaled except the shaft's height):
+
+| piece | use tag | size x, h, z (m) | tris | what / pivot |
+|---|---|---|---|---|
+| SkyRail_Beam_4m (new, tools/decokit/skyrail075.py) | skyrail:beam | 1.27 x 1.6 x 4.0 | 56 | straight 4 m tile along kit Y (Unity +Z); **top centre at the pivot height** (z 0 = rail path = beam top), tile middle at the pivot |
+| SkyRail_Pylon_HeadTwin (new) | skyrail:head-twin | 8.0 x 2.2 x 1.45 | 3964 / 990 / 233 | twin cross-head for the double trunk: the old head's cradle flaring into a rounded cross-arm, bearing pads under beams at x ±3.0; **top at z 0 = beam underside**, hangs 2.2 below |
+| SkyRail_Pylon_Head (old) | skyrail:head | 3.0 x 2.2 x 2.88 | 368 | single-beam cradle, top at z 0 = beam underside: the S1 loop |
+| SkyRail_Pylon_Tall (old, skyport_civic.py) | skyrail:foot-tall | 4.46 x 12 x 5.26 | 308 | 12 m flared trunk + plinth (4.46 across, 5.26 along); its top section = the shaft's base. Use it where the beam runs 22–34 m up (all of S1, height 24) |
+| SkyRail_Pylon_Foot (old) | skyrail:foot | 2.86 x 1.2 x 2.86 | 200 | the low plinth (only for a beam under ~15 m; S1 doesn't need it) |
+| SkyRail_Pylon_Shaft (old) | skyrail:shaft | 1.1 x 1.0 x 1.5 | 40 | 1 m unit, **stretched in height only** (scale y = length) from the foot's top to the head's bottom |
+
+**Beam section** (old Section(.22); x across, z up, top at 0): 1.2 wide x 1.6 deep (x ±0.6, z 0 to −1.6), every corner filleted r 0.22, 4 points a corner (0, 30, 60, 90° on each fillet; 16 points, closed CCW). Stripe: z −1.05 to −0.85 on both flanks, from x ±0.595 to ±0.635 (0.035 proud, the outer edges rounded r 0.012). Materials: body **DK_Hull_Ivory** (#F4EFE3, the kit's hull plating texture, 8 m metric: the textured beam; the old was flat DK_Enamel_Ivory), stripe **DK_Enamel_Teal** (#1F6C67). Both already in Unity (no new material, no new shader variant). Exact points: `beam_section()` and `stripe_section(side)` in tools/decokit/skyrail075.py.
+
+**Sweep (Latch, in the builder; the old way, DecoKitSkyRail.Beam/Sweep):**
+1. Per export `transit.skyRail[]` line (already sampled ~2 m): a ring every ≤ 2 m of arc length s; at each ring p = line point at height `height` (24 = the beam top), tangent t, side = normalize(cross(up, t)), up = world up (no banking). Vertex = p + side·x + up·z for each section point; for a double line (`spacing` > 0: the trunk, 6 m) sweep twice with p offset ±spacing/2 along side.
+2. UVs metric so the tile and the sweep match: **u = s in metres along the line, v = metres of perimeter round the section from the first point** (DK_Hull_Ivory's .mat already scales by 1/8). Smooth normals within the fillets (the section's 30° steps), the old CCW-outward winding. Two submeshes: body (DK_Hull_Ivory), stripes (DK_Enamel_Teal, two open strips or the closed band above). The loop's R 40 curve needs no special piece: the sweep follows the line. Straight runs may use SkyRail_Beam_4m end to end instead (same section, same UVs).
+3. Export `width` 1.5 → **1.2** (Splice): the old beam; `depth` 1.6 stays; the cars' skirts (inner faces x ±1.0) clear either. skyrailEnvelope half 3.75 still holds (beam outer edge 3.6).
+
+**Pylons (export `pylons[]`, yaw = the line's tangent):** at each pylon point, ground g: SkyRail_Pylon_Tall at (g), SkyRail_Pylon_Shaft from g + 12 to the head's bottom (scale height = (height − depth − 2.2) − (g + 12): 8.2 m on S1 at ground 0), then the head at height − depth (22.4): **HeadTwin where `spacing` > 0** (trunk), **SkyRail_Pylon_Head** on the single loop. Splice (rule S-K1): put these kit refs in the export per pylon (foot / shaft / head ids and the shaft length) and drop the procedural `pylonSize` boxes and `capDepth` cross-head; the Tall plinth is 4.46 across x 5.26 along, inside Circus Road's 6 m median (0.77 clear a side). The export's `ground: −2.5` on the trunk looks like a placeholder: pylons stand on the median's pavement.
+**Station look:** the old reel had one station (old SkyRailStation, single beam); ours is SkyRailStation_Twin (already adopted, built from it for the twin beams, platform 24.0), so stations need nothing new. The beam should run through it at the same section.
+**Livery:** DK_Steel_Ivory on both heads (the old head's cap, the twin's pads) takes the old `vermilion` key (Sky category), as the old town did; nothing else on the track is recoloured.
+**Trains (075-D / Pulse):** SkyRail_Car_Head and _Mid adopted; car origin = beam top centre, 18.3 m long (old consist spacing 18.4).
+
+## Roll-out: cranes (Vela)
+Removed from tools/decokit/landmarks.py `disc_tower_at`: the lattice crane (king post, jib and counter-jib, counterweight, stays) and the offset lattice mast. In their place one ringed mast on the axis to the same tip (ivory tapered stem, three chrome collars, chrome needle, a chrome ball at +24). Affects DiscTower (the plain piece, now the generator's binary), DiscTower@avenue-gate-e/w (the pair flanking the arch; regen orders fit, tip 165.6 unchanged; 8276 → 6768 tris, upper extent now symmetric ±20.1). No other piece carries that crane (Tower_Needle and the rest checked; the vista tower was done before). The towers no longer carry DK_Steel_Ivory or DK_Concrete, so the vermilion livery no longer lists them. Latch: rebuild picks it up.
+
+## Roll-out: cars (Vela), for Pulse and Latch
+Adopted for presentation: **HoverScooter** (the candidate Pulse names; the other `Scooter` stays candidate), **SkyRail_Car_Head**, **SkyRail_Car_Mid**, **AirCar_Coral**, **AirCar_Teal**, **AirCar_Saucer** (old DecoKit binaries, at their own size; tags vehicle:scooter / vehicle:skyrail-head / -mid / vehicle:aircar, never the generic `vehicle`, so nothing in the world places them). Pulse: drop the fallbacks for these.
+**Car paints** (tools/decokit/carpaint.py → kit.json `carPaints`, the .mats copied with the kit): 11 materials `DK_CarPaint_*`, each DK_CarEnamel_Ivory's own .mat with only the base colour changed (same flake / orange-peel detail pair, clear coat; no new SetPass). A key = body + roof. Slots: Sedan_Official body DK_CarEnamel_Teal, roof DK_CarEnamel_Ivory; Sedan_Getaway body DK_CarEnamel_Coral, roof DK_CarEnamel_Seafoam (the roof slot also paints the A/C posts and the flank flash). Latch swaps those two slot materials per instance; chrome, glass, lamps, whitewalls stay.
+
+| key | body | roof | family |
+|---|---|---|---|
+| tropical-turquoise | DK_CarPaint_Turquoise #3FA9A5 | DK_CarPaint_Cream #F2E8CF | pastel |
+| larkspur-blue | DK_CarPaint_Larkspur #7FA7D3 | Cream | pastel |
+| dusk-pink | DK_CarPaint_DuskPink #E8A3AE | Cream | pastel |
+| seafoam-green | DK_CarPaint_Seafoam #9CCFB4 | Cream | pastel |
+| canary-yellow | DK_CarPaint_Canary #F0CF6A | Cream | pastel |
+| orchid | DK_CarPaint_Orchid #B5A2D4 | Cream | pastel |
+| matador-red | DK_CarPaint_MatadorRed #B3262C | Cream | saturated |
+| harbor-blue | DK_CarPaint_HarborBlue #2D57A3 | Cream | saturated |
+| tangerine | DK_CarPaint_Tangerine #E0773A | Cream | saturated |
+| onyx | DK_CarPaint_Onyx #24272B | Cream | saturated |
+| cream-turquoise | DK_CarPaint_Cream | DK_CarPaint_Turquoise | reversed |
+
+Pulse: mix from these keys (suggest pastels ~55 %, saturated ~35 %, reversed ~10 %, no two neighbours in a queue alike); keep the unpainted Sedan_Official / Sedan_Getaway out of traffic, so Vale's car and the getaway stay readable as themselves (no key repeats their pairs). Rival stays as is.
+
+## Remap: heights and levels (Aster, Sky 2026-10-28) — read this before planning or placing buildings
+Sky: "the new town had the skytrak going through stations, and had stair cases, multilevel aspects." / "That said, we wanted to lower to around 3 stories high for most of the buildings so game plan view wasn't just always removing buildings floors just to see characters. We either make the spaces a lot larger, or lower the floors level"
+- MOST BUILDINGS 3 STOREYS (old _3 variants); 4 only for corner and hero buildings that don't block play views. NO 6/9/10-storey slabs in the district (drop OLD_STREET's 6 and 9 codes on the boulevard; drop the canyon south of Market Street and the boulevard's east side). Height comes from slender landmarks, towers and the skyline beyond the edge.
+- KEEP OUR MULTILEVEL NETWORK: sky track through stations, stairs, ramps, lifts; levels 0 / 9.43 / 24 m. The old town gives the ground layout and the look; where the old sky rail route differs from our station and deck network, keep ours, restyled with the old route character and pieces.
+
+## Old buildings: plan (Datum, brief 075, 2026-10-28) · rollout/READY-old-datum
+Sky: "where's the rounded corners etc - why can't we just use the old buildings ?" The plan now carries the old DecoKit block grammar, so the old pieces stand at true size with no scaling or piers. Source: DecoKitFrontage.cs (runs, caps, Crescent, Wedges), DecoKitBlock.cs (8 + 6k + 8, D = 16 + 6k, 14 m bays), DecoKitCityBlocks.cs (walls broken at lanes with end caps, four crescents round the circus), DecoKitStreetLayout.cs (R 2 kerb corner cells).
+
+**Where it is (contracts/world/harbour-district.plan.json)**
+- `standards.blocks`: the grammar (bay 6, cell 8, band 14, backToBack 28, solidBelow 40, innerFrom 48, innerClear 10, passage 6, split 156, caps, rank), `plots` (the 18 laid plots), `exempt` (11, each with its reason), `zone` (the capstone zone, the same as `zoneOf`), `kerbReturn` (R 2, staged), `fields` (this schema in words).
+- Top-level `blocks`: 44 blocks (32 perimeter, 12 inner), 157 runs, 92 corner cells.
+- `circus.crescents`: four crescents (sw 7, nw 7, ne 5, se 5 bays) plus `crescentsWhy`.
+- Checked by BG-1..BG-5 (tools/plan/block-grammar.ts, tests in block-grammar.test.ts). A plan without `standards.blocks` gets no BG check, so pinned plans replay as they were.
+
+**Block fields (what the generator reads)**
+- `{ id, plot, kind: perimeter | inner, rect [x0, x1, y0, y1], depth 14, court: solid | open, runs[], corners[] }`. `rect` is the block's outer faces, on or inside the building line. A perimeter block is a ring of 14 m bands behind its runs. Solid means under 40 m deep: 28 is back to back, 29 to 39 has the middle decked at the podium. Open means a court. An inner block is free-standing in a big court, with corner cells all round and faces `court`.
+- Run: `{ face: n|e|s|w, a, b, n, faces, caps: [at a, at b], bays, gap? }`. The run lies on the facade line, a to b in +x or +y. `n` is the outward normal (the facade faces it). `faces` is the class:id it fronts, `passage` for a lane inside the plot, or `court`. Length = caps + 6 × bays exactly (BG-2).
+- Caps:
+  - `corner`: the 8 × 8 cell at that end, shared with the perpendicular run that also caps there; the point is in `corners`. Place the corner piece once per cell: the old Run gave it to the long faces, and the short walls start 8 m in with open ends. Here both runs list the cell, so take it from either, never both.
+  - `end`: the run's last bay rounds off (StreamEnd, or `_M` at the head). Ends face a passage (the old 6 m lanes) or a plaza.
+  - `open`: the run joins a party wall or a neighbour's run. It is flush.
+  - `join`: the run stops at a reserved mass (tower podium, megastructure, signature ground). `gap` (under 6 m) is closed by that mass: grow the podium or the mega's wall to meet the run, or close it with a blank pier in the podium's material.
+  - `arc`: the run meets its crescent at the circus. `gap` is the distance to where the facade line meets the circle.
+- Passage faces: a block deeper than 28 shows a run of (D − 28) / 6 bays toward the lane, open at both ends, between the long faces' end bays. `gap` is the split leftover at its two ends; the end bays' flanks close it.
+- Ground outside blocks inside a plot (passages, forecourt leftover under 6 m, courts) is paved or planted, never built. Passages are 6 m (up to about 7.5 where they absorb the leftover). They are walkable (only buildings block) and need flags, lamps and maybe a gate arch, not roads.
+- Rhythm, classes and heights are yours, as the old per-wall Seg lists were: one building per segment, taller segments rounding toward lower neighbours. Heights follow Aster's remap above: most buildings at the old _3, 4 on corners and heroes. The lamplight area also keeps its play-street cap.
+
+**Crescents (circus.crescents)**
+- Each crescent is 6 m chords on the building-line circle `r` 51 about (0, 0). Chord midpoints sit on r, so nothing stands past the line, and the joints are on `rEnds` 51.09. One chord turns `stepDeg` 6.7446°.
+- `deg [start, end]` are plan degrees, counter-clockwise from +x. `sweep` is cw or ccw. Bay k is centred at deg0 ± (k + 0.5) × step, radius r, facing the centre (the old Crescent with R 51).
+- Caps are `open` then `end`. The crescent starts where the N-S street wall's facade line meets rEnds, within a bay of that run's arc end, so it overlaps the run by under a metre. Make that join open: the crescent continues the wall. Its last bay is the end cap, rounding off toward the E-W face. `gapM` is the arc left before the E-W face; the E-W run's own arc gap sits there too. Leave it paved, as the old crescent's mouth into the parade was.
+- Behind the facade, each 14 m band fans apart. Close every joint with the old procedural limestone prism (DecoKitFrontage.Wedges).
+- The four crescents:
+  - crescent-sw (lamplight-east): from the Boulevard's west wall to Circus Road, 7 bays.
+  - crescent-nw (avenue-court/a): from Crown Avenue's west wall to Circus Road, 7 bays.
+  - crescent-ne (parade-north/a) and crescent-se (harbour-boulevard/c): toward Crown Parade, 5 bays each. Both stop where the band would enter the SpaceHQ ground (x ≥ 56), and the SpaceHQ plaza takes the mouth.
+- The old crescents were S6. Ours take the remap's low class.
+
+**Plan changes beyond the new keys**
+- towers.avenue-needle: rect y 46..66 → 58..78, the same tower 12 m north. Its podium stood on the NW crescent's band. All checks hold, including SK, K-1 and S-C1.
+- lamplight-court-w: the L poly → rect [-244, -164, -114, -33]. Its arm on Circus Road (24 m deep, too shallow for a 28 m block) is the new open plot `lamplight-green` [-244, -190, -33, -9], a small green next to the Gardens Forecourt.
+- Roads, tram, sky rail, stops and stations are unchanged. No block forced a road change.
+
+**Exempt (keep today's massing)**
+- Handover zone: records-square, records-office, garden-row-east, pylon-row-east, rocket-west, lamplight-south-w, lamplight-south-e. Each reaches into the capstone zone [-226, -84] × [-372, -148].
+- Megastructure: crown-terraces.
+- Sheds: docks-court (under the Market Deck), docks-south, docks-east.
+- harbour-east (the ferry offices) is laid.
+
+**R 2 kerb returns (staged, not live)**
+`streetscape.kerbReturn.byClass` stays 6 / 8 / 6 for now. I tried 2 / 2 / 2 everywhere:
+- Every rule passed but SF-22. The island crossing street/island/circus-road/l/a stands 1.0 m from the circus-mouth tangent point, and landings.clear asks for 3.
+- The capstone programme inside the zone also changed: 1589 → 1632 pieces, kerb 909 → 949 m. V-1 (64/65) and the four car routes held.
+
+Splice, two asks:
+1. A zone-aware radius in kerbreturn.ts. A corner inside `standards.blocks.zone` keeps byClass; outside it takes `standards.blocks.kerbReturn.r` (2).
+2. The SF-22 island landing re-solve for R 2.
+
+Then I flip it on.
+
+**Evidence (2026-10-28, 20:40)**
+- `bun tools/plan/cli.ts` exits 0. BG-1..BG-5 all PASS:
+  - BG-1: 18 laid, 11 exempt.
+  - BG-2: 157 runs, 92 corner cells.
+  - BG-3: 44 blocks.
+  - BG-4: 41/41 street corners.
+  - BG-5: crescents 7, 7, 5, 5.
+- `bun tools/plan/cli.ts --overlay tools/missions/handover/overlay.ts` exits 0:
+  - V-1 64/65 (+1 by design), M-1, C-0, C-1, C-3 and W-1 unchanged.
+  - Routes unchanged: getaway 667, official 1064, getaway-service 126, rivals 1473 m.
+  - An earlier run in the shared tree failed only on world rules from the generator work then in progress; it has since passed.
+- `bun run typecheck` 0. `bun test tools/plan/block-grammar.test.ts` 7 pass.
+- `bun test tools/plan`: 236 pass, 1 fail, run while the generator WIP still failed. Re-run afterwards, `bun test tools/plan/world-rules.test.ts`: 65 pass, 0 fail.
+
+## Old buildings: frontage (Splice, brief 075, 2026-10-28) · rollout/READY-old-splice
+The old frontage system builds every block Datum lays (plan `blocks`, `circus.crescents`) from the old DecoKitFrontage / DecoKitBlock / DecoKitCityBlocks rules, at true size. New module `tools/world/gen/oldblocks.ts`; report `bun tools/world/oldblocks-report.ts [--json briefs/075/old/oldblocks.json]`; tests `tools/world/gen/oldblocks.test.ts` (10, with the failing examples).
+- Runs: 6 m bays between the plan's caps. corner = the 8 x 8 cell on the class's StreamCorner, placed once by the longer run (the old long faces); end = StreamEnd at a run's tail, its `_M` twin at the head (Vela's caps); open / join flush, rounding off only toward a lower neighbour (or none) beyond; arc flush. A streamline segment taller than the next by more than 1 m rounds toward it (old Bays). One building per segment; a short wall's bays inside a long wall's band belong to that wall's end building (old Ends). A solid block shallower than 40 m splits at the short wall's bay line (k - k/2 | k/2). Masses are the bands (14 m), each building one body at its class coping.
+- Rhythm: OLD_WALLS is the old CityBlocks walls as data; segment lengths and class weights per wall kind (street: district / circus / primary faces; terrace: the rest) are counted from it, never the same class twice in a row, a corner segment always a class with its own corner, segments at least 3 bays (a shorter leftover of a short wall joins the building beside it). Seeded by block and run id.
+- Heights (Aster's remap): every class is the old 3-storey variant (S6 → S3, S9 / S9W → S3W, D10 / B8 → B3, P7 → P3, A3 mid-run only); a corner building takes its 4-storey sibling on a seeded half (S4, P4, B4); the play streets take PortholeBay_3L / _4L and no arcade. B-2 reads `old`: coping on the old 3.4 m grid, storeys 3-4.
+- Crescents: the plan's four, chords on rEnds facing the centre, the end cap at the sweep's end. Their fanned 14 m bodies reach into the boulevard / Crown Avenue / Circus Road runs' bands (the runs meet the circle), so each crescent and the run buildings it reaches are one building (the crescent continues the wall; B-4 and K-6 hold); the crescent's fan is a wing mass of it.
+- Today's grammar stays on the Handover zone and the exempt plots, and on every plot of a plan without `blocks` (pinned plans replay as they were).
+- Also: roofs.ts keeps the sign frame off the old 3-storey roofs (the long 14 m roofs drew it on 90 of them; 6 now, on the 4-storey corners, 5 boards); colourways.ts lets two old-street palette buildings that meet across a cross street step to the next palette colour (CW-1); frontage.ts gives the end anchor another trade when it would repeat the start anchor with no middle (F-3); facades.ts refuses a bay with a ring vertex inside its body (K-6 at a concave notch). None of these moves anything the checks passed before.
+- Counts (export 85559b33…): 18 plots, 324 buildings, 1675 true-size pieces (1436 bays, 92 corners = the plan's 92 cells, 147 ends of which 72 `_M`), 4 crescents with 24 bays; 0 old pieces scaled; whole export 3513 facades, 1891 true size, 1622 scaled (the every-face modules on backs and courts, and today's grammar's 128 street pieces in the Handover zone and exempt plots).
+- For Datum: (1) the crescents' first and last bodies stand inside the arc-capped runs' bands; I merge them, but runs that stop where the crescent's band begins would let each crescent be its own building as the old was; (2) `join` gaps are left as ground (no pier or podium growth yet). For Latch: rebuild; the crescent chords and the `_M` ends are new placements. For Vela: no new piece needed; HallBay / HallCornerWing (the hall class) are not used (the civic hall is the Handover's).

@@ -19,9 +19,9 @@ test('the live export: BB-1..BB-4 pass; every sign-frame roof outside the play s
   const r = run(base.w);
   for (const id of ['BB-1', 'BB-2', 'BB-3', 'BB-4', 'BB-5']) expect(r[id]!.ok, `${id}: ${r[id]!.detail}`).toBe(true);
   const log = base.gen.billboards!;
-  expect(log.rooftop.roofs).toBe(20);
-  expect(log.rooftop.placed + log.rooftop.left.length + log.rooftop.cap.length).toBe(20);
-  expect(log.rooftop.cap.map(c => c.roof)).toEqual(['bld/boulevard-west/3/roof']); // records: roof 20.58 m, board to 29.75 m, cap 20.4 (Sky's question)
+  expect(log.rooftop.roofs).toBe(6); // brief 075 (the old buildings): only the remap's 4-storey corner buildings keep the sign frame among their roof programmes (roofs.ts), was 20
+  expect(log.rooftop.placed + log.rooftop.left.length + log.rooftop.cap.length).toBe(6);
+  expect(log.rooftop.cap.map(c => c.roof)).toEqual(['bld/lamplight-east/3/roof']); // lamplight (a play street): roof 19.88 m, board to 29.05 m, cap 20.4 (Sky's question)
   expect(base.w.roofs.filter(x => x.programme === 'sign-frame' && x.kit).length).toBe(log.rooftop.placed);
   expect(base.w.street.filter(s => s.kind === 'billboard-wall').length).toBe(log.wall.placed);
   expect(base.w.street.filter(s => s.kind === 'billboard-pylon').length).toBe(log.pylon.placed);
@@ -31,7 +31,7 @@ test('the live export: BB-1..BB-4 pass; every sign-frame roof outside the play s
 
 test('the counts against the old town (14 billboards: 7 rooftop, 4 wall, 3 pylon; 8 advertising columns)', () => {
   const log = base.gen.billboards!;
-  expect([log.rooftop.placed, log.wall.placed, log.pylon.placed, log.column.before + log.column.placed]).toEqual([19, 8, 9, 19]); // brief 075 (golden view): 8 wall boards, was 9: the boulevard's old storey codes (oldstreet.ts) stand most of its east wall at 9 storeys side by side, so fewer party walls show over a lower neighbour
+  expect([log.rooftop.placed, log.wall.placed, log.pylon.placed, log.column.before + log.column.placed]).toEqual([5, 1, 10, 20]); // brief 075 (the old buildings): 5 rooftop boards on the 4-storey corners (the old town 7), 1 wall board (the 3-storey blocks show little party wall over a lower neighbour; the old town 4), 10 pylons (Datum's plan, 2026-10-28), 20 columns. Was [19, 8, 9, 20]: // brief 075 roll-out: 20 columns, one more district corner takes a column once its kerb furniture walks the 10 m palm grid (oldstreet.ts). brief 075 (golden view): 8 wall boards, was 9: the boulevard's old storey codes (oldstreet.ts) stand most of its east wall at 9 storeys side by side, so fewer party walls show over a lower neighbour
 });
 
 test('failing example (BB-1): a board on the Records Precinct roof (20.58 m) tops out at 29.75 m over the 20.4 m cap', () => {
@@ -91,7 +91,11 @@ test('failing example (BB-4, posters): two boards in one view showing the same a
 });
 
 test('BB-5: every CornerTower_12 stands on a building with a hotel tenancy; failing example: one moved onto a building without', () => {
-  const w = clone(base.w), hotels = new Set(w.frontages.filter(f => f.level === 'street' && f.trade === 'hotel-lobby').map(f => f.host)), towers = w.facades.filter(f => f.kit.id === 'CornerTower_12');
+  const w = clone(base.w), hotels = new Set(w.frontages.filter(f => f.level === 'street' && f.trade === 'hotel-lobby').map(f => f.host));
+  // brief 075: the old blocks' corner cells take the class's StreamCorner (Aster's remap: no 9-storey hotel corners left), so the export may hold no CornerTower_12; the
+  // failing example then makes one from a corner piece
+  if (!w.facades.some(f => f.kit.id === 'CornerTower_12')) { const c = w.facades.find(f => f.form === 'corner' && hotels.has(f.building)) ?? w.facades.find(f => f.form === 'corner')!; c.kit = { ...c.kit, id: 'CornerTower_12' }; if (!hotels.has(c.building)) hotels.add(c.building), w.frontages.push({ ...w.frontages.find(f => f.level === 'street' && f.trade === 'hotel-lobby')!, host: c.building }); }
+  const towers = w.facades.filter(f => f.kit.id === 'CornerTower_12');
   expect(towers.length).toBeGreaterThan(0);
   expect(towers.every(f => hotels.has(f.building))).toBe(true);
   const other = w.buildings.map(m => m.id.split('/').slice(0, 3).join('/')).find(id => id.startsWith('bld/') && !hotels.has(id))!;

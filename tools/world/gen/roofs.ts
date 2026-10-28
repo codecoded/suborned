@@ -48,6 +48,9 @@ export function generateRoofs(ctx: Ctx, blds: Bld[], terraces: Terrace[]): Roof[
   const crowned: { at: V; id: string }[] = [], tip = (ctx.B.towers.crownTip as number) ?? Infinity;
   for (const b of blds) {
     const id = `${b.id}/roof`, r = rng(id), list = r.shuffle(R.byUse[b.tower ? 'tower' : b.use] as string[]);
+    // brief 075: an old-frontage building's long 14 m roof would draw the sign frame on most of the district (90 rooftop boards against the old town's 7): only the
+    // remap's 4-storey corner buildings (the old town's boards stood on its taller corners) keep it among their programmes
+    if (b.old && b.old.code < 4) { const k = list.indexOf('sign-frame'); if (k >= 0) list.splice(k, 1); }
     const quay = b.ring.c.some(c => kindOf(c) === 'quay');
     const mk = (f: Frame) => {
       const parts: Prim[] = [], P = (n: string, shape: Prim['shape'], surface: string, lu: number, lv: number, size: [number, number, number], base = 0, yawAdd = 0): void => {

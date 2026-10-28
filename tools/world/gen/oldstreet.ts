@@ -46,6 +46,16 @@ export const OLD_STREET = {
     kerb: 1.2,
     /** m: where along the road (u mod spacing) the left and right walks' palms stand (old z ≡ 1 west, ≡ 5 east, circus at z 206 → our origin). */
     phase: { left: 5, right: 9 },
+    /** Brief 075 roll-out (palms district-wide): the road classes whose pavement palms take this grid on every road, not only the old-street roads. The old town
+     *  (DecoKitBlock.Ring, Southside) pitted every kerbed long face with a pavement of 4 m or more every 10 m (DecoKitBlock.Pit), 1 m behind the kerb, 4 m clear of
+     *  the corners; the boulevard's walks the same (DecoKitStreetLayout.Walks). Our pavements are 8 m (district) and 6.5 m (access), so every edge the plan plants
+     *  (standards.streetscape.trees.avenues: district both pavements, access avenues) takes it; the plan's corners-only (Lantern) and gates-only (Docks) areas
+     *  and the primaries (palm islands in the angle parking, tramstreet.ts) keep their own rules. */
+    classes: ['district', 'access'] as string[],
+    /** What keeps the 12 m grid (old-street roads excepted): 'capstone' = the plots in the capstone zone (street/palms.ts: the Handover's walk window grown by
+     *  30 m). The Handover's site (bun run sim:site) draws the street furniture there and sites its call boxes between it, so the 10 m grid there moves the
+     *  Handover and c041 would need re-recording; the Handover is the one protected thing (brief 075, Sky 2026-10-28). Empty it once the replays are re-recorded (Waymark). */
+    keep: ['capstone'] as string[],
   },
   frontage: {
     /** stream.ts classes a building fronting the road may take (old boulevard walls: streamline). */
@@ -67,6 +77,7 @@ export const OLD_STREET = {
     plain: 'cream',
   },
 };
+
 
 /** Is this edge class (`kind:id`) one of the old street's roads? */
 export const isOldRoad = (c: string): boolean => OLD_STREET.roads.includes(idOf(c));

@@ -21,7 +21,7 @@ const STEPS = new Set(['stair', 'ramp', 'cartRamp', 'escalator', 'stairTower']);
 type Thing = { what: string; ring: V[]; clear: number };
 
 /** What stands on the ground and a pylon must keep off, with the clear distance each needs. */
-function groundThings(w: World): Thing[] {
+export function groundThings(w: World): Thing[] {
   const onGround = (z: number) => z < 1; // the pavement is 0.18
   const keep = (what: string, ring: V[], clear = 0): Thing => ({ what, ring, clear });
   const solids = [...w.buildings, ...w.megastructures.flatMap(m => m.parts), ...w.transit.stops];

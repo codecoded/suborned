@@ -1,9 +1,13 @@
 // Brief 075, the 1950s tram street (Sky 2026-10-28: "how are 1950s cities with trams? ... the same city design with just flying / 1950s space concepts attached
 // to everyday items"; Datum's section: plan standards.streetscape.sections.tramStreet, read whole). What the generator lays on every road a tram line runs on
 // (roads[].tram), by rule over plan data only (the tram paths' segments, the road lines and widths, the plot edges, the stops, the crossings, the buildings):
-//   setts     granite setts under both tram lanes: a band |offset| <= setts.band[1] (3.6) about each double path's line (a single path: about its own line), wherever
-//             the path runs in a carriageway (a road, a junction box, the circus ring's carriageway) on the sheet; a flat per segment (ground.flats, surface `setts`)
-//   square    where two lines' paths cross on the flat (T1 x T2 at s_boulevard), the junction box of their two roads in setts
+//   bed       (brief 075 roll-out, Aster 2026-10-28: "the tram bed still reads as a wide dark strip"; the old frame, briefs/075/golden/old.png, has rails in the street
+//             surface) TRAM_BED.lanes false: no setts band under the tram lanes; the road's own surface (powder blue) runs on, continuous, kerb to kerb, and the
+//             flush rail tiles (1.355 m: their own granite edge stones and setts between the rails) are the only bed. The plan's sections.tramStreet.setts.band
+//             (0..3.6, the whole of both tram lanes) is not laid while TRAM_BED.lanes is false (Datum to carry it into the plan text).
+//             With TRAM_BED.lanes true: granite setts under both tram lanes, a band |offset| <= setts.band[1] (3.6) about each double path's line (a single path: about
+//             its own line), wherever the path runs in a carriageway (a road, a junction box, the circus ring's carriageway) on the sheet; a flat per segment
+//   square    where two lines' paths cross on the flat (T1 x T2 at s_boulevard), the junction box of their two roads in setts (the one sett square; kept)
 //   rails     Vela's adopted track tiles flush in the setts (ground.pieces, kind `tram-rail`): Tile_TramRail_Flush_12m on straights (every whole 12 m), Tile_TramRail_Flush on curves
 //             (the track-bed Tile_TramRail_12m / Tile_TramRail until the flush pair is adopted)
 //             and for a straight's remainder (2 m, stretched along by under 5 % so a run closes on whole tiles); rail heads at +-0.5 = the track centre line
@@ -30,6 +34,10 @@ import type { Layer } from './kit';
 type Section = { roads: string[]; w: number; kerbside: { w: number }; island?: { span: [number, number] } };
 export type TramStreetStd = { band: number; district?: Section; primary?: Section; roads: Set<string> };
 export type TramStreetLog = { setts: { flats: number; m: number; squares: number }; rails: { tiles12: number; tiles2: number; m: number; flush: boolean }; kerbside: { parallel: number; angle: number; loading: number; islands: number; palms: number; lamps: number }; trams: number; gaps: { rule: string; where: string; why: string; at?: V }[] };
+
+/** The tram bed (brief 075 roll-out): `lanes` = granite setts under the whole of both tram lanes (the plan's setts.band); false = the road surface runs on and the
+ *  flush rail tiles carry their own narrow granite edges and setts. `square` = the flat crossing's setts square. */
+export const TRAM_BED = { lanes: false, square: true };
 
 export function tramStreetStd(ctx: Ctx): TramStreetStd | undefined {
   const t = (ctx.S as any).sections?.tramStreet; if (!t) return undefined;
@@ -62,7 +70,7 @@ export function tramGround(ctx: Ctx, log: TramStreetLog, level: number): { flats
   const T = tramStreetStd(ctx); if (!T) return undefined;
   const flats: Flat[] = [], rails: StreetItem[] = [];
   // ---- setts: per segment of each path, the stretches whose samples lie in a carriageway, as a ring (the left offsets, then the right ones back)
-  for (const path of ctx.d.tram) {
+  for (const path of TRAM_BED.lanes ? ctx.d.tram : []) {
     const hw = path.double ? T.band : T.band / 2;
     path.segs.forEach((sg, si) => {
       const n = Math.max(1, Math.ceil(sg.len / 1)), pts = Array.from({ length: n + 1 }, (_, k) => at(sg, (sg.len * k) / n));
@@ -81,7 +89,7 @@ export function tramGround(ctx: Ctx, log: TramStreetLog, level: number): { flats
     });
   }
   // ---- the flat crossing: where two lines' double paths cross, the box of the two roads they run on, in setts
-  const doubles = ctx.d.tram.filter(p => p.double);
+  const doubles = TRAM_BED.square ? ctx.d.tram.filter(p => p.double) : [];
   for (let i = 0; i < doubles.length; i++) for (let j = i + 1; j < doubles.length; j++) {
     const A = doubles[i]!, B = doubles[j]!; if (A.line === B.line) continue;
     for (const sa of A.segs) for (const sb of B.segs) {
@@ -126,7 +134,7 @@ export function tramGround(ctx: Ctx, log: TramStreetLog, level: number): { flats
   });
   return { flats, rails };
 }
-/** The surface a rail lies on: the setts on a carriageway, the island's ring band (the circus loop) at the pavement top. */
+/** The surface a rail lies on: on a carriageway the setts level (FLAT_FOOT 0.02, 2 cm proud of the road at 0, so the tile's top never shares the road's plane), the island's ring band (the circus loop) at the pavement top. */
 const levelOf = (ctx: Ctx, p: V, setts: number) => (inCarriageway(ctx, p) ? setts : ctx.pav);
 function segX(a: V, b: V, c: V, d: V): V | null {
   const r: V = [b[0] - a[0], b[1] - a[1]], s: V = [d[0] - c[0], d[1] - c[1]], den = r[0] * s[1] - r[1] * s[0]; if (Math.abs(den) < 1e-9) return null;

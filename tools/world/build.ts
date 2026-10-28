@@ -24,6 +24,8 @@ import { finishSet } from '../plan/finish-set';
 import { baysOf, fillRing, noseRing, returnsOf } from './gen/kerbreturn';
 import { footwaysOf } from './gen/street/footway';
 import { newTramLog, parkedTrams, tramGround } from './gen/street/tramstreet';
+import { skyTrack } from './gen/street/skytrack';
+import { walkBlock } from '../plan/street-zones';
 import { CIVIC, assignColourways, civicHost, hostOf, oldStreetFamilies } from './gen/colourways';
 
 /** Provisional numbers: TODO each moves into the plan's standards (Datum) and is then read from there. */
@@ -325,6 +327,9 @@ export function worldOf(plan: Plan, d: Derived, civ: Civic): { world: World; gen
   if (tg) { g.flats.push(...tg.flats); g.pieces = [...(g.pieces ?? []), ...tg.rails]; }
   if (gen.tram) { if (gen.tram.bays.length) g.kerbside = gen.tram.bays; if (gen.tram.islands.length) g.islands = gen.tram.islands; }
   const trams = tg ? parkedTrams(gctx, tlog, PROV.foot) : [];
+  // brief 075 roll-out (the sky track to the old profile, skytrack.ts): the old pylon stacks at the plan's pylons and the beam sweep data
+  const st = skyTrack(plan, d, { ground: g, transit: t }, ring => walkBlock(gctx as never, [...ring, ...ring.map((p, i) => { const q = ring[(i + 1) % ring.length]!; return [(p[0] + q[0]) / 2, (p[1] + q[1]) / 2] as V; })], 'skyrail'));
+  if (st) { t.skyTrack = st.track; gen.skyTrack = st.log; for (const r of t.skyRail) { r.width = st.track.beam.width; r.capDepth = 0; } } // the old beam is 1.2 wide (Vela, 'Roll-out: sky track'); the heads are the kit's, so the ribbon fallback draws no procedural cross-head
   if (gen.tram) gen.tram.log = tlog; else if (tg) gen.tram = { bays: [], islands: [], log: tlog };
   const civicM = recordsTower(plan, civicMasses(civ, toPlanFn(plan.civic)));
   if (gen.capstone) { gen.street.push(...civicRobots(ctxOf(plan, d, civ, PROV.pavement), civicM, gen.capstone)); civicPorterGap(gen.capstone, civ); } // brief 026: after the civic masses exist

@@ -125,11 +125,14 @@ export function streetKit(ctx: Ctx, items: StreetItem[]): StreetItem[] {
     const gap = (o: { at: V }) => Math.hypot(o.at[0] - it.at[0], o.at[1] - it.at[1]);
     near.sort((a, b) => gap(a) - gap(b));
     const close = (near[0] ? gap(near[0]) : Infinity) * 1.25; // adjacent = within 25% of the nearest, nearest first
-    const pick = slot ? choose(it.id, fitting(use, slot), near.map(o => o.id), near.filter(o => gap(o) <= close).map(o => o.id)) : null;
+    // brief 075 roll-out: a palm's piece and turn are seeded by where it stands (its edge and position), not by its id: street ids carry the layer's running count, so a
+    // change anywhere earlier in the district (a palm grid, a skipped lamp) renumbered and re-turned the palms in the Handover's zone and moved its site (walk solids)
+    const seed = it.kind === 'tree' || it.kind === 'tub-palm' ? `${it.kind}@${it.edge}@${it.at[0].toFixed(2)},${it.at[1].toFixed(2)}` : it.id;
+    const pick = slot ? choose(seed, fitting(use, slot), near.map(o => o.id), near.filter(o => gap(o) <= close).map(o => o.id)) : null;
     if (!pick) return { ...it, source: 'procedural' as const };
     g.add({ at: it.at, id: pick.a.id });
     const reach = pick.a.tags.reach;
-    const yaw = it.kind === 'tree' || it.kind === 'tub-palm' ? r4(rng(`kit/${it.id}/yaw`).f() * Math.PI * 2) : reach ? reachYaw(it.yaw, reach.axis) : undefined;
+    const yaw = it.kind === 'tree' || it.kind === 'tub-palm' ? r4(rng(`kit/${seed}/yaw`).f() * Math.PI * 2) : reach ? reachYaw(it.yaw, reach.axis) : undefined;
     const kit: KitRef = { id: pick.a.id, scale: pick.k, ...(yaw === undefined ? {} : { yaw }) };
     return { ...it, source: 'kit' as const, kit };
   });

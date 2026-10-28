@@ -1,0 +1,110 @@
+{
+ "arch/old": {
+  "file": "~/Projects/the-suborned/game/Assets/TheSuborned/Art/DecoKit/Models/Landmarks/DK_ParabolicArch.fbx",
+  "tris": 7124,
+  "size": [
+   38.5,
+   11.639,
+   75.791
+  ]
+ },
+ "arch/pier": {
+  "file": "~/Projects/suborned/out/decokit/Models/Landmarks/DK_ParabolicArch.fbx",
+  "tris": 7124,
+  "size": [
+   38.5,
+   11.639,
+   75.791
+  ]
+ },
+ "arch/L0": {
+  "file": "~/Projects/suborned/out/decokit/Models/Landmarks/DK_ParabolicArch@crown-avenue.fbx",
+  "tris": 9820,
+  "size": [
+   34.0,
+   11.639,
+   105.8
+  ]
+ },
+ "arch/L1": {
+  "file": "~/Projects/suborned/out/decokit/Models/Landmarks/DK_ParabolicArch@crown-avenue_L1.fbx",
+  "tris": 4044,
+  "size": [
+   34.0,
+   11.57,
+   105.802
+  ]
+ },
+ "arch/L2": {
+  "file": "~/Projects/suborned/out/decokit/Models/Landmarks/DK_ParabolicArch@crown-avenue_L2.fbx",
+  "tris": 1364,
+  "size": [
+   34.0,
+   11.57,
+   105.796
+  ]
+ },
+ "tower/old": {
+  "file": "~/Projects/the-suborned/game/Assets/TheSuborned/Art/DecoKit/Models/Landmarks/DK_DiscTower.fbx",
+  "tris": 8276,
+  "size": [
+   44.2,
+   40.2,
+   156.6
+  ]
+ },
+ "tower/oldhq": {
+  "file": "~/Projects/the-suborned/game/Assets/TheSuborned/Art/DecoKit/Models/Landmarks/DK_SpaceHQ.fbx",
+  "tris": 12432,
+  "size": [
+   80.0,
+   88.8,
+   252.0
+  ]
+ },
+ "tower/kit": {
+  "file": "~/Projects/suborned/out/decokit/Models/Landmarks/DK_DiscTower@avenue-gate-w.fbx",
+  "tris": 8276,
+  "size": [
+   44.2,
+   40.2,
+   156.2
+  ]
+ },
+ "tower/L0": {
+  "file": "~/Projects/suborned/out/decokit/Models/Landmarks/DK_DiscTower@crown-vista.fbx",
+  "tris": 16976,
+  "size": [
+   58.2,
+   58.2,
+   250.0
+  ]
+ },
+ "tower/L1": {
+  "file": "~/Projects/suborned/out/decokit/Models/Landmarks/DK_DiscTower@crown-vista_L1.fbx",
+  "tris": 9320,
+  "size": [
+   58.2,
+   58.2,
+   250.0
+  ]
+ },
+ "tower/L2": {
+  "file": "~/Projects/suborned/out/decokit/Models/Landmarks/DK_DiscTower@crown-vista_L2.fbx",
+  "tris": 4172,
+  "size": [
+   58.0,
+   58.0,
+   250.0
+  ]
+ },
+ "tower/L0-livery": {
+  "file": "~/Projects/suborned/out/decokit/Models/Landmarks/DK_DiscTower@crown-vista.fbx",
+  "tris": 16976,
+  "size": [
+   58.2,
+   58.2,
+   250.0
+  ]
+ }
+}

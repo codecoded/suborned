@@ -1,0 +1,161 @@
+{
+ "counts": {
+  "plots": 18,
+  "crescents": 4,
+  "buildings": 324,
+  "trueSize": 1675,
+  "bays": 1436,
+  "corners": 92,
+  "ends": 147,
+  "endsMirror": 72,
+  "square": 0,
+  "crescentBays": 24
+ },
+ "classes": {
+  "S3W": 106,
+  "B3": 48,
+  "S3": 103,
+  "P3L": 3,
+  "S4": 21,
+  "P4L": 1,
+  "B4": 9,
+  "P3": 19,
+  "A3": 10,
+  "P4": 4
+ },
+ "export": {
+  "facades": 3513,
+  "trueSize": 1891,
+  "scaled": 1622,
+  "streetPieces": 1869,
+  "streetTrue": 1741,
+  "streetScaled": 128
+ },
+ "oldBuildings": 324,
+ "plots": [
+  {
+   "plot": "boulevard-west",
+   "fit": "blocks",
+   "blocks": 2,
+   "buildings": 14
+  },
+  {
+   "plot": "lamplight-west",
+   "fit": "blocks",
+   "blocks": 1,
+   "buildings": 9
+  },
+  {
+   "plot": "lamplight-court-w",
+   "fit": "blocks",
+   "blocks": 1,
+   "buildings": 8
+  },
+  {
+   "plot": "lamplight-court-e",
+   "fit": "blocks",
+   "blocks": 1,
+   "buildings": 4
+  },
+  {
+   "plot": "lamplight-east",
+   "fit": "blocks",
+   "blocks": 1,
+   "buildings": 6,
+   "crescentBays": [
+    7,
+    7
+   ]
+  },
+  {
+   "plot": "avenue-court",
+   "fit": "blocks",
+   "blocks": 2,
+   "buildings": 9,
+   "crescentBays": [
+    7,
+    7
+   ]
+  },
+  {
+   "plot": "parade-north",
+   "fit": "blocks",
+   "blocks": 2,
+   "buildings": 13,
+   "crescentBays": [
+    5,
+    5
+   ]
+  },
+  {
+   "plot": "crescent-court",
+   "fit": "blocks",
+   "blocks": 1,
+   "buildings": 10
+  },
+  {
+   "plot": "crescent-east",
+   "fit": "blocks",
+   "blocks": 3,
+   "buildings": 17
+  },
+  {
+   "plot": "crescent-north",
+   "fit": "blocks",
+   "blocks": 2,
+   "buildings": 12
+  },
+  {
+   "plot": "harbour-boulevard",
+   "fit": "blocks",
+   "blocks": 6,
+   "buildings": 47,
+   "crescentBays": [
+    5,
+    5
+   ]
+  },
+  {
+   "plot": "harbour-court",
+   "fit": "blocks",
+   "blocks": 4,
+   "buildings": 28
+  },
+  {
+   "plot": "parade-south",
+   "fit": "blocks",
+   "blocks": 2,
+   "buildings": 15
+  },
+  {
+   "plot": "harbour-east",
+   "fit": "blocks",
+   "blocks": 2,
+   "buildings": 18
+  },
+  {
+   "plot": "docks-boulevard",
+   "fit": "blocks",
+   "blocks": 4,
+   "buildings": 39
+  },
+  {
+   "plot": "lantern-west",
+   "fit": "blocks",
+   "blocks": 4,
+   "buildings": 40
+  },
+  {
+   "plot": "lantern-south",
+   "fit": "blocks",
+   "blocks": 4,
+   "buildings": 23
+  },
+  {
+   "plot": "lantern-boulevard",
+   "fit": "blocks",
+   "blocks": 2,
+   "buildings": 12
+  }
+ ]
+}

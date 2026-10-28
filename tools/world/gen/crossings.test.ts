@@ -45,7 +45,7 @@ test('the live plan has crossings: 16 kerb pairs, 10 tram stop patches (one end 
   expect(w.crossings!.filter(c => c.kind === 'bank').length).toBe(0);
   expect(w.crossings!.reduce((n, c) => n + c.refuges.length, 0)).toBe(8); // re-pinned 2026-10-28 (brief 075, the tram street section: Sunset Way's median and its refuge are gone, the stop islands stand at the section's 3.2-6.2 m): was 9
   expect(w.counts.crossings).toBe(26);
-  expect(gen.crossingLog!.landings).toBe(171); // 168 plot-edge landings and the civic block's 3 (the landings the rules do not keep are dropped with their bollards and beacons: 171 of them)
+  expect(gen.crossingLog!.landings).toBe(173); // 173 (2026-10-28, Datum's old-block plan: lamplight-green's two plot-edge landings; was 171) // 168 plot-edge landings and the civic block's 3 (the landings the rules do not keep are dropped with their bollards and beacons: 171 of them)
 });
 
 test('every part is in exactly one crossing and names it; no landing slab is left in the street; a kerb crossing is two landings on opposite kerbs', () => {
@@ -199,7 +199,7 @@ test('a refuge is the slice of the strip that crosses a median of refuge width, 
 test('opt-in: a plan without strip exports no crossings and all 196 single patches', () => {
   expect(old.crossings).toBeUndefined();
   expect(old.counts.crossings).toBeUndefined();
-  expect(old.street.filter(s => s.kind === 'crossing').length).toBe(196);
+  expect(old.street.filter(s => s.kind === 'crossing').length).toBe(198); // 198 (2026-10-28, Datum's old-block plan adds lamplight-green; was 196)
 });
 
 /** The reservation's lawn track (brief 028, Vela) is cut where a crossing's strip crosses it, so it is part of what the crossings change: left out of the ground compare. */

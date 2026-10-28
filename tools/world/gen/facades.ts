@@ -102,7 +102,9 @@ export function generateFacades(ctx: Ctx, blds: FacadeBld[], pav: number, near: 
     const inside = (q: V) => pointInRing(q, p);
     // the body w × d behind the wall from v along t: its back and sides within FIT of the ring (K-6, brief 072: a body 0.3 m short of its sides and back let a
     // bay's back corner stand up to 0.43 m out through a slanted side wall), its front corners 0.3 m behind the wall line
-    const rect = (v: V, t: V, nrm: V, w: number, d: number): boolean => [[FIT, 0.3], [w - FIT, 0.3], [w - FIT, d - FIT], [FIT, d - FIT]].every(([s, e]) => inside([v[0] + t[0] * s! - nrm[0] * e!, v[1] + t[1] * s! - nrm[1] * e!]));
+    // brief 075: and no ring vertex inside the body (a concave notch, such as an old crescent's back cut out of the plot, can stand between the four corners)
+    const rect = (v: V, t: V, nrm: V, w: number, d: number): boolean => [[FIT, 0.3], [w - FIT, 0.3], [w - FIT, d - FIT], [FIT, d - FIT]].every(([s, e]) => inside([v[0] + t[0] * s! - nrm[0] * e!, v[1] + t[1] * s! - nrm[1] * e!]))
+      && !p.some(q => { const s = (q[0] - v[0]) * t[0] + (q[1] - v[1]) * t[1], e = -((q[0] - v[0]) * nrm[0] + (q[1] - v[1]) * nrm[1]); return s > FIT && s < w - FIT && e > 0.3 && e < d - FIT; });
     // vertices: a corner where two street faces meet at a convex right angle with room for the cell on both
     const cornerAt: (boolean)[] = p.map((v, i) => {
       if (!kc || !cornP) return false;

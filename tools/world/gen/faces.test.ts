@@ -32,7 +32,7 @@ const kit: Kit = read('contracts/world/kit.json'), fxBy = new Map(kit.assets.map
 
 test('without the every-face pieces (candidates): nothing placed, every face logged as blocked by the pieces it needs, the wave-2 world unchanged', () => {
   expect(today.world.facades.filter(f => NEW.has(f.form))).toEqual([]);
-  expect(today.gen.faces.log.length).toBeGreaterThan(500);
+  expect(today.gen.faces.log.length).toBeGreaterThan(300); // brief 075: 406, the old blocks' street faces are their runs' pieces (was > 500)
   for (const l of today.gen.faces.log) { expect(l.modules, l.face).toBe(0); expect(l.blocked?.length, l.face).toBeGreaterThan(0); }
   expect(today.world.civic.find(m => m.id === 'civic/civic-office')!.kit).toBeUndefined(); // no RecordsTower yet
   expect(today.world.buildings.some(m => /\/band-\d+$/.test(m.id))).toBe(true); // the grammar's speed bands: the procedural facade stays until the kit is adopted
@@ -55,7 +55,7 @@ test('every wall face of every building is kit (0 undressed), with modules on th
   expect(a.gen.faces.log.filter(l => l.why)).toEqual([]);
   const n = a.world.facades.filter(f => NEW.has(f.form));
   expect(n.filter(f => play(areaOf(f.building))).length).toBeGreaterThan(500);
-  expect(n.length).toBeGreaterThan(5000);
+  expect(n.length).toBeGreaterThan(1000); // brief 075: 1644, the old blocks' street faces are their runs' true-size pieces, the every-face modules dress the rest (was > 5000)
   expect(a.world.buildings.some(m => /\/band-\d+$/.test(m.id) || /\/podium$/.test(m.id) && m.id.startsWith('bld/'))).toBe(false); // plain tiers: the kit is the wall
 });
 

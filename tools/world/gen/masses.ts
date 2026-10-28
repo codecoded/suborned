@@ -4,7 +4,7 @@ import { type V, add, cross, dist, dot, len, mul, norm, sub } from '../../plan/g
 import type { Mass } from '../../../contracts/world/world.schema';
 import { type Ctx, type Rng, bandFor, heightOf, r3, rng, rv, storeysUnder } from './common';
 import { buildingLine, kindOf, plotRing } from './edges';
-import { type Rect, type Ring, areaOf, fit, insetBoth, insetRing, isSimple, bbox, clipHalf, growRect, inset, offsetPts, rectPts, subtractRect } from './geo';
+import { type Rect, type Ring, areaOf, fit, insetBoth, insetRing, isSimple, bbox, clipHalf, growRect, inset, offsetPts, pointInRing as pointInRingM, rectPts, subtractRect } from './geo';
 import { signatureGrounds, towerKit } from './signatures';
 import { GRAMMAR, isStreetClass, roundRing } from './grammar';
 import { type FacadeOut, adjacent, generateFacades } from './facades';
@@ -12,9 +12,10 @@ import { faceKitReady } from './faces';
 import { tradeHosts } from './frontage';
 import { JUNCTION } from './stream';
 import { OLD_STREET, isOldRoad } from './oldstreet';
+import { type OldPlot, type OldPlotLog, layOld, planBlocks, setOldLog } from './oldblocks';
 
 /** A generated building, kept for roofs and frontages. `ring` = ground footprint with edge classes; `top` = highest roof polygon at z. */
-export type Bld = { id: string; plot: string; area: string; use: string; kind: string; n: number; ring: Ring; top: V[]; z: number; tower: boolean; open: boolean };
+export type Bld = { id: string; plot: string; area: string; use: string; kind: string; n: number; ring: Ring; top: V[]; z: number; tower: boolean; open: boolean; /** brief 075: an old-frontage building (oldblocks.ts): its class, storey code and coping (its height above the pavement) */ old?: { cls: string; code: number; top: number } };
 export type Site = { id: string; plot: string; rect: Rect; storeys: number; podium: Rect; kit?: string };
 
 const BUILT = ['residential', 'mixed', 'commercial', 'industrial', 'port'];
@@ -204,7 +205,7 @@ function tiers(ctx: Ctx, b: { use: string; ring: Ring; n: number; shed: number; 
   return { tiers: out, top, z };
 }
 
-type Pend = { id: string; plot: string; area: string; use: string; kind: string; n: number; ring: Ring; shed: number; open: boolean };
+type Pend = { id: string; plot: string; area: string; use: string; kind: string; n: number; ring: Ring; shed: number; open: boolean; old?: { cls: string; code: number; top: number }; /** an old building's further masses (oldblocks.ts OldBld.extra) */ extra?: V[][] };
 export type MassOut = { masses: Mass[]; blds: Bld[]; facades: FacadeOut };
 
 export function generateMasses(ctx: Ctx, sites: Site[]): MassOut {
@@ -215,10 +216,20 @@ export function generateMasses(ctx: Ctx, sites: Site[]): MassOut {
     if (f.W < 6 || f.D < 6) return; // a sliver: no roof could carry even the smallest programme (antenna mast 6 x 6)
     pend.push({ id, plot, area, use, kind, n, ring, shed, open });
   };
+  const olds: OldPlot[] = [], oldLog: OldPlotLog[] = [];
   for (const plot of ctx.d.plots) {
     if (!isBuilt(plot.use) || plot.civic) continue;
     const r = rng(`plot/${plot.id}`), line = buildingLine(ctx, plotRing(ctx, plot));
     if (!line) continue;
+    // brief 075 (Sky: "why can't we just use the old buildings"): a plot the plan lays as old blocks (plan.blocks, circus.crescents) takes the old runs (oldblocks.ts);
+    // every other plot today's grammar (the Handover's, the exempt, and every plot of a pinned plan without blocks)
+    const ob = planBlocks(ctx, plot);
+    if (ob) oldLog.push(ob.log);
+    if (ob && ob.log.fit === 'blocks') {
+      olds.push(ob.out);
+      for (const b of ob.out.blds) pend.push({ id: b.id, plot: plot.id, area: plot.area, use: plot.use, kind: plot.use, n: b.code, ring: b.ring, shed: 0, open: false, old: { cls: b.cls, code: b.code, top: b.top }, ...(b.extra.length ? { extra: b.extra } : {}) });
+      continue;
+    }
     let pieces: Ring[] = [line];
     for (const rc of reserved) pieces = pieces.flatMap(pc => subtractRect(pc, rc));
     let k = 0;
@@ -262,14 +273,22 @@ export function generateMasses(ctx: Ctx, sites: Site[]): MassOut {
     }
   }
   // wave 2: kit facades on the street faces, then each building's tiers (plain behind a kit facade, the space-age grammar otherwise)
-  const solid = pend.filter(p => !p.shed), nearOf = (id: string) => { const me = solid.find(p => p.id === id)!; return solid.filter(p => p.id !== id && p.plot === me.plot && adjacent(me.ring, p.ring)).map(p => p.id); };
+  const solid = pend.filter(p => !p.shed && !p.old), nearOf = (id: string) => { const me = solid.find(p => p.id === id)!; return solid.filter(p => p.id !== id && p.plot === me.plot && adjacent(me.ring, p.ring)).map(p => p.id); };
   const hotels = tradeHosts(ctx, solid, JUNCTION.hotel); // brief 075-F1b: the trades come before the corner pick (CornerTower_12 reads HOTEL)
   const fac = generateFacades(ctx, solid.map(p => ({ id: p.id, use: p.use, n: p.n, ring: p.ring, play: !!ctx.B.caps?.[p.area]?.play, hotel: hotels.has(p.id) })), ctx.pav, nearOf, sites.map(s => ({ ring: rectPts(s.podium), n: s.storeys })));
+  // brief 075: the old runs' pieces (true size); an open run end rounds off where the building beyond is lower (or none stands there)
+  const hOf = (p: Pend) => (p.old ? p.old.top : p.shed ? p.shed : heightOf(ctx.B, p.n)), towerH = sites.map(s => ({ ring: rectPts(s.podium), h: heightOf(ctx.B, ctx.B.towers.podium) }));
+  const beyond = (q: V, self: string): number | null => { const o = pend.find(x => x.id !== self && pointInRingM(q, x.ring.p)); if (o) return hOf(o); const t = towerH.find(x => pointInRingM(q, x.ring)); return t ? t.h : null; };
+  const lo = layOld(ctx, olds, beyond);
+  fac.facades.push(...lo.facades);
+  for (const [id, m] of lo.metres) { fac.metres.set(id, m); fac.kitFaced.add(id); fac.why.set(id, 'old frontage (oldblocks.ts)'); }
+  setOldLog(ctx, { plots: oldLog, counts: { plots: olds.length, ...lo.counts }, classes: lo.classes });
   const whole = faceKitReady(); // brief 072-C: every face is kit, so every building takes plain tiers (the kit is the wall; no grammar)
   for (const p of pend) {
-    const kit = whole || fac.kitFaced.has(p.id), t = !kit && !p.shed && p.n >= GRAMMAR.roundFrom ? grammarTiers(ctx, p) : tiers(ctx, { use: p.use, ring: p.ring, n: p.n, shed: p.shed, whole });
+    const kit = whole || fac.kitFaced.has(p.id), t = p.old ? { tiers: [p.ring.p, ...(p.extra ?? [])].map((ring, i) => ({ part: i ? `wing-${i}` : 'body', ring, base: 0, height: r3(ctx.pav + p.old!.top), surface: p.use })), top: p.ring.p, z: ctx.pav + p.old.top } // brief 075: the old run's body (and any wing a short wall's bay adds), to its class's coping (the pieces are the wall)
+      : !kit && !p.shed && p.n >= GRAMMAR.roundFrom ? grammarTiers(ctx, p) : tiers(ctx, { use: p.use, ring: p.ring, n: p.n, shed: p.shed, whole });
     for (const x of t.tiers) masses.push({ id: `${p.id}/${x.part}`, surface: x.surface, ring: x.ring.map(rv), base: x.base, height: x.height });
-    blds.push({ id: p.id, plot: p.plot, area: p.area, use: p.use, kind: p.kind, n: p.n, ring: p.ring, top: t.top, z: r3(t.z), tower: false, open: p.open });
+    blds.push({ id: p.id, plot: p.plot, area: p.area, use: p.use, kind: p.kind, n: p.n, ring: p.ring, top: t.top, z: r3(t.z), tower: false, open: p.open, ...(p.old ? { old: p.old } : {}) });
   }
   for (const s of sites) { // tower complexes
     const B = ctx.B, pav = ctx.pav, id = `tower/${s.id}`, r = s.rect, podTop = pav + floorTop(B, B.towers.podium);

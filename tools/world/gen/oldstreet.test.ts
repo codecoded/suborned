@@ -11,6 +11,7 @@ import { worldOf } from '../build';
 import { ctxOf } from './common';
 import { classOf } from './stream';
 import { OLD_STREET, isOldRoad, palmStations, roadFrame } from './oldstreet';
+import { inCapstoneZone } from './street/palms';
 
 setDefaultTimeout(180000);
 const root = resolve(import.meta.dir, '../../..'), read = (p: string) => JSON.parse(readFileSync(resolve(root, p), 'utf8'));
@@ -49,11 +50,14 @@ test('SF-7 takes the old 10 m on the old-street roads only: a palm pair 10 m apa
 
 test('frontage: the buildings fronting the old road stand streamline bays only, at the old storey codes outside the play streets, rounding off only toward a lower neighbour', () => {
   const B = plan.standards.buildings, H = (n: number) => B.plinth + B.groundStorey + (n - 1) * B.upperStorey + B.roofCrown;
-  const on = gen.blds.filter(b => !b.tower && b.ring.c.some(isOldRoad)), play = (a: string) => !!(B.caps as Record<string, { play?: boolean }>)[a]?.play;
-  expect(on.length).toBeGreaterThan(20);
+  // brief 075 (the old buildings): a building the plan lays as an old block (gen.blds[].old, oldblocks.ts) follows the old runs and Aster's 3-storey remap (oldblocks.test.ts);
+  // these rules hold for the old road's buildings today's grammar still builds
+  const all = gen.blds.filter(b => !b.tower && b.ring.c.some(isOldRoad)), on = all.filter(b => !b.old), play = (a: string) => !!(B.caps as Record<string, { play?: boolean }>)[a]?.play;
+  expect(all.length).toBeGreaterThan(20); expect(on.length).toBeGreaterThan(0);
   for (const b of on) if (!play(b.area) && b.use === 'commercial') expect(Object.keys(OLD_STREET.frontage.codes).map(Number), b.id).toContain(b.n);
   const faces = w.facades.filter(f => { const b = on.find(x => x.id === f.building); return b && f.edge !== undefined && isOldRoad(b.ring.c[f.edge]!) && ['bay', 'end', 'corner'].includes(f.form); });
-  expect(faces.length).toBeGreaterThan(80);
+  expect(faces.length).toBeGreaterThan(0);
+  expect(w.facades.filter(f => all.some(b => b.id === f.building) && ['bay', 'end', 'corner'].includes(f.form)).length).toBeGreaterThan(80);
   for (const f of faces.filter(x => x.form === 'bay')) expect(OLD_STREET.frontage.classes, f.id).toContain(classOf(f.kit.id) ?? '');
   // an end stands where its building is taller than the neighbour past its tail, or none stands there
   for (const f of faces.filter(x => x.form === 'end')) {
@@ -78,3 +82,24 @@ function inRing(p: [number, number], r: [number, number][] | number[][]): boolea
   for (let i = 0, j = r.length - 1; i < r.length; j = i++) { const a = r[i]!, b = r[j]!; if ((a[1]! > p[1]) !== (b[1]! > p[1]) && p[0] < ((b[0]! - a[0]!) * (p[1] - a[1]!)) / (b[1]! - a[1]!) + a[0]!) inside = !inside; }
   return inside;
 }
+
+test('palms district-wide (brief 075 roll-out): every planted district and access edge outside the capstone zone stands its palms 10 m apart; the capstone zone keeps 12 m (failing example: a palm pair 8 m apart fails SF-7)', () => {
+  const byEdge = new Map<string, [number, number][]>();
+  for (const s of w.street) if (s.kind === 'tree' && /\/e\d+$/.test(s.edge)) byEdge.set(s.edge, [...(byEdge.get(s.edge) ?? []), s.at as [number, number]]);
+  const gaps = (pts: [number, number][]) => pts.slice(1).map((p, i) => Math.hypot(p[0] - pts[i]![0], p[1] - pts[i]![1]));
+  let ten = 0, twelve = 0; const boulevard = new Set(palms.map(p => p.s.edge));
+  for (const [edge, pts] of byEdge) {
+    if (pts.length < 3) continue;
+    const plot = edge.split('/e')[0]!, g = gaps(pts), min = Math.min(...g);
+    if (boulevard.has(edge)) continue; // the old-street road keeps its 10 m everywhere (the test above)
+    if (inCapstoneZone(ctx, plot)) { expect(min, edge).toBeGreaterThan(11.4); twelve++; } else if (Math.abs(min - 10) < 0.05) ten++;
+  }
+  expect(ten).toBeGreaterThan(30);     // the old grid on the district's other streets, not only the boulevard
+  expect(twelve).toBeGreaterThan(2);   // the Handover's zone as it was
+  const sf7 = (x: World) => streetChecks(worldCtx(plan, d, civ, { w: x, gen })).find(c => c.id === 'SF-7')!;
+  const [edge, pts] = [...byEdge].find(([e, p]) => p.length >= 3 && !inCapstoneZone(ctx, e.split('/e')[0]!) && !boulevard.has(e) && Math.abs(Math.min(...gaps(p)) - 10) < 0.05)!;
+  const a = pts[0]!, b = pts[1]!, L = Math.hypot(b[0] - a[0], b[1] - a[1]), moved: [number, number] = [a[0] + ((b[0] - a[0]) / L) * 8, a[1] + ((b[1] - a[1]) / L) * 8];
+  const sib = w.street.find(s => s.kind === 'tree' && s.edge === edge && s.at[0] === b[0] && s.at[1] === b[1])!;
+  const bad: World = { ...w, street: w.street.map(s => (s.id === sib.id ? { ...s, at: moved } : s)) };
+  expect(sf7(bad).ok).toBe(false); expect(JSON.stringify(sf7(bad))).toContain('8.0 m apart (< 10)');
+});
