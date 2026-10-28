@@ -166,11 +166,12 @@ export function blockGrammarChecks(plan: Plan, d: Derived, civ: Civic): Check[] 
     const bk = blocks.find(b => b.id === c.block), bl = line.get(c.plot);
     const start = bk?.runs.find(x => x.caps.includes('arc') && (x.face === 'e' || x.face === 'w'));
     const sp = start && (start.caps[1] === 'arc' ? start.b : start.a);
-    const s0: V = [rEnds * Math.cos((c.deg[0] * Math.PI) / 180), rEnds * Math.sin((c.deg[0] * Math.PI) / 180)];
+    const [ox, oy] = (c.c ?? P.circus?.c ?? [0, 0]) as V, at = (rad: number, g: number): V => [ox + rad * Math.cos(g), oy + rad * Math.sin(g)]; // about the crescent's centre (the circus), not the plan origin
+    const s0: V = at(rEnds, (c.deg[0] * Math.PI) / 180);
     if (!sp || Math.abs(s0[0] - sp[0]) > 0.01 || Math.hypot(s0[0] - sp[0], s0[1] - sp[1]) >= bay) b5.push(`${c.id}: does not start on ${c.block}'s N-S facade line within a bay of its run's arc end`);
     for (let k = 0; k < c.bays; k++) {
       const g0 = ((c.deg[0] + Math.sign(sweep) * k * step) * Math.PI) / 180, g1 = ((c.deg[0] + Math.sign(sweep) * (k + 1) * step) * Math.PI) / 180;
-      const q: V[] = [[rEnds * Math.cos(g0), rEnds * Math.sin(g0)], [rEnds * Math.cos(g1), rEnds * Math.sin(g1)], [(rEnds + band) * Math.cos(g1), (rEnds + band) * Math.sin(g1)], [(rEnds + band) * Math.cos(g0), (rEnds + band) * Math.sin(g0)]];
+      const q: V[] = [at(rEnds, g0), at(rEnds, g1), at(rEnds + band, g1), at(rEnds + band, g0)];
       const hit = reserved.find(x => quadHits(q, x)); if (hit) b5.push(`${c.id} bay ${k + 1}: band enters the reserved mass [${hit.join(', ')}]`);
       if (bl && q.some(p => !inside(p, bl.p, 0.1))) b5.push(`${c.id} bay ${k + 1}: leaves ${c.plot}'s building line`);
     }

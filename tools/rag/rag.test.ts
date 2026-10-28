@@ -49,7 +49,7 @@ describe('skyline and kit chunks (chunker v3)', () => {
     for (const s of p.signatures) expect(sections).toContain(`${p.name} › signature › ${s.id}`);
     for (const m of p.megastructures) expect(sections).toContain(`${p.name} › megastructure › ${m.id}`);
     for (const t of p.standards.buildings.towers.sites) expect(sections).toContain(`${p.name} › tower site › ${t.id}`);
-    expect(sections).toContain(`${p.name} › tower sites`);
+    if (p.standards.buildings.towers.sites.length) expect(sections).toContain(`${p.name} › tower sites`); else expect(sections).not.toContain(`${p.name} › tower sites`); // brief 075 remap: the old town has no tower sites
     const hq = chunks.find(c => c.section.endsWith('signature › space-hq'))!;
     expect(hq.text).toContain('crown: atom'); expect(hq.text).toContain('kit: SpaceHQ'); expect(hq.text).toContain('252');
   });

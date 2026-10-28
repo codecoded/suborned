@@ -7,7 +7,7 @@ import { civic } from '../../plan/civic';
 import { derive, type Plan } from '../../plan/plan';
 import { worldOf } from '../build';
 import { ctxOf } from './common';
-import { OLD_BLOCK, type PlanBlock, copingOf, oldLogOf, planBlocks, quadHitsRect, wallSegs } from './oldblocks';
+import { OLD_BLOCK, type PlanBlock, copingOf, oldLogOf, planBlocks, planSegs, poolFor, quadHitsRect, wallSegs } from './oldblocks';
 import { rng } from './common';
 
 setDefaultTimeout(120000);
@@ -27,7 +27,7 @@ test('every plot the plan lays as blocks takes the old runs, none falls back', (
 
 test('old pieces stand at true size: scale 1, no squash, no pier', () => {
   const ids = new Set(oldB.map(b => b.id)), mine = w.facades.filter(f => ids.has(f.building) && /\/f\d+$/.test(f.id));
-  expect(mine.length).toBeGreaterThan(1000);
+  expect(mine.length).toBeGreaterThan(500); // brief 075 remap: the old town lays 16 plots (522 pieces); the pre-remap plan's 18 laid 1675
   expect(mine.filter(f => f.kit.scale.some(s => Math.abs(s - 1) > 1e-9))).toEqual([]);
   expect(mine.filter(f => f.form === 'pier')).toEqual([]);
 });
@@ -70,6 +70,30 @@ test('a wall never draws the same class twice in a row, and a corner segment dra
     for (let i = 1; i < segs.length; i++) expect(segs[i]![0]).not.toBe(segs[i - 1]![0]);
     expect(segs[0]![0]).not.toBe('A3'); expect(segs[segs.length - 1]![0]).not.toBe('A3');
   }
+});
+
+test('the authored walls (plan runs[].segs, the old Wall / Short Seg lists) build their own segments: every long run that carries them, none missed', () => {
+  const runsWithSegs = blocks.reduce((n, b) => { const max = Math.max(...b.runs.map(r => r.bays)); return n + b.runs.filter(r => (r as any).segs && r.bays === max).length; }, 0);
+  expect(runsWithSegs).toBeGreaterThanOrEqual(10);
+  expect(log.plots.reduce((n, p) => n + (p.authored ?? 0), 0)).toBeGreaterThanOrEqual(runsWithSegs);
+  expect(log.plots.flatMap(p => p.segMiss ?? [])).toEqual([]);
+});
+
+test('authored segments: the remap\'s low class, a segment under 3 bays joining the one before it (else after), H (the civic hall) on the low streamline, head-first runs reversed', () => {
+  const pool = poolFor(false), none = () => ({});
+  expect(planSegs([{ cls: 'S9W', n: 4 }, { cls: 'D10', n: 3 }, { cls: 'S9', n: 4 }], 11, true, 0, 11, pool, none)).toEqual([['S3W', 4], ['B3', 3], ['S3W', 4]]);
+  expect(planSegs([{ cls: 'S9', n: 5 }, { cls: 'S6', n: 1 }], 6, true, 0, 6, pool, none)).toEqual([['S3W', 6]]); // the 1-bay S6 joins the S9 before it
+  expect(planSegs([{ cls: 'S6', n: 1 }, { cls: 'S9', n: 5 }], 6, true, 0, 6, pool, none)).toEqual([['S3W', 6]]); // a first short one joins the next (at the next one's class)
+  expect(planSegs([{ cls: 'H', n: 4 }], 4, true, 0, 4, pool, none)).toEqual([['S3', 4]]);
+  expect(planSegs([{ cls: 'S6', n: 3 }, { cls: 'P7', n: 4 }], 7, false, 0, 7, pool, none)).toEqual([['P3', 4], ['S3', 3]]); // the run is laid head first
+  expect(planSegs([{ cls: 'A3', n: 3 }, { cls: 'S6', n: 4 }], 7, true, 0, 7, pool, (at: number) => ({ end: at === 0 }))![0]![0]).not.toBe('A3'); // the arcade has no end piece
+});
+
+test('failing example: authored segments that do not sum to the run\'s bays are not used (the seeded rhythm stands, the run logged)', () => {
+  expect(planSegs([{ cls: 'S6', n: 4 }], 5, true, 0, 5, poolFor(false), () => ({}))).toBeNull();
+  const p2: Plan = JSON.parse(JSON.stringify(plan)), b = ((p2 as any).blocks as PlanBlock[]).find(x => x.id === 'boulevard-west')!, r = b.runs.find(x => x.face === 'w') as any;
+  r.segs = [{ cls: 'S6', n: 3 }];
+  expect(planBlocks(ctxOf(p2, derive(p2), civ), d.plots.find(p => p.id === b.plot)!)?.log.segMiss).toEqual(['boulevard-west/run1']);
 });
 
 test('failing example: a run whose length is not its caps + 6 k falls back to today\'s grammar, with why', () => {

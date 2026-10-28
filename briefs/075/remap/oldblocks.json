@@ -1,0 +1,154 @@
+{
+ "counts": {
+  "plots": 16,
+  "crescents": 4,
+  "buildings": 85,
+  "trueSize": 522,
+  "bays": 420,
+  "corners": 54,
+  "ends": 48,
+  "endsMirror": 24,
+  "square": 0,
+  "crescentBays": 16
+ },
+ "classes": {
+  "S4": 16,
+  "S3W": 25,
+  "S3": 22,
+  "P4L": 1,
+  "B3": 10,
+  "P3L": 1,
+  "B4": 5,
+  "P3": 4,
+  "P4": 1
+ },
+ "export": {
+  "facades": 1492,
+  "trueSize": 603,
+  "scaled": 889,
+  "streetPieces": 648,
+  "streetTrue": 522,
+  "streetScaled": 126
+ },
+ "oldBuildings": 85,
+ "plots": [
+  {
+   "plot": "lamplight-west",
+   "fit": "blocks",
+   "blocks": 1,
+   "buildings": 9
+  },
+  {
+   "plot": "boulevard-west",
+   "fit": "blocks",
+   "blocks": 1,
+   "buildings": 2,
+   "authored": 2
+  },
+  {
+   "plot": "lamplight-east",
+   "fit": "blocks",
+   "blocks": 1,
+   "buildings": 6,
+   "authored": 2,
+   "crescentBays": [
+    4,
+    4
+   ]
+  },
+  {
+   "plot": "west-wall-n",
+   "fit": "blocks",
+   "blocks": 1,
+   "buildings": 7,
+   "authored": 2,
+   "crescentBays": [
+    4,
+    4
+   ]
+  },
+  {
+   "plot": "east-wall-s",
+   "fit": "blocks",
+   "blocks": 1,
+   "buildings": 4,
+   "authored": 2
+  },
+  {
+   "plot": "east-wall",
+   "fit": "blocks",
+   "blocks": 2,
+   "buildings": 4,
+   "authored": 4,
+   "crescentBays": [
+    4,
+    4
+   ]
+  },
+  {
+   "plot": "east-wall-n",
+   "fit": "blocks",
+   "blocks": 1,
+   "buildings": 7,
+   "authored": 2,
+   "crescentBays": [
+    4,
+    4
+   ]
+  },
+  {
+   "plot": "terrace-s",
+   "fit": "blocks",
+   "blocks": 1,
+   "buildings": 6
+  },
+  {
+   "plot": "n1",
+   "fit": "blocks",
+   "blocks": 1,
+   "buildings": 2
+  },
+  {
+   "plot": "n2",
+   "fit": "blocks",
+   "blocks": 1,
+   "buildings": 2
+  },
+  {
+   "plot": "ss1",
+   "fit": "blocks",
+   "blocks": 1,
+   "buildings": 2
+  },
+  {
+   "plot": "ss2",
+   "fit": "blocks",
+   "blocks": 1,
+   "buildings": 2
+  },
+  {
+   "plot": "ss4",
+   "fit": "blocks",
+   "blocks": 1,
+   "buildings": 3
+  },
+  {
+   "plot": "ss3",
+   "fit": "blocks",
+   "blocks": 1,
+   "buildings": 7
+  },
+  {
+   "plot": "lantern-west",
+   "fit": "blocks",
+   "blocks": 1,
+   "buildings": 15
+  },
+  {
+   "plot": "lantern-south",
+   "fit": "blocks",
+   "blocks": 1,
+   "buildings": 7
+  }
+ ]
+}

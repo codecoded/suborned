@@ -30,7 +30,16 @@ export function pier(ctx: Ctx, mm: Megastructure): MegaOut {
   const out: MegaOut = { id, parts: [], prims: [], decks: [], hosts: [], cores: [], connectors: [], avoid: [] };
   legs.forEach((l, i) => out.parts.push(rectMass(`${id}/leg-${i}`, 'mega', l, 0, f1)));
   const cx = (fp[0] + fp[1]) / 2, cy = (fp[2] + fp[3]) / 2, w = fp[1] - fp[0], d = fp[3] - fp[2], q = m.frameWidth, ft = f1 - f0, g = m.girder;
-  out.decks.push(deckRec(ctx, id, `${id}/lounge-n`, 'concourse', [fp[0], fp[1], 8, fp[3]], [], td), deckRec(ctx, id, `${id}/lounge-s`, 'concourse', [fp[0], fp[1], fp[2], -8], [], td));
+  // the pier's own frame (brief 075 remap: the old town's lines run north-south): u along the sky rail line through it, w across from the line's centre w0; an
+  // east-west line maps (u, w) to (u, w0 + w), a north-south one to (w0 + w, u). A pier off every line keeps the east-west frame on its footprint's centre.
+  const smp = ctx.d.sky.flatMap(pth => pth.samples).reduce<{ p: V; dir: V } | null>((b, x) => (!b || Math.hypot(x.p[0] - cx, x.p[1] - cy) < Math.hypot(b.p[0] - cx, b.p[1] - cy) ? x : b), null);
+  const horiz = !smp || Math.hypot(smp.p[0] - cx, smp.p[1] - cy) > Math.max(w, d) || Math.abs(smp.dir[0]) >= Math.abs(smp.dir[1]), w0 = !smp || Math.hypot(smp.p[0] - cx, smp.p[1] - cy) > Math.max(w, d) ? cy : horiz ? smp.p[1] : smp.p[0];
+  const uLo = horiz ? fp[0] : fp[2], uHi = horiz ? fp[1] : fp[3], wLo = (horiz ? fp[2] : fp[0]) - w0, wHi = (horiz ? fp[3] : fp[1]) - w0;
+  const R = (u0: number, u1: number, a: number, b: number): Rect => (horiz ? [u0, u1, w0 + a, w0 + b] : [w0 + a, w0 + b, u0, u1]);
+  const P = (u: number, wv: number): V => (horiz ? [u, w0 + wv] : [w0 + wv, u]), N = (s: 1 | -1): V => (horiz ? [0, s] : [s, 0]);
+  // a host edge in the frame (the swap of axes mirrors, so a north-south edge runs b -> a to keep its side)
+  const E = (a: V, b: V, n: V, kind: string, street: string) => ({ a: horiz ? a : b, b: horiz ? b : a, n, kind, street, cornerA: false, cornerB: false });
+  out.decks.push(deckRec(ctx, id, `${id}/lounge-n`, 'concourse', R(uLo, uHi, 8, wHi), [], td), deckRec(ctx, id, `${id}/lounge-s`, 'concourse', R(uLo, uHi, wLo, -8), [], td));
   // portal frame f0..f1 on all four sides leg to leg, and the cross-girder carrying the stem
   out.prims.push(box(`${id}/frame-n`, 'mega', [cx, fp[3] - q / 2], [w, q, ft], f0), box(`${id}/frame-s`, 'mega', [cx, fp[2] + q / 2], [w, q, ft], f0),
     box(`${id}/frame-e`, 'mega', [fp[1] - q / 2, cy], [q, d, ft], f0), box(`${id}/frame-w`, 'mega', [fp[0] + q / 2, cy], [q, d, ft], f0), box(`${id}/girder`, GIRDER, [(g[0] + g[1]) / 2, (g[2] + g[3]) / 2], [g[1] - g[0], g[3] - g[2], ft], f0));
@@ -60,11 +69,9 @@ export function pier(ctx: Ctx, mm: Megastructure): MegaOut {
   });
   const mixOf = (lv: string) => m.levels.find(l => l.level === lv)?.mix;
   const apron = host(`${id}/street`, 'street', ctx.pav, m.areas[0]!, mixOf('street'), [
-    { a: [fp[0] + 6, 10], b: [fp[1] - 6, 10], n: [0, -1], kind: 'walk', street: 'skyport-pier', cornerA: false, cornerB: false },
-    { a: [fp[1] - 6, -10], b: [fp[0] + 6, -10], n: [0, 1], kind: 'walk', street: 'skyport-pier', cornerA: false, cornerB: false }], ctx.S.sections.walk.edgeBand, true); // the apron's kiosks spill within a walk's edge band (SF-16)
+    E(P(uLo + 6, 10), P(uHi - 6, 10), N(-1), 'walk', 'skyport-pier'), E(P(uHi - 6, -10), P(uLo + 6, -10), N(1), 'walk', 'skyport-pier')], ctx.S.sections.walk.edgeBand, true); // the apron's kiosks spill within a walk's edge band (SF-16)
   const lounge = host(`${id}/concourse`, 'concourse', zc, m.areas[0]!, mixOf('concourse'), [
-    { a: [fp[0] + 2, 22], b: [fp[1] - 2, 22], n: [0, -1], kind: 'concourse', street: 'lounge', cornerA: false, cornerB: false },
-    { a: [fp[1] - 2, -22], b: [fp[0] + 2, -22], n: [0, 1], kind: 'concourse', street: 'lounge', cornerA: false, cornerB: false }], 0, true);
+    E(P(uLo + 2, 22), P(uHi - 2, 22), N(-1), 'concourse', 'lounge'), E(P(uHi - 2, -22), P(uLo + 2, -22), N(1), 'concourse', 'lounge')], 0, true);
   out.hosts.push(apron, lounge);
   const gw = gatewayRef((m as any).gateway, Math.PI / 2); // spans the pier: the kit's +X (feet at +-16) turned onto y (the pier's plan yaw is text: the fallback)
   if (gw) out.gateway = gw;

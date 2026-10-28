@@ -146,10 +146,34 @@ export function wallSegs(r: Rng, kind: 'street' | 'terrace', k: number, pool: st
   return out;
 }
 
+/** The old class a plan run's authored segment takes (the remap's low class; H, the old civic hall at 11.1 m, is the Handover's and stands under the 3-storey
+ *  floor with a corner wing over its body, so its wall takes the low streamline; A3, the arcade, has no end or corner of its own), in our kit and this street. */
+export function planClass(old: string, pool: string[], need: { corner?: boolean; end?: boolean }): string {
+  const R = resolveClasses(), low = old === 'H' ? 'S3' : LOW_OF[old] ?? old, c = PLAY_OF[low] && pool.includes(PLAY_OF[low]!) ? PLAY_OF[low]! : low, x = R.get(c);
+  const ok = !!x && pool.includes(c) && (!need.corner || !!x.corner) && (!need.end || !!x.end);
+  return ok ? c : pool.find(y => y.startsWith('S3') && R.get(y)?.corner && R.get(y)?.end) ?? pool[0]!;
+}
+/** A run's authored segments (plan `segs`, the old Wall / Short Seg lists) over bays [q, e) in tail → head order, as [class, bays]: one building per segment, a
+ *  segment under minSeg joining the one before it (else after: today's massing width), the class remapped (planClass). null: the run carries none, or they do not sum
+ *  to its bays (the grammar's seeded rhythm stands, logged). */
+export function planSegs(segs: { cls: string; n: number }[] | undefined, bays: number, fwd: boolean, q: number, e: number, pool: string[], need: (i: number, n: number, last: boolean) => { corner?: boolean; end?: boolean }): [string, number][] | null {
+  if (!segs?.length || segs.reduce((s, x) => s + x.n, 0) !== bays) return null;
+  const per: { cls: string; g: number }[] = [];
+  (fwd ? segs : [...segs].reverse()).forEach((x, g) => { for (let i = 0; i < x.n; i++) per.push({ cls: x.cls, g }); });
+  const groups: { cls: string; n: number }[] = [];
+  for (const b of per.slice(q, e)) { const l = groups[groups.length - 1]; if (l && (l as any).g === b.g) l.n++; else groups.push(Object.assign({ cls: b.cls, n: 1 }, { g: b.g })); }
+  for (let i = 0; i < groups.length && groups.length > 1;) {
+    if (groups[i]!.n >= OLD_BLOCK.minSeg) { i++; continue; }
+    const j = i > 0 ? i - 1 : i + 1; groups[j]!.n += groups[i]!.n; groups.splice(i, 1); i = 0;
+  }
+  let at = 0;
+  return groups.map((x, i) => { const c = planClass(x.cls, pool, need(at, x.n, i === groups.length - 1)); at += x.n; return [c, x.n] as [string, number]; });
+}
+
 // ---------------------------------------------------------------- the plan's blocks: buildings and face runs
 
 type Cap = 'corner' | 'end' | 'open' | 'join' | 'arc';
-export type PlanRun = { face: string; a: V; b: V; n: V; faces: string; caps: [Cap, Cap]; bays: number; gap?: [number, number] };
+export type PlanRun = { face: string; a: V; b: V; n: V; faces: string; caps: [Cap, Cap]; bays: number; gap?: [number, number]; segs?: { cls: string; n: number }[]; old?: string };
 export type PlanBlock = { id: string; plot: string; kind: 'perimeter' | 'inner'; rect: [number, number, number, number]; depth: number; court: 'solid' | 'open'; runs: PlanRun[]; corners: V[] };
 export type PlanCrescent = { id: string; plot: string; block: string; from: string; c: V; r: number; rEnds: number; stepDeg: number; deg: [number, number]; sweep: 'cw' | 'ccw'; bays: number; caps: [Cap, Cap]; band: number };
 
@@ -163,7 +187,7 @@ type Slot = { kind: 'corner'; v: V; n0: V; n1: V; t0: V; bld: string } | { kind:
 export type FaceRun = { id: string; slots: Slot[]; tail: RunEnd; head: RunEnd; crescent?: boolean };
 type RunEnd = { open: boolean; at: V; t: V };
 export type OldPlot = { plot: string; blds: OldBld[]; runs: FaceRun[] };
-export type OldPlotLog = { plot: string; fit: 'blocks' | 'fallback'; why?: string; blocks?: number; buildings?: number; crescentBays?: [number, number] };
+export type OldPlotLog = { plot: string; fit: 'blocks' | 'fallback'; why?: string; blocks?: number; buildings?: number; authored?: number; segMiss?: string[]; crescentBays?: [number, number] };
 
 const lerp = (a: V, b: V, s: number): V => [a[0] + (b[0] - a[0]) * s, a[1] + (b[1] - a[1]) * s];
 type R4 = [number, number, number, number]; // x0, x1, y0, y1
@@ -186,7 +210,7 @@ export function planBlocks(ctx: Ctx, plot: { id: string; use: string; area: stri
   const blocks = (((ctx.plan as any).blocks ?? []) as PlanBlock[]).filter(b => b.plot === plot.id);
   if (!blocks.length) return null;
   const { bay: BAY, cell: CELL, body: BODY, tol: TOL } = OLD_BLOCK, play = !!ctx.B.caps?.[plot.area]?.play, pool = poolFor(play), R = resolveClasses();
-  const blds: OldBld[] = [], runsOut: FaceRun[] = [], rects = new Map<string, R4[]>(); let k = 0;
+  const blds: OldBld[] = [], runsOut: FaceRun[] = [], rects = new Map<string, R4[]>(), segMiss: string[] = []; let k = 0, segUsed = 0;
   const fail = (why: string) => ({ out: { plot: plot.id, blds: [], runs: [] }, log: { plot: plot.id, fit: 'fallback' as const, why } });
   const newB = (c: string, r: R4) => { const id = `bld/${plot.id}/${k++}`, x = R.get(c)!; blds.push({ id, plot: plot.id, area: plot.area, use: plot.use, ring: { p: [], c: [] }, extra: [], cls: c, code: x.code, top: x.top }); rects.set(id, [r]); return id; };
   const feet = (((ctx.plan as any).landmarks ?? []) as { gateway?: { feet: R4[]; zones?: string[] } }[]).flatMap(l => (l.gateway?.zones ?? []).includes('frontage') ? l.gateway!.feet : []);
@@ -195,7 +219,7 @@ export function planBlocks(ctx: Ctx, plot: { id: string; use: string; area: stri
     // the runs in CCW form: tail P → head Q along t, outward n, caps at tail / head
     const runs = blk.runs.map((r, i) => {
       const tc: V = [-r.n[1], r.n[0]], fwd = dot(norm(sub(r.b, r.a)), tc) > 0, P = fwd ? r.a : r.b, Q = fwd ? r.b : r.a, caps = fwd ? r.caps : [r.caps[1], r.caps[0]] as [Cap, Cap];
-      return { i, P: P as V, Q: Q as V, t: norm(sub(Q, P)), n: r.n as V, L: dist(P, Q), cls: ringCls(r.faces), faces: r.faces, capT: caps[0], capH: caps[1], bays: r.bays };
+      return { i, P: P as V, Q: Q as V, t: norm(sub(Q, P)), n: r.n as V, L: dist(P, Q), cls: ringCls(r.faces), faces: r.faces, capT: caps[0], capH: caps[1], bays: r.bays, fwd, segs: r.segs };
     });
     type Run = (typeof runs)[number];
     const bad = runs.find(r => Math.abs(r.L - (CELL * ((r.capT === 'corner' ? 1 : 0) + (r.capH === 'corner' ? 1 : 0)) + BAY * r.bays)) > TOL);
@@ -224,7 +248,9 @@ export function planBlocks(ctx: Ctx, plot: { id: string; use: string; area: stri
     }
     // primary runs first: segments → buildings (each segment's band, with the corner cells it owns)
     for (const r of primary) {
-      const list = baysOf.get(r.i)!, segs = wallSegs(rng(`oldblock/${blk.id}/run${r.i}`), wallKind(r.faces), r.bays, pool, r.capT === 'corner', r.capH === 'corner');
+      const list = baysOf.get(r.i)!, need = (at: number, n: number) => ({ corner: (at === 0 && r.capT === 'corner') || (at + n === r.bays && r.capH === 'corner'), end: (at === 0 && r.capT === 'end') || (at + n === r.bays && r.capH === 'end') });
+      const authored = planSegs(r.segs, r.bays, r.fwd, 0, r.bays, pool, need); if (r.segs && !authored) segMiss.push(`${blk.id}/run${r.i}`); else if (authored) segUsed++;
+      const segs = authored ?? wallSegs(rng(`oldblock/${blk.id}/run${r.i}`), wallKind(r.faces), r.bays, pool, r.capT === 'corner', r.capH === 'corner');
       let j = 0;
       segs.forEach(([c0, n], g) => {
         const first = list[j]!, last = list[j + n - 1]!, cT = g === 0 && r.capT === 'corner', cH = g === segs.length - 1 && r.capH === 'corner';
@@ -254,7 +280,8 @@ export function planBlocks(ctx: Ctx, plot: { id: string; use: string; area: stri
           const touch = prevB?.id ?? nextB ?? [...rects].find(([, rs]) => rs.some(x => touches(x, body)))?.[0];
           if (touch) { blds.find(y => y.id === touch)!.extra.push(rectRing(body)); rects.get(touch)!.push(body); for (let z = q; z < e; z++) list[z]!.bld = touch; q = e; continue; }
         }
-        const segs = wallSegs(rng(`oldblock/${blk.id}/run${r.i}/${q}`), wallKind(r.faces), e - q, pool, false, false, prevB?.cls ?? '');
+        const authored = planSegs(r.segs, r.bays, r.fwd, q, e, pool, (at, n) => ({ end: (q + at === 0 && r.capT === 'end') || (q + at + n === r.bays && r.capH === 'end') })); if (r.segs && !authored) segMiss.push(`${blk.id}/run${r.i}`); else if (authored) segUsed++;
+        const segs = authored ?? wallSegs(rng(`oldblock/${blk.id}/run${r.i}/${q}`), wallKind(r.faces), e - q, pool, false, false, prevB?.cls ?? '');
         let j = q;
         for (const [c, n] of segs) { const id = newB(c, bandRect(r.P, r.t, r.n, list[j]!.s0, list[j + n - 1]!.s1, BODY)); for (let z = j; z < j + n; z++) list[z]!.bld = id; j += n; }
         q = e;
@@ -319,7 +346,7 @@ export function planBlocks(ctx: Ctx, plot: { id: string; use: string; area: stri
     if (cr.caps[1] === 'end') { const sl = slots[sgn < 0 ? slots.length - 1 : 0] as Extract<Slot, { kind: 'bay' }>; sl.force = sgn < 0 ? 'head' : 'tail'; } // the plan's end cap
     runsOut.push({ id: cr.id, slots, crescent: true, tail: { open: false, at: front[0]!, t: norm(sub(front[1]!, front[0]!)) }, head: { open: false, at: front[front.length - 1]!, t: norm(sub(front[front.length - 1]!, front[front.length - 2]!)) } });
   }
-  return { out: { plot: plot.id, blds, runs: runsOut }, log: { plot: plot.id, fit: 'blocks', blocks: blocks.length, buildings: blds.length, ...(cres.length ? { crescentBays: [kept, asked] as [number, number] } : {}) } };
+  return { out: { plot: plot.id, blds, runs: runsOut }, log: { plot: plot.id, fit: 'blocks', blocks: blocks.length, buildings: blds.length, ...(segUsed ? { authored: segUsed } : {}), ...(segMiss.length ? { segMiss } : {}), ...(cres.length ? { crescentBays: [kept, asked] as [number, number] } : {}) } };
 }
 
 /** A convex quad and an axis-aligned rect overlap by more than a sliver (separating axes, 0.05 m slack). */

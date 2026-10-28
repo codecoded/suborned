@@ -68,6 +68,16 @@ export function kitFitChecks(c: WCtx): Check[] {
     ...(plan.megastructures ?? []).filter(m => (m as any).gateway).map(m => ({ id: m.id, gw: (m as any).gateway as Gw, ref: w.megastructures.find(x => x.id === `mega/${m.id}`)?.gateway, spans: m.spans.foot ?? [] })),
     ...plan.landmarks.filter(l => l.gateway).map(l => ({ id: l.id, gw: l.gateway as Gw, ref: w.landmarks.find(x => x.id === `landmark/${l.id}`)?.gateway, spans: plan.foot.map(f => f.id) })),
   ];
+  // brief 075 remap: where a block's run fronts the street (plan blocks[].runs[].faces = class:road) behind the section's pavement, the paved setback between the
+  // pavement and that building line is frontage ground too (the old 8 m avenue pavement, now Crown Avenue's 6.5 m access section with its 1.5 m setback to the old wall)
+  const runs = ((plan as { blocks?: { runs: { a: V; b: V; n: V; faces: string }[] }[] }).blocks ?? []).flatMap(b => b.runs);
+  // (p between the street and the run: in front of the facade by exactly the run's own distance past the kerb less p's, so never across the street)
+  const toLine = (p: V, road: string, dk: number) => runs.some(r => {
+    if (r.faces.split(':')[1] !== road) return false;
+    const u: V = [r.b[0] - r.a[0], r.b[1] - r.a[1]], L = Math.hypot(u[0], u[1]), t = ((p[0] - r.a[0]) * u[0] + (p[1] - r.a[1]) * u[1]) / L, s = (p[0] - r.a[0]) * r.n[0] + (p[1] - r.a[1]) * r.n[1];
+    const m: V = [(r.a[0] + r.b[0]) / 2, (r.a[1] + r.b[1]) / 2], rr = roadAt(g, m, '');
+    return t >= -TOL && t <= L + TOL && s >= -TOL && !!rr && rr.road === road && Math.abs(s - (rr.dk - dk)) < 0.5;
+  });
   const KEEP = 1.5, standing = w.street.filter(s => !FLAT.has(s.kind) && s.z < 3), doors = w.frontages.filter(f => f.level === 'street').map(f => ({ id: f.id, ring: boxRing(f.entrance.c, f.entrance.size[0], f.entrance.size[1], f.entrance.yaw) }));
   for (const { id: gid, gw, ref, spans } of gates) {
     if (!ref) { total++; bad.push(`${gid}: gateway ${gw.kit} not emitted`); continue; }
@@ -76,7 +86,7 @@ export function kitFitChecks(c: WCtx): Check[] {
     gw.feet.forEach((f, i) => {
       const id = `${gid}/gateway/foot-${i}`, pts = rectPts(f), ring: V[] = [[f[0], f[2]], [f[1], f[2]], [f[1], f[3]], [f[0], f[3]]];
       if (rectPts(f, 6.4).some(q => !pointInQuad(q, box, TOL))) bad.push(`${id}: outside the piece's footprint`);
-      const onQuay = pts.every(p => plan.quay.some(r => inPoly(p, r))), inFront = pts.every(p => { const r = roadAt(g, p, ''); return !!r && r.dk >= r.sec.kerb + r.sec.walk - TOL && r.dk <= r.sec.pavement + TOL; });
+      const onQuay = pts.every(p => plan.quay.some(r => inPoly(p, r))), inFront = pts.every(p => { const r = roadAt(g, p, ''); return !!r && r.dk >= r.sec.kerb + r.sec.walk - TOL && (r.dk <= r.sec.pavement + TOL || toLine(p, r.road, r.dk)); });
       if (!(zones.includes('quay') && onQuay) && !(zones.includes('frontage') && inFront)) bad.push(`${id}: not in its zone (${zones.join(' / ')})`);
       else if (zones.includes('quay') && onQuay && quayBlock(c, pts)) bad.push(`${id}: within 1.5 m of the quay edge`);
       for (const fp of plan.foot) { const e = Math.min(...pts.map(p => lineDist(p, fp.pts))) - fp.w / 2; if (e < -TOL && spans.includes(fp.id)) bad.push(`${id}: on the ${fp.id} walk`); }

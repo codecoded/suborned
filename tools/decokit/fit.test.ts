@@ -30,7 +30,10 @@ test('fit table: each piece fits its site (footprint, setback, crown, tip ≤ th
 // parapet of the tier below: 12 and 6 m for the plan's 18 and 12) fail; the fixed builds (each tier's envelope the plan's width) pass; a missing measure fails.
 const row = (id: string) => gen.find(a => a.id === id)!;
 const asBuilt = (id: string, tiers: [number, number][] | null | undefined): Built => ({ ...row(id).built!, tiers });
-const planned = (id: string) => (orders.pieces.find(p => p.id === id)!.regen as { tiers: [number, number, number][] }).tiers.map(([w]) => [w, w] as [number, number]);
+// brief 075 remap: the old town's plan has no tower sites; the tier rule's examples run on the orders of the plan before the remap (briefs/075/remap/base.plan.json),
+// the orders these pieces were built to
+const preOrders = readOrders(resolve(import.meta.dir, '../../briefs/075/remap/base.plan.json'));
+const planned = (id: string) => (preOrders.pieces.find(p => p.id === id)!.regen as { tiers: [number, number, number][] }).tiers.map(([w]) => [w, w] as [number, number]);
 test('a tier narrower than the plan fails the fit, by the tolerance stated', () => {
   expect(NARROW).toBe(0.1);
   const old: Record<string, [number, number][]> = {
@@ -39,7 +42,7 @@ test('a tier narrower than the plan fails the fit, by the tolerance stated', () 
     'Tower_Terrace@crescent-terrace': [[24, 22], [15.34, 13.64], [10.54, 8.54], [7.04, 5.54], [4.54, 4.54]],
   };
   for (const [id, tiers] of Object.entries(old)) {
-    const r = fitRow(orders, id, row(id).order!, asBuilt(id, tiers));
+    const r = fitRow(preOrders, id, row(id).order!, asBuilt(id, tiers));
     expect(r.fits, id).toBe(false);
     expect(r.why.some(m => m.includes('no narrower than')), id).toBe(true);
   }
@@ -48,7 +51,7 @@ test('a tier narrower than the plan fails the fit, by the tolerance stated', () 
 test('a tier as wide as the plan passes, one short by the tolerance passes, one past it fails, and no measure fails', () => {
   for (const id of ['Tower_Atom@crescent-tower', 'Tower_Lantern@lantern-beacon', 'Tower_Terrace@crescent-terrace']) {
     const want = planned(id), base = row(id).built!;
-    const pass = (tiers: [number, number][] | null | undefined) => fitRow(orders, id, row(id).order!, { ...base, tiers }).why.filter(m => m.includes('tier') || m.includes('narrower'));
+    const pass = (tiers: [number, number][] | null | undefined) => fitRow(preOrders, id, row(id).order!, { ...base, tiers }).why.filter(m => m.includes('tier') || m.includes('narrower'));
     expect(pass(want), id).toEqual([]);
     expect(pass(want.map(([w, d], i) => (i === 1 ? [w - NARROW, d] : [w, d]) as [number, number])), id).toEqual([]);
     expect(pass(want.map(([w, d], i) => (i === 1 ? [w - NARROW - 0.02, d] : [w, d]) as [number, number])).length, id).toBe(1);

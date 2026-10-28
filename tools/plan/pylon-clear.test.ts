@@ -8,7 +8,9 @@ import { derive, spanMax, type Plan } from './plan';
 
 const root = resolve(import.meta.dir, '../..');
 const read = (p: string): Plan => JSON.parse(readFileSync(resolve(root, p), 'utf8'));
-const live = read('contracts/world/harbour-district.plan.json');
+// brief 075 remap: the old town's S1 turns north at x -95 and crosses neither the monument nor a portal, so the standard's examples run on the pinned plan from
+// before the remap (briefs/075/remap/base.plan.json, committed), whose S1/trunk crosses the circus on y 0 into the Skyport portal
+const live = read('briefs/075/remap/base.plan.json');
 /** A04 run r008, round 3 (read-only): a plan without the standard. */
 const recorded = read('runs/levels/harbour-district/r008/round-3/plan.json');
 const tuple = (d: ReturnType<typeof derive>) => d.pylons.map(p => [p.line, p.path, +p.p[0].toFixed(3), +p.p[1].toFixed(3), +p.s.toFixed(2), +p.span.toFixed(2)]);

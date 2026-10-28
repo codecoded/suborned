@@ -131,16 +131,22 @@ export function generateConnectors(ctx: Ctx, megas: MegaOut[], stations: Mass[],
       if (!plat) continue;
       const smp = s.path.samples.reduce((b, x) => (dist(x.p, s.at) < dist(b.p, s.at) ? x : b));
       if (Math.abs(smp.dir[1]) > 1e-3 && Math.abs(smp.dir[0]) > 1e-3) throw new Error(`station ${pid}: line not axis-aligned (not in the rulebook)`);
-      const horiz = Math.abs(smp.dir[0]) > 0.5;
-      if (!horiz) throw new Error(`station ${pid}: banks are laid for an east-west line`);
-      const platOut = side > 0 ? plat.rect[3] : -plat.rect[2], px0 = plat.rect[0], px1 = plat.rect[1];
+      // the bank is laid in the line's own frame: u along the line, w across it from the line's centre (w0), on the platform's side (sg); an east-west line maps
+      // (u, w) to (x, w0 + w), a north-south line to (w0 + w, u), so a north-south station (the old town's) gets the same bank turned a quarter
+      const horiz = Math.abs(smp.dir[0]) > 0.5, w0 = horiz ? smp.p[1] : smp.p[0];
+      const pr = plat.rect, pw = horiz ? [pr[2] - w0, pr[3] - w0] : [pr[0] - w0, pr[1] - w0], sg: 1 | -1 = pw[0]! + pw[1]! >= 0 ? 1 : -1;
+      const R = (u0: number, u1: number, a: number, b: number): Rect => { const us = [u0, u1].sort((x, y) => x - y), ws = [w0 + a, w0 + b].sort((x, y) => x - y); return horiz ? [us[0]!, us[1]!, ws[0]!, ws[1]!] : [ws[0]!, ws[1]!, us[0]!, us[1]!]; };
+      const uLo = (r: Rect) => (horiz ? r[0] : r[2]), uHi = (r: Rect) => (horiz ? r[1] : r[3]), wMid = (r: Rect) => (horiz ? (r[2] + r[3]) / 2 : (r[0] + r[1]) / 2);
+      const P = (u: number, w: number): V => (horiz ? [u, w] : [w, u]);
+      const platOut = sg > 0 ? pw[1]! : -pw[0]!, px0 = horiz ? pr[0] : pr[2], px1 = horiz ? pr[1] : pr[3];
       let placed = false;
       type Lay = { t: number; d: 1 | -1; towerR: Rect; liftR: Rect; aR: Rect; mzR: Rect; bR: Rect; bounds: Rect; bridge?: { x: [number, number]; y: [number, number] } };
       const spec = forecourtBank(ctx, line.id, s.id, side > 0 ? 'l' : 'r');
       function* attempts(): Generator<Lay> {
+        if (spec && !horiz) { issues.push(`${pid}: the plan's forecourt bank is laid for an east-west line (axisClear and bridge are x and y)`); return; }
         if (spec) { // the plan's forecourt: tower and lift east of the clear axis, run A west of it, run B and the mezzanine over it, the bridge from `bridge.from` to `bridge.to`
-          const t = Math.abs(spec.bridge.from), [s0] = spec.span, ac = spec.axisClear, ys = (c0: number, c1: number) => [side * (t + c0), side * (t + c1)].sort((a, b) => a - b) as [number, number];
-          const at = (x0: number, x1: number, c0: number, c1: number): Rect => [x0, x1, ys(c0, c1)[0], ys(c0, c1)[1]], tx = Math.max(s0 + runB.size[0], ac[1]);
+          const t = Math.abs(spec.bridge.from - w0), [s0] = spec.span, ac = spec.axisClear;
+          const at = (x0: number, x1: number, c0: number, c1: number): Rect => R(x0, x1, sg * (t + c0), sg * (t + c1)), tx = Math.max(s0 + runB.size[0], ac[1]);
           const towerR = at(tx, tx + tower.along, 0, tower.across), aR = at(ac[0] - (runA.size[0] - 8), ac[0], 0, pairW / 2 + 0.2);
           const bR = at(tx - runB.size[0], tx, 4.4, 4.4 + pairW / 2 + 0.2);
           const mzR = at(Math.min(aR[0] - mz[0], bR[0]), aR[0], 0, mz[1] + 2.4); // on to the foot of run B (L-8)
@@ -153,7 +159,7 @@ export function generateConnectors(ctx: Ctx, megas: MegaOut[], stations: Mass[],
            for (const sx of [0, 3, -3, 6, -6, 9, -9, 12, -12, 15, -15, 18, -18]) for (const d of [1, -1] as const) {
           const xa = (px0 + px1) / 2 + sx, tx = [xa, xa + d * tower.along].sort((a, b) => a - b) as [number, number];
           if (tx[0] < px0 + 0.5 || tx[1] > px1 - 0.5) continue;
-          const cl = (l0: number, l1: number, c0: number, c1: number): Rect => { const xs = [xa + d * l0, xa + d * l1].sort((a, b) => a - b), ys = [side * (t + c0), side * (t + c1)].sort((a, b) => a - b); return [xs[0]!, xs[1]!, ys[0]!, ys[1]!]; };
+          const cl = (l0: number, l1: number, c0: number, c1: number): Rect => R(xa + d * l0, xa + d * l1, sg * (t + c0), sg * (t + c1));
           const lay = { t, d, towerR: cl(0, tower.along, 0, tower.across), aR: cl(13, 13 + runA.size[0], 0, pairW / 2 + 0.2), mzR: cl(34, 34 + mz[0], 0, mz[1] + 2.4), bR: cl(tower.along, tower.along + runB.size[0], 4.4, 4.4 + pairW / 2 + 0.2), bounds: cl(0, 42, 0, 10.2) };
           yield { ...lay, liftR: cl(0, liftSz[0], 7.2, 7.2 + liftSz[1]) }; // the lift beyond the tower, away from the line
           yield { ...lay, liftR: cl(tower.along + 0.4, tower.along + 0.4 + liftSz[0], 0, liftSz[1]) }; // or beside it, in the tower's own band (where the walk zone is beyond)
@@ -173,13 +179,12 @@ export function generateConnectors(ctx: Ctx, megas: MegaOut[], stations: Mass[],
         const bridgeId = `${base}/bridge`, mezzId = `${base}/mezzanine`, zc = zOfLv('concourse', base), zd = zOfLv('deck', base);
         let platServe = pid;
         if (bridgeNeeded) {
-          const g = platOut, bx = bridge?.x ?? [towerR[0], towerR[1]], ys = bridge?.y ?? ([side * g, side * t].sort((a, b) => a - b) as [number, number]);
-          const br: Rect = [bx[0]!, bx[1]!, ys[0], ys[1]];
+          const br: Rect = bridge ? [bridge.x[0], bridge.x[1], bridge.y[0], bridge.y[1]] : R(uLo(towerR), uHi(towerR), sg * platOut, sg * t);
           extra.push(deckRec(ctx, base, bridgeId, 'concourse', br, [], L.structureDepth.bridge)); pool.push({ id: bridgeId, level: 'concourse', rect: br }); platServe = bridgeId;
         }
         extra.push(deckRec(ctx, base, mezzId, 'deck', mzR, [], L.structureDepth.deck)); pool.push({ id: mezzId, level: 'deck', rect: mzR });
         const mk = (k: Connector['kind'], n: string, r: Rect, from: string, to: string, serves: string[], free: boolean, w: number, top: number, foot?: V, head?: V): Connector => ({ id: `${base}/${n}`, kind: k, host: base, serves, from, to, foot: rv(foot ?? rectCentre(r)), head: rv(head ?? rectCentre(r)), bottom: from === 'street' ? ctx.pav : zd, top: r3(top), width: w, stepFree: free, ring: ringRect(r), yaw: horiz ? 0 : Math.PI / 2 });
-        const along = (r: Rect, near: boolean): [V, V] => { const y = (r[2] + r[3]) / 2, a: V = [r[0], y], b: V = [r[1], y]; return (d > 0) === near ? [a, b] : [b, a]; };
+        const along = (r: Rect, near: boolean): [V, V] => { const w = wMid(r), a = P(uLo(r), w), b = P(uHi(r), w); return (d > 0) === near ? [a, b] : [b, a]; };
         const [af, ah] = along(aR, true), [bf, bh] = along(bR, false);
         connectors.push(
           mk('stairTower', 'tower', towerR, 'street', 'concourse', [mezzId, platServe], false, ctx.L.minWidth.stair, std.stairTower.size[2]),

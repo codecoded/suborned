@@ -20,6 +20,8 @@ import { type V, dist, inPoly } from '../../../plan/geom';
 import { type Derived, type Plan, inZone } from '../../../plan/plan';
 import { r3, r4, rv } from '../common';
 import { adoptedBy } from '../kitrefs';
+import { discRing } from '../box';
+import { ringGap } from '../../../plan/street-zones';
 
 /** The old beam section (DecoKitSkyRail.cs BeamW .6 half width, BeamH 1.6, Section(.22); Vela's SkyRail_Beam_4m): m. */
 export const BEAM = { piece: 'SkyRail_Beam_4m', width: 1.2, depth: 1.6, fillet: 0.22, stripe: [-1.05, -0.85] as [number, number], stripeProud: 0.035, uPerMetre: 1 };
@@ -73,6 +75,7 @@ export function skyTrack(plan: Plan, d: Derived, w: Pick<World, 'ground'> & { tr
   if (!foot || !shaft || !head || !beam) return undefined; // the old stack is not in the catalogue: the export keeps the ribbons and posts only
   const S = plan.standards.skyrail, kinds = new Set(S.pylonZones as string[]), zones = d.zones.filter(z => kinds.has(z.kind));
   const allowed = (q: V) => zones.some(z => inZone(q, z));
+  const discs = (plan.landmarks ?? []).map(l => discRing(l.c as V, l.r));
   const log: SkyTrackLog = { pylons: 0, tall: 0, foot: 0, bare: 0, twin: 0, single: 0, beams: 0, beamM: 0, gaps: [] };
   const beams: SkyBeam[] = [], pylons: SkyPylon[] = [];
   const ref = (a: { id: string }, at: V, yaw: number, z: number, sy = 1): KitRef & { at: V; z: number } => ({ id: a.id, scale: [1, r4(sy), 1], yaw: r4(yaw), at: rv(at), z: r3(z) });
@@ -87,7 +90,7 @@ export function skyTrack(plan: Plan, d: Derived, w: Pick<World, 'ground'> & { tr
     if (double && !twin) log.gaps.push({ rule: 'SK-T1', where: r.id, why: `${PYLON.headTwin} is not adopted: the single head stands under a double path` });
     (r.pylons as V[]).forEach((p, i) => {
       const t = tangentAt(line, p), yaw = Math.atan2(t[1], t[0]) - Math.PI / 2; // kit +Z (the pieces' along-track axis) on the tangent
-      const g = groundUnder(w, p), fits = (across: number, along: number) => { const ring = footRing(p, t, across, along); return ring.every(allowed) && !walkClear(ring); };
+      const g = groundUnder(w, p), fits = (across: number, along: number) => { const ring = footRing(p, t, across, along); return ring.every(allowed) && !walkClear(ring) && !discs.some(r => ringGap(ring, r) < 0.01); }; // a plinth keeps off a landmark and its steps (SK-T2, SF-18): a plan before pylonClear stood pylons on the monument
       const base = tall && fits(tall.size[0]!, tall.size[2]!) ? tall : fits(foot.size[0]!, foot.size[2]!) ? foot : undefined;
       // neither plinth fits: the bare shaft (1.1 x 1.5, inside the plan's own 1.6 m post) runs down to the ground, as the plan's post stood; logged for the plan's owner where that post itself stands in a walk
       if (!base) { const post = footRing(p, t, r.pylonSize, r.pylonSize), why = walkClear(post); log.bare++; if (why) log.gaps.push({ rule: 'SK-T2', where: `${r.id}/pylon-${i}`, why: `the plan's pylon at ${p.map(Math.round)} stands in ${why}: a bare shaft there (Datum: move the pylon or let the beam span it)`, at: p }); }
