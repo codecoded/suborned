@@ -38,6 +38,7 @@ The GDD keeps a default for each (the draft's, or the build's) until Sky rules. 
 Q13 of brief 035 ("Vale exits north") is settled by brief 059: "Vale comes out of the official door".
 
 ## After v0.31.0 (2026-10-28; Sky's answers, relayed by main)
+- Sky, 2026-10-28, after the flyby comparison (brief 074): "yeah, let's get moving back to the old world textures. designs etc": colourways tint walls and plinths only; the old DecoKit world becomes the reference for textures, materials, designs and look (brief 075), and brief 073 folds into it (the answer to "too shiny / clean" is the old reel's own grade, not a new filter). The height cap, the Handover and 064 A5 stand.
 - Sky, 2026-10-28: "Do building colors": a colourway per building from up to 12 district-wide families (brief 074); the civic block keeps seafoam and teal, the road stays powder blue.
 - Sky, 2026-10-28: "yeah, I more colors needed": Vela's extra colours stay and the district's colour range is pushed further (brief 072); the civic block keeps seafoam and teal, the road stays powder blue.
 - Sky, 2026-10-28: the queued crew items go ahead (064 A3 items 1, 5, 7; c040; the pinstripe retired).
