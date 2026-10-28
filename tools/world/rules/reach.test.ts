@@ -55,12 +55,12 @@ test('a megastructure in the water with no way in is an island', () => {
   expect(reachReport(world({ landmarks: [], megastructures: [{ id: 'm', footprint: [[20, 60, 10, 40]] }] })).islands).toEqual([]);
 });
 
-test('the live plan: the Skyport Tower and the liner berth stand in the water with no way in; RCH-1 reports them (informational until the sky track reaches the Skyport)', () => {
+test('the live plan: every structure joins the street network, the Skyport Tower through its apron and the liner berth through the Market Pier (plan 0.5.2, Datum); RCH-1 is enforced', () => {
   const root = resolve(import.meta.dir, '../../..'), read = (p: string) => JSON.parse(readFileSync(resolve(root, p), 'utf8'));
   const plan: Plan = read('contracts/world/harbour-district.plan.json'), d = derive(plan), c = ctxOf(plan, d, civic(plan.civic, read(plan.civic.block)));
   const enforced = reachRules(c, true)[0]!, live = reachRules(c)[0]!;
-  expect(enforced.ok).toBe(false);
-  expect(enforced.detail).toContain('landmark/skyport-tower');
-  expect(live.ok).toBe(true);
-  expect(!!live.waived).toBe(!RCH_ENFORCED);
+  expect(enforced.ok, enforced.detail).toBe(true);
+  expect(enforced.value).toMatch(/^(\d+)\/\1$/);
+  expect(RCH_ENFORCED).toBe(true);
+  expect(live.waived).toBeUndefined();
 });

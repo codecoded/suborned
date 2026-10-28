@@ -9,7 +9,7 @@ import { boxRing, roadAt } from '../../plan/street-zones';
 import { type V as PV, dist, dot, norm, segDist as segD, sub } from '../../plan/geom';
 import { flagRow } from './colour';
 import { edgeN } from './geo';
-import { streetKit } from './kitrefs';
+import { type PinLog, streetKit } from './kitrefs';
 import { bindPart } from './street/partkit';
 import { type CrossingLog, bankFeet, civicLandings, pairCrossings } from './street/crossings';
 import { Layer, twinBooths } from './street/kit';
@@ -26,7 +26,7 @@ import { type OldPropsLog, oldProps } from './oldtown/props';
 import type { OldGround } from './oldtown/ground';
 import { OLD_STREET } from './oldstreet';
 
-export function generateStreet(ctx: Ctx, o: { buildings: Mass[]; megas: MegaOut[]; decks: DeckRec[]; stops: Mass[]; stations: Mass[]; connectors: Connector[]; frontages: Frontage[]; old?: OldGround; facades?: Facade[] }): { items: StreetItem[]; flags: Flag[]; oldProps?: OldPropsLog; crossings?: Crossing[]; crossingLog?: CrossingLog; takedown?: Takedown; capstone?: CapLog; groundPieces?: StreetItem[]; adverts?: ReturnType<typeof dressAdverts>; tram?: { bays: KerbBay[]; islands: Mass[]; log: TramStreetLog } } {
+export function generateStreet(ctx: Ctx, o: { buildings: Mass[]; megas: MegaOut[]; decks: DeckRec[]; stops: Mass[]; stations: Mass[]; connectors: Connector[]; frontages: Frontage[]; old?: OldGround; facades?: Facade[] }): { items: StreetItem[]; flags: Flag[]; oldProps?: OldPropsLog; crossings?: Crossing[]; crossingLog?: CrossingLog; takedown?: Takedown; capstone?: CapLog; groundPieces?: StreetItem[]; adverts?: ReturnType<typeof dressAdverts>; tram?: { bays: KerbBay[]; islands: Mass[]; log: TramStreetLog }; zonePins?: PinLog } {
   const ground = (m: Mass) => m.base < 1;
   const solids: V[][] = [...o.buildings.filter(ground).map(m => m.ring), ...o.megas.flatMap(m => m.parts.filter(ground).map(p => p.ring))];
   const post = (p: V): V[] => [[p[0] - 0.7, p[1] - 0.7], [p[0] + 0.7, p[1] - 0.7], [p[0] + 0.7, p[1] + 0.7], [p[0] - 0.7, p[1] + 0.7]];
@@ -60,7 +60,8 @@ export function generateStreet(ctx: Ctx, o: { buildings: Mass[]; megas: MegaOut[
   // brief 075 remap (oldtown/props.ts): the old town's props by the old placement rules, last of all under their own ids (street/old/<rule>/<n>), so no other street id moves
   const bays = o.old ? (o.facades ?? []).filter(f => f.form === 'bay' && f.base < 1).flatMap(f => { const m: V = [(f.a[0] + f.b[0]) / 2, (f.a[1] + f.b[1]) / 2], r = ctx.d.roads.filter(x => OLD_STREET.roads.includes(x.id)).find(x => Math.min(...x.line.slice(1).map((q, i) => segD(m, x.line[i]!, q))) < x.w / 2 + 10); return r ? [{ a: f.a as V, b: f.b as V, road: r.id }] : []; }) : [];
   const oldLog = oldProps(ctx, L, o.old, { buildings: o.buildings, frontBays: bays });
-  return { ...(oldLog ? { oldProps: oldLog } : {}), items: streetKit(ctx, [...L.items.filter(x => x.kind !== 'flag-mast'), ...D.items, ...(strips?.parts ?? [])]).map(bindPart), flags, adverts, ...(tram ? { tram } : {}), ...(strips ? { crossings: strips.crossings, crossingLog: strips.log } : {}), ...(takedown ? { takedown } : {}), ...(capstone ? { capstone: capstone.log, groundPieces: capstone.ground } : {}) };
+  const zonePins: PinLog = { used: 0, unmatched: [], unpinned: [], refit: [] }; // brief 075 (stable zone): what the Handover zone's kit pins did (world rule ZK-1)
+  return { ...(oldLog ? { oldProps: oldLog } : {}), items: streetKit(ctx, [...L.items.filter(x => x.kind !== 'flag-mast'), ...D.items, ...(strips?.parts ?? [])], zonePins).map(bindPart), zonePins, flags, adverts, ...(tram ? { tram } : {}), ...(strips ? { crossings: strips.crossings, crossingLog: strips.log } : {}), ...(takedown ? { takedown } : {}), ...(capstone ? { capstone: capstone.log, groundPieces: capstone.ground } : {}) };
 }
 
 /** Grammar §2a flag masts (8 m, 9 m pitch): both sides of Crown Parade in the mall's kerb band (outside SpaceHQ's ground hall), along hotel and civic

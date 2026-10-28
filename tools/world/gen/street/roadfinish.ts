@@ -17,6 +17,7 @@
 // lies on (the carriageway 0, a kerbed bay's floor): the pieces keep their own few millimetres of lift.
 import type { KitAsset } from '../../../../contracts/world/kit.schema';
 import type { StreetItem } from '../../../../contracts/world/world.schema';
+import { zoneMint } from './kit';
 import { type V, dist, inPoly, lineDist, segDist } from '../../../plan/geom';
 import { FLAT_FOOT, type Ctx, r3, r4 } from '../common';
 import { adoptedBy } from '../kitrefs';
@@ -123,9 +124,9 @@ export function dressRoadFinish(ctx: Ctx, o: { crossings: { strip: V[] }[]; /** 
   /** the asphalt set's edge line: its pivot `offset` out from the kerb face, white enamel inlay a little proud of the road (brief 055 road test) */
   if (M?.edge && edgeP) fams.push({ id: 'edge', kind: 'road-edge-line', piece: edgeP, at: M.edge.offset, a: M.edge.offset - M.edge.width / 2, b: M.edge.offset + M.edge.width / 2, z: 0 });
   const mStop: number = M?.stopShort ?? stop;
-  const items: StreetItem[] = [], n: Record<string, number> = {};
+  const items: StreetItem[] = [], mint = zoneMint(ctx); // brief 075 (stable zone): numbered apart inside the Handover zone
   const put = (kind: string, a: KitAsset, at: V, yaw: number, z: number, scale: [number, number, number], edge: string) => {
-    items.push({ id: `street/roadfinish/${kind}-${(n[kind] = (n[kind] ?? 0) + 1) - 1}`, kind, at: [r3(at[0]), r3(at[1])], yaw: wrap(yaw), z: r3(z), size: [r3(a.size[0] * scale[0]), r3(a.size[2] * scale[2]), r3(a.size[1] * scale[1])], surface: 'trim', edge, sight: 'open', source: 'kit', kit: { id: a.id, scale } });
+    items.push({ id: mint(`street/roadfinish/${kind}`, at), kind, at: [r3(at[0]), r3(at[1])], yaw: wrap(yaw), z: r3(z), size: [r3(a.size[0] * scale[0]), r3(a.size[2] * scale[2]), r3(a.size[1] * scale[1])], surface: 'trim', edge, sight: 'open', source: 'kit', kit: { id: a.id, scale } });
     log.counts[kind] = (log.counts[kind] ?? 0) + 1; log.pieces[a.id] = (log.pieces[a.id] ?? 0) + 1;
   };
 

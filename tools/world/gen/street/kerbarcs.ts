@@ -13,6 +13,7 @@ import { baysOf, chordsOf, returnsOf } from '../kerbreturn';
 import { facing, pivotFor } from './capstone';
 import { LAYER, PAVE, RULES } from './capstone-rules';
 import { overlaps } from './crossings';
+import { zoneMint } from './kit';
 
 export type KerbArcLog = { returns: number; stones: number; arcM: number; droppedM: number; pieces: Record<string, number>; /** metres of stone dropped (a crossing strip or a drive lies over it), by the stones' `edge` (`kerbreturn/<return id>`): KR-2 holds each arc to its length less this less a stone */ dropped: Record<string, number> };
 
@@ -20,13 +21,13 @@ export function dressKerbArcs(ctx: Ctx, o: { strips: V[][]; drives: V[][] }): { 
   const R = RULES.kerb, stones = R.pieces.map(adoptedBy);
   const list = returnsOf(ctx);
   if (!list.length || stones.some(s => !s)) return undefined;
-  const ground = stones[0]!, scaleY = r3((PAVE + LAYER.kerb) / ground.size[1]), items: StreetItem[] = [], log: KerbArcLog = { returns: 0, stones: 0, arcM: 0, droppedM: 0, pieces: {}, dropped: {} };
+  const mint = zoneMint(ctx), ground = stones[0]!, scaleY = r3((PAVE + LAYER.kerb) / ground.size[1]), items: StreetItem[] = [], log: KerbArcLog = { returns: 0, stones: 0, arcM: 0, droppedM: 0, pieces: {}, dropped: {} };
   const lay = (ctr: V, n: V, len: number, edge: string, k: number, mid: number) => { // one stone: its centre `ctr` (0.15 m inside the face), `n` toward the carriageway
     const a = stones[k & 1]!, L = len + 0.02, sx = r3(L / a.size[0]), yaw = facing(n), ring = boxRing(ctr, Math.max(0.1, L - 0.1), R.halfDepth * 2, yaw);
     log.arcM += len; void mid;
     if (o.strips.some(p => overlaps(ring, p)) || o.drives.some(p => overlaps(ring, p))) { log.droppedM += len; log.dropped[edge] = (log.dropped[edge] ?? 0) + len; return; }
     const piv = pivotFor(a, ctr, yaw, [sx, scaleY, 1]), size: [number, number, number] = [r3(a.size[0] * sx), r3(a.size[2]), r3(a.size[1] * scaleY)];
-    items.push({ id: `street/kerbreturn/kerb-return-${items.length}`, kind: 'kerb-return', at: piv, yaw: r4(yaw), z: 0, size, surface: 'trim', edge, sight: 'open', source: 'kit', kit: { id: a.id, scale: [sx, scaleY, 1] } });
+    items.push({ id: mint('street/kerbreturn/kerb-return', piv), kind: 'kerb-return', at: piv, yaw: r4(yaw), z: 0, size, surface: 'trim', edge, sight: 'open', source: 'kit', kit: { id: a.id, scale: [sx, scaleY, 1] } });
     log.stones++; log.pieces[a.id] = (log.pieces[a.id] ?? 0) + 1;
   };
   for (const r of list) {

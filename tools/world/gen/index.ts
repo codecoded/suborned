@@ -1,4 +1,5 @@
 // The world generator: one deterministic pass from the plan to every generated layer. Seeded by element id throughout.
+import type { StepLog } from './caissonsteps';
 import type { KerbBay } from '../../../contracts/world/world.schema';
 import type { TramStreetLog } from './street/tramstreet';
 import type { Connector, Crossing, Deck, Fabric, Facade, Frontage, Skin, SignatureOut, KitRef, Mass, Prim, Roof, StreetItem, Takedown } from '../../../contracts/world/world.schema';
@@ -8,7 +9,7 @@ import { type Travel, generateConnectors } from './connectors';
 import { buildingHost, generateFrontages } from './frontage';
 import { type Bld, generateMasses, towerSites } from './masses';
 import { generateMegas } from './mega';
-import { signKit } from './kitrefs';
+import { type PinLog, signKit } from './kitrefs';
 import { type BoardLog, rooftopBoards, wallBoards } from './billboards';
 import { generateRoofs } from './roofs';
 import { generateSignatures, generateStructures } from './signatures';
@@ -38,6 +39,8 @@ export type Generated = {
   faces: FacesOut; // brief 072-C: the every-face pass's log (faces dressed and the gaps, with the pieces that would dress them)
   decks: DeckRec[]; megas: { id: string; parts: Mass[]; prims: Prim[]; gateway?: KitRef & { at: V } }[]; blds: Bld[]; megaOut: MegaOut[]; issues: string[]; travel: Travel[];
   crossings?: Crossing[]; crossingLog?: CrossingLog; // streetscape.crossings.strip only
+  caissonSteps?: StepLog; // brief 075 remap: the flights from the piers on to the caisson decks (caissonsteps.ts), written by build.ts
+  zonePins?: PinLog; // brief 075 (stable zone): the Handover zone's kit pins as the street kit pass used them (world rule ZK-1)
   takedown?: Takedown; // brief 013: present when the civic block has a service door
   groundPieces?: StreetItem[]; // brief 026: the capstone programme's flat ground pieces (world.ground.pieces), kept out of the street layer so the street rules (SF-1..SF-8) never judge paving
   capstone?: CapLog; // brief 026: what the capstone programme placed and the places no rule could fill
@@ -79,7 +82,7 @@ export function generate(ctx: Ctx, stops: Mass[], stations: Mass[]): Generated {
   // grammar §2a colour life: faience, spandrels, fins, balcony awnings and banners per skin; flags along the Parade, hotels and civic fronts
   const life = colourLife(ctx, blds, masses, skins0, fac.facades, frontages), skins = life.skins;
   const og = oldGround(ctx);
-  const { items: street, flags, crossings, crossingLog, takedown, capstone, groundPieces, adverts, tram, oldProps } = generateStreet(ctx, { buildings: masses, megas: megaOut, decks, stops, stations, connectors: conn.connectors, frontages, ...(og ? { old: og, facades: fac.facades } : {}) });
+  const { items: street, flags, crossings, crossingLog, takedown, capstone, groundPieces, adverts, tram, oldProps, zonePins } = generateStreet(ctx, { buildings: masses, megas: megaOut, decks, stops, stations, connectors: conn.connectors, frontages, ...(og ? { old: og, facades: fac.facades } : {}) });
   const rooftop = rooftopBoards(ctx, roofs, blds, masses), walls = wallBoards(ctx, { masses, facades: fac.facades, roofs, catalogue: catalogued }); // brief 075-F (BB-1, BB-2): boards on the sign-frame roofs, then on the party walls over a lower neighbour (clear of those roofs)
   street.push(...walls.items);
   // brief 028 Road (Sky 2026-10-22 "can try"): the testbed's road finish, laid by rule on every kerb face; opt-in on standards.streetscape.roads and the pieces adopted in the kit (a pinned plan or kit gets none)
@@ -89,7 +92,7 @@ export function generate(ctx: Ctx, stops: Mass[], stations: Mass[]): Generated {
   const slabs: Mass[] = ctx.d.plots.map(p => ({ id: `plot/${p.id}`, surface: p.use, ring: slabRing(ctx, p).map(rv), base: 0, height: ctx.pav })); // brief 028: the kerb side's corners are rounded (kerbreturn.ts); the building side and the building line are as the plan has them
   // brief 028 (kerbReturn.bend): the outside of a road's bend is concentric with the inside corner's return; the fillet is pavement laid into the road's corner (a slab of its own, in the use of the plot it meets), never a change to a plot
   for (const r of returnsOf(ctx)) if (r.bend) { const probe: V = [r.at[0] + (r.n1[0] + r.n2[0]) * 0.4, r.at[1] + (r.n1[1] + r.n2[1]) * 0.4]; slabs.push({ id: `plot/${r.id}`, surface: ctx.d.plots.find(p => !p.civic && inPolyV(probe, p.polyV))?.use ?? ctx.d.plots.find(p => p.id === r.plot)!.use, ring: r.cut.map(rv), base: 0, height: ctx.pav }); }
-  return { signatures: [...generateSignatures(ctx), ...generateStructures(ctx)], skins, fabric: { awnings: life.awnings, banners: life.banners, flags }, facades: fac.facades, faces, shopFit: fit.log, facadeWhy: fac.why, faceMetres: fac.metres, buildings: masses, slabs, roofs, frontages, connectors: conn.connectors, street, decks, megas: megaOut.map(m => ({ id: m.id, parts: m.parts, prims: m.prims, ...(m.gateway ? { gateway: m.gateway } : {}) })), blds, megaOut, issues: conn.issues, travel: conn.travel, ...(crossings ? { crossings, crossingLog } : {}), ...(takedown ? { takedown } : {}), ...(capstone ? { capstone } : {}), ...(flat.length ? { groundPieces: flat } : {}), ...(rf ? { roadFinish: rf.log } : {}), ...(tram ? { tram } : {}), ...(og ? { oldGround: og } : {}), ...(oldProps ? { oldProps } : {}), billboards: { rooftop, wall: walls.log, ...(adverts ?? { pylon: { placed: 0, parade: 0, quay: 0, plaza: 0 }, column: { placed: 0, before: 0 } }) }, ...(ka ? { kerbArcs: ka.log } : {}) };
+  return { signatures: [...generateSignatures(ctx), ...generateStructures(ctx)], skins, fabric: { awnings: life.awnings, banners: life.banners, flags }, facades: fac.facades, faces, shopFit: fit.log, facadeWhy: fac.why, faceMetres: fac.metres, buildings: masses, slabs, roofs, frontages, connectors: conn.connectors, street, decks, megas: megaOut.map(m => ({ id: m.id, parts: m.parts, prims: m.prims, ...(m.gateway ? { gateway: m.gateway } : {}) })), blds, megaOut, issues: conn.issues, travel: conn.travel, ...(crossings ? { crossings, crossingLog } : {}), ...(takedown ? { takedown } : {}), ...(capstone ? { capstone } : {}), ...(flat.length ? { groundPieces: flat } : {}), ...(rf ? { roadFinish: rf.log } : {}), ...(tram ? { tram } : {}), ...(og ? { oldGround: og } : {}), ...(oldProps ? { oldProps } : {}), ...(zonePins ? { zonePins } : {}), billboards: { rooftop, wall: walls.log, ...(adverts ?? { pylon: { placed: 0, parade: 0, quay: 0, plaza: 0 }, column: { placed: 0, before: 0 } }) }, ...(ka ? { kerbArcs: ka.log } : {}) };
 }
 
 /** A DeckRec as the export's Deck. */

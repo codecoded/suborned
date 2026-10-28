@@ -23,10 +23,15 @@ const MASS_MIN_H = 2; // m: a ground mass lower than this (a kerb, a bench) is w
 const MASS_MAX_BASE = 1; // m: a mass whose base is higher stands over the ground (a deck slab, a bridge)
 
 /**
- * Whether RCH-1 fails the check (false: it reports, WAIVE). Informational until Datum's sky track branch to the Skyport lands (brief 075): the live plan has the
- * Skyport Tower and the liner berth in the water with no way in. Flip to true once `bun run plan` shows RCH-1 at all/all.
+ * Whether RCH-1 fails the check (false: it reports, WAIVE). Enforced since Datum's S2 Harbour Line and the Skyport apron (brief 075, plan 0.5.2: RCH-1 34/34, no island).
  */
-export const RCH_ENFORCED = false;
+export const RCH_ENFORCED = true;
+/** The plan version RCH-1 is enforced from: a plan written before it (the pre-remap base 0.4.0, the A04 skyline fixtures 0.2.0/0.3.0) laid its caissons in the water with
+ *  "no walk to it" by design, so RCH-1 reports there (WAIVE) as it did before, and those plans' other rules keep their failing examples. Datum's 0.5.2 made every structure reachable. */
+export const RCH_SINCE = '0.5.2';
+const older = (v: unknown, than: string) => { const a = String(v ?? '0').split(/[.-]/).map(Number), b = than.split('.').map(Number); for (let i = 0; i < b.length; i++) { const x = Number.isFinite(a[i]) ? a[i]! : 0; if (x !== b[i]) return x < b[i]!; } return false; };
+/** Whether RCH-1 fails the check for this plan: RCH_ENFORCED, from RCH_SINCE on. */
+export const reachEnforced = (plan: { version?: unknown }) => RCH_ENFORCED && !older(plan.version, RCH_SINCE);
 
 type Ring = V[];
 export type ReachInput = {
@@ -166,10 +171,10 @@ export function reachInputOf(c: Pick<WCtx, 'plan' | 'd' | 'w'>): ReachInput {
 const SOURCE = 'brief 075 (Sky 2026-10-28: "we need the skytrak to get here - it\'s unreachable right now … make sure everywhere has a real structure") · standards.levels (L-1, L-3 stair 3 m) · '
   + 'tools/world/rules/reach.ts · failing examples (reach.test.ts): a caisson only touching its pier\'s end; a pier cut off by water; a deck whose stair foot stands in a building; a station with no platform';
 
-/** RCH-1: every landmark, megastructure, station, pier, platform and deck joins the street network. Informational (WAIVE) while RCH_ENFORCED is false. */
-export function reachRules(c: WCtx, enforced = RCH_ENFORCED): Check[] {
+/** RCH-1: every landmark, megastructure, station, pier, platform and deck joins the street network. Enforced from plan RCH_SINCE (reachEnforced); informational (WAIVE) on an older plan. */
+export function reachRules(c: WCtx, enforced = reachEnforced(c.plan)): Check[] {
   const r = reachReport(reachInputOf(c));
   const k = rule('RCH-1', 'Levels', `Every landmark, megastructure, station, pier, platform and deck joins the street network (road, pavement, pier, stair, lift, ramp or a reached sky track station) by a walkable or rideable path, a joint of at least ${JOINT} m²`, r.checked, r.islands, 'no island', SOURCE);
-  if (!enforced && !k.ok) return [{ ...k, ok: true, waived: 'informational until the sky track reaches the Skyport (brief 075, Datum)', detail: `WAIVED (informational until the sky track reaches the Skyport, brief 075); ${k.detail}` }];
+  if (!enforced && !k.ok) return [{ ...k, ok: true, waived: `informational on a plan before ${RCH_SINCE} (its caissons stand in the water by design)`, detail: `WAIVED (informational: plan ${String(c.plan.version)} predates RCH-1's ${RCH_SINCE}); ${k.detail}` }];
   return [k];
 }

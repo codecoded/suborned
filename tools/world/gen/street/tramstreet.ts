@@ -29,7 +29,7 @@ import { idOf, kindOf, plotRing } from '../edges';
 import { edgeN } from '../geo';
 import { returnAt } from '../kerbreturn';
 import { avenueVariant, speciesOf } from '../../../plan/trees';
-import type { Layer } from './kit';
+import { type Layer, zoneMint } from './kit';
 
 type Section = { roads: string[]; w: number; kerbside: { w: number }; island?: { span: [number, number] } };
 export type TramStreetStd = { band: number; district?: Section; primary?: Section; roads: Set<string> };
@@ -112,10 +112,10 @@ export function tramGround(ctx: Ctx, log: TramStreetLog, level: number): { flats
   log.rails.flush = flush;
   if (!t2) { log.gaps.push({ rule: 'TS-rail', where: 'kit', why: 'Tile_TramRail is not adopted: no rails laid' }); return { flats, rails }; }
   const half = ctx.plan.standards.tram.trackCentres / 2;
-  let nr = 0;
+  const mintRail = zoneMint(ctx); // brief 075 (stable zone): rails numbered apart inside the Handover zone
   const put = (a: { id: string; size: number[] }, p: V, t: V, k: number, edge: string) => {
     if (!onSheet(ctx, p)) return;
-    rails.push({ id: `ground/tram/rail-${nr++}`, kind: 'tram-rail', at: rv(p), yaw: r4(Math.atan2(t[1], t[0])), z: r3(levelOf(ctx, p, level)), size: [r3(a.size[0]! * k), r3(a.size[2]!), r3(a.size[1]!)], surface: 'track', edge, sight: 'open', source: 'kit', kit: { id: a.id, scale: [r4(k), 1, 1] } });
+    rails.push({ id: mintRail('ground/tram/rail', rv(p)), kind: 'tram-rail', at: rv(p), yaw: r4(Math.atan2(t[1], t[0])), z: r3(levelOf(ctx, p, level)), size: [r3(a.size[0]! * k), r3(a.size[2]!), r3(a.size[1]!)], surface: 'track', edge, sight: 'open', source: 'kit', kit: { id: a.id, scale: [r4(k), 1, 1] } });
     if (a.size[0] === 12) log.rails.tiles12++; else log.rails.tiles2++;
     log.rails.m = r3(log.rails.m + a.size[0]! * k);
   };

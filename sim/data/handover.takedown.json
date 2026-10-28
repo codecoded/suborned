@@ -116,18 +116,18 @@
    "door": "official-entrance"
   },
   {
-   "id": "street/orbit-gardens/e2/phone-booth-303",
+   "id": "street/orbit-gardens/e2/phone-booth-z57",
    "kind": "call-box",
    "at": [9315,400],
    "stand": [9175,425],
-   "item": "street/orbit-gardens/e2/phone-booth-303"
+   "item": "street/orbit-gardens/e2/phone-booth-z57"
   },
   {
-   "id": "street/rocket-west/e1/phone-booth-370",
+   "id": "street/rocket-west/e1/phone-booth-z97",
    "kind": "call-box",
    "at": [11100,-6300],
    "stand": [11175,-6175],
-   "item": "street/rocket-west/e1/phone-booth-370"
+   "item": "street/rocket-west/e1/phone-booth-z97"
   },
   {
    "id": "street/civic/call-box-0",
@@ -181,11 +181,11 @@
  ],
  "origins": [
   {
-   "id": "street/records-square/civic-robot-dock-166",
+   "id": "street/records-square/civic-robot-dock-z1",
    "kind": "dock",
    "at": [-1850,-1750],
    "stand": [-1725,-1725],
-   "item": "street/records-square/civic-robot-dock-166"
+   "item": "street/records-square/civic-robot-dock-z1"
   },
   {
    "id": "door:office-entrance",
@@ -361,7 +361,7 @@
  "solidsSrc": "the footprints and heights of the pieces the rules placed (containers, call boxes, posts). The site grid holds them too, as drawn (brief 055, tools/sim/solids.ts), so a stand inside one's body clearance stands at the nearest free cell",
  "watchers": [
   {
-   "id": "street/records-square/mast-camera-165",
+   "id": "street/records-square/mast-camera-z0",
    "kind": "mast-camera",
    "at": [-1850,-1550],
    "facings": [[0,1000],[-866,-500],[866,-500]],
@@ -370,7 +370,7 @@
    "inSim": false
   },
   {
-   "id": "street/records-square/civic-robot-dock-166",
+   "id": "street/records-square/civic-robot-dock-z1",
    "kind": "civic-robot-dock",
    "at": [-1850,-1750],
    "facings": [[0,1000]],

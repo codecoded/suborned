@@ -1,6 +1,7 @@
 // plan → world (suborned.world/1). Everything geometric comes from tools/plan (derive, placements, civic); this file only
 // turns it into the export's shapes and picks heights from standards. Numbers the plan does not hold yet are in PROV, each
 // with the standard it is waiting for.
+import { caissonSteps } from './gen/caissonsteps';
 import { type V, centroid, dist, norm, polyline, rectPoly, segDist, sub } from '../plan/geom';
 import type { Derived, Plan } from '../plan/plan';
 import { type Civic, toPlanFn } from '../plan/civic';
@@ -327,6 +328,7 @@ export function worldOf(plan: Plan, d: Derived, civ: Civic): { world: World; gen
   if (tg) { g.flats.push(...tg.flats); g.pieces = [...(g.pieces ?? []), ...tg.rails]; }
   // brief 075 remap (gen/oldtown/ground.ts): the old town's ground: the lawns' borders, Orbit Gardens' paths, basin and canal, the harbour's terrace, steps, promenade and coping
   if (gen.oldGround) { g.flats.push(...gen.oldGround.flats); g.water.push(...gen.oldGround.water); g.quays.push(...gen.oldGround.raised); }
+  { const st = caissonSteps(plan, PROV.pavement); g.quays.push(...st.masses); if (st.log.flights.length) gen.caissonSteps = st.log; } // brief 075 remap: steps where a pier's walk climbs on to a caisson's deck (gen/caissonsteps.ts)
   if (gen.tram) { if (gen.tram.bays.length) g.kerbside = gen.tram.bays; if (gen.tram.islands.length) g.islands = gen.tram.islands; }
   const trams = tg ? parkedTrams(gctx, tlog, PROV.foot) : [];
   // brief 075 roll-out (the sky track to the old profile, skytrack.ts): the old pylon stacks at the plan's pylons and the beam sweep data

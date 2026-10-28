@@ -27,9 +27,26 @@ export type Landing = { id: string; road: string; cls: string; flank: string[] }
 /** m: nothing stands closer than this to a rounded kerb face (SF-5's 0.45 m off a kerb face, read along the arc). */
 export const KERB_ARC_CLEAR = 0.45;
 
+/** The Handover zone (plan standards.blocks.zone: x0, x1, y0, y1 in the plan frame), or undefined in a plan without one. */
+export const handoverZone = (ctx: Pick<Ctx, 'plan'>): [number, number, number, number] | undefined => (ctx.plan.standards as any)?.blocks?.zone;
+/** True if `p` stands in the zone (edges included). */
+export const inZone = (z: readonly number[] | undefined, p: readonly number[]): boolean => !!z && p[0]! >= z[0]! && p[0]! <= z[1]! && p[1]! >= z[2]! && p[1]! <= z[3]!;
+
+/** Brief 075 (stable zone): an id minter for the generators that number their own pieces (road finish, kerb returns, tram rails): `<prefix>-z<n>` in the Handover zone,
+ *  `<prefix>-<n>` outside it, each prefix counted apart, so nothing laid outside the zone renumbers a piece inside it (as the street layer's own ids, above). */
+export function zoneMint(ctx: Pick<Ctx, 'plan'>): (prefix: string, at: readonly number[]) => string {
+  const z = handoverZone(ctx), n = new Map<string, number>();
+  return (prefix, at) => { const iz = inZone(z, at), key = `${iz ? 'z' : 'o'}:${prefix}`, k = n.get(key) ?? 0; n.set(key, k + 1); return `${prefix}-${iz ? 'z' : ''}${k}`; };
+}
+
 export class Layer {
   items: StreetItem[] = [];
-  private uncounted = 0; // items placed under an explicit id that take no number from the ids minted after them (the civic landings)
+  /** Brief 075 (stable zone): the running numbers a minted id takes. An item standing in the Handover zone (standards.blocks.zone) takes the zone's own number (`<kind>-z<n>`),
+   *  every other item the district's (`<kind>-<n>`): the two never share a count, so no item placed, moved or dropped outside the zone (a gate, a station, a new line) renumbers
+   *  anything inside it, and the zone's ids (the takedown's call boxes, dock and mast) stay as they are. Before, one count ran over the whole district and Datum's S2 stations
+   *  (42 items laid first) shifted every zone id by 42. Items placed under an explicit id take no number. */
+  private count = { zone: 0, out: 0 };
+  private zone: [number, number, number, number] | undefined;
   landings: Landing[] = [];
   private placed = new Grid<{ p: V; r: number; k: string; ring: V[]; exempt: boolean; id: string }>(8, o => o.p); // items so far, hashed: free() asks about the neighbours only
   private crossings: V[][] = []; // crossing footprints placed so far (SF-2: nothing else within 2 m)
@@ -38,6 +55,7 @@ export class Layer {
   private drives: V[][]; // the civic block's drives (brief 023, plan frame): nothing stands on one, street items keep DRIVE_CLEAR off it
   constructor(readonly ctx: Ctx, readonly solids: V[][], readonly decks: Rect[], readonly columns: V[], readonly keep: Rect[], readonly pylons: V[], readonly doors: V[][] = []) {
     this.drives = (ctx.civ.drives ?? []).map(x => x.poly);
+    this.zone = handoverZone(ctx);
     this.boxes = new Float64Array(solids.length * 4);
     solids.forEach((s, i) => { this.boxes[i * 4] = Math.min(...s.map(q => q[0])); this.boxes[i * 4 + 1] = Math.max(...s.map(q => q[0])); this.boxes[i * 4 + 2] = Math.min(...s.map(q => q[1])); this.boxes[i * 4 + 3] = Math.max(...s.map(q => q[1])); });
     for (const d of doors) this.doorGrid.add(d);
@@ -113,8 +131,7 @@ export class Layer {
     const ring = footprintOf(this.ctx.S, kind, o.variant, at, size as [number, number, number], yaw);
     if (kind === 'crossing') this.crossings.push(ring);
     const staffed = c?.staffed && typeof c.staffed === 'object' ? { trade: o.trade ?? c.staffed.trade, occupation: c.staffed.occupation, hours: (Array.isArray(c.staffed.hours) ? c.staffed.hours : 'service') as [number, number] | 'service' } : undefined;
-    if (o.uncounted) this.uncounted++;
-    const id = o.id ?? `street/${edge}/${kind}-${this.items.length - this.uncounted}`;
+    const id = o.id ?? (inZone(this.zone, at) ? `street/${edge}/${kind}-z${this.count.zone++}` : `street/${edge}/${kind}-${this.count.out++}`);
     this.placed.add({ p: at, r, k: kind, ring, exempt: NEAR_CROSSING.has(kind) || edge.startsWith('stop/'), id });
     this.items.push({
       id, kind, at: rv(o.pivot ?? at), yaw: r4(yaw), z: r3(z), size: [r3(size[0]), r3(size[1]), r3(size[2])], surface: SURF[kind] ?? 'trim', edge,

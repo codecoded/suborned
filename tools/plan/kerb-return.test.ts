@@ -16,8 +16,9 @@ describe('KR-1', () => {
   // re-pinned 2026-10-28 (brief 075, the tram street section): 160 -> 142, the medians of Sunset Way, Comet Row and Harbour Road are gone (25 medians, 50 ends -> 16 medians, 32 ends)
   // re-pinned 2026-10-28 (brief 075 remap, the old town's plan): 142 -> 69, the old town's smaller street grid (convex 39 with the junction corners, lay-by and circus mouths;
   // concave 4; bend outsides 4; median ends 6 on Circus Road) and 8 gate lane mouths (16 corners, footways with no return)
-  test('the committed plan passes: 69 returns less the gate mouths\' corners, the radii Datum set, the pavement holds its walk at every square building corner', () => {
-    const c = run(); expect(c.length).toBe(1); expect(c[0]!.id).toBe('KR-1'); expect(c[0]!.ok).toBe(true); expect(c[0]!.value).toBe(`${69 - 2 * activeMouths(ctxOf(plan, derive(plan), civic(plan.civic, block))).length} returns`); // brief 061: a gate's lane mouth is a continuous footway, its two corners have none (14 mouths, 28 corners, once gen/kerbreturn.ts asks isFootwayCorner)
+  // re-pinned 2026-10-29 (brief 075 remap, Datum's West Row fill, plan 0.5.2): 69 -> 73, West Row's new junction corners (4 convex returns)
+  test('the committed plan passes: 73 returns less the gate mouths\' corners, the radii Datum set, the pavement holds its walk at every square building corner', () => {
+    const c = run(); expect(c.length).toBe(1); expect(c[0]!.id).toBe('KR-1'); expect(c[0]!.ok).toBe(true); expect(c[0]!.value).toBe(`${73 - 2 * activeMouths(ctxOf(plan, derive(plan), civic(plan.civic, block))).length} returns`); // brief 061: a gate's lane mouth is a continuous footway, its two corners have none (14 mouths, 28 corners, once gen/kerbreturn.ts asks isFootwayCorner)
   });
   test('a plan without the key has no check (a pinned plan replays square)', () => { expect(run(p => { delete p.standards.streetscape.kerbReturn; })).toEqual([]); });
   test('a district return of 12 m takes the walk away at the building corner: it fails and names the corner', () => {

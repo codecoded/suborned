@@ -70,26 +70,32 @@ export function dressTransit(ctx: Ctx, L: Layer, stops: Mass[], stations: Mass[]
   const towers = connectors.filter(c => c.kind === 'stairTower');
   const zc = ctx.L.list.find((l: any) => l.id === 'concourse').z as number;
   for (const t of towers) {
-    const bb = bbox(t.ring), c: V = [(bb[0] + bb[1]) / 2, (bb[2] + bb[3]) / 2], out: V = [0, c[1] >= 0 ? 1 : -1], id = t.host;
+    // brief 075: the bank's furniture is laid in the line's own frame, as the bank is (connectors.ts: the tower's yaw is 0 on an east-west line, a quarter turn on a
+    // north-south one): `s` along the line, `o` out from it on the bank's side. Before, it stepped in x and out in y whatever the line, so on a north-south station
+    // (S2's Harbour and Skyport) the newsstand, booths, camera and dock stepped across the line, not along it, and a booth landed in the terrace's walk (SF-1)
+    const bb = bbox(t.ring), c: V = [(bb[0] + bb[1]) / 2, (bb[2] + bb[3]) / 2], id = t.host, horiz = Math.abs(Math.sin(t.yaw)) < 0.5;
+    const plat = stations.find(m => m.id === t.host.replace(/^bank\//, 'station/')), pc = plat ? bbox(plat.ring) : undefined;
+    const side = horiz ? (c[1] >= 0 ? 1 : -1) : (pc && c[0] < (pc[0] + pc[1]) / 2 ? -1 : 1); // east-west: away from the line at y 0 (S1, as before); north-south: away from the bank's platform
+    const u: V = horiz ? [1, 0] : [0, 1], out: V = horiz ? [0, side] : [side, 0], yaw0 = horiz ? 0 : Math.PI / 2;
     keep.push([bb[0] - 1, bb[1] + 1, bb[2] - 1, bb[3] + 1]);
     const clears = axisClears(ctx), mid = (r: Rect) => (r[0] + r[1]) / 2;
-    const at = (s: number, o: number): V => { // furniture never stands in a forecourt's clear axis: it moves to the nearer side
-      const p: V = [c[0] + s, c[1] + out[1] * o], a = clears.find(r => inRect(p, r, 0.5));
+    const at = (s: number, o: number): V => { // furniture never stands in a forecourt's clear axis (an east-west forecourt's x band): it moves to the nearer side
+      const p: V = [c[0] + u[0] * s + out[0] * o, c[1] + u[1] * s + out[1] * o], a = horiz ? clears.find(r => inRect(p, r, 0.5)) : undefined;
       return a ? [p[0] < mid(a) ? a[0] - 0.8 : a[1] + 0.8, p[1]] : p;
     };
     // the crossing first (flat, it keeps its place); then each item takes the nearest spot that keeps the walk zones, the beam and the crossing's 2 m clear
     // the crossing lies across the road beyond the bank; with the tower now outside the platform it is moved in until it is 1.7 m clear of a quay edge (SF-14)
-    const offQuay = (p: V) => !quayBlock(ctx, samples9(boxRing(p, 3, S.crossings.w, Math.PI / 2)));
+    const offQuay = (p: V) => !quayBlock(ctx, samples9(boxRing(p, 3, S.crossings.w, yaw0 + Math.PI / 2)));
     const cross = [8, 6.5, 5, 3.5, 2].map(o => at(0, 3.5 + o)).find(offQuay) ?? at(0, 3.5 + 2);
-    L.add('crossing', cross, Math.PI / 2, z, id, { size: [3, S.crossings.w, 0.02], r: 2, force: true }); // brief 061 (coverage.rules.banks false): no crossing at the stair foot, but the patch still keeps the furniture off it (pairCrossings drops it)
+    L.add('crossing', cross, yaw0 + Math.PI / 2, z, id, { size: [3, S.crossings.w, 0.02], r: 2, force: true }); // brief 061 (coverage.rules.banks false): no crossing at the stair foot, but the patch still keeps the furniture off it (pairCrossings drops it)
     const near = (kind: string, s: number, o: number, yaw: number, opt: { size?: [number, number, number]; variant?: string } = {}) => {
       for (const ds of [0, 3, -3, 6, -6, 9, -9, 12, -12, 15, -15, 18, -18, 24, -24]) for (const dd of [0, -1.5, -3, 1.5, -4.5, -6, 3, 4.5, -7.5, -9]) if (L.add(kind, at(s + ds, o + dd), yaw, z, id, opt)) return true;
       return false;
     };
-    near('station-entrance', 0, 3.5 + 2.5, 0);
-    near('newsstand', -7, 3.5 + 1, 0); near('phone-booth', 7, 3.5 + 1, 0); near('phone-booth', 8.5, 3.5 + 1, 0);
-    near('pole-camera', -4.5, 3.5 + 6, 0, { size: [0.25, 0.25, S.watchers.types['pole-camera'].mount], variant: 'pole-camera' });
-    if (id.endsWith('/l')) near('civic-robot-dock', 5, 3.5 + 6, 0); // the main bank
+    near('station-entrance', 0, 3.5 + 2.5, yaw0);
+    near('newsstand', -7, 3.5 + 1, yaw0); near('phone-booth', 7, 3.5 + 1, yaw0); near('phone-booth', 8.5, 3.5 + 1, yaw0);
+    near('pole-camera', -4.5, 3.5 + 6, yaw0, { size: [0.25, 0.25, S.watchers.types['pole-camera'].mount], variant: 'pole-camera' });
+    if (id.endsWith('/l')) near('civic-robot-dock', 5, 3.5 + 6, yaw0); // the main bank
   }
   const perStation = new Set<string>();
   for (const m of stations) {
