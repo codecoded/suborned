@@ -1,0 +1,1448 @@
+{
+ "schema": "suborned.plan-patch-applied/1",
+ "by": "Datum",
+ "date": "2026-10-29",
+ "brief": "075 remap step 2: plan-match",
+ "patch": {
+  "file": "briefs/075/oldbuild/plan-patch.json",
+  "sha256": "ea3f9bcf1036ff3d240521283da6ce937ac263188aadb3a34372ed1b6f03dd81",
+  "ops": 175
+ },
+ "plan": {
+  "file": "contracts/world/harbour-district.plan.json",
+  "from": {
+   "version": "0.5.4",
+   "sha256": "aa27b31df1722a72699e3d6dc3e4c472fe4c6eb932699226d082a300e48687c7"
+  },
+  "to": {
+   "version": "0.5.5",
+   "sha256": "e168639fac7c1e14c259e9cd111716ff5eea6b1678b88c616e2f7287a5a187d5"
+  },
+  "source": "tools/plan/oldtown/transcribe.ts --out contracts/world/harbour-district.oldtown.plan.json (byte for byte; live = draft)"
+ },
+ "rule": "Sky 2026-10-29: the old-built world wins outside the Handover. Applied where the plan's rules allow it; rejected where the op is a measuring artefact (prefab boxes, crescents and landmarks the matcher does not read, plot rects taken as building boxes), where it would move a Handover plot or street, or where a rule stands in the way (each named, and asked of Splice, never loosened).",
+ "counts": {
+  "applied": 2,
+  "appliedModified": 3,
+  "appliedBy": 10,
+  "rejected": 160,
+  "total": 175
+ },
+ "levels": {
+  "street": "kept: carriageway 0, pavement 0.18 across the whole district. One kerb height: the Handover zone fixes 0.18, and a 0.15 pavement outside it would leave a 3 cm lip wherever a pavement crosses the zone line. Latch: raise the old flags and kerb tops 0.15 -> 0.18 and the road deck -0.002 -> 0 (Splice's builder fixes M0002, M1061)",
+  "promenade": "recorded as street-level ground, not a level: standards.levels.grounds[promenade] (walk -0.85, x 80..96, reached on foot by the harbour steps x 74..80). GDD §01 fixes three levels (street 0, deck 9.43, concourse 24); a fourth is Sky's call, and the promenade needs no connector, so it is ground of the street level, as the civic block records its landings. Latch: keep it as built. Splice: plan-match to read it from standards.levels.grounds (M0001)",
+  "decks": "the 4 Crown Circus decks (M1270-M1273) are the stale export: re-export on 0.5.5 (Latch)"
+ },
+ "ops": [
+  {
+   "n": 1,
+   "op": "set",
+   "path": "blocks[id=boulevard-west].rect",
+   "decision": "rejected",
+   "reason": "1.63 m at each run end is the old corner piece's bounds box (StreamCorner), not its wall line: Splice reports the old-built footprints as prefab boxes (OV-1 on them is an artefact; real outlines asked of Latch). The runs are the old W1 walls exactly."
+  },
+  {
+   "n": 2,
+   "op": "set",
+   "path": "blocks[id=east-wall-n].rect",
+   "decision": "rejected",
+   "reason": "the box takes in a Crown Circus crescent (circus.crescents: r 35, band 14, 4 bays S6, a record of its own, not part of the block) and the old corner pieces' bounds. The block's runs are the old walls exactly (start, caps, segments and classes from oldtown.walls). The wing mismatch (bld/.../3/wing-*, HallCornerWing) is our frontage generator's piece choice against the old one, not plan geometry."
+  },
+  {
+   "n": 3,
+   "op": "set",
+   "path": "blocks[id=east-wall-s].rect",
+   "decision": "rejected",
+   "reason": "the old wall ran to 2-4 m flags on the side street; the plan's access section gives 6.5 m pavements (sections.access.pavement, every access road, the Handover's included), and the building line trims the run by 1-2 bays (B-3, BG-3). The old bays could stand only with a per-road pavement width, which the generator does not read (tools/world/gen/edges.ts pavementOf reads the class).",
+   "ask": "Splice: a per-road pavement width (roads[].pavement, old flags 2-4 m) for sunset-east and harbour-market, so E1, E2 and N2 take their old bays and lines; the rule stays as is until then",
+   "latch": "the old bays stand as built (no cut): the plan is behind by 1-2 bays here until Splice answers"
+  },
+  {
+   "n": 4,
+   "op": "set",
+   "path": "blocks[id=east-wall/a].rect",
+   "decision": "rejected",
+   "reason": "the old wall ran to 2-4 m flags on the side street; the plan's access section gives 6.5 m pavements (sections.access.pavement, every access road, the Handover's included), and the building line trims the run by 1-2 bays (B-3, BG-3). The old bays could stand only with a per-road pavement width, which the generator does not read (tools/world/gen/edges.ts pavementOf reads the class).",
+   "ask": "Splice: a per-road pavement width (roads[].pavement, old flags 2-4 m) for sunset-east and harbour-market, so E1, E2 and N2 take their old bays and lines; the rule stays as is until then",
+   "latch": "the old bays stand as built (no cut): the plan is behind by 1-2 bays here until Splice answers"
+  },
+  {
+   "n": 5,
+   "op": "set",
+   "path": "blocks[id=east-wall/b].rect",
+   "decision": "rejected",
+   "reason": "the box takes in a Crown Circus crescent (circus.crescents: r 35, band 14, 4 bays S6, a record of its own, not part of the block) and the old corner pieces' bounds. The block's runs are the old walls exactly (start, caps, segments and classes from oldtown.walls)."
+  },
+  {
+   "n": 6,
+   "op": "set",
+   "path": "blocks[id=lamplight-east].rect",
+   "decision": "rejected",
+   "reason": "the box takes in a Crown Circus crescent (circus.crescents: r 35, band 14, 4 bays S6, a record of its own, not part of the block) and the old corner pieces' bounds. The block's runs are the old walls exactly (start, caps, segments and classes from oldtown.walls)."
+  },
+  {
+   "n": 7,
+   "op": "set",
+   "path": "blocks[id=lamplight-west].rect",
+   "decision": "rejected",
+   "reason": "Handover: the plan keeps this plot or street byte for byte (transcribe.ts KEEP_PLOTS / KEEP_ROADS; the walk window's neighbours). The sim site, the takedown places, the M-1 routes and the W-1 walks read it, and the brief keeps the zone, its routes, timings and points untouched. (lamplight-west and its block: the walk window's west neighbour)",
+   "latch": "the CityMass fragment there stands down (Cap)"
+  },
+  {
+   "n": 8,
+   "op": "remove",
+   "path": "blocks[id=lantern-south]",
+   "decision": "rejected",
+   "reason": "lantern-south is a residential plot: BG-1 wants it laid as blocks (no exemption proves it), and BG-4 wants corner cells at both its Lantern Lane corners, so it keeps its grammar block. The only old pieces near it are SS5's, which stood on Lantern Lane's corner (x -60, y -490), a Handover street.",
+   "latch": "SS5 (runs 79-82) gives way to Lantern Lane; lantern-south's block may be laid in old pieces as an old DecoKitBlock (3-storey classes) if the scene wants it"
+  },
+  {
+   "n": 9,
+   "op": "set",
+   "path": "blocks[id=lantern-west].rect",
+   "decision": "rejected",
+   "reason": "the old-built town has the old procedural CityMass here (DecoKitCityMass, the old builders' backdrop), already cut by the swap to clear our streets, so the fragments left are not a layout to plot (their boxes span our roads). The plan keeps its plots; dropping its grammar blocks for the CityMass needs a BG-1 exemption for the old builders' massing, and BG-1 proves only handover, megastructure and shed.",
+   "ask": "Splice: a BG-1 exemption kind 'massing' (an old-builder CityMass plot: no blocks, the old builders fill it), so the plan can map West Row, Lantern West and the other CityMass plots as massing; the rule stays as is until then",
+   "latch": "CityMass keeps off plan roads, stops and banks (Cap); it may fill the plan plots here meanwhile"
+  },
+  {
+   "n": 10,
+   "op": "set",
+   "path": "blocks[id=n1].rect",
+   "decision": "applied-modified",
+   "reason": "old N1 (DecoKitSouthside N1, plan centre (-50, -282), 40 long) stands on its old line: the block moves from y -306..-260 (the grammar fit) to the old y -302..-262 (40 = 8 + 6 x 4 + 8). x stays -46..-18 (28 deep): the box's -50 is N1's west half cut on Satellite Street's pavement, a Handover street.",
+   "change": "blocks[n1].rect [-46,-18,-306,-260] -> [-46,-18,-302,-262] (transcribe.ts blockAt)",
+   "latch": "N1 as built, its west half giving way to Satellite Street (runs 29, 30)"
+  },
+  {
+   "n": 11,
+   "op": "set",
+   "path": "blocks[id=n2].rect",
+   "decision": "rejected",
+   "reason": "old N2 runs y -302..-262; its north face at -262 stands 4 m from Sunset Way east's kerb (-258), inside the 6.5 m access pavement, so the plan keeps N2's 40 m at y -304.5..-264.5 (2.5 m south of its old line). the old wall ran to 2-4 m flags on the side street; the plan's access section gives 6.5 m pavements (sections.access.pavement, every access road, the Handover's included), and the building line trims the run by 1-2 bays (B-3, BG-3). The old bays could stand only with a per-road pavement width, which the generator does not read (tools/world/gen/edges.ts pavementOf reads the class).",
+   "ask": "Splice: a per-road pavement width (roads[].pavement, old flags 2-4 m) for sunset-east and harbour-market, so E1, E2 and N2 take their old bays and lines; the rule stays as is until then",
+   "latch": "N2 stands as built (2.5 m north of the plan block) until Splice answers"
+  },
+  {
+   "n": 12,
+   "op": "remove",
+   "path": "blocks[id=ss1]",
+   "decision": "applied",
+   "reason": "the old-built town has no building on ss1 (old: the rocket street's mouth off Orbit Square's south side, and RL1, both cut by Satellite and Market Streets). The block goes; the plot becomes open ground (Orbit Square's south end) rather than an empty mixed plot, which BG-1 would refuse. The old SS1, which stood across Market Street's line, shifts onto ss3/a.",
+   "change": "blocks[ss1] removed; plots[ss1].use mixed -> open, name \"Orbit Square south (old: the rocket street's mouth)\"; standards.blocks.plots without ss1",
+   "latch": "ss1 is open paving (Orbit Square south): nothing to build; run51's stub gives way"
+  },
+  {
+   "n": 13,
+   "op": "set",
+   "path": "blocks[id=ss2].rect",
+   "decision": "rejected",
+   "reason": "the old Southside stood its blocks on a 16 m street (facades x ±8) and across the lines of Market Street (y -410, the Handover's distributor and T1) and Apollo Way (y -472, kept 60 m from Market Street by the junction rule); the plan's Boulevard (20 m, facades ±18) and those streets stand, so this old block shifts onto plan block ss2 on ss2; the box is SS2 cut by Market Street (16..36 x -451.6..-418). The plan keeps ss2 at 40 m: its building line is 40.5 m (Apollo Way's pavement to the plot's north edge), under the old 46.",
+   "latch": "shift old SS2 onto ss2 [18,46,-459.5,-419.5] at w 40 (one bay short of its old 46)"
+  },
+  {
+   "n": 14,
+   "op": "set",
+   "path": "blocks[id=ss3].rect",
+   "decision": "applied-modified",
+   "reason": "the old Southside stood its blocks on a 16 m street (facades x ±8) and across the lines of Market Street (y -410, the Handover's distributor and T1) and Apollo Way (y -472, kept 60 m from Market Street by the junction rule); the plan's Boulevard (20 m, facades ±18) and those streets stand, so this old block shifts onto plan block ss3/a and ss3/b on ss3: the one 118 m grammar block becomes two blocks of the old lengths, SS1 (46) and SS3 (34), with the old 18 m gap between them. The box (old SS1 and SS3 cut by Market Street and the Boulevard's pavement) is not a block.",
+   "change": "blocks[ss3] [-46,-18,-545,-427] -> blocks[ss3/a] [-46,-18,-473,-427] (old SS1) + blocks[ss3/b] [-46,-18,-525,-491] (old SS3)",
+   "latch": "shift old SS1 onto ss3/a (23 m south, 10 m west) and old SS3 onto ss3/b (23 m south, 10 m west)"
+  },
+  {
+   "n": 15,
+   "op": "set",
+   "path": "blocks[id=ss4].rect",
+   "decision": "applied-modified",
+   "reason": "the old Southside stood its blocks on a 16 m street (facades x ±8) and across the lines of Market Street (y -410, the Handover's distributor and T1) and Apollo Way (y -472, kept 60 m from Market Street by the junction rule); the plan's Boulevard (20 m, facades ±18) and those streets stand, so this old block shifts onto plan block ss4 on ss4: the 58 m grammar block takes old SS4's 34 m, from Apollo Way's building line (y -484.5). The box (SS4 cut by Apollo Way and the Boulevard) is not a block.",
+   "change": "blocks[ss4] [18,46,-542.5,-484.5] -> [18,46,-518.5,-484.5]",
+   "latch": "shift old SS4 onto ss4 (16.5 m south, 10 m east); the DiscTower at (23.5, -479.5) is a roof tower on SS4, it moves with it"
+  },
+  {
+   "n": 16,
+   "op": "set",
+   "path": "blocks[id=terrace-s].rect",
+   "decision": "rejected",
+   "reason": "the old west terrace is one 14 m single-loaded bar (x -124..-110, y -120..6, run22); the plan's block is 28 deep (the grammar's back-to-back minimum, BG-3) with the same garden face (x -110), and its south end stops at Lamplight Lane (kerbs y -126..-114), today's line that the walk window's plots face, and its north end short of Circus Road and the Gardens Gate, where S1 crosses.",
+   "latch": "the old terrace bar gives way to Lamplight Lane (y < -114) and the Gardens Gate (y -9..9, already asked in \"Swap: network\")"
+  },
+  {
+   "n": 17,
+   "op": "remove",
+   "path": "blocks[id=west-row-e1]",
+   "decision": "rejected",
+   "reason": "the old-built town has the old procedural CityMass here (DecoKitCityMass, the old builders' backdrop), already cut by the swap to clear our streets, so the fragments left are not a layout to plot (their boxes span our roads). The plan keeps its plots; dropping its grammar blocks for the CityMass needs a BG-1 exemption for the old builders' massing, and BG-1 proves only handover, megastructure and shed.",
+   "ask": "Splice: a BG-1 exemption kind 'massing' (an old-builder CityMass plot: no blocks, the old builders fill it), so the plan can map West Row, Lantern West and the other CityMass plots as massing; the rule stays as is until then",
+   "latch": "CityMass keeps off plan roads, stops and banks (Cap); it may fill the plan plots here meanwhile"
+  },
+  {
+   "n": 18,
+   "op": "set",
+   "path": "blocks[id=west-row-e2].rect",
+   "decision": "rejected",
+   "reason": "the old-built town has the old procedural CityMass here (DecoKitCityMass, the old builders' backdrop), already cut by the swap to clear our streets, so the fragments left are not a layout to plot (their boxes span our roads). The plan keeps its plots; dropping its grammar blocks for the CityMass needs a BG-1 exemption for the old builders' massing, and BG-1 proves only handover, megastructure and shed. The new rect is one CityMass box.",
+   "ask": "Splice: a BG-1 exemption kind 'massing' (an old-builder CityMass plot: no blocks, the old builders fill it), so the plan can map West Row, Lantern West and the other CityMass plots as massing; the rule stays as is until then",
+   "latch": "CityMass keeps off plan roads, stops and banks (Cap); it may fill the plan plots here meanwhile"
+  },
+  {
+   "n": 19,
+   "op": "remove",
+   "path": "blocks[id=west-row-e3]",
+   "decision": "rejected",
+   "reason": "the old-built town has the old procedural CityMass here (DecoKitCityMass, the old builders' backdrop), already cut by the swap to clear our streets, so the fragments left are not a layout to plot (their boxes span our roads). The plan keeps its plots; dropping its grammar blocks for the CityMass needs a BG-1 exemption for the old builders' massing, and BG-1 proves only handover, megastructure and shed.",
+   "ask": "Splice: a BG-1 exemption kind 'massing' (an old-builder CityMass plot: no blocks, the old builders fill it), so the plan can map West Row, Lantern West and the other CityMass plots as massing; the rule stays as is until then",
+   "latch": "CityMass keeps off plan roads, stops and banks (Cap); it may fill the plan plots here meanwhile"
+  },
+  {
+   "n": 20,
+   "op": "remove",
+   "path": "blocks[id=west-row-e4]",
+   "decision": "rejected",
+   "reason": "the old-built town has the old procedural CityMass here (DecoKitCityMass, the old builders' backdrop), already cut by the swap to clear our streets, so the fragments left are not a layout to plot (their boxes span our roads). The plan keeps its plots; dropping its grammar blocks for the CityMass needs a BG-1 exemption for the old builders' massing, and BG-1 proves only handover, megastructure and shed.",
+   "ask": "Splice: a BG-1 exemption kind 'massing' (an old-builder CityMass plot: no blocks, the old builders fill it), so the plan can map West Row, Lantern West and the other CityMass plots as massing; the rule stays as is until then",
+   "latch": "CityMass keeps off plan roads, stops and banks (Cap); it may fill the plan plots here meanwhile"
+  },
+  {
+   "n": 21,
+   "op": "remove",
+   "path": "blocks[id=west-row-e5]",
+   "decision": "rejected",
+   "reason": "the old-built town has the old procedural CityMass here (DecoKitCityMass, the old builders' backdrop), already cut by the swap to clear our streets, so the fragments left are not a layout to plot (their boxes span our roads). The plan keeps its plots; dropping its grammar blocks for the CityMass needs a BG-1 exemption for the old builders' massing, and BG-1 proves only handover, megastructure and shed.",
+   "ask": "Splice: a BG-1 exemption kind 'massing' (an old-builder CityMass plot: no blocks, the old builders fill it), so the plan can map West Row, Lantern West and the other CityMass plots as massing; the rule stays as is until then",
+   "latch": "CityMass keeps off plan roads, stops and banks (Cap); it may fill the plan plots here meanwhile"
+  },
+  {
+   "n": 22,
+   "op": "remove",
+   "path": "blocks[id=west-row-w1]",
+   "decision": "rejected",
+   "reason": "the old-built town has the old procedural CityMass here (DecoKitCityMass, the old builders' backdrop), already cut by the swap to clear our streets, so the fragments left are not a layout to plot (their boxes span our roads). The plan keeps its plots; dropping its grammar blocks for the CityMass needs a BG-1 exemption for the old builders' massing, and BG-1 proves only handover, megastructure and shed.",
+   "ask": "Splice: a BG-1 exemption kind 'massing' (an old-builder CityMass plot: no blocks, the old builders fill it), so the plan can map West Row, Lantern West and the other CityMass plots as massing; the rule stays as is until then",
+   "latch": "CityMass keeps off plan roads, stops and banks (Cap); it may fill the plan plots here meanwhile"
+  },
+  {
+   "n": 23,
+   "op": "remove",
+   "path": "blocks[id=west-row-w2]",
+   "decision": "rejected",
+   "reason": "the old-built town has the old procedural CityMass here (DecoKitCityMass, the old builders' backdrop), already cut by the swap to clear our streets, so the fragments left are not a layout to plot (their boxes span our roads). The plan keeps its plots; dropping its grammar blocks for the CityMass needs a BG-1 exemption for the old builders' massing, and BG-1 proves only handover, megastructure and shed.",
+   "ask": "Splice: a BG-1 exemption kind 'massing' (an old-builder CityMass plot: no blocks, the old builders fill it), so the plan can map West Row, Lantern West and the other CityMass plots as massing; the rule stays as is until then",
+   "latch": "CityMass keeps off plan roads, stops and banks (Cap); it may fill the plan plots here meanwhile"
+  },
+  {
+   "n": 24,
+   "op": "remove",
+   "path": "blocks[id=west-row-w3]",
+   "decision": "rejected",
+   "reason": "the old-built town has the old procedural CityMass here (DecoKitCityMass, the old builders' backdrop), already cut by the swap to clear our streets, so the fragments left are not a layout to plot (their boxes span our roads). The plan keeps its plots; dropping its grammar blocks for the CityMass needs a BG-1 exemption for the old builders' massing, and BG-1 proves only handover, megastructure and shed.",
+   "ask": "Splice: a BG-1 exemption kind 'massing' (an old-builder CityMass plot: no blocks, the old builders fill it), so the plan can map West Row, Lantern West and the other CityMass plots as massing; the rule stays as is until then",
+   "latch": "CityMass keeps off plan roads, stops and banks (Cap); it may fill the plan plots here meanwhile"
+  },
+  {
+   "n": 25,
+   "op": "remove",
+   "path": "blocks[id=west-row-w4]",
+   "decision": "rejected",
+   "reason": "the old-built town has the old procedural CityMass here (DecoKitCityMass, the old builders' backdrop), already cut by the swap to clear our streets, so the fragments left are not a layout to plot (their boxes span our roads). The plan keeps its plots; dropping its grammar blocks for the CityMass needs a BG-1 exemption for the old builders' massing, and BG-1 proves only handover, megastructure and shed.",
+   "ask": "Splice: a BG-1 exemption kind 'massing' (an old-builder CityMass plot: no blocks, the old builders fill it), so the plan can map West Row, Lantern West and the other CityMass plots as massing; the rule stays as is until then",
+   "latch": "CityMass keeps off plan roads, stops and banks (Cap); it may fill the plan plots here meanwhile"
+  },
+  {
+   "n": 26,
+   "op": "set",
+   "path": "blocks[id=west-row-w5].rect",
+   "decision": "rejected",
+   "reason": "the old-built town has the old procedural CityMass here (DecoKitCityMass, the old builders' backdrop), already cut by the swap to clear our streets, so the fragments left are not a layout to plot (their boxes span our roads). The plan keeps its plots; dropping its grammar blocks for the CityMass needs a BG-1 exemption for the old builders' massing, and BG-1 proves only handover, megastructure and shed. The new rect is one CityMass box.",
+   "ask": "Splice: a BG-1 exemption kind 'massing' (an old-builder CityMass plot: no blocks, the old builders fill it), so the plan can map West Row, Lantern West and the other CityMass plots as massing; the rule stays as is until then",
+   "latch": "CityMass keeps off plan roads, stops and banks (Cap); it may fill the plan plots here meanwhile"
+  },
+  {
+   "n": 27,
+   "op": "set",
+   "path": "blocks[id=west-wall-n].rect",
+   "decision": "rejected",
+   "reason": "the box takes in a Crown Circus crescent (circus.crescents: r 35, band 14, 4 bays S6, a record of its own, not part of the block) and the old corner pieces' bounds. The block's runs are the old walls exactly (start, caps, segments and classes from oldtown.walls). The wing mismatch (bld/.../3/wing-*, HallCornerWing) is our frontage generator's piece choice against the old one, not plan geometry."
+  },
+  {
+   "n": 28,
+   "op": "set",
+   "path": "plots[id=boulevard-west].rect",
+   "decision": "rejected",
+   "reason": "a plot runs from the kerb (its pavement and yard are plot ground), so the box of the buildings standing in it is not its rect; the plot's block carries the building footprint."
+  },
+  {
+   "n": 29,
+   "op": "set",
+   "path": "plots[id=crown-forecourt].rect",
+   "decision": "rejected",
+   "reason": "the forecourt is open ground from Crown Avenue's end (y 144) to the SpaceHQ stair foot (y 178.12); the box is the two DiscTowers and the SkyBridge between them, landmarks with their own reserves (disc-west / disc-east r 20.5 at (±44, 166), exact)."
+  },
+  {
+   "n": 30,
+   "op": "set",
+   "path": "plots[id=east-wall-n].rect",
+   "decision": "rejected",
+   "reason": "the box takes in a Crown Circus crescent (circus.crescents: r 35, band 14, 4 bays S6, a record of its own, not part of the block) and the old corner pieces' bounds. The block's runs are the old walls exactly (start, caps, segments and classes from oldtown.walls). a plot runs from the kerb (its pavement and yard are plot ground), so the box of the buildings standing in it is not its rect; the plot's block carries the building footprint. The plot's kerb edge moves the other way, to x ±8, with Crown Avenue at 16 m (op 105)."
+  },
+  {
+   "n": 31,
+   "op": "set",
+   "path": "plots[id=east-wall-s].rect",
+   "decision": "rejected",
+   "reason": "a plot runs from the kerb (its pavement and yard are plot ground), so the box of the buildings standing in it is not its rect; the plot's block carries the building footprint. The block's length is op 3."
+  },
+  {
+   "n": 32,
+   "op": "set",
+   "path": "plots[id=east-wall].rect",
+   "decision": "rejected",
+   "reason": "the box takes in a Crown Circus crescent (circus.crescents: r 35, band 14, 4 bays S6, a record of its own, not part of the block) and the old corner pieces' bounds. The block's runs are the old walls exactly (start, caps, segments and classes from oldtown.walls). a plot runs from the kerb (its pavement and yard are plot ground), so the box of the buildings standing in it is not its rect; the plot's block carries the building footprint."
+  },
+  {
+   "n": 33,
+   "op": "remove",
+   "path": "plots[id=garden-row-east]",
+   "decision": "rejected",
+   "reason": "Handover: the plan keeps this plot or street byte for byte (transcribe.ts KEEP_PLOTS / KEEP_ROADS; the walk window's neighbours). The sim site, the takedown places, the M-1 routes and the W-1 walks read it, and the brief keeps the zone, its routes, timings and points untouched.",
+   "latch": "old pieces standing on it give way (as at the zone edge)"
+  },
+  {
+   "n": 34,
+   "op": "remove",
+   "path": "plots[id=gardens-s]",
+   "decision": "rejected",
+   "reason": "gardens-s is a park plot (Orbit Gardens: the canal and the pool), which has no building by design; the old west terrace bar's front (x -110) lies on its west edge."
+  },
+  {
+   "n": 35,
+   "op": "set",
+   "path": "plots[id=lamplight-south-e].rect",
+   "decision": "rejected",
+   "reason": "Handover: the plan keeps this plot or street byte for byte (transcribe.ts KEEP_PLOTS / KEEP_ROADS; the walk window's neighbours). The sim site, the takedown places, the M-1 routes and the W-1 walks read it, and the brief keeps the zone, its routes, timings and points untouched.",
+   "latch": "old pieces standing on it give way (as at the zone edge)"
+  },
+  {
+   "n": 36,
+   "op": "set",
+   "path": "plots[id=lamplight-south-w].rect",
+   "decision": "rejected",
+   "reason": "Handover: the plan keeps this plot or street byte for byte (transcribe.ts KEEP_PLOTS / KEEP_ROADS; the walk window's neighbours). The sim site, the takedown places, the M-1 routes and the W-1 walks read it, and the brief keeps the zone, its routes, timings and points untouched.",
+   "latch": "old pieces standing on it give way (as at the zone edge)"
+  },
+  {
+   "n": 37,
+   "op": "set",
+   "path": "plots[id=lamplight-west].rect",
+   "decision": "rejected",
+   "reason": "Handover: the plan keeps this plot or street byte for byte (transcribe.ts KEEP_PLOTS / KEEP_ROADS; the walk window's neighbours). The sim site, the takedown places, the M-1 routes and the W-1 walks read it, and the brief keeps the zone, its routes, timings and points untouched.",
+   "latch": "old pieces standing on it give way (as at the zone edge)"
+  },
+  {
+   "n": 38,
+   "op": "set",
+   "path": "plots[id=lantern-court].rect",
+   "decision": "rejected",
+   "reason": "lantern-court is the Lantern Terraces megastructure's footprint (megastructures[lantern-terraces], its walk deck spans Lantern Lane); the new rect cuts into Lantern Lane and Satellite Street (x -61 > the kerb at -66). The old pieces there are RL2 and RB1, the old rocket street's blocks turned 35°, which the first remap listed as gone.",
+   "ask": "Aster: the old rocket blocks RL2/RB1 (old-built, 26 pieces) or our Lantern Terraces megastructure (plan) in lantern-court: the brief keeps our multilevel network, so the plan keeps the megastructure until told otherwise",
+   "latch": "RL2/RB1 give way where they meet Lantern Lane and Satellite Street"
+  },
+  {
+   "n": 39,
+   "op": "set",
+   "path": "plots[id=n2].rect",
+   "decision": "rejected",
+   "reason": "a plot runs from the kerb (its pavement and yard are plot ground), so the box of the buildings standing in it is not its rect; the plot's block carries the building footprint. N2's line is op 11."
+  },
+  {
+   "n": 40,
+   "op": "set",
+   "path": "plots[id=orbit-gardens].rect",
+   "decision": "rejected",
+   "reason": "Handover: the plan keeps this plot or street byte for byte (transcribe.ts KEEP_PLOTS / KEEP_ROADS; the walk window's neighbours). The sim site, the takedown places, the M-1 routes and the W-1 walks read it, and the brief keeps the zone, its routes, timings and points untouched.",
+   "latch": "old pieces standing on it give way (as at the zone edge)"
+  },
+  {
+   "n": 41,
+   "op": "set",
+   "path": "plots[id=orbit-square-e].rect",
+   "decision": "rejected",
+   "reason": "the box is old E1's west end (run44) on the square's east edge: E1 stands on the harbour terrace (x 46..74). Tried as a plot of its own (square-east [46,74,-356,-322], laid as the old block): R-F1 fails (it fronts no access road, only the square and the terrace) and the area and quay lines need cutting.",
+   "ask": "Splice: may R-F1 count an open square as a plot's frontage (the old town fronted E1 on Orbit Square)?",
+   "latch": "old E1 stands as built on the terrace: it blocks no route of ours (the terrace walk passes on the steps and the promenade)"
+  },
+  {
+   "n": 42,
+   "op": "set",
+   "path": "plots[id=orbit-square-w].rect",
+   "decision": "rejected",
+   "reason": "the box is old W1's east end (run39); W1 stood across Satellite Street (x -66..-54), a Handover street.",
+   "latch": "W1 gives way to Satellite Street"
+  },
+  {
+   "n": 43,
+   "op": "set",
+   "path": "plots[id=pylon-row-east].rect",
+   "decision": "rejected",
+   "reason": "Handover: the plan keeps this plot or street byte for byte (transcribe.ts KEEP_PLOTS / KEEP_ROADS; the walk window's neighbours). The sim site, the takedown places, the M-1 routes and the W-1 walks read it, and the brief keeps the zone, its routes, timings and points untouched.",
+   "latch": "old pieces standing on it give way (as at the zone edge)"
+  },
+  {
+   "n": 44,
+   "op": "set",
+   "path": "plots[id=rocket-west].rect",
+   "decision": "rejected",
+   "reason": "Handover: the plan keeps this plot or street byte for byte (transcribe.ts KEEP_PLOTS / KEEP_ROADS; the walk window's neighbours). The sim site, the takedown places, the M-1 routes and the W-1 walks read it, and the brief keeps the zone, its routes, timings and points untouched.",
+   "latch": "old pieces standing on it give way (as at the zone edge)"
+  },
+  {
+   "n": 45,
+   "op": "set",
+   "path": "plots[id=ss2].rect",
+   "decision": "rejected",
+   "reason": "a plot runs from the kerb (its pavement and yard are plot ground), so the box of the buildings standing in it is not its rect; the plot's block carries the building footprint. The Southside blocks are ops 13-15."
+  },
+  {
+   "n": 46,
+   "op": "set",
+   "path": "plots[id=ss3].rect",
+   "decision": "rejected",
+   "reason": "a plot runs from the kerb (its pavement and yard are plot ground), so the box of the buildings standing in it is not its rect; the plot's block carries the building footprint. The Southside blocks are ops 13-15."
+  },
+  {
+   "n": 47,
+   "op": "set",
+   "path": "plots[id=ss4].rect",
+   "decision": "rejected",
+   "reason": "a plot runs from the kerb (its pavement and yard are plot ground), so the box of the buildings standing in it is not its rect; the plot's block carries the building footprint. The Southside blocks are ops 13-15."
+  },
+  {
+   "n": 48,
+   "op": "set",
+   "path": "plots[id=west-row-e1].rect",
+   "decision": "rejected",
+   "reason": "the old-built town has the old procedural CityMass here (DecoKitCityMass, the old builders' backdrop), already cut by the swap to clear our streets, so the fragments left are not a layout to plot (their boxes span our roads). The plan keeps its plots; dropping its grammar blocks for the CityMass needs a BG-1 exemption for the old builders' massing, and BG-1 proves only handover, megastructure and shed.",
+   "ask": "Splice: a BG-1 exemption kind 'massing' (an old-builder CityMass plot: no blocks, the old builders fill it), so the plan can map West Row, Lantern West and the other CityMass plots as massing; the rule stays as is until then",
+   "latch": "CityMass keeps off plan roads, stops and banks (Cap); it may fill the plan plots here meanwhile"
+  },
+  {
+   "n": 49,
+   "op": "set",
+   "path": "plots[id=west-row-e2].rect",
+   "decision": "rejected",
+   "reason": "the old-built town has the old procedural CityMass here (DecoKitCityMass, the old builders' backdrop), already cut by the swap to clear our streets, so the fragments left are not a layout to plot (their boxes span our roads). The plan keeps its plots; dropping its grammar blocks for the CityMass needs a BG-1 exemption for the old builders' massing, and BG-1 proves only handover, megastructure and shed.",
+   "ask": "Splice: a BG-1 exemption kind 'massing' (an old-builder CityMass plot: no blocks, the old builders fill it), so the plan can map West Row, Lantern West and the other CityMass plots as massing; the rule stays as is until then",
+   "latch": "CityMass keeps off plan roads, stops and banks (Cap); it may fill the plan plots here meanwhile"
+  },
+  {
+   "n": 50,
+   "op": "set",
+   "path": "plots[id=west-row-e3].rect",
+   "decision": "rejected",
+   "reason": "the old-built town has the old procedural CityMass here (DecoKitCityMass, the old builders' backdrop), already cut by the swap to clear our streets, so the fragments left are not a layout to plot (their boxes span our roads). The plan keeps its plots; dropping its grammar blocks for the CityMass needs a BG-1 exemption for the old builders' massing, and BG-1 proves only handover, megastructure and shed.",
+   "ask": "Splice: a BG-1 exemption kind 'massing' (an old-builder CityMass plot: no blocks, the old builders fill it), so the plan can map West Row, Lantern West and the other CityMass plots as massing; the rule stays as is until then",
+   "latch": "CityMass keeps off plan roads, stops and banks (Cap); it may fill the plan plots here meanwhile"
+  },
+  {
+   "n": 51,
+   "op": "remove",
+   "path": "plots[id=west-row-w3]",
+   "decision": "rejected",
+   "reason": "the old-built town has the old procedural CityMass here (DecoKitCityMass, the old builders' backdrop), already cut by the swap to clear our streets, so the fragments left are not a layout to plot (their boxes span our roads). The plan keeps its plots; dropping its grammar blocks for the CityMass needs a BG-1 exemption for the old builders' massing, and BG-1 proves only handover, megastructure and shed.",
+   "ask": "Splice: a BG-1 exemption kind 'massing' (an old-builder CityMass plot: no blocks, the old builders fill it), so the plan can map West Row, Lantern West and the other CityMass plots as massing; the rule stays as is until then",
+   "latch": "CityMass keeps off plan roads, stops and banks (Cap); it may fill the plan plots here meanwhile"
+  },
+  {
+   "n": 52,
+   "op": "set",
+   "path": "plots[id=west-row-w5].rect",
+   "decision": "rejected",
+   "reason": "the old-built town has the old procedural CityMass here (DecoKitCityMass, the old builders' backdrop), already cut by the swap to clear our streets, so the fragments left are not a layout to plot (their boxes span our roads). The plan keeps its plots; dropping its grammar blocks for the CityMass needs a BG-1 exemption for the old builders' massing, and BG-1 proves only handover, megastructure and shed.",
+   "ask": "Splice: a BG-1 exemption kind 'massing' (an old-builder CityMass plot: no blocks, the old builders fill it), so the plan can map West Row, Lantern West and the other CityMass plots as massing; the rule stays as is until then",
+   "latch": "CityMass keeps off plan roads, stops and banks (Cap); it may fill the plan plots here meanwhile"
+  },
+  {
+   "n": 53,
+   "op": "set",
+   "path": "plots[id=west-terraces].rect",
+   "decision": "rejected",
+   "reason": "west-terraces is the West Terraces megastructure's plot (BG-1 megastructure exemption); the box is one CityMass fragment. the old-built town has the old procedural CityMass here (DecoKitCityMass, the old builders' backdrop), already cut by the swap to clear our streets, so the fragments left are not a layout to plot (their boxes span our roads). The plan keeps its plots; dropping its grammar blocks for the CityMass needs a BG-1 exemption for the old builders' massing, and BG-1 proves only handover, megastructure and shed.",
+   "latch": "CityMass keeps off plan roads, stops and banks (Cap); it may fill the plan plots here meanwhile"
+  },
+  {
+   "n": 54,
+   "op": "set",
+   "path": "plots[id=west-wall-n].rect",
+   "decision": "rejected",
+   "reason": "the box takes in a Crown Circus crescent (circus.crescents: r 35, band 14, 4 bays S6, a record of its own, not part of the block) and the old corner pieces' bounds. The block's runs are the old walls exactly (start, caps, segments and classes from oldtown.walls). a plot runs from the kerb (its pavement and yard are plot ground), so the box of the buildings standing in it is not its rect; the plot's block carries the building footprint. The plot's kerb edge moves the other way, to x ±8, with Crown Avenue at 16 m (op 105)."
+  },
+  {
+   "n": 55,
+   "op": "set",
+   "path": "plots[id=western-park-n].rect",
+   "decision": "rejected",
+   "reason": "Western Park (park): S1's Western Park station banks and pylons stand on it; the box is six CityMass fragments on the park.",
+   "latch": "CityMass stands down off plan parks"
+  },
+  {
+   "n": 56,
+   "op": "remove",
+   "path": "plots[id=western-park-s]",
+   "decision": "rejected",
+   "reason": "western-park-s is a park plot (S1's Western Park station banks stand on it), which has no building by design."
+  },
+  {
+   "n": 57,
+   "op": "review",
+   "path": "landmark/sphere",
+   "decision": "rejected",
+   "reason": "a landmark, not a plot: plan.landmarks has it at exactly this centre, and its plan ring is the landmark's reserve r (OV-1 and the matcher leave landmarks out), so the built box never matches it within 0.5 m. The built ring is about twice the piece (x -276..16, y -20..268; the mesh is r 72.4): the export bug reported in \"Swap: network\".",
+   "latch": "export the SphereStation's real outline (r 72.4), not the 2x box"
+  },
+  {
+   "n": 58,
+   "op": "review",
+   "path": "landmark/disc-west",
+   "decision": "rejected",
+   "reason": "a landmark, not a plot: plan.landmarks has it at exactly this centre, and its plan ring is the landmark's reserve r (OV-1 and the matcher leave landmarks out), so the built box never matches it within 0.5 m. DiscTower at (∓44, 166), top 156.6, matches."
+  },
+  {
+   "n": 59,
+   "op": "review",
+   "path": "signature/space-hq",
+   "decision": "rejected",
+   "reason": "the SpaceHQ signature's ground (x -54..54, y 178.12..298) is the kit box x 1.35 round the old pivot (0, 244), the piece the old builders place; centre and tip (340.2) match the built SpaceHQ@0,244."
+  },
+  {
+   "n": 60,
+   "op": "review",
+   "path": "landmark/skylon",
+   "decision": "rejected",
+   "reason": "a landmark, not a plot: plan.landmarks has it at exactly this centre, and its plan ring is the landmark's reserve r (OV-1 and the matcher leave landmarks out), so the built box never matches it within 0.5 m. Skylon at (58, 194) matches. Its height differs (built top 108, plan 100); heights are not in this patch (reported, not compared)."
+  },
+  {
+   "n": 61,
+   "op": "review",
+   "path": "landmark/disc-east",
+   "decision": "rejected",
+   "reason": "a landmark, not a plot: plan.landmarks has it at exactly this centre, and its plan ring is the landmark's reserve r (OV-1 and the matcher leave landmarks out), so the built box never matches it within 0.5 m. DiscTower at (∓44, 166), top 156.6, matches."
+  },
+  {
+   "n": 62,
+   "op": "review",
+   "path": "landmark/monument",
+   "decision": "rejected",
+   "reason": "a landmark, not a plot: plan.landmarks has it at exactly this centre, and its plan ring is the landmark's reserve r (OV-1 and the matcher leave landmarks out), so the built box never matches it within 0.5 m. CircusMonument at (0, 0) matches (island r 14)."
+  },
+  {
+   "n": 63,
+   "op": "review",
+   "path": "landmark/skylon",
+   "decision": "rejected",
+   "reason": "a landmark, not a plot: plan.landmarks has it at exactly this centre, and its plan ring is the landmark's reserve r (OV-1 and the matcher leave landmarks out), so the built box never matches it within 0.5 m. Skylon at (58, 194) matches. Its height differs (built top 108, plan 100); heights are not in this patch (reported, not compared)."
+  },
+  {
+   "n": 64,
+   "op": "review",
+   "path": "landmark/skylon",
+   "decision": "rejected",
+   "reason": "a landmark, not a plot: plan.landmarks has it at exactly this centre, and its plan ring is the landmark's reserve r (OV-1 and the matcher leave landmarks out), so the built box never matches it within 0.5 m. Skylon at (58, 194) matches. Its height differs (built top 108, plan 100); heights are not in this patch (reported, not compared)."
+  },
+  {
+   "n": 65,
+   "op": "add",
+   "path": "plots",
+   "what": "CircusMonument@0,0",
+   "decision": "rejected",
+   "reason": "a landmark, not a plot: plan.landmarks has it at exactly this centre, and its plan ring is the landmark's reserve r (OV-1 and the matcher leave landmarks out), so the built box never matches it within 0.5 m. (monument)"
+  },
+  {
+   "n": 66,
+   "op": "add",
+   "path": "plots",
+   "what": "CityMass_-1_-1",
+   "decision": "rejected",
+   "reason": "the old-built town has the old procedural CityMass here (DecoKitCityMass, the old builders' backdrop), already cut by the swap to clear our streets, so the fragments left are not a layout to plot (their boxes span our roads). The plan keeps its plots; dropping its grammar blocks for the CityMass needs a BG-1 exemption for the old builders' massing, and BG-1 proves only handover, megastructure and shed.",
+   "ask": "Splice: a BG-1 exemption kind 'massing' (an old-builder CityMass plot: no blocks, the old builders fill it), so the plan can map West Row, Lantern West and the other CityMass plots as massing; the rule stays as is until then",
+   "latch": "CityMass keeps off plan roads, stops and banks (Cap); it may fill the plan plots here meanwhile"
+  },
+  {
+   "n": 67,
+   "op": "add",
+   "path": "plots",
+   "what": "CityMass_-1_0",
+   "decision": "rejected",
+   "reason": "the old-built town has the old procedural CityMass here (DecoKitCityMass, the old builders' backdrop), already cut by the swap to clear our streets, so the fragments left are not a layout to plot (their boxes span our roads). The plan keeps its plots; dropping its grammar blocks for the CityMass needs a BG-1 exemption for the old builders' massing, and BG-1 proves only handover, megastructure and shed.",
+   "ask": "Splice: a BG-1 exemption kind 'massing' (an old-builder CityMass plot: no blocks, the old builders fill it), so the plan can map West Row, Lantern West and the other CityMass plots as massing; the rule stays as is until then",
+   "latch": "CityMass keeps off plan roads, stops and banks (Cap); it may fill the plan plots here meanwhile"
+  },
+  {
+   "n": 68,
+   "op": "add",
+   "path": "plots",
+   "what": "DiscTower@44,166",
+   "decision": "rejected",
+   "reason": "a landmark, not a plot: plan.landmarks has it at exactly this centre, and its plan ring is the landmark's reserve r (OV-1 and the matcher leave landmarks out), so the built box never matches it within 0.5 m. (disc-east)"
+  },
+  {
+   "n": 69,
+   "op": "add",
+   "path": "plots",
+   "what": "LinerDock@270,-138",
+   "decision": "rejected",
+   "reason": "a landmark, not a plot: plan.landmarks has it at exactly this centre, and its plan ring is the landmark's reserve r (OV-1 and the matcher leave landmarks out), so the built box never matches it within 0.5 m. (liner-berth, LinerDock at (270, -138))"
+  },
+  {
+   "n": 70,
+   "op": "add",
+   "path": "plots",
+   "what": "ParabolicArch@0,44",
+   "decision": "rejected",
+   "reason": "the Crown Avenue arch: landmarks[disc-west].gateway at (0, 44), feet in the avenue's frontage zone, not a plot."
+  },
+  {
+   "n": 71,
+   "op": "add",
+   "path": "plots",
+   "what": "Skylon@58,194",
+   "decision": "rejected",
+   "reason": "a landmark, not a plot: plan.landmarks has it at exactly this centre, and its plan ring is the landmark's reserve r (OV-1 and the matcher leave landmarks out), so the built box never matches it within 0.5 m. (skylon)"
+  },
+  {
+   "n": 72,
+   "op": "add",
+   "path": "plots",
+   "what": "Skyport_Tower@170,0",
+   "decision": "rejected",
+   "reason": "a landmark, not a plot: plan.landmarks has it at exactly this centre, and its plan ring is the landmark's reserve r (OV-1 and the matcher leave landmarks out), so the built box never matches it within 0.5 m. (skyport-tower)"
+  },
+  {
+   "n": 73,
+   "op": "add",
+   "path": "plots",
+   "what": "SphereStation@-130,124",
+   "decision": "rejected",
+   "reason": "a landmark, not a plot: plan.landmarks has it at exactly this centre, and its plan ring is the landmark's reserve r (OV-1 and the matcher leave landmarks out), so the built box never matches it within 0.5 m. (sphere; the box is the 2x export bug, op 57)"
+  },
+  {
+   "n": 74,
+   "op": "add",
+   "path": "plots",
+   "what": "run22",
+   "decision": "rejected",
+   "reason": "run22 is the old west terrace bar: plan block terrace-s (op 16)."
+  },
+  {
+   "n": 75,
+   "op": "add",
+   "path": "plots",
+   "what": "run23",
+   "decision": "rejected",
+   "reason": "these are the Crown Circus crescents (circus.crescents crescent-ne, -se, -nw, -sw: r 35-49, 4 bays of S6 each), not buildings on no plot: the matcher does not read crescents."
+  },
+  {
+   "n": 76,
+   "op": "add",
+   "path": "plots",
+   "what": "run24",
+   "decision": "rejected",
+   "reason": "these are the Crown Circus crescents (circus.crescents crescent-ne, -se, -nw, -sw: r 35-49, 4 bays of S6 each), not buildings on no plot: the matcher does not read crescents."
+  },
+  {
+   "n": 77,
+   "op": "add",
+   "path": "plots",
+   "what": "run25",
+   "decision": "rejected",
+   "reason": "these are the Crown Circus crescents (circus.crescents crescent-ne, -se, -nw, -sw: r 35-49, 4 bays of S6 each), not buildings on no plot: the matcher does not read crescents."
+  },
+  {
+   "n": 78,
+   "op": "add",
+   "path": "plots",
+   "what": "run26",
+   "decision": "rejected",
+   "reason": "these are the Crown Circus crescents (circus.crescents crescent-ne, -se, -nw, -sw: r 35-49, 4 bays of S6 each), not buildings on no plot: the matcher does not read crescents."
+  },
+  {
+   "n": 79,
+   "op": "add",
+   "path": "plots",
+   "what": "run29",
+   "decision": "rejected",
+   "reason": "old N1's west half (x -62..-56) in Satellite Street's carriageway (kerbs x -66..-54), a Handover street.",
+   "latch": "gives way to Satellite Street"
+  },
+  {
+   "n": 80,
+   "op": "add",
+   "path": "plots",
+   "what": "run30",
+   "decision": "rejected",
+   "reason": "old N1's west half (x -62..-56) in Satellite Street's carriageway (kerbs x -66..-54), a Handover street.",
+   "latch": "gives way to Satellite Street"
+  },
+  {
+   "n": 81,
+   "op": "add",
+   "path": "plots",
+   "what": "run41",
+   "decision": "rejected",
+   "reason": "old W1 (run41) in Satellite Street's carriageway, a Handover street.",
+   "latch": "gives way to Satellite Street"
+  },
+  {
+   "n": 82,
+   "op": "add",
+   "path": "plots",
+   "what": "run43",
+   "decision": "rejected",
+   "reason": "old E1 on the harbour terrace (x 46..74): see op 41 (R-F1).",
+   "ask": "Splice: R-F1 and a plot fronting a square (op 41)",
+   "latch": "old E1 stands as built"
+  },
+  {
+   "n": 83,
+   "op": "add",
+   "path": "plots",
+   "what": "run45",
+   "decision": "rejected",
+   "reason": "old E1 on the harbour terrace (x 46..74): see op 41 (R-F1).",
+   "ask": "Splice: R-F1 and a plot fronting a square (op 41)",
+   "latch": "old E1 stands as built"
+  },
+  {
+   "n": 84,
+   "op": "add",
+   "path": "plots",
+   "what": "run46",
+   "decision": "rejected",
+   "reason": "old E1 on the harbour terrace (x 46..74): see op 41 (R-F1).",
+   "ask": "Splice: R-F1 and a plot fronting a square (op 41)",
+   "latch": "old E1 stands as built"
+  },
+  {
+   "n": 85,
+   "op": "add",
+   "path": "plots",
+   "what": "run51",
+   "decision": "rejected",
+   "reason": "old RL1 (run51) across Satellite Street and onto orbit-gardens, both kept for the Handover (orbit-gardens is the Café -> Orbit Gardens escape walk's ground).",
+   "latch": "gives way to Satellite Street and orbit-gardens"
+  },
+  {
+   "n": 86,
+   "op": "add",
+   "path": "plots",
+   "what": "run55",
+   "decision": "rejected",
+   "reason": "old RL2 / RB1 in lantern-court (the Lantern Terraces megastructure's footprint) and, for run55, onto Lantern Lane (kerbs y -496..-484): see op 38.",
+   "ask": "Aster: op 38",
+   "latch": "gives way to Lantern Lane and Satellite Street"
+  },
+  {
+   "n": 87,
+   "op": "add",
+   "path": "plots",
+   "what": "run56",
+   "decision": "rejected",
+   "reason": "old RL2 / RB1 in lantern-court (the Lantern Terraces megastructure's footprint) and, for run55, onto Lantern Lane (kerbs y -496..-484): see op 38.",
+   "ask": "Aster: op 38",
+   "latch": "gives way to Lantern Lane and Satellite Street"
+  },
+  {
+   "n": 88,
+   "op": "add",
+   "path": "plots",
+   "what": "run61",
+   "decision": "rejected",
+   "reason": "old RL1/RB1 piece (run61) on orbit-gardens and Market Street, both kept for the Handover.",
+   "latch": "gives way"
+  },
+  {
+   "n": 89,
+   "op": "add",
+   "path": "plots",
+   "what": "run63",
+   "decision": "rejected",
+   "reason": "old SS1's north end (run63) on Market Street's south pavement: SS1 shifts onto ss3/a (op 14).",
+   "latch": "moves with SS1"
+  },
+  {
+   "n": 90,
+   "op": "add",
+   "path": "plots",
+   "what": "run67",
+   "decision": "rejected",
+   "reason": "old SS2's north end north of ss2 (Market Street's line east of the Boulevard, and the Boulevard's carriageway and pavement at x 8..22): SS2 shifts onto ss2 (op 13).",
+   "latch": "moves with SS2"
+  },
+  {
+   "n": 91,
+   "op": "add",
+   "path": "plots",
+   "what": "run68",
+   "decision": "rejected",
+   "reason": "old SS2's north end north of ss2 (Market Street's line east of the Boulevard, and the Boulevard's carriageway and pavement at x 8..22): SS2 shifts onto ss2 (op 13).",
+   "latch": "moves with SS2"
+  },
+  {
+   "n": 92,
+   "op": "add",
+   "path": "plots",
+   "what": "run69",
+   "decision": "rejected",
+   "reason": "old SS2's north end north of ss2 (Market Street's line east of the Boulevard, and the Boulevard's carriageway and pavement at x 8..22): SS2 shifts onto ss2 (op 13).",
+   "latch": "moves with SS2"
+  },
+  {
+   "n": 93,
+   "op": "add",
+   "path": "plots",
+   "what": "run71",
+   "decision": "rejected",
+   "reason": "old SS3's corner (run71) in the Boulevard's west pavement (x -18..-10): SS3 shifts onto ss3/b (op 14).",
+   "latch": "moves with SS3"
+  },
+  {
+   "n": 94,
+   "op": "add",
+   "path": "plots",
+   "what": "run75",
+   "decision": "rejected",
+   "reason": "old SS4's north end on Apollo Way (kerbs y -478..-466) and the Boulevard: SS4 shifts onto ss4 (op 15).",
+   "latch": "moves with SS4"
+  },
+  {
+   "n": 95,
+   "op": "add",
+   "path": "plots",
+   "what": "run76",
+   "decision": "rejected",
+   "reason": "old SS4's north end on Apollo Way (kerbs y -478..-466) and the Boulevard: SS4 shifts onto ss4 (op 15).",
+   "latch": "moves with SS4"
+  },
+  {
+   "n": 96,
+   "op": "add",
+   "path": "plots",
+   "what": "run77",
+   "decision": "rejected",
+   "reason": "old SS4's north end on Apollo Way (kerbs y -478..-466) and the Boulevard: SS4 shifts onto ss4 (op 15).",
+   "latch": "moves with SS4"
+  },
+  {
+   "n": 97,
+   "op": "add",
+   "path": "plots",
+   "what": "run79",
+   "decision": "rejected",
+   "reason": "old SS5 on Lantern Lane's corner (x -60, y -490), a Handover street (op 8).",
+   "latch": "gives way to Lantern Lane"
+  },
+  {
+   "n": 98,
+   "op": "add",
+   "path": "plots",
+   "what": "run80",
+   "decision": "rejected",
+   "reason": "old SS5 on Lantern Lane's corner (x -60, y -490), a Handover street (op 8).",
+   "latch": "gives way to Lantern Lane"
+  },
+  {
+   "n": 99,
+   "op": "add",
+   "path": "plots",
+   "what": "run81",
+   "decision": "rejected",
+   "reason": "old SS5 on Lantern Lane's corner (x -60, y -490), a Handover street (op 8).",
+   "latch": "gives way to Lantern Lane"
+  },
+  {
+   "n": 100,
+   "op": "add",
+   "path": "plots",
+   "what": "run82",
+   "decision": "rejected",
+   "reason": "old SS5 on Lantern Lane's corner (x -60, y -490), a Handover street (op 8).",
+   "latch": "gives way to Lantern Lane"
+  },
+  {
+   "n": 101,
+   "op": "review",
+   "path": "circus",
+   "decision": "rejected",
+   "reason": "the ring road is r 14-29 (old 14-26): 3 m wider so T1's terminal loop runs on R 25 with its swept envelope (±1.825) inside the carriageway and clear of the boulevard mouth's kerb returns (oldtown.manual). The rest of the 40 m is the built side having no circus record near the mouths.",
+   "latch": "re-lay the ring's outer kerb at r 29 (old stones at 26)"
+  },
+  {
+   "n": 102,
+   "op": "review",
+   "path": "roads[id=apollo-way]",
+   "decision": "rejected",
+   "reason": "Apollo Way stays 13 m south of its old line (y -472, old -459) so the Boulevard's junctions keep 60 m (Market Street at -410); width 12 agrees.",
+   "latch": "kerbs at y -478 / -466"
+  },
+  {
+   "n": 103,
+   "op": "review",
+   "path": "roads[id=apron-road]",
+   "decision": "rejected",
+   "reason": "Handover: the plan keeps this plot or street byte for byte (transcribe.ts KEEP_PLOTS / KEEP_ROADS; the walk window's neighbours). The sim site, the takedown places, the M-1 routes and the W-1 walks read it, and the brief keeps the zone, its routes, timings and points untouched.",
+   "latch": "re-lay the kerbs to the plan; old stones off them give way"
+  },
+  {
+   "n": 104,
+   "op": "review",
+   "path": "roads[id=boulevard]",
+   "decision": "rejected",
+   "reason": "the Boulevard keeps 20 m: it is T1's tram street, and a stop needs 10 m a half (sections.tramStreet.district.island: edge 3.2 from the road line + island 3.0 + 0.5 shy + passing lane 3.3); two stops stand on it (circus at y -68, orbit at y -368.5). At 16 m the passing lane would be 1.3 m. The facades stay at x ±18 either way (8 m pavements, old 10).",
+   "latch": "Boulevard kerbs at x ±10 (the old stones at ±8 move out 2 m; pavements 8 m to the walls at ±18)"
+  },
+  {
+   "n": 105,
+   "op": "review",
+   "path": "roads[id=crown-avenue]",
+   "decision": "applied",
+   "reason": "Crown Avenue carries no tram, so it takes its old-built 16 m: kerbs at x ±8 (the old stones), 10 m pavements to the old walls at ±18.",
+   "change": "roads[crown-avenue].w 20 -> 16; plots west-wall-n / east-wall-n kerb edge x ∓10 -> ∓8; streetscape.roads.kerbs.circusMouths crown-avenue faces at x ±8 (from r 29 to r 35); nodes.n_avenue y 134 -> 136 (its end kerb stays on the forecourt edge, y 144); the arch's site text (frontage zone |x| 11.5-18)",
+   "latch": "Crown Avenue as the old stones lay it (kerbs ±8): nothing to move"
+  },
+  {
+   "n": 106,
+   "op": "review",
+   "path": "roads[id=harbour-market]",
+   "decision": "rejected",
+   "reason": "harbour-market agrees (16 m, kerbs y -146 / -130, Splice's reading); the 8 m over 14.75 m is its end at the terrace, where the old street ends on a kerb."
+  },
+  {
+   "n": 107,
+   "op": "review",
+   "path": "roads[id=lantern-lane]",
+   "decision": "rejected",
+   "reason": "Handover: the plan keeps this plot or street byte for byte (transcribe.ts KEEP_PLOTS / KEEP_ROADS; the walk window's neighbours). The sim site, the takedown places, the M-1 routes and the W-1 walks read it, and the brief keeps the zone, its routes, timings and points untouched.",
+   "latch": "re-lay the kerbs to the plan; old stones off them give way"
+  },
+  {
+   "n": 108,
+   "op": "review",
+   "path": "roads[id=market-street]",
+   "decision": "rejected",
+   "reason": "Handover: the plan keeps this plot or street byte for byte (transcribe.ts KEEP_PLOTS / KEEP_ROADS; the walk window's neighbours). The sim site, the takedown places, the M-1 routes and the W-1 walks read it, and the brief keeps the zone, its routes, timings and points untouched. Market Street is also T1's street; Splice rates the 26 m reading low confidence (Southside's diagonal kerbs in its band).",
+   "latch": "re-lay to the plan (kerbs y -419 / -401); the old Southside pieces give way or shift (ops 13-15)"
+  },
+  {
+   "n": 109,
+   "op": "review",
+   "path": "roads[id=orbit-walk]",
+   "decision": "rejected",
+   "reason": "Handover: the plan keeps this plot or street byte for byte (transcribe.ts KEEP_PLOTS / KEEP_ROADS; the walk window's neighbours). The sim site, the takedown places, the M-1 routes and the W-1 walks read it, and the brief keeps the zone, its routes, timings and points untouched.",
+   "latch": "re-lay the kerbs to the plan; old stones off them give way"
+  },
+  {
+   "n": 110,
+   "op": "review",
+   "path": "roads[id=satellite-street]",
+   "decision": "rejected",
+   "reason": "Handover: the plan keeps this plot or street byte for byte (transcribe.ts KEEP_PLOTS / KEEP_ROADS; the walk window's neighbours). The sim site, the takedown places, the M-1 routes and the W-1 walks read it, and the brief keeps the zone, its routes, timings and points untouched.",
+   "latch": "re-lay the kerbs to the plan; old stones off them give way"
+  },
+  {
+   "n": 111,
+   "op": "review",
+   "path": "roads[id=starline-street]",
+   "decision": "rejected",
+   "reason": "Handover: the plan keeps this plot or street byte for byte (transcribe.ts KEEP_PLOTS / KEEP_ROADS; the walk window's neighbours). The sim site, the takedown places, the M-1 routes and the W-1 walks read it, and the brief keeps the zone, its routes, timings and points untouched.",
+   "latch": "re-lay the kerbs to the plan; old stones off them give way"
+  },
+  {
+   "n": 112,
+   "op": "review",
+   "path": "roads[id=sunset-east]",
+   "decision": "rejected",
+   "reason": "sunset-east agrees (12 m, kerbs y -258 / -246); 6 m over 10.75 m is its end at the terrace."
+  },
+  {
+   "n": 113,
+   "op": "review",
+   "path": "plots[id=ss1]",
+   "decision": "applied-by",
+   "by": [
+    12
+   ],
+   "reason": "ss1 is open ground now (op 12)."
+  },
+  {
+   "n": 114,
+   "op": "review",
+   "path": "plots[id=crown-forecourt]",
+   "decision": "rejected",
+   "reason": "see op 29."
+  },
+  {
+   "n": 115,
+   "op": "review",
+   "path": "blocks[id=lamplight-east]",
+   "decision": "rejected",
+   "reason": "the box takes in a Crown Circus crescent (circus.crescents: r 35, band 14, 4 bays S6, a record of its own, not part of the block) and the old corner pieces' bounds. The block's runs are the old walls exactly (start, caps, segments and classes from oldtown.walls)."
+  },
+  {
+   "n": 116,
+   "op": "review",
+   "path": "plots[id=lamplight-south-e]",
+   "decision": "rejected",
+   "reason": "Handover: the plan keeps this plot or street byte for byte (transcribe.ts KEEP_PLOTS / KEEP_ROADS; the walk window's neighbours). The sim site, the takedown places, the M-1 routes and the W-1 walks read it, and the brief keeps the zone, its routes, timings and points untouched.",
+   "latch": "old pieces standing on it give way (as at the zone edge)"
+  },
+  {
+   "n": 117,
+   "op": "review",
+   "path": "plots[id=lantern-court]",
+   "decision": "rejected",
+   "reason": "see op 38."
+  },
+  {
+   "n": 118,
+   "op": "review",
+   "path": "plots[id=gardens-s]",
+   "decision": "rejected",
+   "reason": "see op 34 (a park plot; the old terrace bar's front on its edge)."
+  },
+  {
+   "n": 119,
+   "op": "review",
+   "path": "plots[id=orbit-gardens]",
+   "decision": "rejected",
+   "reason": "Handover: the plan keeps this plot or street byte for byte (transcribe.ts KEEP_PLOTS / KEEP_ROADS; the walk window's neighbours). The sim site, the takedown places, the M-1 routes and the W-1 walks read it, and the brief keeps the zone, its routes, timings and points untouched.",
+   "latch": "old pieces standing on it give way (as at the zone edge)"
+  },
+  {
+   "n": 120,
+   "op": "review",
+   "path": "plots[id=starline-green]",
+   "decision": "rejected",
+   "reason": "starline-green is a park plot fronting the Boulevard; the edge it is held to is old SS2's north end and flags across Market Street's old line (east of the Boulevard Market Street is not a plan road), which shift with SS2 (op 13)."
+  },
+  {
+   "n": 121,
+   "op": "review",
+   "path": "blocks[id=boulevard-west]",
+   "decision": "rejected",
+   "reason": "the pavement edge follows the Boulevard's kerb, which stays at x ±10 (op 104); the rest is the corner-piece bounds (op 1) or a crescent (op 2).",
+   "latch": "Boulevard kerbs at ±10 (op 104)"
+  },
+  {
+   "n": 122,
+   "op": "review",
+   "path": "blocks[id=n1]",
+   "decision": "applied-by",
+   "by": [
+    10
+   ],
+   "reason": "N1 on its old line (op 10)."
+  },
+  {
+   "n": 123,
+   "op": "review",
+   "path": "blocks[id=ss3]",
+   "decision": "applied-by",
+   "by": [
+    14
+   ],
+   "reason": "ss3 as old SS1 and SS3 (op 14)."
+  },
+  {
+   "n": 124,
+   "op": "review",
+   "path": "plots[id=boulevard-west]",
+   "decision": "rejected",
+   "reason": "the pavement edge follows the Boulevard's kerb, which stays at x ±10 (op 104); the rest is the corner-piece bounds (op 1) or a crescent (op 2).",
+   "latch": "Boulevard kerbs at ±10 (op 104)"
+  },
+  {
+   "n": 125,
+   "op": "review",
+   "path": "pavements",
+   "decision": "rejected",
+   "reason": "the pavement edge follows the Boulevard's kerb, which stays at x ±10 (op 104); the rest is the corner-piece bounds (op 1) or a crescent (op 2).",
+   "latch": "Boulevard kerbs at ±10 (op 104)"
+  },
+  {
+   "n": 126,
+   "op": "review",
+   "path": "blocks[id=ss4]",
+   "decision": "applied-by",
+   "by": [
+    15
+   ],
+   "reason": "ss4 as old SS4 (op 15)."
+  },
+  {
+   "n": 127,
+   "op": "review",
+   "path": "plots[id=n2]",
+   "decision": "rejected",
+   "reason": "see op 11.",
+   "ask": "Splice: a per-road pavement width (roads[].pavement, old flags 2-4 m) for sunset-east and harbour-market, so E1, E2 and N2 take their old bays and lines; the rule stays as is until then"
+  },
+  {
+   "n": 128,
+   "op": "review",
+   "path": "plots[id=east-wall]",
+   "decision": "rejected",
+   "reason": "the pavement edge follows the Boulevard's kerb, which stays at x ±10 (op 104); the rest is the corner-piece bounds (op 1) or a crescent (op 2).",
+   "latch": "Boulevard kerbs at ±10 (op 104)"
+  },
+  {
+   "n": 129,
+   "op": "review",
+   "path": "plots[id=garden-row-east]",
+   "decision": "rejected",
+   "reason": "Handover: the plan keeps this plot or street byte for byte (transcribe.ts KEEP_PLOTS / KEEP_ROADS; the walk window's neighbours). The sim site, the takedown places, the M-1 routes and the W-1 walks read it, and the brief keeps the zone, its routes, timings and points untouched.",
+   "latch": "old pieces standing on it give way (as at the zone edge)"
+  },
+  {
+   "n": 130,
+   "op": "review",
+   "path": "blocks[id=ss2]",
+   "decision": "rejected",
+   "reason": "see op 13."
+  },
+  {
+   "n": 131,
+   "op": "review",
+   "path": "plots[id=pylon-row-east]",
+   "decision": "rejected",
+   "reason": "Handover: the plan keeps this plot or street byte for byte (transcribe.ts KEEP_PLOTS / KEEP_ROADS; the walk window's neighbours). The sim site, the takedown places, the M-1 routes and the W-1 walks read it, and the brief keeps the zone, its routes, timings and points untouched.",
+   "latch": "old pieces standing on it give way (as at the zone edge)"
+  },
+  {
+   "n": 132,
+   "op": "review",
+   "path": "plots[id=ss4]",
+   "decision": "applied-by",
+   "by": [
+    15
+   ],
+   "reason": "ss4 as old SS4 (op 15)."
+  },
+  {
+   "n": 133,
+   "op": "review",
+   "path": "plots[id=east-wall-n]",
+   "decision": "applied-by",
+   "by": [
+    105
+   ],
+   "reason": "the Crown Avenue side follows the avenue at 16 m (op 105); the crescent side is op 2 / 27 (rejected)."
+  },
+  {
+   "n": 134,
+   "op": "review",
+   "path": "plots[id=ss2]",
+   "decision": "rejected",
+   "reason": "see op 13."
+  },
+  {
+   "n": 135,
+   "op": "review",
+   "path": "blocks[id=lantern-south]",
+   "decision": "rejected",
+   "reason": "see op 8."
+  },
+  {
+   "n": 136,
+   "op": "review",
+   "path": "plots[id=lantern-south]",
+   "decision": "rejected",
+   "reason": "see op 8."
+  },
+  {
+   "n": 137,
+   "op": "review",
+   "path": "plots[id=n1]",
+   "decision": "applied-by",
+   "by": [
+    10
+   ],
+   "reason": "N1 on its old line (op 10)."
+  },
+  {
+   "n": 138,
+   "op": "review",
+   "path": "blocks[id=ss1]",
+   "decision": "applied-by",
+   "by": [
+    12
+   ],
+   "reason": "ss1 is open ground now (op 12)."
+  },
+  {
+   "n": 139,
+   "op": "review",
+   "path": "plots[id=west-wall-n]",
+   "decision": "applied-by",
+   "by": [
+    105
+   ],
+   "reason": "the Crown Avenue side follows the avenue at 16 m (op 105); the crescent side is op 2 / 27 (rejected)."
+  },
+  {
+   "n": 140,
+   "op": "review",
+   "path": "plots[id=orbit-square-w]",
+   "decision": "rejected",
+   "reason": "see op 42 (W1 gives way to Satellite Street)."
+  },
+  {
+   "n": 141,
+   "op": "review",
+   "path": "plots[id=ss3]",
+   "decision": "applied-by",
+   "by": [
+    14
+   ],
+   "reason": "ss3 as old SS1 and SS3 (op 14)."
+  },
+  {
+   "n": 142,
+   "op": "review",
+   "path": "plots[id=orbit-square-e]",
+   "decision": "rejected",
+   "reason": "see op 41 (old E1)."
+  },
+  {
+   "n": 143,
+   "op": "review",
+   "path": "plots[id=east-wall-s]",
+   "decision": "rejected",
+   "reason": "see ops 3 and 4.",
+   "ask": "Splice: a per-road pavement width (roads[].pavement, old flags 2-4 m) for sunset-east and harbour-market, so E1, E2 and N2 take their old bays and lines; the rule stays as is until then"
+  },
+  {
+   "n": 144,
+   "op": "review",
+   "path": "blocks[id=n2]",
+   "decision": "rejected",
+   "reason": "see op 11.",
+   "ask": "Splice: a per-road pavement width (roads[].pavement, old flags 2-4 m) for sunset-east and harbour-market, so E1, E2 and N2 take their old bays and lines; the rule stays as is until then"
+  },
+  {
+   "n": 145,
+   "op": "review",
+   "path": "blocks[id=east-wall/a]",
+   "decision": "rejected",
+   "reason": "see ops 3 and 4.",
+   "ask": "Splice: a per-road pavement width (roads[].pavement, old flags 2-4 m) for sunset-east and harbour-market, so E1, E2 and N2 take their old bays and lines; the rule stays as is until then"
+  },
+  {
+   "n": 146,
+   "op": "review",
+   "path": "plots[id=orbit-gardens].runs",
+   "decision": "rejected",
+   "reason": "Handover: the plan keeps this plot or street byte for byte (transcribe.ts KEEP_PLOTS / KEEP_ROADS; the walk window's neighbours). The sim site, the takedown places, the M-1 routes and the W-1 walks read it, and the brief keeps the zone, its routes, timings and points untouched. doors are not a plan field outside the civic block: plan runs carry bays and classes; our frontage generator places doors (TS frontage work superseded by the STOP note) and the old frontage places them in the old-built town. No plan change."
+  },
+  {
+   "n": 147,
+   "op": "review",
+   "path": "plots[id=lantern-court].runs",
+   "decision": "rejected",
+   "reason": "doors are not a plan field outside the civic block: plan runs carry bays and classes; our frontage generator places doors (TS frontage work superseded by the STOP note) and the old frontage places them in the old-built town. No plan change."
+  },
+  {
+   "n": 148,
+   "op": "review",
+   "path": "plots[id=gardens-s].runs",
+   "decision": "rejected",
+   "reason": "doors are not a plan field outside the civic block: plan runs carry bays and classes; our frontage generator places doors (TS frontage work superseded by the STOP note) and the old frontage places them in the old-built town. No plan change."
+  },
+  {
+   "n": 149,
+   "op": "review",
+   "path": "blocks[id=terrace-s].runs",
+   "decision": "rejected",
+   "reason": "doors are not a plan field outside the civic block: plan runs carry bays and classes; our frontage generator places doors (TS frontage work superseded by the STOP note) and the old frontage places them in the old-built town. No plan change."
+  },
+  {
+   "n": 150,
+   "op": "review",
+   "path": "entrances",
+   "decision": "rejected",
+   "reason": "doors are not a plan field outside the civic block: plan runs carry bays and classes; our frontage generator places doors (TS frontage work superseded by the STOP note) and the old frontage places them in the old-built town. No plan change."
+  },
+  {
+   "n": 151,
+   "op": "review",
+   "path": "plots[id=ss3].runs",
+   "decision": "rejected",
+   "reason": "doors are not a plan field outside the civic block: plan runs carry bays and classes; our frontage generator places doors (TS frontage work superseded by the STOP note) and the old frontage places them in the old-built town. No plan change."
+  },
+  {
+   "n": 152,
+   "op": "review",
+   "path": "plots[id=orbit-square-w].runs",
+   "decision": "rejected",
+   "reason": "doors are not a plan field outside the civic block: plan runs carry bays and classes; our frontage generator places doors (TS frontage work superseded by the STOP note) and the old frontage places them in the old-built town. No plan change."
+  },
+  {
+   "n": 153,
+   "op": "review",
+   "path": "plots[id=west-wall-n].runs",
+   "decision": "rejected",
+   "reason": "doors are not a plan field outside the civic block: plan runs carry bays and classes; our frontage generator places doors (TS frontage work superseded by the STOP note) and the old frontage places them in the old-built town. No plan change."
+  },
+  {
+   "n": 154,
+   "op": "review",
+   "path": "blocks[id=n1].runs",
+   "decision": "rejected",
+   "reason": "doors are not a plan field outside the civic block: plan runs carry bays and classes; our frontage generator places doors (TS frontage work superseded by the STOP note) and the old frontage places them in the old-built town. No plan change."
+  },
+  {
+   "n": 155,
+   "op": "review",
+   "path": "plots[id=lamplight-south-e].runs",
+   "decision": "rejected",
+   "reason": "Handover: the plan keeps this plot or street byte for byte (transcribe.ts KEEP_PLOTS / KEEP_ROADS; the walk window's neighbours). The sim site, the takedown places, the M-1 routes and the W-1 walks read it, and the brief keeps the zone, its routes, timings and points untouched. doors are not a plan field outside the civic block: plan runs carry bays and classes; our frontage generator places doors (TS frontage work superseded by the STOP note) and the old frontage places them in the old-built town. No plan change."
+  },
+  {
+   "n": 156,
+   "op": "review",
+   "path": "blocks[id=lamplight-east].runs",
+   "decision": "rejected",
+   "reason": "doors are not a plan field outside the civic block: plan runs carry bays and classes; our frontage generator places doors (TS frontage work superseded by the STOP note) and the old frontage places them in the old-built town. No plan change."
+  },
+  {
+   "n": 157,
+   "op": "review",
+   "path": "blocks[id=west-wall-n].runs",
+   "decision": "rejected",
+   "reason": "doors are not a plan field outside the civic block: plan runs carry bays and classes; our frontage generator places doors (TS frontage work superseded by the STOP note) and the old frontage places them in the old-built town. No plan change."
+  },
+  {
+   "n": 158,
+   "op": "review",
+   "path": "blocks[id=ss3].runs",
+   "decision": "rejected",
+   "reason": "doors are not a plan field outside the civic block: plan runs carry bays and classes; our frontage generator places doors (TS frontage work superseded by the STOP note) and the old frontage places them in the old-built town. No plan change."
+  },
+  {
+   "n": 159,
+   "op": "review",
+   "path": "blocks[id=boulevard-west].runs",
+   "decision": "rejected",
+   "reason": "doors are not a plan field outside the civic block: plan runs carry bays and classes; our frontage generator places doors (TS frontage work superseded by the STOP note) and the old frontage places them in the old-built town. No plan change."
+  },
+  {
+   "n": 160,
+   "op": "review",
+   "path": "blocks[id=east-wall-n].runs",
+   "decision": "rejected",
+   "reason": "doors are not a plan field outside the civic block: plan runs carry bays and classes; our frontage generator places doors (TS frontage work superseded by the STOP note) and the old frontage places them in the old-built town. No plan change."
+  },
+  {
+   "n": 161,
+   "op": "review",
+   "path": "blocks[id=ss4].runs",
+   "decision": "rejected",
+   "reason": "doors are not a plan field outside the civic block: plan runs carry bays and classes; our frontage generator places doors (TS frontage work superseded by the STOP note) and the old frontage places them in the old-built town. No plan change."
+  },
+  {
+   "n": 162,
+   "op": "review",
+   "path": "plots[id=east-wall].runs",
+   "decision": "rejected",
+   "reason": "doors are not a plan field outside the civic block: plan runs carry bays and classes; our frontage generator places doors (TS frontage work superseded by the STOP note) and the old frontage places them in the old-built town. No plan change."
+  },
+  {
+   "n": 163,
+   "op": "review",
+   "path": "plots[id=east-wall-n].runs",
+   "decision": "rejected",
+   "reason": "doors are not a plan field outside the civic block: plan runs carry bays and classes; our frontage generator places doors (TS frontage work superseded by the STOP note) and the old frontage places them in the old-built town. No plan change."
+  },
+  {
+   "n": 164,
+   "op": "review",
+   "path": "blocks[id=ss2].runs",
+   "decision": "rejected",
+   "reason": "doors are not a plan field outside the civic block: plan runs carry bays and classes; our frontage generator places doors (TS frontage work superseded by the STOP note) and the old frontage places them in the old-built town. No plan change."
+  },
+  {
+   "n": 165,
+   "op": "review",
+   "path": "blocks[id=n2].runs",
+   "decision": "rejected",
+   "reason": "doors are not a plan field outside the civic block: plan runs carry bays and classes; our frontage generator places doors (TS frontage work superseded by the STOP note) and the old frontage places them in the old-built town. No plan change."
+  },
+  {
+   "n": 166,
+   "op": "review",
+   "path": "plots[id=east-wall-s].runs",
+   "decision": "rejected",
+   "reason": "doors are not a plan field outside the civic block: plan runs carry bays and classes; our frontage generator places doors (TS frontage work superseded by the STOP note) and the old frontage places them in the old-built town. No plan change."
+  },
+  {
+   "n": 167,
+   "op": "review",
+   "path": "plots[id=n2].runs",
+   "decision": "rejected",
+   "reason": "doors are not a plan field outside the civic block: plan runs carry bays and classes; our frontage generator places doors (TS frontage work superseded by the STOP note) and the old frontage places them in the old-built town. No plan change."
+  },
+  {
+   "n": 168,
+   "op": "review",
+   "path": "plots[id=orbit-square-e].runs",
+   "decision": "rejected",
+   "reason": "doors are not a plan field outside the civic block: plan runs carry bays and classes; our frontage generator places doors (TS frontage work superseded by the STOP note) and the old frontage places them in the old-built town. No plan change."
+  },
+  {
+   "n": 169,
+   "op": "review",
+   "path": "blocks[id=east-wall-s].runs",
+   "decision": "rejected",
+   "reason": "doors are not a plan field outside the civic block: plan runs carry bays and classes; our frontage generator places doors (TS frontage work superseded by the STOP note) and the old frontage places them in the old-built town. No plan change."
+  },
+  {
+   "n": 170,
+   "op": "review",
+   "path": "blocks[id=east-wall/a].runs",
+   "decision": "rejected",
+   "reason": "doors are not a plan field outside the civic block: plan runs carry bays and classes; our frontage generator places doors (TS frontage work superseded by the STOP note) and the old frontage places them in the old-built town. No plan change."
+  },
+  {
+   "n": 171,
+   "op": "review",
+   "path": "blocks[id=east-wall/b].runs",
+   "decision": "rejected",
+   "reason": "doors are not a plan field outside the civic block: plan runs carry bays and classes; our frontage generator places doors (TS frontage work superseded by the STOP note) and the old frontage places them in the old-built town. No plan change."
+  },
+  {
+   "n": 172,
+   "op": "review",
+   "path": "plots[id=garden-row-east].runs",
+   "decision": "rejected",
+   "reason": "Handover: the plan keeps this plot or street byte for byte (transcribe.ts KEEP_PLOTS / KEEP_ROADS; the walk window's neighbours). The sim site, the takedown places, the M-1 routes and the W-1 walks read it, and the brief keeps the zone, its routes, timings and points untouched. doors are not a plan field outside the civic block: plan runs carry bays and classes; our frontage generator places doors (TS frontage work superseded by the STOP note) and the old frontage places them in the old-built town. No plan change."
+  },
+  {
+   "n": 173,
+   "op": "review",
+   "path": "blocks[id=ss1].runs",
+   "decision": "rejected",
+   "reason": "doors are not a plan field outside the civic block: plan runs carry bays and classes; our frontage generator places doors (TS frontage work superseded by the STOP note) and the old frontage places them in the old-built town. No plan change."
+  },
+  {
+   "n": 174,
+   "op": "review",
+   "path": "plots[id=pylon-row-east].runs",
+   "decision": "rejected",
+   "reason": "Handover: the plan keeps this plot or street byte for byte (transcribe.ts KEEP_PLOTS / KEEP_ROADS; the walk window's neighbours). The sim site, the takedown places, the M-1 routes and the W-1 walks read it, and the brief keeps the zone, its routes, timings and points untouched. doors are not a plan field outside the civic block: plan runs carry bays and classes; our frontage generator places doors (TS frontage work superseded by the STOP note) and the old frontage places them in the old-built town. No plan change."
+  },
+  {
+   "n": 175,
+   "op": "review",
+   "path": "blocks[id=lantern-south].runs",
+   "decision": "rejected",
+   "reason": "doors are not a plan field outside the civic block: plan runs carry bays and classes; our frontage generator places doors (TS frontage work superseded by the STOP note) and the old frontage places them in the old-built town. No plan change."
+  }
+ ]
+}

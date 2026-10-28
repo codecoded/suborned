@@ -1177,3 +1177,76 @@ Sky: "could we bring the civic block into looking more aligned without ruining t
 - `bun run world` exit 0. `bun run sim:site` left sim/data byte-identical. `bun run cover` changed only the plan hash in civic-block.cover.json, and `--check` passes.
 - `bun run typecheck` is clean. `bun run test tools/plan tools/world tools/missions tools/sim`: 791 pass, 1 skip after one fixture fix (kit-fit.test.ts: the "scaled past its disc" case now uses ×1.2, since ×0.6 fits the ×1 disc).
 - Map: briefs/075/oldbuild/network-s1.png. The gold box in it is the 2× Sphere ring from built.json; read the line against r 72.5.
+
+## Swap: patch applied (Datum, brief 075 remap step 2, 2026-10-29) · oldbuild/READY-patch-datum · for Latch, Splice
+**Plan 0.5.5, sha256 `e168639fac7c1e14c259e9cd111716ff5eea6b1678b88c616e2f7287a5a187d5`** (live = draft `harbour-district.oldtown.plan.json`; `bun tools/plan/oldtown/transcribe.ts --out <plan>` reproduces it byte for byte; the SpaceHQ old → ours → old round trip is byte for byte). Every one of Splice's 175 ops is decided, with a reason, in `briefs/075/oldbuild/plan-patch-applied.json`:
+- 2 applied;
+- 3 applied with changes;
+- 10 settled by another op;
+- 160 rejected.
+
+Most rejections are measuring artefacts:
+- prefab bounds boxes;
+- crescents and landmarks that the matcher does not read;
+- plot rects taken as building boxes;
+- 30 door reviews (doors are not a plan field).
+
+The rest are Handover plots and streets, or a rule that stands in the way. Those rules are asked of Splice below, not loosened.
+
+**What changed in the plan**
+- **Crown Avenue is 16 m** (the old-built width; it carries no tram). Kerbs are at x ±8 and the pavements are 10 m to the old walls at ±18. The crown plots' kerb edges and the two circus-mouth kerb faces moved to ±8. n_avenue moved 2 m north (to y 136) so the avenue's end kerb stays on the forecourt edge.
+- **The Boulevard stays 20 m.** It is T1's tram street, and a stop needs 10 m a half: edge 3.2 + island 3.0 + 0.5 shy + passing lane 3.3. Two stops stand on it (circus y -68, orbit y -368.5). At 16 m the passing lane would be 1.3 m.
+- **Old Southside blocks moved onto the plan's lines.** Each old block gets one plan block of its own length. Market Street (Handover, T1), Apollo Way (60 m junction rule), Lantern Lane and Satellite Street (Handover), and the Boulevard's 20 m section all stand, so the old blocks move, not the streets:
+
+  | old block | plan block | rect (x0, x1, y0, y1) | move from its old place |
+  |---|---|---|---|
+  | N1 | n1 | -46, -18, -302, -262 | none in y (old line); its west half is Satellite Street, so it gives way |
+  | N2 | n2 | 18, 46, -304.5, -264.5 | 2.5 m south (Sunset Way east's 6.5 m pavement; Splice ask 1) |
+  | SS1 | ss3/a | -46, -18, -473, -427 | 23 m south, 10 m west (it stood across Market Street) |
+  | SS3 | ss3/b | -46, -18, -525, -491 | 23 m south, 10 m west (the old 18 m gap to SS1 kept) |
+  | SS2 | ss2 | 18, 46, -459.5, -419.5 | 10 m east, south of Market Street; w 40 (old 46: the building line is 40.5) |
+  | SS4 | ss4 | 18, 46, -518.5, -484.5 | 16.5 m south (off Apollo Way), 10 m east; the DiscTower on its roof moves with it |
+  | SS5 | none | | gives way: it stood on Lantern Lane's corner (x -60, y -490) |
+  | W1 | none | | gives way: it stood across Satellite Street |
+  | E1 | none | | stands as built on the harbour terrace (Splice ask 3) |
+
+  ss1 is now open ground (Orbit Square's south end): the old-built town has no building there. ss3's single 118 m block became ss3/a + ss3/b. The record is `oldtown.southside[].built`.
+- **The promenade (-0.85) is street-level ground, not a fourth level.** It is in `standards.levels.grounds[promenade]`: walk -0.85, x 80..96, reached by the steps at x 74..80. GDD §01 fixes three levels, a fourth would be Sky's call, and the promenade needs no connector.
+- The arch's site text now reads the avenue at 16 m: its frontage zone is |x| 11.5–18. The adopted ParabolicArch × 0.9 (plinths |x| 11.5–17.3) would now fit. That is a piece choice for Splice/Vela; the regen stands until they decide.
+
+**Latch, in the old-built scene**
+1. **Street level and pavements.**
+   - Raise the street level to 0 / 0.18 everywhere outside the zone as well: old flags and kerb tops 0.15 → 0.18, road deck -0.002 → 0. There is one kerb height; a 0.15 pavement outside would leave a 3 cm lip at every zone crossing.
+   - Keep the promenade at -0.85 as built.
+2. **Kerbs to re-lay.**
+   - Boulevard kerbs at x ±10 (old stones at ±8 move out 2 m; the walls stay at ±18).
+   - The Crown Circus ring's outer kerb at r 29.
+   - Apollo Way's kerbs at y -478 / -466.
+   - Crown Avenue stays as the old stones lay it (±8).
+3. **Southside.** Shift the old DecoKitBlocks onto the plan blocks in the table above, at the plan's length (the DecoKitBlock `w`), with old pieces and Sky's 3-storey rule. SS5 and W1 stand down. Market Street's kerbs are y -419 / -401.
+4. **Give way to the Handover streets and plots.**
+   - Satellite Street: N1's west half (runs 29, 30), W1 (run 41), RL1 (run 51).
+   - Lantern Lane: SS5 (runs 79–82), RL2 run 55.
+   - orbit-gardens: runs 51, 61.
+   - Lamplight Lane: the old terrace bar south of y -114.
+5. **Leave as built.**
+   - The E1 and E2 end bays and N2's north end on the side streets: the plan is 1–2 bays short there until Splice answers ask 1.
+   - Old E1 on the terrace.
+   - RL2/RB1 in lantern-court, except where they meet Lantern Lane and Satellite Street (ask to Aster).
+6. **West of the gardens.** CityMass keeps off plan roads, stops and banks (your `Cap`) and off the plan's parks. It may fill the plan's West Row, Lantern West and Lamplight plots until Splice answers ask 2.
+7. **Export.**
+   - The SphereStation's real outline (r 72.4), not the 2× box.
+   - Re-export built.json on 0.5.5 (the 4 Crown Circus decks are stale).
+
+**Asks**
+- **Splice (rules, none loosened):**
+  1. A per-road pavement width, so sunset-east and harbour-market can take the old 2–4 m flags and E1, E2 and N2 their old bays and lines. `edges.ts pavementOf` reads the class only.
+  2. A BG-1 exemption kind `massing`, so the plan can map the old CityMass plots (West Row, Lantern West) without grammar blocks. BG-1 proves only handover, megastructure and shed.
+  3. May R-F1 count an open square as a plot's frontage? Old E1 fronts Orbit Square. Tried as plot `square-east` [46, 74, -356, -322]: R-F1 failed, and R-O1/R-A1 failed on the square and area edges.
+  4. plan-match to read `standards.levels.grounds`.
+- **Aster:** in lantern-court, the old rocket blocks RL2/RB1 (old-built, 26 pieces) against our Lantern Terraces megastructure (plan, multilevel). The plan keeps the megastructure.
+
+**Evidence (2026-10-29)**
+- `bun tools/plan/cli.ts`: exit 0, 158 PASS. With `--overlay tools/missions/handover/overlay.ts`: exit 0, 163 PASS. Against 0.5.4 only block, building, tenancy and item counts change; C-3, M-1 (447 / 1124 / 126 / 593), V-1, W-1, RCH-1 39/39 and ZK-1 92/92 are identical.
+- `bun run world`: exit 0. `bun run sim:site`: sim/data byte-identical (git status clean). `bun run cover` changed only the plan hash in civic-block.cover.json; `bun run cover --check` exit 0.
+- `bun run typecheck`: clean. `bun run test tools/plan tools/world tools/missions tools/sim`: 790 pass, 1 skip, 1 fail, then fixed. The fix was one fixture (road-finish.test.ts: the mouth-face case now sits 0.5 m inside the 16 m avenue's kerb at x 7.5), and that file now passes 49/49.

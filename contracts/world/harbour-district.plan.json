@@ -2,7 +2,7 @@
  "schema": "suborned.plan/1",
  "id": "harbour-district",
  "name": "Harbour District",
- "version": "0.5.4",
+ "version": "0.5.5",
  "date": "2026-10-29",
  "status": "brief 075 remap (Sky 2026-10-28: \"why can't we just remap the world around d handover using old buildings\"): the old DecoKit town transcribed by tools/plan/oldtown/transcribe.ts from /Users/sky/Projects/the-suborned/game/Assets/TheSuborned/Editor/DecoKit (sources sha256 in oldtown.sources), the Handover zone kept byte for byte. transit from A04 run r008, accepted; world program brief 004; skyline and threaded sky rail brief 007 A; skyline text (why, crownWhy, conceptTiles, station kitWhy) from skyline run r011, accepted; play-street height cap brief 066 (Sky 2026-10-26)",
  "frame": {
@@ -868,7 +868,28 @@
     }
    },
    "station": "A sky rail station's platforms are side platforms at concourse z 24, outer edge 8 m from the line (beamCentres/2 + 0.75 beam + 4 m platform). Each station reaches the street by ≥ 2 stair-and-escalator banks (one each side of the line) and ≥ 1 lift each side; banks land on public ground (pavement, median ≥ 8 m, mall, park, square, quay, or a station forecourt: an open plot kept for the bank), never on a built plot (use residential, mixed, commercial, industrial, port or civic), as transit.stationEntrance.siting says. The checker reads it so: L-5 and SF-13 fail a bank's stair tower, escalator run A or lift whose centre stands on a built plot; N-P2 fails a stop or station whose own point (at) stands on any plot, open or built. S1/gardens complies: its point (−160, 0) is on Circus Road's median, its north bank stands on the sphere-gardens park (y ≥ 9), its south bank on gardens-forecourt-w / -e (open, kept for it). A megastructure concourse within 30 m joins the station by a skybridge ≥ 5 m wide. Tram stops stay at street level.",
-   "bridges": "A deck or bridge over a road keeps headroom.road under its structure (z − structureDepth − 0.18 ≥ 5.5); its supports stand in the zones its megastructure lists, never in a carriageway or the tram reservation. A bridge crossing the sky rail line passes ≥ 3 m clear of any pylon."
+   "bridges": "A deck or bridge over a road keeps headroom.road under its structure (z − structureDepth − 0.18 ≥ 5.5); its supports stand in the zones its megastructure lists, never in a carriageway or the tram reservation. A bridge crossing the sky rail line passes ≥ 3 m clear of any pylon.",
+   "grounds": [
+    {
+     "id": "promenade",
+     "level": "street",
+     "walk": -0.85,
+     "x": [
+      80,
+      96
+     ],
+     "y": [
+      -560,
+      300
+     ],
+     "from": "steps",
+     "steps": [
+      74,
+      80
+     ],
+     "why": "the old harbour (DecoKitHarbour): the upper terrace at the pavement (x 46–74), the steps (x 74–80) down to the promenade at -0.85 (x 80–96), the quay edge at x 96, water -2. Street-level ground, walked on foot from the terrace by the steps: not a level (GDD §01: street, deck, concourse)"
+    }
+   ]
   },
   "blocks": {
    "tag": "[S]",
@@ -920,7 +941,6 @@
     "lamplight-west",
     "n1",
     "n2",
-    "ss1",
     "ss2",
     "ss3",
     "ss4",
@@ -3375,12 +3395,12 @@
         "id": "circus-mouth/crown-avenue/e",
         "road": "crown-avenue",
         "a": [
-         10,
-         27.22
+         8,
+         27.87
         ],
         "b": [
-         10,
-         33.54
+         8,
+         34.07
         ],
         "toward": [
          -1,
@@ -3391,12 +3411,12 @@
         "id": "circus-mouth/crown-avenue/w",
         "road": "crown-avenue",
         "a": [
-         -10,
-         27.22
+         -8,
+         27.87
         ],
         "b": [
-         -10,
-         33.54
+         -8,
+         34.07
         ],
         "toward": [
          1,
@@ -3909,7 +3929,7 @@
   ],
   "n_avenue": [
    0,
-   134
+   136
   ],
   "c_end": [
    -156,
@@ -4080,12 +4100,12 @@
    "id": "crown-avenue",
    "name": "Crown Avenue",
    "class": "access",
-   "w": 20,
+   "w": 16,
    "path": [
     "c_n",
     "n_avenue"
    ],
-   "why": "the boulevard's section north of the circus to the forecourt (old z 236 to 346): the arch spans it, the HQ closes it"
+   "why": "the old avenue north of the circus to the forecourt (old z 236 to 346), at its old-built 16 m (kerbs x ±8, the old stones; 10 m pavements to the old walls at ±18; no tram, so not the Boulevard's 20 m tram section): the arch spans it, the HQ closes it"
   },
   {
    "id": "sunset-east",
@@ -4706,7 +4726,7 @@
    "area": "crown",
    "rect": [
     -50,
-    -10,
+    -8,
     9,
     144
    ],
@@ -4751,7 +4771,7 @@
    "use": "commercial",
    "area": "crown",
    "rect": [
-    10,
+    8,
     48,
     9,
     144
@@ -4973,7 +4993,7 @@
   },
   {
    "id": "ss1",
-   "use": "mixed",
+   "use": "open",
    "area": "southside",
    "rect": [
     -54,
@@ -4981,7 +5001,7 @@
     -401,
     -356
    ],
-   "name": "old SS1"
+   "name": "Orbit Square south (old: the rocket street's mouth)"
   },
   {
    "id": "starline-green",
@@ -6221,131 +6241,14 @@
    ]
   },
   {
-   "id": "lamplight-west",
-   "plot": "lamplight-west",
-   "kind": "perimeter",
-   "rect": [
-    -323,
-    -265,
-    -123,
-    -17
-   ],
-   "depth": 14,
-   "court": "open",
-   "runs": [
-    {
-     "face": "w",
-     "a": [
-      -323,
-      -123
-     ],
-     "b": [
-      -323,
-      -17
-     ],
-     "n": [
-      -1,
-      0
-     ],
-     "faces": "primary:sunset-way",
-     "caps": [
-      "corner",
-      "corner"
-     ],
-     "bays": 15
-    },
-    {
-     "face": "e",
-     "a": [
-      -265,
-      -123
-     ],
-     "b": [
-      -265,
-      -17
-     ],
-     "n": [
-      1,
-      0
-     ],
-     "faces": "access:lamplight-lane",
-     "caps": [
-      "corner",
-      "corner"
-     ],
-     "bays": 15
-    },
-    {
-     "face": "s",
-     "a": [
-      -323,
-      -123
-     ],
-     "b": [
-      -265,
-      -123
-     ],
-     "n": [
-      0,
-      -1
-     ],
-     "faces": "party:lamplight-south-w",
-     "caps": [
-      "corner",
-      "corner"
-     ],
-     "bays": 7
-    },
-    {
-     "face": "n",
-     "a": [
-      -323,
-      -17
-     ],
-     "b": [
-      -265,
-      -17
-     ],
-     "n": [
-      0,
-      1
-     ],
-     "faces": "district:circus-road",
-     "caps": [
-      "corner",
-      "corner"
-     ],
-     "bays": 7
-    }
-   ],
-   "corners": [
-    [
-     -323,
-     -123
-    ],
-    [
-     -323,
-     -17
-    ],
-    [
-     -265,
-     -123
-    ],
-    [
-     -265,
-     -17
-    ]
-   ]
-  },
-  {
    "id": "n1",
    "plot": "n1",
    "kind": "perimeter",
    "rect": [
     -46,
     -18,
-    -306,
-    -260
+    -302,
+    -262
    ],
    "depth": 14,
    "court": "solid",
@@ -6354,11 +6257,11 @@
      "face": "w",
      "a": [
       -46,
-      -306
+      -302
      ],
      "b": [
       -46,
-      -260
+      -262
      ],
      "n": [
       -1,
@@ -6369,17 +6272,18 @@
       "corner",
       "corner"
      ],
-     "bays": 5
+     "bays": 4,
+     "old": "old N1: new DecoKitBlock(\"N1\", -50f, -76f, 0f, 40f, S((\"S4\", 4)), S((\"S4\", 4)), walkR: 10f, d: 64f) (plan centre -50, -282, 40 × 64)"
     },
     {
      "face": "e",
      "a": [
       -18,
-      -306
+      -302
      ],
      "b": [
       -18,
-      -260
+      -262
      ],
      "n": [
       1,
@@ -6390,17 +6294,18 @@
       "corner",
       "corner"
      ],
-     "bays": 5
+     "bays": 4,
+     "old": "old N1: new DecoKitBlock(\"N1\", -50f, -76f, 0f, 40f, S((\"S4\", 4)), S((\"S4\", 4)), walkR: 10f, d: 64f) (plan centre -50, -282, 40 × 64)"
     },
     {
      "face": "s",
      "a": [
       -46,
-      -306
+      -302
      ],
      "b": [
       -18,
-      -306
+      -302
      ],
      "n": [
       0,
@@ -6411,17 +6316,18 @@
       "corner",
       "corner"
      ],
-     "bays": 2
+     "bays": 2,
+     "old": "old N1: new DecoKitBlock(\"N1\", -50f, -76f, 0f, 40f, S((\"S4\", 4)), S((\"S4\", 4)), walkR: 10f, d: 64f) (plan centre -50, -282, 40 × 64)"
     },
     {
      "face": "n",
      "a": [
       -46,
-      -260
+      -262
      ],
      "b": [
       -18,
-      -260
+      -262
      ],
      "n": [
       0,
@@ -6432,25 +6338,26 @@
       "corner",
       "corner"
      ],
-     "bays": 2
+     "bays": 2,
+     "old": "old N1: new DecoKitBlock(\"N1\", -50f, -76f, 0f, 40f, S((\"S4\", 4)), S((\"S4\", 4)), walkR: 10f, d: 64f) (plan centre -50, -282, 40 × 64)"
     }
    ],
    "corners": [
     [
      -46,
-     -306
+     -302
     ],
     [
      -46,
-     -260
+     -262
     ],
     [
      -18,
-     -306
+     -302
     ],
     [
      -18,
-     -260
+     -262
     ]
    ]
   },
@@ -6572,123 +6479,6 @@
    ]
   },
   {
-   "id": "ss1",
-   "plot": "ss1",
-   "kind": "perimeter",
-   "rect": [
-    -46,
-    -18,
-    -393,
-    -359
-   ],
-   "depth": 14,
-   "court": "solid",
-   "runs": [
-    {
-     "face": "w",
-     "a": [
-      -46,
-      -393
-     ],
-     "b": [
-      -46,
-      -359
-     ],
-     "n": [
-      -1,
-      0
-     ],
-     "faces": "access:satellite-street",
-     "caps": [
-      "corner",
-      "corner"
-     ],
-     "bays": 3
-    },
-    {
-     "face": "e",
-     "a": [
-      -18,
-      -393
-     ],
-     "b": [
-      -18,
-      -359
-     ],
-     "n": [
-      1,
-      0
-     ],
-     "faces": "district:boulevard",
-     "caps": [
-      "corner",
-      "corner"
-     ],
-     "bays": 3
-    },
-    {
-     "face": "s",
-     "a": [
-      -46,
-      -393
-     ],
-     "b": [
-      -18,
-      -393
-     ],
-     "n": [
-      0,
-      -1
-     ],
-     "faces": "district:market-street",
-     "caps": [
-      "corner",
-      "corner"
-     ],
-     "bays": 2
-    },
-    {
-     "face": "n",
-     "a": [
-      -46,
-      -359
-     ],
-     "b": [
-      -18,
-      -359
-     ],
-     "n": [
-      0,
-      1
-     ],
-     "faces": "park:orbit-square-w",
-     "caps": [
-      "corner",
-      "corner"
-     ],
-     "bays": 2
-    }
-   ],
-   "corners": [
-    [
-     -46,
-     -393
-    ],
-    [
-     -46,
-     -359
-    ],
-    [
-     -18,
-     -393
-    ],
-    [
-     -18,
-     -359
-    ]
-   ]
-  },
-  {
    "id": "ss2",
    "plot": "ss2",
    "kind": "perimeter",
@@ -6806,13 +6596,13 @@
    ]
   },
   {
-   "id": "ss3",
+   "id": "ss3/a",
    "plot": "ss3",
    "kind": "perimeter",
    "rect": [
     -46,
     -18,
-    -545,
+    -473,
     -427
    ],
    "depth": 14,
@@ -6822,7 +6612,7 @@
      "face": "w",
      "a": [
       -46,
-      -545
+      -473
      ],
      "b": [
       -46,
@@ -6837,13 +6627,14 @@
       "corner",
       "corner"
      ],
-     "bays": 17
+     "bays": 5,
+     "old": "old SS1: new DecoKitBlock(\"SS1\", -22f, -221f, 0f, 46f, S((\"S3\", 1), (\"B3\", 3), (\"S3\", 1)), S((\"S3\", 5))) (plan centre -22, -427, 46 × 28)"
     },
     {
      "face": "e",
      "a": [
       -18,
-      -545
+      -473
      ],
      "b": [
       -18,
@@ -6858,17 +6649,18 @@
       "corner",
       "corner"
      ],
-     "bays": 17
+     "bays": 5,
+     "old": "old SS1: new DecoKitBlock(\"SS1\", -22f, -221f, 0f, 46f, S((\"S3\", 1), (\"B3\", 3), (\"S3\", 1)), S((\"S3\", 5))) (plan centre -22, -427, 46 × 28)"
     },
     {
      "face": "s",
      "a": [
       -46,
-      -545
+      -473
      ],
      "b": [
       -18,
-      -545
+      -473
      ],
      "n": [
       0,
@@ -6879,7 +6671,8 @@
       "corner",
       "corner"
      ],
-     "bays": 2
+     "bays": 2,
+     "old": "old SS1: new DecoKitBlock(\"SS1\", -22f, -221f, 0f, 46f, S((\"S3\", 1), (\"B3\", 3), (\"S3\", 1)), S((\"S3\", 5))) (plan centre -22, -427, 46 × 28)"
     },
     {
      "face": "n",
@@ -6900,13 +6693,14 @@
       "corner",
       "corner"
      ],
-     "bays": 2
+     "bays": 2,
+     "old": "old SS1: new DecoKitBlock(\"SS1\", -22f, -221f, 0f, 46f, S((\"S3\", 1), (\"B3\", 3), (\"S3\", 1)), S((\"S3\", 5))) (plan centre -22, -427, 46 × 28)"
     }
    ],
    "corners": [
     [
      -46,
-     -545
+     -473
     ],
     [
      -46,
@@ -6914,11 +6708,132 @@
     ],
     [
      -18,
-     -545
+     -473
     ],
     [
      -18,
      -427
+    ]
+   ]
+  },
+  {
+   "id": "ss3/b",
+   "plot": "ss3",
+   "kind": "perimeter",
+   "rect": [
+    -46,
+    -18,
+    -525,
+    -491
+   ],
+   "depth": 14,
+   "court": "solid",
+   "runs": [
+    {
+     "face": "w",
+     "a": [
+      -46,
+      -525
+     ],
+     "b": [
+      -46,
+      -491
+     ],
+     "n": [
+      -1,
+      0
+     ],
+     "faces": "access:lantern-lane",
+     "caps": [
+      "corner",
+      "corner"
+     ],
+     "bays": 3,
+     "old": "old SS3: new DecoKitBlock(\"SS3\", -22f, -279f, 0f, 34f, S((\"S3\", 1), (\"P3\", 1), (\"S3\", 1)), S((\"S3\", 3))) (plan centre -22, -485, 34 × 28)"
+    },
+    {
+     "face": "e",
+     "a": [
+      -18,
+      -525
+     ],
+     "b": [
+      -18,
+      -491
+     ],
+     "n": [
+      1,
+      0
+     ],
+     "faces": "district:boulevard",
+     "caps": [
+      "corner",
+      "corner"
+     ],
+     "bays": 3,
+     "old": "old SS3: new DecoKitBlock(\"SS3\", -22f, -279f, 0f, 34f, S((\"S3\", 1), (\"P3\", 1), (\"S3\", 1)), S((\"S3\", 3))) (plan centre -22, -485, 34 × 28)"
+    },
+    {
+     "face": "s",
+     "a": [
+      -46,
+      -525
+     ],
+     "b": [
+      -18,
+      -525
+     ],
+     "n": [
+      0,
+      -1
+     ],
+     "faces": "none",
+     "caps": [
+      "corner",
+      "corner"
+     ],
+     "bays": 2,
+     "old": "old SS3: new DecoKitBlock(\"SS3\", -22f, -279f, 0f, 34f, S((\"S3\", 1), (\"P3\", 1), (\"S3\", 1)), S((\"S3\", 3))) (plan centre -22, -485, 34 × 28)"
+    },
+    {
+     "face": "n",
+     "a": [
+      -46,
+      -491
+     ],
+     "b": [
+      -18,
+      -491
+     ],
+     "n": [
+      0,
+      1
+     ],
+     "faces": "district:market-street",
+     "caps": [
+      "corner",
+      "corner"
+     ],
+     "bays": 2,
+     "old": "old SS3: new DecoKitBlock(\"SS3\", -22f, -279f, 0f, 34f, S((\"S3\", 1), (\"P3\", 1), (\"S3\", 1)), S((\"S3\", 3))) (plan centre -22, -485, 34 × 28)"
+    }
+   ],
+   "corners": [
+    [
+     -46,
+     -525
+    ],
+    [
+     -46,
+     -491
+    ],
+    [
+     -18,
+     -525
+    ],
+    [
+     -18,
+     -491
     ]
    ]
   },
@@ -6929,7 +6844,7 @@
    "rect": [
     18,
     46,
-    -542.5,
+    -518.5,
     -484.5
    ],
    "depth": 14,
@@ -6939,7 +6854,7 @@
      "face": "w",
      "a": [
       18,
-      -542.5
+      -518.5
      ],
      "b": [
       18,
@@ -6954,13 +6869,14 @@
       "corner",
       "corner"
      ],
-     "bays": 7
+     "bays": 3,
+     "old": "old SS4: new DecoKitBlock(\"SS4\", 22f, -279f, 0f, 34f, S((\"S4\", 3)), S((\"S4\", 1), (\"P4\", 1), (\"S4\", 1)), walkR: 2f) (plan centre 22, -485, 34 × 28)"
     },
     {
      "face": "e",
      "a": [
       46,
-      -542.5
+      -518.5
      ],
      "b": [
       46,
@@ -6975,17 +6891,18 @@
       "corner",
       "corner"
      ],
-     "bays": 7
+     "bays": 3,
+     "old": "old SS4: new DecoKitBlock(\"SS4\", 22f, -279f, 0f, 34f, S((\"S4\", 3)), S((\"S4\", 1), (\"P4\", 1), (\"S4\", 1)), walkR: 2f) (plan centre 22, -485, 34 × 28)"
     },
     {
      "face": "s",
      "a": [
       18,
-      -542.5
+      -518.5
      ],
      "b": [
       46,
-      -542.5
+      -518.5
      ],
      "n": [
       0,
@@ -6996,7 +6913,8 @@
       "corner",
       "corner"
      ],
-     "bays": 2
+     "bays": 2,
+     "old": "old SS4: new DecoKitBlock(\"SS4\", 22f, -279f, 0f, 34f, S((\"S4\", 3)), S((\"S4\", 1), (\"P4\", 1), (\"S4\", 1)), walkR: 2f) (plan centre 22, -485, 34 × 28)"
     },
     {
      "face": "n",
@@ -7017,13 +6935,14 @@
       "corner",
       "corner"
      ],
-     "bays": 2
+     "bays": 2,
+     "old": "old SS4: new DecoKitBlock(\"SS4\", 22f, -279f, 0f, 34f, S((\"S4\", 3)), S((\"S4\", 1), (\"P4\", 1), (\"S4\", 1)), walkR: 2f) (plan centre 22, -485, 34 × 28)"
     }
    ],
    "corners": [
     [
      18,
-     -542.5
+     -518.5
     ],
     [
      18,
@@ -7031,11 +6950,128 @@
     ],
     [
      46,
-     -542.5
+     -518.5
     ],
     [
      46,
      -484.5
+    ]
+   ]
+  },
+  {
+   "id": "lamplight-west",
+   "plot": "lamplight-west",
+   "kind": "perimeter",
+   "rect": [
+    -323,
+    -265,
+    -123,
+    -17
+   ],
+   "depth": 14,
+   "court": "open",
+   "runs": [
+    {
+     "face": "w",
+     "a": [
+      -323,
+      -123
+     ],
+     "b": [
+      -323,
+      -17
+     ],
+     "n": [
+      -1,
+      0
+     ],
+     "faces": "primary:sunset-way",
+     "caps": [
+      "corner",
+      "corner"
+     ],
+     "bays": 15
+    },
+    {
+     "face": "e",
+     "a": [
+      -265,
+      -123
+     ],
+     "b": [
+      -265,
+      -17
+     ],
+     "n": [
+      1,
+      0
+     ],
+     "faces": "access:lamplight-lane",
+     "caps": [
+      "corner",
+      "corner"
+     ],
+     "bays": 15
+    },
+    {
+     "face": "s",
+     "a": [
+      -323,
+      -123
+     ],
+     "b": [
+      -265,
+      -123
+     ],
+     "n": [
+      0,
+      -1
+     ],
+     "faces": "party:lamplight-south-w",
+     "caps": [
+      "corner",
+      "corner"
+     ],
+     "bays": 7
+    },
+    {
+     "face": "n",
+     "a": [
+      -323,
+      -17
+     ],
+     "b": [
+      -265,
+      -17
+     ],
+     "n": [
+      0,
+      1
+     ],
+     "faces": "district:circus-road",
+     "caps": [
+      "corner",
+      "corner"
+     ],
+     "bays": 7
+    }
+   ],
+   "corners": [
+    [
+     -323,
+     -123
+    ],
+    [
+     -323,
+     -17
+    ],
+    [
+     -265,
+     -123
+    ],
+    [
+     -265,
+     -17
     ]
    ]
   },
@@ -9103,9 +9139,9 @@
     "zones": [
      "frontage"
     ],
-    "piece": "a regen of ParabolicArch, gold as the pier's (DK_Crown_Gold): outer span 34.0 (foot to foot), foot centres ±15.5, clear 28.0 between the plinths, plinths 3.0 across × 6.0 along, depth ≤ 11.6, crest 95.2 and top 105.3 (brief 075 golden vista 2: the vista 1 piece, crest 68 and top 75.2, × 1.4 in height only). At (0, 44) the frontage zone is |x| 13.5–18 (4.5 m), so the plinths at |x| 14–17 stand 0.5 m off the walk's edge and 1 m off the building line; the piece is not widened for it",
-    "whyNot38": "the adopted ParabolicArch is 38.5 m across (foot centres ±16, plinths 6.4 → |x| 12.8–19.2): at (0, 44) its feet stand 0.7 m on the clear walk (the kerb and walk zones run to |x| 13.5) and 1.2 m past the old walls' building line (|x| 18). At its tag floor × 0.9 (34.65, plinths |x| 11.5–17.3) the feet are 2 m on the walk. The only zone that takes a foot here is the frontage zone (|x| 13.5–18), so the regen (plinths |x| 14–17) is sized to it",
-    "siteWhy": "brief 075 remap: the old ParabolicArch's place across Crown Avenue (old (0, 250) → plan (0, 44)), just past the circus mouth, as the old reel. Splice's measure at the site (briefs/075/notes.md, K-1's own test, both sides alike, every y 38–50): Crown Avenue's kerb face at |x| 10, kerb and walk zones to |x| 13.5 (3.5 m), the 6.5 m access pavement to |x| 16.5, then the 1.5 m paved setback to the old walls' building line at |x| 18 (block runs facing access:crown-avenue). So the frontage zone at y 41–47 is |x| 13.5–18 and the plinths (|x| 14–17, y 41–47) stand inside it, with the old walls behind them; the arch's depth (≤ 11.64, y 38.2–49.8) stays on that same avenue section. Outside the play-street cap",
+    "piece": "a regen of ParabolicArch, gold as the pier's (DK_Crown_Gold): outer span 34.0 (foot to foot), foot centres ±15.5, clear 28.0 between the plinths, plinths 3.0 across × 6.0 along, depth ≤ 11.6, crest 95.2 and top 105.3 (brief 075 golden vista 2: the vista 1 piece, crest 68 and top 75.2, × 1.4 in height only). At (0, 44) the frontage zone is |x| 11.5–18 (6.5 m: Crown Avenue at its old-built 16 m, brief 075 plan-match; 13.5–18 at 20 m), so the plinths at |x| 14–17 stand 2.5 m off the walk's edge and 1 m off the building line; the piece is not widened for it",
+    "whyNot38": "the adopted ParabolicArch is 38.5 m across (foot centres ±16, plinths 6.4 → |x| 12.8–19.2): at (0, 44) its feet stand 1.2 m past the old walls' building line (|x| 18) (at the 20 m avenue they also stood 0.7 m on the clear walk, which ran to |x| 13.5; at the old 16 m it runs to |x| 11.5). At its tag floor × 0.9 (34.65, plinths |x| 11.5–17.3) the feet stand in the frontage zone (|x| 11.5–18) since the avenue is 16 m (brief 075 plan-match): the old piece × 0.9 would now fit, a piece choice for Splice and Vela; the regen (plinths |x| 14–17) stands until they make it",
+    "siteWhy": "brief 075 remap: the old ParabolicArch's place across Crown Avenue (old (0, 250) → plan (0, 44)), just past the circus mouth, as the old reel. Splice's measure at the site (briefs/075/notes.md, K-1's own test, both sides alike, every y 38–50): Crown Avenue's kerb face at |x| 8 (its old-built 16 m since the brief 075 plan-match; |x| 10 when Splice measured it at 20 m), kerb and walk zones to |x| 11.5 (3.5 m), the 6.5 m access pavement to |x| 14.5, then the 3.5 m paved setback to the old walls' building line at |x| 18 (block runs facing access:crown-avenue). So the frontage zone at y 41–47 is |x| 11.5–18 and the plinths (|x| 14–17, y 41–47) stand inside it, with the old walls behind them; the arch's depth (≤ 11.64, y 38.2–49.8) stays on that same avenue section. Outside the play-street cap",
     "keep": "the generator: the plinths only in the frontage zone (never the walk, kerb zone or carriageway); no doorway, spill or vending inside 1.5 m of a plinth; no palm or lamp whose crown or head comes within 1 m of a leg (the leg is at about x ±14.8 at 8 m up); the shopfronts behind the plinths (the old walls at |x| 18, y 41–47) keep their doors (a door moves along its facade, never under a plinth)"
    }
   },
@@ -9894,6 +9930,7 @@
    "Records Precinct: two vehicle gates (Rocket, Satellite) to seal against cars, but on foot the crew can leave across any street. Is the escape on foot meant to be open like that, with the police sealing stations rather than streets?"
   ],
   "history": [
+   "2026-10-29 (Datum, brief 075 plan-match; version 0.5.5): Splice's plan-match patch (briefs/075/oldbuild/plan-patch.json, 175 ops from match.json) decided op by op in briefs/075/oldbuild/plan-patch-applied.json; the old-built town wins outside the Handover where the plan's rules let it. Applied: Crown Avenue at its old-built 16 m (kerbs x ±8, 10 m pavements to the old walls; no tram), its plots' kerb edges and circus-mouth faces with it, n_avenue 2 m north so its end kerb stays on the forecourt; the old Southside blocks on the plan's lines (N1 on its old line y -302..-262; SS1 and SS3 as ss3/a y -473..-427 and ss3/b y -525..-491, the old 18 m gap kept; SS4 34 m at y -518.5..-484.5); ss1 open ground (no old building stands there). Recorded: the old harbour promenade (-0.85) as street-level ground (standards.levels.grounds), not a fourth level. Kept: the Boulevard at 20 m (T1's stop islands need 10 m a half: two stops stand on it); the 0.18 pavement everywhere (one kerb height; the Handover zone fixes it); every Handover plot and street; the crescents, landmarks and old walls as transcribed (box artefacts rejected). Asked of Splice: a per-road pavement width (the old 2-4 m side-street flags at E1, E2, N2), a BG-1 'massing' exemption (the old CityMass west of the gardens), R-F1 for a plot fronting a square (old E1 on the harbour terrace). Handover zone, routes, timings and points unchanged.",
    "2026-10-29 (Datum, brief 075 swap: network; version 0.5.4): Latch's old-built town (cc903ae0) stands the old SphereStation at ×1 (188 m, legs to r 67, service towers to r 72.4) and S1's north leg on x -95 ran through its leg ring. The Sphere landmark is now the old ×1 (r 72.5, top 188.4; was ×0.425, r 31, top 80), and S1 goes round its east side: east on Circus Road's line past Orbit Gardens station, north (R 70) onto x -52 (78 m off the Sphere's centre, so pylons keep pylonClear.landmark outside its disc), then an S of two R 70 curves (corners (-52, 156) and (-95, 198)) between the Sphere and the west gate tower's shaft onto x -95 north of the Sphere. Crown Circus station moves north 15 m on that straight to (-95, 253) (platforms y 228..278), Crown Walk with it (y 253) and Sphere Park's slot. Sphere Park and the north lawn take x -54..-50 of west-wall-n's back yard for y 9..144 (the old W4 wall's back is at x -46), so the line and its pylons stand on park (S-C1, S-P2). S1 gardens → Crown Circus 304 → 374 m (run 25 → 31 s). T1 is unchanged: its streets (Crown Road, Sunset Way, Market Street) are the Handover's mission streets (official 1124, getaway 447, rivals 593) and its stops are kept, so the old pieces give way to Market Street at the Southside seam (briefs/075/notes.md, Swap: network). Handover zone unchanged (overlay: C-0, C-3, M-1, M-2, M-3, V-1, W-1 identical). The 'ours' form keeps S1 on x -95 (data only, through the ×1 Sphere: it would need the same detour if Sky picks it).",
    "2026-10-29 (Datum, brief 075 remap step 2, Aster; version 0.5.3): the SpaceHQ switch, plan.spacehq.form (Sky's call; default 'old'). 'old': the old gold SpaceHQ as the old reel stood it (DecoKitStreetSkyline: the kit SpaceHQ × 1.35 at old (0, 450)), ground x -54..54, y 178.12..298, tip 340.2 = standards.skyline.dominant (rivalMax 200 kept; SK-1 exempts the dominant from the harbour band, so no exception), Crown Forecourt to the grand stair's foot (y 178.12), and S1's third station, Crown Circus, on its north leg beside it (x -95, y 238; banks, stairs and lifts on Sphere Park). 'ours': the SpaceHQ_Portal remake (252) at (0, 244) with S1 east on y 244 through its drum and the station inside. Both forms in plan.spacehq.forms; tools/plan/oldtown/transcribe.ts writes the chosen one. Handover zone untouched; Pulse's journeys kept (no journey rides the new run). Notes: briefs/075/notes.md 'SpaceHQ switch'.",
    "2026-10-29 (Datum, brief 075 review, Aster relaying Sky; version 0.5.2): (1) the old asphalt road back (Sky: overriding 'keep powdblue'): roads.finish.set asphalt, road-asphalt = the old DK_Asphalt_Road (Vela's port, #817B75, 16 m repeat), dashes 0.12 m, 2 m on 4 m off; the light ribbon kept on every class (GDD §14/§15), so SF-24 holds unchanged. (2) The Skyport reachable (Sky: 'we need the skytrak to get here'): S2 Harbour Line from the south edge over the water on x 117, Harbour station on the Market Pier's new landing stage (x 96..140, y -196..-106; T1/Crown Circus interchange 137 m), a terminal loop (R 40) round the Skyport Tower with the Skyport station on its west leg over the new Skyport apron (x 96..140, y ±30), 41 pylons in water and on the quays. (3) Every structure reachable (RCH-1 33/33): the Skyport apron runs 8 m onto the tower's caisson, the Market Pier 6 m onto the liner berth's. The Handover zone, its routes (M-1), escape walks (W-1) and V-1 unchanged; Pulse's journeys kept (T1 and S1 unchanged; S2's runs added, its journeys Pulse's). Notes: briefs/075/notes.md 'Remap: Skyport and reach'.",
@@ -10585,6 +10622,7 @@
    "E1: 11 bays (old 13, 2 off its south segment), between the plan's 6.5 m pavements on Sunset Way and Market Street (y -234.5..-152.5; old -242..-148)",
    "E2: 7 bays (old 8), from Market Street's building line to the east lane (y -122..-72; old -128..-72)",
    "E3's terrace wall (old: End, Corner at z 178, the parade's corner) ends square: no perpendicular run meets that corner (BG-2)",
+   "The old Southside blocks shift onto the plan's lines (brief 075 plan-match): N1 on its old line y -302..-262 (28 deep: its west half is Satellite Street); SS1 (46) and SS3 (34) on ss3 at y -473..-427 and -525..-491 (the old 18 m gap between them; old SS1 stood across Market Street); SS4 (34) at y -518.5..-484.5 from Apollo Way's building line (old: across Apollo Way's plan line); SS2 at the plan's 40 (old 46: its plot's building line is 40.5 between Market Street and Apollo Way); ss1 open (no old building stands there); N2 at y -304.5..-264.5, 2.5 m south of its old line (Sunset Way east's 6.5 m access pavement; old 4 m)",
    "Blocks: the boulevard walls, their short walls and the four crescents are the old walls exactly (start, length, caps, segments and storey classes; plan.blocks[].runs[].segs and .old). Every other laid plot (the garden terrace, Southside, the Lantern Quarter) is fitted by the grammar to its building line, its long faces on the higher-rank street; their classes are left to the generator (Splice) where no old block stood",
    "Timetable: T1 and S1 runs regenerated stop to stop at today's speeds; journeys cleared (they named T2 and today's stops) for Pulse"
   ],
@@ -11161,7 +11199,7 @@
      -50,
      -282
     ],
-    "built": "trimmed into a plot of the plan"
+    "built": "block n1, on its old line (y -302..-262), 28 deep: its west half is Satellite Street (gives way)"
    },
    {
     "name": "N2",
@@ -11201,7 +11239,7 @@
      32,
      -282
     ],
-    "built": "as plotted"
+    "built": "block n2 (y -304.5..-264.5): 2.5 m south of its old line, the plan's 6.5 m access pavement on Sunset Way east (old 4 m)"
    },
    {
     "name": "N4",
@@ -11281,7 +11319,7 @@
      -64,
      -339
     ],
-    "built": "gone: the Handover zone"
+    "built": "gone: it stood across Satellite Street (x -66..-54), a Handover street"
    },
    {
     "name": "E1",
@@ -11321,7 +11359,7 @@
      60,
      -339
     ],
-    "built": "gone: the Handover zone"
+    "built": "stands on the harbour terrace (x 46..74) in the old-built town; not in the plan: a plot there fronts no access road (R-F1), asked of Splice"
    },
    {
     "name": "W2",
@@ -11513,7 +11551,7 @@
      -22,
      -427
     ],
-    "built": "trimmed into a plot of the plan"
+    "built": "block ss3/a (y -473..-427): shifted 23 m south and 10 m west, off Market Street's line and onto the Boulevard's wall line (x -18)"
    },
    {
     "name": "SS2",
@@ -11553,7 +11591,7 @@
      22,
      -427
     ],
-    "built": "as plotted"
+    "built": "block ss2 (y -459.5..-419.5) at 40 m (old 46): shifted 10 m east and south of Market Street"
    },
    {
     "name": "SS3",
@@ -11593,7 +11631,7 @@
      -22,
      -485
     ],
-    "built": "trimmed into a plot of the plan"
+    "built": "block ss3/b (y -525..-491): shifted 23 m south with SS1 (the old 18 m gap kept) and 10 m west"
    },
    {
     "name": "SS4",
@@ -11633,7 +11671,7 @@
      22,
      -485
     ],
-    "built": "as plotted"
+    "built": "block ss4 (y -518.5..-484.5): shifted 16.5 m south off Apollo Way's line and 10 m east"
    },
    {
     "name": "SS5",
@@ -11673,7 +11711,7 @@
      -67,
      -485
     ],
-    "built": "trimmed into a plot of the plan"
+    "built": "gone: it stood on Lantern Lane's corner (x -60, y -490), a Handover street; lantern-south keeps its grammar block"
    }
   ],
   "gardens": {

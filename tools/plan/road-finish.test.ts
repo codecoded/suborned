@@ -62,7 +62,7 @@ describe('RF-1 fails: the shoulder, the retired pinstripe and the kerb faces (br
   test('a shoulder that reaches the middle line', () => f(p => { R(p).shoulder.to = 4.5; }, /reaches the narrowest middle line/));
   test('a pinstripe key back in the plan (retired, 072-G)', () => f(p => { R(p).pinstripe = { piece: 'PaveEdge_Pinstripe_6m', offset: 0.5, width: 0.04 }; }, /roads\.pinstripe: the pavement pinstripe is retired/));
   test('a set that drops the retired pinstripe', () => f(p => { R(p).finish.sets.enamel.drop.push('pinstripe'); }, /finish set enamel: drop "pinstripe": the pinstripe is retired/));
-  test('a mouth face off its road\'s carriageway edge', () => f(p => { R(p).kerbs.circusMouths.faces[0].a = [9.5, 42.048]; }, /circus-mouth\/crown-avenue\/e a: 0\.5\d m off crown-avenue's carriageway edge/));
+  test('a mouth face off its road\'s carriageway edge', () => f(p => { R(p).kerbs.circusMouths.faces[0].a = [7.5, 42.048]; } /* 0.5 m inside Crown Avenue's kerb at x 8 (16 m since the brief 075 plan-match; was [9.5, …] at 20 m) */, /circus-mouth\/crown-avenue\/e a: 0\.5\d m off crown-avenue's carriageway edge/));
   test('a mouth face ending neither on the ring nor at a plot corner', () => f(p => { R(p).kerbs.circusMouths.faces[0].b = [9, 47]; }, /b: ends neither on the circus ring/));
   test('a mouth face that points out of the carriageway', () => f(p => { R(p).kerbs.circusMouths.faces[0].toward = [1, 0]; }, /toward points out of the carriageway/));
   test('a face whose toward is not its normal', () => f(p => { R(p).kerbs.circusMouths.faces[0].toward = [0.6, 0.8]; }, /toward is not the unit normal/));
