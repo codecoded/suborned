@@ -16,6 +16,8 @@
     "lilac_w": "#d8c8ec", "lilac_p": "#7a3b78", "lilac_r": "#eee6f7",
     "apricot_w": "#f9b977", "apricot_p": "#1e8c6e", "apricot_r": "#fce0c0",
     "seagreen_w": "#9ad2c6", "seagreen_p": "#e2661f", "seagreen_r": "#d5eee8",
+    "oldapricot_w": "#e8b793", "oldapricot_p": "#c8553d", "oldapricot_r": "#ecd1b8", "oldceladon_w": "#b7cdb4", "oldceladon_p": "#c8553d", "oldceladon_r": "#d5dbc6",
+    "oldrose_w": "#dda596", "oldrose_p": "#c8553d", "oldrose_r": "#e6caba", "oldochre_w": "#e2c07a", "oldochre_p": "#c8553d", "oldochre_r": "#e9d5b0",
     "e_tangerine": "#f07a28", "e_plum": "#7a3b78", "e_cerulean": "#1f8fc4", "e_jade": "#1e9c78", "e_lime": "#b5d334",
     "e_mustard": "#eea82d", "e_coral_deep": "#e07560", "e_royal": "#2c56a6", "e_teal_deep": "#1f6c67", "e_red": "#c42a1f", "e_redorange": "#e8553a", "e_oxblood": "#8e2f25", "e_powder": "#86add3",
     "glass_clear": "#2c6478", "glass_t": "#a7cad8", "glass_dark": "#233f50",
@@ -35,7 +37,8 @@
     "cream": ["cream_w", "cream_p", "cream_r"], "peach": ["peach_w", "peach_p", "peach_r"], "mint": ["mint_w", "mint_p", "mint_r"],
     "sky": ["sky_w", "sky_p", "sky_r"], "sand": ["sand_w", "sand_p", "sand_r"], "ivory": ["ivory_w", "ivory_p", "ivory_r"], "civic": ["civic_w", "e_seafoam", "roof_e"],
     "blush": ["blush_w", "blush_p", "blush_r"], "powder": ["powder_w", "powder_p", "powder_r"],
-    "butter": ["butter_w", "butter_p", "butter_r"], "lilac": ["lilac_w", "lilac_p", "lilac_r"], "apricot": ["apricot_w", "apricot_p", "apricot_r"], "seagreen": ["seagreen_w", "seagreen_p", "seagreen_r"]
+    "butter": ["butter_w", "butter_p", "butter_r"], "lilac": ["lilac_w", "lilac_p", "lilac_r"], "apricot": ["apricot_w", "apricot_p", "apricot_r"], "seagreen": ["seagreen_w", "seagreen_p", "seagreen_r"],
+    "oldapricot": ["oldapricot_w", "oldapricot_p", "oldapricot_r"], "oldceladon": ["oldceladon_w", "oldceladon_p", "oldceladon_r"], "oldrose": ["oldrose_w", "oldrose_p", "oldrose_r"], "oldochre": ["oldochre_w", "oldochre_p", "oldochre_r"]
   },
   "areas": {
     "lantern":   { "families": { "peach": 3, "cream": 2, "sand": 2, "blush": 2, "apricot": 3, "butter": 2, "lilac": 2, "seagreen": 1, "mint": 1 }, "enamel": ["e_coral", "e_teal", "e_sun", "e_rose", "e_apricot", "e_mustard", "e_coral_deep", "e_red", "e_royal", "e_tangerine", "e_plum", "e_cerulean", "flamingo"] },

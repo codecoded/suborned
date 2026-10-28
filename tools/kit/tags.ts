@@ -83,7 +83,7 @@ const SCALE: Record<string, [number, number]> = {
   VendingMachine_Cola: [1, 1], VendingMachine_Snack: [1, 1], Automat: [1, 1], BikeRack: [1, 1], InfoLightbox: [1, 1], SandwichBoard: [1, 1], HangingBasket: [1, 1], Lockers: [1, 1], RoundBench: [1, 1], DrinkingFountain: [1, 1],
   PottedTopiary: [1, 1], TopiaryCone: [1, 1], ShrubMound: [1, 1], FlowerBed: [1, 1], FacetedPot: [1, 1],
   // street pieces whose size is not the plan's catalogue size: a tub palm is 4.5 m in the plan (a fern is 1.1 m: scaled up to 2.2x it is a 2.4 m potted fern), the newsstand 3 x 1.5 x 2.8 m (the kiosk is 6 x 4.4 x 6.5 m: scaled to 0.4), the two tram shelters a little under their pieces
-  PottedFern: [0.9, 2.2], FanPalm_Play: [0.5, 2.2], PhoneBooth_Single: [1, 1], Newsstand: [1, 1], CurvedKiosk_Play: [0.4, 1.1], BusShelter_Play: [0.7, 1.1], TramCanopy_Play: [0.8, 1.1],
+  PottedFern: [0.9, 2.2], FanPalm_Play: [0.5, 2.2], PhoneBooth_Single: [1, 1], Newsstand: [1, 1], CurvedKiosk_Play: [0.4, 1.1], BusShelter_Play: [0.7, 1.1], TramCanopy_Play: [0.8, 1.1], Tram: [1, 1], Tile_TramRail: [1, 1], Tile_TramRail_12m: [1, 1], TicketKiosk: [1, 1], TimetableColumn: [1, 1], // brief 075: at their own size (a scaled tram leaves its gauge; the track tiles butt end to end)
 };
 /** Pieces that can hold a body (brief 013): a closed container big enough to lie a person in. Only the Dumpster today; adopting a piece is Vela's call, tagging it is not. */
 const STASH: Record<string, KitStash> = { Dumpster: { holds: 1 } };
@@ -92,7 +92,10 @@ const SQUASH: Record<string, number> = { Streetlamp: 0.7, CCTVPole: 0.5 };
 const REACH: Record<string, KitReach> = { Streetlamp: { axis: '-x', m: 1.25 } };
 const USE_BY_CATEGORY: Record<string, string> = { Street: 'street', Signals: 'street', Booths: 'street', Furnish: 'street', Plants: 'tree', Rooftop: 'roof', Signage: 'sign', Facades: 'facade', Skyline: 'skyline', Highrise: 'tower', Landmarks: 'landmark', Skyport: 'landmark', Ground: 'ground', Alleys: 'alley', Plaza: 'plaza', Structures: 'structure', Sky: 'sky', Vehicles: 'vehicle', Robots: 'cast', Calibration: 'calibration', Crowns: 'crown', Horizon: 'horizon' };
 
-const PLAIN_USE: Record<string, string[]> = { 'LinerDock@liner-berth': ['landmark:liner-berth'], OceanLiner: ['landmark:ocean-liner'], // OceanLiner: the moored liner on the water site Datum is siting beside the berth (a landmark once the plan has it)
+const PLAIN_USE: Record<string, string[]> = { 'LinerDock@liner-berth': ['landmark:liner-berth'], OceanLiner: ['landmark:ocean-liner'],
+  // brief 075 golden view (Vela): the old tram and its track, and the stop's ticket kiosk and timetable column (tools/decokit vehicles.py, ground.py, tram075.py). Their own tags, never the
+  // category's generic `vehicle` / `ground` / `structure` / `street`: Splice places them by rule (slotOf today has no case for kiosk-tickets or timetable-column, so tagging them moves no item).
+  Tram: ['vehicle:tram'], Tile_TramRail: ['ground:tram-rail'], Tile_TramRail_12m: ['ground:tram-rail:12m'], TicketKiosk: ['kiosk-tickets'], TimetableColumn: ['timetable-column'], // OceanLiner: the moored liner on the water site Datum is siting beside the berth (a landmark once the plan has it)
   PlanterArc: ['planter:fountain-garden'], SkyRailStation_Twin: ['station:twin'], SkyRailStation_Decks: ['station:decks'], ParadeGate_Block: ['portal:parade-gate'],
   // the crossing's pieces (brief 009 A, Vela; adopted by Splice): the generator places a part by its use tag and never scales it
   // brief 061 (Sky 2026-10-25, signal head A): the head is SignalLens (the floating lens, oriented, with state and clock) and its clock ring HaloRing (one radial quad in the paving, no export part: Latch places it from `signal.halo`);

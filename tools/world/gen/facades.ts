@@ -15,6 +15,7 @@ import { adopted } from './kitrefs';
 import { type Ring, edgeN, pointInRing } from './geo';
 import { isStreetClass } from './grammar';
 import { END_SIDE, JUNCTION, classOf, cornerPlace, endPlace, recipePick } from './stream';
+import { OLD_STREET, isOldRoad } from './oldstreet';
 
 /** What the generator knows of a building before its masses are built. */
 export type FacadeBld = { id: string; use: string; n: number; ring: Ring; /** in a play-street area (standards.buildings.playStreets): storey-true pieces only */ play?: boolean; /** a street-level hotel tenancy (brief 075-F1b): only then CornerTower_12, whose blade sign reads HOTEL */ hotel?: boolean };
@@ -65,7 +66,7 @@ export function adjacent(a: Ring, b: Ring): boolean {
 
 const turn = (t0: V, t1: V) => ({ left: cross(t0, t1) > 0, square: Math.abs(dot(t0, t1)) < 0.26 });
 
-export function generateFacades(ctx: Ctx, blds: FacadeBld[], pav: number, near: (id: string) => string[]): FacadeOut {
+export function generateFacades(ctx: Ctx, blds: FacadeBld[], pav: number, near: (id: string) => string[], /** brief 075: the tower sites' footprints and storeys (neighbours an old-street end must not round off toward) */ towers: { ring: V[]; n: number }[] = []): FacadeOut {
   const { bays, ends, corners } = catalogue(), B = ctx.B, H = (n: number) => B.plinth + B.groundStorey + (n - 1) * B.upperStorey + B.roofCrown;
   const why = new Map<string, string>(), facades: Facade[] = [], kitFaced = new Set<string>(), metres = new Map<string, { street: number; kit: number }>(), chosen = new Map<string, string>();
   const yawOf = (n: V) => r4(Math.atan2(n[1], n[0]) - Math.PI / 2);
@@ -87,7 +88,8 @@ export function generateFacades(ctx: Ctx, blds: FacadeBld[], pav: number, near: 
       return [r3(Math.min(hi, Math.max(sy * x.a.tags.squash, sy))), r3(sy), r3(sy)];
     };
     const storeyTrue = (x: Piece) => x.code === String(b.n) && Math.abs(x.a.size[1] - x.coping) <= COPING_TOL;
-    const fit = bays.filter(x => (b.play ? storeyTrue(x) : !LOW.test(x.a.id))).map(x => ({ x, k: scaleOf(x) })).filter((o): o is { x: Piece; k: [number, number, number] } => !!o.k);
+    // brief 075 (golden view, oldstreet.ts): a building fronting an old-street road takes the old walls' class family only (streamline)
+    const old = c.some(isOldRoad), fit = bays.filter(x => (b.play ? storeyTrue(x) : !LOW.test(x.a.id)) && (!old || OLD_STREET.frontage.classes.includes(classOf(x.a.id) ?? ''))).map(x => ({ x, k: scaleOf(x) })).filter((o): o is { x: Piece; k: [number, number, number] } => !!o.k);
     if (!fit.length) { why.set(b.id, `no bay fits H(${b.n})`); continue; }
     const taken = new Set(near(b.id).map(id => chosen.get(id)).filter((x): x is string => !!x));
     const fresh = fit.filter(o => !taken.has(o.x.a.id));
@@ -121,7 +123,14 @@ export function generateFacades(ctx: Ctx, blds: FacadeBld[], pav: number, near: 
     const endAtTail = (e: number): boolean => {
       if (!ke) return false;
       const q = (e + N - 1) % N, v = p[e]!, t0 = norm(sub(v, p[q]!)), t1 = norm(sub(p[(e + 1) % N]!, v)), tn = turn(t0, t1);
-      return street[e] && !street[q] && tn.left && tn.square && edgeLen(e) >= BAY * ke[1] + 3;
+      return street[e] && !street[q] && tn.left && tn.square && edgeLen(e) >= BAY * ke[1] + 3 && (!isOldRoad(c[e]!) || tallerAt(e));
+    };
+    // brief 075 (old DecoKitFrontage.Bays): on an old-street face a run rounds off only toward a lower neighbour (h > neighbour + 1) or where no building stands beyond
+    // its tail (a lane, a court), never at every party wall: the neighbour is the building standing 1 m past the tail along the wall line, 2 m behind it
+    const tallerAt = (e: number): boolean => {
+      const v = p[e]!, t = norm(sub(p[(e + 1) % N]!, v)), nrm = edgeN(v, p[(e + 1) % N]!), q: V = [v[0] - t[0] - nrm[0] * 2, v[1] - t[1] - nrm[1] * 2];
+      const o = blds.find(x => x.id !== b.id && pointInRing(q, x.ring.p)) ?? towers.find(x => pointInRing(q, x.ring));
+      return !o || h > H(o.n) + 1;
     };
     const lay = (cornerAt: boolean[]) => {
       let kitM = 0, placed = 0;
@@ -149,7 +158,9 @@ export function generateFacades(ctx: Ctx, blds: FacadeBld[], pav: number, near: 
           if (rect(a, t, nrm, BAY * sc, BODY * sc)) { push({ building: b.id, form: 'end', storeys: b.n, kit: { id: endP.a.id, scale: ke!, yaw: ep.yaw, at: r3v(ep.at) }, base: r3(pav), a: r3v(a), b: r3v(at(BAY * sc)), edge: e }); kitM += BAY * sc; placed++; }
         }
         // the run of bays between the reserved ends: tile it with k bays of width BAY × x, x within the piece's scale range and at least its squash share of the height scale
-        const R = L - r0 - r1, [lo, hi] = bay.a.tags.scale, wmin = BAY * Math.max(lo, k[1] * bay.a.tags.squash), wmax = BAY * hi;
+        // brief 075 (oldstreet.ts frontage.squash): on an old-street face a bay may stand a little narrower than its height scale (the old runs' rhythm: our H(9) 38.4 against the old
+        // S9's 36.7 asks 6.28 m, which leaves the plan's 6 m-bay buildings a procedural gap), so the run closes on whole bays
+        const oldFace = isOldRoad(c[e]!), R = L - r0 - r1, [lo, hi] = bay.a.tags.scale, wmin = BAY * Math.max(lo, k[1] * (oldFace ? Math.min(bay.a.tags.squash, OLD_STREET.frontage.squash) : bay.a.tags.squash)), wmax = BAY * hi;
         if (R < wmin - 1e-6) continue;
         let s0 = r0, count: number, stride: number;
         const kMin = Math.ceil(R / wmax - 1e-9), kMax = Math.floor(R / wmin + 1e-9);

@@ -31,7 +31,7 @@ test('the live export: BB-1..BB-4 pass; every sign-frame roof outside the play s
 
 test('the counts against the old town (14 billboards: 7 rooftop, 4 wall, 3 pylon; 8 advertising columns)', () => {
   const log = base.gen.billboards!;
-  expect([log.rooftop.placed, log.wall.placed, log.pylon.placed, log.column.before + log.column.placed]).toEqual([19, 9, 9, 19]);
+  expect([log.rooftop.placed, log.wall.placed, log.pylon.placed, log.column.before + log.column.placed]).toEqual([19, 8, 9, 19]); // brief 075 (golden view): 8 wall boards, was 9: the boulevard's old storey codes (oldstreet.ts) stand most of its east wall at 9 storeys side by side, so fewer party walls show over a lower neighbour
 });
 
 test('failing example (BB-1): a board on the Records Precinct roof (20.58 m) tops out at 29.75 m over the 20.4 m cap', () => {

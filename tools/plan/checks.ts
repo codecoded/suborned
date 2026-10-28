@@ -130,7 +130,7 @@ export function check(plan: Plan, d: Derived, civic: Civic, strict = false, over
     const street = (p: V) => d.roads.some(r => nearLine(p, r.line, r.w / 2 + .01)) || dist(p, plan.circus.c) <= plan.circus.island;
     const off = paths.flatMap(p => p.samples).filter(s => !street(s.p));
     add({ id: 'T-C1', group: 'Tram', rule: `${line.id} runs in street space or the circus island`, value: `${off.length / 2} m off`, limit: '0', ok: !off.length });
-    for (const p of paths) for (const r of d.roads.filter(r => r.id !== 'boulevard')) {
+    for (const p of paths) for (const r of d.roads.filter(r => (plan.roads.find(x => x.id === r.id) as { tram?: { line?: string } } | undefined)?.tram?.line !== line.id)) { // brief 075: a road the line runs along (roads[].tram) is its own street, not a crossing (was: every road but the Boulevard)
       const pl = p.samples.map(s => s.p);
       const apart = (A: V[], B: V[]) => Math.max(...A.map(v => v[0])) < Math.min(...B.map(v => v[0])) || Math.max(...B.map(v => v[0])) < Math.min(...A.map(v => v[0])) || Math.max(...A.map(v => v[1])) < Math.min(...B.map(v => v[1])) || Math.max(...B.map(v => v[1])) < Math.min(...A.map(v => v[1]));
       const rx0 = Math.min(...r.line.map(v => v[0])), rx1 = Math.max(...r.line.map(v => v[0])), ry0 = Math.min(...r.line.map(v => v[1])), ry1 = Math.max(...r.line.map(v => v[1]));

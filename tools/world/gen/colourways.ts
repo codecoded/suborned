@@ -7,7 +7,9 @@
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import type { Frontage } from '../../../contracts/world/world.schema';
-import { rng } from './common';
+import { type Ctx, rng } from './common';
+import type { V } from '../../plan/geom';
+import { OLD_STREET, oldRoadOf, roadFrame } from './oldstreet';
 
 export const FACADE_SPEC_PATH = 'unity/Assets/Suborned/Editor/World/facade.json';
 type Spec = { swatches: Record<string, string>; families: Record<string, [string, string, string]>; areas: Record<string, { families: Record<string, number> }>; hostAreas: Record<string, string> };
@@ -19,8 +21,8 @@ export const COLOURWAY_SPEC = {
   hostAreas: raw.hostAreas,
 };
 export const CIVIC = 'civic';
-/** The district colourways: every family but the civic block's. */
-export const FAMILIES = Object.keys(COLOURWAY_SPEC.families).filter(k => k !== CIVIC);
+/** The district colourways: every family but the civic block's and the old high street's (brief 075: those are given by oldStreetFamilies only, never drawn). */
+export const FAMILIES = Object.keys(COLOURWAY_SPEC.families).filter(k => k !== CIVIC && !OLD_STREET.colour.palette.includes(k));
 export const wallOf = (fam: string) => COLOURWAY_SPEC.families[fam]![0]!;
 
 export const COLOURWAY = {
@@ -96,11 +98,12 @@ export function drawFamily(id: string, area: string, salt: number): string {
 export type ColourwayLog = { buildings: number; pairs: number; redrawn: number; passes: number; families: Record<string, number>; same: number; de: { min: number; p10: number; median: number } | null };
 
 /** Each building's colourway (the civic block's `civic`), then the neighbour repair. `blds`: id and area (facade.json area key) of every building host. */
-export function assignColourways(blds: { id: string; area?: string }[], frontages: Frontage[]): { of: Map<string, string>; log: ColourwayLog } {
+export function assignColourways(blds: { id: string; area?: string }[], frontages: Frontage[], fixed: Map<string, string> = new Map()): { of: Map<string, string>; log: ColourwayLog } {
   const of = new Map<string, string>(), area = new Map<string, string>();
   const ids = [...new Set(blds.map(b => b.id))].sort();
   for (const b of blds) if (!area.has(b.id)) area.set(b.id, areaKey(b.area, b.id));
   for (const id of ids) of.set(id, civicHost(id) ? CIVIC : drawFamily(id, area.get(id)!, 0));
+  for (const [id, f] of fixed) if (of.has(id) && of.get(id) !== CIVIC) of.set(id, f); // brief 075: the old high street's families (oldStreetFamilies) stand; the repair never re-draws them
   const pairs = streetNeighbours(frontages, new Set(ids)), nb = new Map<string, string[]>();
   for (const [p, q] of pairs) { (nb.get(p) ?? nb.set(p, []).get(p)!).push(q); (nb.get(q) ?? nb.set(q, []).get(q)!).push(p); }
   // a building's worst neighbour: -1 sharing a family, else the smallest wall dE
@@ -109,7 +112,7 @@ export function assignColourways(blds: { id: string; area?: string }[], frontage
   for (; passes < COLOURWAY.passes; passes++) {
     let n = 0;
     for (const id of ids) {
-      if (of.get(id) === CIVIC) continue;
+      if (of.get(id) === CIVIC || fixed.has(id)) continue;
       let best = of.get(id)!, bs = score(id, best);
       if (bs >= COLOURWAY.floor) continue;
       for (let s = 1; s <= COLOURWAY.tries; s++) {
@@ -137,4 +140,33 @@ export function spreadOf(of: Map<string, string>, pairs: [string, string][]): Om
     families: Object.fromEntries(Object.entries(families).sort((a, b) => b[1] - a[1] || (a[0] < b[0] ? -1 : 1))),
     de: d.length ? { min: r1(d[0]!), p10: r1(d[Math.floor(d.length / 10)]!), median: r1(d[Math.floor(d.length / 2)]!) } : null,
   };
+}
+
+// ---------------------------------------------------------------- brief 075: the old high street (oldstreet.ts; old DecoKitColourways.HighStreet)
+/** The families of the buildings fronting an old-street road, by the old HighStreet rule: each road's walls walked in order (its right side, then its left,
+ *  each along the road's direction, as the old east walls came before the west), a run broken where the plot changes (a side street or lane); a building is
+ *  painted when the one before it in its run is not, the palette running on in order from wall to wall; the rest take the plain family. Towers aside. */
+export function oldStreetFamilies(ctx: Ctx, blds: { id: string; plot: string; tower?: boolean; ring: { p: V[]; c: string[] } }[]): Map<string, string> {
+  const C = OLD_STREET.colour, walls = new Map<string, { id: string; plot: string; u: number }[]>();
+  for (const b of blds) {
+    if (b.tower) continue;
+    const N = b.ring.p.length;
+    for (let i = 0; i < N; i++) {
+      const road = oldRoadOf(b.ring.c[i]!); if (!road) continue;
+      const a = b.ring.p[i]!, z = b.ring.p[(i + 1) % N]!, m: V = [(a[0] + z[0]) / 2, (a[1] + z[1]) / 2], f = roadFrame(ctx, road, m); if (!f) continue;
+      const key = `${OLD_STREET.roads.indexOf(road)}|${f.left ? 1 : 0}`, w = walls.get(key) ?? walls.set(key, []).get(key)!;
+      if (!w.some(x => x.id === b.id)) w.push({ id: b.id, plot: b.plot, u: m[0] * f.dir[0] + m[1] * f.dir[1] });
+      break; // one face per building decides its place on the wall
+    }
+  }
+  const out = new Map<string, string>(); let k = 0;
+  for (const key of [...walls.keys()].sort()) {
+    let previous = false, plot = '';
+    for (const w of walls.get(key)!.sort((x, y) => x.u - y.u || (x.id < y.id ? -1 : 1))) {
+      if (w.plot !== plot) { previous = false; plot = w.plot; } // a new run
+      previous = !previous;
+      out.set(w.id, previous ? C.palette[k++ % C.palette.length]! : C.plain);
+    }
+  }
+  return out;
 }

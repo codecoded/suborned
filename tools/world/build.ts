@@ -23,7 +23,7 @@ import { civicRoofs } from './civic/roof';
 import { finishSet } from '../plan/finish-set';
 import { baysOf, fillRing, noseRing, returnsOf } from './gen/kerbreturn';
 import { footwaysOf } from './gen/street/footway';
-import { CIVIC, assignColourways, civicHost, hostOf } from './gen/colourways';
+import { CIVIC, assignColourways, civicHost, hostOf, oldStreetFamilies } from './gen/colourways';
 
 /** Provisional numbers: TODO each moves into the plan's standards (Datum) and is then read from there. */
 export const PROV = {
@@ -316,7 +316,7 @@ export function worldOf(plan: Plan, d: Derived, civ: Civic): { world: World; gen
   const civicM = recordsTower(plan, civicMasses(civ, toPlanFn(plan.civic)));
   if (gen.capstone) { gen.street.push(...civicRobots(ctxOf(plan, d, civ, PROV.pavement), civicM, gen.capstone)); civicPorterGap(gen.capstone, civ); } // brief 026: after the civic masses exist
   // brief 074 (Sky 2026-10-28, "Do building colors"): each building's colourway (a facade.json wall family) on every mass and facade piece of it; the civic block's are `civic`
-  const cw = assignColourways(gen.blds.map(b => ({ id: b.id, area: b.area })), gen.frontages);
+  const cw = assignColourways(gen.blds.map(b => ({ id: b.id, area: b.area })), gen.frontages, oldStreetFamilies(gctx, gen.blds)); // brief 075: the old high street's families on the old-street roads (oldstreet.ts)
   gen.colourways = cw.log;
   for (const m of gen.buildings) { const c = cw.of.get(hostOf(m.id)); if (c) m.colourway = c; }
   for (const f of gen.facades) { const c = cw.of.get(f.building); if (c) f.colourway = c; }

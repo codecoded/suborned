@@ -18,7 +18,7 @@ Frames: as the whole-wall pieces (skyline.py): face -Y, pivot = the footprint's 
 depth +Y, no bevel; the same footprint and pivot as StreamBay_n / StreamEnd_n / StreamCorner_n, so a column of stack modules stands where the whole-wall piece would.
 Windows: the opaque window film (sides.py DK_Window_Film, Redline's 072 rule for the every-face pieces: no transparent film over thousands of tall walls; the
 occlusion cut fades it with the wall) in front of a solid body; GLASS names the material if Glint or Redline want the fronts' DK_GlassDark back.
-L0 is full detail (GDD §12). L1 and L2 are hand-built: L1 the same layout with square-section trims, fewer segments on the rounds, no beads or mast; L2 the bands and
+L0 is full detail (GDD §12). L1 and L2 are hand-built: L1 the same layout with square-section trims, fewer segments on the rounds, no beads, the corner's mast kept (075: the corner Top is 12.21 m at every level); L2 the bands and
 the window recess alone (body at the face, film 0.3 behind it, eyebrows, canopy and coping kept), so it is also the shadow copy with its windows open (072-G)."""
 
 import math
@@ -191,8 +191,12 @@ def fin(s, band, lod):
             for k in range(3):
                 z = zt + 2.6 + 1.0 * k
                 s.box((-0.27, -1.32, z), (0.27, 0.4, z + 0.32), pal.Enamel_Teal)
-        if lod == 0:
-            mast(s, 0.0, -0.4, zt + 6.0, 3.2)
+        if lod < 2:
+            mast(s, 0.0, -0.4, zt + 6.0, 3.2)  # L1 keeps the whole mast (about 60 triangles): the 3.36 m whip and beacon are the corner's skyline mark
+        else:  # L2 (brief 075 open item): the whip and the beacon alone, 4 sides, so the piece stays 12.21 m tall at every level (it dropped to 8.85 m)
+            with s.at((0.0, -0.4, zt + 6.0)):
+                s.lathe([(0.09, 0.0), (0.09, 0.25), (0.025, 0.3), (0.025, 3.2), (0.0, 3.2)], pal.Chrome, seg=4)
+                s.lathe([(0.0, 3.18), (0.08, 3.2), (0.08, 3.3), (0.0, 3.36)], pal.Signal_Red, seg=4)
 
 
 for _band in ("Base", "Mid", "Top"):

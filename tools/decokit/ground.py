@@ -198,24 +198,58 @@ def kerb_prof(r0, r1, z1, rn=0.05):
 
 # ----------------------------------------------------------------- assets
 
-@asset("Tile_TramRail", "Ground", bevel=0.012)
+def tram_rail_far(n):
+    """Hand-built L2 of the track (brief 075): the 6 % collapse folded the 2 m tile's rails into slivers and lost the slabs (and grew it 2.05 m wide, so tiles
+    overlapped at distance). Flat boxes on the same plan, top z = 0: grey track bed, steel rail strips, ivory outer slabs, the mint/red strips per 2 m period."""
+    yi, gf = 0.4625 - 0.085, 0.4625
+
+    def build(s):
+        s.box((-n, -1, -0.15), (n, 1, -0.12), pal.Stone_Dark)
+        s.box((-n, -yi, -0.12), (n, yi, 0.0), pal.Tile_Grey)
+        for sg in (1, -1):
+            y0, y1 = sorted((sg * yi, sg * (gf + 0.095)))
+            s.box((-n, y0, -0.12), (n, y1, 0.0), pal.Steel)
+            y0, y1 = sorted((sg * (gf + 0.095), sg * 0.8))
+            s.box((-n, y0, -0.12), (n, y1, 0.0), pal.Tile_Ivory)
+            y0, y1 = sorted((sg * 0.8, sg * 1.0))
+            for x0 in range(-n, n, 2):
+                s.box((x0, y0, -0.12), (x0 + 0.4, y1, 0.0), pal.Tile_Mint)
+                s.box((x0 + 0.4, y0, -0.12), (x0 + 2, y1, 0.0), pal.Tile_Red)
+    return build
+
+
+@asset("Tile_TramRail", "Ground", bevel=0.012, far=tram_rail_far(1))
 def tile_tram_rail(s):
     """Road-level module (top z = 0, body to -0.15): one track along X, rail-head centrelines at y = +-0.5 (the tram's
     wheel treads), grooved rails flush in grey track slabs, ivory outer slabs, mint + red edge strips on both sides."""
+    tram_rail(s, 1)
+
+
+@asset("Tile_TramRail_12m", "Ground", bevel=0.012, far=tram_rail_far(6))
+def tile_tram_rail_12m(s):
+    """Brief 075 golden view: Tile_TramRail's section on a 12 m straight (six of its 2 m periods: the mint/red strips,
+    the 1 m ivory slabs and the running bond repeat exactly, so it butts onto Tile_TramRail end to end). One instance
+    for six on the straights; the 2 m tile keeps the curves."""
+    tram_rail(s, 6)
+
+
+def tram_rail(s, n):
+    """The old DecoKit tram track over x = -n..n (n 2 m periods); n = 1 is the old Tile_TramRail, op for op."""
     zb, zt, gf = -0.12, 0.0, 0.4625  # gf = gauge face (inner edge of the 75 mm head)
-    bed(s, z0=-0.15, z1=zb)
+    bed(s, rect(-n, -1, n, 1), z0=-0.15, z1=zb)
     for sg in (1, -1):
         y0, y1 = sorted((sg * 0.8, sg * 1.0))
-        s.rbox((-1 + J, y0 + J, zb), (-0.6 - J, y1 - J, zt), 0.022, pal.Tile_Mint)
-        s.rbox((-0.6 + J, y0 + J, zb), (1 - J, y1 - J, zt), 0.022, pal.Tile_Red)
+        for x0 in range(-n, n, 2):
+            s.rbox((x0 + J, y0 + J, zb), (x0 + 0.4 - J, y1 - J, zt), 0.022, pal.Tile_Mint)
+            s.rbox((x0 + 0.4 + J, y0 + J, zb), (x0 + 2 - J, y1 - J, zt), 0.022, pal.Tile_Red)
         y0, y1 = sorted((sg * (gf + 0.095), sg * 0.8))
-        for x0 in (-1, 0):
+        for x0 in range(-n, n):
             slab(s, rect(x0, y0, x0 + 1, y1), pal.Tile_Ivory, zb, zt)
 
         def part(pts, mat, sg=sg):  # (w, z) section; w = distance inward (toward y = 0) from the gauge face
             poly = [(sg * (gf - w), z) for w, z in pts]
             with s.at((0, 0, 0), SIDE):
-                s.extrude(poly if _area(poly) > 0 else poly[::-1], -1, 1, mat, smooth_sides=True)
+                s.extrude(poly if _area(poly) > 0 else poly[::-1], -n, n, mat, smooth_sides=True)
         part(rect(-0.095, -0.15, 0.085, -0.04), pal.Steel_Satin)  # web + foot block
         part(rect(-0.095, -0.04, -0.075, zt), pal.Steel_Satin)  # outer keeper flat
         part([(-0.075, -0.04), (0.0, -0.04)] + crown(0.0, -0.075, -0.005, zt), pal.Steel)  # crowned head
@@ -224,8 +258,9 @@ def tile_tram_rail(s):
         part(rect(0.065, -0.04, 0.085, zt), pal.Steel_Satin)  # inner keeper flat
     yi = gf - 0.085
     for y0, y1 in ((gf + 0.095, 1), (-yi, yi), (-1, -gf - 0.095)):
-        grout(s, rect(-1, y0, 1, y1), zt)
-    for (y0, y1), cuts in (((0.0, yi), (-1, -0.5, 0.5, 1)), ((-yi, 0.0), (-1, 0, 1))):  # running bond
+        grout(s, rect(-n, y0, n, y1), zt)
+    bond = [-n] + [-n + 0.5 + k for k in range(2 * n)] + [n]  # n = 1: (-1, -0.5, 0.5, 1)
+    for (y0, y1), cuts in (((0.0, yi), bond), ((-yi, 0.0), list(range(-n, n + 1)))):  # running bond
         for x0, x1 in zip(cuts, cuts[1:]):
             slab(s, rect(x0, y0, x1, y1), pal.Tile_Grey, zb, zt)
 

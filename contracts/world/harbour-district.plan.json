@@ -16,7 +16,7 @@
   },
 
   "standards": {
-    "tram": { "radiusRunning": 50, "radiusLoop": 25, "stopSpacing": [300, 500], "platform": 30, "trackCentres": 3.6 },
+    "tram": { "radiusRunning": 25, "radiusRunningWhy": "brief 075: street running in the centre lanes turns at the ring's right-angle corners on R 25 (sections.tramStreet.primary.corners); was 50, which swept 6 m over the corner pavement once T2 left the outer half. Same as radiusLoop; PCC cars took 12.2 m", "radiusLoop": 25, "stopSpacing": [300, 500], "platform": 30, "trackCentres": 3.6 },
     "skyrail": {
       "radiusLine": 70,
       "radiusLoop": 40,
@@ -995,22 +995,158 @@
       "sections": {
         "note": "zones from the kerb face inward: kerb (trees, lamps, furniture; items ≥ 0.45 m from the kerb face, Manual for Streets) · walk (clear, never blocked, SF-1) · frontage (spill, vending robots, planters; spill depth = min(frontage.placement.spill.depth, this zone)). pavement = kerb + walk + frontage.",
         "primary":  {
-          "pavement": 5.0, "kerb": 1.5, "walk": 3.0, "frontage": 0.5, "median": "trees + twin-boomerang lamps in the 4 m median, except along a T2 median platform (its 37.2 m + 2 m each end) and where T2 slews across the median (roads[].tram)", "why": "no frontage on primaries (frontage.placement.never): 0.5 m plinth strip only; 3.0 walk because primaries carry the walk between areas (NACTO through zone 2.4–3.6)",
-          "tram": {
-            "line": "T2",
-            "note": "T2's cross-section wherever it runs on a primary (where: roads[].tram). Offsets in m from the road centreline, positive toward the tram's half (24 m road: median ±2, carriageway 2–12, pavement 12–17). The pair centre is 6.0 off the centreline, as drawn in tram[T2].paths.",
-            "median": [-2.0, 2.0],
-            "separator": [2.0, 2.4],
-            "tracks": { "inner": 4.2, "outer": 7.8 },
-            "lanes": { "tram": [2.4, 6.0], "shared": [6.0, 9.6], "kerbside": [9.6, 12.0] },
-            "swept": [2.375, 9.625],
-            "running": "right-hand: the outer (kerbside) track runs with the half's traffic in the shared lane; the inner track runs contraflow in its own lane, behind a flush 0.4 m cobbled separator (surface, not an object: SF-3 holds). The kerbside 2.4 m strip is a hard strip (no frontage access on primaries), taken by the kerb platform at stops; cars queue behind a tram at a stop.",
-            "platforms": {
-              "median": { "span": [-2.0, 2.8], "edge": 2.8, "top": 0.30, "shelter": [-1.5, 0.0], "roof": [-1.7, 0.7], "clear": 2.8, "for": "inner track", "note": "the whole 4 m median + a 0.8 m build-out into the separator and tram lane; the shelter's glazed back faces the far carriageway 0.5 m in from its kerb" },
-              "kerb": { "span": [9.2, 12.0], "edge": 9.2, "top": 0.30, "raised": [12.0, 17.0], "shelter": [11.5, 13.0], "roof": [10.6, 13.0], "clear": 2.3, "for": "outer track", "note": "a 2.8 m build-out over the kerbside strip, joined level to the pavement: the whole 5 m pavement rises 0.12 to the platform top for the 37.2 m stop, 1:20 along the walk at each end (2.4 m). The shelter stands across the joint in the raised kerb zone, its back 0.5 m short of the walk (13.5), so the walk keeps 3.0 and the platform keeps 2.3 clear" },
-              "why": "platform edge = track ± 1.4 (tramStop.edge). Shelter body 1.5 deep (catalogue.tram-shelter), roof 2.4 with its front edge ≥ 0.6 back from the platform edge; clear = platform edge to shelter front ≥ 1.5 (Inclusive Mobility at obstacles). The 2.8 m kerb build-out alone left 1.3, so the shelter steps back into the raised kerb zone"
+          "pavement": 5.0, "kerb": 1.5, "walk": 3.0, "frontage": 0.5, "median": "trees + twin-boomerang lamps in the 4 m median of a primary with no tram on the sheet (Crown Road); a tram primary has no median (sections.tramStreet, brief 075)", "why": "no frontage on primaries (frontage.placement.never): 0.5 m plinth strip only; 3.0 walk because primaries carry the walk between areas (NACTO through zone 2.4–3.6)"
+        },
+        "tramStreet": {
+          "tag": "[S]",
+          "source": "brief 075 (Sky 2026-10-28: \"how are 1950s cities with trams? … the same city design with just flying / 1950s space concepts attached to everyday items\"; the street section approved from the old reel, briefs/075/golden/sky-old.png) · Market Street, San Francisco, 1950s (120 ft building to building, centre tracks, boarding islands, wide sidewalks) · Melbourne's Swanston and Bourke Streets (centre tracks in mixed traffic, kerbside parking, safety zones at stops) · Palm Canyon Drive, Palm Springs (angle parking with palm islands in the parking lane) · PCC car (min radius 12.2 m) · standards.tram (trackCentres 3.6, platform 30) · transit.tramStop (edge = track ± 1.4)",
+          "rule": "Every road a tram line runs on (roads[].tram) takes this section, and no other road does: tracks flush in the carriageway on the two centre lanes, the pair centred on the road line (tracks ± trackCentres / 2 = ± 1.8), laid in granite setts, in mixed traffic; no median, no reservation, no lawn track, no grass anywhere between the kerbs. Each half: the tram lane (setts, shared with cars), one traffic lane, a kerbside parking and loading strip. About 2 lanes each way including the tram lane. Stops are boarding islands in the carriageway with shelters; traffic passes on the kerb side of the island, the kerbside strip giving way to it. Overhead wires on span wires. Where a tram line runs on one half only off the sheet's edge (Crown Road's stub in the beyond block), that stub keeps its half and the road keeps its median on the sheet (notTram).",
+          "offsets": "m from the road centreline, per half, the same on both halves (the section is symmetric about the road line)",
+          "tracks": {
+            "at": 1.8,
+            "gauge": 1.0,
+            "rail": "the kit's Tile_TramRail / Tile_TramRail_12m (2.0 m tile, rail heads ± 0.5 = the Tram's 1.0 m gauge, briefs/075/notes.md Vela golden tram), top flush with the setts, no sleepers seen",
+            "swept": [
+              -0.025,
+              3.625
+            ],
+            "sweptWhy": "track ± (half car 1.325 + 0.5): the two envelopes overlap 0.05 m on the road line, which is fine: cars pass at 0.95 m (3.6 − 2.65)"
+          },
+          "setts": {
+            "band": [
+              0,
+              3.6
+            ],
+            "what": "granite setts, the whole of both tram lanes (7.2 m down the road's middle): the material change is the lane line; no painted divider, no dash on the road line between the tracks",
+            "why": "the 1950s street: rails in setts, asphalt either side; also SF-3 (the tram's space stays clear) reads on the ground"
+          },
+          "district": {
+            "roads": [
+              "boulevard"
+            ],
+            "w": 20,
+            "lanes": {
+              "tram": [
+                0,
+                3.6
+              ],
+              "traffic": [
+                3.6,
+                7.2
+              ],
+              "kerbside": [
+                7.2,
+                10
+              ]
+            },
+            "kerbside": {
+              "use": "parallel parking (bays 6.0 × 2.4, 0.4 m off the traffic lane) and loading bays outside trades that take deliveries (frontage catalogue); no parking within 10 m of a kerb return's tangent point, 5 m of a crossing, or along a stop's island and 15 m before it, 10 m after it",
+              "w": 2.8
+            },
+            "pavement": "sections.district (8.0: kerb 2.0 palms, lamps, kiosks, advertising columns · walk 3.0 · frontage 3.0): the wide pavement the old reel shows",
+            "wallToWall": 36,
+            "island": {
+              "span": [
+                3.2,
+                6.2
+              ],
+              "edge": 3.2,
+              "top": 0.3,
+              "length": 37.2,
+              "shelter": [
+                4.7,
+                6.2
+              ],
+              "clear": 1.5,
+              "passing": [
+                6.7,
+                10
+              ],
+              "noses": "each end a half round (R 1.5) with a chrome-capped bollard pair and the stop's crossing beside it (the island is the crossing's refuge)",
+              "why": "edge = track 1.8 + 1.4 (tramStop.edge); 3.0 wide (tramStop.platforms T1); shelter body 1.5 at the island's back, 1.5 m clear to the edge; passing lane = 0.5 m shy off the island + 3.3 m to the kerb, the kerbside strip suspended there"
+            },
+            "why": "was w 28 with a 10 m lawn reservation and two 9 m carriageways (brief 028); a 1950s tram street of 2 lanes each way with parking needs 20 kerb to kerb. The 8 m taken out goes to the plots fronting the Boulevard (4 m a side), so the pavements keep 8 m and the street wall closes from 44 m to 36 m"
+          },
+          "primary": {
+            "roads": [
+              "sunset-way",
+              "comet-row",
+              "harbour-road"
+            ],
+            "w": 24,
+            "lanes": {
+              "tram": [
+                0,
+                3.6
+              ],
+              "traffic": [
+                3.6,
+                7.2
+              ],
+              "kerbside": [
+                7.2,
+                12
+              ]
+            },
+            "kerbside": {
+              "use": "30° angle parking bays (2.6 wide along the bay, 4.8 deep) with a kerbed palm island every 24 m (2.0 along the kerb × 4.8, flush with the pavement top, one coconut palm in a 1.5 m pit and a district lamp on alternate islands): the primaries' palms, since their 4 m medians are gone and their 1.5 m kerb zone takes no pit (trees.pit 1.5 + 0.45). No bays within 10 m of a kerb return's tangent point, 5 m of a crossing, or along a stop's island and 15 m before it, 10 m after it: there the strip is a loading margin",
+              "w": 4.8,
+              "why": "w stays 24: the primaries' kerb lines, their plots, the beyond block, the quay edge (Harbour Road's east kerb is the quay, x 312) and the Parade's and the Market Deck's footprints all stand on it. Tram lane + one traffic lane leaves 4.8 m a side: 1950s angle parking fills it (Palm Canyon Drive) where a parallel strip would leave a 2.4 m dead lane. Datum's proposal [S]; the alternative is w 20 with 7 m pavements (the plots and beyond 2 m out, the quay re-cut), for Sky"
+            },
+            "pavement": "sections.primary (5.0: kerb 1.5, walk 3.0, frontage 0.5), unchanged",
+            "island": {
+              "span": [
+                3.2,
+                6.2
+              ],
+              "edge": 3.2,
+              "top": 0.3,
+              "length": 37.2,
+              "shelter": [
+                4.7,
+                6.2
+              ],
+              "clear": 1.5,
+              "passing": [
+                6.7,
+                10.4
+              ],
+              "why": "as district: the T1 island; the passing lane runs in the kerbside strip, 1.6 m loading margin to the kerb"
+            },
+            "corners": {
+              "radius": 25,
+              "why": "street running in the centre lanes turns at the ring corners (sw, se, nw) on R 25: the inner track's swept envelope (25 × (√2 − 1) + 3.625 = 13.98 m from the corner node along the bisector) stays inside the primary kerb return (R 6: 14.48 m), 0.5 m clear; R 50 swept 6 m over the corner's pavement. Same radius as the T1 loop round the circus (radiusLoop 25); PCC cars took 12.2"
             }
-          }
+          },
+          "notTram": {
+            "roads": [
+              "crown-road"
+            ],
+            "why": "Crown Road carries T2 only on its 50 m stub west of the nw junction, inside the beyond block; on the sheet it carries no tram and keeps its 4 m palm median, the ring's north edge along the Crown Terraces front"
+          },
+          "stops": "every stop is a pair of islands, one per track, opposite each other on straight track (transit.tramStop.platforms), in the carriageway between the tram lane and the passing lane; the stop's crossing runs from kerb to kerb across both islands at the platform end the coverage rules name (crossings.coverage.rules.stops): the floating-eye head at each kerb and on each island (GDD §15 crossings: no zebra, no paint)",
+          "wires": {
+            "contact": {
+              "height": 5.8,
+              "over": "each track centre, zig-zag ± 0.2 m",
+              "why": "1950s street tramway contact wire 5.5–6.1 m; clears headroom.road 5.5"
+            },
+            "span": {
+              "height": 7,
+              "spacing": 30,
+              "curveSpacing": 12,
+              "form": "a steel span wire across the street, its two ends on wall rosettes (a chrome boss in a 0.6 m deco disc on the facade at 7.0 m) where a building wall stands within 2 m behind the building line at both ends",
+              "why": "the 1950s street: no poles where the walls can carry the wires"
+            },
+            "poles": {
+              "where": "where either end has no wall within 2 m of the building line (junction mouths, open plots, the circus, parks, the beyond, the quay): a slim side pole, chrome, Ø 0.3, 8.5 m, in the kerb zone 0.45 m off the kerb face, paired across the street; it is a kerb-zone item (SF-5, SF-11 3 m off lamps and trees, never in the walk)",
+              "centre": "slim centre poles stand only where the track centres open to ≥ 4.4 m (a 0.3 pole + 2 × (1.325 + 0.5) − 2 × 1.8); none on this sheet (trackCentres 3.6)",
+              "lamps": "a span pole may carry a street lamp bracket in place of the nearest district lamp (lamps.rule: one column, not two, within 6 m)"
+            },
+            "circus": "round the circus loop the wires hang from poles on the island's ring band (r 24–31) and the outer pavement, at curveSpacing"
+          },
+          "furniture": "the pavement keeps its class rules: kerb palms (trees.spacing; the Boulevard 10 m, oldstreet.ts), lamps midway, kiosks, newsstands and advertising columns in the kerb zone (catalogue, BB-3), the stop's kiosk-tickets, newsstand and phone booths on the pavement facing the stop (transit.tramStop.kit per stop)",
+          "checks": "T-C1 (tracks in street space), T-S2 (platforms on straight track), SF-3 (nothing in the swept envelope but track, setts and the stop kit), KR-1/KR-2 (kerb returns) hold on the plan as it stands; the generator's tram-street finish, islands, span wires and angle bays are Splice's (briefs/075/notes.md, Street section)"
         },
         "district": { "pavement": 8.0, "kerb": 2.0, "walk": 3.0, "frontage": 3.0, "why": "kerb 2.0 = 1.5 tree pit + 0.45 offset; frontage 3.0 = frontage.placement.spill.depth; 8.0 ≥ spill.minPavement 6" },
         "access":   { "pavement": 6.5, "kerb": 1.5, "walk": 2.0, "frontage": 3.0, "avenue": { "kerb": 2.0, "walk": 2.0, "frontage": 2.5 }, "why": "walk 2.0 = Inclusive Mobility minimum; avenue edges trade 0.5 of spill for the tree pit, same 6.5 pavement" },
@@ -1031,7 +1167,7 @@
         "avenues": {
           "primary": "coconut in the median (its median cut: species.coconut.median)",
           "district": "coconut both pavements, pairs opposite; phoenix in medians ≥ 6 m. Exceptions: no median trees where the median is under the sky rail beam envelope (Circus Road) or within 6 m of a megastructure support (Market Street, Harbour Road)",
-          "boulevard": "coconut both pavements; the tram reservation is lawn track, never planted (SF-3)",
+          "boulevard": "coconut both pavements (kerb zone); no reservation, no lawn: the tracks lie flush in setts in the centre lanes, never planted (SF-3, sections.tramStreet)",
           "access": { "avenue": ["records", "lamplight", "gardens", "crescent", "harbour"], "cornersOnly": ["lantern"], "gatesOnly": ["docks"], "why": "residential, civic and shopping areas are tree-lined; the Lantern Quarter is lit by signs, one palm per corner; the Docks keep their edges for roller bays and cargo, a phoenix pair marks each gate" },
           "mall": "coconut in both tree bands, 11 m off the line (canopy edge 8 m, clear of the beam envelope)",
           "walk": "coconut in one edge band, alternate sides every 12 m",
@@ -1199,9 +1335,9 @@
       },
       "transit": {
         "tramStop": {
-          "source": "standards.tram (platform 30, trackCentres 3.6) · standards.levels.connectors.ramp 0.083 · T1 on the Boulevard (w 28, centre reservation 10) · T2 side-running on the primaries (track centre 6 m off the road centreline, outer half)",
-          "platforms": "one per track, opposite each other, on straight track parallel to the kerb (never on a slew or curve), 30 long, top 0.30 above carriageway (low-floor), 1:12 ramps 3.6 m at each end → 37.2 m overall. T1: 3.0 wide. T2: sections.primary.tram.platforms (median 4.8, kerb 2.8 + the raised kerb zone). Every shelter leaves ≥ 1.5 m clear between its front and the platform edge",
-          "edge": "platform edge 1.4 m from its track centre = half car 1.325 (car 2.65 m, e.g. Melbourne E-class) + 0.075 step gap. T1 (Boulevard, tracks ±1.8): side platforms 3.2–6.2 m off the centreline, taking 1.2 m of each 9 m carriageway and leaving 7.8; shelter at the back of the platform, 1.5 clear. T2 (primaries, tracks 4.2 and 7.8 off the centreline): the inner track boards from a median platform −2.0–2.8 (the 4 m median + a 0.8 build-out), the outer track from a kerb build-out 9.2–12.0 joined level to a raised pavement (sections.primary.tram.platforms)",
+          "source": "standards.tram (platform 30, trackCentres 3.6) · standards.levels.connectors.ramp 0.083 · T1 and T2 street-running in the centre lanes of every tram street (sections.tramStreet, brief 075: tracks ± 1.8 about the road line, boarding islands)",
+          "platforms": "one per track, opposite each other, on straight track parallel to the kerb (never on a slew or curve), 30 long, top 0.30 above carriageway (low-floor), 1:12 ramps 3.6 m at each end → 37.2 m overall. T1 and T2: 3.0 wide boarding islands (sections.tramStreet). Every shelter leaves ≥ 1.5 m clear between its front and the platform edge",
+          "edge": "platform edge 1.4 m from its track centre = half car 1.325 (car 2.65 m, e.g. Melbourne E-class) + 0.075 step gap. T1 and T2 (tracks ±1.8 about the road line, brief 075): boarding islands 3.2–6.2 m off the centreline in the carriageway, traffic passing on their kerb side (sections.tramStreet.district.island, .primary.island); shelter at the back of the island, 1.5 clear",
           "kit": { "per platform": ["tram-shelter 1, centred on the platform's entry half", "bench 2 (in the shelter)", "ticket machine [0.8, 0.6, 1.8] at the entry ramp, facing the platform", "timetable column [0.4, 0.4, 2.6] with a 0.8 m coral dial at 2.0: a clock face marking the next arrival from Pulse's timetable, no text", "bin 1", "bollards at both ramp feet"], "per stop": ["crossing at both platform ends", "on the pavement facing the stop: kiosk-tickets 1, newsstand 1, phone-booth 2; where that kerb zone is too narrow (T2 on a primary, kerb 1.5) they stand on a 3 m kerb build-out beyond the platform's entry end, else are skipped (SF-6)", "interchange stop (T1/circus): + public-clock 1"] },
           "why": "the timetable column makes the next tram a window the player can see coming (§01 orchestrate the city)"
         },
@@ -1296,8 +1432,8 @@
               { "id": "circus-mouth/crown-avenue/w", "road": "crown-avenue", "a": [-9, 42.048], "b": [-9, 50.2], "toward": [1, 0] },
               { "id": "circus-mouth/circus-road/n", "road": "circus-road", "a": [-42.048, 9], "b": [-50.2, 9], "toward": [0, -1] },
               { "id": "circus-mouth/circus-road/s", "road": "circus-road", "a": [-42.048, -9], "b": [-50.2, -9], "toward": [0, 1] },
-              { "id": "circus-mouth/boulevard/e", "road": "boulevard", "a": [14, -40.657], "b": [14, -49.04], "toward": [-1, 0] },
-              { "id": "circus-mouth/boulevard/w", "road": "boulevard", "a": [-14, -40.657], "b": [-14, -49.04], "toward": [1, 0] }
+              { "id": "circus-mouth/boulevard/e", "road": "boulevard", "a": [10, -41.821], "b": [10, -50.01], "toward": [-1, 0] },
+              { "id": "circus-mouth/boulevard/w", "road": "boulevard", "a": [-10, -41.821], "b": [-10, -50.01], "toward": [1, 0] }
             ]
           },
           "footMouths": {
@@ -1320,7 +1456,7 @@
           },
           "beyond": "a road's carriageway edges where they run in or along a beyond block (Sunset Way's west kerb, Crown Road's north kerb, Comet Row's south kerb, and the roads that run on to the sheet edge) are kerb faces to the sheet edge: the city beyond keeps its kerbs (about 2.6 km)",
           "quay": "a quay edge on a road's carriageway edge (Harbour Road's east kerb, x 312, about 1.03 km) is a kerb face",
-          "reservation": "a road with a reservation (the Boulevard, 10 m of lawn track) has a kerb face each side of it at ± reservation / 2, cut at junction boxes, crossings and where a track crosses it, as a median's edges are; each of its two carriageways takes its own middle line for lozenges and seams (± (reservation / 2 + (w / 2 − reservation / 2) / 2): ± 9.5 on the Boulevard), never the road line, which lies in the reservation",
+          "reservation": "(brief 075: no road on the sheet has a reservation now; the Boulevard's lawn track is gone, its tracks lie in setts in the centre lanes, sections.tramStreet. The rule stays for a plan that has one) a road with a reservation (the Boulevard had 10 m of lawn track) has a kerb face each side of it at ± reservation / 2, cut at junction boxes, crossings and where a track crosses it, as a median's edges are; each of its two carriageways takes its own middle line for lozenges and seams (± (reservation / 2 + (w / 2 − reservation / 2) / 2): ± 9.5 on the Boulevard), never the road line, which lies in the reservation",
           "checks": "RF-1 (Splice): every listed face lies on its road's carriageway edge (± 0.05), its ends on the ring or a plot corner, and `toward` points into the carriageway; every kerbed bay touches its road"
         },
         "breaks": {
@@ -1361,9 +1497,9 @@
           "edgeOff": { "offset": 1.25, "width": 0.2, "note": "NOT laid in the clean asphalt (rename the key to `edge` to lay it again): a solid white line along every kerb face, 1.25 m out, outside the shoulder. The first board stacked it with the pearl shoulder, the brass pinstripe (since retired) and the ribbon: 4-5 parallel stripes along each kerb, 'soooo messy' (Sky)" },
           "stopShort": 1.0,
           "lanes": {
-            "boulevard": 2, "sunset-way": 2, "crown-road": 2, "comet-row": 2, "harbour-road": 2
+            "crown-road": 2
           },
-          "lanesNote": "lanes per one-way carriageway, kerb to kerb (3.0 m or more a lane); a divider is a dashed line at each lane boundary. The plan recorded no lane counts before: these five are Vela's proposal from the carriageway widths (Datum to confirm): the Boulevard's 9 m carriageways and the primaries' 10 m halves (the T2 half carries the rails, so its divider lies in the swept envelope and is cut; the other half takes the divider). Not named: the districts' 6 m halves (one lane) and the 12-13 m access roads (centre line only). The tram section's own `lanes` (tram, shared, kerbside) are bands of the T2 half, not counts, and take no paint",
+          "lanesNote": "brief 075: the tram streets (the Boulevard, Sunset Way, Comet Row, Harbour Road) are undivided and take no count: their tram lanes are setts (sections.tramStreet.setts: the material change is the line, no dash between the tracks), the traffic lane's kerb side is the parking strip's edge. Crown Road keeps 2 (its median stays). Before: lanes per one-way carriageway, kerb to kerb (3.0 m or more a lane); a divider is a dashed line at each lane boundary. The plan recorded no lane counts before: these five are Vela's proposal from the carriageway widths (Datum to confirm): the Boulevard's 9 m carriageways and the primaries' 10 m halves (the T2 half carries the rails, so its divider lies in the swept envelope and is cut; the other half takes the divider). Not named: the districts' 6 m halves (one lane) and the 12-13 m access roads (centre line only). The tram section's own `lanes` (tram, shared, kerbside) are bands of the T2 half, not counts, and take no paint",
           "why": "Sky's asphalt reference (briefs/028/palm/ref-flyby-boulevard-old-city.png): a dark road, a few clean white lines; mockups paid/055-road/codex/*_C_asphalt_lanes.png. 1.0 m stop-short at crossings and junctions (breaks.stopShort is 0.3 for the light pieces): white marks read hard, and the crossing's floating orbs and in-road light need clear road round them"
         },
         "crossings": {
@@ -1533,38 +1669,35 @@
       "name": "Sunset Way",
       "class": "primary",
       "w": 24,
-      "median": 4,
       "path": ["off_southside", "sw", "w_market", "w_circus", "nw"],
       "tram": {
         "line": "T2",
-        "section": "standards.streetscape.sections.primary.tram",
+        "section": "standards.streetscape.sections.tramStreet",
         "runs": [
-          { "half": "west", "offset": 6, "from": [-346, -676], "to": [-346, 170], "stops": ["lantern", "rocket", "terraces"] },
-          { "slew": "west → east half across the median, 12 m over 55 m; the median is open (no kerb, palms or lamps) z 165–240, track laid flush across it", "from": [-346, 170], "to": [-334, 235] },
-          { "half": "east", "offset": 6, "from": [-334, 235], "to": [-334, 236], "then": "R 50 curve through the nw junction into Crown Road's north half" }
+          { "centre": true, "from": [-340, -695], "to": [-340, 261], "stops": ["lantern", "rocket", "terraces"], "then": "R 25 curve through the nw junction into Crown Road's north half" }
         ],
-        "why": "outer half (west, off the ring) from the sw corner; it crosses to the east half north of the Crown Terraces stop so the R 50 turn into Crown Road fits inside the junction"
+        "why": "brief 075 (Sky 2026-10-28, the 1950s street-running tram): T2 runs in the centre lanes, tracks flush in setts, mixed traffic; the 4 m palm median and the side-running layout (outer half, contraflow inner track, the slew across the median north of Crown Terraces) are gone. w stays 24 (kerb lines, plots and the beyond unchanged): sections.tramStreet.primary"
       }
     },
     {
       "id": "crown-road", "name": "Crown Road", "class": "primary", "w": 24, "median": 4, "path": ["off_west", "nw", "n_avenue", "ne"],
-      "tram": { "line": "T2", "section": "standards.streetscape.sections.primary.tram", "runs": [{ "half": "north", "offset": 6, "from": [-384, 286], "to": [-400, 286], "stops": [], "then": "off-sheet west to the West End" }] }
+      "tram": { "line": "T2", "section": "standards.streetscape.sections.tramStreet", "runs": [{ "half": "north", "offset": 6, "from": [-365, 286], "to": [-400, 286], "stops": [], "then": "off-sheet west to the West End" }], "why": "brief 075: only the 50 m stub west of the nw junction, inside the beyond block, carries T2, on the north half (offset 6) so it clears the median Crown Road keeps on the sheet; the R 50 curve from Sunset Way's centre lanes lands on it. Crown Road on the sheet carries no tram and keeps its 4 m palm median: the ring's north edge along the Crown Terraces front (sections.tramStreet.notTram)" }
     },
     {
-      "id": "comet-row", "name": "Comet Row", "class": "primary", "w": 24, "median": 4, "path": ["sw", "s_boulevard", "se"],
-      "tram": { "line": "T2", "section": "standards.streetscape.sections.primary.tram", "runs": [{ "half": "south", "offset": 6, "from": [256, -726], "to": [-296, -726], "stops": ["comet"] }], "why": "outer half (south, off the ring); R 50 curves through the se and sw junctions" }
+      "id": "comet-row", "name": "Comet Row", "class": "primary", "w": 24, "path": ["sw", "s_boulevard", "se"],
+      "tram": { "line": "T2", "section": "standards.streetscape.sections.tramStreet", "runs": [{ "centre": true, "from": [275, -720], "to": [-315, -720], "stops": ["comet"] }], "why": "brief 075: centre lanes, tracks flush in setts, mixed traffic; the 4 m median and the side-running south half are gone (was offset 6, z -726); R 25 curves through the se and sw junctions; it crosses T1 on the flat at s_boulevard (a tram square of setts)" }
     },
     {
-      "id": "harbour-road", "name": "Harbour Road", "class": "primary", "w": 24, "median": 4, "path": ["se", "e_market", "ne", "off_seagates"],
-      "tram": { "line": "T2", "section": "standards.streetscape.sections.primary.tram", "runs": [{ "half": "east", "offset": 6, "from": [306, 320], "to": [306, -676], "stops": ["harbour", "harbour-court", "docks"] }], "why": "outer half (east, the quay side); off-sheet north to Sea Gates" }
+      "id": "harbour-road", "name": "Harbour Road", "class": "primary", "w": 24, "path": ["se", "e_market", "ne", "off_seagates"],
+      "tram": { "line": "T2", "section": "standards.streetscape.sections.tramStreet", "runs": [{ "centre": true, "from": [300, 320], "to": [300, -695], "stops": ["harbour", "harbour-court", "docks"] }], "why": "brief 075: centre lanes, tracks flush in setts, mixed traffic; the 4 m median and the side-running quay half are gone (was offset 6, x 306); off-sheet north to Sea Gates" }
     },
     {
       "id": "boulevard",
       "name": "The Boulevard",
       "class": "district",
-      "w": 28,
-      "reservation": 10,
-      "path": ["off_boulevard_south", "s_boulevard", "m_boulevard", "c_s"]
+      "w": 20,
+      "path": ["off_boulevard_south", "s_boulevard", "m_boulevard", "c_s"],
+      "tram": { "line": "T1", "section": "standards.streetscape.sections.tramStreet", "runs": [{ "centre": true, "from": [0, -780], "to": [0, -56], "stops": ["circus", "records", "comet"] }], "why": "brief 075 (Sky 2026-10-28, the 1950s street-running tram): was w 28 with a 10 m lawn reservation and two 9 m carriageways; now 20 kerb to kerb, tracks flush in setts in the two centre lanes (±1.8, unchanged), mixed traffic, a traffic lane and a kerbside parking and loading lane each way, boarding islands at the stops. The plots fronting it run 4 m further out to the new kerb line (±10), so the pavements keep 8 m and the street wall stands 36 m apart (Market Street, San Francisco, 1950s: 120 ft building to building, centre tracks, boarding islands)" }
     },
     { "id": "crown-avenue", "name": "Crown Avenue", "class": "district", "w": 18, "median": 6, "path": ["c_n", "g_cres_s", "g_terrace", "n_avenue"] },
     {
@@ -1651,7 +1784,7 @@
     { "id": "pylon-row-east", "use": "mixed", "area": "records", "rect": [-114, -66, -310, -274] },
     { "id": "orbit-gardens", "name": "Orbit Gardens", "use": "open", "area": "records", "rect": [-180, -66, -401, -322] },
     { "id": "rocket-west", "use": "residential", "area": "records", "rect": [-328, -192, -401, -192] },
-    { "id": "boulevard-west", "use": "commercial", "area": "records", "rect": [-54, -14, -401, -192] },
+    { "id": "boulevard-west", "use": "commercial", "area": "records", "rect": [-54, -10, -401, -192] },
     { "id": "lamplight-west", "use": "residential", "area": "lamplight", "rect": [-328, -256, -126, -9] },
     { "id": "lamplight-court-w", "use": "residential", "area": "lamplight", "poly": [[-244, -114], [-164, -114], [-164, -33], [-190, -33], [-190, -9], [-244, -9]] },
     { "id": "lamplight-court-e", "use": "residential", "area": "lamplight", "rect": [-156, -106, -114, -33] },
@@ -1680,9 +1813,9 @@
       }
     },
     { "id": "gardens-forecourt-e", "name": "Gardens Forecourt", "use": "open", "area": "lamplight", "rect": [-156, -106, -33, -9], "why": "east half of the forecourt (see gardens-forecourt-w): stair tower + lift east of the Records Axis, open to the corner at x −106.", "bank": "gardens-forecourt-w" },
-    { "id": "lamplight-east", "use": "mixed", "area": "lamplight", "rect": [-94, -14, -126, -9], "notch": [0, 0, 51] },
+    { "id": "lamplight-east", "use": "mixed", "area": "lamplight", "rect": [-94, -10, -126, -9], "notch": [0, 0, 51] },
     { "id": "lamplight-south-w", "use": "residential", "area": "lamplight", "rect": [-328, -164, -192, -126] },
-    { "id": "lamplight-south-e", "use": "residential", "area": "lamplight", "rect": [-156, -14, -192, -126] },
+    { "id": "lamplight-south-e", "use": "residential", "area": "lamplight", "rect": [-156, -10, -192, -126] },
     {
       "id": "sphere-gardens",
       "name": "Sphere Gardens",
@@ -1696,18 +1829,18 @@
     { "id": "crescent-court", "use": "residential", "area": "crescent", "rect": [9, 174, 116, 214] },
     { "id": "crescent-east", "use": "commercial", "area": "crescent", "rect": [186, 288, 104, 268] },
     { "id": "crescent-north", "use": "residential", "area": "crescent", "rect": [9, 186, 226, 268] },
-    { "id": "harbour-boulevard", "use": "commercial", "area": "harbour", "rect": [14, 114, -401, -20], "notch": [0, 0, 51] },
+    { "id": "harbour-boulevard", "use": "commercial", "area": "harbour", "rect": [10, 114, -401, -20], "notch": [0, 0, 51] },
     { "id": "harbour-court", "use": "mixed", "area": "harbour", "rect": [126, 224, -401, -146] },
     { "id": "parade-south", "use": "mixed", "area": "harbour", "rect": [114, 288, -134, -20] },
     { "id": "harbour-east", "name": "Ferry offices", "use": "port", "area": "harbour", "rect": [236, 288, -401, -134] },
-    { "id": "docks-boulevard", "use": "commercial", "area": "docks", "rect": [14, 114, -708, -419] },
+    { "id": "docks-boulevard", "use": "commercial", "area": "docks", "rect": [10, 114, -708, -419] },
     { "id": "docks-court", "use": "industrial", "area": "docks", "rect": [126, 224, -594, -419] },
     { "id": "docks-south", "use": "industrial", "area": "docks", "rect": [114, 288, -708, -606] },
     { "id": "docks-east", "name": "Quay sheds", "use": "port", "area": "docks", "rect": [236, 288, -606, -419] },
     { "id": "lantern-west", "use": "residential", "area": "lantern", "rect": [-328, -192, -708, -419] },
     { "id": "starline-green", "name": "Starline Green", "use": "park", "area": "lantern", "rect": [-180, -66, -594, -419] },
-    { "id": "lantern-south", "use": "residential", "area": "lantern", "rect": [-192, -14, -708, -606] },
-    { "id": "lantern-boulevard", "use": "commercial", "area": "lantern", "rect": [-54, -14, -606, -419] }
+    { "id": "lantern-south", "use": "residential", "area": "lantern", "rect": [-192, -10, -708, -606] },
+    { "id": "lantern-boulevard", "use": "commercial", "area": "lantern", "rect": [-54, -10, -606, -419] }
   ],
 
   "foot": [
@@ -2141,24 +2274,24 @@
     {
       "id": "T2",
       "name": "Harbour Line",
-      "beyond": "north off-sheet along Harbour Road (x 306, z 320) and west off-sheet along Crown Road (x -400, z 286): through-running at both ends",
+      "beyond": "north off-sheet along Harbour Road (x 300, z 320, centre lanes) and west off-sheet along Crown Road (x -400, z 286, its north half): through-running at both ends",
       "paths": [
         {
           "id": "harbour",
           "role": "running",
           "double": true,
-          "pts": [[306, 320], [306, -726, 50], [-346, -726, 50], [-346, 175, 50], [-334, 230, 50], [-334, 286, 50], [-400, 286]]
+          "pts": [[300, 320], [300, -720, 25], [-340, -720, 25], [-340, 286, 25], [-400, 286]]
         }
       ],
       "order": ["harbour"],
       "stops": [
-        { "id": "harbour", "name": "Harbour Gate", "path": "harbour", "at": [306, 60], "interchange": "S1/harbour", "fronts": "harbour-road" },
-        { "id": "harbour-court", "name": "Harbour Court", "path": "harbour", "at": [306, -245], "fronts": "harbour-road" },
-        { "id": "docks", "name": "Docks", "path": "harbour", "at": [306, -550], "fronts": "harbour-road" },
-        { "id": "comet", "name": "Comet Row", "path": "harbour", "at": [-30, -726], "interchange": "T1/comet", "fronts": "comet-row" },
-        { "id": "lantern", "name": "Lantern", "path": "harbour", "at": [-346, -585], "fronts": "sunset-way" },
-        { "id": "rocket", "name": "Rocket", "path": "harbour", "at": [-346, -280], "fronts": "sunset-way" },
-        { "id": "terraces", "name": "Crown Terraces", "path": "harbour", "at": [-346, 150], "fronts": "sunset-way" }
+        { "id": "harbour", "name": "Harbour Gate", "path": "harbour", "at": [300, 60], "interchange": "S1/harbour", "fronts": "harbour-road" },
+        { "id": "harbour-court", "name": "Harbour Court", "path": "harbour", "at": [300, -245], "fronts": "harbour-road" },
+        { "id": "docks", "name": "Docks", "path": "harbour", "at": [300, -550], "fronts": "harbour-road" },
+        { "id": "comet", "name": "Comet Row", "path": "harbour", "at": [-30, -720], "interchange": "T1/comet", "fronts": "comet-row" },
+        { "id": "lantern", "name": "Lantern", "path": "harbour", "at": [-340, -585], "fronts": "sunset-way" },
+        { "id": "rocket", "name": "Rocket", "path": "harbour", "at": [-340, -280], "fronts": "sunset-way" },
+        { "id": "terraces", "name": "Crown Terraces", "path": "harbour", "at": [-340, 150], "fronts": "sunset-way" }
       ]
     }
   ],
@@ -2242,7 +2375,7 @@
       "Buchanan's hierarchy: a primary ring (Sunset Way, Crown Road, Harbour Road, Comet Row) carries through traffic round the district; district distributors (the Boulevard, Market Street, Circus Road, Crown Avenue) feed it; access roads serve seven environmental areas and never link two distributors.",
       "Every way a car can enter an environmental area is a gate. For a mission, the gates are the seal points; the Records Precinct has two.",
       "Crown Circus is the hub (EPCOT 1966: a radial centre with transit through it). Four arms: the Boulevard south, Crown Avenue north, Circus Road west, Crown Parade (a pedestrian mall) east to the harbour.",
-      "Tram T1 runs in the Boulevard's central reservation with stops about 300 m apart. It turns on a balloon loop round the circus island (R 28), so single-ended trams need no crossover. South of Comet Row it runs on to Southside. Tram T2, the Harbour Line (A04 run r008), runs the ring: in from the north down Harbour Road (Harbour Gate, Harbour Court, Docks), west along Comet Row (Comet Row), north up Sunset Way (Lantern, Rocket, Crown Terraces) and off west along Crown Road, through-running at both ends.",
+      "Tram T1 runs in the Boulevard's centre lanes, flush in setts in mixed traffic (brief 075: the 1950s street-running tram; it ran on a 10 m lawn reservation before), with stops about 300 m apart on boarding islands. It turns on a balloon loop round the circus island (R 28), so single-ended trams need no crossover. South of Comet Row it runs on to Southside. Tram T2, the Harbour Line (A04 run r008), runs the ring: in from the north down Harbour Road (Harbour Gate, Harbour Court, Docks), west along Comet Row (Comet Row), north up Sunset Way (Lantern, Rocket, Crown Terraces) and off west along Crown Road, through-running at both ends. Since brief 075 it runs in the centre lanes of Harbour Road, Comet Row and Sunset Way (their medians gone), turning the ring's corners on R 25, and crosses T1 on the flat at s_boulevard.",
       "Sky rail S1 is the airport line (Tokyo 1964). One straight trunk: Skyport, Harbour, Crown Circus, Sphere Gardens, then the West End. It runs over public space: Circus Road's median, the circus island, the Parade and the Skyport Pier, and since brief 007 it threads the buildings over them: through the SpaceHQ drum (Crown Circus station inside), over the open Parade (the Galleries' side galleries under glazed barrel canopies, the Parade itself open to the sky; the beam on its mall pylons), through the Parade Gate block and the Skyport Tower's portal (Skyport station inside). Trains turn on a loop over the water round the skyport pad; the Skyport station stands on the pier's apron, the landside end.",
       "Three interchanges join the network, each within standards.skyrail.interchange 150 m (S-I1): sky rail and tram cross at right angles at Crown Circus (S1/circus to T1/circus 119 m); S1/harbour meets T2 at Harbour Gate (T2/harbour at (306, 60) on Harbour Road, 69 m from the station at (340, 0)); T1 and T2 meet at Comet Row (47 m).",
       "The Records Axis: the Sphere Gardens sky station, Garden Walk, the café, the fountain, the raised table on Orbit Walk and the office door all sit on x = −160.",
@@ -2258,6 +2391,7 @@
       "Records Precinct: two vehicle gates (Rocket, Satellite) to seal against cars, but on foot the crew can leave across any street. Is the escape on foot meant to be open like that, with the police sealing stations rather than streets?"
     ],
     "history": [
+      "2026-10-28 (Datum, brief 075, the street section: Sky's 1950s street-running tram; input edit, version kept at 0.4.0): standards.streetscape.sections.tramStreet (new): every road a tram runs on takes tracks flush in setts in the two centre lanes (± 1.8), mixed traffic, one traffic lane and a kerbside parking or loading strip each way, boarding islands at stops, span wires from wall rosettes or side poles; no median, reservation or lawn. The Boulevard w 28 + reservation 10 → w 20 (tram lane 3.6, traffic 3.6, parking 2.8 a side), its seven fronting plots 4 m out to the new kerb (boulevard-west, lamplight-east, lamplight-south-e, harbour-boulevard, docks-boulevard, lantern-boulevard, lantern-south), circus mouth faces at x ± 10, pavements 8, street wall 36 m. Sunset Way, Comet Row, Harbour Road: median 4 removed, w 24 kept (tram 3.6, traffic 3.6, kerbside 4.8: angle parking with palm islands, [S] proposal), T2 from side-running (offset 6) to the centre lanes: its path on the road lines, stops 6 m in (harbour, harbour-court, docks at x 300; comet at z -720; lantern, rocket, terraces at x -340), corners R 25 (standards.tram.radiusRunning 50 → 25: R 50 swept the corner pavement). Crown Road keeps its median; T2's off-sheet stub keeps the north half. sections.primary.tram (the side-running section) removed; roads.marks.lanes keeps crown-road only. Handover: points, routes (667 / 1064 / 126 / 1473 m), C-0 and V-1 64/65 unchanged",
       "2026-10-28 (Datum, brief 075 task d, the golden view; input edit, version kept at 0.4.0): landmarks gains crown-vista, the end of the Boulevard / Crown Avenue axis (x 0) as the old reel's boulevard ended on the gold arch and the gold disc tower: DiscTower × 1.1 at (0, 350), r 24.5, top 172.4 (tip 172.4, rival tier, under rivalMax 200), crownType disc (SK-2: 165.9 m from the avenue-gate pair), past the sheet edge because the axis has no far end inside the district (Crown Avenue ends at the T with Crown Road, y 280). Its gateway field proposes the Crown Avenue arch at (0, 160), feet in the frontage zone x ±(14–17), y 157–163, as ParabolicArch@crown-avenue (34 m foot to foot, crest 68, top 75.2): the adopted 38.5 m arch does not fit the 34 m avenue (its feet land on the walk and in the buildings, at × 0.9 too). Not built yet: no generator places a landmark's gateway (Splice), the piece is not made (Vela), and the tower is not gold until a livery entry is made (Splice, Vela). No road, plot, streetscape, line or Handover geometry changed; standards.skyline.tiers names the tower.",
       "2026-10-20 (Datum, brief 026/028, Sky's pick of the testbed road, finish B; input edit, version kept at 0.3.0): standards.streetscape.roads (finish enamel DK_Ground_RoadEnamel on every class, pearl kerb, no paint; a light ribbon along every kerb face of every class, lens centre 0.10 m off the kerb face; breaks stop 0.3 m short at crossings, junction boxes, flush bays, drives, tram platforms and track crossings; lozenges 8.5 m on each carriageway's middle line, seams 9 m across, neither on a carriageway a tram runs in; crossings keep their own light, signal, never zebra) and standards.streetscape.inlays (the testbed's fountain plaza: PaveInlay_Ring_Q ×4 round a round centrepiece r ≤ 3.3, PaveInlay_Band_6m spokes on its axes out across a district pavement to the kerb zone; pavements otherwise plain). Rules SF-22, SF-23 listed for the world side (Splice); plan-side RF-1, RF-2 in tools/plan/road-finish.ts with failing examples.",
       "2026-10-15 (Splice, brief 009, Sky's d1 and his approval of Datum's crossing proposal; input edit, version kept at 0.3.0): (1) standards.streetscape.crossings.strip.lights.field {modules [2, 1], width 3.9, end 0, thick 0.002}: the lit strip under the light lines (LightField_2 / _1 adopted in the kit, use tag crossing:field; part kind crossing-field). (2) strip.across.track [stop] → [stop, kerb]: a kerb crossing may cross a tram track (every kerb crossing carries a signal). (3) crossings.coverage.rules {reach 4, arms {offset 8}, island {ring crown-circus}, mall {}, midBlock {gap 120, class [district], reach 15}, dedupe {mouth 30, bend 20, turn 45}}: Datum's proposal as generator rules (the proposal's add/remove/lines stay as the record); crossings.where gains the arms, island, mall, mid-block and twin rules. Result in the export: 95 crossings → see briefs/009 (the rules place 12 arms, 8 island, 2 mall and 3 mid-block crossings, drop 11 twins, and the tram allowance adds 7 on the Boulevard). (4) The walk's body clearance is read from standards.walking.body by every walk (the plan's walk.ts and walk-fine.ts, the people's walk graph), and rule W-5 holds it in the world rules (tools/world/rules/walking.ts).",

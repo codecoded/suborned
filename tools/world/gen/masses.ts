@@ -11,6 +11,7 @@ import { type FacadeOut, adjacent, generateFacades } from './facades';
 import { faceKitReady } from './faces';
 import { tradeHosts } from './frontage';
 import { JUNCTION } from './stream';
+import { OLD_STREET, isOldRoad } from './oldstreet';
 
 /** A generated building, kept for roofs and frontages. `ring` = ground footprint with edge classes; `top` = highest roof polygon at z. */
 export type Bld = { id: string; plot: string; area: string; use: string; kind: string; n: number; ring: Ring; top: V[]; z: number; tower: boolean; open: boolean };
@@ -235,6 +236,14 @@ export function generateMasses(ctx: Ctx, sites: Site[]): MassOut {
           const others = Array.from({ length: top - lo + 1 }, (_, i) => lo + i).filter(x => !mine.some(m => !m.shed && adjacent(m.ring, ring) && m.n === x));
           if (others.length) n = rng(`${id}/contrast`).weighted(others, x => 1 + 5 * Math.exp(-((x - cb.mode) ** 2) / 2));
         }
+        // brief 075 (golden view, oldstreet.ts): a building fronting an old-street road stands at an old storey code its band reaches (S6, S9), weighted as the old walls'
+        // bays; a code with one streamline bay never stands beside itself (neighbour contrast), a twin code (S9 | S9W) may. The play streets keep their cap's storeys.
+        const ob = bandFor(ctx.B, use, plot.area), cap = ctx.B.caps?.[plot.area]?.m as number | undefined, F = OLD_STREET.frontage;
+        const codes = !ob.capped && ring.c.some(isOldRoad) ? Object.keys(F.codes).map(Number).filter(c => c >= ob.lo && c <= ob.hi && (!cap || c <= storeysUnder(ctx.B, cap))) : [];
+        if (codes.length) {
+          const beside = mine.filter(m => !m.shed && adjacent(m.ring, ring)).map(m => m.n), ok = codes.filter(c => F.twins.includes(c) || !beside.includes(c));
+          n = rng(`${id}/oldstreet`).weighted(ok.length ? ok : codes, c => F.codes[c]!);
+        }
       }
       if (use === 'port' && !shed) kind = 'office';
       const before = pend.length;
@@ -255,7 +264,7 @@ export function generateMasses(ctx: Ctx, sites: Site[]): MassOut {
   // wave 2: kit facades on the street faces, then each building's tiers (plain behind a kit facade, the space-age grammar otherwise)
   const solid = pend.filter(p => !p.shed), nearOf = (id: string) => { const me = solid.find(p => p.id === id)!; return solid.filter(p => p.id !== id && p.plot === me.plot && adjacent(me.ring, p.ring)).map(p => p.id); };
   const hotels = tradeHosts(ctx, solid, JUNCTION.hotel); // brief 075-F1b: the trades come before the corner pick (CornerTower_12 reads HOTEL)
-  const fac = generateFacades(ctx, solid.map(p => ({ id: p.id, use: p.use, n: p.n, ring: p.ring, play: !!ctx.B.caps?.[p.area]?.play, hotel: hotels.has(p.id) })), ctx.pav, nearOf);
+  const fac = generateFacades(ctx, solid.map(p => ({ id: p.id, use: p.use, n: p.n, ring: p.ring, play: !!ctx.B.caps?.[p.area]?.play, hotel: hotels.has(p.id) })), ctx.pav, nearOf, sites.map(s => ({ ring: rectPts(s.podium), n: s.storeys })));
   const whole = faceKitReady(); // brief 072-C: every face is kit, so every building takes plain tiers (the kit is the wall; no grammar)
   for (const p of pend) {
     const kit = whole || fac.kitFaced.has(p.id), t = !kit && !p.shed && p.n >= GRAMMAR.roundFrom ? grammarTiers(ctx, p) : tiers(ctx, { use: p.use, ring: p.ring, n: p.n, shed: p.shed, whole });

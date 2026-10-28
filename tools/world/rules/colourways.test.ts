@@ -8,6 +8,7 @@ import { derive, type Plan } from '../../plan/plan';
 import { ctxOf, generated } from '../../plan/world-ctx';
 import { FAMILIES, deltaE2000, drawFamily, hostOf, streetNeighbours } from '../gen/colourways';
 import { colourwayFaults, colourwayRules } from './colourways';
+import { OLD_STREET } from '../gen/oldstreet';
 
 setDefaultTimeout(120000);
 const root = resolve(import.meta.dir, '../../..'), read = (p: string) => JSON.parse(readFileSync(resolve(root, p), 'utf8'));
@@ -28,7 +29,7 @@ test('the live export: every building one colourway, its pieces in it, no street
   expect(f.faults).toEqual([]);
   expect(f.spread.same).toBe(0);
   expect(f.spread.de!.median).toBeGreaterThanOrEqual(22);
-  expect(Object.keys(f.spread.families).every(k => FAMILIES.includes(k))).toBe(true);
+  expect(Object.keys(f.spread.families).every(k => FAMILIES.includes(k) || OLD_STREET.colour.palette.includes(k))).toBe(true); // brief 075: the old high street's families, given only on the old-street roads
   expect(base.w.civic.filter(m => m.colourway === 'civic').map(m => m.id)).toContain('civic/civic-office');
 });
 

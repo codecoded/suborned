@@ -121,6 +121,11 @@ export function dressTransit(ctx: Ctx, L: Layer, stops: Mass[], stations: Mass[]
   const sq = ctx.d.plots.find(p => p.civic === 'square');
   if (sq) { const b = bbox(sq.polyV), cc = ctx.plan.circus.c; const p: V = [Math.min(b[1] - 7.5, Math.max(b[0] + 7.5, cc[0])), Math.min(b[3] - 7.5, Math.max(b[2] + 7.5, cc[1]))]; L.add('mast-camera', p, 0, z, sq.id, { size: [0.4, 0.4, 8], variant: 'mast', force: true }); L.add('civic-robot-dock', [p[0] - 2, p[1]], 0, z, sq.id, { force: true }); }
   const circ = kerbNear(segs, [0, -60], 60, 1.1);
-  if (circ) for (const o of [0, 3]) L.add('civic-robot-dock', [circ.q[0] + Math.cos(circ.yaw) * (10 + o), circ.q[1] + Math.sin(circ.yaw) * (10 + o)], 0, z, 'circus', { force: true });
+  if (circ) { // brief 075 (Datum): the pair stands 10 and 13 m along the kerb from the point nearest (0, -60); where a kerb return or a crossing takes that spot (the Boulevard at w 20 brings the circus mouth's return to it), the pair steps back along the kerb, away from the circus, a metre at a time, to the first spot where both pass every test (the walk, the tram's space, crossings, doors)
+    const at = (d: number): V => [circ.q[0] + Math.cos(circ.yaw) * d, circ.q[1] + Math.sin(circ.yaw) * d];
+    const pair = (d: number, force: boolean) => L.fits('civic-robot-dock', at(d), 0, z, 'circus', { force }) && L.fits('civic-robot-dock', at(d + 3), 0, z, 'circus', { force });
+    let d = 10; if (!pair(d, true)) for (d = 9; d > -30 && !pair(d, false); d--);
+    for (const o of [0, 3]) L.add('civic-robot-dock', at(d + o), 0, z, 'circus', { force: true });
+  }
   return keep;
 }

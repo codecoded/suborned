@@ -8,6 +8,7 @@ import { civic } from '../../plan/civic';
 import { derive, type Plan } from '../../plan/plan';
 import { worldOf } from '../build';
 import { adjacent } from './facades';
+import { OLD_STREET, isOldRoad } from './oldstreet';
 import { SIGN_OFF } from './frontage';
 import { HORIZON_CENTRE, ROCKETS, footprint, simple } from './horizon';
 import { ACCENT_ROLES, COLOUR, FABRIC_SURFACES } from './colour';
@@ -26,13 +27,15 @@ const areaOf = new Map(d.plots.map(p => [p.id, p.area])), play = (bld: string) =
 const STREET = new Set(['bay', 'end', 'corner']), EVERY = w.facades.some(f => !STREET.has(f.form));
 const coping = (id: string) => ({ '2': 12.9, '3': 16.3, '4': 19.7 } as Record<string, number>)[/_(\d+)[WL]?$/.exec(id)![1]!] ?? 6.1 + 3.4 * Number(/_(\d+)[WL]?$/.exec(id)![1]);
 
+/** Brief 075: a facade piece standing on an edge of its building that fronts an old-street road (oldstreet.ts). */
+const ringOf = new Map(gen.blds.map(b => [b.id, b.ring])), oldFace = (f: { building: string; edge?: number }) => { const r = ringOf.get(f.building); return !!r && f.edge !== undefined && isOldRoad(r.c[f.edge] ?? ''); };
 test('every facade piece is adopted, within its scale range and its building\'s H(n)', () => {
   expect(w.facades.length).toBeGreaterThan(300);
   for (const f of w.facades) {
     const a = by.get(f.kit.id)!; expect(a.status, f.kit.id).toBe('adopted');
     const [lo, hi] = a.tags.scale, [sx, sy, sz] = f.kit.scale;
     for (const s of [sx, sy, sz]) { expect(s).toBeGreaterThanOrEqual(lo - 1e-3); expect(s).toBeLessThanOrEqual(hi + 1e-3); }
-    expect(sx / sy).toBeGreaterThanOrEqual(a.tags.squash - 1e-3);
+    expect(sx / sy).toBeGreaterThanOrEqual((oldFace(f) ? Math.min(a.tags.squash, OLD_STREET.frontage.squash) : a.tags.squash) - 1e-3); // brief 075: an old-street face may squash its bays to 0.92 (oldstreet.ts)
     if (f.form === 'bay') expect(Math.abs(a.size[1] * sy - H(f.storeys)) / H(f.storeys), f.id).toBeLessThanOrEqual(0.081);
   }
 });

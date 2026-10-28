@@ -190,14 +190,15 @@ test('brief 074-B/H: 12 colourway sets over the wall and plinth slots (band and 
   const cw = kit.colourways!, fac = JSON.parse(readFileSync(resolve(import.meta.dir, '../../unity/Assets/Suborned/Editor/World/facade.json'), 'utf8')) as { families: Record<string, string[]> };
   expect(cw.families).toEqual(Object.keys(fac.families).filter(f => f !== 'civic')); // one colourway per facade.json wall family; civic keeps the base
   expect(cw.keep).toEqual(['base', 'civic']);
-  expect(Object.keys(cw.slots).sort()).toEqual(['DK_Limestone_Tex', 'DK_Render_White', 'DK_Stone_Dark']); // 074-H (Sky 2026-10-28): walls and plinth only
+  const oldF = new Set(cw.old?.families ?? []); // brief 075 (golden view): the old high-street families recolour walls + trim (DK_Enamel_Ivory, old Lighter), never the plinth
+  expect(Object.keys(cw.slots).sort()).toEqual(['DK_Limestone_Tex', 'DK_Render_White', 'DK_Stone_Dark', ...(oldF.size ? ['DK_Enamel_Ivory'] : [])].sort()); // 074-H (Sky 2026-10-28): walls and plinth only
   expect(cw.files.some(f => /^Materials\/DK_Enamel_(Seafoam|Teal)__/.test(f.path))).toBe(false);
   expect(cw.wallSoften).toBeGreaterThanOrEqual(0); expect(cw.wallSoften).toBeLessThan(1);
   const paths = new Set(cw.files.map(f => f.path));
   const mat = (n: string) => { const g = join(GEN_ROOT, `Materials/${n}.mat`); return existsSync(g) ? readFileSync(g, 'utf8') : undefined; };
   const strip = (t: string) => t.replace(/  m_Name: \S+\n/, '').replace(/    - _(Base)?Color: \{[^}]*\}\n/g, '');
   for (const [base, by] of Object.entries(cw.materials)) {
-    expect(Object.keys(by)).toEqual(cw.families);
+    expect(Object.keys(by)).toEqual(cw.families.filter(f => (oldF.has(f) ? cw.old!.slots : { DK_Limestone_Tex: 1, DK_Render_White: 1, DK_Stone_Dark: 1 } as Record<string, unknown>)[base] !== undefined)); // each family over its own slots
     for (const [f, n] of Object.entries(by)) {
       expect(n).toBe(`${base}__${f}`);
       for (const p of [`Materials/${n}.mat`, `Materials/${n}.mat.meta`]) expect(paths.has(p), p).toBe(true);
@@ -205,7 +206,7 @@ test('brief 074-B/H: 12 colourway sets over the wall and plinth slots (band and 
       if (b && v) expect(strip(v), n).toBe(strip(b)); // only the name and the base colour differ: no new variant, no new SetPass
     }
   }
-  for (const c of Object.values(cw.colours)) for (const k of ['wall', 'plinth', 'wallSwatch'] as const) expect(c[k]).toMatch(/^#[0-9A-F]{6}$/);
+  for (const [f, c] of Object.entries(cw.colours)) for (const k of ['wall', oldF.has(f) ? 'trim' : 'plinth', 'wallSwatch'] as const) expect(c[k], `${f}.${k}`).toMatch(/^#[0-9A-F]{6}$/);
   // the base wall sits on the neutral sheet (the old cream sheet leaves the copy: replaced, not added)
   const lime = kit.assets.find(a => a.materials.includes('DK_Limestone_Tex'))!;
   expect(lime.files.some(f => f.path === 'Textures/wall_panel_neutral_v1.png')).toBe(true);
