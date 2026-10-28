@@ -35,6 +35,7 @@
     "world": "bun tools/world/export.ts",
     "world:faces": "bun tools/world/faces.ts",
     "life": "bun tools/life/cli.ts",
+    "life:presentation": "bun tools/life/presentation.ts",
     "crew": "bun tools/crew/cards.ts",
     "art:bible": "bun tools/art-bible/generate.ts",
     "ingest": "bun tools/rag/ingest.ts",
