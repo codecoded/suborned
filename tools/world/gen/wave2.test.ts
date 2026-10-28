@@ -38,7 +38,7 @@ test('every facade piece is adopted, within its scale range and its building\'s 
 });
 
 test('play streets (brief 066): every kit piece on a 3- or 4-storey play-street building carries the building\'s own storey code', () => {
-  const fs = w.facades.filter(f => play(f.building) && STREET.has(f.form)); // the wave-2 street pieces; the every-face modules (brief 072-C) are held in faces.test.ts
+  const fs = w.facades.filter(f => play(f.building) && STREET.has(f.form) && !f.face); // the wave-2 street pieces; the every-face modules (brief 072-C) and its streamline corners and ends (075-E) are held in faces.test.ts
   expect(fs.length).toBeGreaterThan(200);
   for (const f of fs) { expect(f.storeys, f.id).toBeGreaterThanOrEqual(3); expect(f.storeys, f.id).toBeLessThanOrEqual(4); expect(/_(\d+)[WL]?$/.exec(f.kit.id)?.[1], f.id).toBe(String(f.storeys)); }
   // a bay's top is its coping (nothing over the roof line): no arcade (folded roof and mast), no porthole bay with its fin and beacon over the parapet, only the low ones
@@ -71,7 +71,7 @@ test('adjacent plot buildings never repeat their storeys', () => {
 
 test('a facade piece stands on its building ring: its front is on a street edge', () => {
   const ring = new Map(gen.blds.map(b => [b.id, b.ring]));
-  for (const f of w.facades.filter(x => STREET.has(x.form))) { // the street pieces; an every-face module's `edge` is its tier ring's (faces.test.ts)
+  for (const f of w.facades.filter(x => STREET.has(x.form) && !x.face)) { // the street pieces; an every-face module's `edge` is its tier ring's (faces.test.ts), as is a streamline corner or end the every-face pass places (brief 075-E: it carries `face`)
     const r = ring.get(f.building)!, i = f.edge, a = r.p[i]!, b = r.p[(i + 1) % r.p.length]!;
     const L = Math.hypot(b[0] - a[0], b[1] - a[1]), dd = (p: number[]) => Math.abs(((p[0]! - a[0]) * (b[1] - a[1]) - (p[1]! - a[1]) * (b[0] - a[0])) / L);
     expect(dd(f.a), f.id).toBeLessThan(0.05); expect(dd(f.b), f.id).toBeLessThan(0.05);

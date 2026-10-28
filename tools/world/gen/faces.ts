@@ -15,6 +15,19 @@
 // pieces that would dress it, and keeps its procedural wall; the coverage check (tools/world/faces.ts, `bun run world:faces`) fails on every such face.
 // Deterministic: same plan and catalogue, same modules (array order, ids from the building id, the dock pick seeded by the face id).
 //
+// STREAMLINE (brief 075-E, Sky 2026-10-28: "we've still lost all the lovely curved buildings"): the old DecoKit street's grammar is the default on the faces
+// the public sees (briefs/075/composition.md; stream.ts):
+//   - a public run of a building's whole wall (from the pavement to its top) takes the building's streamline class: the bay its street front carries
+//     (facades.ts), else one drawn by the old recipe (StreamBay the majority, PortholeBay, BalconyBay, DecoBay, ArcadeBay for rhythm), one class per
+//     building; its bay must fit the wall's height (0.9-1.1; storey-true in the play streets) and its 14 m body stand inside the building (a shallow wing,
+//     an acute corner or a shop run keeps the side pieces);
+//   - an outside corner between two such runs takes the class's rounded corner (StreamCorner_n), at a street junction DecoCorner_10 where the height fits
+//     code 10, or CornerTower_12 where it is adopted outside the play streets on a building of 9 storeys or more;
+//   - an outside corner where only one of the two runs is streamline (a public face meeting a service back) takes the class's StreamEnd, its front on the
+//     face that leaves the corner and its rounded return on the one that enters it (the old pieces have no mirror: stream.ts KIT_X);
+//   - walls the whole-wall pieces cannot reach (taller than DecoBay_10, an upper tier, a party wall above a lower neighbour) take Vela's stacked streamline
+//     pieces once adopted (stream.ts STREAM_STACK), else SideBayStack; SideBay and AlleyWall stay on the rest (service backs, blank party walls, shallow wings).
+//
 // SERVICE, the rule for a "true service back" (Sky's "service walls only on true service backs"), from the plan only: a wall face is a service back when it
 // faces no street (its building-line edge is classed party, court or none by tools/world/gen/edges.ts) and
 //   (a) it is a court face: the inner ring of a perimeter block, the block's service yard; or
@@ -32,9 +45,10 @@ import type { KitAsset } from '../../../contracts/world/kit.schema';
 import { type V, cross, dist, dot, norm, sub } from '../../plan/geom';
 import { type Ctx, r3, r4, rng } from './common';
 import { adopted } from './kitrefs';
-import { type Ring, ccw, edgeN } from './geo';
+import { type Ring, ccw, edgeN, pointInRing } from './geo';
 import { isStreetClass } from './grammar';
 import { kindOf } from './edges';
+import { CODE_H, JUNCTION, STREAM_ROWS, STREAM_STACK, type StreamClass, type StreamRow, capBody, cornerPlace, endPlace, recipePick, rowOf } from './stream';
 
 /** The piece names (brief 072; Vela's briefs/072/pieces/pieces.md has the final list). */
 export const FACE_KIT = {
@@ -72,13 +86,17 @@ export const FACES = {
   shopMin: 1.5, // m: a run shorter than this is too narrow for a shopfront and keeps its side pieces
   acuteTol: 0.5, // deg: a corner within this of square is square (K-6: no pull-back)
   shopTol: 0.6, // m: a run's part lies on a tenancy's line within this (shareTol, widened for a chord across an arc: avenue-court/19 stands 0.45 off)
+  /** brief 075-E: the part of a wall standing above a lower neighbour takes the stacked streamline bays (the old street's taller segment wrapped its ribbons
+   *  round the side it showed above its neighbour: StreamEnd's 14 m return); false keeps SideBayStack there (a "blank party wall"). Aster's call. */
+  streamParty: true,
+  capSquare: 0.05, // brief 075-E: |cos| of the turn under which a streamline corner or end wraps a corner (3°: the cell and the 14 m return are square; a slanted face keeps its pier)
 };
 
 export type Occ = { owner: string; ring: V[]; base: number; top: number; box: [number, number, number, number] };
 export type Cover = { quad: V[]; lo: number; hi: number; owner: string };
 export type FaceBld = { id: string; plot: string; area: string; use: string; kind: string; n: number; ring: Ring; tower: boolean; play: boolean; top: number };
-export type FaceLog = { face: string; building: string; area: string; play: boolean; family: 'side' | 'service' | 'stack'; length: number; from: number; to: number; modules: number; why?: string; blocked?: string[]; /** the module ids that dress it (Redline's per-face coverage) */ dressedBy?: string[]; /** a shop run: the shop filler modules on it (ShopFill_n or the ShopStack_Base row) */ shop?: number; /** a shop run given back to its side pieces: too short once pulled back from an acute corner */ shopCut?: string; /** stretches left bare at an acute corner (m): narrower than any piece that fits there */ bare?: number[] };
-export type FacesOut = { facades: Facade[]; log: FaceLog[]; piers: { placed: number; skipped: number; why: Record<string, number> } };
+export type FaceLog = { face: string; building: string; area: string; play: boolean; family: 'side' | 'service' | 'stack'; length: number; from: number; to: number; modules: number; /** brief 075-E: the streamline bay the run takes */ stream?: string; /** why a public run keeps the side pieces */ streamWhy?: string; why?: string; blocked?: string[]; /** the module ids that dress it (Redline's per-face coverage) */ dressedBy?: string[]; /** a shop run: the shop filler modules on it (ShopFill_n or the ShopStack_Base row) */ shop?: number; /** a shop run given back to its side pieces: too short once pulled back from an acute corner */ shopCut?: string; /** stretches left bare at an acute corner (m): narrower than any piece that fits there */ bare?: number[] };
+export type FacesOut = { facades: Facade[]; log: FaceLog[]; piers: { placed: number; skipped: number; why: Record<string, number> }; /** brief 075-E: the streamline corners and ends placed, by piece */ stream: { corners: Record<string, number>; ends: Record<string, number>; runs: number; kept: Record<string, number>; /** outside corners left to a pier, by reason */ missed: Record<string, number> } };
 
 const boxOf = (p: V[]): [number, number, number, number] => [Math.min(...p.map(q => q[0])), Math.max(...p.map(q => q[0])), Math.min(...p.map(q => q[1])), Math.max(...p.map(q => q[1]))];
 export const occOf = (owner: string, ring: V[], base: number, top: number): Occ => ({ owner, ring, base, top, box: boxOf(ring) });
@@ -277,6 +295,8 @@ export function faceKitReady(): boolean {
 export function dressFaces(ctx: Ctx, inp: FacesIn): FacesOut {
   const P: Pieces = new Map(adopted().map(a => [a.id, a])), pav = ctx.pav, out: Facade[] = [], log: FaceLog[] = [];
   const piers = { placed: 0, skipped: 0, why: {} as Record<string, number> }, skip = (w: string) => { piers.skipped++; piers.why[w] = (piers.why[w] ?? 0) + 1; };
+  const streamOn = faceKitReady();
+  const stream = { corners: {} as Record<string, number>, ends: {} as Record<string, number>, runs: 0, kept: {} as Record<string, number>, missed: {} as Record<string, number> }, inc = (o: Record<string, number>, k: string) => { o[k] = (o[k] ?? 0) + 1; };
   const byB = new Map<string, Facade[]>(); for (const f of inp.facades) (byB.get(f.building) ?? byB.set(f.building, []).get(f.building)!).push(f);
   const tenB = new Map<string, Tenancy[]>(); for (const t of inp.tenancies ?? []) (tenB.get(t.host) ?? tenB.set(t.host, []).get(t.host)!).push(t);
   const coversOf = (fs: Facade[]): Cover[] => fs.flatMap(f => { const a = inp.catalogue(f.kit.id); return a ? [{ quad: quadOf(f.kit.at, a.size, f.kit.scale, f.kit.yaw ?? 0, 0.05), lo: f.base, hi: f.base + a.size[1] * f.kit.scale[1], owner: f.building }] : []; });
@@ -309,6 +329,18 @@ export function dressFaces(ctx: Ctx, inp: FacesIn): FacesOut {
   for (const b of inp.blds) {
     const tiers = inp.masses.filter(m => m.id.startsWith(b.id + '/') && !/\/band-\d+$/.test(m.id) && m.height > 1);
     const covers = coversOf(byB.get(b.id) ?? []), placed: Facade[] = [];
+    // brief 075-E: the building's one streamline class: its street front's bay (facades.ts), else drawn by the old recipe
+    const frontRow = rowOf((byB.get(b.id) ?? []).find(f => f.form === 'bay')?.kit.id ?? '');
+    const bCls: StreamClass = frontRow?.cls ?? recipePick<StreamClass>(['S', 'P', 'B', 'D', 'A'], c => c, rng(`faces/stream/${b.id}`).f());
+    const coping = (code: number) => CODE_H[code] ?? 6.1 + 3.4 * code;
+    /** The streamline bay for a whole wall of height h: the front's own bay, else the class's, else a StreamBay; storey-true in the play streets. */
+    const streamRow = (h: number): { row: StreamRow; a: KitAsset; sy: number } | null => {
+      const fits = (row: StreamRow) => { const a = P.get(row.bay); if (!a) return null; const sy = h / a.size[1]; if (!inRange(a, sy)) return null;
+        if (b.play ? row.code !== b.n || Math.abs(a.size[1] - coping(row.code)) > 0.4 : /^PortholeBay_\d+L$/.test(row.bay)) return null; return { row, a, sy }; };
+      const best = (rows: StreamRow[], seed: string) => { const ok = rows.map(fits).filter((x): x is { row: StreamRow; a: KitAsset; sy: number } => !!x); if (!ok.length) return null;
+        const d = Math.min(...ok.map(o => Math.abs(o.sy - 1))), near = ok.filter(o => Math.abs(o.sy - 1) < d + 0.02); return near[Math.floor(rng(seed).f() * near.length)]!; };
+      return (frontRow ? fits(frontRow) : null) ?? best(STREAM_ROWS.filter(r => r.cls === bCls), `faces/stream/${b.id}/${bCls}`) ?? best(STREAM_ROWS.filter(r => r.cls === 'S'), `faces/stream/${b.id}/S`);
+    };
     const push = (f: Omit<Facade, 'id' | 'building' | 'storeys'>) => placed.push({ id: `${b.id}/k${placed.length}`, building: b.id, storeys: b.n, ...f });
     for (const m of tiers) {
       const ring = ccw(m.ring), N = ring.length, z0 = m.base, z1 = r3(m.base + m.height);
@@ -331,11 +363,55 @@ export function dressFaces(ctx: Ctx, inp: FacesIn): FacesOut {
         }
       }
       // runs: spans that meet at a vertex at a small turn, with one foot and one family
-      type Run = { parts: Span[]; from: number; fam: 'side' | 'service'; startPier: number; endPier: number };
+      type Run = { parts: Span[]; from: number; fam: 'side' | 'service'; startPier: number; endPier: number; st?: { row: StreamRow; a: KitAsset; sy: number }; sk?: Module[]; stWhy?: string };
       const runs: Run[] = [];
       const joins = (x: Span, y: Span) => Math.abs(x.s1 - L(x.e)) < 0.02 && y.e === (x.e + 1) % N && y.s0 < 0.02 && Math.abs(turnDeg(T(x.e), T(y.e))) < FACES.chainTurn && Math.abs(x.from - y.from) < 0.01 && x.fam === y.fam;
       for (const s of spans) { const r = runs[runs.length - 1], last = r?.parts[r.parts.length - 1]; if (r && last && joins(last, s)) r.parts.push(s); else runs.push({ parts: [s], from: s.from, fam: s.fam, startPier: 0, endPier: 0 }); }
       if (runs.length > 1) { const f = runs[0]!, l = runs[runs.length - 1]!; if (joins(l.parts[l.parts.length - 1]!, f.parts[0]!)) { f.parts.unshift(...l.parts); runs.pop(); } }
+      // brief 075-E: each run's geometry (the polyline of its parts, a point and the outward normal s m along it) and its streamline bay
+      const geoOf = (r: Run) => {
+        const pts: V[] = [], lens: number[] = [], ns: V[] = [];
+        for (const s of r.parts) { const a = ring[s.e]!, t = T(s.e); if (!pts.length) pts.push([a[0] + t[0] * s.s0, a[1] + t[1] * s.s0]); pts.push([a[0] + t[0] * s.s1, a[1] + t[1] * s.s1]); lens.push(s.s1 - s.s0); ns.push([t[1], -t[0]]); }
+        const total = lens.reduce((x, y) => x + y, 0);
+        const seg = (s: number) => { let acc = 0; for (let i = 0; i < lens.length; i++) { if (s <= acc + lens[i]! + 1e-9 || i === lens.length - 1) return { i, k: Math.min(1, Math.max(0, (s - acc) / (lens[i]! || 1))) }; acc += lens[i]!; } return { i: lens.length - 1, k: 1 }; };
+        const at = (s: number): V => { const { i, k } = seg(s); return [pts[i]![0] + (pts[i + 1]![0] - pts[i]![0]) * k, pts[i]![1] + (pts[i + 1]![1] - pts[i]![1]) * k]; };
+        return { total, at, nAt: (s: number): V => ns[seg(s).i]! };
+      };
+      /** Does a body `depth` m deep behind the run from s0 to s1 stand inside the tier (sampled every metre, 5 cm in)? */
+      const bodyIn = (r: Run, s0: number, s1: number, depth: number): boolean => {
+        const g = geoOf(r), k = Math.max(2, Math.ceil((s1 - s0) / 1));
+        for (let i = 0; i <= k; i++) { const s = s0 + 0.05 + ((s1 - s0 - 0.1) * i) / k, p = g.at(s), n = g.nAt(s);
+          for (const d of [0.3, depth / 2, depth - 0.05]) if (!pointInRing([p[0] - n[0] * d, p[1] - n[1] * d], ring)) return false; }
+        return true;
+      };
+      const tierFoot = (r: Run) => Math.abs(r.from - z0) < 0.01; // not the part of a party wall above a lower neighour (a blank party wall keeps the side pieces)
+      const wholeFoot = (r: Run) => whole && tierFoot(r) && z0 <= pav + FACES.topTol;
+      const streamy = (r: Run) => !!(r.st || r.sk);
+      for (const r of runs) {
+        if (r.fam !== 'side' || !streamOn) continue; // the grammar dresses with the every-face pass (faceKitReady), not without it
+        if (!tierFoot(r) && !FACES.streamParty) { r.stWhy = 'a party wall above a lower neighbour'; continue; }
+        const parts = r.parts.map(s => { const a = ring[s.e]!, t = T(s.e); return [[a[0] + t[0] * s.s0, a[1] + t[1] * s.s0], [a[0] + t[0] * s.s1, a[1] + t[1] * s.s1]] as [V, V]; });
+        const shop = tenB.has(b.id) && shopOverlap(parts, tenB.get(b.id)!) > FACES.shopOverlap;
+        if (shop && wholeFoot(r) && b.n <= 4) { r.stWhy = 'shop run'; continue; } // the whole-wall shop fillers (ShopFill_n) stay; a taller shop run takes the shop row under streamline storeys
+        // at a corner sharper than square the body pulls back d·cot (K-6, as the tiling below); the side pieces take the strip it leaves (a shop run keeps them all)
+        const p0 = r.parts[0]!, pz = r.parts[r.parts.length - 1]!, gap0 = p0.s0, gap1 = Math.max(0, L(pz.e) - pz.s1), c0 = cotAcute(T(edgeBefore(p0.e)), T(p0.e)), c1 = cotAcute(T(pz.e), T(edgeAfter(pz.e)));
+        if (shop && (c0 > 0 || c1 > 0)) { r.stWhy = 'acute corner (shop run)'; continue; }
+        const total = geoOf(r).total, foot = Math.max(r.from, pav);
+        const fitsBody = (d: number) => { const q0 = Math.max(0, d * c0 - gap0), q1 = Math.max(0, d * c1 - gap1); return total - q0 - q1 >= FACES.module * 0.9 && bodyIn(r, q0, total - q1, d); };
+        if (wholeFoot(r) && !shop) { // the whole-wall streamline bay
+          const st = streamRow(z1 - foot);
+          if (st && fitsBody(backOf(st.a))) { r.st = st; continue; }
+          r.stWhy = st ? `the ${r3(backOf(st.a))} m body leaves the building` : `no whole-wall streamline bay fits ${r3(z1 - foot)} m${b.play ? ` at ${b.n} storeys` : ''}`;
+        }
+        if (!P.get(STREAM_STACK.bay.mid)) continue; // Vela's stacked streamline bays (stream.ts STREAM_STACK), once adopted
+        const c = column(ctx, foot, z1, tierFoot(r) ? foot : Math.max(z0, pav), b.top, P, STREAM_STACK.bay);
+        if (!('mods' in c)) { r.stWhy = `streamline stack: ${c.why}`; continue; }
+        if (!fitsBody(Math.max(...c.mods.map(x => backOf(x.a))))) { r.stWhy = 'the stack body leaves the building'; continue; }
+        r.sk = c.mods; r.stWhy = undefined;
+      }
+      // the corner and end stacks are cut at the plan's bands: a Top module taller than its band (StreamCornerStack_Top's fin) stands on the Top band's height
+      const PB: Pieces = new Map(P);
+      for (const nm of [STREAM_STACK.corner.top, STREAM_STACK.end.top]) { const a = P.get(nm); if (a && a.size[1] > 3.95 + 0.05) PB.set(nm, { ...a, size: [a.size[0], 3.95, a.size[2]] }); }
       // corner piers: where one run ends at a vertex and the next starts there at a turn of pierTurn or more, both from the tier's foot
       const vertexOf = (r: Run, end: boolean) => { const s = end ? r.parts[r.parts.length - 1]! : r.parts[0]!; return end ? (Math.abs(s.s1 - L(s.e)) < 0.02 ? (s.e + 1) % N : -1) : s.s0 < 0.02 ? s.e : -1; };
       for (const r of runs) {
@@ -344,6 +420,48 @@ export function dressFaces(ctx: Ctx, inp: FacesIn): FacesOut {
         const e0 = (v + N - 1) % N, tn = turnDeg(T(e0), T(v)); if (Math.abs(tn) < FACES.pierTurn) continue;
         if (Math.abs(tn) > FACES.pierMax) { skip('turn over pierMax: the modules meet'); continue; }
         const kind = tn > 0 ? 'out' : 'in', names = FACE_KIT.pier[kind], vtx = ring[v]!, n0 = edgeN(ring[e0]!, vtx), n1 = edgeN(vtx, ring[(v + 1) % N]!), bis = norm([n0[0] + n1[0], n0[1] + n1[1]]);
+        // brief 075-E: a streamline corner or end in place of the pier
+        if (kind === 'out' && Math.abs(r.from - nx.from) < 0.01 && (streamy(r) || streamy(nx)) && Math.abs(dot(T(e0), T(v))) < FACES.capSquare) { // both faces from one foot (a party strip's corner too)
+          const foot = Math.max(r.from, pav), h = z1 - foot, face = `${m.id}#v${v}`, gr = geoOf(r).total, gn = geoOf(nx).total;
+          const fitCap = (id: string, sc?: number) => { const a = P.get(id); if (!a) return null; const s = sc ?? h / capBody(a); return inRange(a, s) ? [{ a, z: foot, sy: s, s }] : null; };
+          const stackCap = (names: Names) => { if (!P.get(names.mid)) return null; const c = column(ctx, foot, z1, tierFoot(r) ? foot : Math.max(z0, pav), b.top, PB, names); if (!('mods' in c)) return null; const s = Math.max(1, ...c.mods.map(md => md.sy)); return c.mods.map(md => ({ a: P.get(md.id)!, z: md.z, sy: md.sy, s })); }; // one plan scale for the column, never narrower than tall (squash 1)
+          type Cap = { a: KitAsset; z: number; sy: number; s: number }[];
+          const capPush = (form: 'corner' | 'end', cap: Cap, place: (a: KitAsset, s: number) => { at: V; yaw: number }, pa: V, pb: V, edge: number, normal: V) => {
+            for (const md of cap) { const q = place(md.a, md.s);
+              push({ form, kit: { id: md.a.id, scale: [r3(md.s), r3(md.sy), r3(md.s)], yaw: q.yaw, at: [r3(q.at[0]), r3(q.at[1])] }, base: r3(md.z), a: [r3(pa[0]), r3(pa[1])], b: [r3(pb[0]), r3(pb[1])], edge, face,
+                family: form === 'corner' ? 'corner-out' : 'side', normal: [r4(normal[0]), r4(normal[1])], column: { id: face, storeys: cap.length }, casts: 'proxy-l2' }); }
+          };
+          let capped = false;
+          if (streamy(r) && streamy(nx)) { // the rounded corner: the junction pieces, the classes' whole-wall corners, else the corner stack
+            const junction = isStreetClass(clsOf(b, ring[e0]!, vtx)) && isStreetClass(clsOf(b, vtx, ring[(v + 1) % N]!)), street0 = z0 <= pav + FACES.topTol;
+            const tries: (Cap | null)[] = [...(junction && street0 && wholeFoot(r) && wholeFoot(nx) && !b.play && b.n >= JUNCTION.towerMin ? [fitCap(JUNCTION.tower, 1)] : []), ...(junction && wholeFoot(r) && wholeFoot(nx) && (!b.play || b.n === 10) ? [fitCap(JUNCTION.deco)] : []),
+              ...(r.st && nx.st ? [r.st.row, nx.st.row].filter(row => !b.play || row.code === b.n).map(row => fitCap(row.corner)) : []), stackCap(STREAM_STACK.corner)];
+            for (const cap of tries) {
+              if (!cap?.length) continue;
+              const cell = cornerPlace(vtx, n0, n1, cap[0]!.a, cap[0]!.s).onFace;
+              if (gr < cell - 0.02 || gn < cell - 0.02) continue;
+              let ok = true; // the cell behind both faces inside the tier
+              for (let i = 0; i <= 3 && ok; i++) for (let j = 0; j <= 3 && ok; j++) { const x = 0.05 + ((cell - 0.1) * i) / 3, y = 0.05 + ((cell - 0.1) * j) / 3; ok = pointInRing([vtx[0] - n0[0] * x - n1[0] * y, vtx[1] - n0[1] * x - n1[1] * y], ring); }
+              if (!ok) continue;
+              capPush('corner', cap, (a, s) => cornerPlace(vtx, n0, n1, a, s), [vtx[0] - T(e0)[0] * cell, vtx[1] - T(e0)[1] * cell], vtx, e0, bis);
+              r.endPier = cell; nx.startPier = cell; inc(stream.corners, cap[0]!.a.id); capped = true; break;
+            }
+          }
+          if (!capped) { // the rounded end: its front on the leaving face, its return on the entering one (stream.ts KIT_X: no mirror)
+            const row = (nx.st ?? r.st)?.row, tries: (Cap | null)[] = [...(row && wholeFoot(r) && wholeFoot(nx) && (!b.play || row.code === b.n) ? [fitCap(row.end)] : []), stackCap(STREAM_STACK.end)];
+            for (const cap of tries) {
+              if (!cap?.length) continue;
+              const c0 = cap[0]!, ep = endPlace(vtx, T(v), n1, c0.a, c0.s), depth = backOf(c0.a) * c0.s;
+              let ok = gn >= ep.front - 0.02 && gr >= depth - 0.02;
+              for (let i = 0; i <= 3 && ok; i++) for (let j = 0; j <= 5 && ok; j++) { const u = 0.05 + ((ep.front - 0.1) * i) / 3, z = 0.05 + ((depth - 0.1) * j) / 5; ok = pointInRing([vtx[0] + T(v)[0] * u - n1[0] * z, vtx[1] + T(v)[1] * u - n1[1] * z], ring); }
+              if (!ok) continue;
+              capPush('end', cap, (a, s) => endPlace(vtx, T(v), n1, a, s), vtx, [vtx[0] + T(v)[0] * ep.front, vtx[1] + T(v)[1] * ep.front], v, n1);
+              r.endPier = depth; nx.startPier = ep.front; inc(stream.ends, c0.a.id); capped = true; break;
+            }
+          }
+          if (capped) continue;
+          inc(stream.missed, streamy(r) && streamy(nx) ? 'no corner fits (room, cell or height)' : 'no end fits (room or height)');
+        } else if (kind === 'out') inc(stream.missed, Math.abs(r.from - nx.from) >= 0.01 ? 'the faces stand from different feet (a lower neighbour against one)' : !(streamy(r) || streamy(nx)) ? 'neither face streamline' : 'not square');
         let mods: Module[] | null = null;
         const from = Math.max(r.from, nx.from), foot = Math.max(from, pav), full = whole && Math.abs(from - z0) < 0.01; // a corner beside a party wall stands from the higher foot
         if (full) { for (const code of b.kind === 'shed' ? [3, 4] : b.n <= 4 ? [b.n, 3, 4] : []) { const a = P.get(names.whole[code] ?? ''); if (a && inRange(a, (z1 - foot) / a.size[1])) { mods = [{ id: a.id, z: r3(foot), sy: r3((z1 - foot) / a.size[1]), a }]; break; } } }
@@ -390,6 +508,12 @@ export function dressFaces(ctx: Ctx, inp: FacesIn): FacesOut {
           if ('mods' in c) { col = c.mods; stacked = true; } else { blocked = [...new Set([...blocked, ...c.blocked])]; why = blocked.length ? `not adopted: ${blocked.join(', ')}` : c.why; }
         }
         if (!col) { ent.why = why; if (blocked.length) ent.blocked = blocked; continue; }
+        // brief 075-E: a streamline run takes its bay as the whole-wall column, or the stacked streamline bays (no dock variants; the pilasters of the wall take what
+        // no whole number fills, the plain column the strip an acute corner leaves); `plain` is the side column it replaces
+        const plain = col, plainCode = code;
+        if (r.st) { col = [{ id: r.st.a.id, z: r3(foot), sy: r3(r.st.sy), a: r.st.a }]; variants = []; stacked = false; ent.stream = r.st.a.id; stream.runs++; }
+        else if (r.sk) { col = r.sk; stacked = true; variants = []; code = 0; ent.stream = r.sk[0]!.id; stream.runs++; }
+        else if (r.fam === 'side') { ent.streamWhy = r.stWhy ?? 'no streamline bay'; inc(stream.kept, (r.stWhy ?? 'none').replace(/[\d.]+ m/g, 'n m').replace(/ at \d+ storeys/, '')); }
         ent.family = stacked ? 'stack' : r.fam;
         // the shop rule (pieces.md Pass 2): a side run an own-shopfront tenancy overlaps by more than shopOverlap is a shop run; a whole-wall column takes
         // ShopFill_n for SideBay_n, a stacked column from the pavement its ground row as a ShopStack_Base row (the base-band modules dropped)
@@ -399,7 +523,7 @@ export function dressFaces(ctx: Ctx, inp: FacesIn): FacesOut {
           if (shopOverlap(parts, tenB.get(b.id)!) > FACES.shopOverlap) {
             const c0 = col[0]!;
             if (!stacked && code) { const a = P.get(FACE_KIT.shop.whole[code] ?? ''); if (a && Math.abs(a.size[1] - c0.a.size[1]) < 0.05 && inRange(a, c0.sy)) shopCol = { ...c0, id: a.id, a }; }
-            else if (stacked && c0.id === FACE_KIT.stack.base && c0.z <= pav + FACES.topTol) { const a = P.get(FACE_KIT.shop.base); if (a && Math.abs(a.size[1] - c0.a.size[1]) < 0.05 && inRange(a, c0.sy)) shopRow = { ...c0, id: a.id, a }; }
+            else if (stacked && (c0.id === FACE_KIT.stack.base || c0.id === STREAM_STACK.bay.base) && c0.z <= pav + FACES.topTol) { const a = P.get(FACE_KIT.shop.base); if (a && Math.abs(a.size[1] - c0.a.size[1]) < 0.05 && inRange(a, c0.sy)) shopRow = { ...c0, id: a.id, a }; }
           }
         }
         // the pilaster column of the same wall: takes what no whole number of modules fills (a stretch's ends) and a shop run's ends at an acute corner
@@ -435,13 +559,13 @@ export function dressFaces(ctx: Ctx, inp: FacesIn): FacesOut {
           }
           ent.shop = st.k;
         }
-        const dropBase = (cl: Module[]) => (shopRow && cl[0] && cl[0].z <= pav + FACES.topTol && (cl[0].id === FACE_KIT.stack.base || cl[0].id === FACE_KIT.pilaster.base) ? cl.slice(1) : cl);
+        const dropBase = (cl: Module[]) => (shopRow && cl[0] && cl[0].z <= pav + FACES.topTol && (cl[0].id === FACE_KIT.stack.base || cl[0].id === STREAM_STACK.bay.base || cl[0].id === FACE_KIT.pilaster.base) ? cl.slice(1) : cl);
         const svc = r.parts.find(x => x.svc)?.svc;
         let q = 0;
         /** Tile from..to with column cl (its first module's width and range; a whole number of modules, else with pilasters pc at the ends; `fixed` = the
          *  shop fillers' own tiling) and place each width's column as `pick` gives it. False when nothing fits. */
         const lay = (from: number, to: number, cl: Module[], pc: Module[] | null, pick: (c: Module[]) => Module[], fixed?: { k: number; sx: number }, dockable = false): boolean => {
-          const len = to - from, w = cl[0]!.a.size[0], range = cl[0]!.a.tags.scale;
+          const len = to - from, w = cl[0]!.a.size[0], range: [number, number] = [Math.max(cl[0]!.a.tags.scale[0], Math.max(...cl.map(m => m.sy)) * cl[0]!.a.tags.squash), cl[0]!.a.tags.scale[1]]; // a module no narrower than its squash share of its height scale (wave-2's rule)
           let tl = fixed ? { ...fixed, pil: [] as number[] } : tile(len, w, range);
           if (!tl && pc) tl = tile(len, w, range, { w: pc[0]!.a.size[0], range: pc[0]!.a.tags.scale });
           if (!tl) return false;
@@ -450,7 +574,12 @@ export function dressFaces(ctx: Ctx, inp: FacesIn): FacesOut {
           const dock = dockable && variants.length && tl.k >= 2 ? Math.floor(rng(`${face}/dock`).f() * tl.k) : -1;
           let sAt = from, j = 0;
           for (const seg of widths) {
-            const pa = at(sAt), pb = at(sAt + seg.w), t = norm(sub(pb, pa)), n: V = [t[1], -t[0]], c: V = [(pa[0] + pb[0]) / 2, (pa[1] + pb[1]) / 2], yaw = yawOf(n);
+            const pa = at(sAt), pb = at(sAt + seg.w), t = norm(sub(pb, pa)), n: V = [t[1], -t[0]], c0: V = [(pa[0] + pb[0]) / 2, (pa[1] + pb[1]) / 2], yaw = yawOf(n);
+            // a module whose chord spans a concave bend of the run (an inward arc) steps back by the bend's depth behind the chord, so no part of it stands in the
+            // air between the chord and the wall (K-6; brief 075-E: the street pass's ends moved to the runs' tails and laid new joints along avenue-court/19's arc)
+            let sag = 0, acc = 0;
+            for (let i = 0; i + 1 < lens.length; i++) { acc += lens[i]!; if (acc > sAt + 0.02 && acc < sAt + seg.w - 0.02) sag = Math.max(sag, -dot(sub(pts[i + 1]!, pa), n)); }
+            const c: V = sag > 0.005 ? [c0[0] - n[0] * sag, c0[1] - n[1] * sag] : c0;
             const cs = pick(seg.pil ? pc! : cl), sx = cs.length ? r3(seg.w / cs[0]!.a.size[0]) : 1;
             for (const md0 of cs) {
               const md = !seg.pil && j === dock && cs.length === 1 ? { ...md0, id: variants[0]!.id, a: variants[0]! } : md0, [cx, cz] = centreOf(md.a);
@@ -479,8 +608,19 @@ export function dressFaces(ctx: Ctx, inp: FacesIn): FacesOut {
           continue;
         }
         if (shopRow) { ends(a0, h0); ends(h1, a1); if (dropBase(col).length === 0) continue; } // the run was one base band: the shop row is all of it
+        // the plain column's pilasters (as before brief 075-E): a streamline run's acute-corner strips and a run no whole number of streamline bays tiles
+        const ppw = plainCode ? P.get(PL.whole[plainCode]!) : undefined;
+        let ppc: Module[] | null = null;
+        if (r.st || r.sk) { if (ppw && inRange(ppw, (z1 - foot) / ppw.size[1])) ppc = [{ id: ppw.id, z: r3(foot), sy: r3((z1 - foot) / ppw.size[1]), a: ppw }]; else { const c = column(ctx, plain[0]!.z, z1, plain[0]!.z, b.top, P, PL); if ('mods' in c) ppc = c.mods; } }
+        if (r.st || r.sk) { // the strips an acute corner leaves the streamline body: the plain column (and its pilasters)
+          const [p0, p1] = fit(Math.max(deep(plain), deep(ppc)));
+          const strip = (from: number, to: number) => { if (to - from < 1e-3) return; if (to - from < FACES.minFace || !lay(from, to, plain, ppc, x => x)) (ent.bare ??= []).push(r3(to - from)); };
+          if (a0 > p0 + 1e-3) strip(p0, a0);
+          if (a1 < p1 - 1e-3) strip(a1, p1);
+        }
         if (a1 - a0 < FACES.minFace) { (ent.bare ??= []).push(r3(a1 - a0)); continue; }
-        if (!lay(a0, a1, col, pcol, dropBase, undefined, true)) {
+        const laid = lay(a0, a1, col, pcol, dropBase, undefined, true) || ((r.st || r.sk) && lay(a0, a1, plain, ppc, dropBase) && (delete ent.stream, ent.streamWhy = 'no whole number of streamline bays fits the run', stream.runs--, true));
+        if (!laid) {
           const len = r3(a1 - a0), w = col[0]!.a.size[0], range = col[0]!.a.tags.scale;
           ent.why = `face ${len} m: no whole number of ${w} m modules at ${range.join('-')}` + (pcol ? ' even with pilasters' : `; a pilaster would fill it (not adopted: ${code ? PL.whole[code] : PL.mid})`); if (!pcol) ent.blocked = [code ? PL.whole[code]! : PL.mid];
         }
@@ -488,7 +628,7 @@ export function dressFaces(ctx: Ctx, inp: FacesIn): FacesOut {
     }
     out.push(...placed);
   }
-  return { facades: out, log, piers };
+  return { facades: out, log, piers, stream };
 }
 
 /** Redline's LOD, combine and instancing fields (briefs/072/redline/plan.md §6) on every facade piece: the LOD set (the piece's own L0..L2 chain, the

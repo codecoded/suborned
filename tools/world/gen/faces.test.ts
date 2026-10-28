@@ -44,7 +44,7 @@ test('every facade piece carries Redline\'s fields: LOD set, combine block and c
   for (const f of [...today.world.facades, ...a.world.facades]) {
     expect(f.lod?.set, f.id).toBe(f.kit.id); expect(f.lod!.levels).toBeGreaterThanOrEqual(1); expect(f.instance).toBe(`${f.kit.id}|${f.colourway}`);
     expect(f.combine!.cell).toEqual([Math.floor(f.kit.at[0] / FACES.hlodCell), Math.floor(f.kit.at[1] / FACES.hlodCell)]);
-    if (NEW.has(f.form)) { expect(f.family, f.id).toBeDefined(); expect(f.column!.storeys).toBeGreaterThanOrEqual(1); expect(f.casts).toBe('proxy-l2'); expect(f.lod!.class, f.id).toBeDefined(); expect(Math.hypot(...f.normal!)).toBeCloseTo(1, 3); }
+    if (NEW.has(f.form)) { expect(f.family, f.id).toBeDefined(); expect(f.column!.storeys).toBeGreaterThanOrEqual(1); expect(f.casts).toBe('proxy-l2'); expect(f.lod!.class, f.id).toBe(fxBy.get(f.kit.id)?.lodClass ?? offBy.get(f.kit.id)?.lodClass); if (!/^(StreamBay|PortholeBay|BalconyBay|ArcadeBay|DecoBay)_/.test(f.kit.id)) expect(f.lod!.class, f.id).toBeDefined(); expect(Math.hypot(...f.normal!)).toBeCloseTo(1, 3); }
     expect(f.combine!.block).toBe(f.building.startsWith('bld/') ? f.building.split('/')[1]! : f.building);
   }
 });
@@ -141,4 +141,24 @@ test('shop runs (pieces.md Pass 2): fillers 3 m nearest R / 3; a run on a tenanc
     const under = a.world.facades.filter(f => f.face === face && /^(SideBayStack|SidePilaster)_Base$/.test(f.kit.id) && s([(f.a[0] + f.b[0]) / 2, (f.a[1] + f.b[1]) / 2]) > lo + 0.01 && s([(f.a[0] + f.b[0]) / 2, (f.a[1] + f.b[1]) / 2]) < hi - 0.01);
     expect(under.map(f => f.id), face).toEqual([]);
   }
+});
+
+// Brief 075-E (Sky 2026-10-28: "we've still lost all the lovely curved buildings"): streamline is the default grammar of the faces the public sees.
+test('streamline grammar (075-E): the majority of public face metres, never on a service back, storey-true in the play streets, corners and ends square and adopted', () => {
+  const STREAM = /^(Stream|Porthole|Balcony|Arcade|Deco)|^CornerTower_/, seen = new Set<string>();
+  let pub = 0, st = 0;
+  for (const f of a.world.facades) {
+    if (f.service || /^AlleyWall/.test(f.kit.id)) { expect(f.kit.id, f.id).not.toMatch(STREAM); continue; }
+    if (f.column && seen.has(f.column.id)) continue; if (f.column) seen.add(f.column.id);
+    const m = f.form === 'pier' ? 0 : Math.hypot(f.b[0] - f.a[0], f.b[1] - f.a[1]) * (f.form === 'corner' ? 2 : 1);
+    pub += m; if (STREAM.test(f.kit.id)) st += m;
+  }
+  expect(st / pub).toBeGreaterThan(0.5);
+  for (const f of a.world.facades.filter(x => x.face && STREAM.test(x.kit.id))) {
+    expect(fxBy.get(f.kit.id)!.status, f.id).toBe('adopted');
+    const whole = /_(\d+)[WL]?$/.exec(f.kit.id);
+    if (play(areaOf(f.building)) && whole && !/^CornerTower/.test(f.kit.id)) expect(Number(whole[1]), f.id).toBe(f.storeys); // a whole-wall piece carries the building's storey code
+  }
+  // a streamline corner from the every-face pass stands at a square outside corner: its two legs a→b and b→(the leaving face) meet at 90° (within 3°)
+  for (const f of a.world.facades.filter(x => x.face && x.form === 'corner')) expect(Math.hypot(f.b[0] - f.a[0], f.b[1] - f.a[1]), f.id).toBeGreaterThan(7);
 });

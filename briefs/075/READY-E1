@@ -1,0 +1,4 @@
+075-E step 1 (streamline grammar), Splice, 2026-10-28
+export out/world/harbour-district.world.json sha256 a6c76f6a9f041e1b6f542631ad01f2797ddb85397e429e01eeba562f83e782f5
+streamline share of public face metres 34.5% -> 67.0% (briefs/075/composition.md)
+checks: world x2 same hash, world:faces, plan, plan + handover overlay, cover --check, sim:site (site moved; missions:check handover SHIPS), typecheck, tools/world + tools/kit tests 331/331
