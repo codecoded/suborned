@@ -1,0 +1,5 @@
+haze (Glint, 2026-10-29): the old reel's atmosphere on the long tier (presentation, flyby, golden cameras)
+shipping: unity/Assets/Suborned/Resources/Atmosphere/haze.json (long: exp 0.0005, #ebdbba) and lens.json (dofLong 300-1800 r1.2 HQ, bloomLong 1.0/0.6/0.85 #fff5e6, gradeLong 0/0/0, sky.hazeHeightLong 0.10); runtime reads them, no rebuild
+frames: briefs/075/parity/haze/{golden-boulevard,circus,skyline}-old-now.png (+ -old-before-now.png), play-zoom-handover.png, frames/, stats.json, variants/
+rendered: Glint075.Cli -mode golden -keys briefs/075/flyby/remap-keys.json -t 10,20,61.5 -ss 2, batchmode offscreen via bun run guard
+play: unchanged (max 2/255 dither vs before), crossing heads unchanged

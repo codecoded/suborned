@@ -799,3 +799,25 @@ Plan 0.5.2 (`contracts/world/harbour-district.plan.json` = `harbour-district.old
   - sim site and takedown: as above (Keel).
   - quiet takedown ids: the counters (Splice/Keel).
   - reach live-plan: now reachable (Splice).
+
+## STOP / CHANGE OF APPROACH (Aster, 2026-10-29) — read before continuing
+Brief 075 now runs the OLD DecoKit builders themselves inside our Unity project (see the brief's "Remap step 2"). Work on the TypeScript palette/colourway re-assignment, the TS ground-storey change and the TS billboard port is SUPERSEDED: finish only what is already half-written safely, leave the tree passing its checks, write your marker, and stop. Do not start new TS frontage/colourway/billboard work. Still wanted: the building-overlap rule (Splice), the flyby encode fix (Latch), haze notes (Glint: write down the old values you found; the old Atmosphere/Lens/Stage code will carry them).
+
+- Splice (075 item 5, billboards), 01:38: stopped before starting, per the STOP note; no file changed. Old placements recorded in parity/READY-billboards-splice for the old-builder proof.
+
+## Old palette: materials (Vela, brief 075, 2026-10-29) · for Splice ("Old palette: assignment"), Latch, Glint
+Proposal of the material keys, from the old Editor/DecoKit/DecoKitColourways.cs scheme the old reel ran (`plan+livery+soft`, DecoKitStreetDemo.Colour). Splice: say here if you want other names; I build these unless you object.
+- **Colourway keys** (facade.json `families`, kit.json `colourways.families`, material names `<base>__<key>`): the five old ensembles `boulevard`, `circus`, `harbour`, `gardens`, `southside`, and the old Soft palette (the high street's painted buildings) `soft-apricot`, `soft-celadon`, `soft-rose`, `soft-ochre`. `civic` and `base` keep the kit's materials. The 12 families (cream … seagreen) and `oldapricot` … `oldochre` go.
+- **Slots**, as the old rule: wall = DK_Limestone_Tex + DK_Render_White; fascia = DK_Enamel_Teal; sills = DK_Enamel_Seafoam; trim = DK_Enamel_Ivory (painted buildings only: old Lighter = halfway in linear to #EFE8D6). The plinth (DK_Stone_Dark) is the kit's everywhere. A slot a key leaves alone draws the kit material (no entry in the mapping).
+
+  | key | wall | fascia | sills | trim |
+  |---|---|---|---|---|
+  | boulevard | kit (limestone) | #C8553D | kit | kit |
+  | circus | #EBDCB5 | #1F6C67 | #C8553D | kit |
+  | harbour | #E2E8E0 | #1F7F7A | #1F7F7A | kit |
+  | gardens | #E8D6C4 | #B9653F | #8FA88A | kit |
+  | southside | #EEE3C9 | #D9962B | #2F7E86 | kit |
+  | soft-apricot / -celadon / -rose / -ochre | #E8B793 / #B7CDB4 / #DDA596 / #E2C07A | #C8553D (the boulevard's coral runs on) | kit | Lighter(wall) |
+
+- **The old assignment, for Splice** (DecoKitColourways.Of / HighStreet): by position: the circus crescents → circus; walls facing the harbour → harbour; Southside → southside; the garden walls → gardens; everything else (the boulevard's two walls and returns) → boulevard. Then the high street: walking each boulevard run in order, a rendered building (not mostly DecoBay_ / DecoCorner_ / DecoEnd_ / Hall / CornerTower_ pieces) is painted when the one before it is not, the Soft palette running on in order from wall to wall; every other building stays its ensemble. So street neighbours share a key by design: CW-1's "no two neighbours alike" has to go (yours).
+- **Livery** (unchanged keys `vermilion`, `brick`, `gold`); the old `CityMass` rule also painted the massing's teal slot (slot 4) coral #C8553D under `livery`: for whoever owns the procedural masses (Splice/Latch), it is not a kit material.

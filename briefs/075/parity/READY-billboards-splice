@@ -1,0 +1,8 @@
+Splice, 075 item 5 (rooftop billboards and billboard bands), 2026-10-29 01:38: NOT STARTED, superseded.
+Aster's STOP note (briefs/075/notes.md, 01:36, "Remap step 2") landed before any edit: the TS billboard port is not to be started. No file changed.
+Read for the record (old DecoKitDistrictDressing.cs, read only), all of which the old builders now place by construction:
+- Circus: Billboard_Rooftop_B (NE crescent, phi0 + 2 step, R + 6, crescent roof 26.35, facing the centre; the ATOM FIZZ board) and Billboard_Rooftop_A (opposite, phi0 - 180 + 2 step);
+  Billboard_Wall_A/B/C on the NE crescent's first three chords, 8 m up, facing the centre (the "billboard band"); 4 AdColumns (already ported, props.ts C-column).
+- Boulevard: Billboard_Rooftop_A (-25, 70, roof 10.95, yaw 180) and Billboard_Rooftop_C (-25.5, 32, yaw 90) over the low civic hall; Billboard_Wall_C on Market Street (35, MarketPierZ.y + 2, 8 m up, yaw 180); 2 AdColumns (ported, B-column).
+- Parade: Billboard_Pylon_A/B at (40, z -/+ 17), yaw -90 (ported, BB-3). Harbour: Pylon_A on the promenade, Rooftop_B/C on the back bays (not in scope). Decks: SS1 Billboard_Rooftop_B.
+Plan frame = old (x, z - 206); plan yaw = -old yaw.

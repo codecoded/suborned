@@ -1,0 +1,111 @@
+{
+ "schema": "glint.haze075-stats/1",
+ "note": "stats.py (HSV saturation mean, Rec.601 luma median, p5, p95) on 1920x1080 frames; ours rendered 3840x2160 and lanczos-downsampled; old = briefs/075/golden/old.png (t 10) and old-flyby.mp4 frames (t 20, 61.5). Flight = briefs/075/flyby/remap-keys.json.",
+ "frames": {
+  "golden-boulevard": {
+   "t": 10.0,
+   "old": {
+    "satMean": 111.6,
+    "lumaMedian": 111.9,
+    "p5": 42.7,
+    "p95": 205.5,
+    "leftThirdMedian": 85.9,
+    "rightThirdMedian": 126.3
+   },
+   "h0-before": {
+    "satMean": 118.3,
+    "lumaMedian": 137.3,
+    "p5": 42.5,
+    "p95": 227.7,
+    "leftThirdMedian": 148.2,
+    "rightThirdMedian": 95.1
+   },
+   "h3-final": {
+    "satMean": 100.8,
+    "lumaMedian": 117.4,
+    "p5": 38.8,
+    "p95": 207.2,
+    "leftThirdMedian": 125.9,
+    "rightThirdMedian": 79.3
+   }
+  },
+  "circus": {
+   "t": 20.0,
+   "old": {
+    "satMean": 101.2,
+    "lumaMedian": 139.2,
+    "p5": 46.9,
+    "p95": 218.7,
+    "leftThirdMedian": 105.5,
+    "rightThirdMedian": 152.3
+   },
+   "h0-before": {
+    "satMean": 128.2,
+    "lumaMedian": 187.6,
+    "p5": 57.4,
+    "p95": 236.4,
+    "leftThirdMedian": 189.8,
+    "rightThirdMedian": 172.3
+   },
+   "h3-final": {
+    "satMean": 109.2,
+    "lumaMedian": 168.1,
+    "p5": 63.0,
+    "p95": 215.9,
+    "leftThirdMedian": 170.0,
+    "rightThirdMedian": 151.4
+   }
+  },
+  "skyline": {
+   "t": 61.5,
+   "old": {
+    "satMean": 95.9,
+    "lumaMedian": 148.7,
+    "p5": 61.2,
+    "p95": 208.3,
+    "leftThirdMedian": 160.2,
+    "rightThirdMedian": 143.3
+   },
+   "h0-before": {
+    "satMean": 123.5,
+    "lumaMedian": 194.1,
+    "p5": 60.4,
+    "p95": 237.4,
+    "leftThirdMedian": 197.8,
+    "rightThirdMedian": 192.9
+   },
+   "h3-final": {
+    "satMean": 101.0,
+    "lumaMedian": 173.8,
+    "p5": 63.5,
+    "p95": 215.5,
+    "leftThirdMedian": 177.5,
+    "rightThirdMedian": 173.1
+   }
+  }
+ },
+ "r1_variants": {
+  "h1-port-exact-bloom-0.48": {
+   "golden-boulevard": [
+    91.7,
+    139.5,
+    45.4
+   ],
+   "circus": [
+    92.2,
+    193.4,
+    91.0
+   ],
+   "skyline": [
+    80.8,
+    198.4,
+    75.5
+   ]
+  },
+  "note": "sat / median / p5 with the old bloom threshold (0.8 at the old sun = 0.48 at ours): veiled, rejected"
+ },
+ "play": {
+  "note": "play views h0-before vs h3-final, per-channel abs difference over 1920x1080: max 2/255 (camera dither), so the crossing heads and signals are unchanged (dE < 1)",
+  "max_abs_diff": 2
+ }
+}

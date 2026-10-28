@@ -292,7 +292,8 @@ namespace Suborned.World.Review
                 var e = J.A(k, "eye"); var l = J.A(k, "look");
                 keys.Add(new K { t = J.F(k, "t"), eye = new Vector3((float)(double)e[0], (float)(double)e[1], (float)(double)e[2]), look = new Vector3((float)(double)l[0], (float)(double)l[1], (float)(double)l[2]) });
             }
-            float t = float.Parse(Arg("-t", "6"), CultureInfo.InvariantCulture);
+            // brief 075 haze (Glint 2026-10-29): -t takes a comma list of flight times, one frame per time per variant (<name>-t<t>.png; a single time keeps <name>-golden.png)
+            var times = Arg("-t", "6").Split(',').Select(x => x.Trim()).ToArray();
             var variants = J.A(Json.Parse(File.ReadAllText(Abs(Arg("-variants", "briefs/075/golden/glint/variants.json")))));
             var sun = RenderSettings.sun;
             Quaternion rot0 = sun.transform.rotation; float int0 = sun.intensity;
@@ -342,15 +343,22 @@ namespace Suborned.World.Review
                     if (lens) { typeof(AtmosphereLens).GetMethod("OnDisable", Any)?.Invoke(lens, null); UnityEngine.Object.DestroyImmediate(lens.gameObject); }
                     lens = InstallLens(J.S(v, "lens"));
                     HazeVariant(J.S(v, "haze"));
-                    var eye = Spline(keys, t, i => keys[i].eye); var dir = Spline(keys, t, i => (keys[i].look - keys[i].eye).normalized);
-                    new Pose { Position = eye, Rotation = Quaternion.LookRotation(dir, Vector3.up), Fov = cam.fieldOfView, Near = 0.3f, Far = 12000f }.Apply(cam);
-                    session.ShadowDistance = Mathf.Clamp(eye.y * 8f, 120f, 1200f);
-                    cam.enabled = true;
-                    session.Grab(cam, 64, 64); session.Grab(cam, 64, 64);
-                    File.WriteAllBytes(Path.Combine(outDir, $"{name}-golden.png"), session.Grab(cam, 1920, 1080).EncodeToPNG());
-                    cam.enabled = false;
-                    session.ShadowDistance = 0f;
-                    report.Append($"golden {name}: t {t} eye {eye} sun {sun.transform.eulerAngles} x{sun.intensity:F2}; ambient #{ColorUtility.ToHtmlStringRGB(RenderSettings.ambientSkyColor)} #{ColorUtility.ToHtmlStringRGB(RenderSettings.ambientEquatorColor)} #{ColorUtility.ToHtmlStringRGB(RenderSettings.ambientGroundColor)}; ssao {(st == null ? "none" : $"{SF("Intensity").GetValue(st)} r{SF("Radius").GetValue(st)} d{SF("DirectLightingStrength").GetValue(st)} after {SF("AfterOpaque").GetValue(st)} {SF("Source").GetValue(st)}")}; lens {J.S(v, "lens") ?? "Resources"}\n");
+                    Vector3 eye = default;
+                    foreach (var ts in times)
+                    {
+                        float t = float.Parse(ts, CultureInfo.InvariantCulture);
+                        eye = Spline(keys, t, i => keys[i].eye); var dir = Spline(keys, t, i => (keys[i].look - keys[i].eye).normalized);
+                        new Pose { Position = eye, Rotation = Quaternion.LookRotation(dir, Vector3.up), Fov = cam.fieldOfView, Near = 0.3f, Far = 12000f }.Apply(cam);
+                        session.ShadowDistance = Mathf.Clamp(eye.y * 8f, 120f, 1200f);
+                        cam.enabled = true;
+                        session.Grab(cam, 64, 64); session.Grab(cam, 64, 64);
+                        int ss = Mathf.Clamp(int.Parse(Arg("-ss", "1")), 1, 2);
+                        File.WriteAllBytes(Path.Combine(outDir, times.Length == 1 ? $"{name}-golden.png" : $"{name}-t{ts}.png"), session.Grab(cam, 1920 * ss, 1080 * ss).EncodeToPNG());
+                        cam.enabled = false;
+                        session.ShadowDistance = 0f;
+                        report.Append($"golden {name}: t {t} eye {eye} tier {DistanceHaze.TierOf(cam)} fog {RenderSettings.fogMode} {RenderSettings.fogDensity}\n");
+                    }
+                    report.Append($"golden {name}: times {string.Join(",", times)} eye {eye} sun {sun.transform.eulerAngles} x{sun.intensity:F2}; ambient #{ColorUtility.ToHtmlStringRGB(RenderSettings.ambientSkyColor)} #{ColorUtility.ToHtmlStringRGB(RenderSettings.ambientEquatorColor)} #{ColorUtility.ToHtmlStringRGB(RenderSettings.ambientGroundColor)}; ssao {(st == null ? "none" : $"{SF("Intensity").GetValue(st)} r{SF("Radius").GetValue(st)} d{SF("DirectLightingStrength").GetValue(st)} after {SF("AfterOpaque").GetValue(st)} {SF("Source").GetValue(st)}")}; lens {J.S(v, "lens") ?? "Resources"}\n");
                     if (J.B(v, "play"))
                         foreach (var (id, f, yawV) in new[] { ("office-front", Baseline072.OfficeFront, 30f), ("office-front", Baseline072.OfficeFront, 210f), ("cafe-square", cellOpen, 30f), ("cafe-square", cellOpen, 210f) })
                         {
