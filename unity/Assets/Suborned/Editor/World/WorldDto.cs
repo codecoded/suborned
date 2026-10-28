@@ -90,10 +90,11 @@ namespace Suborned.World
     /// <summary>Kit (civic objects): the piece standing in for the extrusion at its At, on its Base. Fade (civic kit masses): the
     /// play camera's architecture fade may ghost the piece (a parasol over a table someone stands at). GroundBy: the id of the
     /// kit mass that is this building's ground storey (the café's bay), so the facade draws none.
-    /// Materials: this mass's piece draws the slot (a material name on the piece) in the named kit material.</summary>
+    /// Materials: this mass's piece draws the slot (a material name on the piece) in the named kit material.
+    /// Colourway (brief 074): the building's facade.json wall family (`buildings[].colourway`, `civic` on the civic block); null when the export has none.</summary>
     public sealed class MassDto
     {
-        [System.NonSerialized] public object Raw; public string Id, Surface, GroundBy; public Vector2[] Ring; public float Base, Height; public KitRefDto Kit; public bool Fade; public Dictionary<string, string> Materials;
+        [System.NonSerialized] public object Raw; public string Id, Surface, GroundBy, Colourway; public Vector2[] Ring; public float Base, Height; public KitRefDto Kit; public bool Fade; public Dictionary<string, string> Materials;
 
         /// <summary>This mass on another ring (its own ring is left alone).</summary>
         public MassDto With(Vector2[] ring) { var c = (MassDto)MemberwiseClone(); c.Ring = ring; return c; }

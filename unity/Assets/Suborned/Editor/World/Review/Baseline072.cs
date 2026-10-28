@@ -265,10 +265,10 @@ namespace Suborned.World.Review
         }
 
         /// <summary>HandoverHost.PlaceCamera at the overhead preset: ortho 14, pitch 38, the yaw; focus on the street datum.</summary>
-        internal static void Pose(Camera cam, TacticalShadows shadows, ArchitectureFade fade, Vector2 f, float yaw, float standOff)
+        internal static void Pose(Camera cam, TacticalShadows shadows, ArchitectureFade fade, Vector2 f, float yaw, float standOff, float zoom = PlayZoom)
         {
             var focus = new Vector3(f.x, 0f, f.y);
-            cam.orthographic = true; cam.orthographicSize = PlayZoom;
+            cam.orthographic = true; cam.orthographicSize = zoom;
             cam.transform.rotation = Quaternion.Euler(PlayPitch, yaw, 0f);
             cam.transform.position = focus - cam.transform.forward * standOff;
             cam.nearClipPlane = 0.3f; cam.farClipPlane = Mathf.Max(standOff + 1500f, 0f);

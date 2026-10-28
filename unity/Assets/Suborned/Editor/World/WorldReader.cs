@@ -207,7 +207,7 @@ namespace Suborned.World
         static MassDto Mass(object m) => new()
         {
             Id = Id(m), Surface = J.S(m, "surface"), Ring = J.Poly(m, "ring"), Base = J.F(m, "base"), Height = J.F(m, "height"), Kit = Kit(J.Get(m, "kit")),
-            Fade = J.Get(m, "fade") is true, GroundBy = J.Get(m, "groundBy") as string, Raw = m,
+            Fade = J.Get(m, "fade") is true, GroundBy = J.Get(m, "groundBy") as string, Colourway = J.S(m, "colourway"), Raw = m,
             Materials = J.Get(m, "materials") is Dictionary<string, object> slots ? slots.ToDictionary(kv => kv.Key, kv => (string)kv.Value) : null,
         };
 

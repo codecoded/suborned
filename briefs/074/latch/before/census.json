@@ -1,0 +1,13 @@
+{
+  "schema": "suborned.074-census/1",
+  "tag": "074before",
+  "when": "2026-10-28 10:42",
+  "export": "out/scratch/latch/072/g/g.world.json sha256 6841dcfc6f91ddea79ec6f275e5191f516dc91ffad884005c85724decbe1ce88",
+  "views": [{"id": "office-front", "focus": [-160, -281], "yaw": 30, "ortho": 14, "pitch": 38, "standOff": 160}, {"id": "office-front", "focus": [-160, -281], "yaw": 210, "ortho": 14, "pitch": 38, "standOff": 160}, {"id": "cell-open", "focus": [-170.5, -227.5], "yaw": 30, "ortho": 14, "pitch": 38, "standOff": 160}, {"id": "cell-open", "focus": [-170.5, -227.5], "yaw": 210, "ortho": 14, "pitch": 38, "standOff": 160}, {"id": "wide-lamplight", "focus": [-215, -120], "yaw": 30, "ortho": 18.5, "pitch": 38, "standOff": 160}],
+  "columns": {"placed": 2265, "singleModules": 2389, "layoutPrefabsPlaced": 165, "layoutPrefabsInFolder": 165, "meshAssetsInFolder": 495, "distinctMeshesPlaced": 495, "trianglesAllLodsOfPlacedMeshes": 573512},
+  "materials": {"scene": 289, "modules": 14, "shadowProxies": 29, "sceneShaderVariants": 29, "moduleShaderVariants": 6},
+  "shadowProxies": {"all": 6458, "modules": 4654, "materials": ["DK_Bark_Fibre", "DK_Bark_Palm", "DK_Beacon_Rose", "DK_Bronze", "DK_Chrome", "DK_Coconut", "DK_Crown_Gold", "DK_Enamel_Charcoal", "DK_Enamel_Coral", "DK_Enamel_Ivory", "DK_Enamel_Mustard", "DK_Enamel_Seafoam", "DK_Enamel_Teal", "DK_GlassDark", "DK_Gold", "DK_Iron", "DK_Lamp", "DK_Leaf_PalmFeather", "DK_Leaf_Shrub", "DK_Limestone_Tex", "DK_Lobby", "DK_Render_White", "DK_Soil", "DK_Steel", "DK_Steel_Ivory", "DK_Stone_Dark", "DK_Terrazzo_Ivory", "DK_Window_Film", "DK_Window_Tower"]},
+  "moduleShaderVariants": ["DecoKit/Complex Lit Cutaway|_CLEARCOAT", "DecoKit/Complex Lit Cutaway|_CLEARCOAT,_DETAIL_MULX2", "DecoKit/Lit Cutaway|_DETAIL_MULX2", "DecoKit/Lit Cutaway|_EMISSION", "DecoKit/Lit Cutaway|_METALLICSPECGLOSSMAP,_NORMALMAP,_OCCLUSIONMAP", "Suborned/DecoKit/GlassSky|"],
+  "moduleMaterials": ["DK_Chrome", "DK_Enamel_Charcoal", "DK_Enamel_Ivory", "DK_Enamel_Mustard", "DK_Enamel_Seafoam", "DK_Enamel_Teal", "DK_GlassDark", "DK_Gold", "DK_Lamp", "DK_Limestone_Tex", "DK_Lobby", "DK_Stone_Dark", "DK_Window_Film", "DK_Window_Tower"],
+  "moduleRootsByWallMaterial": {"DK_Limestone_Tex": 4654}
+}

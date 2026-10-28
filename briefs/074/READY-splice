@@ -1,0 +1,13 @@
+074-A building colourways in the world export (Splice, 2026-10-28)
+export: out/world/harbour-district.world.json sha256 67a3a07b6ffcc1b4ae9bcc8a822e6a3a8b61b56bbc38595deba19a009960d6c4 (bun run world, twice, same hash)
+facade.json read: unity/Assets/Suborned/Editor/World/facade.json sha256 07b28afe420e857c34704a417c61e550fc7195b20e47c88e9e031d1dc916afe0
+
+fields (all strings, values = facade.json `families` keys):
+  buildings[].colourway   every mass of a building (bld/<plot>/<n>/body|upper, tower/<id>/podium|lower|upper); one value per building = FacadeKit.HostOf(mass id)
+  facades[].colourway     every facade piece; always equal to its building's (facades[].building = the HostOf id); facades[].instance = "<piece>|<colourway>"
+  civic[].colourway       "civic" on civic/cafe, civic/cafe/*, civic/civic-office, civic/civic-office/* (facade.json hostAreas); absent on other civic masses
+values: cream peach mint sky sand ivory blush powder butter lilac apricot seagreen (district) | civic (civic block only); never "base" now
+Unity: read buildings[].colourway in place of FacadeKit.Fill's family draw (Wall, Plinth, Roof family) and ProcGrammar.Assign's WallFam; keep the enamel A/B picks as they are
+check: CW-1 (tools/world/rules/colourways.ts) in bun run plan / bun run world
+spread: 320 buildings, 189 street-neighbour pairs, 0 sharing; wall dE2000 min 16.0 p10 17.0 median 26.3
+families: butter 42, mint 37, cream 32, powder 31, seagreen 30, lilac 28, blush 26, peach 25, ivory 19, sky 18, apricot 17, sand 15

@@ -8,6 +8,7 @@ export function report(w: World, gen: Generated, d: Derived): void {
   console.log(`counts ${Object.entries(w.counts).map(([k, v]) => `${k} ${v}`).join(', ')}`);
   const by = (xs: string[]) => { const m: Record<string, number> = {}; for (const x of xs) m[x] = (m[x] ?? 0) + 1; return Object.entries(m).sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0])).map(([k, v]) => `${k} ${v}`).join(', '); };
   console.log(`buildings ${gen.blds.length} (${by(gen.blds.map(b => b.kind))}); plots ${w.ground.plots.length}; roofs by programme: ${by(w.roofs.map(r => r.programme))}`);
+  { const c = gen.colourways; if (c) console.log(`colourways (brief 074): ${c.buildings} buildings, ${c.pairs} street-neighbour pairs, sharing a family ${c.same}; re-drawn ${c.redrawn} in ${c.passes} passes; wall dE2000 min ${c.de?.min} p10 ${c.de?.p10} median ${c.de?.median}; families ${Object.entries(c.families).map(([k, v]) => `${k} ${v}`).join(', ')}; civic block masses ${w.civic.filter(m => m.colourway === 'civic').length}`); }
   console.log(`tenancies ${w.frontages.length} by trade: ${by(w.frontages.map(f => f.trade))}`);
   console.log(`tenancies by level: ${by(w.frontages.map(f => f.level))}`);
   console.log(`connectors ${w.connectors.length}: ${by(w.connectors.map(c => c.kind))}; decks ${gen.decks.length}, columns ${gen.decks.reduce((n, x) => n + x.columns.length, 0)}`);

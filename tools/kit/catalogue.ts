@@ -2,7 +2,7 @@
 import { createHash } from 'node:crypto';
 import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs';
 import { join, relative } from 'node:path';
-import type { Kit, KitAsset, KitBuilt, KitFile, KitOrder, KitStatus } from '../../contracts/world/kit.schema';
+import type { Kit, KitAsset, KitBuilt, KitColourways, KitFile, KitOrder, KitStatus } from '../../contracts/world/kit.schema';
 import { WAVE1, tagsOf } from './tags';
 import { generatedTags } from './generated';
 import { FULL_DETAIL, LOD_CATEGORIES, LOD_CLASSES, lodCategoryOf, lodClassOf, lodScreens } from './lod';
@@ -117,5 +117,16 @@ export function buildCatalogue(root: string, prior?: Kit, gen?: string): Kit {
   // so they ride at the top level. No generator output with them: the prior catalogue's list is kept (copy then needs `bun run decokit`).
   const surf = genTexDir && existsSync(genTexDir) ? readdirSync(genTexDir).filter(n => /^surface_.+\.png$/.test(n)).sort().flatMap(n => pair('texture', `Textures/${n}`)) : [];
   const textures = surf.length ? surf : prior?.textures ?? []; // pair() marks them root 'generated' (the legacy DecoKit has no surface_*)
-  return { schema: 'suborned.kit/1', source: { manifest: 'decokit_manifest.json', materials: 'decokit_materials.json', manifestSha256: sha(manifestText), materialsSha256: sha(materialsText) }, lodCategories: LOD_CATEGORIES, ...(classed.some(a => a.lodClass) ? { lodClasses: LOD_CLASSES } : {}), ...(textures.length ? { textures } : {}), assets: classed }; // the classes ride once a classed piece is catalogued
+  // brief 074-B: the colourway material sets (tools/decokit colourways.py, Data/colourways.json beside the .mats): no piece lists them, so the mapping and their files ride at the top level.
+  // No generator output with them: the prior catalogue's are kept (copy then needs `bun run decokit`).
+  const cwFile = gen && join(gen, 'Data/colourways.json');
+  let colourways: KitColourways | undefined = prior?.colourways;
+  if (cwFile && existsSync(cwFile)) {
+    const { derivation: _d, neutral: _n, rule: _r, ...cw } = JSON.parse(readFileSync(cwFile, 'utf8')) as Omit<KitColourways, 'files'> & { derivation?: unknown; neutral?: unknown; rule?: unknown };
+    const names = [...new Set(Object.values(cw.materials).flatMap(m => Object.values(m)))].sort();
+    const files = names.flatMap(n => pair('material', `Materials/${n}.mat`));
+    if (files.length !== names.length * 2) throw new Error(`colourways: ${names.length * 2 - files.length} .mat/.meta files missing in ${gen}/Materials (rerun bun run decokit --mats-only)`);
+    colourways = { ...cw, files };
+  }
+  return { schema: 'suborned.kit/1', source: { manifest: 'decokit_manifest.json', materials: 'decokit_materials.json', manifestSha256: sha(manifestText), materialsSha256: sha(materialsText) }, lodCategories: LOD_CATEGORIES, ...(classed.some(a => a.lodClass) ? { lodClasses: LOD_CLASSES } : {}), ...(textures.length ? { textures } : {}), ...(colourways ? { colourways } : {}), assets: classed }; // the classes ride once a classed piece is catalogued
 }

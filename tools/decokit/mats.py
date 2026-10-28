@@ -162,6 +162,11 @@ GROUND = {
     "DK_Granite_Kerb_B": dict(albedo="ground_kerb_v1.png", normal="ground_kerb_v1_normal.png", mask="ground_kerb_v1_mask.png", tile=(0.5, 0.5), smoothness=1.0, tint="#EAE6DF"),
 }
 
+# Brief 074-B (colourways.py): Unity draws DK_Limestone_Tex on the neutral panel sheet (the old sheet's luminance, its cream moved into the .mat's tint) so a colourway's tint can land
+# any wall family; Blender keeps facade_panel_v1 for the base row (TEXTURES above), so the FBX bytes do not move. The materials table names the sheet Unity uses (the catalogue
+# copies what the table and the .mat name), so the old sheet leaves the kit copy: replaced, not added.
+UNITY_TEXTURE = {"DK_Limestone_Tex": "wall_panel_neutral_v1.png"}
+
 UV_MAPPED = ("decal", "art", "emit", "emitmap", "fabric", "cutout", "paving", "face")  # these use the face's explicit (decal) UVs, not metric tiling
 SOURCE_ART = Path(os.environ.get("DECOKIT_SOURCEART") or Path(os.environ.get("SUBORNED_STORE", "~/Projects/the-suborned-store")).expanduser() / "source-art/DecoKit")
 EXTRA_TEXDIRS = tuple(Path(p).expanduser() for p in os.environ.get("DECOKIT_TEXDIRS_EXTRA", "").split(os.pathsep) if p)  # candidate textures (brief 008): searched first, the store stays read-only
@@ -444,7 +449,7 @@ def material_rows():
         tex = TEXTURES.get(name)
         rows.append(dict(name=name, kind=kind, color=list(srgb(hexstr)), smoothness=1 - rough, metallic=metal,
                          coat=coat, coatSmoothness=1 - coat_rough, alpha=alpha,
-                         emission=extra[0] if extra else 0.0, **({"cutoff": extra[1]} if kind == "emitmap" and len(extra) > 1 else {}), texture=tex[0] if tex else "",
+                         emission=extra[0] if extra else 0.0, **({"cutoff": extra[1]} if kind == "emitmap" and len(extra) > 1 else {}), texture=UNITY_TEXTURE.get(name, tex[0]) if tex else "",
                          tileMetres=tex[1] if tex and metric_tiling(name, kind) else 0.0, **({"pbr": GROUND[name]} if name in GROUND else {}), **({"film": dict(film, shader=GLASS_SHADER_GUID)} if film else {}), **({"robotDetail": _detail_of(name)} if _detail_of(name) else {}), **({"stage": {"property": "_Stage", "default": 0, "range": [0, 3], "by": "RobotFace.cs, from the rig's attention table (robot-faces.json)"}} if kind == "face" else {})))
     return rows
 

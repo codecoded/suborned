@@ -493,8 +493,8 @@ export function dressFaces(ctx: Ctx, inp: FacesIn): FacesOut {
 
 /** Redline's LOD, combine and instancing fields (briefs/072/redline/plan.md §6) on every facade piece: the LOD set (the piece's own L0..L2 chain, the
  *  catalogue's switch category and, for the every-face pieces, its distance class: kit.json lodClass / lodClasses, tools/kit/lod.ts), the combine groups (the block = the plot or tower
- *  site; the 32 m HLOD cell [floor(x / 32), floor(y / 32)]; the column, set by the pass), the colourway (the material slot set; `base` until KitSlots
- *  remaps one per placement) and the instancing key (piece + colourway: transforms vary). */
+ *  site; the 32 m HLOD cell [floor(x / 32), floor(y / 32)]; the column, set by the pass), the colourway (the building's wall family,
+ *  brief 074; `base` where it has none) and the instancing key (piece + colourway: transforms vary). */
 export function dressFields(f: Facade, a: KitAsset | undefined, plotOf: (building: string) => string): Facade {
   const c = FACES.hlodCell, colourway = f.colourway ?? 'base', cls = a?.lodClass;
   return { ...f, lod: { set: f.kit.id, levels: 1 + (a?.lods?.length ?? 0), category: a?.lodCategory ?? 'facades', ...(cls ? { class: cls } : {}) }, combine: { block: plotOf(f.building), cell: [Math.floor(f.kit.at[0] / c), Math.floor(f.kit.at[1] / c)] }, colourway, instance: `${f.kit.id}|${colourway}` };

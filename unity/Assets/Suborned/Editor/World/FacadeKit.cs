@@ -4,10 +4,12 @@ using UnityEngine;
 
 namespace Suborned.World
 {
-    /// <summary>Per-building colours and style, decided once per host (a building: its podium and body share them), seeded by id.</summary>
+    /// <summary>Per-building colours and style, decided once per host (a building: its podium and body share them), seeded by id.
+    /// Colourway (brief 074): the wall family the export chose for the building (`buildings[].colourway`); when it names a facade.json family
+    /// other than `civic`, it replaces the host's own family draw, so walls, plinths, roofs and the kit modules agree.</summary>
     public sealed class Host
     {
-        public string Id, Area, Style, Wall, Plinth, Roof, A, B, Trim;
+        public string Id, Area, Style, Wall, Plinth, Roof, A, B, Trim, Colourway;
         public Vector2[] BodyRing;
         public readonly List<FrontageDto> Fronts = new();
     }
@@ -32,14 +34,22 @@ namespace Suborned.World
         public FacadeKit(Nodes nodes, FacadeSpec spec, WorldDto world)
         {
             this.nodes = nodes; this.spec = spec; this.world = world; sf = new QuadKit(spec.Atlas);
-            foreach (var f in world.Frontages) Get(f.Host, f.Area).Fronts.Add(f);
+            // brief 074: the buildings first, so a host's export colourway is known before its frontages' area hint fills it
             foreach (var m in world.Buildings)
             {
                 var id = HostOf(m.Id);
+                if (m.Colourway != null)
+                {
+                    var hc = Get(id, null);
+                    if (hc.Colourway != null && hc.Colourway != m.Colourway) throw new System.IO.InvalidDataException($"World: building {id}: mass {m.Id} has colourway `{m.Colourway}`, another of its masses `{hc.Colourway}` (CW-1)");
+                    if (!spec.Families.ContainsKey(m.Colourway)) throw new System.IO.InvalidDataException($"World: building {id}: colourway `{m.Colourway}` is not a facade.json family");
+                    hc.Colourway = m.Colourway;
+                }
                 if (m.Id.EndsWith("/podium")) { continue; }
                 bodySurface[id] = m.Surface;
                 if (m.Id.EndsWith("/body") || m.Id.EndsWith("/lower")) Get(id, null).BodyRing = Poly.Clean(m.Ring);
             }
+            foreach (var f in world.Frontages) Get(f.Host, f.Area).Fronts.Add(f);
         }
 
         public IEnumerable<string> AllHosts() => hosts.Keys.Where(k => bodySurface.ContainsKey(k)).Select(k => { Resolve(k); return k; }).ToList();
@@ -62,12 +72,16 @@ namespace Suborned.World
             var d = new Dice(h.Id);
             var (names, w) = spec.AreaFamilies[h.Area]; int total = w.Sum(), r = d.Int(total), k = 0;
             while (r >= w[k]) { r -= w[k]; k++; }
-            var fam = spec.Families[names[k]];
+            // brief 074: the export's colourway in place of the draw (the draw is still spent, so the roof and enamel picks stay as they were)
+            var fam = spec.Families[ExportFamily(h) ?? names[k]];
             h.Trim = spec.AreaTrim.TryGetValue(h.Area, out var trim) ? trim : "white";
             h.Wall = fam[0]; h.Plinth = fam[1]; h.Roof = d.Int(3) == 0 ? spec.Roofs[d.Int(spec.Roofs.Length)] : fam[2];
             var en = spec.AreaEnamel[h.Area]; int ia = d.Int(en.Length);
             h.A = en[ia]; h.B = en[(ia + 1 + d.Int(en.Length - 1)) % en.Length];
         }
+
+        /// <summary>The export's colourway for a host when it decides the family (brief 074): a facade.json family other than `civic`; else null.</summary>
+        public static string ExportFamily(Host h) => h.Colourway != null && h.Colourway != "civic" ? h.Colourway : null;
 
         public Host Resolve(string id)
         {

@@ -12,7 +12,8 @@ namespace Suborned.World
 {
     /// <summary>Brief 072-E (Redline's plan 3.2, "bake stack columns"): the every-face modules that share an export `column` (the storeys of one
     /// bay position on one face: SideBayStack Base + Mid × k + Top, pier storeys, pilasters) become one prefab instance per column, its mesh
-    /// baked once per column layout: (piece, offset and scale of each module relative to the lowest, colourway). A layout is one prefab under
+    /// baked once per column layout: (piece, offset and scale of each module relative to the lowest). Brief 074: the colourway is not in the
+    /// layout key; the placed instance has its slots swapped (KitColourways.Apply), so 12 colourways share one bake per layout. A layout is one prefab under
     /// Built/Columns/ with an LODGroup (class `column`: switch distances from kit.json lodClasses against the baked column's own size) and one
     /// renderer per level, a submesh per material, so the GPU Resident Drawer still instances repeats and the architecture fade still reaches
     /// one bay at a time. Nothing is combined across columns, nothing static-batched. A column of one module, or one whose modules turn
@@ -55,6 +56,7 @@ namespace Suborned.World
                     continue;
                 }
                 var t = placer.Place(els[f], layer.name, f.Kit, placer.PivotForCentre(f.Kit, f.Kit.At), f.Base, 0f);
+                KitColourways.Apply(t, f.Colourway); // brief 074: the building's colourway on the placed piece (modules and street pieces)
                 if (f.Module)
                 {
                     Singles++; Modules++; ModuleRoots.Add(t.gameObject);
@@ -82,7 +84,7 @@ namespace Suborned.World
             var cs = new Vector3(col[0].Kit.Scale.x, 1f, 1f);
             var frame = Matrix4x4.TRS(origin, rot, cs);
             var inv = frame.inverse;
-            var key = new StringBuilder(col[0].Colourway ?? "base");
+            var key = new StringBuilder("column"); // brief 074 (Redline phase 3 §5.2.2): no colourway in the key; the instance's slots are swapped below
             var locals = new List<(string id, Matrix4x4 m)>();
             foreach (var m in col)
             {
@@ -102,6 +104,7 @@ namespace Suborned.World
             var go = (GameObject)PrefabUtility.InstantiatePrefab(v.Prefab, els[col[0]]);
             go.transform.SetPositionAndRotation(origin, rot);
             go.transform.localScale = cs; // the column's element has scale 1 at the origin until Combine.Flush moves it (children keep their world place)
+            KitColourways.Apply(go.transform, col[0].Colourway); // Bakeable: every module of the column shares it
             if (go.TryGetComponent<LODGroup>(out var lg)) ModuleGroups.Add(lg);
             ModuleRoots.Add(go);
             placer.Count(layer.name, col.Count, v.Tris0);

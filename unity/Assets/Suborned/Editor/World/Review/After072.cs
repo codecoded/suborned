@@ -68,6 +68,9 @@ namespace Suborned.World.Review
             string shotsDir = tag == null || tag == "before" ? Path.Combine(root, "briefs", "072", "shots", "after") : tag == "textured" ? Path.Combine(root, "briefs", "072", "shots", "textured") : g ? Path.Combine(root, "briefs", "072", "shots", "g") : Path.Combine(root, "out", "scratch", "latch", "072", tag);
             string countsDir = Path.Combine(root, "briefs", "072", "latch", tag == null ? "after" : g ? "g" : "textured");
             string areaFile = g ? Path.Combine(countsDir, "area-g.json") : Path.Combine(root, "briefs", "072", "texture", tag == "textured" ? "area-after.json" : "area.json");
+            // brief 074-C: `-tag 074before` / `-tag 074` (After072.C074.cs): shots and counts of the play views at yaw 30 / 210 plus the wide street view, and the colourway census
+            bool c074 = tag == "074before" || tag == "074";
+            if (c074) { only = new HashSet<string> { "shots", "counts", "c074" }; shotsDir = Path.Combine(root, "briefs", "074", "shots", tag == "074" ? "after" : "before"); countsDir = Path.Combine(root, "briefs", "074", "latch", tag == "074" ? "after" : "before"); }
             if (tag == "a3") only = new HashSet<string> { "a3" }; // brief 064 A3 items 1, 5, 7: the no-look check (After072.A3.cs)
             EditorSceneManager.OpenScene(HarbourWorldBuilder.ScenePath, OpenSceneMode.Single);
             var c = new Ctx();
@@ -81,6 +84,7 @@ namespace Suborned.World.Review
             foreach (var (id, f) in new[] { ("office-front", Baseline072.OfficeFront), ("cell-open", cellOpen) })
                 foreach (var y in Baseline072.Yaws) c.views.Add(new Baseline072.View { Id = id, Label = id, Focus = f, Yaw = y });
 
+            if (c074) C074Views(c);
             var people = GameObject.Find("people"); if (people) people.SetActive(false);
             // TacticalShadows fits the cascades in its own beginCameraRendering; batchmode may open the scene without its OnEnable having run
             if (c.shadows) { Debug.Log($"072 after: TacticalShadows enabled {c.shadows.enabled}, active and enabled {c.shadows.isActiveAndEnabled}"); c.shadows.enabled = false; c.shadows.enabled = true; }
@@ -103,9 +107,10 @@ namespace Suborned.World.Review
                 var dir = countsDir; Directory.CreateDirectory(dir);
                 var every = Counts(c, "every face (as built)");
                 List<Count> today = null;
-                if (ef && ef.HasToday) { ef.Set(false); try { today = Counts(c, "today (EveryFace off, same build)"); } finally { ef.Set(true); } }
+                if (!c074 && ef && ef.HasToday) { ef.Set(false); try { today = Counts(c, "today (EveryFace off, same build)"); } finally { ef.Set(true); } }
                 File.WriteAllText(Path.Combine(dir, "offscreen.json"), CountsJson(c, exportLine, every, today));
             }
+            if (only.Contains("c074")) C074Census(Path.Combine(countsDir, "census.json"), exportLine, tag, c);
             if (only.Contains("area")) Area(c, session, areaFile, exportLine);
             if (only.Contains("sd")) SurfaceDetailCheck(c, session, Path.Combine(root, "out", "scratch", "latch", "072", "sd"));
             if (only.Contains("f1")) F1(c, session, Path.Combine(root, "briefs", "072", "shots", g ? "f1g" : "f1"), stamp, g ? Path.Combine(root, "briefs", "072", "shots", "f1", "f1.json") : null);
@@ -120,7 +125,7 @@ namespace Suborned.World.Review
             Directory.CreateDirectory(dir);
             foreach (var v in c.views)
             {
-                Baseline072.Pose(c.cam, c.shadows, c.fade, v.Focus, v.Yaw, c.standOff);
+                Baseline072.Pose(c.cam, c.shadows, c.fade, v.Focus, v.Yaw, c.standOff, ZoomOf(v));
                 v.Shot = $"{v.Id}-y{v.Yaw:000}.png";
                 File.WriteAllBytes(Path.Combine(dir, v.Shot), session.Grab(c.cam, W, H).EncodeToPNG());
             }
@@ -264,7 +269,7 @@ namespace Suborned.World.Review
             {
                 foreach (var v in c.views)
                 {
-                    Baseline072.Pose(c.cam, c.shadows, c.fade, v.Focus, v.Yaw, c.standOff);
+                    Baseline072.Pose(c.cam, c.shadows, c.fade, v.Focus, v.Yaw, c.standOff, ZoomOf(v));
                     LookLab.SetSurfaceDetail(true); session.Grab(c.cam, 64, 64); var on = session.Grab(c.cam, W, H).GetPixels32();
                     LookLab.SetSurfaceDetail(false); session.Grab(c.cam, 64, 64); var offTex = session.Grab(c.cam, W, H); var off = offTex.GetPixels32();
                     double sum = 0; int max = 0, changed = 0;
@@ -314,7 +319,7 @@ namespace Suborned.World.Review
                 foreach (var src in c.views)
                 {
                     var v = new Baseline072.View { Id = src.Id, Label = src.Label, Focus = src.Focus, Yaw = src.Yaw };
-                    Baseline072.Pose(c.cam, c.shadows, c.fade, v.Focus, v.Yaw, c.standOff);
+                    Baseline072.Pose(c.cam, c.shadows, c.fade, v.Focus, v.Yaw, c.standOff, ZoomOf(v));
                     var visible = new List<Renderer>(); var lodOut = new HashSet<Renderer>();
                     Baseline072.Census(c.cam, v, meshTris, visible, lodOut);
                     var n = new Count { v = v };
@@ -547,7 +552,7 @@ namespace Suborned.World.Review
                 for (int vi = 0; vi < c.views.Count; vi++)
                 {
                     var v = c.views[vi];
-                    Baseline072.Pose(c.cam, c.shadows, c.fade, v.Focus, v.Yaw, c.standOff);
+                    Baseline072.Pose(c.cam, c.shadows, c.fade, v.Focus, v.Yaw, c.standOff, ZoomOf(v));
                     for (int pass = 0; pass < 2; pass++)
                     {
                         foreach (var t in opaqueSkip) t.SetFloat("_Skip", pass);

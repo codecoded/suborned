@@ -54,7 +54,10 @@ namespace Suborned.World
                 go.transform.localScale = src.transform.localScale;
                 go.AddComponent<MeshFilter>().sharedMesh = mesh;
                 var p = go.AddComponent<MeshRenderer>();
-                p.sharedMaterials = src.sharedMaterials;
+                // brief 074 (Redline phase 3 §5.2.3): the base materials, never a colourway's tint: the caster pass ignores colour, and one set keeps the
+                // shadow draws from splitting by colourway
+                var pm = src.sharedMaterials; for (int i = 0; i < pm.Length; i++) pm[i] = KitColourways.Base(pm[i]);
+                p.sharedMaterials = pm;
                 p.shadowCastingMode = ShadowCastingMode.ShadowsOnly;
                 p.receiveShadows = false;
                 p.lightProbeUsage = LightProbeUsage.Off;

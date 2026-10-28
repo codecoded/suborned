@@ -23,6 +23,7 @@ import { catalogued } from './kitrefs';
 import { returnsOf, slabRing } from './kerbreturn';
 import { colourLife } from './colour';
 import { type ShopFitLog, fitShopfronts } from './shopfit';
+import type { ColourwayLog } from './colourways';
 import type { DeckRec, Host, MegaOut } from './types';
 
 export type Generated = {
@@ -35,6 +36,7 @@ export type Generated = {
   groundPieces?: StreetItem[]; // brief 026: the capstone programme's flat ground pieces (world.ground.pieces), kept out of the street layer so the street rules (SF-1..SF-8) never judge paving
   capstone?: CapLog; // brief 026: what the capstone programme placed and the places no rule could fill
   kerbArcs?: KerbArcLog; // brief 028: the pearl kerb laid round every kerb return (kind kerb-return)
+  colourways?: ColourwayLog; // brief 074: the building colourways' spread (set by build.ts worldOf)
   roadFinish?: RoadFinishLog; // brief 028 Road: what the road finish laid (its pieces are in groundPieces, kinds road-ribbon, road-shoulder, road-lozenge, road-seam; the pinstripe retired 072-G) and what it left
 };
 

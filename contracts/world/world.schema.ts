@@ -68,6 +68,11 @@ export type Footway = {
 /** Extruded footprint from base to base + height. */
 export type Mass = {
   id: string; surface: string; ring: V[]; base: number; height: number; source?: Source; kit?: KitRef & { at: V; base: number };
+  /** Brief 074, the building's colourway: the facade.json wall family (`unity/Assets/Suborned/Editor/World/facade.json` `families` key: cream | peach | mint | sky | sand | ivory | blush | powder | butter |
+   *  lilac | apricot | seagreen; `civic` on the civic block's café and Records Office masses). One per building (FacadeKit.HostOf: the mass id less `/podium`, `/body`, `/upper`, `/lower`), on every
+   *  mass of it, chosen by the export (tools/world/gen/colourways.ts: the area's family weights, seeded by the building id; no two street neighbours share one). Unity reads it in place of its own pick
+   *  (wall, plinth and roof from that family). Absent on masses that are not buildings (megastructure parts, gates, civic furniture). Checked by CW-1. */
+  colourway?: string;
   /** Civic only (brief 008 B3): the play camera's architecture fade may thin this mass (a parasol, a frontage, a shelter: it stands between the camera and a person). */
   fade?: true;
   /** Civic only: the id of the kit mass that is this mass's ground storey. This mass starts above it (its `base` is that piece's top): draw no plinth, shopfront or ground floor at its base. */
@@ -115,7 +120,8 @@ export type Facade = {
   family?: 'side' | 'alley' | 'stack-base' | 'stack-mid' | 'stack-top' | 'corner-out' | 'corner-in' | 'pilaster'; service?: 'court' | 'yard' | 'back-to-back'; normal?: V; column?: { id: string; storeys: number }; casts?: 'proxy-l2' | 'none';
   /** On every facade piece (tools/world/gen/faces.ts dressFields): `lod.set` = the piece whose L0..L2 chain draws it (`levels` of them), `category` = the catalogue's switch category, `class` = the
    *  distance class of an every-face piece (kit.json `lodClasses`: bay3 | bay4 | storey | cornerStorey | landmark | crown); `combine.block` = the plot (or tower site), `combine.cell` = the 32 m HLOD cell
-   *  [floor(x / 32), floor(y / 32)]; `colourway` = the material slot set (`base`); `instance` = the GPU instancing key, `<piece>|<colourway>`. */
+   *  [floor(x / 32), floor(y / 32)]; `colourway` = the building's colourway (brief 074: the facade.json wall family its building's masses carry, `buildings[].colourway`; `base` only on a piece whose building has none),
+   *  the material set the piece is drawn in; `instance` = the GPU instancing key, `<piece>|<colourway>`. CW-1: a piece's colourway is its building's. */
   lod?: { set: string; levels: number; category: string; class?: string }; combine?: { block: string; cell: [number, number] }; colourway?: string; instance?: string;
 };
 /** bay, end, corner: the wave-2 street pieces (facades.ts). Brief 072-C (faces.ts), `base` = the module's foot: side = a SideBay (a wall the public sees), service = an AlleyWall

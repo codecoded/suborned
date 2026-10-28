@@ -9,6 +9,7 @@ import { worldOf } from '../world/build';
 import { look } from '../world/civic/look';
 import type { Generated } from '../world/gen';
 import { adopted } from '../world/gen/kitrefs';
+import { COLOURWAY_SPEC } from '../world/gen/colourways';
 import type { Check } from './checks';
 import type { Civic } from './civic';
 import { type V, lineDist, nearLine } from './geom';
@@ -36,7 +37,7 @@ const SOURCE = (() => {
  */
 export function worldKey(plan: Plan, civ: Civic): string {
   const h = createHash('sha1');
-  h.update(JSON.stringify(plan)); h.update(JSON.stringify(civ)); h.update(JSON.stringify(adopted())); h.update(JSON.stringify(look)); h.update(SOURCE);
+  h.update(JSON.stringify(plan)); h.update(JSON.stringify(civ)); h.update(JSON.stringify(adopted())); h.update(JSON.stringify(look)); h.update(JSON.stringify(COLOURWAY_SPEC)); h.update(SOURCE); // brief 074: facade.json's families and area weights pick the colourways
   return h.digest('hex').slice(0, 16);
 }
 

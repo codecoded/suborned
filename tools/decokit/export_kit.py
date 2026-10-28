@@ -193,7 +193,7 @@ def copy_ground():
         raise SystemExit(f"[DK-EXPORT] no ground set in {src}: run python3 tools/decokit/ground_tex.py")
     out = DST / "Textures"
     out.mkdir(parents=True, exist_ok=True)
-    for f in sorted(p for g in ("ground_*", "robot_*", "car_*", "cabinet_*", "pavilion_*", "fountain_*", "signal_*", "horizon_*", "surface_*") for p in src.glob(g) if p.suffix != ".json"):
+    for f in sorted(p for g in ("ground_*", "robot_*", "car_*", "cabinet_*", "pavilion_*", "fountain_*", "signal_*", "horizon_*", "surface_*", "wall_*") for p in src.glob(g) if p.suffix != ".json"):
         shutil.copy2(f, out / f.name)
     shutil.copy2(src / "ground.json", DST / "ground.json")
 

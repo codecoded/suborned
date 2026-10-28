@@ -115,7 +115,9 @@ namespace Suborned.World
             ProcSkin.Finish(buildings);
             new FabricKit(nodes, facade.Spec.Atlas).Build(Nodes.Group(root, "fabric"), world.Fabric);
             Debug.Log($"World: skins {world.Skins.Count}: {ProcSkin.Matched} walls matched to a face, {ProcSkin.Unmatched} by the grammar alone (facets, unskinned walls), {ProcSkin.Cells} bay cells; colour life: {ProcSkin.Panels} porthole panels, {ProcSkin.Spandrels} spandrels, {ProcSkin.BalconyFronts} balcony fronts, {ProcSkin.Fins} fins");
+            KitColourways.Load(KitCataloguePath); // brief 074: Vela's colourway material sets, swapped per placed piece and column instance
             skyline.Facades(Nodes.Group(root, "facades"), world.Facades);
+            Debug.Log(KitColourways.Summary());
             roofs.Roofs(Nodes.Group(root, "roofs"), world.Roofs, placer, standIns);
             var frontages = Nodes.Group(root, "frontages");
             shops.Frontages(frontages, world.Frontages);
