@@ -9,7 +9,7 @@ import type { Circus, Drive, Flat, Landmark, Level, Mass, Road, SkyRail, Track, 
 import { FLAT_FOOT, LAND, ctxOf, rng } from './gen/common';
 import { type Generated, generate, toDeck } from './gen';
 import type { DeckRec } from './gen/types';
-import { adopted, adoptedBy, catalogued, kitPosters, landmarkKit } from './gen/kitrefs';
+import { adopted, adoptedBy, catalogued, gatewayRef, kitPosters, landmarkKit } from './gen/kitrefs';
 import { liveriesOf } from './gen/livery';
 import { postersOf } from './gen/billboards';
 import { FACE_KIT, dressFields } from './gen/faces';
@@ -274,7 +274,8 @@ function landmarks(plan: Plan): Landmark[] {
     const m: Landmark = l.caisson
       ? { id, surface: 'landmark', shape: 'cylinder', centre: rv(l.c), radius: l.caisson.r, base: PROV.quayBase, height: r3(l.caisson.deck - PROV.quayBase) }
       : { id, surface: 'landmark', shape: l.id === 'sphere' ? 'sphere' : 'cylinder', centre: rv(l.c), radius: l.r, base: PROV.pavement, height: top };
-    return landmarkKit(m, l); // the plan's disc (its r) and height (its top); the kit piece is scaled to fit them
+    const gw = gatewayRef(l.gateway as { kit?: string; c?: V; yaw?: unknown } | undefined, Math.PI / 2); // the landmark's arch (crown-vista: the Crown Avenue arch), placed as the pier's is
+    return { ...landmarkKit(m, l), ...(gw ? { gateway: gw } : {}) }; // the plan's disc (its r) and height (its top); the kit piece is scaled to fit them
   });
 }
 

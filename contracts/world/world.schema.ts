@@ -117,7 +117,7 @@ export type Level = { id: string; name: string; height: number; decks: Deck[]; s
 export type Deck = { id: string; surface: string; columnSurface: string; ring: V[]; columns: V[]; thickness: number; columnSize: number; ground: number; group: string };
 export type Stair = { id: string; surface: string; foot: V; head: V; bottom: number; top: number; width: number; riser: number };
 /** shape: sphere (a ball of `radius` standing on `base`) or cylinder (radius, base → base + height). */
-export type Landmark = { id: string; surface: string; shape: 'sphere' | 'cylinder'; centre: V; radius: number; base: number; height: number; source?: Source; kit?: KitRef; kits?: (KitRef & { at: V })[]; why?: string }; // why = what stopped the kit piece fitting; kits = several pieces on one landmark (the skyport's pads, standing on base + height)
+export type Landmark = { id: string; surface: string; shape: 'sphere' | 'cylinder'; centre: V; radius: number; base: number; height: number; source?: Source; kit?: KitRef; kits?: (KitRef & { at: V })[]; why?: string; gateway?: KitRef & { at: V } }; // why = what stopped the kit piece fitting; kits = several pieces on one landmark (the skyport's pads, standing on base + height); gateway = the landmark's arch (plan landmarks[].gateway: the Crown Avenue arch for crown-vista) standing on the pavement at `at`, away from the landmark's own disc, turned by its yaw (kit +X = plan +x at 0)
 
 /** Primitive solid. Plan frame; `c` = centre in plan, `base` = lowest z, `yaw` = radians from +x toward +y.
  *  size [a, b, h]: a along yaw, b across it. box: a × b × h · cyl: a = b = diameter · sphere: a = b = h = diameter (base = bottom) ·

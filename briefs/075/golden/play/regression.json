@@ -1,0 +1,22 @@
+{
+ "office-front-y030": {
+  "mad_frame": 0.04,
+  "mad_centre": 0.01,
+  "changed_px_pct": 0.13
+ },
+ "office-front-y210": {
+  "mad_frame": 0.05,
+  "mad_centre": 0.08,
+  "changed_px_pct": 0.16
+ },
+ "cafe-square-y030": {
+  "mad_frame": 0.04,
+  "mad_centre": 0.04,
+  "changed_px_pct": 0.05
+ },
+ "cafe-square-y210": {
+  "mad_frame": 0.15,
+  "mad_centre": 0.04,
+  "changed_px_pct": 0.26
+ }
+}

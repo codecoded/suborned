@@ -25,6 +25,7 @@ namespace Suborned.World
         public List<MassDto> Gates = new();
         public List<FacadeDto> Facades = new();
         public List<SignatureDto> Signatures = new();
+        public List<ParkedTramDto> Trams = new(); // brief 075: dressing.trams (presentation only); empty when the export has none
         public object Liveries; // brief 075-C: the export's `liveries` (raw; KitLiveries reads it), null when absent
         public object Posters; // brief 075-F1: the export's `posters` (raw; KitPosters reads it), null when absent
         public List<SkinDto> Skins = new(); // the procedural facade of every plot building (window family, accent, per-face bays)
@@ -60,7 +61,20 @@ namespace Suborned.World
         public List<DriveDto> Drives = new(); // brief 023: a car's way from a road's carriageway over a plot's pavement to a bay that touches no road
         public List<StreetItemDto> Pieces = new(); // brief 026 (Splice): flat kit pieces on the ground (tactile, terrazzo, drain, manhole; kerb, flags, pits when adopted); not in counts.ground
         public List<FootwayDto> Footways = new(); // brief 061: the continuous footway at each gate's lane mouth; its table is also a flat in Flats (id Table)
+        public List<KerbBayDto> Kerbside = new(); // brief 075: the tram streets' kerbside bays (marks on the carriageway); not in counts.ground
+        public List<MassDto> Islands = new(); // brief 075: the primaries' kerbed palm islands in the kerbside strip (0.18 masses); not in counts.ground
     }
+
+    /// <summary>Brief 075 (world.schema.ts KerbBay): a kerbside bay on a tram street: parallel | angle | loading, its Ring at Level on the carriageway of Road
+    /// (a road id without the `road/` prefix); Yaw = the stall's axis (plan radians). Marks only: parked cars are life's.</summary>
+    public sealed class KerbBayDto { public string Id, Kind, Road; public Vector2[] Ring; public float Yaw, Level; }
+
+    /// <summary>Brief 075 (world.schema.ts TramWires.pieces): one of Vela's overhead pieces (contact | span | hanger | rosette), its kit ref at Kit.At, at height Z.
+    /// The strands' Kit.Scale.x stretches the 1 m piece to its run.</summary>
+    public sealed class WirePieceDto { public string Id, Kind; public KitRefDto Kit; public float Z; }
+
+    /// <summary>Brief 075 (world.schema.ts ParkedTram): a parked Tram, dressing only (never sim data): its kit ref (pivot Kit.At, Kit.Yaw) on the rail top Z.</summary>
+    public sealed class ParkedTramDto { public string Id, Line, Stop; public KitRefDto Kit; public float Z; }
 
     /// <summary>Brief 061 (world.schema.ts Footway): a gate's lane mouth where the higher road's pavement runs on across the lane at kerb height.
     /// Frame: Origin = the higher road's near kerb line on the lane's axis, Along = that kerb line's direction, Into = from the kerb into the lane;
@@ -175,6 +189,7 @@ namespace Suborned.World
         public List<TrackDto> Tram = new();
         public List<SkyRailDto> SkyRail = new();
         public List<MassDto> Stops = new(), Stations = new();
+        public List<WirePieceDto> Wires = new(); // brief 075: transit.wires.pieces (the overhead); empty when the export has none
     }
 
     public sealed class TrackDto { public string Id, Surface; public Vector2[] Line; public float Width, Level, Depth, Spacing; } // Spacing > 0: two ribbons that far apart
@@ -210,7 +225,7 @@ namespace Suborned.World
 
     /// <summary>Sphere (radius standing on Base) or cylinder (Radius, Base to Base + Height). Kit = the piece that is the landmark;
     /// Kits = pieces standing on its top (Base + Height) at their At, the landmark itself staying procedural (the skyport's pads).</summary>
-    public sealed class LandmarkDto { public string Id, Surface, Shape, Source; public Vector2 Centre; public float Radius, Base, Height; public KitRefDto Kit; public List<KitRefDto> Kits = new(); }
+    public sealed class LandmarkDto { public string Id, Surface, Shape, Source; public Vector2 Centre; public float Radius, Base, Height; public KitRefDto Kit; public List<KitRefDto> Kits = new(); public KitRefDto Gateway; } // Gateway (brief 075): a kit arch on the pavement at its At, its Yaw turning the piece's +X (the Crown Avenue arch); null = none
 
     /// <summary>Gateway: a kit arch standing on the quay under its At (its Yaw turns the piece's +X).</summary>
     public sealed class MegaDto { public string Id; public List<MassDto> Parts = new(); public List<PrimDto> Prims = new(); public KitRefDto Gateway; }

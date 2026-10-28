@@ -44,6 +44,12 @@ namespace Suborned.World
             }); // optional (present when the civic block states drives)
             w.Ground.Pieces = Each(g, "pieces", StreetItem); // brief 026: optional
             w.Ground.Footways = Each(g, "footways", Footway); // brief 061: optional (present when the plan carries streetscape.continuousFootway)
+            w.Ground.Kerbside = Each(g, "kerbside", x => new KerbBayDto
+            {
+                Id = Id(x), Kind = J.S(x, "kind") is "parallel" or "angle" or "loading" ? J.S(x, "kind") : throw new InvalidDataException($"World: kerb bay {Id(x)}: kind `{J.S(x, "kind")}` (parallel | angle | loading)"),
+                Road = J.S(x, "road") ?? throw new InvalidDataException($"World: kerb bay {Id(x)} has no road"), Ring = J.Poly(x, "ring"), Yaw = J.F(x, "yaw"), Level = J.F(x, "level"),
+            }); // brief 075: optional
+            w.Ground.Islands = Each(g, "islands", Mass); // brief 075: optional
 
             var t = J.Get(o, "transit");
             w.Transit.Tram = Each(t, "tram", x => new TrackDto
@@ -58,6 +64,17 @@ namespace Suborned.World
 
             w.Transit.Stops = Each(t, "stops", Mass);
             w.Transit.Stations = Each(t, "stations", Mass);
+            if (J.Get(t, "wires") is { } wires) // brief 075: the overhead; the contact and span lines are data (their pieces are what draws)
+                w.Transit.Wires = Each(wires, "pieces", x => new WirePieceDto
+                {
+                    Id = Id(x), Kind = J.S(x, "kind") is "contact" or "span" or "hanger" or "rosette" ? J.S(x, "kind") : throw new InvalidDataException($"World: wire piece {Id(x)}: kind `{J.S(x, "kind")}` (contact | span | hanger | rosette)"),
+                    Kit = Kit(J.Get(x, "kit")) ?? throw new InvalidDataException($"World: wire piece {Id(x)} has no kit"), Z = J.F(x, "z"),
+                });
+            if (J.Get(o, "dressing") is { } dressing) // brief 075: presentation only
+                w.Trams = Each(dressing, "trams", x => new ParkedTramDto
+                {
+                    Id = Id(x), Line = J.S(x, "line"), Stop = J.S(x, "stop"), Kit = Kit(J.Get(x, "kit")) ?? throw new InvalidDataException($"World: parked tram {Id(x)} has no kit"), Z = J.F(x, "z"),
+                });
 
             w.Buildings = Each(o, "buildings", Mass);
             w.Roofs = Each(o, "roofs", x => new RoofDto
@@ -124,7 +141,7 @@ namespace Suborned.World
             var civic = Each(o, "civic", Mass); w.HiddenCivic = civic.Count(m => J.Get(m.Raw, "hidden") is true); w.Civic = civic.Where(m => !(J.Get(m.Raw, "hidden") is true)).ToList();
             w.Landmarks = Each(o, "landmarks", l => new LandmarkDto
             {
-                Id = Id(l), Surface = J.S(l, "surface"), Shape = J.S(l, "shape"), Centre = J.P(l, "centre"), Radius = J.F(l, "radius"), Base = J.F(l, "base"), Height = J.F(l, "height"), Source = J.S(l, "source"), Kit = Kit(J.Get(l, "kit")), Kits = Each(l, "kits", Kit),
+                Id = Id(l), Surface = J.S(l, "surface"), Shape = J.S(l, "shape"), Centre = J.P(l, "centre"), Radius = J.F(l, "radius"), Base = J.F(l, "base"), Height = J.F(l, "height"), Source = J.S(l, "source"), Kit = Kit(J.Get(l, "kit")), Kits = Each(l, "kits", Kit), Gateway = Kit(J.Get(l, "gateway")), // brief 075: the landmark's gateway arch
             });
             w.Gates = Each(o, "gates", Mass);
             w.Liveries = J.Get(o, "liveries"); // brief 075-C

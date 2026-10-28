@@ -33,6 +33,20 @@ test('K-1 fails a landmark piece scaled past its disc, a gateway on the beam and
   expect(run(q).detail).toContain('tip 75');
 });
 
+test('K-1 checks a landmark gateway: the Crown Avenue arch is emitted, its feet in the frontage zone; a foot on the walk, out of the piece or against a lamp fails', () => {
+  const lm = v.w.landmarks.find(l => l.id === 'landmark/crown-vista')!;
+  expect(lm.gateway).toMatchObject({ id: 'ParabolicArch@crown-avenue', scale: [1, 1, 1], yaw: 0, at: [0, 160] });
+  const walk: Plan = structuredClone(plan); (walk.landmarks.find(l => l.id === 'crown-vista') as any).gateway.feet[0] = [-13, -10, 157, 163]; // x 10-13 = the walk zone (dk 1-4: kerb and walk)
+  const k = run(walk).detail!;
+  expect(k).toContain('crown-vista/gateway/foot-0: not in its zone (frontage)'); expect(k).toContain("crown-avenue's walk zone");
+  const out: Plan = structuredClone(plan); (out.landmarks.find(l => l.id === 'crown-vista') as any).gateway.feet[1] = [16, 19, 157, 163]; // past the piece's x 17
+  expect(run(out).detail).toContain('crown-vista/gateway/foot-1: outside the piece');
+  const w = structuredClone(v.w), lamp = structuredClone(w.street.find(s => s.kind === 'lamp')!); lamp.id = 'street/test/lamp'; lamp.at = [12.8, 160]; lamp.z = 0.18; w.street.push(lamp); // 1.2 m off the east plinth (x 14)
+  expect(run(plan, { ...v, w }).detail).toContain('crown-vista/gateway/foot-1: street/test/lamp (lamp) within 1.5 m of the plinth');
+  const gone = structuredClone(v.w); delete gone.landmarks.find(l => l.id === 'landmark/crown-vista')!.gateway;
+  expect(run(plan, { ...v, w: gone }).detail).toContain('crown-vista: gateway ParabolicArch@crown-avenue not emitted');
+});
+
 test('K-2 passes on the plan: every placed tower piece stands to its order\'s tip', () => {
   const k = k2();
   expect(k.ok).toBe(true); expect(k.detail).toBeUndefined();

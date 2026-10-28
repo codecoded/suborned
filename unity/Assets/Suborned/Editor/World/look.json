@@ -524,6 +524,7 @@
       "material": "DK_Ground_Gutter",
       "tile": 1
     },
+    "kerbside/paint": {"palette":"harbour.kerb","value":1,"smoothness":0.1,"note":"brief 075 (Latch, TramStreet.cs): the kerbside bays' lines on a tram street (ground.kerbside), 0.10 m, in the kerb's pearl; Glint and Vela tune. Its own key, not ground/paint, so the centre-line dashes (RoadMarkings) stay off"},
     "setts": {"palette":"harbour.asphalt","value":0.8,"smoothness":0.2,"material":"DK_Gutter_Setts","tile":1,"note":"brief 075 (Splice, tramstreet.ts): the tram lanes' granite setts (ground.flats surface setts); the granite kerb's gutter setts for now, Vela's own setts sheet when it lands"}
   },
   "details": {

@@ -67,7 +67,7 @@ namespace Suborned.World
         {
             var roads = new Dictionary<string, RoadDto>(); foreach (var r in w.Ground.Roads) roads[r.Id] = r;
             var items = new Dictionary<string, StreetItemDto>(System.StringComparer.Ordinal); foreach (var s in w.Street) items[s.Id] = s;
-            int refuges = 0, inside = 0, grew = 0, alone = 0; float most = 0f;
+            int refuges = 0, inside = 0, grew = 0, alone = 0, onIslands = 0; float most = 0f;
             foreach (var c in w.Crossings)
             {
                 if (c.Line.Length != 2 || (c.Line[1] - c.Line[0]).sqrMagnitude < 1e-6f) throw new InvalidDataException($"World: {c.Id}: `line` is not two points apart");
@@ -80,13 +80,20 @@ namespace Suborned.World
                 var islands = new MeshKit();
                 foreach (var ring in c.Refuges)
                 {
-                    var median = w.Ground.Medians.Find(m => Poly.Contains(m.Ring, Centre(ring))) ?? throw new InvalidDataException($"World: {c.Id}: a refuge stands on no median");
+                    var at = Centre(ring);
+                    var median = w.Ground.Medians.Find(m => Poly.Contains(m.Ring, at));
+                    if (median == null)
+                    {   // brief 075: a tram street's stop crossing runs kerb to kerb across both boarding islands (transit.stops) or a kerbed island (ground.islands):
+                        // the island is the refuge and is drawn already (its own mass and kerb ribbon), so nothing is raised here
+                        if (IslandUnder(w, at) == null) throw new InvalidDataException($"World: {c.Id}: a refuge at ({at.x:F2}, {at.y:F2}) stands on no median, boarding island or kerbed island");
+                        onIslands++; refuges++; continue;
+                    }
                     var grown = Poly.Inset(Poly.Clean(ring), -spec.Lip) ?? throw new InvalidDataException($"World: {c.Id}: a refuge ring is degenerate");
                     islands.Prism(grown, median.Base, median.Base + median.Height + spec.Lip);
                     refuges++;
                 }
                 // a crossing's own geometry is its refuges; one without is a marker only (its parts are the street layer's pieces)
-                var el = c.Refuges.Count > 0 ? Nodes.Element(layer, c.Id) : Nodes.Group(layer, c.Id);
+                var el = !islands.Empty ? Nodes.Element(layer, c.Id) : Nodes.Group(layer, c.Id);
                 switch (nodes.PartIn(Ground, el, "refuges", islands, road?.KerbSurface ?? spec.Surface, spec.Reach))
                 {
                     case null: break;
@@ -95,7 +102,7 @@ namespace Suborned.World
                     case float g: grew++; most = Mathf.Max(most, g); break;
                 }
             }
-            Debug.Log($"World: crossings {w.Crossings.Count} ({w.Crossings.FindAll(c => c.Control == "signal").Count} signalled): {refuges} refuges ({inside} inside a kerb batch, " +
+            Debug.Log($"World: crossings {w.Crossings.Count} ({w.Crossings.FindAll(c => c.Control == "signal").Count} signalled): {refuges} refuges ({onIslands} on a boarding or kerbed island, drawn with it; {inside} inside a kerb batch, " +
                 $"{grew} grew one by at most {most:F2} m of {spec.Reach} m, {alone} in a ground tile of their own)");
             Dress(street, w);
         }
@@ -253,6 +260,10 @@ namespace Suborned.World
             AssetDatabase.CreateAsset(m, path);
             return m;
         }
+
+        /// <summary>Brief 075: the boarding island (transit.stops) or kerbed island (ground.islands) under a plan point, else null.</summary>
+        public static MassDto IslandUnder(WorldDto w, Vector2 p) =>
+            w.Transit.Stops.Find(m => Poly.Contains(m.Ring, p)) ?? w.Ground.Islands.Find(m => Poly.Contains(m.Ring, p));
 
         static Vector2 Centre(Vector2[] ring)
         {

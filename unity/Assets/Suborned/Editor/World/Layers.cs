@@ -72,9 +72,20 @@ namespace Suborned.World
             foreach (var f in g.Foot) nodes.Solid(layer, f.Id, new MeshKit().Ribbon(f.Line, f.Width, f.Level, f.Level), nodes.Ground(f.Surface));
             foreach (var m in g.Medians) Mass(layer, m, true);
             var tables = FootwayKit.ByTable(g); FootwayKit.Built = FootwayKit.Bands = 0; // brief 061: a footway's table is its element: table, lip, ramp and bands (FootwayKit)
+            // brief 075: the rail tiles (ground.pieces tram-rail, top at their z) lie at the setts top: the setts flat steps aside under each tile's
+            // footprint (less 2 cm a side, so no seam opens), else the two coplanar surfaces z-fight into a patchwork at distance
+            var rails = new System.Collections.Generic.List<(Vector2[] ring, Rect box, float z)>();
+            foreach (var p in g.Pieces) if (p.Kind == "tram-rail") { var rr = Poly.Rect(p.At, new Vector2(Mathf.Cos(p.Yaw), Mathf.Sin(p.Yaw)), Mathf.Max(0.01f, p.Size.x - 0.04f), Mathf.Max(0.01f, p.Size.y - 0.04f)); rails.Add((rr, BoxOf(rr), p.Z)); }
+            int railCut = 0;
             foreach (var f in g.Flats)
                 if (tables.TryGetValue(f.Id, out var fw)) FootwayKit.Build(nodes, Nodes.Element(layer, f.Id), fw);
+                else if (rails.Count > 0 && RailCut(f, rails) is { } parts)
+                {
+                    var mk = new MeshKit(); foreach (var q in parts) mk.Flat(q, f.Level);
+                    nodes.Solid(layer, f.Id, mk, nodes.Ground(f.Surface)); railCut++;
+                }
                 else nodes.Solid(layer, f.Id, new MeshKit().Flat(f.Ring, f.Level), nodes.Ground(f.Surface));
+            if (rails.Count > 0) Debug.Log($"World: {railCut} flats cut round {rails.Count} rail tiles at their top (brief 075: no coplanar setts under the flush rails)");
             if (FootwayKit.Built != g.Footways.Count) throw new System.IO.InvalidDataException($"World: {g.Footways.Count} footways in the export, {FootwayKit.Built} with their table in ground.flats");
             if (g.Footways.Count > 0) Debug.Log($"World: continuous footways {FootwayKit.Built} (brief 061: table, lip, ramp and {FootwayKit.Bands} bands; posts with the street)");
             foreach (var w in g.Water) nodes.Solid(layer, w.Id, new MeshKit().Flat(w.Ring, w.Level), w.Surface);
@@ -93,6 +104,24 @@ namespace Suborned.World
                 foreach (var q in parts) kit.Prism(q, p.Base, p.Base + p.Height);
                 nodes.Solid(layer, p.Id, kit, nodes.Ground(p.Surface));
             }
+        }
+
+        static Rect BoxOf(Vector2[] ring) { float x0 = float.MaxValue, y0 = float.MaxValue, x1 = float.MinValue, y1 = float.MinValue; foreach (var v in ring) { x0 = Mathf.Min(x0, v.x); y0 = Mathf.Min(y0, v.y); x1 = Mathf.Max(x1, v.x); y1 = Mathf.Max(y1, v.y); } return Rect.MinMaxRect(x0, y0, x1, y1); }
+
+        /// <summary>Brief 075: the flat less every rail tile whose top lies on it (within 5 mm) and whose footprint overlaps it; null when none does.</summary>
+        static System.Collections.Generic.List<Vector2[]> RailCut(WaterDto f, System.Collections.Generic.List<(Vector2[] ring, Rect box, float z)> rails)
+        {
+            var box = BoxOf(f.Ring); System.Collections.Generic.List<Vector2[]> parts = null;
+            foreach (var (ring, rb, z) in rails)
+            {
+                if (Mathf.Abs(z - f.Level) > 0.005f || !rb.Overlaps(box)) continue;
+                parts ??= new System.Collections.Generic.List<Vector2[]> { Poly.Clean(f.Ring) };
+                var keep = new System.Collections.Generic.List<Vector2[]>(); var cut = new System.Collections.Generic.List<Vector2[]>();
+                foreach (var q in parts) (BoxOf(q).Overlaps(rb) ? cut : keep).Add(q);
+                if (cut.Count == 0) continue;
+                keep.AddRange(CutConvex(cut, (Vector2[])ring.Clone())); parts = keep;
+            }
+            return parts;
         }
 
         /// <summary>A flat that is a kerb bay (the civic block's `civic/bay/*`): a lay-by at carriageway level, cut out of the plot slab.</summary>
@@ -255,9 +284,16 @@ namespace Suborned.World
             return r.ToArray();
         }
 
-        public void Transit(Transform layer, TransitDto t)
+        public void Transit(Transform layer, TransitDto t, System.Collections.Generic.HashSet<string> railCovered = null)
         {
-            foreach (var x in t.Tram) nodes.Solid(layer, x.Id, Beams(x.Line, x.Spacing, x.Width, x.Level - x.Depth, x.Level), x.Surface);
+            foreach (var x in t.Tram)
+            {
+                var beams = Beams(x.Line, x.Spacing, x.Width, x.Level - x.Depth, x.Level);
+                // brief 075: where the export lays rail tiles along the track (TramStreet.RailCovered), the strip (2 cm proud of the flush rails) is not drawn:
+                // its marker stands covered at the strip's volume, as an element a kit piece elsewhere stands in for
+                if (railCovered != null && railCovered.Contains(x.Id)) { Combine.Cover(Nodes.Element(layer, x.Id), beams.Bounds); continue; }
+                nodes.Solid(layer, x.Id, beams, x.Surface);
+            }
             foreach (var m in t.Stops) Mass(layer, m);
             foreach (var m in t.Stations) Mass(layer, m);
             foreach (var s in t.SkyRail)
@@ -294,20 +330,31 @@ namespace Suborned.World
         {
             foreach (var l in landmarks)
             {
-                if (l.Kit != null) { KitLiveries.Apply(placer.Place(Nodes.Element(layer, l.Id), layer.name, l.Kit, l.Centre, l.Base, 0f), l.Id, "kit", l.Kit.Id); continue; }
-                var kit = new MeshKit();
-                if (l.Shape == "sphere")
+                Transform el;
+                if (l.Kit != null) { el = Nodes.Element(layer, l.Id); KitLiveries.Apply(placer.Place(el, layer.name, l.Kit, l.Centre, l.Base, 0f), l.Id, "kit", l.Kit.Id); }
+                else
                 {
-                    const int slices = 24;
-                    for (int i = 0; i < slices; i++)
+                    var kit = new MeshKit();
+                    if (l.Shape == "sphere")
                     {
-                        float z0 = -l.Radius + 2 * l.Radius * i / slices, z1 = z0 + 2 * l.Radius / slices, zm = (z0 + z1) * 0.5f;
-                        kit.Prism(Poly.Circle(l.Centre, Mathf.Sqrt(l.Radius * l.Radius - zm * zm), 48), l.Base + l.Radius + z0, l.Base + l.Radius + z1);
+                        const int slices = 24;
+                        for (int i = 0; i < slices; i++)
+                        {
+                            float z0 = -l.Radius + 2 * l.Radius * i / slices, z1 = z0 + 2 * l.Radius / slices, zm = (z0 + z1) * 0.5f;
+                            kit.Prism(Poly.Circle(l.Centre, Mathf.Sqrt(l.Radius * l.Radius - zm * zm), 48), l.Base + l.Radius + z0, l.Base + l.Radius + z1);
+                        }
                     }
+                    else kit.Prism(Poly.Circle(l.Centre, l.Radius, 48), l.Base, l.Base + l.Height);
+                    el = nodes.Solid(layer, l.Id, kit, l.Surface);
+                    for (int i = 0; i < l.Kits.Count; i++) { var k = l.Kits[i]; KitLiveries.Apply(placer.Place(el, layer.name, k, k.At, l.Base + l.Height, 0f), l.Id, $"kits[{i}]", k.Id); }
                 }
-                else kit.Prism(Poly.Circle(l.Centre, l.Radius, 48), l.Base, l.Base + l.Height);
-                var el = nodes.Solid(layer, l.Id, kit, l.Surface);
-                for (int i = 0; i < l.Kits.Count; i++) { var k = l.Kits[i]; KitLiveries.Apply(placer.Place(el, layer.name, k, k.At, l.Base + l.Height, 0f), l.Id, $"kits[{i}]", k.Id); }
+                if (l.Gateway != null)
+                {   // brief 075 (Splice): the landmark's gateway arch (the Crown Avenue arch), on the landmark's own element: pivot between its feet on the
+                    // pavement top, kit +X turned by its yaw (0 = feet across the avenue on plan x)
+                    if (float.IsNaN(l.Gateway.Yaw)) throw new System.IO.InvalidDataException($"World: {l.Id}: gateway without a yaw");
+                    float ground = KerbKit.PaveTop > 0f ? KerbKit.PaveTop : l.Base;
+                    KitLiveries.Apply(placer.Place(el, layer.name, l.Gateway, l.Gateway.At, ground, 0f), l.Id, "gateway", l.Gateway.Id);
+                }
             }
         }
 

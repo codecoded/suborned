@@ -152,7 +152,7 @@ namespace Suborned.World
                 // brief 028 road finish: the baked ground pieces (ribbons, shoulders, flags, capstone kerbs: millimetres to 0.185 m) likewise, and
                 // a glow volume (Shaders/CrossGlow: additive light, the road pool) never casts
                 bool glow = acc.Mat && acc.Mat.shader && acc.Mat.shader.name == "Suborned/Cross Glow";
-                if (p[0] == "ground" || p[0] == "ground-pieces" || p[0] == CityLayers.CrossingParts || glow) mr.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
+                if (p[0] == "ground" || p[0] == "ground-pieces" || p[0] == CityLayers.CrossingParts || p[0] == TramStreet.KerbsideLayer || p[0] == TramStreet.WiresLayer || glow) mr.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
                 if (p[0] == Layer072.Shell) { mr.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.ShadowsOnly; mr.receiveShadows = false; mr.lightProbeUsage = UnityEngine.Rendering.LightProbeUsage.Off; mr.reflectionProbeUsage = UnityEngine.Rendering.ReflectionProbeUsage.Off; }
                 if (glow) { mr.receiveShadows = false; mr.lightProbeUsage = UnityEngine.Rendering.LightProbeUsage.Off; mr.reflectionProbeUsage = UnityEngine.Rendering.ReflectionProbeUsage.Off; }
                 verts += acc.Kit.VertexCount;

@@ -108,7 +108,10 @@ namespace Suborned.World
             layers.Ground(groundLayer, world.Ground);
             RoadMarkings.Build(nodes, groundLayer, world); // brief 026 round 2: the dashed centre lines
             Debug.Log($"World: kerbs as stones {KerbKit.Stones} segments, gutter strips {KerbKit.Gutters} segments; {KerbKit.Covered} segments left to the export's kit kerb stones (brief 026 round 2)");
-            layers.Transit(Nodes.Group(root, "transit"), world.Transit);
+            var railCovered = TramStreet.RailCovered(world.Transit, world.Ground.Pieces); // brief 075: the strips step aside for the flush rail tiles
+            layers.Transit(Nodes.Group(root, "transit"), world.Transit, railCovered);
+            Debug.Log($"World: track strips {world.Transit.Tram.Count - railCovered.Count} drawn, {railCovered.Count} covered by the export's rail tiles ({string.Join(", ", railCovered)}; brief 075)");
+            TramStreet.Kerbside(nodes, root, world.Ground); // brief 075: kerbside bays and palm islands
             var buildings = Nodes.Group(root, "buildings");
             ProcSkin.Elements(Nodes.Group(root, "skins"), world.Skins);
             facade.Buildings(buildings, world.Buildings, standIns);
@@ -140,6 +143,8 @@ namespace Suborned.World
             if (world.Entrances.Count > 0) ServiceDoors.Build(nodes, Nodes.Group(root, "takedown"), world); // brief 013: the service doors (export takedown.entrances)
             megas.Gates(Nodes.Group(root, "gates"), world.Gates);
             layers.Landmarks(Nodes.Group(root, "landmarks"), world.Landmarks, placer);
+            TramStreet.Wires(root, world.Transit.Wires, placer); // brief 075: the overhead, baked
+            TramStreet.Dressing(root, world.Trams, placer); // brief 075: parked trams, presentation only
             skyline.Signatures(Nodes.Group(root, "signatures"), world.Signatures, nodes);
             Debug.Log(KitLiveries.Finish()); // every listed livery placed exactly once
             Debug.Log(KitPosters.Finish()); // every pick taken by a placed board exactly once; variants mapped to their base for the shadow proxies

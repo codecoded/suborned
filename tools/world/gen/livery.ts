@@ -17,6 +17,7 @@ export const LIVERY = {
   own: {
     SphereStation: [{ slot: 'DK_Hull_Ivory', colour: 'brick' }],
     SpaceHQ_Portal: [{ slot: 'DK_Crown_Gold', colour: 'gold' }],
+    DiscTower: [{ slot: 'DK_Crown_Gold', colour: 'gold' }], // brief 075 vista: only DiscTower@crown-vista has a DK_Crown_Gold slot (its gold shaft core), so the plain DiscTower and the avenue-gate pair take nothing
   } as Record<string, { slot: string; colour: string }[]>,
   /** The old reel's colours. No metallic / smoothness = the slot keeps its own finish (enamel); gold is the old showpiece finish. */
   colours: {

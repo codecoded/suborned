@@ -29,5 +29,5 @@ const SOURCE = 'brief 075-C step 2 (Aster: the old reel\'s landmark colours as c
 /** LV-1: the landmark livery is the rule's, on every placed landmark piece. */
 export function liveryRules(c: WCtx): Check[] {
   const r = liveryFaults(c.w);
-  return [rule('LV-1', 'Colour', `Every placed landmark piece paints by the livery rule (lattice DK_Steel_Ivory vermilion on Landmarks, Skyport and Sky pieces; SphereStation hull brick; SpaceHQ_Portal crown gold); ${r.placed} pieces`, r.checked, r.faults, '0 faults', SOURCE)];
+  return [rule('LV-1', 'Colour', `Every placed landmark piece paints by the livery rule (lattice DK_Steel_Ivory vermilion on Landmarks, Skyport and Sky pieces; SphereStation hull brick; SpaceHQ_Portal and DiscTower@crown-vista crown gold); ${r.placed} pieces`, r.checked, r.faults, '0 faults', SOURCE)];
 }

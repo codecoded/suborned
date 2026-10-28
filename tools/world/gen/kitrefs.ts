@@ -174,6 +174,14 @@ export function signKit(
 /** An adopted piece by id, or undefined (a plan that names a piece the kit has not adopted gets the procedural stand-in). */
 export const adoptedBy = (id: string | undefined): KitAsset | undefined => (id ? adopted().find(a => a.id === id) : undefined);
 
+/** A plan gateway (megastructures[].gateway, landmarks[].gateway): its adopted arch at the pivot `c`, turned by the plan's numeric `yaw` (radians, kit +X = plan +x at 0),
+ *  else by `fallbackYaw` (the pier's yaw is text, so π/2). Unscaled. Undefined if there is no gateway or its piece is not adopted. */
+export function gatewayRef(gw: { kit?: string; c?: V; yaw?: unknown } | undefined, fallbackYaw: number): (KitRef & { at: V }) | undefined {
+  const a = gw?.c && adoptedBy(gw.kit);
+  if (!gw?.c || !a) return undefined;
+  return { id: a.id, scale: [1, 1, 1], yaw: r4(typeof gw.yaw === 'number' ? gw.yaw : fallbackYaw), at: [r3(gw.c[0]), r3(gw.c[1])] };
+}
+
 /** Landmarks: the kit piece scaled to stand inside the plan's disc and under its height; if it cannot, procedural and why.
  *  The skyport carries `pads`: SkyPad_Roof × 1.0 at each (c, yaw°) on the procedural caisson. */
 export function landmarkKit(l: Landmark, plan: PlanLandmark): Landmark {

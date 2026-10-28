@@ -10,7 +10,7 @@ import { type Ctx, r3, r4, rv } from '../common';
 import { type Rect, rectPts } from '../geo';
 import { type MegaOut } from '../types';
 import type { V } from '../../../plan/geom';
-import { adoptedBy } from '../kitrefs';
+import { gatewayRef } from '../kitrefs';
 import { GIRDER } from '../surfaces';
 import { box, deckRec, host, prim, rectMass, zOf } from './kit';
 
@@ -66,7 +66,7 @@ export function pier(ctx: Ctx, mm: Megastructure): MegaOut {
     { a: [fp[0] + 2, 22], b: [fp[1] - 2, 22], n: [0, -1], kind: 'concourse', street: 'lounge', cornerA: false, cornerB: false },
     { a: [fp[1] - 2, -22], b: [fp[0] + 2, -22], n: [0, 1], kind: 'concourse', street: 'lounge', cornerA: false, cornerB: false }], 0, true);
   out.hosts.push(apron, lounge);
-  const gw = (m as any).gateway as { kit: string; c: [number, number]; feet: Rect[] } | undefined, arch = gw && adoptedBy(gw.kit);
-  if (gw && arch) out.gateway = { id: arch.id, scale: [1, 1, 1], yaw: r4(Math.PI / 2), at: [r3(gw.c[0]), r3(gw.c[1])] }; // spans the pier: the kit's +X (feet at +-16) turned onto y
+  const gw = gatewayRef((m as any).gateway, Math.PI / 2); // spans the pier: the kit's +X (feet at +-16) turned onto y (the pier's plan yaw is text: the fallback)
+  if (gw) out.gateway = gw;
   return out;
 }

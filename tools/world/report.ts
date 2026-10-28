@@ -66,10 +66,11 @@ export function coverage(w: World, gen?: Generated): void {
   }
   const used: Record<string, number> = {};
   for (const f of w.facades) used[f.kit.id] = (used[f.kit.id] ?? 0) + 1;
-  for (const x of [...w.street.map(s => s.kit?.id), ...w.frontages.map(f => f.signKit?.id), ...w.landmarks.flatMap(l => [l.kit?.id, ...(l.kits ?? []).map(k => k.id)]), ...w.roofs.map(r => r.kit?.id), ...w.megastructures.map(m => m.gateway?.id)]) if (x) used[x] = (used[x] ?? 0) + 1;
+  for (const x of [...w.street.map(s => s.kit?.id), ...w.frontages.map(f => f.signKit?.id), ...w.landmarks.flatMap(l => [l.kit?.id, ...(l.kits ?? []).map(k => k.id)]), ...w.roofs.map(r => r.kit?.id), ...w.megastructures.map(m => m.gateway?.id), ...w.landmarks.map(l => l.gateway?.id)]) if (x) used[x] = (used[x] ?? 0) + 1;
   console.log('kit pieces used: ' + Object.entries(used).sort().map(([k, v]) => `${k} ${v}`).join(', '));
   for (const l of w.landmarks) console.log(`landmark ${l.id}: ${l.source} ${l.kit ? `${l.kit.id} x ${l.kit.scale[0]}` : l.kits ? `${l.kits.length} x ${l.kits[0]!.id} x ${l.kits[0]!.scale[0]}` : ''}`);
   for (const m of w.megastructures) if (m.gateway) console.log(`gateway ${m.id}: ${m.gateway.id} x ${m.gateway.scale[0]} at ${m.gateway.at}`);
+  for (const l of w.landmarks) if (l.gateway) console.log(`gateway ${l.id}: ${l.gateway.id} x ${l.gateway.scale[0]} at ${l.gateway.at} yaw ${l.gateway.yaw}`);
   console.log(`roof kit pads: ${w.roofs.filter(r => r.kit).length}`);
   const bb = gen?.billboards; // brief 075-F: the BB rules' counts, the play-street cap's exclusions (Sky's question) and the ads shown
   if (bb) console.log(`billboards (BB-1..4): rooftop ${bb.rooftop.placed}/${bb.rooftop.roofs} sign-frame roofs (cap: ${bb.rooftop.cap.map(c => `${c.roof} ${c.top} > ${c.cap} m`).join(', ') || 'none'}; left: ${bb.rooftop.left.map(l => `${l.roof} (${l.why})`).join(', ') || 'none'}), wall ${bb.wall.placed} of ${bb.wall.candidates} party walls, pylons ${bb.pylon.placed} (parade ${bb.pylon.parade}, quay ${bb.pylon.quay}, plaza ${bb.pylon.plaza}), advertising columns ${bb.column.before + bb.column.placed} (+${bb.column.placed}); posters ${w.posters?.placed.length ?? 0} picks, ${new Set((w.posters?.placed ?? []).filter(p => p.key.length > 1).map(p => p.key)).size} distinct ads`);

@@ -21,7 +21,16 @@ const UNITY = '/Applications/Unity/Hub/Editor/6000.6.2f1/Unity.app/Contents/MacO
 const OLD_PROJECT = join(root, 'out/scratch/latch/oldworld/unity');
 const stepsPath = join(here, 'steps.json');
 
-type Step = { step: string; date: string; what: string; by?: string; export_sha256?: string };
+type Stats = { satMean: number; lumaMedian: number; p5: number; p95: number; leftThirdMedian: number; rightThirdMedian: number };
+type Step = { step: string; date: string; what: string; by?: string; export_sha256?: string; stats?: Stats };
+
+/** Glint's frame stats (stats.py: HSV saturation mean, Rec. 601 luma median, p5, p95, third medians) of a rendered frame. */
+function stats(png: string): Stats {
+  const r = spawnSync('python3', ['-I', join(here, 'stats.py'), png], { encoding: 'utf8' });
+  if (r.status !== 0) { console.error(`golden: stats failed on ${png}: ${r.stderr}`); process.exit(1); }
+  return JSON.parse(r.stdout);
+}
+const fmt = (s: Stats) => `sat ${s.satMean} · median ${s.lumaMedian} · p5 ${s.p5} · p95 ${s.p95} · left/right third ${s.leftThirdMedian}/${s.rightThirdMedian}`;
 type Steps = { schema: 'latch.golden075-steps/1'; steps: Step[] };
 
 const args = process.argv.slice(2);
@@ -75,7 +84,7 @@ function index() {
   const rest = steps.filter(s => s.step !== 'before').reverse(); // newest first
   const cards = [
     card(v('old.png'), 'old', 'the old DecoKit reel, rendered from the old project copy at its t 10 s camera'),
-    ...rest.map(s => card(v(`${s.step}.png`), s.step, `${s.date} · ${s.what}${s.by ? ` (${s.by})` : ''}`)),
+    ...rest.map(s => card(v(`${s.step}.png`), s.step, `${s.date} · ${s.what}${s.by ? ` (${s.by})` : ''}${s.stats && !s.what.includes('sat ') ? ` | ${fmt(s.stats)}` : ''}`)),
     before ? card(v('before.png'), 'before', `${before.date} · ${before.what}`) : '',
   ].join('\n');
   const html = `<!doctype html><html lang="en"><head><meta charset="utf-8"><title>075 golden view</title>
@@ -129,6 +138,8 @@ if (step === 'old' || step.startsWith('sky-')) { console.error(`golden: step nam
 
 if (!has('--no-build')) {
   run('world export', ['bun', 'run', 'world']);
+  // the play host (PlayInstall) refuses a walk file made from another export: regenerate it from this one (3 s, no pictures)
+  run('walk file', ['bun', 'tools/game/playing.ts', 'bun', 'tools/geometry/cli.ts', '--no-shots']);
   const pin = join(scratch, 'pin', `${step}.world.json`);
   mkdirSync(dirname(pin), { recursive: true });
   copyFileSync(join(root, 'out/world/harbour-district.world.json'), pin);
@@ -139,7 +150,10 @@ unity('golden render', 'unity', 'Suborned.World.Review.Golden075.Cli', ['-tag', 
 
 const frame = JSON.parse(readFileSync(join(here, `${step}.json`), 'utf8'));
 const s = loadSteps();
-const entry: Step = { step, date: new Date().toISOString().slice(0, 16).replace('T', ' ') + 'Z', what, ...(opt('--by') ? { by: opt('--by') } : {}), export_sha256: frame.export_sha256 };
+const st = stats(join(here, `${step}.png`));
+const entry: Step = { step, date: new Date().toISOString().slice(0, 16).replace('T', ' ') + 'Z', what, ...(opt('--by') ? { by: opt('--by') } : {}), export_sha256: frame.export_sha256, stats: st };
+const old = existsSync(join(here, 'old.png')) ? stats(join(here, 'old.png')) : undefined;
+console.log(`golden: ${step}: ${fmt(st)}${old ? `\ngolden: old:  ${fmt(old)}` : ''}`);
 const at = s.steps.findIndex(x => x.step === step);
 if (at >= 0) s.steps[at] = entry; else s.steps.push(entry);
 writeFileSync(stepsPath, JSON.stringify(s, null, 2) + '\n');
