@@ -43,8 +43,9 @@ shaders (only CrowdTest and CitizenLineup use them; the street build doesn't).
 | E5 | namespace `TheSuborned` → `Suborned.OldTown` (namespace, using, using static, aliases) | all 72 .cs | 159 | distinct namespace (executeMethod is now `Suborned.OldTown.Editor.DecoKit.DecoKitMenu.*`) |
 | E6 | shader-name literals `"DecoKit/…"` → `"OldTown/DecoKit/…"` | DecoKitMaterials (3), GroundMesh (2), Harbour, Sky, SkyTraffic, Studio | 9 | our project has its own shaders under the same names (see A1) |
 | E7 | `DecoKitStreetDemo.SceneName` `"DecoKitStreet"` → `"OldTownProof"` | DecoKitStreetDemo | 1 | scene is `Assets/Scenes/OldTownProof.unity` (OpenSaved and Flyby follow) |
+| E8 | the one height parameter: `internal static Func<DecoKitPlacer, string, Piece, Piece> Lower` (null = the old builders as they were); `Of` returns `Lower(p, cls, Raw(p, cls))`, the old switch is now `Raw`; `Crescent` reads `Raw` (the circus crescents keep their height) | DecoKitFrontage | 3 | brief 075 swap, Sky's height rule (OldTownSwap sets it for "rule", clears it after) |
 
-No logic, number, colour, material or layout was changed.
+No logic, number, colour, material or layout was changed by E1-E7. E8 changes nothing while `Lower` is null (the proof's builds and the swap's "old" heights).
 
 ## Art edits (in the git-ignored copy only; our Kit untouched)
 | id | change | files | sites |
@@ -85,3 +86,12 @@ The shader names also clashed (four `DecoKit/*` names exist in our `Suborned/Sha
 ## Proof (`proof.png`, `proof.json`, `oldtown_proof_t20.png`)
 Against `briefs/074/flyby/old-stills/flyby_t20.png`, 1920×1080: mean |diff| 0.036/255, RMSE 0.27, PSNR 59.6 dB, 92.4% of pixels
 identical, 0.14% differ by more than 2, 0.02% by more than 8, none by more than 32 (max 84 on a few isolated pixels). It is the old frame.
+
+## The swap (remap step 2, 2026-10-29): new code beside the copy
+- `Suborned/Editor/OldTown/Swap/` (own asmdef `Suborned.OldTown.Swap.Editor`, Editor only, `autoReferenced: false`): `OldTownSwap` (Build, Shoot, Flyby,
+  Verify), `SwapOurs` (our scene cut to the zone and the network), `SwapNetwork` (our routes in the old pieces), `SwapCut` (the old gives way),
+  `SwapExport` (built.json, occluders), `SwapShots`, `SwapVerify`, `SwapMesh` and `SwapShapes` (mesh components and exact XZ clipping).
+- `Suborned/Editor/OldTown/Proof/OldTownSwapAccess.cs`: `InternalsVisibleTo("Suborned.OldTown.Swap.Editor")`, so the swap calls the old internal API
+  without making any of it public. The old builders' private members it needs (DecoKitStreetDemo's tunables and Ground, DecoKitSkyRail.Beam,
+  DecoKitFlyby.Pose and Duration, OldTownProof.WithOldSettings) are called by reflection.
+- Report, frames and evidence: `briefs/075/oldbuild/swap/` (index.html).

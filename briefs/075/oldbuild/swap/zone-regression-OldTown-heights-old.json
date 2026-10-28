@@ -1,0 +1,14 @@
+{
+ "schema":"latch.oldtown-zone-regression/1",
+ "zoneInner":"the Handover zone, 2 m in from its edge (plan x -224..-86, y -370..-150)",
+ "ours":{"scene":"Assets/Scenes/probe-oldtown-ours.unity","triangles":823657,"areaM2":126829.4,"kitRenderers":854,"sha256":"2e6d37abff709ece97cab3c92fdc3ea1427025cf54afb402fb4784bf37f4dca5"},
+ "swapped":{"scene":"Assets/Scenes/OldTown-heights-old.unity","triangles":823794,"areaM2":126827.8,"kitRenderers":854,"sha256":"5d5b5f9dedda6d0d07a944fd31cf3d903a77348e11e071fca10cef4013a41565"},
+ "identical":false,
+ "kitRenderersIdentical":false,
+ "kitOnlyInOurs":["R:DK_StreamBayStack_Top,-20917,1860,-30170,DK_Limestone_Tex__ivory+DK_Window_Film+DK_Chrome+DK_Enamel_Seafoam+DK_Enamel_Ivory","R:DK_StreamBayStack_Top_L2,-20917,1860,-30170,DK_Limestone_Tex+DK_Window_Film+DK_Enamel_Ivory"],
+ "kitOnlyInSwapped":["R:DK_StreamBayStack_Top,-20917,1860,-30171,DK_Limestone_Tex__ivory+DK_Window_Film+DK_Chrome+DK_Enamel_Seafoam+DK_Enamel_Ivory","R:DK_StreamBayStack_Top_L2,-20917,1860,-30171,DK_Limestone_Tex+DK_Window_Film+DK_Enamel_Ivory"],
+ "areaDiffs":["facade -1.55 m2"],
+ "materialCountsThatDiffer":[],
+ "oldRenderersInZoneByPath":{"Deco Sky Traffic/Lane rooftop 70 m <- Deco Sky Traffic":2},
+ "note":"identity = per material, the area clipped exactly to the inner zone and its centroid (1 cm), plus every imported kit renderer by mesh, centre and materials; material names compare by name (the 18 kit materials swapped for HEAD's keep their names)"
+}

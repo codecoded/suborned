@@ -23,7 +23,13 @@ namespace Suborned.OldTown.Editor.DecoKit
             internal Piece(string bay, string end, string corner, float height) { Bay = bay; End = end; Corner = corner; Height = height; }
         }
 
-        internal static Piece Of(DecoKitPlacer p, string cls) => cls switch
+        /// Brief 075 swap (Latch), edit E8 of the verbatim copy: the one height parameter. Null (the old builders as they were) or a
+        /// map from a class and its old piece to the piece that stands (Editor/OldTown/Swap: the "rule" heights). Crescents read Raw.
+        internal static System.Func<DecoKitPlacer, string, Piece, Piece> Lower;
+
+        internal static Piece Of(DecoKitPlacer p, string cls) => Lower == null ? Raw(p, cls) : Lower(p, cls, Raw(p, cls));
+
+        internal static Piece Raw(DecoKitPlacer p, string cls) => cls switch
         {
             "S6" => new("StreamBay_6", "StreamEnd_6", Pick(p, "StreamCorner_6", "StreamCorner_9"), 26.5f),
             "S9" => new("StreamBay_9", "StreamEnd_9", "StreamCorner_9", 36.7f),
@@ -103,7 +109,7 @@ namespace Suborned.OldTown.Editor.DecoKit
         /// stepping by sign(step); the last bay rounds off into whatever opens beyond the crescent.
         internal static void Crescent(DecoKitPlacer p, Vector3 centre, float r, float phi0, float step, string cls, int count, bool endCap)
         {
-            var piece = Of(p, cls);
+            var piece = Raw(p, cls);  // E8: the crescents keep their old height under any Lower
             int terrace = ++run;  // the whole crescent is one building: segment 0
             float d = 2f * Mathf.Asin(3f / r) * Mathf.Rad2Deg * Mathf.Sign(step);
             Wedges(centre, r, phi0, d, count, piece.Height);

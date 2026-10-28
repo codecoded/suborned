@@ -122,4 +122,10 @@ unity/Assets/Scenes/OldTownProof.unity
 unity/Assets/Scenes/OldTownProof.unity.meta
 unity/Assets/Scenes/OldTownProof/
 unity/Assets/Scenes/OldTownProof.meta
+# the swap (OldTownSwap.Build): the old-built town with ours in the Handover zone, at each height setting, and their bakes
+unity/Assets/Scenes/OldTown.unity
+unity/Assets/Scenes/OldTown.unity.meta
+unity/Assets/Scenes/OldTown/
+unity/Assets/Scenes/OldTown.meta
+unity/Assets/Scenes/OldTown-heights-*
 unity/Scratch/

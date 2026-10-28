@@ -1,0 +1,81 @@
+{
+ "regression_vs_c044": {
+  "office-front-y030": {
+   "mad_frame": 41.21,
+   "mad_centre": 61.66,
+   "changed_px_pct": 57.75
+  },
+  "office-front-y030 (heights old)": {
+   "mad_frame": 41.21,
+   "mad_centre": 61.67,
+   "changed_px_pct": 57.75
+  },
+  "office-front-y210": {
+   "mad_frame": 53.6,
+   "mad_centre": 61.99,
+   "changed_px_pct": 79.84
+  },
+  "office-front-y210 (heights old)": {
+   "mad_frame": 53.6,
+   "mad_centre": 61.99,
+   "changed_px_pct": 79.88
+  },
+  "cafe-square-y030": {
+   "mad_frame": 21.55,
+   "mad_centre": 22.71,
+   "changed_px_pct": 39.92
+  },
+  "cafe-square-y030 (heights old)": {
+   "mad_frame": 21.54,
+   "mad_centre": 22.71,
+   "changed_px_pct": 39.91
+  },
+  "cafe-square-y210": {
+   "mad_frame": 34.83,
+   "mad_centre": 24.0,
+   "changed_px_pct": 72.96
+  },
+  "cafe-square-y210 (heights old)": {
+   "mad_frame": 34.84,
+   "mad_centre": 24.01,
+   "changed_px_pct": 72.97
+  }
+ },
+ "flyby_vs_old_reel": {
+  "00": {
+   "mad_frame": 16.01,
+   "mad_centre": 16.38,
+   "changed_px_pct": 27.67
+  },
+  "10": {
+   "mad_frame": 18.54,
+   "mad_centre": 17.54,
+   "changed_px_pct": 34.29
+  },
+  "20": {
+   "mad_frame": 8.79,
+   "mad_centre": 8.87,
+   "changed_px_pct": 14.6
+  },
+  "30": {
+   "mad_frame": 19.84,
+   "mad_centre": 15.15,
+   "changed_px_pct": 30.45
+  },
+  "40": {
+   "mad_frame": 6.29,
+   "mad_centre": 0.35,
+   "changed_px_pct": 8.7
+  },
+  "50": {
+   "mad_frame": 13.23,
+   "mad_centre": 13.5,
+   "changed_px_pct": 20.71
+  },
+  "60": {
+   "mad_frame": 15.61,
+   "mad_centre": 13.02,
+   "changed_px_pct": 28.18
+  }
+ }
+}
