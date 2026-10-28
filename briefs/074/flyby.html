@@ -1,0 +1,45 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>074 · flyby: old DecoKit reel against today, colourways on and off</title>
+<style>
+body{background:#15181d;color:#dde3e2;font:15px/1.5 system-ui,sans-serif;margin:24px;max-width:1400px}
+h1{font-size:22px;margin:0 0 6px}h2{font-size:17px;margin:28px 0 6px;color:#b0cdc7}
+video{width:100%;background:#000;display:block}img{width:100%;display:block}
+code{background:#222a2c;padding:1px 4px;border-radius:3px}
+.clip{margin:14px 0 22px}.clip p{margin:4px 0}
+ul{margin:4px 0 0 18px;padding:0}li{margin:3px 0}
+.dim{color:#9aa9a6;font-size:13px}
+</style>
+<h1>Brief 074 · the old boulevard flyby against today's world</h1>
+<p class="dim">Latch, 2026-10-28. Today = <code>Assets/Scenes/HarbourDistrict.unity</code> built from export 67a3a07b (colourways landed in 0c39f98c). Old = the DecoKit street study re-rendered from <code>out/old-world</code> (old-flyby.mp4, old-keys.json). Every clip is 1080p30 H.264, rendered offscreen frame by frame (old and new both at 2x supersampling, 3840x2160 down to 1920x1080). Nothing shipped was changed: the path is <code>flyby/new-keys.json</code> (scratch), and colourways off is an in-memory material swap that is never saved.</p>
+
+<h2>How the two flights line up</h2>
+<p>The new flight copies the old reel's motion and camera: the same Hermite spline through timed eye and look keys (the view direction is splined), a 58° vertical field of view, shadow distance = eye height x 8 (120–1200 m), 62 s. It follows the old route on our plan: <b>the Boulevard</b> north at 6→12 m eye height (old 6→12 m), <b>Crown Circus</b> past the monument's east side (the old orrery), a right bank and climb past Space HQ's south flank, <b>the Parade</b>, over the Parade gate and the pier to <b>the Skyport tower</b>, round its sea side, then out to sea looking back at the skyline. Each key has the same time as the old key for that place (0, 8, 16, 21, 25, 29, 38, 44, 50, 56, 62 s, plus extra keys at 33 and 40.5 s to clear roofs and the gate), so a frame number in one clip is the same moment of the route in the other. They don't match everywhere, because our plan is bigger: circus to Skyport tower is about 545 m here and about 170 m in the old street. So after the circus the new camera flies faster (up to about 40 m/s over the pier; the old one never went above 13 m/s), and at 29–38 s the old camera is already at the tower while ours is still on the Parade.</p>
+<p>Light: each side keeps its own. Old: sun at 45° elevation from behind-left, warm ACES grade, trilight ambient, exponential fog. New: the game's sun at 38° from behind-right (light.json), its own grade. Both are bright afternoons with the sun behind the camera on the boulevard.</p>
+
+<h2>Clips</h2>
+<div class="clip">
+<p><b>Old against new (colourways on)</b>: <a href="flyby/old-vs-new.mp4">old-vs-new.mp4</a>. 2560x720, old on the left and new on the right, time-aligned frame for frame (each 1280x720, scaled from 1080p).</p>
+<video src="flyby/old-vs-new.mp4" controls preload="metadata"></video>
+</div>
+<div class="clip">
+<p><b>Colourways on against off</b>: <a href="flyby/on-vs-off.mp4">on-vs-off.mp4</a>. 2560x720, the same flight; on the right every kit module is back on its base material (55,253 slots on 16,682 renderers). Roofs and the civic block keep their family colours either way, as in the shipped builder.</p>
+<video src="flyby/on-vs-off.mp4" controls preload="metadata"></video>
+</div>
+<div class="clip">
+<p><b>Full-size singles:</b> <a href="flyby/old-flyby.mp4">old-flyby.mp4</a> (the old reel, 1860 frames) · <a href="flyby/new-on.mp4">new-on.mp4</a> (today, colourways on, 1861 frames) · <a href="flyby/new-off.mp4">new-off.mp4</a> (today, colourways off). All 1920x1080, 30 fps, 62 s.</p>
+</div>
+
+<h2>Stills at matching moments</h2>
+<p>Columns: old, new with colourways on, new with colourways off. Rows: boulevard (6 s), square (20 s, Crown Circus against the old circus), Parade (33 s), Skyport tower (50 s), skyline across the water (61.5 s). Each image is the same frame number pulled from each clip. Full size: <a href="flyby/grid.png">grid.png</a>, single frames in <code>flyby/grid/</code>.</p>
+<a href="flyby/grid.png"><img src="flyby/grid.png" alt="old / new on / new off at five matching moments"></a>
+
+<h2>Where today still falls short of the old reel (Latch's read)</h2>
+<ul>
+<li><b>Density:</b> the old boulevard is a continuous canyon of 8–10 storey slabs with rounded glass corners, both sides unbroken to the vanishing point. Ours is 17–35 m with side-street gaps, so the street reads wider and lower. The far skyline is a band of white cut-out towers that look like bare boxes from the Skyport.</li>
+<li><b>People and traffic:</b> the old reel has crowds on both pavements, cars, a tram, aircars, airships and service robots, all moving. Ours has none in the edit scene: no people layer, and no cars or sky traffic outside the play host. This is the biggest gap in how alive the clip feels.</li>
+<li><b>Palms:</b> the old reel has lush, bright, dense palms with big fronds close to the lens on both kerbs. Ours are smaller, darker, spaced wider and smaller in frame. The boulevard's green median strips draw the eye instead.</li>
+<li><b>Haze and grade:</b> the old reel is filmic: warm ACES grade, teal sky, aerial haze that layers the depth, sun glare, sparkling water. Ours has a flat saturated blue sky, little haze, flat teal water and clean, even light, so it reads as a game render, not a painting. (The old frames show sky banding and a grainy finish, so it isn't flawless.)</li>
+<li><b>Landmarks:</b> the old boulevard ends on a gold arch and a gold disc tower, with a red sphere and a rocket gantry close by. The view always has a hero. Ours ends on grey needle towers; Space HQ is tan and fills the frame only when the camera passes it. The sky rail beam over the circus and the Parade is a flat, untextured pink box, and the pier and Skyport aprons are bare beige slabs.</li>
+<li><b>Colour:</b> colourways on is clearly better than off. Off reads as one brownish limestone everywhere; on gives the street pastel variety (powder, lilac, mint, butter). Against the old reel, though, ours looks more candy and toy-like. The old reel gets its cohesion from cream and white walls with one orange or teal accent, under a warm grade. That suggests tinting less of each building (wall and plinth only, or a softer tint), which is also Redline's draw-cost finding, rather than more.</li>
+</ul>
