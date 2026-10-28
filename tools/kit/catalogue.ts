@@ -12,6 +12,9 @@ type GenRow = { name: string; bounds?: [number, number, number, number]; lods?: 
 const r3 = (n: number) => Math.round(n * 1000) / 1000;
 const sha = (b: Buffer | string) => createHash('sha256').update(b).digest('hex');
 const GUID = /guid: ([0-9a-f]{32})/g;
+/** Brief 075 remap step 2 (the SpaceHQ switch, form "old"): DecoKit pieces adopted as the old builders place them, the old repo's own binary. The generator's
+ *  re-export of the same name (SpaceHQ: Vela's brief 007 rebuild, a different tower) and its LODs never replace it, so our world and the old builders stand one piece. */
+export const OLD_PIECES: ReadonlySet<string> = new Set(['SpaceHQ']);
 
 function walk(dir: string, out: string[] = []): string[] {
   for (const e of readdirSync(dir, { withFileTypes: true })) (e.isDirectory() ? walk(join(dir, e.name), out) : out.push(join(dir, e.name)));
@@ -82,12 +85,12 @@ export function buildCatalogue(root: string, prior?: Kit, gen?: string): Kit {
     const st: KitStatus = status.get(a0.name) ?? (WAVE1.has(a0.name) ? 'adopted' : 'candidate');
     // An adopted DecoKit piece the generator re-exported in full (its fbx is in the generator's output, e.g. Vela's slimmed street props, brief 007 round 3):
     // the generator's binary, size, triangles and materials win; the DecoKit's fbx meta (GUID, import settings) and prefab stay, so references hold.
-    const g = st === 'adopted' && gen ? genManifest.find(x => x.name === a0.name && x.fbx === a0.fbx && existsSync(join(gen, x.fbx))) : undefined;
+    const old = OLD_PIECES.has(a0.name), g = st === 'adopted' && gen && !old ? genManifest.find(x => x.name === a0.name && x.fbx === a0.fbx && existsSync(join(gen, x.fbx))) : undefined;
     const a = g ? { ...a0, tris: g.tris, size: g.size, materials: g.materials, parts: g.parts ?? a0.parts } : a0;
     const fbx: KitFile[] = g ? [{ root: 'generated', role: 'fbx', path: g.fbx, sha256: sha(readFileSync(join(gen!, g.fbx))), bytes: statSync(join(gen!, g.fbx)).size }, ...pair('fbx', a.fbx).filter(f => f.role === 'fbx-meta')] : pair('fbx', a.fbx);
     const files: KitFile[] = [...fbx, ...pair('prefab', a.fbx.replace(/^Models\//, 'Prefabs/').replace(/\.fbx$/, '.prefab')), ...matFiles(a.materials)];
     files.push(...pair('fbx', a.fbx.replace(/\.fbx$/, '_Far.fbx')).filter(f => !files.some(x => x.path === f.path))); // the full robots' prefabs nest a `_Far` model (brief 026, Latch): copied with the piece, hash-checked like it
-    const lo = st === 'adopted' ? lodsOf(a.name) : { files: [] }; // LOD files exist for the pieces the generator was asked about (adopted)
+    const lo = st === 'adopted' && !old ? lodsOf(a.name) : { files: [] }; // LOD files exist for the pieces the generator was asked about (adopted)
     files.push(...lo.files);
     const lc = lodCategoryOf(a.name, a.category);
     return { id: a.name, category: a.category, size: a.size as [number, number, number], ...pivotOf(a.name), front: '+Z', tris: a.tris, materials: a.materials, ...(a.parts ? { parts: a.parts } : {}), ...(a.lod1 ? { lod1: a.lod1 } : {}), ...('lods' in lo ? { lods: lodScreens(lo.lods, lc, a.name) } : {}), lodCategory: lc, files, tags: tagsOf(a.name, a.category), status: st };

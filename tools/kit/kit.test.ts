@@ -94,9 +94,14 @@ test('Vela\'s street props are the generator\'s binaries; since brief 026 (old d
   }
 });
 
-test('brief 007 round 3 wrap-up: the concept-B liner (hand-built far L2) and PlanterArc adopted, base SpaceHQ rejected; every LOD asks only for its piece\'s materials', () => {
+test('brief 007 round 3 wrap-up: the concept-B liner (hand-built far L2) and PlanterArc adopted; every LOD asks only for its piece\'s materials', () => {
   const by = (id: string) => kit.assets.find(a => a.id === id)!;
-  expect(by('SpaceHQ').status).toBe('rejected'); expect(by('SpaceHQ_Portal').status).toBe('adopted');
+  expect(by('SpaceHQ_Portal').status).toBe('adopted');
+  // brief 075 remap step 2 (the SpaceHQ switch, form "old"): the base SpaceHQ is adopted as the old builders' own piece (OLD_PIECES), never the generator's
+  // brief 007 rebuild of the same name: the old repo's fbx (no generated root), no generator LODs
+  const hq = by('SpaceHQ'), fbx = hq.files.find(f => f.role === 'fbx')!;
+  expect(hq.status).toBe('adopted'); expect(fbx.root).toBeUndefined(); expect(fbx.sha256).toBe('f5399b467978a4aa3cabc5e21e6c3ce2ba233a8972b22f792b98b98d46838f42');
+  expect(hq.lods).toBeUndefined(); expect(hq.files.some(f => f.role === 'lod')).toBe(false); expect(hq.size).toEqual([80, 252, 88.8]);
   expect(by('PlanterArc').status).toBe('adopted'); expect(by('PlanterArc').pivot).toBe('footprint-centre-ground');
   const liner = by('OceanLiner');
   expect(liner.status).toBe('adopted'); expect(liner.lods?.length).toBe(2);
