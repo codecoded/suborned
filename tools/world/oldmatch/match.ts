@@ -38,18 +38,21 @@ export const MATCH = {
 
 type R4 = [number, number, number, number]; // x0 x1 y0 y1
 export type Poly = { id: string; ring: V[]; kind?: string };
-export type Chain = { id: string; pts: V[] };
+export type Chain = { id: string; pts: V[]; /** per sample, the element it came from (joined chains) */ of?: string[] };
 export type Side = {
   foot: Poly[]; ground: Poly[]; kerbs: Chain[]; roads: { id: string; line: V[]; width: number; level: number }[];
-  pavTops: { id: string; ring: V[]; top: number }[]; entrances: { id: string; building: string; at: V; z: number }[];
+  pavTops: { id: string; ring: V[]; top: number }[]; entrances: { id: string; building: string; at: V; z: number; normal?: V; w?: number; kind?: string }[];
   levels: { id: string; z: number; walk?: number }[]; decks: { id: string; ring: V[]; z: number }[]; skipped: string[];
   /** the built kerb lines as exported (built side only) */ kerbLines?: Chain[];
   heights: { id: string; kind: string; height: number }[];
+  /** built side: where the ground was laid piece by piece (kerb and pavement-edge comparisons only inside); missing = everywhere */ coverage?: Poly[];
+  /** built side: the Handover zone is taken from our export (the file has none of it) */ zoneOurs?: boolean;
 };
-export type Kind = 'footprint' | 'kerb' | 'pavement' | 'entrance' | 'level' | 'deck' | 'pavement-top';
+export type Kind = 'footprint' | 'kerb' | 'pavement' | 'entrance' | 'level' | 'deck' | 'pavement-top' | 'intrusion';
 export type Mismatch = {
   id: string; kind: Kind; /** built-only: on the old-built side with nothing on ours within tolerance; plan-only: the reverse; differ: both exist, values differ */
   side: 'built-only' | 'plan-only' | 'differ'; el: string; near: string | null; dev: number | null; at: V; from?: V; to?: V; length?: number; zone: boolean; detail?: string;
+  /** zone: the Handover zone; core: inside the built ground's coverage (the old builders' piece-laid streets); district: beyond it (massing only) */ area?: 'zone' | 'core' | 'district';
 };
 
 // ------------------------------------------------------------------ geometry
@@ -97,7 +100,26 @@ export function outline(polys: Poly[]): Chain[] {
     }
     flush();
   }
-  return out;
+  return joinChains(out);
+}
+
+/** Chains joined end to end where one's last sample is within a sample step of another's first (or last: then reversed), so the outline of a row of pavement
+ *  modules or bays is one chain, not one per module, and a mismatch along it is one run. */
+export function joinChains(cs: Chain[]): Chain[] {
+  const tol = MATCH.step * 1.2, live = cs.map(c => ({ ...c, pts: [...c.pts], of: c.of ? [...c.of] : c.pts.map(() => c.id) })), alive = live.map(() => true);
+  const ends = grid(live.map((c, i) => i), i => bbOf([live[i]!.pts[0]!, live[i]!.pts[live[i]!.pts.length - 1]!]), 4);
+  const d = (a: V, b: V) => Math.hypot(a[0] - b[0], a[1] - b[1]);
+  for (let i = 0; i < live.length; i++) {
+    if (!alive[i]) continue;
+    for (let guard = 0; guard < live.length; guard++) {
+      const c = live[i]!, tail = c.pts[c.pts.length - 1]!;
+      const j = ends(tail, tol).find(j => j !== i && alive[j] && (d(live[j]!.pts[0]!, tail) <= tol || d(live[j]!.pts[live[j]!.pts.length - 1]!, tail) <= tol));
+      if (j === undefined) break;
+      const o = live[j]!, fwd = d(o.pts[0]!, tail) <= tol;
+      c.pts.push(...(fwd ? o.pts : [...o.pts].reverse())); c.of.push(...(fwd ? o.of : [...o.of].reverse())); alive[j] = false;
+    }
+  }
+  return live.filter((_, i) => alive[i]);
 }
 
 /** A polyline with a point every MATCH.step at most. */
@@ -165,7 +187,7 @@ export function worldSide(w: World, plan: { standards: any }): Side {
     ground: [...pav.map(p => ({ id: p.id, ring: p.ring })), ...foot],
     kerbs: kerbsOf(roads, g.circuses.map(c => ({ id: c.id, centre: c.centre, radius: c.radius, islandRadius: c.islandRadius }))),
     levels: (plan.standards.levels.list as { id: string; z: number; walk?: number }[]).map(l => ({ id: l.id, z: l.z, walk: l.walk })),
-    decks: w.levels.flatMap(l => l.decks.map(d => ({ id: d.id, ring: d.ring, z: l.height }))),
+    decks: [...w.levels.flatMap(l => l.decks.map(d => ({ id: d.id, ring: d.ring, z: l.height }))), ...(w.transit?.stations ?? []).map(s => ({ id: s.id, ring: s.ring, z: r3(s.base + s.height) }))],
     skipped: [],
   };
 }
@@ -178,17 +200,23 @@ export function builtSide(b: OldBuilt): Side {
   const roads = b.roads.map(r => ({ id: r.id, line: mr(r.line), width: r.width, level: r.level }));
   const circ = (b.circuses ?? []).map(c => ({ id: c.id, centre: mv(c.centre), radius: c.radius, islandRadius: c.islandRadius }));
   const pav = b.pavements.map(p => ({ id: p.id, ring: mr(p.ring), top: p.top }));
-  if (!b.circuses) skipped.push('circuses not exported: no roundabout kerbs on the built side');
+  const byKerbs = !b.roads.length && !!b.kerbs; // no centrelines: the kerb lines as built are the built kerbs
+  if (!b.circuses && !byKerbs) skipped.push('circuses not exported: no roundabout kerbs on the built side');
   if (!b.decks) skipped.push('decks not exported: deck outlines and levels not compared');
+  if (b.coverage) skipped.push(`ground (kerbs, pavement edges) compared only inside the built ground's coverage (${b.coverage.length} cells): the rest of the district has no kerbs or flags in the file`);
+  skipped.push(...(b.notes ?? []));
+  const kerbLines = b.kerbs?.map(k => ({ id: k.id, pts: densify(mr(k.line)) }));
   return {
     foot, roads, pavTops: pav,
     heights: b.buildings.map(x => ({ id: x.id, kind: x.kind, height: x.height })),
     ground: [...pav.map(p => ({ id: p.id, ring: p.ring })), ...foot],
-    kerbs: kerbsOf(roads, circ),
-    entrances: b.entrances.map(e => ({ id: e.id, building: e.building, at: mv(e.at), z: e.z })),
+    kerbs: byKerbs ? kerbLines! : kerbsOf(roads, circ),
+    entrances: b.entrances.map(e => ({ id: e.id, building: e.building, at: mv(e.at), z: e.z, normal: e.normal, w: e.w, kind: e.kind })),
     levels: b.levels,
     decks: (b.decks ?? []).map(d => ({ id: d.id, ring: mr(d.ring), z: d.z })),
-    kerbLines: b.kerbs?.map(k => ({ id: k.id, pts: densify(mr(k.line)) })),
+    kerbLines: byKerbs ? undefined : kerbLines,
+    coverage: b.coverage?.map(c => ({ id: c.id, ring: mr(c.ring) })),
+    zoneOurs: b.zone === 'ours',
     skipped,
   };
 }
@@ -217,15 +245,15 @@ export function builtOf(w: World, plan: { standards: any }, offset: V = [0, 0]):
 function chainDiff(kind: Kind, side: Mismatch['side'], A: Chain[], B: Chain[], tol: number, zone: (p: V) => boolean): Mismatch[] {
   const near = nearestOn(B), out: Mismatch[] = [];
   for (const c of A) {
-    let run: { p: V; d: number; id: string | null }[] = [];
+    let run: { p: V; d: number; id: string | null; el: string }[] = [];
     const flush = () => {
       if (!run.length) return;
       const worst = run.reduce((m, x) => (x.d > m.d ? x : m)), len = run.length * MATCH.step, ids = new Set(run.map(x => x.id).filter(Boolean));
       // a run shorter than a sample step either side of a corner is a probe artefact at a convex joint, not a feature
-      if (len >= MATCH.step * 2 || worst.d > tol * 2) out.push({ id: '', kind, side, el: c.id, near: worst.id ?? (ids.size ? [...ids][0]! : null), dev: Number.isFinite(worst.d) ? r3(worst.d) : null, at: rv(worst.p), from: rv(run[0]!.p), to: rv(run[run.length - 1]!.p), length: r3(len), zone: run.some(x => zone(x.p)) });
+      if (len >= MATCH.step * 2 || worst.d > tol * 2) out.push({ id: '', kind, side, el: worst.el, near: worst.id ?? (ids.size ? [...ids][0]! : null), dev: Number.isFinite(worst.d) ? r3(worst.d) : null, at: rv(worst.p), from: rv(run[0]!.p), to: rv(run[run.length - 1]!.p), length: r3(len), zone: run.some(x => zone(x.p)) });
       run = [];
     };
-    for (const p of c.pts) { const n = near(p); if (n.d > tol) run.push({ p, ...n }); else flush(); }
+    c.pts.forEach((p, i) => { const n = near(p); if (n.d > tol) run.push({ p, ...n, el: c.of?.[i] ?? c.id }); else flush(); });
     flush();
   }
   return out;
@@ -236,27 +264,57 @@ const levelOf = (z: number, levels: Side['levels']) => levels.map(l => ({ l, d: 
 export type Report = {
   schema: 'suborned.oldmatch/1'; tolerance: typeof MATCH; zone: R4; counts: Record<string, number>; inZone: number; outside: number;
   mismatches: Mismatch[]; skipped: string[]; overlap: { checked: number; faults: OverlapFault[] };
+  /** m of outline left out of the ground comparison by the built ground's coverage, by chain kind */ uncovered: Record<string, number>;
   heights: { tall: number; low: number; byKind: Record<string, { n: number; max: number }> };
 };
 
-export function compare(built: Side, ours: Side, plan: { standards: any }, overlap: { checked: number; faults: OverlapFault[] } = { checked: 0, faults: [] }): Report {
-  const zr = plan.standards.blocks.zone as R4, zone = (p: V) => inR(p, zr), M: Mismatch[] = [];
-  // footprints
+export function compare(built: Side, ours: Side, plan: { standards: any; sheet?: { x: V; y: V } }, overlap: { checked: number; faults: OverlapFault[] } = { checked: 0, faults: [] }): Report {
+  const zr = plan.standards.blocks.zone as R4, M: Mismatch[] = [];
+  // zone 'ours' (Latch's swap): the file has nothing of the zone; anything of it standing in the zone is an intrusion (hard), then the zone is taken from our
+  // export, clipped to the zone rect. Inside the zone the two sides are then the same by construction, so a mismatch counts as the zone's only when a sample
+  // lies deeper in than the probe (a seam on the zone's edge is the old build's, outside, and goes to the patch).
+  if (built.zoneOurs) { M.push(...intrusions(built, zr)); built = withZone(built, ours, zr); }
+  const zIn: R4 = built.zoneOurs ? [zr[0] + MATCH.probe + MATCH.step, zr[1] - MATCH.probe - MATCH.step, zr[2] + MATCH.probe + MATCH.step, zr[3] - MATCH.probe - MATCH.step] : zr;
+  const zone = (p: V) => inR(p, zIn);
+  // ground coverage: kerbs and pavement edges are compared only where the built ground was laid
+  const cov = built.coverage ? (() => { const C = built.coverage!.map(c => ({ ...c, bb: bbOf(c.ring) })), g = grid(C, c => c.bb, 16); return (p: V) => inR(p, zIn) || g(p, 0).some(i => inR(p, C[i]!.bb) && inPoly(p, C[i]!.ring)); })() : null;
+  const uncovered: Record<string, number> = {};
+  // the plan's sheet (plan.sheet x, y): beyond it the old build is backdrop (the CityMass skyline the plan does not map), not compared
+  const sheet: R4 | null = plan.sheet ? [plan.sheet.x[0], plan.sheet.x[1], plan.sheet.y[0], plan.sheet.y[1]] : null, onSheet = (p: V) => !sheet || inR(p, sheet);
+  const clipBy = (keep: ((p: V) => boolean) | null, kind: string, cs: Chain[]): Chain[] => {
+    if (!keep) return cs;
+    const out: Chain[] = [];
+    for (const c of cs) {
+      let cur: V[] = [], of: string[] = [];
+      const push = () => { if (cur.length) out.push({ id: of[0] ?? c.id, pts: cur, of }); cur = []; of = []; };
+      c.pts.forEach((q, i) => { if (keep(q)) { cur.push(q); of.push(c.of?.[i] ?? c.id); } else { uncovered[kind] = (uncovered[kind] ?? 0) + MATCH.step; push(); } });
+      push();
+    }
+    return out;
+  };
+  const clipCov = (kind: string, cs: Chain[]) => clipBy(cov || sheet ? (p: V) => (!cov || cov(p)) && onSheet(p) : null, kind, cs);
+  // footprints (on the sheet)
   const fb = outline(built.foot), fo = outline(ours.foot);
-  M.push(...chainDiff('footprint', 'built-only', fb, fo, MATCH.footprint, zone), ...chainDiff('footprint', 'plan-only', fo, fb, MATCH.footprint, zone));
-  // kerbs: derived both sides; the built kerb lines too when exported (against ours and our pavement edges, which carry the rounded returns)
-  M.push(...chainDiff('kerb', 'built-only', built.kerbs, ours.kerbs, MATCH.kerb, zone), ...chainDiff('kerb', 'plan-only', ours.kerbs, built.kerbs, MATCH.kerb, zone));
+  M.push(...chainDiff('footprint', 'built-only', clipBy(sheet && onSheet, 'footprint-built (beyond the sheet)', fb), fo, MATCH.footprint, zone), ...chainDiff('footprint', 'plan-only', clipBy(sheet && onSheet, 'footprint (beyond the sheet)', fo), fb, MATCH.footprint, zone));
+  // kerbs: derived both sides (or the built kerb lines when the file has no centrelines); the built kerb lines too when exported beside centrelines (against
+  // ours and our pavement edges, which carry the rounded returns)
+  M.push(...chainDiff('kerb', 'built-only', clipBy(sheet && onSheet, 'kerb-built (beyond the sheet)', built.kerbs), ours.kerbs, MATCH.kerb, zone), ...chainDiff('kerb', 'plan-only', clipCov('kerb', ours.kerbs.map(c => ({ ...c, pts: densify(c.pts) }))), built.kerbs, MATCH.kerb, zone));
   if (built.kerbLines) M.push(...chainDiff('kerb', 'built-only', built.kerbLines, [...ours.kerbs, ...outline(ours.ground)], MATCH.kerb, zone).map(m => ({ ...m, detail: 'built kerb line' })));
   // pavements: the kerb-side outline of pavement ∪ footprints
   const gb = outline(built.ground), go = outline(ours.ground);
-  M.push(...chainDiff('pavement', 'built-only', gb, go, MATCH.kerb, zone), ...chainDiff('pavement', 'plan-only', go, gb, MATCH.kerb, zone));
-  // pavement tops: a built pavement's top equals the top of ours under its first inside sample
+  M.push(...chainDiff('pavement', 'built-only', clipCov('pavement-built', gb), go, MATCH.kerb, zone), ...chainDiff('pavement', 'plan-only', clipCov('pavement', go), gb, MATCH.kerb, zone));
+  // pavement tops: a built pavement's top equals the top of ours under its first inside sample; one mismatch per (built top, our tops, zone) with the count
+  const tops = new Map<string, Mismatch & { n: number }>();
   for (const p of built.pavTops) {
     const q = insidePoint(p.ring);
     if (!q) continue;
     const under = ours.pavTops.filter(o => inPoly(q, o.ring));
-    if (under.length && !under.some(o => Math.abs(o.top - p.top) <= MATCH.level)) M.push({ id: '', kind: 'pavement-top', side: 'differ', el: p.id, near: under[0]!.id, dev: r3(Math.min(...under.map(o => Math.abs(o.top - p.top)))), at: rv(q), zone: zone(q), detail: `top ${p.top}, ours ${[...new Set(under.map(o => o.top))].join('/')}` });
+    if (!under.length || under.some(o => Math.abs(o.top - p.top) <= MATCH.level)) continue;
+    const ot = [...new Set(under.map(o => o.top))].sort().join('/'), key = `${p.top}|${ot}|${zone(q)}`, t = tops.get(key);
+    if (t) { t.n++; continue; }
+    tops.set(key, { id: '', kind: 'pavement-top', side: 'differ', el: p.id, near: under[0]!.id, dev: r3(Math.min(...under.map(o => Math.abs(o.top - p.top)))), at: rv(q), zone: zone(q), detail: `top ${p.top}, ours ${ot}`, n: 1 });
   }
+  for (const { n, ...m } of tops.values()) M.push(n > 1 ? { ...m, el: `${n} pavements (first ${m.el})`, detail: `${m.detail} (${n} pavements)` } : m);
   // entrances, at the same level
   const ent = (A: Side['entrances'], B: Side['entrances'], side: Mismatch['side']) => {
     const g = grid(B, e => bbOf([e.at]), 8);
@@ -268,7 +326,32 @@ export function compare(built: Side, ours: Side, plan: { standards: any }, overl
       if (best > MATCH.entrance) M.push({ id: '', kind: 'entrance', side, el: e.id, near: bid, dev: Number.isFinite(best) ? r3(best) : null, at: rv(e.at), zone: zone(e.at), detail: `${la.l.id} door of ${e.building}` });
     }
   };
-  ent(built.entrances, ours.entrances, 'built-only'); ent(ours.entrances, built.entrances, 'plan-only');
+  const bays = built.entrances.filter(e => e.kind === 'bay' && e.normal && e.w), doors = built.entrances.filter(e => !bays.includes(e));
+  if (!bays.length) { ent(built.entrances, ours.entrances, 'built-only'); ent(ours.entrances, built.entrances, 'plan-only'); }
+  else {
+    // bay fronts stand in for doors (the old builders model none): a door of ours on a bay (within w/2 + MATCH.entrance along, MATCH.entrance across, same
+    // level) is matched; a built building none of whose bays carries a door of ours is built-only (one per building); a door of ours on no bay and near no
+    // built door is plan-only. Built doors (the zone, taken from ours) match door to door.
+    ent(doors, ours.entrances, 'built-only');
+    const onBay = (e: Side['entrances'][number], b: Side['entrances'][number]) => {
+      const n = b.normal!, l = Math.hypot(n[0], n[1]) || 1, nx = n[0] / l, ny = n[1] / l, dx = e.at[0] - b.at[0], dy = e.at[1] - b.at[1];
+      return Math.abs(dx * nx + dy * ny) <= MATCH.entrance && Math.abs(-dx * ny + dy * nx) <= b.w! / 2 + MATCH.entrance && levelOf(e.z, ours.levels)?.l.id === levelOf(b.z, ours.levels)?.l.id;
+    };
+    const bg = grid(bays, b => bbOf([b.at]), 8), dg = grid(doors, d => bbOf([d.at]), 8), carried = new Set<string>();
+    for (const e of ours.entrances) {
+      if ((cov && !cov(e.at)) || !onSheet(e.at)) { uncovered['doors (count)'] = (uncovered['doors (count)'] ?? 0) + 1; continue; } // the old builders laid no bays here
+      const hit = bg(e.at, 8).map(i => bays[i]!).filter(b => onBay(e, b));
+      hit.forEach(b => carried.add(b.building));
+      if (hit.length) continue;
+      if (dg(e.at, MATCH.entrance).some(i => { const d = doors[i]!; return Math.hypot(d.at[0] - e.at[0], d.at[1] - e.at[1]) <= MATCH.entrance && levelOf(d.z, ours.levels)?.l.id === levelOf(e.z, ours.levels)?.l.id; })) continue;
+      let best = Infinity, bid: string | null = null;
+      for (const i of bg(e.at, MATCH.far)) { const b = bays[i]!, d = Math.hypot(b.at[0] - e.at[0], b.at[1] - e.at[1]); if (d < best) { best = d; bid = b.id; } }
+      M.push({ id: '', kind: 'entrance', side: 'plan-only', el: e.id, near: bid, dev: Number.isFinite(best) ? r3(best) : null, at: rv(e.at), zone: zone(e.at), detail: `door of ${e.building} on no old bay front` });
+    }
+    const byB = new Map<string, Side['entrances']>();
+    for (const b of bays) (byB.get(b.building) ?? byB.set(b.building, []).get(b.building)!).push(b);
+    for (const [bid, bs] of byB) if (!carried.has(bid) && bs.some(b => onSheet(b.at))) { const mid = bs[Math.floor(bs.length / 2)]!; M.push({ id: '', kind: 'entrance', side: 'built-only', el: bid, near: null, dev: null, at: rv(mid.at), zone: zone(mid.at), detail: `old building ${bid}: ${bs.length} bay front(s), none carries a door of ours` }); }
+  }
   // levels, exact
   for (const l of ours.levels) {
     const b = built.levels.find(x => x.id === l.id);
@@ -285,17 +368,58 @@ export function compare(built: Side, ours: Side, plan: { standards: any }, overl
       M.push(...chainDiff('deck', 'built-only', db, dov, MATCH.kerb, zone), ...chainDiff('deck', 'plan-only', dov, db, MATCH.kerb, zone));
     }
   }
-  const order: Kind[] = ['level', 'footprint', 'kerb', 'pavement', 'pavement-top', 'entrance', 'deck'];
+  const order: Kind[] = ['intrusion', 'level', 'footprint', 'kerb', 'pavement', 'pavement-top', 'entrance', 'deck'];
   M.sort((a, b) => order.indexOf(a.kind) - order.indexOf(b.kind) || Number(b.zone) - Number(a.zone) || (b.dev ?? 1e9) - (a.dev ?? 1e9) || a.at[0] - b.at[0] || a.at[1] - b.at[1]);
-  M.forEach((m, i) => { m.id = `M${String(i + 1).padStart(4, '0')}`; });
+  M.forEach((m, i) => { m.id = `M${String(i + 1).padStart(4, '0')}`; if (cov) m.area = m.zone ? 'zone' : cov(m.at) ? 'core' : 'district'; });
   const counts: Record<string, number> = {};
   for (const m of M) counts[`${m.kind} ${m.side}`] = (counts[`${m.kind} ${m.side}`] ?? 0) + 1;
   const byKind: Report['heights']['byKind'] = {};
   for (const h of built.heights) { const k = (byKind[h.kind] ??= { n: 0, max: 0 }); k.n++; k.max = Math.max(k.max, r3(h.height)); }
   return {
     schema: 'suborned.oldmatch/1', tolerance: MATCH, zone: zr, counts, inZone: M.filter(m => m.zone).length, outside: M.filter(m => !m.zone).length, mismatches: M,
-    skipped: built.skipped, overlap,
+    skipped: built.skipped, overlap, uncovered: Object.fromEntries(Object.entries(uncovered).map(([k, v]) => [k, r3(v)])),
     heights: { tall: built.heights.filter(h => h.height > 17).length, low: built.heights.filter(h => h.height <= 17).length, byKind },
+  };
+}
+
+/** A ring clipped to a rect (Sutherland–Hodgman); [] when nothing is left. */
+function clipRect(ring: V[], r: R4): V[] {
+  let pts = ring;
+  const edges: [(p: V) => boolean, (a: V, b: V) => V][] = [
+    [p => p[0] >= r[0], (a, b) => [r[0], a[1] + ((b[1] - a[1]) * (r[0] - a[0])) / (b[0] - a[0])]],
+    [p => p[0] <= r[1], (a, b) => [r[1], a[1] + ((b[1] - a[1]) * (r[1] - a[0])) / (b[0] - a[0])]],
+    [p => p[1] >= r[2], (a, b) => [a[0] + ((b[0] - a[0]) * (r[2] - a[1])) / (b[1] - a[1]), r[2]]],
+    [p => p[1] <= r[3], (a, b) => [a[0] + ((b[0] - a[0]) * (r[3] - a[1])) / (b[1] - a[1]), r[3]]],
+  ];
+  for (const [inside, cut] of edges) {
+    const out: V[] = [];
+    for (let i = 0; i < pts.length; i++) { const a = pts[i]!, b = pts[(i + 1) % pts.length]!, ia = inside(a), ib = inside(b); if (ia) out.push(a); if (ia !== ib) out.push(cut(a, b)); }
+    pts = out;
+    if (pts.length < 3) return [];
+  }
+  return Math.abs(signed(pts)) > 1e-6 ? pts : [];
+}
+
+/** Anything of the file standing in the zone when the zone is to come from our export: footprints, pavements, kerbs, doors, decks with a point inside. */
+function intrusions(b: Side, zr: R4): Mismatch[] {
+  // strictly inside (a piece touching the zone's edge from outside is not in it): a vertex, or the ring's inside point, more than 1 cm in
+  const zs: R4 = [zr[0] + 0.01, zr[1] - 0.01, zr[2] + 0.01, zr[3] - 0.01];
+  const hit = (kind: Kind, el: string, pts: V[]) => { const p = [...pts, ...(pts.length >= 3 ? [insidePoint(pts)].filter((q): q is V => !!q) : [])].find(q => inR(q, zs)); return p ? [{ id: '', kind: 'intrusion' as Kind, side: 'built-only' as const, el, near: null, dev: null, at: rv(p), zone: true, detail: `${kind} of the old build inside the Handover zone (the zone is ours)` }] : []; };
+  return [
+    ...b.foot.flatMap(f => hit('footprint', f.id, f.ring)), ...b.pavTops.flatMap(p => hit('pavement', p.id, p.ring)), ...b.kerbs.flatMap(k => hit('kerb', k.id, k.pts)),
+    ...b.entrances.flatMap(e => hit('entrance', e.id, [e.at])),
+  ];
+}
+
+/** The built side with the zone taken from ours (clipped to the zone rect). */
+function withZone(b: Side, o: Side, zr: R4): Side {
+  const clipP = <T extends { ring: V[] }>(xs: T[]) => xs.flatMap(x => { const ring = clipRect(x.ring, zr); return ring.length ? [{ ...x, ring }] : []; });
+  const foot = [...b.foot, ...clipP(o.foot)], pavTops = [...b.pavTops, ...clipP(o.pavTops)];
+  const kerbs = [...b.kerbs];
+  for (const c of o.kerbs) { let cur: V[] = []; for (const q of densify(c.pts)) { if (inR(q, zr)) cur.push(q); else { if (cur.length > 1) kerbs.push({ id: c.id, pts: cur }); cur = []; } } if (cur.length > 1) kerbs.push({ id: c.id, pts: cur }); }
+  return {
+    ...b, foot, pavTops, kerbs, ground: [...pavTops.map(p => ({ id: p.id, ring: p.ring })), ...foot],
+    entrances: [...b.entrances, ...o.entrances.filter(e => inR(e.at, zr))], decks: [...b.decks, ...clipP(o.decks)],
   };
 }
 
@@ -326,7 +450,7 @@ export type PlanPatch = {
   ops: PatchOp[]; builderFixes: PatchOp[]; zoneFailures: string[];
 };
 
-export function patchOf(rep: Report, plan: any, built: OldBuilt, builtPath: string, planPath: string): PlanPatch {
+export function patchOf(rep: Report, plan: any, built: OldBuilt, builtPath: string, planPath: string, ourRoads: { id: string; line: V[]; width: number }[] = []): PlanPatch {
   const [ox, oy] = built.frame?.offset ?? [0, 0], mv = (p: V): V => [p[0] + ox, p[1] + oy];
   const blocks = ((plan.blocks ?? []) as { id: string; plot: string; rect?: R4 }[]).filter((b): b is { id: string; plot: string; rect: R4 } => Array.isArray(b.rect)), plots = ((plan.plots ?? []) as { id: string; rect?: R4 }[]).filter((p): p is { id: string; rect: R4 } => Array.isArray(p.rect));
   const ops: PatchOp[] = [], fixes: PatchOp[] = [];
@@ -343,14 +467,21 @@ export function patchOf(rep: Report, plan: any, built: OldBuilt, builtPath: stri
     const bb = bbOf(inside.flatMap(f => f.ring)).map(r3) as R4;
     ops.push({ op: 'set', path: `${t}.rect`, owner: 'datum', from: r, to: bb, why: `footprints differ by up to ${Math.max(...ms.map(m => m.dev ?? MATCH.far))} m; to = the box of the old-built footprints standing in it (${inside.length}); re-lay runs and the plot rect to suit`, evidence: ms.map(m => m.id) });
   }
-  // built buildings on no plan block or plot: new plots
-  const seen = new Set<string>();
+  // built buildings on no plan block or plot: new plots, one per old group (a CityMass tile's masses, a run, a landmark: the file's `building` less its
+  // component number), with the box of its footprints and the count
+  const groupOf = (b: OldBuilt['buildings'][number]) => (b.building ?? b.id).replace(/#\d+$/, '').replace(/^(run\d+)\.\d+$/, '$1');
+  const byG = new Map<string, { ids: Set<string>; ev: string[] }>();
   for (const m of orphan) {
-    if (m.side === 'built-only' && !seen.has(m.el)) {
-      seen.add(m.el);
-      const f = bFoot.find(x => x.id === m.el);
-      if (f) ops.push({ op: 'add', path: 'plots', owner: 'datum', to: { rect: bbOf(f.ring).map(r3), from: f.id, kind: f.kind }, why: 'an old-built building on no plan block or plot', evidence: orphan.filter(x => x.el === m.el).map(x => x.id) });
+    if (m.side === 'built-only') {
+      const b = built.buildings.find(x => x.id === m.el);
+      if (!b) continue;
+      const g = groupOf(b), e = byG.get(g) ?? byG.set(g, { ids: new Set(), ev: [] }).get(g)!;
+      e.ids.add(b.id); e.ev.push(m.id);
     } else if (m.side === 'plan-only') ops.push({ op: 'review', path: m.el, owner: 'datum', why: `our footprint has no old-built counterpart within ${MATCH.footprint} m (not on a plan block: a landmark, megastructure or signature)`, evidence: [m.id] });
+  }
+  for (const [g, e] of [...byG].sort((a, b) => (a[0] < b[0] ? -1 : 1))) {
+    const fs = bFoot.filter(f => e.ids.has(f.id));
+    if (fs.length) ops.push({ op: 'add', path: 'plots', owner: 'datum', to: { rect: bbOf(fs.flatMap(f => f.ring)).map(r3), from: g, footprints: fs.length, kind: fs[0]!.kind }, why: `old-built building(s) on no plan block or plot (${fs.length} footprint(s) of ${g})`, evidence: e.ev });
   }
   // kerbs and pavement edges, grouped by the plan road they are nearest (world id road/<id>)
   const roadOf = (m: Mismatch) => { const id = (m.side === 'plan-only' ? m.el : m.near) ?? m.el; return id.replace(/\/island$/, ''); };
@@ -360,7 +491,8 @@ export function patchOf(rep: Report, plan: any, built: OldBuilt, builtPath: stri
     const pid = rid.replace(/^road\//, '').replace(/^circus\//, ''), isC = rid.startsWith('circus/');
     const pr = isC ? undefined : (plan.roads ?? []).find((r: any) => r.id === pid);
     const br = built.roads.find(r => r.id === rid || r.id === pid) ?? nearestBuiltRoad(built, ms[0]!.at);
-    ops.push({ op: 'review', path: isC ? 'circus' : pr ? `roads[id=${pid}]` : rid, owner: 'datum', from: pr ? { w: pr.w, path: pr.path } : undefined, to: br ? { w: br.width, line: simplify(br.line.map(mv)) } : undefined, why: `kerb lines differ by up to ${Math.max(...ms.map(m => m.dev ?? MATCH.far))} m over ${r3(ms.reduce((s, m) => s + (m.length ?? 0), 0))} m`, evidence: ms.map(m => m.id) });
+    const wl = ourRoads.find(r => r.id === rid || r.id === `road/${pid}`), kw = !br && wl && built.kerbs ? kerbWidth(simplify(wl.line), wl.width, built.kerbs.map(k => k.line.map(mv))) : undefined;
+    ops.push({ op: 'review', path: isC ? 'circus' : pr ? `roads[id=${pid}]` : rid, owner: 'datum', from: pr ? { w: pr.w, path: pr.path } : undefined, to: br ? { w: br.width, line: simplify(br.line.map(mv)) } : kw, why: `kerb lines differ by up to ${Math.max(...ms.map(m => m.dev ?? MATCH.far))} m over ${r3(ms.reduce((s, m) => s + (m.length ?? 0), 0))} m`, evidence: ms.map(m => m.id) });
   }
   const pav = out.filter(x => x.kind === 'pavement'), byP = new Map<string, Mismatch[]>();
   for (const m of pav) { const t = targetOf(m.at) ?? 'pavements'; (byP.get(t) ?? byP.set(t, []).get(t)!).push(m); }
@@ -369,11 +501,34 @@ export function patchOf(rep: Report, plan: any, built: OldBuilt, builtPath: stri
   for (const m of out.filter(x => x.kind === 'entrance')) { const t = targetOf(m.at) ?? 'entrances'; (byE.get(t) ?? byE.set(t, []).get(t)!).push(m); }
   for (const [t, ms] of byE) ops.push({ op: 'review', path: t === 'entrances' ? t : `${t}.runs`, owner: 'datum', to: { builtOnly: ms.filter(m => m.side === 'built-only').map(m => m.at), planOnly: ms.filter(m => m.side === 'plan-only').map(m => m.at) }, why: 'doors differ (the old frontage places them; our frontage follows the runs)', evidence: ms.map(m => m.id) });
   for (const m of out.filter(x => ['level', 'deck', 'pavement-top'].includes(x.kind))) fixes.push({ op: 'review', path: m.el, owner: 'latch', why: `${m.kind}: ${m.detail ?? m.side} (levels, decks and pavement tops are our network, kept as planned)`, evidence: [m.id] });
+  // bay fronts that carry no door of ours: the old frontage wants doors there (Datum: the run's doors, or Latch: a door in the old bay)
   return {
     schema: 'suborned.plan-patch/1', plan: planPath, planVersion: plan.version, built: builtPath,
     note: 'Proposed by the plan-match check (tools/world/oldmatch) from the mismatches outside the Handover zone: the old-built world wins there (Sky 2026-10-29). Datum applies or rejects each op in the plan; nothing here edits the plan. Zone mismatches are hard failures, listed, never patched.',
     tolerance: MATCH, ops, builderFixes: fixes, zoneFailures: rep.mismatches.filter(m => m.zone).map(m => `${m.id} ${m.kind} ${m.side} ${m.el} at ${m.at.join(',')}`),
   };
+}
+
+/** The built kerbs either side of a plan road, measured square to its centreline (kerb segments within the plan half-width + 8 m, on the straight parts): the median
+ *  offset each side gives the built kerb-to-kerb width and the centreline's shift (+ = to the left of the path's direction). */
+function kerbWidth(path: V[], w: number, lines: V[][]): { w: number; shift: number; left: number; right: number; segments: number } | undefined {
+  const L: number[] = [], R: number[] = [];
+  for (const line of lines) for (let k = 1; k < line.length; k++) {
+    // each kerb segment, by its midpoint and direction: it counts when it runs along the road (not a side street's kerb) beside a straight of the path
+    const p0 = line[k - 1]!, p1 = line[k]!, q: V = [(p0[0] + p1[0]) / 2, (p0[1] + p1[1]) / 2], dl = Math.hypot(p1[0] - p0[0], p1[1] - p0[1]);
+    if (dl < 1e-6) continue;
+    for (let i = 1; i < path.length; i++) {
+      const a = path[i - 1]!, b = path[i]!, l = Math.hypot(b[0] - a[0], b[1] - a[1]); if (l < 1e-6) continue;
+      const tx = (b[0] - a[0]) / l, ty = (b[1] - a[1]) / l, s = (q[0] - a[0]) * tx + (q[1] - a[1]) * ty, n = -(q[0] - a[0]) * ty + (q[1] - a[1]) * tx;
+      if (s < 4 || s > l - 4 || Math.abs(n) > w / 2 + 8) continue;
+      if (Math.abs(((p1[0] - p0[0]) * tx + (p1[1] - p0[1]) * ty) / dl) < 0.9) continue;
+      (n > 0 ? L : R).push(Math.abs(n));
+    }
+  }
+  if (L.length < 3 || R.length < 3) return undefined;
+  const med = (xs: number[]) => { const s = [...xs].sort((a, b) => a - b); return s[Math.floor(s.length / 2)]!; };
+  const l = med(L), r = med(R);
+  return { w: r3(l + r), shift: r3((l - r) / 2), left: r3(l), right: r3(r), segments: L.length + R.length };
 }
 
 function nearestBuiltRoad(b: OldBuilt, p: V) {

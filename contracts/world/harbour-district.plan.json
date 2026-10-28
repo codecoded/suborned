@@ -2,7 +2,7 @@
  "schema": "suborned.plan/1",
  "id": "harbour-district",
  "name": "Harbour District",
- "version": "0.5.3",
+ "version": "0.5.4",
  "date": "2026-10-29",
  "status": "brief 075 remap (Sky 2026-10-28: \"why can't we just remap the world around d handover using old buildings\"): the old DecoKit town transcribed by tools/plan/oldtown/transcribe.ts from /Users/sky/Projects/the-suborned/game/Assets/TheSuborned/Editor/DecoKit (sources sha256 in oldtown.sources), the Handover zone kept byte for byte. transit from A04 run r008, accepted; world program brief 004; skyline and threaded sky rail brief 007 A; skyline text (why, crownWhy, conceptTiles, station kitWhy) from skyline run r011, accepted; play-street height cap brief 066 (Sky 2026-10-26)",
  "frame": {
@@ -4705,7 +4705,7 @@
    "use": "commercial",
    "area": "crown",
    "rect": [
-    -54,
+    -50,
     -10,
     9,
     144
@@ -4781,7 +4781,7 @@
    "area": "gardens",
    "rect": [
     -156,
-    -54,
+    -50,
     9,
     50
    ],
@@ -4826,24 +4826,32 @@
      50
     ],
     [
-     -54,
+     -50,
      50
     ],
     [
-     -54,
-     232
-    ],
-    [
-     -121,
-     232
-    ],
-    [
-     -121,
-     244
+     -50,
+     144
     ],
     [
      -54,
-     244
+     144
+    ],
+    [
+     -54,
+     247
+    ],
+    [
+     -121,
+     247
+    ],
+    [
+     -121,
+     259
+    ],
+    [
+     -54,
+     259
     ],
     [
      -54,
@@ -8525,11 +8533,11 @@
    "pts": [
     [
      -115,
-     238
+     253
     ],
     [
      -54,
-     238
+     253
     ]
    ]
   },
@@ -8965,10 +8973,10 @@
     -130,
     124
    ],
-   "r": 31,
+   "r": 72.5,
    "kit": "SphereStation",
-   "top": 80,
-   "kitFit": "brief 006 B (rev. Aster review 2026-10-12): a 120 m sphere on six lattice legs, 143 × 132 × 188 m as built, scaled uniformly × 0.425 (top 80 / 188.2 binds): sphere Ø 51 with its centre at 46, leg feet within r 28.8, service towers within r 30. r 40 → 31 so the disc is the ground the piece stands on (fit foot 2r = 62 ≥ 143.3 × 0.425 = 60.9) and the 9 m ring it left empty goes back to Sphere Gardens. Not scaled up: a Ø 80 sphere needs × 0.67, top 125, over the Skyport Tower (108) and the hotel (106); × 0.56 (legs filling Ø 80) tops 105, a third mark at the hotel's height. A machine with no storeys or doors, so uniform scale is honest",
+   "top": 188.4,
+   "kitFit": "brief 075 swap (Latch, cc903ae0): the old builders stand the SphereStation at ×1 (DecoKitStreetSkyline Put(\"SphereStation\", (-130, 0, 330), 20), 188 m), so the plan does too (Sky 2026-10-29: every landmark at its old height): the kit as built, 143.3 × 132 × 188.2 m (six lattice legs from r 58–67 at the ground to r 53–61 at 24 m, a ring girder r 54 at 34 m, service towers to r 72.4), × 1.0. r 72.5 = the ground it stands on (fit foot 145 ≥ 143.3); top 188.4 = 188.2 on the 0.18 pavement, under rivalMax 200 and more than 150 m from the quay (the harbour band does not bind). Was × 0.425 (top 80, r 31; Aster review 2026-10-12)",
    "oldPut": {
     "kit": "SphereStation",
     "at": [
@@ -8979,7 +8987,8 @@
     "yaw": 20,
     "scale": 1,
     "src": "p.Put(\"SphereStation\", new Vector3(-130f, 0f, 330f), 20f);"
-   }
+   },
+   "scale": 1
   },
   {
    "id": "skylon",
@@ -9603,8 +9612,18 @@
        0
       ],
       [
-       -95,
+       -52,
        0,
+       70
+      ],
+      [
+       -52,
+       156,
+       70
+      ],
+      [
+       -95,
+       198,
        70
       ],
       [
@@ -9649,12 +9668,12 @@
      "path": "trunk",
      "at": [
       -95,
-      238
+      253
      ],
      "length": 50,
      "fronts": "crown-walk",
      "kit": "SkyRailStation_Twin",
-     "kitWhy": "open-air on S1's north leg beside the old SpaceHQ (its west face x -54), north–south; banks (stairs, escalators, lifts to the deck 9.43 and the concourse 24) on Sphere Park either side of the line; the old HQ is the old builders' piece and carries no beam"
+     "kitWhy": "open-air on S1's north leg beside the old SpaceHQ (its west face x -54), north of the Sphere, north–south; banks (stairs, escalators, lifts to the deck 9.43 and the concourse 24) on Sphere Park either side of the line; the old HQ is the old builders' piece and carries no beam"
     }
    ]
   },
@@ -9875,6 +9894,7 @@
    "Records Precinct: two vehicle gates (Rocket, Satellite) to seal against cars, but on foot the crew can leave across any street. Is the escape on foot meant to be open like that, with the police sealing stations rather than streets?"
   ],
   "history": [
+   "2026-10-29 (Datum, brief 075 swap: network; version 0.5.4): Latch's old-built town (cc903ae0) stands the old SphereStation at ×1 (188 m, legs to r 67, service towers to r 72.4) and S1's north leg on x -95 ran through its leg ring. The Sphere landmark is now the old ×1 (r 72.5, top 188.4; was ×0.425, r 31, top 80), and S1 goes round its east side: east on Circus Road's line past Orbit Gardens station, north (R 70) onto x -52 (78 m off the Sphere's centre, so pylons keep pylonClear.landmark outside its disc), then an S of two R 70 curves (corners (-52, 156) and (-95, 198)) between the Sphere and the west gate tower's shaft onto x -95 north of the Sphere. Crown Circus station moves north 15 m on that straight to (-95, 253) (platforms y 228..278), Crown Walk with it (y 253) and Sphere Park's slot. Sphere Park and the north lawn take x -54..-50 of west-wall-n's back yard for y 9..144 (the old W4 wall's back is at x -46), so the line and its pylons stand on park (S-C1, S-P2). S1 gardens → Crown Circus 304 → 374 m (run 25 → 31 s). T1 is unchanged: its streets (Crown Road, Sunset Way, Market Street) are the Handover's mission streets (official 1124, getaway 447, rivals 593) and its stops are kept, so the old pieces give way to Market Street at the Southside seam (briefs/075/notes.md, Swap: network). Handover zone unchanged (overlay: C-0, C-3, M-1, M-2, M-3, V-1, W-1 identical). The 'ours' form keeps S1 on x -95 (data only, through the ×1 Sphere: it would need the same detour if Sky picks it).",
    "2026-10-29 (Datum, brief 075 remap step 2, Aster; version 0.5.3): the SpaceHQ switch, plan.spacehq.form (Sky's call; default 'old'). 'old': the old gold SpaceHQ as the old reel stood it (DecoKitStreetSkyline: the kit SpaceHQ × 1.35 at old (0, 450)), ground x -54..54, y 178.12..298, tip 340.2 = standards.skyline.dominant (rivalMax 200 kept; SK-1 exempts the dominant from the harbour band, so no exception), Crown Forecourt to the grand stair's foot (y 178.12), and S1's third station, Crown Circus, on its north leg beside it (x -95, y 238; banks, stairs and lifts on Sphere Park). 'ours': the SpaceHQ_Portal remake (252) at (0, 244) with S1 east on y 244 through its drum and the station inside. Both forms in plan.spacehq.forms; tools/plan/oldtown/transcribe.ts writes the chosen one. Handover zone untouched; Pulse's journeys kept (no journey rides the new run). Notes: briefs/075/notes.md 'SpaceHQ switch'.",
    "2026-10-29 (Datum, brief 075 review, Aster relaying Sky; version 0.5.2): (1) the old asphalt road back (Sky: overriding 'keep powdblue'): roads.finish.set asphalt, road-asphalt = the old DK_Asphalt_Road (Vela's port, #817B75, 16 m repeat), dashes 0.12 m, 2 m on 4 m off; the light ribbon kept on every class (GDD §14/§15), so SF-24 holds unchanged. (2) The Skyport reachable (Sky: 'we need the skytrak to get here'): S2 Harbour Line from the south edge over the water on x 117, Harbour station on the Market Pier's new landing stage (x 96..140, y -196..-106; T1/Crown Circus interchange 137 m), a terminal loop (R 40) round the Skyport Tower with the Skyport station on its west leg over the new Skyport apron (x 96..140, y ±30), 41 pylons in water and on the quays. (3) Every structure reachable (RCH-1 33/33): the Skyport apron runs 8 m onto the tower's caisson, the Market Pier 6 m onto the liner berth's. The Handover zone, its routes (M-1), escape walks (W-1) and V-1 unchanged; Pulse's journeys kept (T1 and S1 unchanged; S2's runs added, its journeys Pulse's). Notes: briefs/075/notes.md 'Remap: Skyport and reach'.",
    "2026-10-28 (Datum, brief 075 remap follow-up, Aster; version 0.5.1): no bare sand in the district outside water, parks and plazas. The first remap left the strip west of Sunset Way (x -460..-352) as the beyond hatch, which the world draws as bare ground. It is now West Row (area westrow): an access street on x -416 from Circus Road (gate west-row-gate) to the south plot line, 8 m lanes opposite the seams of Sunset Way's east-side plots and at equal spans of at most 140 m, ten plots fitted as old-grammar blocks (28 m solid on the sheet-edge side, 46 m open-court on Sunset Way, the corner block on Circus Road), Western Park run on north to Crown Road; westend and sphere areas start at Sunset Way's west kerb; the beyond hatch keeps only the sheet's slivers. Rule-based in tools/plan/oldtown/transcribe.ts (WR); the Handover zone, its streets, plots, gates, routes and site are unchanged",
@@ -9961,7 +9981,7 @@
      {
       "from": "S1/gardens",
       "to": "S1/crown-circus",
-      "sec": 25
+      "sec": 31
      }
     ]
    },
@@ -10150,8 +10170,18 @@
          0
         ],
         [
-         -95,
+         -52,
          0,
+         70
+        ],
+        [
+         -52,
+         156,
+         70
+        ],
+        [
+         -95,
+         198,
          70
         ],
         [
@@ -10196,12 +10226,12 @@
        "path": "trunk",
        "at": [
         -95,
-        238
+        253
        ],
        "length": 50,
        "fronts": "crown-walk",
        "kit": "SkyRailStation_Twin",
-       "kitWhy": "open-air on S1's north leg beside the old SpaceHQ (its west face x -54), north–south; banks (stairs, escalators, lifts to the deck 9.43 and the concourse 24) on Sphere Park either side of the line; the old HQ is the old builders' piece and carries no beam"
+       "kitWhy": "open-air on S1's north leg beside the old SpaceHQ (its west face x -54), north of the Sphere, north–south; banks (stairs, escalators, lifts to the deck 9.43 and the concourse 24) on Sphere Park either side of the line; the old HQ is the old builders' piece and carries no beam"
       }
      ]
     },
@@ -10534,7 +10564,7 @@
    "The plan's S1 (Sphere Line) is not an old line: the generator lays station banks only for east-west lines on y 0 (the circus axis), so S1 runs from the West End along Circus Road (Western Park and Orbit Gardens stations), north past the Sphere's east side (x -95) and off the sheet; it joins T1 at Sunset Terraces. S1 does not reach the Skyport (a station there would have to be 200–500 m from another on y 0, and the circus's 14 m island takes no pylon): S2 does (brief 075 review). The old lines stay planned data:",
    "The old lines are not in plan.skyrail in this draft: the generator lays station banks for east-west lines only and the old lines run north-south (the main loop over the boulevard's west promenade, x -13; the harbour line on the quay, x 88). S1 (Sphere Line: Circus Road, north on x -218, a loop by the Sphere) and S2 (Harbour Line: up the quay, into the Skyport Tower, round the pad) are planned in oldtown.skyrail.planned with radii, spans and stations, ready for plan.skyrail once the generator lays north-south banks (Splice). The old boulevard leg also needs a pylon zone on the promenade (pylonZones has none) and is drawn as data only",
    "The harbour sky rail (planned) keeps the old quay leg (x 88) and Harbour station (old (88, 110) → plan (88, -96), here 44 m south at -140 so the station spacing to the Skyport holds, 200 m); the old loop round the Skyport (R 48) becomes the plan's line into the Skyport Tower's portal (the tower 15 m east of the old Skyport, x 170 → 170, so the R 70 turn off the quay ends before the portal) and the loop round the pad beyond; the old sea leg (x 122) is not built (the line ends on its loop)",
-   "The Sphere stands at the old SphereStation (old (-130, 330) → plan (-130,124), yaw 20) at the plan's ×0.425 (top 80, Aster review 2026-10-12); the old town stood it at ×1 (188 m)",
+   "The Sphere stands at the old SphereStation (old (-130, 330) → plan (-130,124), yaw 20) at the old ×1 (r 72.5, top 188.4; brief 075 swap: the old builders stand it at ×1, and Sky's heights rule keeps every landmark at its old height); was ×0.425 (top 80, Aster review 2026-10-12)",
    "The Skyport is the old Skyport_Tower piece at the old position (plan (170, 0)) as a landmark at 108 m (× 0.94), not today's Skyport Tower megastructure: that portal tower needs a sky line and its station through it, and no line the generator can build reaches the pier (S2 planned); the aircar pad landmark goes (the tower carries the old discs)",
    "The liner berth closes old Market Street's vista at the Market Pier's head (old LinerDock at x 270 on the pier's axis; plan (270,-138), the pier 152 m long)",
    "The gate towers (old DiscTower pair at x ±44, z 372) stand at the old 156.6 (× 1.0, tip 156.8): within 150 m of the quay, so standards.skyline.harbour.exceptions names the pair (brief 075 remap, Aster); every other tip there keeps 108",

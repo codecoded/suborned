@@ -19,6 +19,7 @@ export type OldBuilt = {
     commit?: string; // git HEAD the scene was built at
     heights?: string; // the height rule in force (brief 075: flagships at old height, domestic ~3 storeys)
     at?: string; // ISO time of export
+    export?: string; // the world export the swap composited (source and sha256)
   };
   frame: { units: 'm'; offset: V };
   /** The walk levels the scene was built to (plan standards.levels.list: street 0 / walk 0.18, deck 9.43, concourse 24). Must match the plan exactly. */
@@ -32,8 +33,11 @@ export type OldBuilt = {
     origin: 'old' | 'ours'; storeys?: number; piece?: string;
   }[];
   /** Every door a person can use at street or deck level: the shopfront/lobby door's centre on the wall line, z = the floor it opens onto. normal = outward. */
-  entrances: { id: string; building: string; at: V; z: number; normal?: V; w?: number; kind?: 'lobby' | 'shop' | 'service' | 'public' | 'official' | 'station' | 'other' }[];
-  /** Carriageways: centreline (dense enough that a 0.5 m kerb check holds: a vertex every <= 2 m on curves), kerb-to-kerb width, carriageway z. */
+  entrances: { id: string; building: string; at: V; z: number; normal?: V; w?: number; kind?: 'lobby' | 'shop' | 'service' | 'public' | 'official' | 'station' | 'other' | 'bay' }[];
+  // kind 'bay' (brief 075, Latch's swap: the old builders model no doors): a ground-storey bay front standing in for doors, `at` its facade centre, `normal`
+  // outward, `w` its width (both required). Matched as "a door of ours lies on this bay" (within w/2 + 1 m along, 1 m across, same level); a building none of
+  // whose bays carries a door of ours is built-only. Outside the Handover zone only; inside it, our real doors (zone 'ours').
+  /** Carriageways: centreline (may be empty when `kerbs` are given: the kerb lines are then the built kerbs, both ways) (dense enough that a 0.5 m kerb check holds: a vertex every <= 2 m on curves), kerb-to-kerb width, carriageway z. */
   roads: { id: string; line: V[]; width: number; level: number }[];
   /** Roundabouts: the carriageway's outer kerb radius and the island's kerb radius. */
   circuses?: { id: string; centre: V; radius: number; islandRadius: number; level: number }[];
@@ -43,4 +47,11 @@ export type OldBuilt = {
   pavements: { id: string; ring: V[]; top: number }[];
   /** Raised walkways at deck and concourse level (our network, kept by the swap). z = walk top. */
   decks?: { id: string; ring: V[]; z: number; level: string }[];
+  /** Where the ground (kerbs, pavements) was laid piece by piece: kerb and pavement-edge comparisons run inside these rings only (the old builders lay stones
+   *  only in the core; beyond it the district is massing on flat ground). Missing = everywhere. */
+  coverage?: { id: string; ring: V[] }[];
+  /** 'ours': the Handover zone (plan standards.blocks.zone) is not in the file; the check takes the zone from our export and fails anything of the file's
+   *  standing in it. Missing = the zone is in the file (as built). */
+  zone?: 'ours';
+  notes?: string[];
 };

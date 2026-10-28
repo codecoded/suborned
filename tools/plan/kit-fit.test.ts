@@ -37,7 +37,7 @@ const tips = (by: Record<string, number>): Plan => {
 test('K-1 passes on the plan', () => { const k = run(); expect(k.id).toBe('K-1'); expect(k.ok).toBe(true); });
 
 test('K-1 fails a landmark piece scaled past its disc, a gateway on the beam and a tower tip over crownTip', () => {
-  const w = structuredClone(v.w); w.landmarks.find(l => l.id === 'landmark/sphere')!.kit!.scale = [0.6, 0.6, 0.6];
+  const w = structuredClone(v.w); w.landmarks.find(l => l.id === 'landmark/sphere')!.kit!.scale = [1.2, 1.2, 1.2]; // past its disc (r 72.5 at × 1 since brief 075's swap: 143.3 × 1.2 > 145)
   expect(run(plan, { ...v, w }).detail).toContain('landmark/sphere');
   const p: Plan = structuredClone(pre), g = (p.megastructures!.find(m => m.id === 'skyport-tower') as any).gateway; // the pier tower: pre-remap
   g.feet[0] = [479.1, 485.9, 0.5, 7];

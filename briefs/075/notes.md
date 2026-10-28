@@ -1116,3 +1116,64 @@ Sky: "could we bring the civic block into looking more aligned without ruining t
   - `bun run sim:site`: sim/data byte-identical (8 files, sha256 compared before and after).
   - `git diff` on kit.collide.json, civic-block.json and sim/data: empty.
   - `bun run collide --check`: exit 1 on **SpaceHQ only**. This predates the restyle: Splice's adoption (5bb7109d) has no volumes yet. The fix is `bun run collide --only SpaceHQ`, which adds one entry and changes no existing hash. It is not run here because kit.collide.json is locked for this task; Aster to route.
+
+## Swap: network (Datum, brief 075 remap step 2, 2026-10-29) · oldbuild/READY-network-datum · for Latch
+**Plan 0.5.4, sha256 `aa27b31df1722a72699e3d6dc3e4c472fe4c6eb932699226d082a300e48687c7`** (live = draft `harbour-district.oldtown.plan.json`; `bun tools/plan/oldtown/transcribe.ts --out <plan>` reproduces it byte for byte; the SpaceHQ old → ours → old round trip is byte for byte). Read against Latch's swap (cc903ae0, swap-rule.json). Splice's plan-patch.json had not landed, so no block or kerb op from it is applied here.
+
+**S1 and the Sphere (changed).**
+- The old builders stand the SphereStation at ×1, as the old kit piece: legs r 58–67 at the ground and 53–61 at beam height, a ring girder r 54 at 34 m, service towers to r 72.4. S1's old north leg on x -95 ran 35 m from the centre, through the leg ring. Measured on the old fbx, the old line came within 0.0 m of the mesh; the new line comes no closer than 5.8 m.
+- The plan's Sphere landmark is now the old ×1: c (-130, 124), r 72.5, top 188.4, scale 1. It was ×0.425 (r 31, top 80). This is Sky's rule that every landmark keeps its old height, and the derive now keeps pylons outside the real disc.
+- New S1 'old' path (`skyrail[S1].paths.trunk`): `[-460,0] → [-52,0 R70] → [-52,156 R70] → [-95,198 R70] → [-95,300]`.
+  - It runs east on Circus Road's line past both stations (Western Park, Orbit Gardens: unchanged).
+  - It turns north over the Gardens Gate and the north lawn onto x -52, 78 m off the Sphere's centre.
+  - An S of two R 70 curves takes it between the Sphere and the west gate tower's shaft onto x -95, north of the Sphere. That shaft is r 11 below 40 m; the disc is at 112–136 m. The beam clears the shaft by 6.4 m.
+  - From there it runs off the sheet north. Every radius is ≥ 70.
+- **Crown Circus station** moves north 15 m on the straight to (-95, 253): platforms y 227.8..277.8, north–south, `SkyRailStation_Twin`.
+  - Crown Walk moves with it to y 253 (x -115 → -54, the HQ's west face), and so does Sphere Park's slot (y 247..259).
+  - The banks keep the same layout, 15 m further north:
+
+  | side | stair tower | run A (to 9.43) | run B (to 24) | lift |
+  |---|---|---|---|---|
+  | west (l) | (-106.25, 263.6) | x -103.85, y 271.8 → 292.8 | x -108.25, y 298.6 → 268.4 | (-111.15, 260.0) |
+  | east (r) | (-83.75, 263.6) | x -86.15, y 271.8 → 292.8 | x -81.75, y 298.6 → 268.4 | (-78.85, 260.0) |
+
+  - Gardens → Crown Circus is now 374 m (was 304). The timetable run goes from 25 to 31 s; headways are unchanged (the Handover's 0:00 phase holds).
+- **Pylons:** S1 now has 31 (was 26); 72 across the network. Take the positions from the export (`transit.skyRail[].pylons`). Near the Sphere they stand at (-52, 82.4), (-52, 111.6), (-52.1, 129.5), (-54.2, 143.8), (-68, 171.1), (-79.9, 184.1) and (-89.1, 199.4), all at least 77.8 m off its centre.
+  - S1 pylons 13 and 14 no longer stand on the old west terrace's north stub, so the 4 StreamBay_3 at x -116, y 9..27 stay down only because of the plan's lawn cut (below).
+  - Over the Gardens Gate, pylons 12 (-125.5, 0) and 13 (-107.6, 1.5) stand just either side of the old terrace strip (x -124..-110).
+- **Park edge:** Sphere Park and the north lawn take x -54..-50 of west-wall-n's back yard for y 9..144, so the line and its pylons stand on park (S-C1, S-P2). The old W4 wall's back is at x -46, so no old piece moves. The beam is 6 m off those backs and 4.1 m off CornerTower_12.
+
+**What Latch needs to do in the old-built scene:**
+1. Lay S1's beam and pylons from the new export, not the old x -95 leg. The Sphere stands as the old piece; nothing round it is cut.
+2. Place Crown Circus station and its banks at the new place (y 253). Crown Walk is at y 253.
+3. Cut the old west terrace (DecoKitCityBlocks garden-square wall at x -110) where the plan has the Gardens Gate (y -9..9) and the north lawn (y 9..50). This is the plan's deliberate seam: S1 and the Gardens Gate cross there. Today StreamBay_3/3W at y -12..6 and the stub at y 30..46 stand under the beam (5 m below its underside) and on the gate.
+4. Export bug: in swap/built.json the SphereStation ring is about 2× the piece (x -276..16, y -20..268; the mesh is r 72.4). That ring made the "flagship clash" in the log, and it will throw off plan-match.
+5. Pylon 14 (-90.7, 7.4) stands on the old basin's terrazzo ring, 1.3 m off its coping (OT-2 passes). It is acceptable as is; say if it reads badly at play zoom and I'll move it.
+
+**T1: not re-routed, and why.**
+- T1's streets are the Handover's mission streets. The official arrival (1124 m) is Crown Road → Sunset Way → Market Street; the getaway (447 m) is Market Street → Sunset Way; the rivals' route (593 m) uses Market Street x -60..0. Market Street also carries the zone's gates.
+- Every stop is kept (terraces, lamplight, rocket on Sunset Way and Market Street).
+- The old town has no street west of the Boulevard: there it is procedural CityMass on a 70 m grid with gaps, not roads. In the Southside the old blocks stand across Market Street's line.
+- Moving the tram off these streets means dropping or moving stops (N-R1, N-C1 and the S1 interchange at Sunset Terraces depend on them) or moving Handover streets (M-1 timings). The brief rules both out.
+- So T1's path is unchanged, and the clashes Latch found are seams, fixed on the old side:
+  1. **Market Street, Southside seam (x -158..0).** The carriageway is kerb to kerb y -419..-401. The plan's plots start at the kerbs: ss1 and orbit-gardens to the north, lantern-court and ss3 to the south.
+     - Standing in it today: the old SS1's north end (StreamCorner_3 at (-32.8, -407.2) and (-11.2, -407.2), StreamBay_3 at y -410..-415), RL1's and RL2's corners (x -146..-68, y -400..-419) and their palms, cypress and lamp.
+     - These 15 bays and the corners give way to Market Street, as at the zone edge.
+     - Better than a cut: shift those old blocks onto their plan plots when Splice's plan-patch lands (block ops). I'll apply its ops to the plan then.
+  2. **West of the Southside** (Sunset Way x -340, Crown Road y 280, Market Street x -340..-158, plus Circus Road, West Row and Lamplight Lane). The old ground has no road deck there.
+     - Lay our road from the plan: the plan's finish is the old DK_Asphalt_Road, with kerbs and pavements.
+     - Keep the old CityMass off those streets with its own mechanism: in `DecoKitCityMass.Cap`, return 0 for a cell whose lot (±28.7 m with jitter) meets a plan road's corridor (kerb to kerb plus the pavement), a station bank or a stop.
+     - That stands down the 21 CityMass parts the tram removed (x -333..-352, the x -350 column) and the 4 cut by S1's bank and newsstands at y -30, rather than cutting them after the build.
+- The boulevard leg (x 0) is the old line's own street, and the old rails stand there.
+
+**S2 (unchanged in the plan): builder fixes.**
+- S2 pylon-14 at (117, -140) stands on the Market Pier's landing stage. A pylon on a pier stands on the deck; it must not cut the pier mesh (swap-rule: "mesh:Harbour/Market pier" gave way).
+- The Skyport station's platforms are at 22.8–24 m. They do not clash with the Skyport pier, its piles or the quay wall at the ground, which the swap cut in plan. Compare heights.
+
+**Evidence (2026-10-29):**
+- `bun tools/plan/cli.ts`: exit 0, 158 PASS. With `--overlay tools/missions/handover/overlay.ts`: exit 0, 163 PASS.
+- Overlay diff against the 0.5.3 plan: only S1 counts, the pylon totals (67 → 72) and item counts change. C-0, C-3, M-1 (447 / 1124 / 126 / 593), M-2, M-3, V-1, W-1 and ZK-1 are identical.
+- RCH-1 39/39, L-1, L-5, S-R1, S-P1 (longest 30.9 on a disc span), S-P2, S-S1, S-S2 (204, 374), S-C1, N-R1, N-C1, SK-1 (sphere 188.4 under 200), SK-T1/T2/T3, SF-18 72/72, NP-1, K-1 all pass.
+- `bun run world` exit 0. `bun run sim:site` left sim/data byte-identical. `bun run cover` changed only the plan hash in civic-block.cover.json, and `--check` passes.
+- `bun run typecheck` is clean. `bun run test tools/plan tools/world tools/missions tools/sim`: 791 pass, 1 skip after one fixture fix (kit-fit.test.ts: the "scaled past its disc" case now uses ×1.2, since ×0.6 fits the ×1 disc).
+- Map: briefs/075/oldbuild/network-s1.png. The gold box in it is the 2× Sphere ring from built.json; read the line against r 72.5.

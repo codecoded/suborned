@@ -86,9 +86,14 @@ test('a building missing from the old build is plan-only; one on no plan block o
   const b = self(); b.buildings = b.buildings.filter(x => x.building !== 'bld/east-wall-s/3');
   const gone = run(b);
   expect(gone.r.mismatches.some(m => m.kind === 'footprint' && m.side === 'plan-only' && m.el.startsWith('bld/east-wall-s/3'))).toBe(true);
-  const c = self(); c.buildings.push({ id: 'old/kiosk', ring: [[600, 600], [610, 600], [610, 610], [600, 610]], base: 0, height: 6, kind: 'other', origin: 'old' });
+  const c = self(); c.buildings.push({ id: 'old/kiosk', ring: [[350, -500], [360, -500], [360, -490], [350, -490]], base: 0, height: 6, kind: 'other', origin: 'old' });
   const add = run(c).patch.ops.find(o => o.op === 'add');
   expect((add?.to as { from: string }).from).toBe('old/kiosk');
+  // beyond the plan's sheet the old build is backdrop: not compared, counted as not compared
+  const far = self(); far.buildings.push({ id: 'old/backdrop', ring: [[600, 600], [610, 600], [610, 610], [600, 610]], base: 0, height: 6, kind: 'other', origin: 'old' });
+  const fr = run(far).r;
+  expect(fr.mismatches).toEqual([]);
+  expect(fr.uncovered['footprint-built (beyond the sheet)']).toBeGreaterThan(30);
 });
 
 test('pavement tops are exact: a slab built at 0.20 where ours is 0.18 fails', () => {
