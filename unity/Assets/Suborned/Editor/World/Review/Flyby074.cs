@@ -17,7 +17,7 @@ namespace Suborned.World.Review
     /// still at both ends) through time-stamped eye / look keys, the view direction splined (not the look point), fov 58, shadow distance
     /// clamp(eye height x 8, 120, 1200), as DecoKitFlyby did. Keys in a scratch json (never the shipped flyby.json).
     ///   -executeMethod Suborned.World.Review.Flyby074.Cli -path &lt;json&gt; -out &lt;mp4 or dir&gt; [-colourways off] [-storyboard 2]
-    ///   [-from s] [-to s] [-ss 2] [-stills t1,t2,..] [-lens on] [-life on [-lifeT0 s] [-lifeFile json]]
+    ///   [-from s] [-to s] [-ss 2] [-stills t1,t2,..] [-lens on] [-life on [-lifeT0 s] [-lifeFile json]] [-master on|off] [-crf 14]
     /// -life on (brief 075): Pulse's presentation life (traffic, trams, people) posed each frame at presentation time lifeT0 + reel time.
     /// -colourways off: every renderer's tinted kit material swapped back to its base (KitColourways.Base) in memory before the render;
     /// the scene is never saved. -storyboard s: 960x540 stills every s seconds plus a clearance report instead of the video.</summary>
@@ -106,9 +106,9 @@ namespace Suborned.World.Review
                 float from = F("-from", 0f), to = Mathf.Min(F("-to", duration), duration);
                 int frames = Mathf.RoundToInt((to - from) * fps) + 1;
                 Directory.CreateDirectory(Path.GetDirectoryName(outArg));
-                var scale = ss > 1 ? $"vflip,scale={W}:{H}:flags=lanczos" : "vflip";
-                var psi = new ProcessStartInfo("/opt/homebrew/bin/ffmpeg",
-                    $"-hide_banner -loglevel error -y -f rawvideo -pix_fmt rgb24 -s {W * ss}x{H * ss} -r {fps} -i - -vf {scale} -c:v libx264 -preset slow -crf 18 -pix_fmt yuv420p -r {fps} -movflags +faststart \"{outArg}\"")
+                // brief 075 item 6: ReviewVideo's settings (CRF 14 tune grain yuv420p BT.709 share copy, -master on adds the yuv444p CRF 8 master)
+                bool master = Arg("-master", "on") == "on";
+                var psi = new ProcessStartInfo(ReviewVideo.Ffmpeg, ReviewVideo.Args(W * ss, H * ss, W, H, fps, outArg, master, (int)F("-crf", ReviewVideo.ShareCrf)))
                 { UseShellExecute = false, RedirectStandardInput = true, RedirectStandardError = true, CreateNoWindow = true };
                 var log = new StringBuilder();
                 using var ff = Process.Start(psi);

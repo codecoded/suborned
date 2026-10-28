@@ -12,7 +12,7 @@
       270
     ],
     "ffmpeg": "/opt/homebrew/bin/ffmpeg",
-    "crf": 25,
+    "crf": 14,
     "preset": "slow"
   },
   "defaults": {

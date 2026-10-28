@@ -46,7 +46,7 @@ namespace Suborned.World.Review
         public readonly List<Key> Keys = new();
         public int Fps, Width, Height, Quality, ContactWidth, ContactHeight;
         public string Ffmpeg; // render.ffmpeg: the encoder that writes flyby.mp4 (null: frames only)
-        public int Crf = 18; public string Preset = "medium"; // render.crf / render.preset: H.264 rate control (a higher CRF = a smaller file)
+        public int Crf = ReviewVideo.ShareCrf; public string Preset = ReviewVideo.Preset; // render.crf / render.preset: H.264 rate control (a higher CRF = a smaller file)
         public float Duration;
         public float Aspect => (float)Width / Height;
 

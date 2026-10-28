@@ -81,8 +81,7 @@ namespace Suborned.World.Review
             {
                 var exe = File.Exists(path.Ffmpeg) ? path.Ffmpeg : "ffmpeg";
                 var psi = new System.Diagnostics.ProcessStartInfo(exe,
-                    $"-hide_banner -loglevel error -y -f rawvideo -pix_fmt rgb24 -s {path.Width}x{path.Height} -r {path.Fps} -i - " +
-                    $"-vf vflip -c:v libx264 -preset {path.Preset} -crf {path.Crf} -pix_fmt yuv420p -r {path.Fps} -movflags +faststart \"{Mp4}\"")
+                    ReviewVideo.Args(path.Width, path.Height, path.Width, path.Height, path.Fps, Mp4, false, path.Crf, path.Preset))
                 { UseShellExecute = false, RedirectStandardInput = true, RedirectStandardError = true, CreateNoWindow = true };
                 try { ffmpeg = System.Diagnostics.Process.Start(psi); }
                 catch (Exception e) { throw new InvalidOperationException($"World: flyby: cannot start ffmpeg `{exe}` ({e.Message}); set render.ffmpeg in flyby.json", e); }
