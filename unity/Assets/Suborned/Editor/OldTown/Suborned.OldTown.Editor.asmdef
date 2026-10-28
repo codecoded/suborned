@@ -1,0 +1,14 @@
+{
+    "name": "Suborned.OldTown.Editor",
+    "rootNamespace": "Suborned.OldTown.Editor",
+    "references": ["Suborned.OldTown", "Unity.InputSystem", "Unity.RenderPipelines.Core.Runtime", "Unity.RenderPipelines.Core.Editor", "Unity.RenderPipelines.Universal.Runtime", "Unity.RenderPipelines.Universal.Editor", "Unity.Burst", "Unity.Collections", "Unity.Mathematics"],
+    "includePlatforms": ["Editor"],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": false,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
