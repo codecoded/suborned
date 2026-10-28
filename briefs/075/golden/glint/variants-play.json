@@ -1,0 +1,11 @@
+[
+ {
+  "name": "p-base",
+  "lens": "briefs/075/golden/glint/lens/base.json",
+  "play": true
+ },
+ {
+  "name": "p-g1",
+  "play": true
+ }
+]

@@ -74,7 +74,7 @@ namespace Suborned
         /// <summary>Glint 2026-10-24 (Glyph's review of 0.2.99): the sun's SHADOW STRENGTH by day (1 = a shadow takes the whole sun out; below 1 the sun still fills the shade in its own warm colour, so shaded cream stays cream and shaded enamel stays powder blue; the sunlit side does not change). 0 or absent = the scene's own.</summary>
         [Serializable] public sealed class Sunp { public float shadowStrength; }
         /// <summary>Glint 2026-10-24: the long tier's exposure as a DELTA in EV on the scene grade's own post exposure (0 = none): the plaza and the pale roofs blow out in the flyby.</summary>
-        [Serializable] public sealed class Longp { public float exposureDelta; }
+        [Serializable] public sealed class Longp { public float exposureDelta, saturationDelta, contrastDelta; } // saturation / contrast deltas: brief 075 golden view (Glint 2026-10-28), on the scene grade's own; 0 = none
         [Serializable] public sealed class Bandp { public string resource; public float minDeg, maxDeg, gain, opacity; }
         // ---- the evening phase (Glint 2026-10-24; LightPhase.SetEvening). All optional: a lens.json with no `evening` leaves SetEvening as it was (the day look with the dusk lights) ----
         /// <summary>The evening sun: a low warm sun with long shadows. pitch/yaw are the light's own Euler angles (as light.json sun: pitch 38 yaw 330 by day); shadowStrength is the Light's, replacing sun.shadowStrength.</summary>
@@ -126,7 +126,7 @@ namespace Suborned
         sealed class Rig { public ColorAdjustments adj; public WhiteBalance wb; public ShadowsMidtonesHighlights smh; public Vignette vig; }
         Rig rigPlay, rigFollow, rigLong;
         Volume vNight; LiftGammaGain nightLift;
-        float duskK = -1f, playSatValue, longExposureDelta;
+        float duskK = -1f, playSatValue, longExposureDelta, longSatDelta, longConDelta;
         Light sunLight; float sunStrength0 = -1f; int sunSearched;
         LensFlareComponentSRP flare; LensFlareDataSRP flareData; Texture flareStarburst;
         Texture2D farBand; bool farBandTried;
@@ -192,7 +192,7 @@ namespace Suborned
             if (d.farBand == null || string.IsNullOrEmpty(d.farBand.resource) || d.farBand.maxDeg <= d.farBand.minDeg) return "farBand: resource, minDeg < maxDeg";
             if (d.sky.peach < 0f || d.sky.peach > 2f) return "sky.peach in [0, 2] (0 = none)";
             if (d.sun != null && d.sun.shadowStrength != 0f && (d.sun.shadowStrength < 0.2f || d.sun.shadowStrength > 1f)) return "sun.shadowStrength 0 (the scene's own) or 0.2..1";
-            if (d.gradeLong != null && Mathf.Abs(d.gradeLong.exposureDelta) > 1.5f) return "gradeLong.exposureDelta within +-1.5 EV";
+            if (d.gradeLong != null && (Mathf.Abs(d.gradeLong.exposureDelta) > 1.5f || Mathf.Abs(d.gradeLong.saturationDelta) > 60f || Mathf.Abs(d.gradeLong.contrastDelta) > 40f)) return "gradeLong: exposureDelta within +-1.5 EV, saturationDelta within 60, contrastDelta within 40";
             var n = d.night;
             if (n != null)
             {
@@ -247,7 +247,8 @@ namespace Suborned
             vLong = NewVolume("lens/long", out var pl);
             Bloom(pl, data.bloomLong); longCurves = pl.Add<ColorCurves>(false);
             longExposureDelta = data.gradeLong != null ? data.gradeLong.exposureDelta : 0f;
-            if (Mathf.Abs(longExposureDelta) > 0.001f) longAdj = pl.Add<ColorAdjustments>(false);
+            longSatDelta = data.gradeLong != null ? data.gradeLong.saturationDelta : 0f; longConDelta = data.gradeLong != null ? data.gradeLong.contrastDelta : 0f;
+            if (LongGrade) longAdj = pl.Add<ColorAdjustments>(false);
             if (data.evening != null)
             {   // the evening phase's grade parts, on each tier's own volume (inert until LightPhase.Dusk > 0: no override is set)
                 rigPlay = MakeRig(pp, playSat); rigFollow = MakeRig(pf, null); rigLong = MakeRig(pl, longAdj); longAdj = rigLong.adj;
@@ -315,10 +316,16 @@ namespace Suborned
                 foreach (var cc in new[] { playCurves, followCurves, longCurves }) if (cc) cc.hueVsHue.Override(new TextureCurve(keys, 0.5f, true, new Vector2(0f, 1f)));
             }
             if (longAdj && Mathf.Abs(longExposureDelta) > 0.001f) longAdj.postExposure.Override(BaseExposure() + longExposureDelta);
+            if (longAdj && Mathf.Abs(longSatDelta) > 0.001f) longAdj.saturation.Override(Mathf.Clamp(BaseSaturation() + longSatDelta, -100f, 100f));
+            if (longAdj && Mathf.Abs(longConDelta) > 0.001f) longAdj.contrast.Override(Mathf.Clamp(BaseContrast() + longConDelta, -100f, 100f));
             if (Mathf.Abs(g.exposureDelta) > 0.001f) playSat.postExposure.Override(BaseExposure() + g.exposureDelta); else playSat.postExposure.overrideState = false; // brief 075-A: the play view's own exposure step // only the exposure is overridden; contrast, saturation and filter stay the scene grade's
             baseSaturation = s0;
             duskK = -1f; // the evening grade is pushed again on the next Update (a scene load re-reads the scene grade)
         }
+
+        bool LongGrade => Mathf.Abs(longExposureDelta) > 0.001f || Mathf.Abs(longSatDelta) > 0.001f || Mathf.Abs(longConDelta) > 0.001f;
+
+        float BaseContrast() { var sa = SceneAdj(); return sa != null && sa.contrast.overrideState ? sa.contrast.value : 6f; }
 
         float BaseExposure()
         {
@@ -376,9 +383,11 @@ namespace Suborned
                 else if (play && Mathf.Abs(data.gradePlay.exposureDelta) > 0.001f) r.adj.postExposure.Override(expBase + data.gradePlay.exposureDelta + g.exposure * k); // the play view's own step stays at k 0
                 else if (on) r.adj.postExposure.Override(expBase + g.exposure * k); else r.adj.postExposure.overrideState = false;
                 if (play) r.adj.saturation.Override(playSatValue + g.saturation * k);                      // the play grade's own saturation is always overridden
+                else if (lng && Mathf.Abs(longSatDelta) > 0.001f) r.adj.saturation.Override(satBase + longSatDelta + g.saturation * k); // brief 075 golden: the long tier's own step stays at k 0
                 else if (on) r.adj.saturation.Override(satBase + g.saturation * k); else r.adj.saturation.overrideState = false;
-                if (on) { r.adj.contrast.Override(c0 + g.contrast * k); r.adj.colorFilter.Override(new Color(f0.r * fil.r, f0.g * fil.g, f0.b * fil.b, 1f)); }
-                else { r.adj.contrast.overrideState = false; r.adj.colorFilter.overrideState = false; }
+                if (lng && Mathf.Abs(longConDelta) > 0.001f) r.adj.contrast.Override(c0 + longConDelta + g.contrast * k);
+                else if (on) r.adj.contrast.Override(c0 + g.contrast * k); else r.adj.contrast.overrideState = false;
+                if (on) r.adj.colorFilter.Override(new Color(f0.r * fil.r, f0.g * fil.g, f0.b * fil.b, 1f)); else r.adj.colorFilter.overrideState = false;
                 if (on) { r.wb.temperature.Override(g.temperature * k); r.wb.tint.Override(g.tint * k); } else { r.wb.temperature.overrideState = false; r.wb.tint.overrideState = false; }
                 if (on)
                 {

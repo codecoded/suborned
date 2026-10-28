@@ -103,8 +103,9 @@ namespace Suborned.World.Review
                     phase.Set(false);
                 }
                 else if (mode == "flyby") Flyby(session, outDir, variant, report);
+                else if (mode == "golden") { UnityEngine.Object.DestroyImmediate(lens.gameObject); lens = Golden(session, cam, shadows, fade, standOff, cellOpen, outDir, report, v => focusNow = v); }
                 else if (mode == "heads") Heads(session, cam, shadows, fade, standOff, outDir, report);
-                else throw new ArgumentException("glint075: -mode play|flyby|heads");
+                else throw new ArgumentException("glint075: -mode play|flyby|heads|golden");
             }
             finally
             {
@@ -256,6 +257,99 @@ namespace Suborned.World.Review
                 }
             }
             finally { UnityEngine.Object.DestroyImmediate(cam.gameObject); }
+        }
+
+
+        /// <summary>Brief 075 golden view (Glint, 2026-10-28): the golden frame (Flyby074's flight at -t, default 6 s: the boulevard frame Sky compared)
+        /// under each variant of -variants (a json array), in one session. A variant: name; lens (a lens.json path, default Resources); ambient (scale on
+        /// the day trilight) and ambientSky / ambientEquator / ambientGround (#rrggbb, before the scale); sunYaw / sunPitch / sunIntensity; ssao
+        /// { intensity, radius, direct, afterOpaque, source depth|normals } on the renderer's feature in memory; play (true: also the four day play
+        /// views). Every variant starts from the ported base; nothing is saved.</summary>
+        static AtmosphereLens Golden(RenderSession session, Camera playCam, TacticalShadows shadows, ArchitectureFade fade, float standOff, Vector2 cellOpen,
+                                     string outDir, StringBuilder report, Action<Vector3> focus)
+        {
+            var o = Json.Parse(File.ReadAllText(Abs(Arg("-keys", "briefs/074/flyby/new-keys.json"))));
+            var keys = new List<K>();
+            foreach (var k in J.A(o, "keys"))
+            {
+                var e = J.A(k, "eye"); var l = J.A(k, "look");
+                keys.Add(new K { t = J.F(k, "t"), eye = new Vector3((float)(double)e[0], (float)(double)e[1], (float)(double)e[2]), look = new Vector3((float)(double)l[0], (float)(double)l[1], (float)(double)l[2]) });
+            }
+            float t = float.Parse(Arg("-t", "6"), CultureInfo.InvariantCulture);
+            var variants = J.A(Json.Parse(File.ReadAllText(Abs(Arg("-variants", "briefs/075/golden/glint/variants.json")))));
+            var sun = RenderSettings.sun;
+            Quaternion rot0 = sun.transform.rotation; float int0 = sun.intensity;
+            Color as0 = RenderSettings.ambientSkyColor, ae0 = RenderSettings.ambientEquatorColor, ag0 = RenderSettings.ambientGroundColor;
+            var feat = TacticalShadows.SsaoFeature;
+            object st = feat ? typeof(UnityEngine.Rendering.Universal.ScreenSpaceAmbientOcclusion).GetField("m_Settings", Any).GetValue(feat) : null;
+            FieldInfo SF(string n) => st?.GetType().GetField(n, Any);
+            var ssao0 = st == null ? null : new object[] { SF("Intensity").GetValue(st), SF("Radius").GetValue(st), SF("DirectLightingStrength").GetValue(st), SF("AfterOpaque").GetValue(st), SF("Source").GetValue(st) };
+            void SsaoSet(object i, object r, object d, object a, object src) { if (st == null) return; SF("Intensity").SetValue(st, i); SF("Radius").SetValue(st, r); SF("DirectLightingStrength").SetValue(st, d); SF("AfterOpaque").SetValue(st, a); SF("Source").SetValue(st, src); }
+            var cam = RenderSession.TempCamera("golden075");
+            cam.fieldOfView = J.Get(o, "fov") is double fv ? (float)fv : 58f;
+            AtmosphereLens lens = null;
+            static Color Hx(string h) { ColorUtility.TryParseHtmlString(h, out var c); return c; }
+            try
+            {
+                foreach (var v in variants)
+                {
+                    string name = J.S(v, "name");
+                    // base
+                    sun.transform.rotation = rot0; sun.intensity = int0;
+                    RenderSettings.ambientSkyColor = as0; RenderSettings.ambientEquatorColor = ae0; RenderSettings.ambientGroundColor = ag0;
+                    if (ssao0 != null) SsaoSet(ssao0[0], ssao0[1], ssao0[2], ssao0[3], ssao0[4]);
+                    // variant
+                    var eu = rot0.eulerAngles;
+                    float pitch = J.Get(v, "sunPitch") is double sp ? (float)sp : eu.x, yaw = J.Get(v, "sunYaw") is double sy ? (float)sy : eu.y;
+                    sun.transform.rotation = Quaternion.Euler(pitch, yaw, 0f);
+                    if (J.Get(v, "sunIntensity") is double si) sun.intensity = (float)si;
+                    float sc = J.Get(v, "ambient") is double asc ? (float)asc : 1f;
+                    Color A(string key, Color c0) => (J.S(v, key) is { } h ? Hx(h) : c0) * sc;
+                    RenderSettings.ambientSkyColor = A("ambientSky", as0); RenderSettings.ambientEquatorColor = A("ambientEquator", ae0); RenderSettings.ambientGroundColor = A("ambientGround", ag0);
+                    if (RenderSettings.skybox && RenderSettings.skybox.HasProperty("_SunDir")) { var to = -sun.transform.forward; RenderSettings.skybox.SetVector("_SunDir", new Vector4(to.x, to.y, to.z, 0)); }
+                    DynamicGI.UpdateEnvironment();
+                    if (J.Get(v, "ssao") is Dictionary<string, object> so && st != null)
+                    {
+                        var srcT = SF("Source").FieldType;
+                        SsaoSet(J.Get(so, "intensity") is double i ? (float)i : ssao0[0], J.Get(so, "radius") is double r ? (float)r : ssao0[1], J.Get(so, "direct") is double d ? (float)d : ssao0[2],
+                            J.Get(so, "afterOpaque") is bool ao ? ao : ssao0[3], J.S(so, "source") is { } src ? Enum.ToObject(srcT, src == "normals" ? 1 : 0) : ssao0[4]);
+                    }
+                    var ph = UnityEngine.Object.FindAnyObjectByType<LightPhase>(FindObjectsInactive.Include);
+                    if (ph != null)
+                    {   // the day State LightPhase.Set(false) restores
+                        var dst = ph.day; var dt = dst.GetType();
+                        void SetF(string n, object val) { var f = dt.GetField(n, Any); if (f != null) f.SetValue(dst, val); }
+                        SetF("sunIntensity", sun.intensity); SetF("sunRotation", sun.transform.rotation);
+                        SetF("ambientSky", RenderSettings.ambientSkyColor); SetF("ambientEquator", RenderSettings.ambientEquatorColor); SetF("ambientGround", RenderSettings.ambientGroundColor);
+                    }
+                    if (lens) { typeof(AtmosphereLens).GetMethod("OnDisable", Any)?.Invoke(lens, null); UnityEngine.Object.DestroyImmediate(lens.gameObject); }
+                    lens = InstallLens(J.S(v, "lens"));
+                    var eye = Spline(keys, t, i => keys[i].eye); var dir = Spline(keys, t, i => (keys[i].look - keys[i].eye).normalized);
+                    new Pose { Position = eye, Rotation = Quaternion.LookRotation(dir, Vector3.up), Fov = cam.fieldOfView, Near = 0.3f, Far = 12000f }.Apply(cam);
+                    session.ShadowDistance = Mathf.Clamp(eye.y * 8f, 120f, 1200f);
+                    cam.enabled = true;
+                    session.Grab(cam, 64, 64); session.Grab(cam, 64, 64);
+                    File.WriteAllBytes(Path.Combine(outDir, $"{name}-golden.png"), session.Grab(cam, 1920, 1080).EncodeToPNG());
+                    cam.enabled = false;
+                    session.ShadowDistance = 0f;
+                    report.Append($"golden {name}: t {t} eye {eye} sun {sun.transform.eulerAngles} x{sun.intensity:F2}; ambient #{ColorUtility.ToHtmlStringRGB(RenderSettings.ambientSkyColor)} #{ColorUtility.ToHtmlStringRGB(RenderSettings.ambientEquatorColor)} #{ColorUtility.ToHtmlStringRGB(RenderSettings.ambientGroundColor)}; ssao {(st == null ? "none" : $"{SF("Intensity").GetValue(st)} r{SF("Radius").GetValue(st)} d{SF("DirectLightingStrength").GetValue(st)} after {SF("AfterOpaque").GetValue(st)} {SF("Source").GetValue(st)}")}; lens {J.S(v, "lens") ?? "Resources"}\n");
+                    if (J.B(v, "play"))
+                        foreach (var (id, f, yawV) in new[] { ("office-front", Baseline072.OfficeFront, 30f), ("office-front", Baseline072.OfficeFront, 210f), ("cafe-square", cellOpen, 30f), ("cafe-square", cellOpen, 210f) })
+                        {
+                            focus(new Vector3(f.x, 0f, f.y));
+                            Baseline072.Pose(playCam, shadows, fade, f, yawV, standOff);
+                            session.Grab(playCam, 64, 64);
+                            File.WriteAllBytes(Path.Combine(outDir, $"{name}-day-{id}-y{yawV:000}.png"), session.Grab(playCam, 1920, 1080).EncodeToPNG());
+                        }
+                }
+            }
+            finally
+            {
+                if (ssao0 != null) SsaoSet(ssao0[0], ssao0[1], ssao0[2], ssao0[3], ssao0[4]);
+                sun.transform.rotation = rot0; sun.intensity = int0;
+                UnityEngine.Object.DestroyImmediate(cam.gameObject);
+            }
+            return lens ? lens : InstallLens(null);
         }
 
         /// <summary>Flyby074's Hermite (non-uniform Catmull-Rom, still at both ends).</summary>

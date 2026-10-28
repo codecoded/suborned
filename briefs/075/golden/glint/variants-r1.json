@@ -1,0 +1,60 @@
+[
+ {
+  "name": "a0-base"
+ },
+ {
+  "name": "a1-bloom",
+  "lens": "briefs/075/golden/glint/lens/a1-bloom.json"
+ },
+ {
+  "name": "a2-exp",
+  "lens": "briefs/075/golden/glint/lens/a2-exp.json"
+ },
+ {
+  "name": "a3-sat",
+  "lens": "briefs/075/golden/glint/lens/a3-sat.json"
+ },
+ {
+  "name": "a4-amb",
+  "ambient": 0.7,
+  "lens": "briefs/075/golden/glint/lens/a4-amb.json"
+ },
+ {
+  "name": "a5-ssao",
+  "ambient": 0.7,
+  "ssao": {
+   "intensity": 0.9,
+   "radius": 0.45,
+   "direct": 0.25,
+   "afterOpaque": false,
+   "source": "normals"
+  },
+  "lens": "briefs/075/golden/glint/lens/a5-ssao.json"
+ },
+ {
+  "name": "a6-teal",
+  "ambient": 0.7,
+  "ambientSky": "#8fa9b0",
+  "ssao": {
+   "intensity": 0.9,
+   "radius": 0.45,
+   "direct": 0.25,
+   "afterOpaque": false,
+   "source": "normals"
+  },
+  "lens": "briefs/075/golden/glint/lens/a6-teal.json"
+ },
+ {
+  "name": "a7-yaw45",
+  "ambient": 0.7,
+  "sunYaw": 45,
+  "ssao": {
+   "intensity": 0.9,
+   "radius": 0.45,
+   "direct": 0.25,
+   "afterOpaque": false,
+   "source": "normals"
+  },
+  "lens": "briefs/075/golden/glint/lens/a7-yaw45.json"
+ }
+]

@@ -1,0 +1,30 @@
+[
+ {
+  "name": "b1",
+  "lens": "briefs/075/golden/glint/lens/b1.json"
+ },
+ {
+  "name": "b2",
+  "lens": "briefs/075/golden/glint/lens/b2.json"
+ },
+ {
+  "name": "b3",
+  "lens": "briefs/075/golden/glint/lens/b3.json"
+ },
+ {
+  "name": "b6",
+  "lens": "briefs/075/golden/glint/lens/b6.json"
+ },
+ {
+  "name": "b4-yaw45",
+  "sunYaw": 45,
+  "play": true,
+  "lens": "briefs/075/golden/glint/lens/b4-yaw45.json"
+ },
+ {
+  "name": "b5-amb85",
+  "ambient": 0.85,
+  "play": true,
+  "lens": "briefs/075/golden/glint/lens/b5-amb85.json"
+ }
+]
