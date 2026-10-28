@@ -1,0 +1,226 @@
+{
+ "schema": "glint.vintage075-stats/1",
+ "note": "stats.py measures (HSV sat mean, Rec.601 luma median/p5/p95) on 1920x1080; accentSatP90/P97 = HSV saturation percentile over the lower 55 % of the frame (street, enamel, signs); skyTopRGB/Sat = mean of the top 12 % rows where b >= r and luma > 120",
+ "frames": {
+  "old": {
+   "golden": {
+    "satMean": 111.6,
+    "lumaMedian": 111.9,
+    "p5": 42.7,
+    "p95": 205.5,
+    "accentSatP90": 249.2,
+    "accentSatP97": 255.0,
+    "skyTopRGB": [
+     97,
+     174,
+     161
+    ],
+    "skyTopSat": 112.5
+   },
+   "circus": {
+    "satMean": 101.2,
+    "lumaMedian": 139.2,
+    "p5": 46.9,
+    "p95": 218.7,
+    "accentSatP90": 147.1,
+    "accentSatP97": 190.1,
+    "skyTopRGB": [
+     84,
+     178,
+     167
+    ],
+    "skyTopSat": 133.1
+   },
+   "sky": {
+    "satMean": 95.9,
+    "lumaMedian": 148.7,
+    "p5": 61.2,
+    "p95": 208.3,
+    "accentSatP90": 196.2,
+    "accentSatP97": 204.0,
+    "skyTopRGB": [
+     100,
+     187,
+     176
+    ],
+    "skyTopSat": 118.1
+   }
+  },
+  "base": {
+   "golden": {
+    "satMean": 117.3,
+    "lumaMedian": 120.9,
+    "p5": 48.8,
+    "p95": 208.2,
+    "accentSatP90": 249.9,
+    "accentSatP97": 255.0,
+    "skyTopRGB": [
+     90,
+     181,
+     170
+    ],
+    "skyTopSat": 127.7
+   },
+   "circus": {
+    "satMean": 102.3,
+    "lumaMedian": 142.2,
+    "p5": 47.3,
+    "p95": 219.4,
+    "accentSatP90": 145.7,
+    "accentSatP97": 193.3,
+    "skyTopRGB": [
+     85,
+     178,
+     167
+    ],
+    "skyTopSat": 132.7
+   },
+   "sky": {
+    "satMean": 92.0,
+    "lumaMedian": 156.6,
+    "p5": 62.3,
+    "p95": 214.9,
+    "accentSatP90": 183.8,
+    "accentSatP97": 201.3,
+    "skyTopRGB": [
+     100,
+     187,
+     176
+    ],
+    "skyTopSat": 118.5
+   }
+  },
+  "v1": {
+   "golden": {
+    "satMean": 121.7,
+    "lumaMedian": 113.3,
+    "p5": 43.4,
+    "p95": 199.5,
+    "accentSatP90": 250.2,
+    "accentSatP97": 255.0,
+    "skyTopRGB": [
+     70,
+     168,
+     159
+    ],
+    "skyTopSat": 148.6
+   },
+   "circus": {
+    "satMean": 106.7,
+    "lumaMedian": 129.4,
+    "p5": 44.9,
+    "p95": 213.1,
+    "accentSatP90": 156.2,
+    "accentSatP97": 207.5,
+    "skyTopRGB": [
+     64,
+     166,
+     157
+    ],
+    "skyTopSat": 155.6
+   },
+   "sky": {
+    "satMean": 100.9,
+    "lumaMedian": 142.6,
+    "p5": 56.4,
+    "p95": 207.6,
+    "accentSatP90": 195.8,
+    "accentSatP97": 205.0,
+    "skyTopRGB": [
+     80,
+     174,
+     164
+    ],
+    "skyTopSat": 137.4
+   }
+  },
+  "v2s": {
+   "golden": {
+    "satMean": 122.1,
+    "lumaMedian": 120.4,
+    "p5": 46.5,
+    "p95": 210.5,
+    "accentSatP90": 255.0,
+    "accentSatP97": 255.0,
+    "skyTopRGB": [
+     102,
+     181,
+     171
+    ],
+    "skyTopSat": 110.7
+   },
+   "circus": {
+    "satMean": 107.8,
+    "lumaMedian": 142.3,
+    "p5": 46.3,
+    "p95": 222.4,
+    "accentSatP90": 168.5,
+    "accentSatP97": 240.5,
+    "skyTopRGB": [
+     96,
+     178,
+     168
+    ],
+    "skyTopSat": 116.4
+   },
+   "sky": {
+    "satMean": 88.8,
+    "lumaMedian": 159.2,
+    "p5": 61.5,
+    "p95": 217.5,
+    "accentSatP90": 184.2,
+    "accentSatP97": 200.2,
+    "skyTopRGB": [
+     113,
+     187,
+     177
+    ],
+    "skyTopSat": 100.2
+   }
+  },
+  "v3s": {
+   "golden": {
+    "satMean": 121.8,
+    "lumaMedian": 116.6,
+    "p5": 44.6,
+    "p95": 207.3,
+    "accentSatP90": 255.0,
+    "accentSatP97": 255.0,
+    "skyTopRGB": [
+     91,
+     175,
+     166
+    ],
+    "skyTopSat": 121.5
+   },
+   "circus": {
+    "satMean": 106.4,
+    "lumaMedian": 137.4,
+    "p5": 46.6,
+    "p95": 219.7,
+    "accentSatP90": 158.6,
+    "accentSatP97": 236.0,
+    "skyTopRGB": [
+     85,
+     172,
+     164
+    ],
+    "skyTopSat": 128.0
+   },
+   "sky": {
+    "satMean": 91.3,
+    "lumaMedian": 152.8,
+    "p5": 60.2,
+    "p95": 214.5,
+    "accentSatP90": 187.9,
+    "accentSatP97": 200.4,
+    "skyTopRGB": [
+     103,
+     181,
+     172
+    ],
+    "skyTopSat": 109.7
+   }
+  }
+ }
+}
