@@ -10,7 +10,7 @@ import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname, join, relative } from 'node:path';
 import { streetDensity } from './model';
 import { CAT, CATEGORY, DRAW, PROM, bandOf } from './rules';
-import type { Presentation, Model, Loop, Route, Timed, Looping, Still } from '../../contracts/world/presentation.schema';
+import type { Presentation, Model, Loop, Route, Timed, Looping, Still, Paint, PresentationLod } from '../../contracts/world/presentation.schema';
 
 const ROOT = join(import.meta.dir, '..', '..');
 export const PRESENTATION_FILE = 'out/world/harbour-district.presentation.json';
@@ -199,6 +199,54 @@ function roadGraph(W: any, PL: any) {
   return { nodes, edges, out, degree };
 }
 
+// ---------- car paints: 1950s two-tones (brief 075 roll-out). The old reel (the old DecoKitCitizens) gave every car one of eight enamels over an
+// ivory body, seeded per car; ours keep the enamels and pair them with ivory, both ways round, plus the two sedans' own liveries. Violets and
+// lilacs are left out: violet is the rivals' car. When Vela lands her variants as kit.json `carPaints` ({ keys: { <key>: { name?, body, roof,
+// hex: { body, roof } } } }: body and roof are material names), those keys replace this table and carry their materials.
+const IVORY = '#EFE8D6';
+export const PAINTS: [string, string, string, string][] = [ // key, name, body hex, roof hex
+  ['coral-seafoam', 'coral, seafoam roof (the getaway sedan\'s own)', '#F28A70', '#72B5A7'],
+  ['teal-ivory', 'deep teal, ivory roof (the official sedan\'s own)', '#1F6C67', IVORY],
+  ['turquoise-ivory', 'turquoise, ivory roof', '#0A6D82', IVORY],
+  ['tomato-ivory', 'tomato red, ivory roof', '#E25E47', IVORY],
+  ['canary-ivory', 'canary yellow, ivory roof', '#E7B84C', IVORY],
+  ['seafoam-ivory', 'seafoam, ivory roof', '#78C4A2', IVORY],
+  ['cherry-ivory', 'cherry red, ivory roof', '#B53A31', IVORY],
+  ['sky-ivory', 'sky blue, ivory roof', '#5F9FC6', IVORY],
+  ['navy-ivory', 'navy, ivory roof', '#27406A', IVORY],
+  ['green-ivory', 'Kelly green, ivory roof', '#2F7D5C', IVORY],
+  ['flamingo-ivory', 'flamingo pink, ivory roof', '#E59AA6', IVORY],
+  ['ivory-turquoise', 'ivory, turquoise roof', IVORY, '#0A6D82'],
+  ['ivory-tomato', 'ivory, tomato roof', IVORY, '#E25E47'],
+  ['ivory-canary', 'ivory, canary roof', IVORY, '#E7B84C'],
+];
+const OLD = 'the old reel: DecoKitCitizens.Enamels (#0A6D82 #E25E47 #E7B84C #78C4A2 #B53A31 #5F9FC6 #27406A #2F7D5C) over ivory, one per car, seeded';
+export function carPaints(kitJson: any): Record<string, Paint> {
+  const vela = kitJson.carPaints?.keys as Record<string, any> | undefined;
+  if (vela && Object.keys(vela).length) return Object.fromEntries(Object.keys(vela).sort().map(k => { const e = vela[k]; return [k, { name: e.name ?? k, hex: { body: e.hex?.body ?? IVORY, roof: e.hex?.roof ?? IVORY }, materials: { body: e.body, roof: e.roof }, source: `kit.json carPaints (${kitJson.carPaints.source ?? 'Vela'})` } as Paint]; }));
+  return Object.fromEntries(PAINTS.map(([k, name, body, roof]) => [k, { name, hex: { body, roof }, source: k.endsWith('-seafoam') || k === 'teal-ivory' ? 'the adopted sedan\'s own livery (tools/decokit/cars070.py)' : OLD } as Paint]));
+}
+/** every adopted kit car (Vehicles, car-sized, not a tram, robot, cart or scooter): the cars traffic and the bays draw from */
+export function adoptedCars(kit: Record<string, any>) {
+  return Object.values(kit).filter((a: any) => a.category === 'Vehicles' && a.status === 'adopted' && !/Tram|Robot|Cart|Scooter|Truck|Van/i.test(a.id) && a.size?.[2] >= 3 && a.size[2] <= 6.5 && a.size[1] < 2.5).map((a: any) => a.id as string).sort();
+}
+const RIVAL_SHARE = 0.04; // the rivals' violet sedan: rare in traffic and the bays, so it does not read as the rival car
+
+// ---------- presentation-only draw tiers (never play): screen-height fractions of a 1.75 m figure
+export const LOD: PresentationLod = {
+  scope: 'Presentation scenes only (Flyby074, the golden view, the free-fly camera). Play, the missions and the figure library keep their own LOD heights and cull (the library culls a figure below 1.2 % of screen height, about 130 m at fov 60).',
+  figures: [
+    { from: 0.012, draw: 'library', note: 'the figure library\'s LODs and their heights, animated every frame, as now' },
+    { from: 0.005, draw: 'last-lod-slow', note: 'the last LOD (1,500 tris), its pose stepped every 4th frame (13 px down to 5 px at 1080p: a walk still reads, the swap cost is a quarter)' },
+    { from: 0.0015, draw: 'far-card', note: 'a far card: one GPU-instanced camera-facing quad (2 tris) per figure, 2 x 1 frames of the figure\'s last LOD baked once at install (walk mid-stride / idle) into a shared atlas, or failing that a 2-colour capsule (coat = the figure texture\'s mean, head = skin); per-instance colour, no per-frame mesh swap (5 px down to 1.6 px)' },
+  ],
+  cars: [
+    { from: 0.004, draw: 'kit-lods', note: 'the kit piece and its own LODs (the sedans are full detail, nolod)' },
+    { from: 0.0012, draw: 'far-box', note: 'a far box: one instanced rounded box in the body hex with a roof-hex top (12 tris); car screen height = 1.3 m / viewport' },
+  ],
+  distances: 'figures at fov 60: library to 130 m, slow last LOD to 300 m, far card to 1,010 m; at fov 40: 200 / 480 / 1,600 m. Cars (1.3 m) at fov 60: kit to 280 m, far box to 940 m.',
+};
+
 // ---------- the build
 export type Options = { hour: number; people: number; cars: number; worldFile?: string };
 export const DEFAULTS: Options = { hour: 14.5, people: 3000, cars: 220 };
@@ -216,8 +264,11 @@ export function build(I: Inputs, opt: Options = DEFAULTS): Presentation {
     const k = kit[id]; if (!k) throw new Error(`kit piece ${id} not in kit.json`);
     return [key, { kind, kit: id, status: k.status === 'adopted' ? 'adopted' : 'candidate', tris: [k.tris, ...(k.lods ?? []).map((l: any) => l.tris)], size: k.size, pivot: k.pivot, ...(k.pivotOffset ? { pivotOffset: k.pivotOffset } : {}), fallback, ...(note ? { note } : {}) }];
   };
+  const carIds = adoptedCars(kit), carKey = (id: string) => ({ Sedan_Official: 'car/official', Sedan_Getaway: 'car/getaway', Sedan_Rival: 'car/rival' } as Record<string, string>)[id] ?? `car/${id}`;
+  if (!carIds.some(id => !/Rival/.test(id))) throw new Error('no adopted kit car to draw traffic with');
+  const paints = carPaints(kitJson), paintKeys = Object.keys(paints);
   const models: Record<string, Model> = Object.fromEntries([
-    km('car/official', 'car', 'Sedan_Official', null), km('car/getaway', 'car', 'Sedan_Getaway', null), km('car/rival', 'car', 'Sedan_Rival', null, 'the rivals\' violet sedan: kept rare (8 %) so it does not read as the rival car'),
+    ...carIds.map(id => km(carKey(id), 'car', id, null, /Rival/.test(id) ? `the rivals' violet sedan: kept rare (${RIVAL_SHARE * 100} %), never repainted, so it does not read as the rival car` : 'repainted per car from `paints` (picked by seed; neighbours differ)')),
     km('van/box', 'van', 'BoxTruck_Play', 'car/official', 'loading bays and 8 % of traffic (life.traffic mix: van)'),
     km('scooter/hover', 'scooter', 'HoverScooter', null, '4 % of traffic, hovering 0.35 m (life.traffic mix: hover-car, the future attached to an everyday thing)'),
     km('tram', 'tram', 'Tram', null, 'pivot on the track centreline, +Z the nose'),
@@ -225,6 +276,21 @@ export function build(I: Inputs, opt: Options = DEFAULTS): Presentation {
     km('aircar/coral', 'aircar', 'AirCar_Coral', null), km('aircar/teal', 'aircar', 'AirCar_Teal', null), km('aircar/saucer', 'aircar', 'AirCar_Saucer', null),
     ...I.figures.map(f => [`figure/${f}`, { kind: 'figure', figure: f, status: 'figure', tris: [3000, 1500], fallback: null, note: 'tools/figures/figures.json townsperson (crowd LODs, under the crowd budget 12k / 4.5k / 1.5k)' } as Model] as [string, Model]),
   ]);
+  for (const m of Object.values(models)) { // paint slots: the kit's first two car enamels (body; roof and flash), as cars070 builds them
+    if (m.kind !== 'car' && m.kind !== 'van') continue;
+    const en = (kit[m.kit!].materials ?? []).filter((x: string) => x.startsWith('DK_CarEnamel_'));
+    if (en.length >= 2) m.paintSlots = { body: en[0], roof: en[1] };
+  }
+  const plainCars = carIds.filter(id => !/Rival/.test(id)).map(carKey), rivalKey = carIds.some(id => /Rival/.test(id)) ? 'car/rival' : null;
+  /** a car model by weight (rival rare, the rest shared equally), then a paint: seeded by id, never the same paint as any of `avoid` */
+  const carPick = (r: () => number, other: [string, number][], avoid: (string | undefined)[]) => {
+    const share = 1 - RIVAL_SHARE - other.reduce((s, x) => s + x[1], 0);
+    const model = pickW(r, [...plainCars.map(k => [k, share / plainCars.length] as [string, number]), ...(rivalKey ? [[rivalKey, RIVAL_SHARE] as [string, number]] : []), ...other]);
+    const drawn = models[model].paintSlots ? model : models[model].fallback; // a candidate van draws as its fallback: paint that
+    if (!drawn || !models[drawn]?.paintSlots) return { model };
+    let paint = pick(r, paintKeys); for (let i = 0; i < 12 && avoid.includes(paint); i++) paint = pick(r, paintKeys);
+    return { model, paint };
+  };
   const figureKeys = I.figures.map(f => `figure/${f}`);
   const loops: Loop[] = [], routes: Route[] = [], timed: Timed[] = [], looping: Looping[] = [], still: Still[] = [];
   const dropped: Record<string, number> = {};
@@ -321,7 +387,7 @@ export function build(I: Inputs, opt: Options = DEFAULTS): Presentation {
       if (node.startsWith('off_') && step > 0) break;
     }
     if (!node.startsWith('off_') || len < 300) return null;
-    const lane = r() < 0.5 ? 0 : 1, model = pickW(r, [['car/official', 40], ['car/getaway', 40], ['car/rival', 8], ['van/box', 8], ['scooter/hover', 4]] as [string, number][]);
+    const lane = r() < 0.5 ? 0 : 1;
     // geometry: lane paths trimmed at each node, joined by connectors; vmax by class
     const legs: { pts: P[]; v: number }[] = [];
     for (let i = 0; i < seq.length; i++) {
@@ -338,7 +404,7 @@ export function build(I: Inputs, opt: Options = DEFAULTS): Presentation {
     const c = cumul(pts), vAt = (s: number) => { let lo = 0, hi = c.length - 1; while (hi - lo > 1) { const m = (lo + hi) >> 1; if (c[m] <= s) lo = m; else hi = m; } return Math.min(vs[lo], vs[hi]); };
     const pr = profile(pts, vAt, { acc: 1.8, dec: 2.2, latAcc: 2.5, v0: vs[0], v1: vs.at(-1)!, stops: [], step: 2 });
     if (pr.t.at(-1)! > PERIOD - 5) return null;
-    return { pr, model, entry };
+    return { pr, entry, r };
   }
   // departures: jittered per entry gate; accept a trip only if it never closes within 4.5 m behind/beside another car going the same way
   type Car = { pts: P[]; t: number[]; t0: number };
@@ -346,7 +412,7 @@ export function build(I: Inputs, opt: Options = DEFAULTS): Presentation {
   const posAt = (c: Car, tau: number) => { const t = c.t; if (tau < 0 || tau > t.at(-1)!) return null; let lo = 0, hi = t.length - 1; while (hi - lo > 1) { const m = (lo + hi) >> 1; if (t[m] <= tau) lo = m; else hi = m; } const f = (tau - t[lo]) / ((t[hi] - t[lo]) || 1), a = c.pts[lo], b = c.pts[hi]; return { x: a[0] + (b[0] - a[0]) * f, y: a[1] + (b[1] - a[1]) * f, h: heading(unit(a, b)) }; };
   const cell = (x: number, y: number, s: number) => `${s}|${Math.floor(x / 6)}|${Math.floor(y / 6)}`;
   let busy = 0, k = 0, accepted = 0;
-  const lastAt = new Map<string, number>();
+  const lastAt = new Map<string, number>(), lastPaint = new Map<string, (string | undefined)[]>();
   while (busy < opt.cars * PERIOD && k < opt.cars * 30) {
     const id = `car/${k++}`, tr = trip(id); if (!tr) { drop('car trip: no route'); continue; }
     const r = rng(id + '/t0'), t0 = Math.floor(r() * PERIOD * 10) / 10, car: Car = { pts: tr.pr.pts, t: tr.pr.t, t0 };
@@ -357,25 +423,34 @@ export function build(I: Inputs, opt: Options = DEFAULTS): Presentation {
       samples.push({ s, ...p });
     }
     if (clash) { drop('car trip: clashes with an earlier car'); continue; }
+    const recent = lastPaint.get(tr.entry) ?? [], look = carPick(tr.r, [['van/box', 0.08], ['scooter/hover', 0.04]], recent); // not the paint of the last three cars in at this gate
+    lastPaint.set(tr.entry, [look.paint, ...recent].slice(0, 3));
     for (const q of samples) (occ.get(cell(q.x, q.y, q.s)) ?? occ.set(cell(q.x, q.y, q.s), []).get(cell(q.x, q.y, q.s))!).push({ x: q.x, y: q.y, h: q.h });
     const sm = simplify(car.pts, car.t, 0.1);
-    routes.push({ id: `route/${id}`, kind: 'car', z: tr.model === 'scooter/hover' ? 0.35 : 0, xy: sm.xy, t: sm.t, len: r2(tr.pr.len) });
-    timed.push({ id, model: tr.model, route: routes.length - 1, t0 });
+    routes.push({ id: `route/${id}`, kind: 'car', z: look.model === 'scooter/hover' ? 0.35 : 0, xy: sm.xy, t: sm.t, len: r2(tr.pr.len) });
+    timed.push({ id, model: look.model, route: routes.length - 1, t0, ...(look.paint ? { paint: look.paint } : {}) });
     busy += car.t.at(-1)!; accepted++; lastAt.set(tr.entry, t0);
   }
 
   // ---- 3. parked cars in the world's kerbside bays (brief 075 tram street): about four in five bays taken
   const roadLine = (id: string) => W.ground.roads.find((r: any) => r.id === `road/${id}`).line as P[];
+  const parked: { p: P; model: string; paint?: string }[] = [], NEAR = 9, RIVAL_GAP = 40; // neighbours: any parked car within 9 m (the next bay or two, the bay across an angle row)
   for (const b of W.ground.kerbside) {
     const r = rng(b.id), c = centroid(b.ring), take = b.kind === 'loading' ? 0.5 : 0.8;
     if (r() > take) continue;
     let h: number;
     if (b.kind === 'angle') h = b.yaw;
     else { const ln = roadLine(b.road), pr = project(ln, c), a = at(ln, cumul(ln), pr.s), side = a.dir[0] * (c[1] - a.p[1]) - a.dir[1] * (c[0] - a.p[0]); h = heading(side > 0 ? [-a.dir[0], -a.dir[1]] : a.dir); }
-    const model = b.kind === 'loading' ? 'van/box' : pickW(r, [['car/official', 45], ['car/getaway', 45], ['car/rival', 10]] as [string, number][]);
+    const near = parked.filter(q => dist(q.p, c) < NEAR), rivalNear = parked.some(q => q.model === rivalKey && dist(q.p, c) < RIVAL_GAP);
+    const rp = rng(b.id + '/paint');
+    let look = b.kind === 'loading' ? carPick(rp, [['van/box', 1 - RIVAL_SHARE]], near.map(q => q.paint)) : carPick(rp, [], near.map(q => q.paint));
+    for (let i = 0; i < 6 && (look.model === rivalKey && rivalNear || (!look.paint && near.some(q => q.model === look.model))); i++) look = carPick(rp, b.kind === 'loading' ? [['van/box', 1 - RIVAL_SHARE]] : [], near.map(q => q.paint)); // no two rival sedans within 40 m, no two unpainted twins side by side
+    if (look.model === rivalKey && rivalNear) look = carPick(rng(b.id + '/plain'), [], near.map(q => q.paint));
+    const model = look.model;
     const po = models[model].pivotOffset?.[1] ?? 0, p = add(c, [Math.cos(h), Math.sin(h)], -po);
     if (blocked(p)) { drop('parked car: bay inside an obstacle'); continue; }
-    still.push({ id: `parked/${b.id.split('/').slice(2).join('/')}`, model, at: [r2(p[0]), r2(p[1])], z: b.level ?? 0, heading: r3(h), clip: 'parked', where: b.id });
+    parked.push({ p: c, model, paint: look.paint });
+    still.push({ id: `parked/${b.id.split('/').slice(2).join('/')}`, model, at: [r2(p[0]), r2(p[1])], z: b.level ?? 0, heading: r3(h), clip: 'parked', where: b.id, ...(look.paint ? { paint: look.paint } : {}) });
   }
 
   // ---- 4. pedestrians: the life density model (tools/life/model.ts streetDensity) at `hour`, scaled to `people` figures in all
@@ -518,12 +593,16 @@ export function build(I: Inputs, opt: Options = DEFAULTS): Presentation {
   // ---- counts and the file
   const by = (f: (m: Model) => boolean) => [...timed, ...looping, ...still].filter(x => f(models[x.model])).length;
   const movingCarsAt = (tau: number) => timed.filter(x => routes[x.route].kind === 'car').filter(x => { const d = ((tau - x.t0) % PERIOD + PERIOD) % PERIOD; return d <= routes[x.route].t.at(-1)!; }).length;
+  const tally = (xs: string[]) => Object.fromEntries([...xs.reduce((m, x) => m.set(x, (m.get(x) ?? 0) + 1), new Map<string, number>())].sort((a, b) => a[0] < b[0] ? -1 : 1));
   const meanMoving = Math.round([0, 90, 180, 270, 360, 450, 540, 630].reduce((s, t) => s + movingCarsAt(t), 0) / 8);
   const counts = {
     figures: by(m => m.kind === 'figure'), walkers: looping.filter(x => x.clip === 'walk').length, standing: still.filter(x => x.clip !== 'parked').length,
     carTrips: timed.filter(x => routes[x.route].kind === 'car').length, carsMovingMean: meanMoving, carsParked: still.filter(x => x.clip === 'parked').length,
     trams: timed.filter(x => models[x.model].kind === 'tram').length, skyrailTrains: timed.filter(x => models[x.model].kind === 'skyrail').length, aircars: looping.filter(x => x.clip === 'fly').length,
     walkLoops: loops.filter(l => l.kind === 'walk').length, routes: routes.length, walkLoopsDropped: loopsDropped, dropped,
+    carModels: tally([...timed.filter(x => routes[x.route].kind === 'car'), ...still.filter(x => x.clip === 'parked')].map(x => x.model)),
+    carPaints: tally([...timed, ...still].map(x => x.paint).filter((x): x is string => !!x)),
+    parkedNeighboursSamePaint: still.filter(x => x.clip === 'parked' && x.paint).reduce((n, x, i, xs) => n + xs.slice(0, i).filter(y => y.paint === x.paint && dist(y.at, x.at) < NEAR).length, 0),
   };
   const rel = (f: string) => relative(ROOT, f);
   return {
@@ -537,7 +616,7 @@ export function build(I: Inputs, opt: Options = DEFAULTS): Presentation {
     frame: 'plan frame: x east, y north, metres; Unity position = (x, z, y); z is a hint, snap to the drawn ground',
     heading: 'radians, 0 = +x (east), pi/2 = +y (north); models front +Z: Unity eulerY = 90 - deg(heading)',
     clock: { periodSec: PERIOD, hour: opt.hour, band, sample: 'tau = t mod periodSec; timed: d = (tau - t0) mod periodSec, active while d <= route.t[last], position = linear in t between route points; looping: s = (s0 + v * tau) mod loop.len, offset lat to the walker\'s left; still: fixed. See briefs/075/notes.md "Golden: life" and tools/life/presentation-sample.ts.' },
-    models, loops, routes, timed, looping, still, counts,
+    models, paints, lod: LOD, loops, routes, timed, looping, still, counts,
     laterForma: [
       'The old RetroFutureMobility cars, vans and aircars (the old reel\'s traffic) are over the vehicle budget: a civilian set at budget (sedan colourways, coupe, delivery van, hover-car) is a later Forma item; until then traffic uses Sedan_Official / Sedan_Getaway / Sedan_Rival, BoxTruck_Play and HoverScooter.',
       'AirCar_Coral / AirCar_Teal / AirCar_Saucer, SkyRail_Car_Head, BoxTruck_Play and HoverScooter are kit candidates (not copied into Unity): adoption is Vela\'s, with Sky\'s yes.',

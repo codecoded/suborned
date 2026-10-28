@@ -41,8 +41,24 @@ export type Presentation = {
   looping: Looping[];
   /** Still things: parked cars in the world's kerbside bays, people standing, sitting or waiting. */
   still: Still[];
+  /** Car paints (brief 075 roll-out): 1950s two-tones. A car or van whose model has `paintSlots` may carry `paint` (a key here): swap the
+   *  renderer slots whose material is the model's paintSlots.body / .roof for the paint's `materials.body` / `.roof` when given (Vela's kit
+   *  variants), else for a copy of that slot's material with its base colour set to `hex.body` / `hex.roof` (one shared copy per slot and key).
+   *  A model without paintSlots (the rival's violet sedan) always wears its own. */
+  paints: Record<string, Paint>;
+  /** Presentation-only draw tiers (never play, never the Handover, never the figure library): how far to draw what. */
+  lod: PresentationLod;
   counts: Record<string, number | Record<string, number>>;
   laterForma: string[]; // models wanted and not used yet (over budget or missing)
+};
+export type Paint = { name: string; hex: { body: string; roof: string }; materials?: { body: string; roof: string }; source: string };
+/** Screen-height fractions (a 1.75 m figure's height / the viewport height), as the figure library's lodHeights. Tiers run top to bottom:
+ *  a figure draws as the first tier whose `from` it is at or above; below the last tier's `from` it is culled. */
+export type PresentationLod = {
+  scope: string;
+  figures: { from: number; draw: 'library' | 'last-lod-slow' | 'far-card'; note: string }[];
+  cars: { from: number; draw: 'kit-lods' | 'far-box'; note: string }[];
+  distances: string; // the tiers in metres at the flyby's fovs, for reading
 };
 
 export type Model = {
@@ -51,12 +67,14 @@ export type Model = {
   tris: number | number[]; size?: [number, number, number]; // kit size [across, up, along] m
   pivot?: string; pivotOffset?: V2; // the kit's; positions here are the pivot (for the Tram: on the track centreline)
   fallback: string | null; note?: string;
+  /** cars only: the two enamel slots a paint replaces (the kit's first two DK_CarEnamel_* materials: body, then roof and flash) */
+  paintSlots?: { body: string; roof: string };
 };
 export type Loop = { id: string; kind: 'walk' | 'sky'; len: number; xyz: number[]; where: string };
 export type Route = { id: string; kind: 'tram' | 'car' | 'skyrail' | 'aircar'; z: number; xy: number[]; t: number[]; stops?: RouteStop[]; len: number };
 export type RouteStop = { stop: string; tArrive: number; tDepart: number };
 /** `consist`: further cars coupled behind the lead (a sky rail train): each at `back` metres behind the lead's pivot measured along the route
  *  polyline (find the lead's arc length, step back), `flip` = turned 180 degrees (a rear-facing head car). */
-export type Timed = { id: string; model: string; route: number; t0: number; consist?: { model: string; back: number; flip: boolean }[] };
+export type Timed = { id: string; model: string; route: number; t0: number; paint?: string; consist?: { model: string; back: number; flip: boolean }[] };
 export type Looping = { id: string; model: string; loop: number; s0: number; v: number; lat: number; clip: 'walk' | 'fly'; bob?: number };
-export type Still = { id: string; model: string; at: V2; z: number; heading: number; clip: 'parked' | 'idle' | 'idle_alt' | 'talk' | 'phone' | 'look_around' | 'sit'; where: string };
+export type Still = { id: string; model: string; at: V2; z: number; heading: number; clip: 'parked' | 'idle' | 'idle_alt' | 'talk' | 'phone' | 'look_around' | 'sit'; where: string; paint?: string };

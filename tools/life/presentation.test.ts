@@ -2,7 +2,7 @@
 import { test, expect, describe } from 'bun:test';
 import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs';
 import { join } from 'node:path';
-import { build, loadInputs, obstacles, PERIOD, WORLD_FILE, cumul, at, type P } from './presentation';
+import { build, loadInputs, obstacles, adoptedCars, PERIOD, WORLD_FILE, cumul, at, type P } from './presentation';
 import { sample, onRoute } from './presentation-sample';
 
 const ROOT = join(import.meta.dir, '..', '..');
@@ -77,5 +77,30 @@ describe.skipIf(!hasWorld)('presentation life from the world export', () => {
         const want = T.runs.find((x: any) => [x.from, x.to].sort().join() === [`${line}/${u.a}`, `${line}/${u.b}`].sort().join())?.sec; if (want) expect(Math.abs(u.sec - want)).toBeLessThan(0.6);
       }
     }
+  });
+
+  test('cars: every adopted kit car, many paints, neighbours differ, the rival sedan rare and never repainted', () => {
+    const kit = JSON.parse(readFileSync(join(ROOT, 'contracts/world/kit.json'), 'utf8')), byId = Object.fromEntries(kit.assets.map((a: any) => [a.id, a]));
+    const cars = [...p.timed.filter((x: any) => p.routes[x.route].kind === 'car'), ...p.still.filter((x: any) => x.clip === 'parked')];
+    const used = new Set(cars.map((x: any) => p.models[x.model].kit));
+    for (const id of adoptedCars(byId)) expect(used.has(id)).toBe(true);
+    const keys = Object.keys(p.paints); expect(keys.length).toBeGreaterThanOrEqual(8);
+    for (const x of cars) { const m = p.models[x.model], drawn = m.paintSlots ? m : p.models[m.fallback ?? '']; if (drawn?.paintSlots) expect(keys).toContain(x.paint); else expect(x.paint).toBeUndefined(); }
+    expect(p.models['car/rival'].paintSlots).toBeUndefined();
+    const parked = p.still.filter((x: any) => x.clip === 'parked'), share = (xs: any[], f: (x: any) => boolean) => xs.filter(f).length / xs.length;
+    expect(share(parked, (x: any) => x.model === 'car/rival')).toBeLessThan(0.06); expect(share(cars, (x: any) => x.model === 'car/rival')).toBeLessThan(0.06);
+    // no paint over a fifth of the bays, and no two neighbours (within 9 m) in the same paint
+    const tally = new Map<string, number>(); for (const x of parked) if (x.paint) tally.set(x.paint, (tally.get(x.paint) ?? 0) + 1);
+    expect(Math.max(...tally.values()) / parked.length).toBeLessThan(0.2);
+    const twins = parked.filter((x: any, i: number) => x.paint && parked.slice(0, i).some((y: any) => y.paint === x.paint && Math.hypot(y.at[0] - x.at[0], y.at[1] - x.at[1]) < 9));
+    expect(twins.map((x: any) => x.id)).toEqual([]);
+    const rivals = parked.filter((x: any) => x.model === 'car/rival');
+    expect(rivals.filter((x: any, i: number) => rivals.slice(0, i).some((y: any) => Math.hypot(y.at[0] - x.at[0], y.at[1] - x.at[1]) < 40)).map((x: any) => x.id)).toEqual([]);
+  });
+
+  test('presentation draw tiers are presentation-only and run far to near', () => {
+    expect(p.lod.scope).toMatch(/Presentation scenes only/); expect(p.lod.scope).toMatch(/Play, the missions/);
+    for (const tiers of [p.lod.figures, p.lod.cars]) { for (let i = 1; i < tiers.length; i++) expect(tiers[i].from).toBeLessThan(tiers[i - 1].from); }
+    expect(p.lod.figures[0].from).toBe(0.012); // the figure library's own last height: the near tier is the library, unchanged
   });
 });
