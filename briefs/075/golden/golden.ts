@@ -5,6 +5,7 @@
 //        world export (bun run world) -> pinned copy -> bun run kit -> Unity HarbourWorldBuilder.Build -> Unity Golden075.Cli -tag <step>
 //        -> briefs/075/golden/<step>.png + <step>.json, steps.json entry (replaced if the step exists), index.html
 //        --no-build: render the scene as it is now (no export, no kit copy, no Unity build)
+//        --life t: Pulse's presentation life (bun run life:presentation from this export) posed at presentation time t
 //   bun briefs/075/golden/golden.ts --old      render the old frame once from out/scratch/latch/oldworld/unity -> old.png
 //   bun briefs/075/golden/golden.ts --index    rebuild index.html from steps.json only
 //
@@ -22,7 +23,7 @@ const OLD_PROJECT = join(root, 'out/scratch/latch/oldworld/unity');
 const stepsPath = join(here, 'steps.json');
 
 type Stats = { satMean: number; lumaMedian: number; p5: number; p95: number; leftThirdMedian: number; rightThirdMedian: number };
-type Step = { step: string; date: string; what: string; by?: string; export_sha256?: string; stats?: Stats };
+type Step = { step: string; date: string; what: string; by?: string; export_sha256?: string; life_t?: number; stats?: Stats };
 
 /** Glint's frame stats (stats.py: HSV saturation mean, Rec. 601 luma median, p5, p95, third medians) of a rendered frame. */
 function stats(png: string): Stats {
@@ -128,10 +129,12 @@ if (has('--old')) {
   process.exit(0);
 }
 
-const step = args.find(a => !a.startsWith('--') && a !== opt('--what') && a !== opt('--by'));
+const step = args.find(a => !a.startsWith('--') && a !== opt('--what') && a !== opt('--by') && a !== opt('--life'));
+const lifeT = opt('--life'); // brief 075 s3: Pulse's presentation life posed at presentation time t (Golden075 -life t)
+if (lifeT !== undefined && !/^[0-9]+(\.[0-9]+)?$/.test(lifeT)) { console.error(`golden: --life wants seconds, got ${lifeT}`); process.exit(2); }
 const what = opt('--what');
 if (!step || !/^[A-Za-z0-9._-]+$/.test(step) || !what) {
-  console.error('usage: bun briefs/075/golden/golden.ts <step> --what "what changed" [--by name] [--no-build] | --old | --index');
+  console.error('usage: bun briefs/075/golden/golden.ts <step> --what "what changed" [--by name] [--no-build] [--life t] | --old | --index');
   process.exit(2);
 }
 if (step === 'old' || step.startsWith('sky-')) { console.error(`golden: step name ${step} is reserved`); process.exit(2); }
@@ -146,12 +149,13 @@ if (!has('--no-build')) {
   run('kit copy', ['bun', 'tools/game/playing.ts', 'bun', 'run', 'kit']);
   unity('scene build', 'unity', 'Suborned.World.HarbourWorldBuilder.Build', ['-world', pin], join(scratch, `${step}-build.log`));
 }
-unity('golden render', 'unity', 'Suborned.World.Review.Golden075.Cli', ['-tag', step], join(scratch, `${step}-render.log`));
+if (lifeT !== undefined) run('presentation life', ['bun', 'tools/game/playing.ts', 'bun', 'run', 'life:presentation']); // from this world export (git-ignored, regenerated)
+unity('golden render', 'unity', 'Suborned.World.Review.Golden075.Cli', ['-tag', step, ...(lifeT !== undefined ? ['-life', lifeT] : [])], join(scratch, `${step}-render.log`));
 
 const frame = JSON.parse(readFileSync(join(here, `${step}.json`), 'utf8'));
 const s = loadSteps();
 const st = stats(join(here, `${step}.png`));
-const entry: Step = { step, date: new Date().toISOString().slice(0, 16).replace('T', ' ') + 'Z', what, ...(opt('--by') ? { by: opt('--by') } : {}), export_sha256: frame.export_sha256, stats: st };
+const entry: Step = { step, date: new Date().toISOString().slice(0, 16).replace('T', ' ') + 'Z', what, ...(opt('--by') ? { by: opt('--by') } : {}), export_sha256: frame.export_sha256, ...(lifeT !== undefined ? { life_t: Number(lifeT) } : {}), stats: st };
 const old = existsSync(join(here, 'old.png')) ? stats(join(here, 'old.png')) : undefined;
 console.log(`golden: ${step}: ${fmt(st)}${old ? `\ngolden: old:  ${fmt(old)}` : ''}`);
 const at = s.steps.findIndex(x => x.step === step);

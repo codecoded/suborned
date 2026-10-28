@@ -172,6 +172,22 @@
         "leftThirdMedian": 174.5,
         "rightThirdMedian": 86.3
       }
+    },
+    {
+      "step": "s3-life",
+      "date": "2026-10-28 12:43Z",
+      "what": "no wires, flush rails in setts, raised arch and 250 m gold tower, traffic, trams and people (Pulse's presentation life at t 77: T1 tram 27 m ahead on the east track, as the old frame's)",
+      "by": "Latch",
+      "export_sha256": "8297649696698b39764c168a1dfd0d9b299b6f654f40bb95b82194c32064af11",
+      "life_t": 77,
+      "stats": {
+        "satMean": 104,
+        "lumaMedian": 113.1,
+        "p5": 36,
+        "p95": 230.2,
+        "leftThirdMedian": 174,
+        "rightThirdMedian": 86.2
+      }
     }
   ],
   "old_stats": {

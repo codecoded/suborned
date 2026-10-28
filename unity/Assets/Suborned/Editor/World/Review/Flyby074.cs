@@ -17,7 +17,8 @@ namespace Suborned.World.Review
     /// still at both ends) through time-stamped eye / look keys, the view direction splined (not the look point), fov 58, shadow distance
     /// clamp(eye height x 8, 120, 1200), as DecoKitFlyby did. Keys in a scratch json (never the shipped flyby.json).
     ///   -executeMethod Suborned.World.Review.Flyby074.Cli -path &lt;json&gt; -out &lt;mp4 or dir&gt; [-colourways off] [-storyboard 2]
-    ///   [-from s] [-to s] [-ss 2] [-stills t1,t2,..]
+    ///   [-from s] [-to s] [-ss 2] [-stills t1,t2,..] [-lens on] [-life on [-lifeT0 s] [-lifeFile json]]
+    /// -life on (brief 075): Pulse's presentation life (traffic, trams, people) posed each frame at presentation time lifeT0 + reel time.
     /// -colourways off: every renderer's tinted kit material swapped back to its base (KitColourways.Base) in memory before the render;
     /// the scene is never saved. -storyboard s: 960x540 stills every s seconds plus a clearance report instead of the video.</summary>
     public static class Flyby074
@@ -69,9 +70,14 @@ namespace Suborned.World.Review
                 lens = Glint075.InstallLens(null); haze = Glint075.InstallHaze();
                 Debug.Log("074 flyby: runtime lens and haze installed (-lens on)");
             }
+            // brief 075 golden: `-life on` draws Pulse's presentation life (LifeInstall), posed each frame at presentation time lifeT0 + reel time
+            PresentationLife life = Arg("-life", "off") == "on" ? LifeInstall.Install(Arg("-lifeFile", null) is string lf ? Abs(lf) : null) : null;
+            float lifeT0 = F("-lifeT0", 0f);
             using var session = new RenderSession();
             var cam = RenderSession.TempCamera("flyby074");
             cam.fieldOfView = fov;
+            if (life) { life.View = cam; Debug.Log($"074 flyby: life on, presentation t = {lifeT0} + reel time"); }
+            void Life(float t) { if (life) life.Step(lifeT0 + t); }
             try
             {
                 Pose(cam, keys, 0f); session.Grab(cam, 64, 64);
@@ -85,7 +91,7 @@ namespace Suborned.World.Review
                     int w = (int)F("-w", board > 0f ? 960 : 1920), h = (int)F("-h", board > 0f ? 540 : 1080);
                     foreach (var t in ts)
                     {
-                        Pose(cam, keys, t); session.ShadowDistance = Shadow(cam);
+                        Pose(cam, keys, t); Life(t); session.ShadowDistance = Shadow(cam);
                         File.WriteAllBytes(Path.Combine(outArg, $"t{t:00.0}.png"), session.Grab(cam, w, h).EncodeToPNG());
                         var eyeAt = cam.transform.position;
                         var nearR = UnityEngine.Object.FindObjectsByType<MeshRenderer>(FindObjectsInactive.Exclude).Where(r => r.bounds.SqrDistance(eyeAt) < 225f && r.bounds.size.magnitude < 300f)
@@ -112,7 +118,7 @@ namespace Suborned.World.Review
                 var clock = Stopwatch.StartNew();
                 for (int f = 0; f < frames; f++)
                 {
-                    Pose(cam, keys, from + f / (float)fps); session.ShadowDistance = Shadow(cam);
+                    Pose(cam, keys, from + f / (float)fps); Life(from + f / (float)fps); session.ShadowDistance = Shadow(cam);
                     var raw = session.Grab(cam, W * ss, H * ss).GetRawTextureData<byte>();
                     var bytes = raw.ToArray(); stdin.Write(bytes, 0, bytes.Length);
                     if (f % 150 == 149) Debug.Log($"074 flyby: {f + 1}/{frames}, {clock.Elapsed.TotalSeconds / (f + 1):0.00} s a frame");
@@ -125,6 +131,7 @@ namespace Suborned.World.Review
             finally
             {
                 UnityEngine.Object.DestroyImmediate(cam.gameObject);
+                if (life) UnityEngine.Object.DestroyImmediate(life.gameObject);
                 const System.Reflection.BindingFlags Any = System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance;
                 if (lens) { typeof(AtmosphereLens).GetMethod("OnDisable", Any)?.Invoke(lens, null); UnityEngine.Object.DestroyImmediate(lens.gameObject); }
                 if (haze) { typeof(DistanceHaze).GetMethod("OnDisable", Any)?.Invoke(haze, null); UnityEngine.Object.DestroyImmediate(haze.gameObject); }

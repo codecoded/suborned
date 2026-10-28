@@ -13,7 +13,8 @@ namespace Suborned.World.Review
     /// scene with the runtime lens and haze installed as Flyby074 `-lens on` does. Camera from briefs/075/golden/cameras.json ("ours"):
     /// eye, look, fov 58, 1920 x 1080 at supersample 2 (rendered 3840 x 2160, lanczos down in ffmpeg as the reels were), shadow distance
     /// clamp(eye height x 8, 120, 1200). Nothing is saved; the scene is never written.
-    ///   Unity -batchmode -quit -projectPath unity -executeMethod Suborned.World.Review.Golden075.Cli -tag &lt;step&gt; [-out dir] -logFile &lt;log&gt;
+    ///   Unity -batchmode -quit -projectPath unity -executeMethod Suborned.World.Review.Golden075.Cli -tag &lt;step&gt; [-out dir] [-life t [-lifeFile json]] -logFile &lt;log&gt;
+    /// -life t: Pulse's presentation life (traffic, trams, people; out/world/harbour-district.presentation.json) posed at presentation time t (LifeInstall).
     /// Writes &lt;out&gt;/&lt;step&gt;.png and &lt;out&gt;/&lt;step&gt;.json (camera, export stamp). Normally run through briefs/075/golden/golden.ts.</summary>
     public static class Golden075
     {
@@ -48,6 +49,13 @@ namespace Suborned.World.Review
             var phase = UnityEngine.Object.FindAnyObjectByType<Suborned.Play.LightPhase>(FindObjectsInactive.Include);
             if (phase) typeof(Suborned.Play.LightPhase).GetMethod("OnEnable", Any)?.Invoke(phase, null);
             AtmosphereLens lens = Glint075.InstallLens(null); DistanceHaze haze = Glint075.InstallHaze();
+            // brief 075 golden s3: `-life t` draws Pulse's presentation life at presentation time t (LifeInstall; never in play)
+            string lifeArg = Arg("-life", null); float lifeT = float.NaN; PresentationLife life = null;
+            if (lifeArg != null)
+            {
+                lifeT = float.Parse(lifeArg, CultureInfo.InvariantCulture);
+                life = LifeInstall.Install(Arg("-lifeFile", null) is string lf ? Abs(lf) : null);
+            }
             var tmp = Path.Combine(HarbourWorldBuilder.RepoRoot, "out", "scratch", "latch", "golden075", $"{tag}-ss{ss}.png");
             Directory.CreateDirectory(Path.GetDirectoryName(tmp)); Directory.CreateDirectory(outDir);
             var png = Path.Combine(outDir, tag + ".png");
@@ -58,6 +66,7 @@ namespace Suborned.World.Review
                 try
                 {
                     new Pose { Position = eye, Rotation = Quaternion.LookRotation((look - eye).normalized, Vector3.up), Fov = fov, Near = 0.3f, Far = 12000f }.Apply(cam);
+                    if (life) { life.View = cam; life.Step(lifeT); Debug.Log($"golden075: life at t {lifeT:0.##} (tau {lifeT % life.Period:0.##}): {life.Shown} shown of {life.Count}"); }
                     session.ShadowDistance = Mathf.Clamp(eye.y * 8f, 120f, 1200f);
                     session.Grab(cam, 64, 64); session.Grab(cam, 64, 64); // the first render after a load is flat; the lens forces post on from the next frame
                     File.WriteAllBytes(tmp, session.Grab(cam, W * ss, H * ss).EncodeToPNG());
@@ -66,6 +75,7 @@ namespace Suborned.World.Review
                 finally
                 {
                     UnityEngine.Object.DestroyImmediate(cam.gameObject);
+                    if (life) UnityEngine.Object.DestroyImmediate(life.gameObject); // the dressing trams shown again
                     if (lens) { typeof(AtmosphereLens).GetMethod("OnDisable", Any)?.Invoke(lens, null); UnityEngine.Object.DestroyImmediate(lens.gameObject); }
                     if (haze) { typeof(DistanceHaze).GetMethod("OnDisable", Any)?.Invoke(haze, null); UnityEngine.Object.DestroyImmediate(haze.gameObject); }
                 }
@@ -85,7 +95,8 @@ namespace Suborned.World.Review
                 $"  \"step\": \"{tag}\",\n  \"rendered\": \"{DateTime.UtcNow:yyyy-MM-ddTHH:mm:ssZ}\",\n" +
                 $"  \"scene\": \"{HarbourWorldBuilder.ScenePath}\",\n  \"export\": \"{export.Replace("\\", "/")}\",\n  \"export_sha256\": \"{sha}\",\n" +
                 $"  \"eye\": [{F(eye.x)}, {F(eye.y)}, {F(eye.z)}],\n  \"look\": [{F(look.x)}, {F(look.y)}, {F(look.z)}],\n" +
-                $"  \"fov_deg\": {F(fov)},\n  \"size\": [{W}, {H}],\n  \"supersample\": {ss},\n  \"lens\": \"runtime lens + haze (Flyby074 -lens on)\"\n}}\n");
+                $"  \"fov_deg\": {F(fov)},\n  \"size\": [{W}, {H}],\n  \"supersample\": {ss},\n  \"lens\": \"runtime lens + haze (Flyby074 -lens on)\",\n" +
+                $"  \"life_t\": {(float.IsNaN(lifeT) ? "null" : F(lifeT))}\n}}\n");
             Debug.Log($"golden075: {png}");
         });
     }
