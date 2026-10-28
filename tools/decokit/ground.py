@@ -265,6 +265,117 @@ def tram_rail(s, n):
             slab(s, rect(x0, y0, x1, y1), pal.Tile_Grey, zb, zt)
 
 
+# ----------------------------------------------------------------- flush street-running track (brief 075 golden view)
+# Sky 2026-10-28 ("no overhead wires though!") and Aster: the track must read as rails set flush in the street, the setts continuous across it, as the old reel's
+# street-running track (briefs/075/golden/old.png), never the sleeper bed of Tile_TramRail. Only the two grooved rails, a narrow granite edge stone along each side of
+# each rail, and the setts between the rails (the builder cuts the setts flat under each tile's footprint, Layers.cs, so the tile carries the setts it covers, in the
+# same DK_Ground_Setts the flats draw with). Same gauge (rail-head centres +-0.5, gauge faces +-0.4625), pivot (footprint centre, ground) and lengths (2 m, 12 m) as
+# Tile_TramRail / _12m, so the names swap. Width 1.355 m (granite outer edges +-0.6775), body to -0.15 (the rail web).
+# Top FLUSH_TOP = 3 mm over the pivot: invisible at play zoom, and the tile wins the 2 cm bands where the builder's cut stops short of its edges and ends (else the
+# setts flat z-fights the rail heads at every joint).
+register("DK_Ground_Setts", "ground", "#FFFFFF")
+mats.TEXTURES.setdefault("DK_Ground_Setts", ("ground_setts_v1.png", 2.0))  # setts_tex.py: fan-bond granite setts, 2 m tile
+mats.GROUND.setdefault("DK_Ground_Setts", dict(albedo="ground_setts_v1.png", normal="ground_setts_v1_normal.png", mask="ground_setts_v1_mask.png", tile=(2.0, 2.0), smoothness=1.0))  # DK_Ground_Pavement's keywords: no new variant
+FLUSH_TOP = 0.003
+# The edge stones: the kerb granite sheet tinted down to a step over the setts (mean about #A2A6A9 against the setts' #8F9498), so each rail reads as a thin steel line
+# in a quiet granite border, never a pale band (the kerb's own #CCC9C3 drew four light lines a track). A tint on the same sheet: no new texture, no new variant.
+register("DK_Granite_Rail", "stone", "#CBD4DE")
+mats.TEXTURES.setdefault("DK_Granite_Rail", ("ground_kerb_v1.png", 0.5))
+mats.GROUND.setdefault("DK_Granite_Rail", dict(albedo="ground_kerb_v1.png", normal="ground_kerb_v1_normal.png", mask="ground_kerb_v1_mask.png", tile=(0.5, 0.5), smoothness=1.0, tint="#CBD4DE"))
+GF = 0.4625            # gauge face (inner edge of the 75 mm head); head centre 0.5
+RAIL_OUT, RAIL_IN = 0.095, 0.085   # rail section past the gauge face, outward / inward
+EDGE_W, EDGE_R = 0.12, 0.018       # granite edge stone width, rounded arris on its setts side
+EDGE_D = -0.07                      # stone and setts depth (the bed below)
+
+
+def _side_part(s, n, poly, mat, smooth=False):
+    """A (y, z) section extruded along x = -n..n (SIDE: local X -> world Y)."""
+    with s.at((0, 0, 0), SIDE):
+        s.extrude(poly if _area(poly) > 0 else poly[::-1], -n, n, mat, smooth_sides=smooth)
+
+
+def _side_block(s, x0, x1, poly, mat):
+    with s.at((0, 0, 0), SIDE):
+        s.extrude(poly if _area(poly) > 0 else poly[::-1], x0, x1, mat)
+
+
+def _edge_section(ya, yb, round_at, zt):
+    """Granite edge stone across y = ya..yb (ya < yb), top zt, the arris at round_at (ya or yb) rounded EDGE_R."""
+    r = EDGE_R
+    if round_at == yb:
+        return [(ya, EDGE_D), (yb, EDGE_D)] + arc(yb - r, zt - r, r, 0, 90, 4) + [(ya, zt)]
+    return [(ya, EDGE_D), (yb, EDGE_D), (yb, zt)] + arc(ya + r, zt - r, r, 90, 180, 4)
+
+
+def tram_rail_flush(s, n):
+    """Flush grooved rails on x = -n..n (see the block comment above)."""
+    zt = FLUSH_TOP
+    yi = GF - RAIL_IN                 # 0.3775: the inner keeper's face
+    yo = GF + RAIL_OUT                # 0.5575: the outer keeper's face
+    W = yo + EDGE_W                   # 0.6775
+    bed(s, rect(-n, -W, n, W), z0=-0.15, z1=EDGE_D)
+    for sg in (1, -1):
+        def part(pts, mat, sg=sg):  # (w, z); w = distance inward (toward y = 0) from the gauge face
+            _side_part(s, n, [(sg * (GF - w), z) for w, z in pts], mat, smooth=True)
+        part(rect(-RAIL_OUT, -0.15, RAIL_IN, -0.04), pal.Steel_Satin)                         # web + foot block
+        part(rect(-RAIL_OUT, -0.04, -0.075, zt), pal.Steel_Satin)                             # outer keeper flat
+        part([(-0.075, -0.04), (0.0, -0.04)] + crown(0.0, -0.075, zt - 0.005, zt), pal.Steel)  # crowned head
+        part(rect(0.0, -0.04, 0.035, -0.037), pal.Iron)                                       # flangeway groove floor
+        part([(0.035, -0.04), (0.065, -0.04)] + crown(0.065, 0.035, zt - 0.004, zt - 0.001, 4), pal.Steel)  # guard lip
+        part(rect(0.065, -0.04, RAIL_IN, zt), pal.Steel_Satin)                                # inner keeper flat
+        # granite edge stones, 1 m long, 4 mm joints: outside the rail (arris on the street side) and inside it (arris on the setts side)
+        for ya, yb, rd in ((yo + J, W - J, "out"), (yi - EDGE_W + J, yi - J, "in")):
+            y0, y1 = (ya, yb) if sg > 0 else (-yb, -ya)
+            rnd = (y1 if rd == "out" else y0) if sg > 0 else (y0 if rd == "out" else y1)
+            sec = _edge_section(y0, y1, rnd, zt)
+            for x0 in range(-n, n):
+                _side_block(s, x0 + J, x0 + 1 - J, sec, pal.Granite_Rail)
+    yc = yi - EDGE_W - J              # 0.2555: the setts between the rails
+    s.extrude(rect(-n, -yc, n, yc), EDGE_D, zt, pal.Ground_Setts, bottom=False)
+
+
+def tram_rail_flush_lod(n, far):
+    """Hand-built L1 (far=False) and L2 (far=True): flat boxes on the same plan, top FLUSH_TOP. L1 keeps the groove and the stone joints; L2 is the
+    setts band, the two granite bands and a steel strip per rail (the collapse would fold the 75 mm heads into slivers)."""
+    zt = FLUSH_TOP
+    yi, yo = GF - RAIL_IN, GF + RAIL_OUT
+    W = yo + EDGE_W
+
+    def build(s):
+        s.box((-n, -(yi - EDGE_W), EDGE_D), (n, yi - EDGE_W, zt), pal.Ground_Setts)
+        for sg in (1, -1):
+            def bx(a, b, z0, z1, mat, x0=-n, x1=n):
+                y0, y1 = sorted((sg * a, sg * b))
+                s.box((x0, y0, z0), (x1, y1, z1), mat)
+            if far:
+                bx(yo, W, EDGE_D, zt, pal.Granite_Rail)
+                bx(yi - EDGE_W, yi, EDGE_D, zt, pal.Granite_Rail)
+                bx(yi, yo, -0.15, zt, pal.Steel)
+            else:
+                for x0 in range(-n, n):
+                    bx(yo + J, W - J, EDGE_D, zt, pal.Granite_Rail, x0 + J, x0 + 1 - J)
+                    bx(yi - EDGE_W + J, yi - J, EDGE_D, zt, pal.Granite_Rail, x0 + J, x0 + 1 - J)
+                bx(GF + 0.075, yo, -0.15, zt, pal.Steel_Satin)        # outer keeper
+                bx(GF, GF + 0.075, -0.15, zt, pal.Steel)              # head
+                bx(GF - 0.035, GF, -0.15, zt - 0.03, pal.Iron)        # groove (open, 30 mm)
+                bx(yi, GF - 0.035, -0.15, zt, pal.Steel_Satin)        # guard lip + inner keeper
+        s.box((-n, -W, -0.15), (n, W, EDGE_D), pal.Stone_Dark)
+    return build
+
+
+@asset("Tile_TramRail_Flush", "Ground", bevel=0.0, near=tram_rail_flush_lod(1, False), far=tram_rail_flush_lod(1, True))
+def tile_tram_rail_flush(s):
+    """Brief 075 golden view: the street-running track, 2 m (curves and a straight's remainder). Two grooved rails flush in the setts, a granite
+    edge stone each side of each rail, the setts between; no bed, no sleepers, no coloured strips. Tile_TramRail's gauge, pivot and length."""
+    tram_rail_flush(s, 1)
+
+
+@asset("Tile_TramRail_Flush_12m", "Ground", bevel=0.0, near=tram_rail_flush_lod(6, False), far=tram_rail_flush_lod(6, True))
+def tile_tram_rail_flush_12m(s):
+    """Tile_TramRail_Flush on a 12 m straight (six of its 2 m periods: the 1 m edge stones repeat exactly, so it butts onto the 2 m tile end to end)."""
+    tram_rail_flush(s, 6)
+
+
 @asset("Tile_Tactile", "Ground", bevel=0.012)
 def tile_tactile(s):
     """Sidewalk module at a crossing: ivory slabs (back), powder-blue panel, red blister strip on a satin-steel tray

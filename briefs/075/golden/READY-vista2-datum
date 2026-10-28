@@ -1,0 +1,4 @@
+Datum 2026-10-28 brief 075 golden vista 2
+plan sha256 10d7920dbefe3a59315b91185f822723df03377197fd1770235d9f54d675e552
+arch c [0,53] feet y 50-56 crest 95.2 top 105.3 (regen Vela); tower (0,350) r 30 top 250 (regen Vela); standards.skyline.vista; tramStreet wires removed
+plan checker exit 0; handover overlay exit 0 (V-1 64/65, M-1 667/1064/126/1473)
