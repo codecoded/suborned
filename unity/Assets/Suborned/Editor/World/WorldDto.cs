@@ -190,7 +190,19 @@ namespace Suborned.World
         public List<SkyRailDto> SkyRail = new();
         public List<MassDto> Stops = new(), Stations = new();
         public List<WirePieceDto> Wires = new(); // brief 075: transit.wires.pieces (the overhead); empty when the export has none
+        public SkyTrackDto SkyTrack; // brief 075 roll-out: transit.skyTrack (the old beam sweep and pylon stacks); null = draw SkyRail's ribbons and posts
     }
+
+    /// <summary>Brief 075 roll-out (Splice's skytrack.ts, Vela's SkyRail_Beam_4m section): the beam section swept along each beam's centre line,
+    /// its top at Top; the old pylon stacks (Foot optional, Shaft stretched in height, Head or HeadTwin hanging from the beam's underside).</summary>
+    public sealed class SkyTrackDto
+    {
+        public string Piece; public float Width, Depth, Fillet, StripeLo, StripeHi, StripeProud, UPerMetre;
+        public List<SkyBeamDto> Beams = new();
+        public List<SkyPylonDto> Pylons = new();
+    }
+    public sealed class SkyBeamDto { public string Id; public Vector2[] Line; public float Top; }
+    public sealed class SkyPylonDto { public string Id; public Vector2 At; public float Yaw, Ground; public KitRefDto Foot, Shaft, Head; public float FootZ, ShaftZ, HeadZ; }
 
     public sealed class TrackDto { public string Id, Surface; public Vector2[] Line; public float Width, Level, Depth, Spacing; } // Spacing > 0: two ribbons that far apart
 

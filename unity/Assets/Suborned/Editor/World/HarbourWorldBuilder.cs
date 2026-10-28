@@ -108,8 +108,10 @@ namespace Suborned.World
             layers.Ground(groundLayer, world.Ground);
             RoadMarkings.Build(nodes, groundLayer, world); // brief 026 round 2: the dashed centre lines
             Debug.Log($"World: kerbs as stones {KerbKit.Stones} segments, gutter strips {KerbKit.Gutters} segments; {KerbKit.Covered} segments left to the export's kit kerb stones (brief 026 round 2)");
+            KitColourways.Load(KitCataloguePath); // brief 074: Vela's colourway material sets, swapped per placed piece and column instance (loaded before the transit layer: brief 075 roll-out, the sky track's heads take the vermilion livery)
+            KitLiveries.Load(KitCataloguePath, world.Liveries); // brief 075-C: landmark livery, swapped per placed piece by host and ref
             var railCovered = TramStreet.RailCovered(world.Transit, world.Ground.Pieces); // brief 075: the strips step aside for the flush rail tiles
-            layers.Transit(Nodes.Group(root, "transit"), world.Transit, railCovered);
+            layers.Transit(Nodes.Group(root, "transit"), world.Transit, railCovered, placer);
             Debug.Log($"World: track strips {world.Transit.Tram.Count - railCovered.Count} drawn, {railCovered.Count} covered by the export's rail tiles ({string.Join(", ", railCovered)}; brief 075)");
             TramStreet.Kerbside(nodes, root, world.Ground); // brief 075: kerbside bays and palm islands
             var buildings = Nodes.Group(root, "buildings");
@@ -119,10 +121,8 @@ namespace Suborned.World
             ProcSkin.Finish(buildings);
             new FabricKit(nodes, facade.Spec.Atlas).Build(Nodes.Group(root, "fabric"), world.Fabric);
             Debug.Log($"World: skins {world.Skins.Count}: {ProcSkin.Matched} walls matched to a face, {ProcSkin.Unmatched} by the grammar alone (facets, unskinned walls), {ProcSkin.Cells} bay cells; colour life: {ProcSkin.Panels} porthole panels, {ProcSkin.Spandrels} spandrels, {ProcSkin.BalconyFronts} balcony fronts, {ProcSkin.Fins} fins");
-            KitColourways.Load(KitCataloguePath); // brief 074: Vela's colourway material sets, swapped per placed piece and column instance
             skyline.Facades(Nodes.Group(root, "facades"), world.Facades);
             Debug.Log(KitColourways.Summary());
-            KitLiveries.Load(KitCataloguePath, world.Liveries); // brief 075-C: landmark livery, swapped per placed piece by host and ref
             roofs.Roofs(Nodes.Group(root, "roofs"), world.Roofs, placer, standIns);
             var frontages = Nodes.Group(root, "frontages");
             shops.Frontages(frontages, world.Frontages);

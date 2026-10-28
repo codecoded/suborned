@@ -25,6 +25,8 @@ namespace Suborned.World
         public int Vert(Vector3 p) { v.Add(p); return v.Count - 1; }
 
         public Vector3 At(int i) => v[i];
+        /// <summary>The normal set on vertex i (zero where Build computes it).</summary>
+        public Vector3 NormalAt(int i) => nrm != null && i < nrm.Count ? nrm[i] : default;
         /// <summary>Low-level: moves vertex i (RoadPoolJoints mitres a pool band's far corner before it is baked).</summary>
         public void SetAt(int i, Vector3 p) => v[i] = p;
         /// <summary>The UV of vertex i (zero where none).</summary>
@@ -32,6 +34,9 @@ namespace Suborned.World
 
         /// <summary>A vertex with its own UV (brief 026: the kerb stone and gutter strip, UV in metres along and across the kerb).</summary>
         public int Vert(Vector3 p, Vector2 uv0) { PadUv(); v.Add(p); uv.Add(uv0); return v.Count - 1; }
+
+        /// <summary>A vertex with its own UV and normal (brief 075 roll-out: the sky track's swept beam, smooth round its fillets).</summary>
+        public int Vert(Vector3 p, Vector2 uv0, Vector3 n) { PadUv(); PadNormals(); v.Add(p); uv.Add(uv0); nrm.Add(n.normalized); return v.Count - 1; }
 
         void PadUv() { uv ??= new List<Vector2>(); while (uv.Count < v.Count) uv.Add(default); }
         void PadNormals() { nrm ??= new List<Vector3>(); while (nrm.Count < v.Count) nrm.Add(default); }

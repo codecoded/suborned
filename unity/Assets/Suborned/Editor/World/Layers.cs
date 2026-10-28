@@ -284,7 +284,7 @@ namespace Suborned.World
             return r.ToArray();
         }
 
-        public void Transit(Transform layer, TransitDto t, System.Collections.Generic.HashSet<string> railCovered = null)
+        public void Transit(Transform layer, TransitDto t, System.Collections.Generic.HashSet<string> railCovered = null, KitPlacer placer = null)
         {
             foreach (var x in t.Tram)
             {
@@ -296,6 +296,7 @@ namespace Suborned.World
             }
             foreach (var m in t.Stops) Mass(layer, m);
             foreach (var m in t.Stations) Mass(layer, m);
+            if (t.SkyTrack != null && placer != null) { SkyTrack(layer, t, placer); return; } // brief 075 roll-out: the old sky track replaces the ribbons and square posts
             foreach (var s in t.SkyRail)
             {
                 var el = Nodes.Element(layer, s.Id);
@@ -313,6 +314,127 @@ namespace Suborned.World
                     pylons.Prism(Poly.Rect(p, tangent, s.PylonSize, s.PylonSize), s.Ground, soffit);
                 }
                 nodes.Part(el, "pylons", pylons, s.PylonSurface);
+            }
+        }
+
+        /// <summary>Brief 075 roll-out (Vela's "Roll-out: sky track", the old DecoKitSkyRail.Beam/Sweep): each skyTrack beam is SkyRail_Beam_4m's section
+        /// (Width x Depth, corners filleted Fillet, 4 points a corner at 0/30/60/90 deg, top at the beam's Top) swept along its centre line, world up, no
+        /// banking; UVs metric (u = metres along x UPerMetre, v = metres round the section), smooth normals (each point's own: the fillet's radial, the
+        /// flats' face normal), in DK_Hull_Ivory; the teal stripe a proud band on each flank (z StripeLo..StripeHi, 0.005 inside to StripeProud out) in
+        /// DK_Enamel_Teal; ends capped. Cut into 24 m pieces so the batches tile and cull. Pylons: the kit stack per export pylon (foot, shaft stretched in
+        /// height, head or twin head), each on its line's element. The skyRail lines keep their elements (ids), now holding these; no ribbon, no post.</summary>
+        void SkyTrack(Transform layer, TransitDto t, KitPlacer placer)
+        {
+            var st = t.SkyTrack;
+            Material body = KitImport.Library("DK_Hull_Ivory") ?? throw new System.IO.InvalidDataException("World: sky track: DK_Hull_Ivory missing from Kit/Materials (bun run kit)");
+            Material stripe = KitImport.Library("DK_Enamel_Teal") ?? throw new System.IO.InvalidDataException("World: sky track: DK_Enamel_Teal missing from Kit/Materials (bun run kit)");
+            var els = new System.Collections.Generic.Dictionary<string, Transform>();
+            Transform Owner(string id)
+            {
+                foreach (var s in t.SkyRail) if (id.StartsWith(s.Id + "/", System.StringComparison.Ordinal)) { if (!els.TryGetValue(s.Id, out var e)) els[s.Id] = e = Nodes.Element(layer, s.Id); return e; }
+                throw new System.IO.InvalidDataException($"World: sky track {id} belongs to no transit.skyRail line");
+            }
+            // the section (x across, z up, top at 0), CCW, and each point's outward normal
+            float hw = st.Width * 0.5f, r = st.Fillet, d = st.Depth;
+            var sec = new System.Collections.Generic.List<(Vector2 p, Vector2 n)>();
+            foreach (var (x, z, a0) in new[] { (-hw, -d, 180f), (hw, -d, 270f), (hw, 0f, 0f), (-hw, 0f, 90f) })
+            {
+                float cx = x - Mathf.Sign(x) * r, cz = z + (z < 0f ? r : -r);
+                for (int k = 0; k < 4; k++) { float a = (a0 + 30f * k) * Mathf.Deg2Rad; var n = new Vector2(Mathf.Cos(a), Mathf.Sin(a)); sec.Add((new Vector2(cx, cz) + n * r, n)); }
+            }
+            var per = new float[sec.Count + 1];
+            for (int i = 0; i < sec.Count; i++) per[i + 1] = per[i] + Vector2.Distance(sec[i].p, sec[(i + 1) % sec.Count].p);
+            int beams = 0, pieces = 0, tris = 0;
+            foreach (var b in st.Beams)
+            {
+                var el = Owner(b.Id); var line = Poly.CleanLine(b.Line); int n = line.Length;
+                if (n < 2) throw new System.IO.InvalidDataException($"World: sky track {b.Id}: a beam line of {n} points");
+                bool closed = Vector2.Distance(line[0], line[n - 1]) < 0.05f; if (closed) n--;
+                var s = new float[n]; for (int i = 1; i < n; i++) s[i] = s[i - 1] + Vector2.Distance(line[i - 1], line[i]);
+                Vector2 Tan(int i)
+                {
+                    Vector2 a = i > 0 ? line[i - 1] : closed ? line[n - 1] : line[0], c = i < n - 1 ? line[i + 1] : closed ? line[0] : line[n - 1];
+                    return (c - a).normalized;
+                }
+                // ring i in world space: point j of the section and its normal
+                (Vector3 p, Vector3 nr) Ring(int i, Vector2 q, Vector2 qn)
+                {
+                    var tg = Tan(i); var side = new Vector2(tg.y, -tg.x); // plan right of the direction
+                    var c = line[i];
+                    return (new Vector3(c.x + side.x * q.x, b.Top + q.y, c.y + side.y * q.x), new Vector3(side.x * qn.x, qn.y, side.y * qn.x));
+                }
+                int rings = closed ? n + 1 : n; const int Chunk = 12; // 12 steps of ~2 m a piece
+                for (int r0 = 0; r0 < rings - 1; r0 += Chunk)
+                {
+                    int r1 = Mathf.Min(rings - 1, r0 + Chunk);
+                    var kb = new MeshKit(); var ks = new MeshKit();
+                    // body: one vertex per section point per ring (normals analytic, so the flats stay flat)
+                    int[,] idx = new int[r1 - r0 + 1, sec.Count + 1];
+                    for (int ri = r0; ri <= r1; ri++)
+                    {
+                        int i = ri % n; float u = (ri == n ? s[n - 1] + Vector2.Distance(line[n - 1], line[0]) : s[i]) * st.UPerMetre;
+                        for (int j = 0; j <= sec.Count; j++) { var (p, nr) = Ring(i, sec[j % sec.Count].p, sec[j % sec.Count].n); idx[ri - r0, j] = kb.Vert(p, new Vector2(u, per[j]), nr); }
+                    }
+                    for (int ri = r0; ri < r1; ri++)
+                        for (int j = 0; j < sec.Count; j++)
+                            Quad(kb, idx[ri - r0, j], idx[ri - r0, j + 1], idx[ri - r0 + 1, j + 1], idx[ri - r0 + 1, j]);
+                    // stripes: a proud band on each flank, flat faces (outer, top, bottom)
+                    foreach (float sideSign in new[] { -1f, 1f })
+                    {
+                        float xi = sideSign * (hw - 0.005f), xo = sideSign * (hw + st.StripeProud);
+                        var faces = new[] { (new Vector2(xi, st.StripeHi), new Vector2(xo, st.StripeHi), Vector2.up), (new Vector2(xo, st.StripeHi), new Vector2(xo, st.StripeLo), new Vector2(sideSign, 0f)), (new Vector2(xo, st.StripeLo), new Vector2(xi, st.StripeLo), Vector2.down) };
+                        foreach (var (qa, qb, qn) in faces)
+                        {
+                            int prevA = -1, prevB = -1; float vb = Vector2.Distance(qa, qb);
+                            for (int ri = r0; ri <= r1; ri++)
+                            {
+                                int i = ri % n; float u = (ri == n ? s[n - 1] + Vector2.Distance(line[n - 1], line[0]) : s[i]) * st.UPerMetre;
+                                var (pa, na) = Ring(i, qa, qn); var (pb, _) = Ring(i, qb, qn);
+                                int ia = ks.Vert(pa, new Vector2(u, 0f), na), ib = ks.Vert(pb, new Vector2(u, vb), na);
+                                if (prevA >= 0) Quad(ks, prevA, prevB, ib, ia);
+                                prevA = ia; prevB = ib;
+                            }
+                        }
+                    }
+                    if (!closed && r0 == 0) { var tg = Tan(0); Cap(kb, sec.ConvertAll(q => Ring(0, q.p, q.n).p), new Vector3(-tg.x, 0f, -tg.y)); }
+                    if (!closed && r1 == rings - 1) { var tg = Tan(n - 1); Cap(kb, sec.ConvertAll(q => Ring(n - 1, q.p, q.n).p), new Vector3(tg.x, 0f, tg.y)); }
+                    nodes.Part(el, $"beam/{b.Id}/{pieces}", kb, body); nodes.Part(el, $"stripe/{b.Id}/{pieces}", ks, stripe);
+                    tris += kb.TriangleCount + ks.TriangleCount; pieces++;
+                }
+                beams++;
+            }
+            int pylons = 0;
+            foreach (var p in st.Pylons)
+            {
+                var el = Owner(p.Id);
+                if (p.Foot != null) placer.Place(el, layer.name, p.Foot, p.Foot.At, p.FootZ, p.Yaw);
+                placer.Place(el, layer.name, p.Shaft, p.Shaft.At, p.ShaftZ, p.Yaw);
+                KitLiveries.Apply(placer.Place(el, layer.name, p.Head, p.Head.At, p.HeadZ, p.Yaw), p.Id, "head", p.Head.Id);
+                pylons++;
+            }
+            foreach (var s in t.SkyRail) if (!els.ContainsKey(s.Id)) Debug.LogWarning($"World: sky track: line {s.Id} has no beam or pylon in transit.skyTrack: not drawn");
+            Debug.Log($"World: sky track (brief 075 roll-out): {beams} beams swept in {pieces} pieces ({tris} tris, section {sec.Count} points, {st.Width} x {st.Depth} r {st.Fillet}), {pylons} pylon stacks; skyRail ribbons and posts retired");
+        }
+
+        /// <summary>A quad a-b-c-d, wound so its face points along the vertices' own normals (Unity's clockwise front).</summary>
+        static void Quad(MeshKit k, int a, int b, int c, int d)
+        {
+            Vector3 pa = k.At(a), pb = k.At(b), pc = k.At(c), pd = k.At(d);
+            var face = Vector3.Cross(pb - pa, pc - pa); if (face.sqrMagnitude < 1e-12f) face = Vector3.Cross(pc - pa, pd - pa);
+            if (Vector3.Dot(face, k.NormalAt(a) + k.NormalAt(c)) >= 0f) { k.Tri(a, b, c); k.Tri(a, c, d); } else { k.Tri(a, c, b); k.Tri(a, d, c); }
+        }
+
+        /// <summary>A flat end cap (a fan about the section's centre) over the ring's points, facing `outward`.</summary>
+        static void Cap(MeshKit k, System.Collections.Generic.List<Vector3> ring, Vector3 outward)
+        {
+            var mid = Vector3.zero; foreach (var q in ring) mid += q; mid /= ring.Count;
+            int centre = k.Vert(mid, Vector2.zero, outward);
+            var at = new int[ring.Count];
+            for (int j = 0; j < ring.Count; j++) at[j] = k.Vert(ring[j], new Vector2(ring[j].x, ring[j].y), outward);
+            for (int j = 0; j < ring.Count; j++)
+            {
+                int x = at[j], y = at[(j + 1) % ring.Count];
+                if (Vector3.Dot(Vector3.Cross(ring[j] - mid, ring[(j + 1) % ring.Count] - mid), outward) >= 0f) k.Tri(centre, x, y); else k.Tri(centre, y, x);
             }
         }
 

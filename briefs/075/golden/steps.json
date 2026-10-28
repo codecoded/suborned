@@ -188,6 +188,22 @@
         "leftThirdMedian": 174,
         "rightThirdMedian": 86.2
       }
+    },
+    {
+      "step": "s4-oldtown",
+      "date": "2026-10-28 14:40Z",
+      "what": "old buildings at true size (rounded corners, ends, crescents, 3 storeys), old sky track, varied cars",
+      "by": "Latch",
+      "export_sha256": "85559b335cf390176be9d7c3a63b0feadf751785b920e911afa354a135ae53b9",
+      "life_t": 77,
+      "stats": {
+        "satMean": 105.4,
+        "lumaMedian": 142.3,
+        "p5": 40.1,
+        "p95": 234.4,
+        "leftThirdMedian": 181.6,
+        "rightThirdMedian": 99
+      }
     }
   ],
   "old_stats": {

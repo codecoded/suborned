@@ -75,7 +75,7 @@ namespace Suborned.World.Review
                 Baseline072.Pose(cam, shadows, fade, Baseline072.OfficeFront, 30f, standOff); session.Grab(cam, 64, 64); // the first render after a load comes out flat
                 if (mode == "play")
                 {
-                    var views = new List<(string id, Vector2 f, float yaw)> { ("office-front", Baseline072.OfficeFront, 30f), ("office-front", Baseline072.OfficeFront, 210f), ("cafe-square", cellOpen, 30f), ("cafe-square", cellOpen, 210f) };
+                    var views = new List<(string id, Vector2 f, float yaw, float zoom)> { ("office-front", Baseline072.OfficeFront, 30f, Baseline072.PlayZoom), ("office-front", Baseline072.OfficeFront, 210f, Baseline072.PlayZoom), ("cafe-square", cellOpen, 30f, Baseline072.PlayZoom), ("cafe-square", cellOpen, 210f, Baseline072.PlayZoom) };
                     // brief 075-F1 (Latch): -spots "id:x,y,yaw;..." adds play-zoom views (plan x, y = world x, z); -posters off puts every board back on its
                     // base material in memory (the canonical "mars" cell everywhere: the scene as it was before the per-instance swap), never saved
                     if (Arg("-spots", null) is { } spots)
@@ -84,7 +84,7 @@ namespace Suborned.World.Review
                         foreach (var sp in spots.Split(';', StringSplitOptions.RemoveEmptyEntries))
                         {
                             var kv = sp.Split(':'); var n = kv[1].Split(',').Select(x => float.Parse(x, CultureInfo.InvariantCulture)).ToArray();
-                            views.Add((kv[0], new Vector2(n[0], n[1]), n[2]));
+                            views.Add((kv[0], new Vector2(n[0], n[1]), n[2], n.Length > 3 ? n[3] : Baseline072.PlayZoom)); // brief 075 (Latch): an optional 4th number, the orthographic size (a wide view at the play pitch)
                         }
                     }
                     if (Arg("-posters", "on") == "off") report.Append($"posters off: {PostersOff()} slots back on their base\n");
@@ -95,7 +95,7 @@ namespace Suborned.World.Review
                         {
                             focusNow = new Vector3(v.f.x, 0f, v.f.y);
                             if (night) typeof(LightPhase).GetMethod("Cap", Any).Invoke(phase, new object[] { true });
-                            Baseline072.Pose(cam, shadows, fade, v.f, v.yaw, standOff);
+                            Baseline072.Pose(cam, shadows, fade, v.f, v.yaw, standOff, v.zoom);
                             session.Grab(cam, 64, 64);
                             File.WriteAllBytes(Path.Combine(outDir, $"{variant}-{(night ? "night" : "day")}-{v.id}-y{v.yaw:000}.png"), session.Grab(cam, 1920, 1080).EncodeToPNG());
                         }

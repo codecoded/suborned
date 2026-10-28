@@ -62,6 +62,25 @@ namespace Suborned.World
                 Height = J.F(x, "height"), Width = J.F(x, "width"), Depth = J.F(x, "depth"), PylonSize = J.F(x, "pylonSize"), Ground = J.F(x, "ground"), Spacing = J.F(x, "spacing"), CapDepth = J.F(x, "capDepth"),
             });
 
+            if (J.Get(t, "skyTrack") is { } st) // brief 075 roll-out: the old sky track (the sweep and the pylon stacks)
+            {
+                var bm = J.Get(st, "beam") ?? throw new InvalidDataException("World: transit.skyTrack has no beam");
+                var stripe = J.A(bm, "stripe");
+                w.Transit.SkyTrack = new SkyTrackDto
+                {
+                    Piece = J.S(bm, "piece"), Width = J.F(bm, "width"), Depth = J.F(bm, "depth"), Fillet = J.F(bm, "fillet"),
+                    StripeLo = (float)(double)stripe[0], StripeHi = (float)(double)stripe[1], StripeProud = J.F(bm, "stripeProud"), UPerMetre = J.F(bm, "uPerMetre"),
+                    Beams = Each(bm, "beams", x => new SkyBeamDto { Id = Id(x), Line = J.Poly(x, "line"), Top = J.F(x, "top") }),
+                    Pylons = Each(st, "pylons", x =>
+                    {
+                        var p = new SkyPylonDto { Id = Id(x), At = J.P(x, "at"), Yaw = J.F(x, "yaw"), Ground = J.F(x, "ground") };
+                        if (J.Get(x, "foot") is { } f) { p.Foot = Kit(f); p.FootZ = J.F(f, "z"); }
+                        var sh = J.Get(x, "shaft") ?? throw new InvalidDataException($"World: sky pylon {p.Id} has no shaft"); p.Shaft = Kit(sh); p.ShaftZ = J.F(sh, "z");
+                        var hd = J.Get(x, "head") ?? throw new InvalidDataException($"World: sky pylon {p.Id} has no head"); p.Head = Kit(hd); p.HeadZ = J.F(hd, "z");
+                        return p;
+                    }),
+                };
+            }
             w.Transit.Stops = Each(t, "stops", Mass);
             w.Transit.Stations = Each(t, "stations", Mass);
             if (J.Get(t, "wires") is { } wires) // brief 075: the overhead; the contact and span lines are data (their pieces are what draws)

@@ -1,0 +1,15 @@
+{
+  "schema": "latch.golden075-frame/1",
+  "step": "s4-oldtown",
+  "rendered": "2026-10-28T14:40:42Z",
+  "scene": "Assets/Scenes/HarbourDistrict.unity",
+  "export": "out/scratch/latch/golden075/pin/s4-oldtown.world.json",
+  "export_sha256": "85559b335cf390176be9d7c3a63b0feadf751785b920e911afa354a135ae53b9",
+  "eye": [1.9297, 8.1094, -214.5703],
+  "look": [0.4271, 9.0026, -114.5856],
+  "fov_deg": 58,
+  "size": [1920, 1080],
+  "supersample": 2,
+  "lens": "runtime lens + haze (Flyby074 -lens on)",
+  "life_t": 77
+}

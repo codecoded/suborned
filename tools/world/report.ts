@@ -3,8 +3,13 @@ import type { World } from '../../contracts/world/world.schema';
 import type { Derived } from '../plan/plan';
 import type { Generated } from './gen';
 import { civicClearance } from './build';
+import { kitSizes, occlusionLine, occlusionOf } from './occlusion';
+import { resolve } from 'node:path';
 
 export function report(w: World, gen: Generated, d: Derived): void {
+  // brief 075: the play-view occlusion measure (tools/world/occlusion.ts; bun run world:occlusion for the before/after report), informational, never fails the export
+  try { console.log(occlusionLine(occlusionOf(w, kitSizes(resolve(import.meta.dir, '../../contracts/world/kit.json')), d.areas.map(a => ({ id: a.id, name: a.name, ring: a.polyV })), gen.capstone?.zone as [number, number, number, number] | undefined))); }
+  catch (e) { console.log(`play-view occlusion: not measured (${(e as Error).message})`); }
   console.log(`counts ${Object.entries(w.counts).map(([k, v]) => `${k} ${v}`).join(', ')}`);
   const by = (xs: string[]) => { const m: Record<string, number> = {}; for (const x of xs) m[x] = (m[x] ?? 0) + 1; return Object.entries(m).sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0])).map(([k, v]) => `${k} ${v}`).join(', '); };
   console.log(`buildings ${gen.blds.length} (${by(gen.blds.map(b => b.kind))}); plots ${w.ground.plots.length}; roofs by programme: ${by(w.roofs.map(r => r.programme))}`);

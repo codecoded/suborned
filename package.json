@@ -34,6 +34,7 @@
     "geometry": "bun tools/geometry/cli.ts",
     "world": "bun tools/world/export.ts",
     "world:faces": "bun tools/world/faces.ts",
+    "world:occlusion": "bun tools/world/occlusion-cli.ts",
     "life": "bun tools/life/cli.ts",
     "life:presentation": "bun tools/life/presentation.ts",
     "crew": "bun tools/crew/cards.ts",
