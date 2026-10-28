@@ -2,7 +2,9 @@
 // grammar (standards.blocks, Datum), so the old frontage pieces stand at true size: runs of 6 m bays between caps (corner = the 8 m cell, end / open / join / arc = 0), 14 m bays, 28 back to back,
 // corner cells at public corners, crescents of 6 m chords round Crown Circus. Opt-in: a plan without standards.blocks has no check (a pinned plan replays as it was made).
 //   BG-1  the standard is whole; every built plot is laid as blocks or exempt for a reason the plan can prove (handover: reaches into the capstone zone; megastructure: a footprint covers it;
-//         shed: industrial or port use); the zone equals the capstone zone (tools/world/gen/street/capstone.ts zoneOf), so it cannot be widened to exempt a plot
+//         shed: industrial or port use; massing: an old-builder CityMass plot, brief 075 ask 2: outside the Handover zone and clear of every rect of the old composed
+//         district (standards.blocks.massing.composed, from the old DecoKitCityPlan.InDistrict / DecoKitSouthside.Bounds), where the old DecoKitCityMass filled the
+//         ground, so the old builders fill it and no blocks are laid); the zone equals the capstone zone (tools/world/gen/street/capstone.ts zoneOf), so it cannot be widened to exempt a plot
 //   BG-2  every run: axis-aligned, its length = caps + 6 x bays exactly (0.01 m), bays >= 1, known caps; a gap only at a join or arc end (or a passage face's open ends) and under 6 m; every corner cap meets the corner cap of a
 //         perpendicular run of its block at the same point (the shared 8 x 8 cell)
 //   BG-3  every run's 14 m band lies inside its plot's building line and clear of every reserved mass (tower podium, megastructure, signature ground) and of the circus; a perimeter block is at least
@@ -45,6 +47,18 @@ function quadHits(q: V[], r: R4): boolean {
 }
 const list = (bad: string[]) => (bad.length ? bad.slice(0, 6).join('; ') + (bad.length > 6 ? `; … (${bad.length})` : '') : undefined);
 
+/** BG-1 `massing` (brief 075 ask 2): why an old-builder CityMass exemption does not hold for a plot ('' = it holds). The old DecoKitCityMass filled every 70 m
+ *  cell outside the composed district (DecoKitCityMass.Cap: P.InDistrict, DecoKitSouthside.Contains), so a plot may be left to it only clear of that district's
+ *  rects (standards.blocks.massing.composed, plan frame) and outside the Handover zone, and only as a town plot (industrial and port plots are sheds). */
+export function massingFails(S: any, use: string, bb: R4, zone: R4): string {
+  const M = S?.massing, rects = M?.composed as R4[] | undefined;
+  if (!M || !Array.isArray(rects) || !rects.length || rects.some(r => !Array.isArray(r) || r.length !== 4 || r.some(v => typeof v !== 'number')) || typeof M.source !== 'string' || !M.source) return 'standards.blocks.massing needs composed (rects [x0, x1, y0, y1]) and a source';
+  if (!['residential', 'mixed', 'commercial'].includes(use)) return `massing is for town plots, not ${use}`;
+  if (overlaps(bb, zone, 0)) return 'it reaches into the Handover zone';
+  const hit = rects.find(r => overlaps(bb, r));
+  return hit ? `it reaches into the old composed district ${JSON.stringify(hit)}, where the old builders laid blocks, not CityMass` : '';
+}
+
 export function blockGrammarChecks(plan: Plan, d: Derived, civ: Civic): Check[] {
   const S = (plan.standards as any)?.blocks; if (!S) return [];
   const P = plan as any, blocks: Block[] = P.blocks ?? [], crescents: any[] = P.circus?.crescents ?? [];
@@ -70,12 +84,13 @@ export function blockGrammarChecks(plan: Plan, d: Derived, civ: Civic): Check[] 
     if (!why) continue;
     const xs = pl.polyV.map(p => p[0]), ys = pl.polyV.map(p => p[1]), bb: R4 = [Math.min(...xs), Math.max(...xs), Math.min(...ys), Math.max(...ys)];
     const kind = why.split(':')[0];
+    if (kind === 'massing') { const bad = massingFails(S, pl.use, bb, zone) || (blocks.some(b => b.plot === pl.id) ? 'it has blocks: the old builders fill a massing plot' : ''); if (bad) b1.push(`${pl.id}: "${why}" does not hold (${bad})`); continue; }
     if (kind === 'handover' ? !overlaps(bb, zone, 0) : kind === 'megastructure' ? !(plan.megastructures ?? []).some((m: any) => (m.footprint as R4[]).some(f => f[0] <= bb[0] + 0.5 && f[1] >= bb[1] - 0.5 && f[2] <= bb[2] + 0.5 && f[3] >= bb[3] - 0.5)) : kind === 'shed' ? !['industrial', 'port'].includes(pl.use) : true)
-      b1.push(`${pl.id}: "${why}" does not hold (handover: reaches into the zone; megastructure: a footprint covers the plot; shed: industrial or port)`);
+      b1.push(`${pl.id}: "${why}" does not hold (handover: reaches into the zone; megastructure: a footprint covers the plot; shed: industrial or port; massing: clear of the old composed district)`);
   }
   for (const id of Object.keys(exempt)) if (!d.plots.some(p => p.id === id)) b1.push(`exempt ${id}: no such plot`);
   for (const pl of d.plots) if (pl.civic && blocks.some(b => b.plot === pl.id)) b1.push(`${pl.id}: the civic block is never laid as blocks`);
-  out.push({ id: 'BG-1', group: 'Blocks', rule: 'The old block grammar is whole (6 m bays, 8 m corner cells, 14 m bands) and every built plot outside the Handover zone is laid as blocks; an exemption is the Handover zone, a covering megastructure or a shed', value: `${laid.size} laid, ${Object.keys(exempt).length} exempt`, limit: 'all', ok: !b1.length, detail: list(b1), source: SRC });
+  out.push({ id: 'BG-1', group: 'Blocks', rule: 'The old block grammar is whole (6 m bays, 8 m corner cells, 14 m bands) and every built plot outside the Handover zone is laid as blocks; an exemption is the Handover zone, a covering megastructure, a shed or the old CityMass (massing)', value: `${laid.size} laid, ${Object.keys(exempt).length} exempt`, limit: 'all', ok: !b1.length, detail: list(b1), source: SRC });
 
   // ---- BG-2: runs
   const b2: string[] = [], cell = S.cell as number, bay = S.bay as number;

@@ -20,6 +20,17 @@ describe('BG', () => {
     expect(one('BG-1', p => { p.standards.blocks.zone = [-300, -84, -372, -148]; }).detail).toMatch(/is not the capstone zone/);
     expect(one('BG-1', p => { p.standards.blocks.plots = p.standards.blocks.plots.filter((x: string) => x !== 'boulevard-west'); p.standards.blocks.exempt['boulevard-west'] = 'handover: near it'; p.blocks = p.blocks.filter((b: any) => b.plot !== 'boulevard-west'); }).detail).toMatch(/boulevard-west: "handover: near it" does not hold/);
   });
+  test('BG-1 massing (brief 075 ask 2): a West Row plot left to the old CityMass holds; without the standard, in the composed district, in the Handover zone, as a shed or with blocks it fails', () => {
+    const MASSING = { composed: [[-112, 400, -508, 194], [-158, 46, -506, -246]], source: 'DecoKitCityPlan.InDistrict, DecoKitSouthside.Bounds (plan frame)' };
+    const leave = (p: any, id: string, why = 'massing: the old CityMass fills it') => { p.standards.blocks.plots = p.standards.blocks.plots.filter((x: string) => x !== id); p.standards.blocks.exempt[id] = why; p.blocks = p.blocks.filter((b: any) => b.plot !== id); };
+    const ok = one('BG-1', p => { p.standards.blocks.massing = MASSING; leave(p, 'west-row-w1'); leave(p, 'lantern-west'); });
+    expect([ok.ok, ok.detail]).toEqual([true, undefined]);
+    expect(one('BG-1', p => { leave(p, 'west-row-w1'); }).detail).toMatch(/west-row-w1: "massing: the old CityMass fills it" does not hold \(standards\.blocks\.massing needs composed/);
+    expect(one('BG-1', p => { p.standards.blocks.massing = MASSING; leave(p, 'n1'); }).detail).toMatch(/n1: .* reaches into the old composed district \[-112,400,-508,194\]/);
+    expect(one('BG-1', p => { p.standards.blocks.massing = MASSING; p.standards.blocks.exempt['lamplight-south-w'] = 'massing: old CityMass'; }).detail).toMatch(/lamplight-south-w: .* reaches into the Handover zone/);
+    expect(one('BG-1', p => { p.standards.blocks.massing = MASSING; leave(p, 'west-row-w1'); p.plots.find((x: any) => x.id === 'west-row-w1').use = 'industrial'; }).detail).toMatch(/massing is for town plots, not industrial/);
+    expect(one('BG-1', p => { p.standards.blocks.massing = MASSING; p.standards.blocks.plots = p.standards.blocks.plots.filter((x: string) => x !== 'west-row-w1'); p.standards.blocks.exempt['west-row-w1'] = 'massing: x'; }).detail).toMatch(/west-row-w1: .*\(it has blocks/);
+  });
   test('BG-2: a run padded off the 6 m bay, and a corner cap with no partner, fail', () => {
     expect(one('BG-2', p => { blk(p, 'boulevard-west').runs[0].b[1] += 1; }).detail).toMatch(/caps \+ 6 × 4 = 40/);
     expect(one('BG-2', p => { const r = blk(p, 'terrace-s').runs.find((x: any) => x.face === 'n'); r.caps = ['end', 'corner']; r.bays += 1; }).detail).toMatch(/meets no perpendicular corner cap|caps \+ 6/);

@@ -5,6 +5,7 @@ import { deckGroups, isWayDown } from '../world/gen/connectors';
 import type { Check } from './checks';
 import { type V, inPoly, lineDist, lineToPoly } from './geom';
 import { type R4, type WCtx, TOL, bb, f1, rectDist, ringGap, rule } from './world-ctx';
+import { sectionOf } from './sections';
 
 const zOf = (c: WCtx) => Object.fromEntries((c.L.list as { id: string; z: number }[]).map(l => [l.id, l.z])) as Record<string, number>;
 const skyLines = (c: WCtx) => c.d.sky.map(p => p.samples.map(s => s.p as V));
@@ -37,7 +38,7 @@ export function megaChecks(c: WCtx): Check[] {
     for (let x = f[0] + 2; x < f[1]; x += 4) for (let y = f[2] + 2; y < f[3]; y += 4) {
       tot++; const p: V = [x, y];
       const ok = m.spans.plots.some(id => inPoly(p, d.plots.find(q => q.id === id)!.polyV))
-        || (m.spans.roads ?? []).some(id => { const r = roadsBy.get(id)!; return lineDist(p, r.line) <= r.w / 2 + S.sections[r.class].pavement; })
+        || (m.spans.roads ?? []).some(id => { const r = roadsBy.get(id)!; return lineDist(p, r.line) <= r.w / 2 + sectionOf(S.sections, plan, r.class, r.id).pavement; })
         || (m.spans.foot ?? []).some(id => { const q = footBy.get(id)!; return lineDist(p, q.pts) <= q.w / 2; })
         || d.zones.some(zn => kinds(m).has(zn.kind) && (zn.poly ? inPoly(p, zn.poly) : false))
         || (kinds(m).has('quay') && plan.quay.some(q => inPoly(p, q)))

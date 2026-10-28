@@ -1,8 +1,9 @@
 // Loads a suborned.plan/1 file and derives what the checks and drawings share: road geometry, plot polygons, the
 // pylon zones and the sky rail pylons.
-import { type Rect, type Sample, type Seg, type V, chainage, dist, filleted, inPoly, notched, pathLength, polyline, rectPoly, ring, sample } from './geom';
+import type { OwnPavement } from './sections';
+import { type Rect, type Sample, type Seg, type V, chainage, dist, filleted, inPoly, lineDist, notched, pathLength, polyline, rectPoly, ring, sample } from './geom';
 
-export type Road = { id: string; name: string; class: 'primary' | 'district' | 'access'; w: number; median?: number; reservation?: number; gyratory?: boolean; arc?: V; cw?: boolean; path: string[] };
+export type Road = { id: string; name: string; class: 'primary' | 'district' | 'access'; w: number; /** the road's own pavement section (brief 075 ask 1; tools/plan/sections.ts) */ pavement?: OwnPavement; median?: number; reservation?: number; gyratory?: boolean; arc?: V; cw?: boolean; path: string[] };
 export type Plot = { id: string; name?: string; use: string; area: string; rect?: Rect; poly?: V[]; notch?: [number, number, number]; civic?: string };
 export type Path = { id: string; role: string; double?: boolean; pts: number[][] };
 export type Stop = { id: string; name: string; path: string; at: V; length?: number; interchange?: string; fronts?: string };
@@ -89,6 +90,17 @@ export function spanMax(std: any, landmarks: Disc[], path: PathGeo, s0: number, 
   const byCurve = Math.min(...path.samples.filter(x => x.s >= s0 - .01 && x.s <= s1 + .01).map(x => spanLimit(std, x.r)));
   const over = std.pylonClear?.span as number | undefined;
   return over !== undefined && crossesDisc(path, s0, s1, landmarks) ? Math.max(byCurve, over) : byCurve;
+}
+
+/** standards.skyrail.pylonClear.walk: whether a pylon centred at p would put its post in a foot path's clear walk zone (undefined when the plan does not ask). */
+export function pylonWalkBlock(plan: Plan): ((p: V) => boolean) | undefined {
+  const pc = plan.standards.skyrail.pylonClear as { walk?: { post?: number } } | undefined; if (!pc?.walk) return undefined;
+  const sec = (plan.standards as any).streetscape?.sections ?? {}, edge = sec.walk?.edgeBand ?? 0, band = sec.mall?.bands?.walk as [number, number] | undefined;
+  const h = ((pc.walk.post ?? 1.6) / 2) * Math.SQRT2;
+  return (p: V) => plan.foot.some(f => {
+    const off = lineDist(p, f.pts as V[]); if (off - h >= f.w / 2) return false;
+    return f.kind === 'mall' ? !!band && off + h > band[0] && off - h < band[1] : off - h < f.w / 2 - edge;
+  });
 }
 
 /**
@@ -251,8 +263,13 @@ export function derive(plan: Plan): Derived {
   // standards.skyrail.pylonClear (opt-in, brief 007 round 3): a pylon's centre keeps `landmark` metres outside every landmark disc
   // (the Crown monument's basin and steps fill its disc). A plan without it places pylons as it always did: recorded runs rederive.
   const clear = plan.standards.skyrail.pylonClear?.landmark as number | undefined;
+  // standards.skyrail.pylonClear.walk (opt-in, brief 075: S2's pylons on the Skyport and Market piers): no part of a pylon's post (pylonSize square, any yaw:
+  // its half-diagonal) stands in a foot path's clear walk zone (SF-1: a walk's middle inside its edge bands, a mall's walk band), so the greedy steps the pylon
+  // back to the walk's edge band and the beam spans the walk; a plan without it places pylons as before
+  const walkOff = pylonWalkBlock(plan);
   const allowed = (p: V) => zones.some(z => kinds.has(z.kind) && inZone(p, z))
-    && (clear === undefined || !plan.landmarks.some(l => dist(p, l.c) < l.r + clear - 1e-9));
+    && (clear === undefined || !plan.landmarks.some(l => dist(p, l.c) < l.r + clear - 1e-9))
+    && (!walkOff || !walkOff(p));
   const pylons: Pylon[] = [], pylonGaps: Derived['pylonGaps'] = [];
   for (const p of sky) { const r = placePylons(plan.standards.skyrail, p, allowed, portalSpans(plan, p.line, p), plan.landmarks); pylons.push(...r.out); pylonGaps.push(...r.gaps); }
   return {

@@ -7,6 +7,7 @@ import type { Host } from '../world/gen/types';
 import type { Check } from './checks';
 import { type V, lineToPoly, nearLine, lineDist } from './geom';
 import { type R4, type WCtx, TOL, bb, f1, rule } from './world-ctx';
+import { sectionOf } from './sections';
 
 const BUILT = ['residential', 'mixed', 'commercial', 'industrial', 'port'];
 const lineOf = (c: WCtx) => c.d.sky.map(p => p.samples.map(s => s.p as V));
@@ -60,7 +61,7 @@ export function buildingChecks(c: WCtx): Check[] {
     const poly = plotOf.get(b.plot)!, parts = w.buildings.filter(m => m.id.startsWith(`${b.id}/`));
     for (const m of parts) for (const v of m.ring) {
       if (!inside(v, poly) && lineDist(v, [...poly, poly[0]!]) > TOL) { bad3.push(`${m.id} leaves its plot`); break; }
-      const hit = roads.find(r => nearLine(v, r.line, r.w / 2 + S.sections[r.class].pavement - 0.05, true));
+      const hit = roads.find(r => nearLine(v, r.line, r.w / 2 + sectionOf(S.sections, plan, r.class, r.id).pavement - 0.05, true));
       if (hit) { bad3.push(`${m.id} inside ${hit.id}'s pavement`); break; }
     }
   }

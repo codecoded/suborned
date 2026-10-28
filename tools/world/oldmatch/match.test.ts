@@ -110,3 +110,26 @@ test('OV-1 on the old-built footprints: two buildings laid 2 m into each other f
   expect(builtOverlap(self()).faults).toEqual([]);
   expect(MATCH.footprint).toBe(0.5);
 });
+
+test('grounds (standards.levels.grounds, ask 4): the old promenade level and its flags at -0.85 inside the ground match; without the ground, or outside its rect, they fail', () => {
+  const g = (P.standards.levels.grounds as { id: string; walk: number; x: V; y: V }[]).find(x => x.id === 'promenade')!;
+  expect(g.walk).toBe(-0.85);
+  const flags = (x0: number, y0: number) => ({ id: `old/promenade-flags@${x0}`, ring: [[x0, y0], [x0 + 6, y0], [x0 + 6, y0 + 6], [x0, y0 + 6]] as V[], top: -0.85 });
+  const b = self(); b.levels = [...b.levels.filter(l => l.id !== 'promenade'), { id: 'old/promenade', z: -0.85 }]; b.pavements.push(flags(84, -300));
+  expect(run(b).r.mismatches).toEqual([]);
+  // a door on the promenade is on a plan level
+  const door = self(); door.levels = [...door.levels.filter(l => l.id !== 'promenade'), { id: 'old/promenade', z: -0.85 }]; door.entrances.push({ id: 'old/kiosk-door', building: 'old/kiosk', at: [88, -300], z: -0.85 });
+  expect(run(door).r.mismatches.filter(m => m.kind === 'entrance').every(m => m.detail !== 'z -0.85 is on no plan level')).toBe(true);
+  // failing: the same flags on the boulevard's pavement (outside the ground's rect)
+  const out = self(); out.pavements.push(flags(12, -180));
+  expect(run(out).r.mismatches.find(m => m.kind === 'pavement-top')?.detail).toMatch(/top -0.85, ours 0.18/);
+  // failing: a plan without the ground reports the old promenade as a built-only level and its flags as a pavement-top difference
+  const noG = structuredClone(P); delete noG.standards.levels.grounds;
+  const r = compare(builtSide(b), worldSide(w, noG), noG, builtOverlap(b));
+  expect(r.mismatches.some(m => m.kind === 'level' && m.side === 'built-only' && m.el === 'old/promenade')).toBe(true);
+  expect(r.mismatches.some(m => m.kind === 'pavement-top')).toBe(true);
+  // failing: a promenade built at -0.9 is not the plan's ground
+  const lo = self(); lo.levels = [...lo.levels.filter(l => l.id !== 'promenade'), { id: 'old/promenade', z: -0.9 }];
+  const ml = run(lo).r.mismatches.filter(m => m.kind === 'level').map(m => `${m.side} ${m.el}`).sort();
+  expect(ml).toEqual(['built-only old/promenade', 'plan-only promenade']);
+});

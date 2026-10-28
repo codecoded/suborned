@@ -24,6 +24,7 @@ import { overlaps } from './crossings';
 import { lawn } from './ground';
 import type { Layer } from './kit';
 import { FLAT_SET as FLAT_KINDS_SET, LAYER, MARGIN, PAVE, RULES, type Rect4, inRect4 } from './capstone-rules';
+import { sectionOf } from '../../../plan/sections';
 
 export type CapGap = { rule: string; where: string; why: string };
 export type CapLog = { zone: Rect4; counts: Record<string, number>; pieces: Record<string, number>; gaps: CapGap[]; kerb: { edgeM: number; stoneM: number; droppedM: number }; /** flat pieces left out because they lay over a kerb return's carriageway (brief 028), by kind */ returnDropped: Record<string, number> };
@@ -247,7 +248,7 @@ function gutters(c: Ctx2, runs: Run[]): void {
       if (okRoad(at, ring, r.road)) flatPiece(c, 'drain', dr, at, yaw, LAYER.gutter, [1, 1, 1], `cap/drain/${r.road}`);
     }
     // a manhole in the middle of each pavement's walk zone (a sec: kerb + walk/2 from the kerb face)
-    const sec = c.ctx.S.sections[r.cls] as { kerb: number; walk: number };
+    const sec = sectionOf(c.ctx.S.sections, c.ctx.plan, r.cls, r.road) as { kerb: number; walk: number };
     for (let s = M.walk / 2 + (r.len % M.walk) / 2; mh && s < r.len - 2; s += M.walk) {
       const at: V = [r.a[0] + r.u[0] * s - r.n[0] * (sec.kerb + sec.walk / 2), r.a[1] + r.u[1] * s - r.n[1] * (sec.kerb + sec.walk / 2)], ring = boxRing(at, mh.size[0], mh.size[2], 0);
       if (!inZone(c, at) || onCivic(c, at) || !clearOfPoints(c, ring) || c.strips.some(q => overlaps(ring, q)) || c.tiles.some(q => ringGap(q, ring) < 0.3) || c.L.nearby(at, 0.8).length) continue;
@@ -471,7 +472,7 @@ function planting(c: Ctx2, walls: Wall[], all: Frontage[]): void {
   if (sm) {
     const gardens = new Set(c.ctx.d.plots.filter(p => (RULES.robots.nanny.plots as readonly string[]).includes(p.use)).map(p => p.id));
     for (const r of kerbRuns(c.ctx, c.zone).filter(r => gardens.has(r.plot))) {
-      const sec = c.ctx.S.sections[r.cls] as { pavement: number }, off = sec.pavement + RULES.shrub.beyond;
+      const sec = sectionOf(c.ctx.S.sections, c.ctx.plan, r.cls, r.road) as { pavement: number }, off = sec.pavement + RULES.shrub.beyond;
       for (let s = RULES.shrub.every / 2; s < r.len - 1; s += RULES.shrub.every) {
         const at: V = [r.a[0] + r.u[0] * s - r.n[0] * off, r.a[1] + r.u[1] * s - r.n[1] * off];
         if (!standing(c, 'planter-bed', sm, at, ang(r.u), PAVE, `cap/garden/${r.plot}`, { blocks: false })) continue;
@@ -486,7 +487,7 @@ function bikeRacks(c: Ctx2, walls: Wall[]): void {
   const placed: { at: V; street: string }[] = [];
   for (const w of walls.filter(w => trade(w, B.trades))) {
     const road = c.ctx.d.roads.find(r => r.id === w.f.street); if (!road) continue;
-    const mid = w.at(w.f.w / 2, 0), sec = c.ctx.S.sections[road.class] as { kerb: number };
+    const mid = w.at(w.f.w / 2, 0), sec = sectionOf(c.ctx.S.sections, c.ctx.plan, road.class, road.id) as { kerb: number };
     // the road's nearest foot to the tenancy and the way away from the road
     let best = Infinity, foot: V = mid, tan: V = [1, 0];
     for (let i = 1; i < road.line.length; i++) { const a = road.line[i - 1]!, b = road.line[i]!, d = segDist(mid, a, b); if (d < best) { best = d; const u = norm2([b[0] - a[0], b[1] - a[1]]), t = Math.max(0, Math.min(dist(a, b), (mid[0] - a[0]) * u[0] + (mid[1] - a[1]) * u[1])); foot = [a[0] + u[0] * t, a[1] + u[1] * t]; tan = u; } }

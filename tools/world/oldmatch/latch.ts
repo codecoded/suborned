@@ -11,7 +11,7 @@
 //   - kerb stones joined end to end into kerb lines (ends within 2 cm), so a mismatch is a run along a kerb, not a stone;
 //   - pavements: 2 m flag modules centred on `at`; the file carries no yaw (the boulevard's courses are axis-aligned, Southside's are turned), so each module's
 //     turn is read from its neighbours on the same grid (a module 2 m away: the direction to it, folded to a quarter turn), axis-aligned when it has none;
-//   - levels: old/road and old/walk are the street level's z and walk; old/promenade is reported as a level the plan has not got; old/water is no walk level;
+//   - levels: old/road and old/walk are the street level's z and walk; old/promenade is kept as a level (plan-match reads it as the plan ground at its walk height, standards.levels.grounds); old/water is no walk level;
 //     the export's ringed levels (our decks and station platforms, kept by the swap) are decks;
 //   - coverage: the old builders lay kerb stones and flags only in the core (the boulevard, Southside, the side street, the circus); the district beyond is
 //     massing on a flat ground. Ground comparisons (kerbs, pavement edges) run inside the coverage (the pieces' 2 m cells grown by COVER m), never beyond it;

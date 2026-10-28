@@ -6,6 +6,7 @@ import type { Plot } from '../../plan/plan';
 import type { Ctx } from './common';
 import { type Ring, areaOf, ccw, clipHalf, edgeN, pointInRing } from './geo';
 import { returnAt } from './kerbreturn';
+import { sectionOf } from '../../plan/sections';
 import { footwayTangentPoints } from './street/footway';
 
 export const kindOf = (c: string) => c.split(':')[0]!;
@@ -86,10 +87,11 @@ function plotRingOf(ctx: Ctx, plot: Plot & { polyV: V[] }): Ring {
   return { p, c };
 }
 
-/** Pavement width at an edge: the section's pavement for roads; the circus is carved already, malls, walks and quays carry their own bands. */
+/** Pavement width at an edge: the road's section's pavement (its own roads[].pavement, else its class's; tools/plan/sections.ts); the circus is carved
+ *  already, malls, walks and quays carry their own bands. */
 export function pavementOf(ctx: Ctx, cls: string): number {
-  const k = kindOf(cls), s = ctx.S.sections;
-  return k === 'primary' || k === 'district' || k === 'access' ? s[k].pavement : 0;
+  const k = kindOf(cls);
+  return k === 'primary' || k === 'district' || k === 'access' ? sectionOf(ctx.S.sections, ctx.plan, k, idOf(cls) || undefined).pavement : 0;
 }
 
 /** The building line: the plot cut back along each street edge by that edge's pavement (half-plane clips, so arcs and

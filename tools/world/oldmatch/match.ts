@@ -5,7 +5,9 @@
 //   - kerbs: the carriageway edges (derived from roads and circuses on both sides; and the built kerb lines when exported) within MATCH.kerb (0.5 m);
 //   - pavements: the outline of pavement ∪ footprints (the kerb-side edge of every block) within MATCH.kerb, and each built pavement's top equal to ours there;
 //   - entrances: each door within MATCH.entrance (1 m) of one on the other side, at the same level;
-//   - levels: the built levels equal to plan standards.levels.list (MATCH.level, 1 mm: "exact"), decks at a plan level, deck outlines within 0.5 m.
+//   - levels: the built levels equal to plan standards.levels.list (MATCH.level, 1 mm: "exact"), decks at a plan level, deck outlines within 0.5 m. A plan ground
+//     (standards.levels.grounds: street-level ground at its own walk height, the harbour promenade at -0.85) is a level too: a built level at its walk height is that
+//     ground whatever its id, a door at it is on a plan level, and a built pavement inside the ground's rect at its walk height matches the plan (brief 075 ask 4).
 // Every mismatch is reported; any mismatch fails. Inside the Handover zone (plan standards.blocks.zone) a mismatch is a hard failure (the zone stays as it is);
 // outside it the old-built world wins (Sky's workflow), so its mismatches become a proposed plan patch for Datum (patchOf), never an edit to the plan here.
 // Levels, decks and pavement tops are our network (brief 075 "levels and heights": kept as planned), so those go to the builder (Latch), not the patch.
@@ -42,12 +44,22 @@ export type Chain = { id: string; pts: V[]; /** per sample, the element it came 
 export type Side = {
   foot: Poly[]; ground: Poly[]; kerbs: Chain[]; roads: { id: string; line: V[]; width: number; level: number }[];
   pavTops: { id: string; ring: V[]; top: number }[]; entrances: { id: string; building: string; at: V; z: number; normal?: V; w?: number; kind?: string }[];
-  levels: { id: string; z: number; walk?: number }[]; decks: { id: string; ring: V[]; z: number }[]; skipped: string[];
+  levels: Level[]; decks: { id: string; ring: V[]; z: number }[]; skipped: string[];
   /** the built kerb lines as exported (built side only) */ kerbLines?: Chain[];
   heights: { id: string; kind: string; height: number }[];
   /** built side: where the ground was laid piece by piece (kerb and pavement-edge comparisons only inside); missing = everywhere */ coverage?: Poly[];
   /** built side: the Handover zone is taken from our export (the file has none of it) */ zoneOurs?: boolean;
 };
+/** A plan level (standards.levels.list) or ground (standards.levels.grounds: `ground` is its rect [x0, x1, y0, y1], z = walk = its walk height). */
+export type Level = { id: string; z: number; walk?: number; ground?: R4 };
+/** The plan's levels and grounds as Side levels. */
+export function planLevels(plan: { standards: any }): Level[] {
+  const L = plan.standards.levels ?? {};
+  return [
+    ...((L.list ?? []) as { id: string; z: number; walk?: number }[]).map(l => ({ id: l.id, z: l.z, walk: l.walk })),
+    ...((L.grounds ?? []) as { id: string; walk: number; x: [number, number]; y: [number, number] }[]).map(g => ({ id: g.id, z: g.walk, walk: g.walk, ground: [g.x[0], g.x[1], g.y[0], g.y[1]] as R4 })),
+  ];
+}
 export type Kind = 'footprint' | 'kerb' | 'pavement' | 'entrance' | 'level' | 'deck' | 'pavement-top' | 'intrusion';
 export type Mismatch = {
   id: string; kind: Kind; /** built-only: on the old-built side with nothing on ours within tolerance; plan-only: the reverse; differ: both exist, values differ */
@@ -186,7 +198,7 @@ export function worldSide(w: World, plan: { standards: any }): Side {
     foot, heights, roads, pavTops: pav, entrances,
     ground: [...pav.map(p => ({ id: p.id, ring: p.ring })), ...foot],
     kerbs: kerbsOf(roads, g.circuses.map(c => ({ id: c.id, centre: c.centre, radius: c.radius, islandRadius: c.islandRadius }))),
-    levels: (plan.standards.levels.list as { id: string; z: number; walk?: number }[]).map(l => ({ id: l.id, z: l.z, walk: l.walk })),
+    levels: planLevels(plan),
     decks: [...w.levels.flatMap(l => l.decks.map(d => ({ id: d.id, ring: d.ring, z: l.height }))), ...(w.transit?.stations ?? []).map(s => ({ id: s.id, ring: s.ring, z: r3(s.base + s.height) }))],
     skipped: [],
   };
@@ -230,7 +242,7 @@ export function builtOf(w: World, plan: { standards: any }, offset: V = [0, 0]):
     schema: 'suborned.oldbuilt/1',
     source: { scene: 'our world export (identity)', builder: 'tools/world/oldmatch builtOf' },
     frame: { units: 'm', offset },
-    levels: s.levels,
+    levels: s.levels.map(({ ground: _g, ...l }) => l),
     buildings: s.foot.map(f => ({ id: f.id, building: f.kind === 'civic' ? 'civic' : f.kind === 'megastructure' ? f.id.split('/').slice(0, 2).join('/') : hostOf(f.id), ring: mr(f.ring), base: 0.18, height: s.heights.find(h => h.id === f.id)!.height, kind: kindOf[f.kind ?? 'building'] ?? 'other', origin: 'ours' as const })),
     entrances: s.entrances.map(e => ({ id: e.id, building: e.building, at: mv(e.at), z: e.z })),
     roads: s.roads.map(r => ({ id: r.id, line: mr(r.line), width: r.width, level: r.level })),
@@ -310,6 +322,7 @@ export function compare(built: Side, ours: Side, plan: { standards: any; sheet?:
     if (!q) continue;
     const under = ours.pavTops.filter(o => inPoly(q, o.ring));
     if (!under.length || under.some(o => Math.abs(o.top - p.top) <= MATCH.level)) continue;
+    if (ours.levels.some(l => l.ground && inR(q, l.ground) && Math.abs((l.walk ?? l.z) - p.top) <= MATCH.level)) continue; // the plan's ground at its walk height (standards.levels.grounds)
     const ot = [...new Set(under.map(o => o.top))].sort().join('/'), key = `${p.top}|${ot}|${zone(q)}`, t = tops.get(key);
     if (t) { t.n++; continue; }
     tops.set(key, { id: '', kind: 'pavement-top', side: 'differ', el: p.id, near: under[0]!.id, dev: r3(Math.min(...under.map(o => Math.abs(o.top - p.top)))), at: rv(q), zone: zone(q), detail: `top ${p.top}, ours ${ot}`, n: 1 });
@@ -353,12 +366,13 @@ export function compare(built: Side, ours: Side, plan: { standards: any; sheet?:
     for (const [bid, bs] of byB) if (!carried.has(bid) && bs.some(b => onSheet(b.at))) { const mid = bs[Math.floor(bs.length / 2)]!; M.push({ id: '', kind: 'entrance', side: 'built-only', el: bid, near: null, dev: null, at: rv(mid.at), zone: zone(mid.at), detail: `old building ${bid}: ${bs.length} bay front(s), none carries a door of ours` }); }
   }
   // levels, exact
+  const sameZ = (b: Level, l: Level) => Math.abs(b.z - (l.walk ?? l.z)) <= MATCH.level || (b.walk !== undefined && Math.abs(b.walk - (l.walk ?? l.z)) <= MATCH.level);
   for (const l of ours.levels) {
-    const b = built.levels.find(x => x.id === l.id);
+    const b = built.levels.find(x => x.id === l.id) ?? (l.ground ? built.levels.find(x => sameZ(x, l)) : undefined); // a ground: the built level at its walk height, whatever its id
     if (!b) M.push({ id: '', kind: 'level', side: 'plan-only', el: l.id, near: null, dev: null, at: [0, 0], zone: false, detail: `plan level ${l.id} (z ${l.z}) not in built.levels` });
     else if (Math.abs(b.z - l.z) > MATCH.level || (b.walk !== undefined && l.walk !== undefined && Math.abs(b.walk - l.walk) > MATCH.level)) M.push({ id: '', kind: 'level', side: 'differ', el: l.id, near: l.id, dev: r3(Math.max(Math.abs(b.z - l.z), Math.abs((b.walk ?? l.walk ?? 0) - (l.walk ?? 0)))), at: [0, 0], zone: false, detail: `built z ${b.z} walk ${b.walk}, plan z ${l.z} walk ${l.walk}` });
   }
-  for (const b of built.levels) if (!ours.levels.some(l => l.id === b.id)) M.push({ id: '', kind: 'level', side: 'built-only', el: b.id, near: null, dev: null, at: [0, 0], zone: false, detail: `built level ${b.id} (z ${b.z}) is not a plan level` });
+  for (const b of built.levels) if (!ours.levels.some(l => l.id === b.id || (l.ground && sameZ(b, l)))) M.push({ id: '', kind: 'level', side: 'built-only', el: b.id, near: null, dev: null, at: [0, 0], zone: false, detail: `built level ${b.id} (z ${b.z}) is not a plan level` });
   // decks: at a plan level, outlines within the kerb tolerance
   if (built.decks.length || !built.skipped.some(s => s.startsWith('decks'))) {
     for (const d of built.decks) { const q = insidePoint(d.ring) ?? d.ring[0]!; if (!ours.levels.some(l => Math.abs(d.z - l.z) <= MATCH.level || Math.abs(d.z - (l.walk ?? l.z)) <= MATCH.level)) M.push({ id: '', kind: 'deck', side: 'differ', el: d.id, near: null, dev: null, at: rv(q), zone: zone(q), detail: `deck z ${d.z} is on no plan level` }); }

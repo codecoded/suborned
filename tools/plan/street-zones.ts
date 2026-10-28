@@ -5,6 +5,7 @@ import type { Ctx } from '../world/gen/common';
 import { plotRing } from '../world/gen/edges';
 import { type V, lineDist, polyline, segDist } from './geom';
 import { speciesOf } from './trees';
+import { sectionOf } from './sections';
 
 export type Sec = { cls: 'primary' | 'district' | 'access'; kerb: number; walk: number; frontage: number; pavement: number };
 export const TOL = 0.011;
@@ -83,12 +84,12 @@ export type At = { dk: number; sec: Sec; road: string };
 /** The section p belongs to: the road the item's own plot edge faces (else the nearest road), the circus ring for circus items; dk = distance past the kerb face. */
 export function roadAt(c: Ctx, p: V, edge: string): At | null {
   const S = c.S, cc = c.plan.circus, x = indexes(c);
-  const mk = (r: { class: Sec['cls'] }, dk: number, road: string): At => {
-    const b = S.sections[r.class] as Sec & { avenue?: Sec }, area = c.plan.plots.find(q => q.id === edge.split('/e')[0])?.area;
-    const av = r.class === 'access' && area && (S.trees.avenues.access.avenue as string[]).includes(area) ? b.avenue : undefined;
+  const mk = (r: { class: Sec['cls'] }, dk: number, road: string, own = true): At => {
+    const b = sectionOf(S.sections, c.plan, r.class, own ? road : undefined) as unknown as Sec & { avenue?: Sec; own?: boolean }, area = c.plan.plots.find(q => q.id === edge.split('/e')[0])?.area;
+    const av = r.class === 'access' && !b.own && area && (S.trees.avenues.access.avenue as string[]).includes(area) ? b.avenue : undefined; // a road's own pavement keeps its own zones
     return { dk, road, sec: { cls: r.class, pavement: b.pavement, kerb: (av ?? b).kerb, walk: (av ?? b).walk, frontage: (av ?? b).frontage } };
   };
-  const rc = Math.hypot(p[0] - cc.c[0], p[1] - cc.c[1]), ring = (): At | null => (rc >= cc.ring[1] - 0.01 ? mk({ class: 'district' }, rc - cc.ring[1], 'crown-circus') : null);
+  const rc = Math.hypot(p[0] - cc.c[0], p[1] - cc.c[1]), ring = (): At | null => (rc >= cc.ring[1] - 0.01 ? mk({ class: 'district' }, rc - cc.ring[1], 'crown-circus', false) : null);
   if (edge === 'circus') return ring();
   const own = ownStreet(c, edge), [kind, id] = own.split(':');
   if ((kind === 'primary' || kind === 'district' || kind === 'access') && id) { const r = x.by.get(id); if (r) { const dl = x.roads.nearest(p, 40).get(id); if (dl !== undefined) return mk(r, dl - r.w / 2, id); } }

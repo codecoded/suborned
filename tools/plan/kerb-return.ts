@@ -12,6 +12,7 @@ import { segDist } from './geom';
 import type { Derived, Plan } from './plan';
 import { ctxOf } from '../world/gen/common';
 import { returnsOf } from '../world/gen/kerbreturn';
+import { sectionOf } from './sections';
 
 const OPEN = new Set(['park', 'open', 'square', 'civic']);
 const SRC = 'standards.streetscape.kerbReturn (Datum 2026-10-24) · brief 028 (Sky 2026-10-24) · Manual for Streets §6.3.12 · the testbed (civic-road-layout.js civicRoadBoundaries)';
@@ -29,7 +30,7 @@ export function kerbReturnChecks(plan: Plan, d: Derived, civ: Civic): Check[] {
       if (r.r < r.want - 0.01) { shrunk++; bad.push(`${r.id}: radius ${r.r.toFixed(2)} m, the plan asks ${r.want} m (an edge is too short for both ends' tangents)`); }
       const plot = d.plots.find(p => p.id === r.plot);
       if (!r.convex || r.bay || r.mouth || r.nose || !plot || OPEN.has(plot.use) || plot.civic) continue;
-      const secs = r.roads.map(id => S.sections[roadOf(id)?.class ?? r.cls] as { pavement: number; kerb: number; walk: number }); if (secs.some(s => !s)) continue;
+      const secs = r.roads.map(id => sectionOf(S.sections, plan, roadOf(id)?.class ?? r.cls, id) as { pavement: number; kerb: number; walk: number }); if (secs.some(s => !s)) continue;
       const bl: [number, number] = [r.at[0] - r.n1[0] * secs[0]!.pavement - r.n2[0] * secs[1]!.pavement, r.at[1] - r.n1[1] * secs[0]!.pavement - r.n2[1] * secs[1]!.pavement]; // the building line's corner
       // the pavement left at the building line's corner: its distance to the arc (the quarter turn between the tangent points, not the whole circle)
       const w = Math.min(...r.arc.slice(1).map((q, i) => segDist(bl, r.arc[i]!, q))), need = Math.max(...secs.map(s => s.kerb + s.walk));

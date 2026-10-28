@@ -8,6 +8,7 @@ import { type Ctx, type Rng, r3, r4, rng, rv } from './common';
 import { frontKind, idOf, kindOf } from './edges';
 import { edgeN } from './geo';
 import type { Bld } from './masses';
+import { sectionOf } from '../../plan/sections';
 import type { Host, HostEdge } from './types';
 
 type Trade = { w: [number, number]; depth: number; service: string; hours: [number, number] | 'service'; wants: string[]; spill: string; sign: [string, string, string]; anchor?: boolean; areas?: string[] };
@@ -15,8 +16,9 @@ const QUIET: Record<string, number> = { access: 0, park: 1, quay: 2, walk: 3, di
 const OPEN = new Set(['party', 'court', 'none', 'primary']);
 
 /** Spill room in front of a facade: the section's frontage zone (never more than the spill depth), none where the pavement is under minPavement. */
-function spillZone(ctx: Ctx, kind: string, area = ''): number {
-  const base = ctx.S.sections[kind === 'walk' || kind === 'quay' || kind === 'park' ? 'none' : kind], avenue = kind === 'access' && (ctx.S.trees.avenues.access.avenue as string[]).includes(area);
+function spillZone(ctx: Ctx, kind: string, area = '', street = ''): number {
+  const own = ['primary', 'district', 'access'].includes(kind) && street ? sectionOf(ctx.S.sections, ctx.plan, kind, street) : undefined; // a road's own pavement (roads[].pavement) keeps its own frontage zone
+  const base = own?.own ? own : ctx.S.sections[kind === 'walk' || kind === 'quay' || kind === 'park' ? 'none' : kind], avenue = !own?.own && kind === 'access' && (ctx.S.trees.avenues.access.avenue as string[]).includes(area);
   const sec = avenue && base?.avenue ? { ...base, frontage: base.avenue.frontage } : base; // an avenue's frontage zone gives 0.5 m to the tree pit
   if (kind === 'mall') return Math.min(ctx.F.placement.spill.depth, 4);
   return sec && sec.pavement >= ctx.F.placement.spill.minPavement ? Math.min(ctx.F.placement.spill.depth, sec.frontage) : 0;
@@ -31,7 +33,7 @@ export function buildingHost(ctx: Ctx, b: Pick<Bld, 'id' | 'area' | 'ring'>): Ho
     let j = i;
     while (j + 1 < n && street(j + 1) && c[j + 1] === c[i] && dist(p[j]!, p[j + 1]!) < 8 && dist(p[i]!, p[(j + 2) % n]!) <= 30) j++;
     const a = p[i]!, e = p[(j + 1) % n]!;
-    if (dist(a, e) >= 3) edges.push({ a, b: e, n: edgeN(a, e), kind: frontKind(c[i]!), street: idOf(c[i]!), spill: spillZone(ctx, frontKind(c[i]!), b.area), cornerA: street((i + n - 1) % n), cornerB: street((j + 1) % n) });
+    if (dist(a, e) >= 3) edges.push({ a, b: e, n: edgeN(a, e), kind: frontKind(c[i]!), street: idOf(c[i]!), spill: spillZone(ctx, frontKind(c[i]!), b.area, idOf(c[i]!)), cornerA: street((i + n - 1) % n), cornerB: street((j + 1) % n) });
     i = j + 1;
   }
   if (!edges.length) return null;
@@ -133,7 +135,7 @@ export function generateFrontages(ctx: Ctx, hosts: Host[]): Frontage[] {
       ordered.forEach((s, k) => {
         const isEnd = k >= startSegs.length + segs.length, w = s.w, pos = isEnd ? L - ordered.slice(k).reduce((n, x) => n + x.w, 0) : at, a: V = [e.a[0] + u[0] * pos, e.a[1] + u[1] * pos];
         if (!isEnd) at = pos + w;
-        const x = T[s.t]!, spill = x.spill === 'none' ? 0 : Math.min(ctx.F.placement.spill.depth, e.spill ?? (h.level === 'street' && !h.free && ['district', 'access'].includes(e.kind) ? spillZone(ctx, e.kind, h.area) : h.pavement)), id = `${h.id}/e${ei}-${k}`;
+        const x = T[s.t]!, spill = x.spill === 'none' ? 0 : Math.min(ctx.F.placement.spill.depth, e.spill ?? (h.level === 'street' && !h.free && ['district', 'access'].includes(e.kind) ? spillZone(ctx, e.kind, h.area, e.street) : h.pavement)), id = `${h.id}/e${ei}-${k}`;
         const g = prims(ctx, h, id, s.t, x, a, u, e.n, w, e.kind, spill, r);
         out.push({
           id, host: h.id, level: h.level, z: h.z, trade: s.t, area: h.area, street: e.street, a: rv(a), b: rv([a[0] + u[0] * w, a[1] + u[1] * w]), w: r3(w), normal: [r3(e.n[0]), r3(e.n[1])], yaw: r4(Math.atan2(u[1], u[0])),

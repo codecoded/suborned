@@ -4,7 +4,7 @@ import { describe, expect, test } from 'bun:test';
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { dist } from './geom';
-import { derive, spanMax, type Plan } from './plan';
+import { derive, pylonWalkBlock, spanMax, type Plan } from './plan';
 
 const root = resolve(import.meta.dir, '../..');
 const read = (p: string): Plan => JSON.parse(readFileSync(resolve(root, p), 'utf8'));
@@ -137,5 +137,18 @@ describe('standards.skyrail.pylonClear', () => {
   test('S1/loop\'s pylons are the standard-free plan\'s', () => {
     const had = withClear(undefined), now = derive(live);
     expect(now.pylons.filter(p => p.path === 'loop').map(p => p.p)).toEqual(had.pylons.filter(p => p.path === 'loop').map(p => p.p));
+  });
+
+  test('walk (brief 075): S2\'s pylons step out of the Skyport and Market piers\' clear walks; without it two stand in them; nothing else moves', () => {
+    const cur: Plan = read('contracts/world/harbour-district.plan.json'), on: Plan = structuredClone(cur);
+    (on.standards.skyrail as any).pylonClear = { ...(on.standards.skyrail as any).pylonClear, walk: { post: 1.6 } };
+    const inWalk = (pl: Plan) => { const f = pylonWalkBlock({ ...pl, standards: { ...pl.standards, skyrail: { ...pl.standards.skyrail, pylonClear: { walk: { post: 1.6 } } } } } as Plan)!; return derive(pl).pylons.filter(p => f(p.p)).map(p => `${p.line}/${p.path} ${p.p.map(v => +v.toFixed(2)).join(',')}`); };
+    expect(pylonWalkBlock(cur)).toBeUndefined();
+    expect(inWalk(cur)).toEqual(['S2/trunk 117,-140', 'S2/loop 114,1.5']); // failing example: the committed plan's pier pylons (SK-T2's two bare-shaft gaps)
+    expect(inWalk(on)).toEqual([]);
+    const a = derive(cur).pylons, b = derive(on).pylons;
+    expect(b.filter(p => p.line !== 'S2').map(p => p.p)).toEqual(a.filter(p => p.line !== 'S2').map(p => p.p));
+    expect(derive(on).pylonGaps).toEqual([]);
+    expect(b.some(p => p.line === 'S2' && Math.abs(p.p[0] - 114) < 1e-6 && Math.abs(p.p[1] - 5.5) < 1e-6)).toBe(true); // the Skyport pier's north edge band (walk |y| < 4, post half-diagonal 1.13)
   });
 });

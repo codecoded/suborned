@@ -21,6 +21,7 @@ import { footwayTangents } from './footway';
 import { kerbReturnStd, returnsOf } from '../kerbreturn';
 import { discRing } from '../box';
 import { clearReach, lookOf } from './parts';
+import { sectionOf } from '../../../plan/sections';
 
 const QUARTER = Math.PI / 2;
 
@@ -132,7 +133,7 @@ export function islandSeeds(ctx: Ctx, rules: CoverageRules): Seed[] {
   };
   for (const q of ctx.d.roads.filter(x => x !== road && !x.gyratory)) { // a road with a node on the ring's middle line
     const node = q.path.find(n => Math.abs(dist(ctx.plan.nodes[n]!, c.c) - mid) < 1); if (!node) continue;
-    const j = project(q.line, ctx.plan.nodes[node]!).s, u = norm(sub(atChainage(q.line, j < lengthOf(q.line) / 2 ? j + 10 : j - 10).p, ctx.plan.nodes[node]!)), off = q.w / 2 + S.sections[q.class].pavement / 2;
+    const j = project(q.line, ctx.plan.nodes[node]!).s, u = norm(sub(atChainage(q.line, j < lengthOf(q.line) / 2 ? j + 10 : j - 10).p, ctx.plan.nodes[node]!)), off = q.w / 2 + sectionOf(S.sections, ctx.plan, q.class, q.id).pavement / 2;
     for (const sg of sides) line(`island/${q.id}/${sg < 0 ? 'r' : 'l'}`, sg * off, u, `${q.name}'s footway, ${off.toFixed(1)} m off its axis, to the island`, q.id);
   }
   for (const f of ctx.plan.foot.filter(x => x.kind === 'mall')) {

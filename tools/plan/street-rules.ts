@@ -9,6 +9,7 @@ import { type V, lineToPoly } from './geom';
 import { type Spot, indexes, spotsOf, walkBlock } from './street-geo';
 import { FLAT, quayBlock } from './street-zones';
 import { speciesOf } from './trees';
+import { sectionOf } from './sections';
 import { type WCtx, TOL, bb, f1, ringGap, rule } from './world-ctx';
 
 const G = 'Streetscape';
@@ -143,8 +144,8 @@ export function streetRules(c: WCtx): Check[] {
   const bad16: string[] = [], roadBy = new Map(d.roads.map(r => [r.id, r]));
   for (const f of w.frontages) {
     if (f.level !== 'street') continue;
-    const r = roadBy.get(f.street), foot = plan.foot.find(x => x.id === f.street), sec = r ? S.sections[r.class] : foot?.kind === 'mall' ? S.sections.mall : null;
-    const zone = r ? ((r.class === 'access' && S.trees.avenues.access.avenue.includes(f.area) ? sec.avenue?.frontage : null) ?? sec.frontage) : foot?.kind === 'mall' ? sec?.frontage : S.sections.walk.edgeBand; // a walk's or the quay's spill stays in its edge band
+    const r = roadBy.get(f.street), foot = plan.foot.find(x => x.id === f.street), sec: any = r ? sectionOf(S.sections, plan, r.class, r.id) : foot?.kind === 'mall' ? S.sections.mall : null;
+    const zone = r ? ((r.class === 'access' && !sec.own && S.trees.avenues.access.avenue.includes(f.area) ? sec.avenue?.frontage : null) ?? sec.frontage) : foot?.kind === 'mall' ? sec?.frontage : S.sections.walk.edgeBand; // a walk's or the quay's spill stays in its edge band
     if (f.spill.depth > Math.min(F.placement.spill.depth, zone ?? 0) + TOL) bad16.push(`${f.id}: spill ${f.spill.depth} m > frontage zone ${zone ?? 0} m`);
   }
   out.push(rule('SF-16', G, 'Frontage spill depth ≤ the street section\'s frontage zone', w.frontages.filter(f => f.level === 'street').length, bad16, 'all', 'streetscape.sections · frontage.placement.spill'));

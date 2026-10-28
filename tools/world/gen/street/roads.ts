@@ -10,13 +10,14 @@ import { kerbReturnStd, returnAt } from '../kerbreturn';
 import { footwayTangentAt } from './footway';
 import { OLD_STREET, lampStation, palmStations } from '../oldstreet';
 import { oldPalmEdge } from './palms';
+import { sectionOf } from '../../../plan/sections';
 
 const ROADS = ['primary', 'district', 'access'];
 
 /** A crossing landing at `s` along a plot edge (`at(s, d)`: s along the edge, d in from the kerb line), flanked by bollards, and by beacons on a district road (`flank` false: the patch alone, on a civic kerb).
  *  Recorded in L.landings with the ids it was placed with. */
 export function landing(ctx: Ctx, L: Layer, at: (s: number, d: number) => V, s: number, yaw: number, edge: string, cls: string, road: string, force = true, flank = true, fixedId?: string): boolean {
-  const S = ctx.S, sec = S.sections[cls], n0 = L.items.length;
+  const S = ctx.S, sec = sectionOf(S.sections, ctx.plan, cls, road), n0 = L.items.length;
   if (!L.add('crossing', at(s, 0.9), yaw + Math.PI / 2, ctx.pav, edge, { size: [1.8, S.crossings.w, 0.02], r: 2.2, force, ...(fixedId ? { id: fixedId, uncounted: true } : {}) })) return false;
   const id = L.items[L.items.length - 1]!.id;
   if (flank) for (const o of [-2.4, 2.4]) L.add('bollard', at(s + o, sec.kerb - 0.3), yaw, ctx.pav, edge, { size: S.bollards.size, r: 0.2 });
@@ -36,7 +37,7 @@ export function dressRoads(ctx: Ctx, L: Layer): void {
       const kind = kindOf(ring.c[i]!); if (!ROADS.includes(kind)) continue;
       const a = ring.p[i]!, b = ring.p[(i + 1) % n]!, len = dist(a, b), u: V = [(b[0] - a[0]) / len, (b[1] - a[1]) / len], nrm = edgeN(a, b), id = `${plot.id}/e${i}`, r = rng(`street/${id}`);
       const at = (s: number, d: number): V => [a[0] + u[0] * s - nrm[0] * d, a[1] + u[1] * s - nrm[1] * d], yaw = Math.atan2(u[1], u[0]), lampYaw = Math.atan2(nrm[1], nrm[0]); // the lamp's arm (kit +X) points along the kerb normal, over the carriageway
-      const sec = S.sections[kind], par = nrm[0] + nrm[1] > 0 ? 0 : 1, tree = kind === 'district' || (kind === 'access' && avenue.has(plot.area));
+      const sec = sectionOf(S.sections, ctx.plan, kind, idOf(ring.c[i]!)), par = nrm[0] + nrm[1] > 0 ? 0 : 1, tree = kind === 'district' || (kind === 'access' && avenue.has(plot.area));
       if (len < 14) continue;
       if (kind === 'primary') { for (let s = 45 + par * 20; s < len - 10; s += dense ? 90 : 150) L.add('hydrant', at(s, 0.8), 0, z, id); continue; }
       // crossings at both ends of district and access edges, flanked by bollards; beacons on district crossings.
