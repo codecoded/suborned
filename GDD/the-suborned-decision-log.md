@@ -38,6 +38,7 @@ The GDD keeps a default for each (the draft's, or the build's) until Sky rules. 
 Q13 of brief 035 ("Vale exits north") is settled by brief 059: "Vale comes out of the official door".
 
 ## After v0.31.0 (2026-10-28; Sky's answers, relayed by main)
+- Sky, 2026-10-28: "Hmm….why can't we just remap the world around d handover using old buildings" and "And old props. So the sky trak and other things all planned properly but looking great": the district plan becomes the old town transcribed around the fixed Handover zone, with the old props and the old look on real plan geometry (brief 075).
 - Sky, 2026-10-28: "where's the rounded corners etc - why can't we just use the old buildings ?": the old frontage and block system is ported, and the plan's blocks outside the Handover conform to the old block grammar (brief 075).
 - Aster with Datum, 2026-10-28 (under Sky's brief-075 scope): one vista landmark, the gold Crown Vista tower, at 250 m, an exception to §10's 200 m rival ceiling (SpaceHQ stays tallest); §10 to say so at the next GDD version.
 - Sky, 2026-10-28: "do it", and "no overhead wires though!": no tram overhead wires anywhere (the trams draw power another way); the golden-view plan and the district roll-out proceed (brief 075).
