@@ -22,3 +22,10 @@ Brief 073 folds in here: the answer to "too shiny / clean" is the old reel's own
 A and B now, in parallel with 074-H (the tint back to walls and plinths). Then Latch rebuilds once and re-shoots the play-zoom compare and the flyby grid; Redline costs. Then C, then D.
 
 ## Status
+- 2026-10-28, first pass landed (fc1020d8, 61698d63, 991d5fe5; 074-H in b1661058):
+  - A (Glint): the old reel's grade, sun, Trilight ambient, DK_SpaceSky, exponential haze and DK_Ocean, scaled to our sun so calibrated colours hold; play-only bloom; banding kept by leaving dithering off; night unchanged; crossing heads within 3 dE (briefs/075/grade.md).
+  - B (Vela): old road texture in powder blue, old pavement cream, no lawn bands, the old sky in the glass; the rest of our kit already matches the old DecoKit (briefs/075/textures.md).
+  - C 1–2 (Splice, Vela, Latch): stand-in tower blocks hidden (T-K1, 4,288 panels gone, round towers read round); the old livery (brick sphere, vermilion lattices, gold SpaceHQ; LV-1, KitLiveries).
+  - Shots: briefs/075/flyby.html (grid.png: old / 074 / 075), briefs/075/shots/compare/ (player-day, player-night).
+  - Redline (briefs/075/redline.md): +0.01 to +0.23 ms at the opening, projected 12.4 ms (11.0–13.9) against 13.0; nearly all of it the road's borrowed detail maps (+1 SetPass); colourways at wall + plinth pass every draw mark; 075 Air switches specified, pending (sky, ocean, colourways).
+  - Open: the long haze washes the far skyline to cream (Glint; or C10 mid-ground massing); the road detail maps (the old road had none: drop them, Aster's call, Vela); the y210 beacon on DK_StreamCorner_4 LOD0 (an embedded FBX material; Vela or Latch); C3–C10 wait on Sky's calls (designs.md).
