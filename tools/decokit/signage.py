@@ -17,7 +17,7 @@ from geo import circle, dome, fillet, rrect
 from kit import asset
 from mats import pal
 from mega_parts import girder, strut
-from signage_art import ATLAS
+from signage_art import ADS, ATLAS
 from signage_parts import (BACK, FRONT, SIDE_L, SIDE_R, ad, art, atom, beacon, board, bulb, bulbs, framed, gooseneck,
                            ladder, neon_word, poster, rail, row, scallops, starburst, tray)
 from signals import ball, band, bezel, puck, slab
@@ -31,6 +31,13 @@ for _n, _k, _h, *_e in (("DK_Billboard_Ads", "art", "#FFFFFF"), ("DK_Billboard_A
                         ("DK_Steel_Ivory", "enamel", "#E4DFD2")):  # = landmarks.py's painted lattice steel
     mats.register(_n, _k, _h, *_e)
 mats.TEXTURES["DK_Billboard_Ads"] = mats.TEXTURES["DK_Billboard_Ads_Lit"] = (ATLAS, 1.0)
+
+# Brief 075-F1 (Vela): every billboard's 3:1 face bakes the same canonical cell (sheet A's first, "mars"; a pylon's back face its row partner, "fizz"), so a
+# variant .mat (posters.py: DK_Billboard_Ads[_Lit]__<ad>, the base .mat with only the texture and the _BaseMap offset changed) shows any of the 16 ads on any board.
+# Same shader and keywords: no new SetPass. The ad each piece showed before (its old cell) is its default key, kit.json `posters.defaults`.
+CANON, CANON_BACK = ADS[0], ADS[1]
+DEFAULTS = {"Billboard_Rooftop_A": "mars", "Billboard_Rooftop_B": "fizz", "Billboard_Rooftop_C": "skyrail", "Billboard_Pylon_A": "planetarium",
+            "Billboard_Pylon_B": "cruise", "Billboard_Wall_A": "cinema", "Billboard_Wall_B": "robot", "Billboard_Wall_C": "aircar"}
 
 
 # ----------------------------------------------------------------- rooftop billboard
@@ -59,7 +66,7 @@ def rooftop(s, cell, accent):
     girder(s, (-6.0, -0.75, 7.75), (6.0, -0.75, 7.75), 0.6, 0.5, 8, st, chord=0.09, lace=0.05)
     with s.at((0, YA, ZC), FRONT):
         slab(s, 12.7, 4.7, 0.18, -0.32, -0.005, pal.Enamel_Cream, e=0.03, n=4, m=2)
-        wf, hf = framed(s, 12.0, 4.0, ad(cell), pal.Billboard_Ads, lip=0.18, depth=0.14)
+        wf, hf = framed(s, 12.0, 4.0, ad(CANON), pal.Billboard_Ads, lip=0.18, depth=0.14)
         ya = -hf / 2 - 0.28
         slab(s, wf, 0.56, 0.08, -0.3, 0.08, accent, e=0.02, n=3, m=1, cy=ya)
         for k in range(3):
@@ -133,7 +140,7 @@ def pylon(s, front, back, top):
         band(s, mast(z)[0] - 0.02, mast(z)[0] + 0.05, z - 0.06, z + 0.06, pal.Chrome, seg=24)
     with s.at((0, 0, 8.25), FRONT):
         slab(s, 5.0, 2.5, 0.4, -0.4, 0.4, pal.Enamel_Ivory, e=0.05)
-    for y, rot, cell in ((-0.4, FRONT, front), (0.4, BACK, back)):
+    for y, rot, cell in ((-0.4, FRONT, CANON), (0.4, BACK, CANON_BACK)):
         with s.at((0, y, 8.25), rot):
             bezel(s, 5.0, 2.5, 0.4, 0.08, -0.02, 0.05, pal.Chrome, n=5)
             for cy in (0.95, -0.95):
@@ -184,7 +191,7 @@ def wall_board(s, cell, accent):
     zc = 0.44 + 1.113
     with s.at((0, -0.3, zc), FRONT):
         slab(s, 6.0, 2.33, 0.12, -0.3, -0.005, pal.Enamel_Cream, e=0.02, n=4, m=2)
-        wf, hf = framed(s, 5.6, 5.6 / 3, ad(cell), pal.Billboard_Ads, lip=0.15, depth=0.12, r=0.08)
+        wf, hf = framed(s, 5.6, 5.6 / 3, ad(CANON), pal.Billboard_Ads, lip=0.15, depth=0.12, r=0.08)
         ya = -hf / 2 - 0.21
         slab(s, wf, 0.42, 0.06, -0.3, 0.06, accent, e=0.015, n=3, m=1, cy=ya)
         for k in range(2):

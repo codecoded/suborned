@@ -2977,6 +2977,12 @@
    { "host": "mega/skyport-tower", "ref": "use", "piece": "Skyport_Tower_Portal", "slots": { "DK_Steel_Ivory": "DK_Steel_Ivory__vermilion" } }
   ]
  },
+ "posters": { "placed": [
+   { "host": "bld/avenue-court/27/roof", "piece": "Billboard_Rooftop_B", "key": "cruise", "slots": { "DK_Billboard_Ads": "DK_Billboard_Ads__cruise" } },
+   { "host": "street/foot/crown-parade/billboard-pylon-2065", "piece": "Billboard_Pylon_A", "key": "luna", "back": "suds", "slots": { "DK_Billboard_Ads_Lit": "DK_Billboard_Ads_Lit__luna" } },
+   { "host": "street/avenue-court/e17/advertising-column-2080", "piece": "AdColumn", "key": "A", "slots": {} },
+   { "host": "street/avenue-court/e0/advertising-column-2082", "piece": "AdColumn", "key": "B", "slots": { "DK_Billboard_Ads": "DK_Billboard_Ads__sheetB" } }
+ ] },
  "gates": [
   {
    "id": "gate/rocket-gate",

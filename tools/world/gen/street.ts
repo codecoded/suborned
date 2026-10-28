@@ -19,8 +19,9 @@ import { type CapLog, dressCapstone } from './street/capstone';
 import { dressRoads } from './street/roads';
 import { dressFootways } from './street/footway';
 import { dressTransit } from './street/transit';
+import { dressAdverts } from './billboards';
 
-export function generateStreet(ctx: Ctx, o: { buildings: Mass[]; megas: MegaOut[]; decks: DeckRec[]; stops: Mass[]; stations: Mass[]; connectors: Connector[]; frontages: Frontage[] }): { items: StreetItem[]; flags: Flag[]; crossings?: Crossing[]; crossingLog?: CrossingLog; takedown?: Takedown; capstone?: CapLog; groundPieces?: StreetItem[] } {
+export function generateStreet(ctx: Ctx, o: { buildings: Mass[]; megas: MegaOut[]; decks: DeckRec[]; stops: Mass[]; stations: Mass[]; connectors: Connector[]; frontages: Frontage[] }): { items: StreetItem[]; flags: Flag[]; crossings?: Crossing[]; crossingLog?: CrossingLog; takedown?: Takedown; capstone?: CapLog; groundPieces?: StreetItem[]; adverts?: ReturnType<typeof dressAdverts> } {
   const ground = (m: Mass) => m.base < 1;
   const solids: V[][] = [...o.buildings.filter(ground).map(m => m.ring), ...o.megas.flatMap(m => m.parts.filter(ground).map(p => p.ring))];
   const post = (p: V): V[] => [[p[0] - 0.7, p[1] - 0.7], [p[0] + 0.7, p[1] - 0.7], [p[0] + 0.7, p[1] + 0.7], [p[0] - 0.7, p[1] + 0.7]];
@@ -47,7 +48,8 @@ export function generateStreet(ctx: Ctx, o: { buildings: Mass[]; megas: MegaOut[
     const at = new Map(L.items.map(i => [i.id, i.at] as const));
     for (const pts of [takedown.report, takedown.origins] as { item?: string; at: V }[][]) for (const q of pts) { const a = q.item ? at.get(q.item) : undefined; if (a) q.at = [a[0], a[1]]; }
   }
-  return { items: streetKit(ctx, [...L.items.filter(x => x.kind !== 'flag-mast'), ...D.items, ...(strips?.parts ?? [])]).map(bindPart), flags, ...(strips ? { crossings: strips.crossings, crossingLog: strips.log } : {}), ...(takedown ? { takedown } : {}), ...(capstone ? { capstone: capstone.log, groundPieces: capstone.ground } : {}) };
+  const adverts = dressAdverts(ctx, L, { decks: o.decks, megas: o.megas }); // brief 075-F (BB-3, BB-4): pylons and advertising columns take the ground everything else left, so no other street id moves
+  return { items: streetKit(ctx, [...L.items.filter(x => x.kind !== 'flag-mast'), ...D.items, ...(strips?.parts ?? [])]).map(bindPart), flags, adverts, ...(strips ? { crossings: strips.crossings, crossingLog: strips.log } : {}), ...(takedown ? { takedown } : {}), ...(capstone ? { capstone: capstone.log, groundPieces: capstone.ground } : {}) };
 }
 
 /** Grammar §2a flag masts (8 m, 9 m pitch): both sides of Crown Parade in the mall's kerb band (outside SpaceHQ's ground hall), along hotel and civic

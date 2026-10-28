@@ -7,6 +7,7 @@ import { buildingHost, generateFrontages } from './frontage';
 import { type Bld, generateMasses, towerSites } from './masses';
 import { generateMegas } from './mega';
 import { signKit } from './kitrefs';
+import { type BoardLog, rooftopBoards, wallBoards } from './billboards';
 import { generateRoofs } from './roofs';
 import { generateSignatures, generateStructures } from './signatures';
 import { generateStreet } from './street';
@@ -37,6 +38,7 @@ export type Generated = {
   capstone?: CapLog; // brief 026: what the capstone programme placed and the places no rule could fill
   kerbArcs?: KerbArcLog; // brief 028: the pearl kerb laid round every kerb return (kind kerb-return)
   colourways?: ColourwayLog; // brief 074: the building colourways' spread (set by build.ts worldOf)
+  billboards?: BoardLog; // brief 075-F: what the BB rules placed and left (billboards.ts); the play-street cap's exclusions are Sky's question
   roadFinish?: RoadFinishLog; // brief 028 Road: what the road finish laid (its pieces are in groundPieces, kinds road-ribbon, road-shoulder, road-lozenge, road-seam; the pinstripe retired 072-G) and what it left
 };
 
@@ -68,7 +70,9 @@ export function generate(ctx: Ctx, stops: Mass[], stations: Mass[]): Generated {
   for (const m of masses) if (/\/band-\d+$/.test(m.id)) m.surface = accentOf.get(m.id.slice(0, m.id.lastIndexOf('/'))) ?? m.surface;
   // grammar §2a colour life: faience, spandrels, fins, balcony awnings and banners per skin; flags along the Parade, hotels and civic fronts
   const life = colourLife(ctx, blds, masses, skins0, fac.facades, frontages), skins = life.skins;
-  const { items: street, flags, crossings, crossingLog, takedown, capstone, groundPieces } = generateStreet(ctx, { buildings: masses, megas: megaOut, decks, stops, stations, connectors: conn.connectors, frontages });
+  const { items: street, flags, crossings, crossingLog, takedown, capstone, groundPieces, adverts } = generateStreet(ctx, { buildings: masses, megas: megaOut, decks, stops, stations, connectors: conn.connectors, frontages });
+  const rooftop = rooftopBoards(ctx, roofs, blds, masses), walls = wallBoards(ctx, { masses, facades: fac.facades, roofs, catalogue: catalogued }); // brief 075-F (BB-1, BB-2): boards on the sign-frame roofs, then on the party walls over a lower neighbour (clear of those roofs)
+  street.push(...walls.items);
   // brief 028 Road (Sky 2026-10-22 "can try"): the testbed's road finish, laid by rule on every kerb face; opt-in on standards.streetscape.roads and the pieces adopted in the kit (a pinned plan or kit gets none)
   const rf = dressRoadFinish(ctx, { crossings: crossings ?? [], platforms: stops.map(s => s.ring), mouths: activeMouths(ctx) }); // brief 061: the continuous footways' mouths: the higher road's ribbon runs on across, the lane's stops short of the ramp
   const ka = dressKerbArcs(ctx, { strips: (crossings ?? []).map(c => c.strip as V[]), drives: (ctx.civ.drives ?? []).map(d => d.poly as V[]) }); // brief 028: after the crossings, so a stone never lies across a crossing strip
@@ -76,7 +80,7 @@ export function generate(ctx: Ctx, stops: Mass[], stations: Mass[]): Generated {
   const slabs: Mass[] = ctx.d.plots.map(p => ({ id: `plot/${p.id}`, surface: p.use, ring: slabRing(ctx, p).map(rv), base: 0, height: ctx.pav })); // brief 028: the kerb side's corners are rounded (kerbreturn.ts); the building side and the building line are as the plan has them
   // brief 028 (kerbReturn.bend): the outside of a road's bend is concentric with the inside corner's return; the fillet is pavement laid into the road's corner (a slab of its own, in the use of the plot it meets), never a change to a plot
   for (const r of returnsOf(ctx)) if (r.bend) { const probe: V = [r.at[0] + (r.n1[0] + r.n2[0]) * 0.4, r.at[1] + (r.n1[1] + r.n2[1]) * 0.4]; slabs.push({ id: `plot/${r.id}`, surface: ctx.d.plots.find(p => !p.civic && inPolyV(probe, p.polyV))?.use ?? ctx.d.plots.find(p => p.id === r.plot)!.use, ring: r.cut.map(rv), base: 0, height: ctx.pav }); }
-  return { signatures: [...generateSignatures(ctx), ...generateStructures(ctx)], skins, fabric: { awnings: life.awnings, banners: life.banners, flags }, facades: fac.facades, faces, shopFit: fit.log, facadeWhy: fac.why, faceMetres: fac.metres, buildings: masses, slabs, roofs, frontages, connectors: conn.connectors, street, decks, megas: megaOut.map(m => ({ id: m.id, parts: m.parts, prims: m.prims, ...(m.gateway ? { gateway: m.gateway } : {}) })), blds, megaOut, issues: conn.issues, travel: conn.travel, ...(crossings ? { crossings, crossingLog } : {}), ...(takedown ? { takedown } : {}), ...(capstone ? { capstone } : {}), ...(flat.length ? { groundPieces: flat } : {}), ...(rf ? { roadFinish: rf.log } : {}), ...(ka ? { kerbArcs: ka.log } : {}) };
+  return { signatures: [...generateSignatures(ctx), ...generateStructures(ctx)], skins, fabric: { awnings: life.awnings, banners: life.banners, flags }, facades: fac.facades, faces, shopFit: fit.log, facadeWhy: fac.why, faceMetres: fac.metres, buildings: masses, slabs, roofs, frontages, connectors: conn.connectors, street, decks, megas: megaOut.map(m => ({ id: m.id, parts: m.parts, prims: m.prims, ...(m.gateway ? { gateway: m.gateway } : {}) })), blds, megaOut, issues: conn.issues, travel: conn.travel, ...(crossings ? { crossings, crossingLog } : {}), ...(takedown ? { takedown } : {}), ...(capstone ? { capstone } : {}), ...(flat.length ? { groundPieces: flat } : {}), ...(rf ? { roadFinish: rf.log } : {}), billboards: { rooftop, wall: walls.log, ...(adverts ?? { pylon: { placed: 0, parade: 0, quay: 0, plaza: 0 }, column: { placed: 0, before: 0 } }) }, ...(ka ? { kerbArcs: ka.log } : {}) };
 }
 
 /** A DeckRec as the export's Deck. */

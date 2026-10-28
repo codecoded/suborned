@@ -162,7 +162,7 @@ test('brief 072-F: the surface-detail array and the three detail pairs ride as k
   for (const f of t) { expect(f.root).toBe('generated'); expect(f.sha256).toMatch(/^[0-9a-f]{64}$/); }
   const meta = join(GEN_ROOT, 'Textures/surface_detail_v1.png.meta');
   if (existsSync(meta)) expect(readFileSync(meta, 'utf8')).toMatch(/textureShape: 4\n/); // Texture2DArray (TextureImporterShape: 2D=1, Cube=2, 2DArray=4)
-  const only: Kit = { ...kit, colourways: undefined, landmarks: undefined, assets: [] }, dest = mkdtempSync(join(tmpdir(), 'kit-tex-'));
+  const only: Kit = { ...kit, colourways: undefined, landmarks: undefined, posters: undefined, assets: [] }, dest = mkdtempSync(join(tmpdir(), 'kit-tex-'));
   try { const r = copyAdopted(only, root, dest, GEN_ROOT); expect(r.errors).toEqual([]); expect(r.copied.length).toBe(t.length); expect(r.pruned).toEqual([]); }
   finally { rmSync(dest, { recursive: true, force: true }); }
 });
@@ -210,7 +210,7 @@ test('brief 074-B/H: 12 colourway sets over the wall and plinth slots (band and 
   const lime = kit.assets.find(a => a.materials.includes('DK_Limestone_Tex'))!;
   expect(lime.files.some(f => f.path === 'Textures/wall_panel_neutral_v1.png')).toBe(true);
   expect(kit.assets.some(a => a.status === 'adopted' && a.files.some(f => f.path === 'Textures/facade_panel_v1.png'))).toBe(false);
-  const only: Kit = { ...kit, textures: [], landmarks: undefined, assets: [] }, dest = mkdtempSync(join(tmpdir(), 'kit-cw-'));
+  const only: Kit = { ...kit, textures: [], landmarks: undefined, posters: undefined, assets: [] }, dest = mkdtempSync(join(tmpdir(), 'kit-cw-'));
   try { const r = copyAdopted(only, root, dest, GEN_ROOT); expect(r.errors).toEqual([]); expect(r.copied.length).toBe(cw.files.length); }
   finally { rmSync(dest, { recursive: true, force: true }); }
 });
@@ -236,7 +236,35 @@ test('brief 075-C: landmark livery (old DecoKitColourways `livery`): vermilion l
     const b = mat(v.base) ?? legacy(v.base), m = mat(v.material);
     if (b && m) expect(strip(m), v.material).toBe(strip(b)); // only the name and the base colour differ: no new variant, no new SetPass
   }
-  const only: Kit = { ...kit, textures: [], colourways: undefined, assets: [] }, dest = mkdtempSync(join(tmpdir(), 'kit-lv-'));
+  const only: Kit = { ...kit, textures: [], colourways: undefined, posters: undefined, assets: [] }, dest = mkdtempSync(join(tmpdir(), 'kit-lv-'));
   try { const r = copyAdopted(only, root, dest, GEN_ROOT); expect(r.errors).toEqual([]); expect(r.copied.length).toBe(lv.files.length); }
+  finally { rmSync(dest, { recursive: true, force: true }); }
+});
+
+test('brief 075-F1: billboard and poster variants: 16 ads on two sheets in one layout, every billboard bakes the canonical cell, each variant only re-points the texture and its offset', () => {
+  const ps = kit.posters!;
+  expect(ps.schema).toBe('suborned.posters/1');
+  expect(ps.adOrder.length).toBe(16);
+  expect(ps.adOrder.filter(k => ps.ads[k]!.sheet === 'A')).toEqual(['mars', 'fizz', 'aircar', 'skyrail', 'robot', 'planetarium', 'cruise', 'cinema']); // the old sheet's 8, unchanged
+  expect(new Set(ps.adOrder.map(k => ps.ads[k]!.words)).size).toBe(16);
+  const byId = new Map(kit.assets.map(a => [a.id, a]));
+  for (const [id, base] of [...Object.entries(ps.adPieces), ...Object.entries(ps.sheetPieces)]) { const a = byId.get(id)!; expect(a.status, id).toBe('adopted'); expect(a.materials, id).toContain(base); }
+  for (const id of Object.keys(ps.adPieces)) expect(ps.adOrder, id).toContain(ps.defaults[id]);
+  for (const k of ps.adOrder) { expect(ps.ads[ps.backFace[k]!]!.sheet).toBe(ps.ads[k]!.sheet); expect(ps.backFace[ps.backFace[k]!]).toBe(k); }
+  const paths = new Set(ps.files.map(f => f.path));
+  expect(paths.has(ps.sheets.B.texture) && paths.has(`${ps.sheets.B.texture}.meta`)).toBe(true);
+  const gen = (p: string) => { const g = join(GEN_ROOT, p); return existsSync(g) ? readFileSync(g, 'utf8') : undefined; };
+  const legacy = (n: string) => { const p = join(root, `Materials/${n}.mat`); return existsSync(p) ? readFileSync(p, 'utf8') : undefined; };
+  const strip = (t: string) => t.replace(/  m_Name: \S+\n/, '').replace(/guid: [0-9a-f]{32}, type: 3/g, 'guid: T, type: 3').replace(/m_Offset: \{[^}]*\}/g, 'm_Offset: O');
+  for (const k of ps.adOrder) for (const [base, n] of Object.entries(ps.ads[k]!.materials)) {
+    for (const p of [`Materials/${n}.mat`, `Materials/${n}.mat.meta`]) expect(paths.has(p), p).toBe(true);
+    const b = gen(`Materials/${base}.mat`) ?? legacy(base), m = gen(`Materials/${n}.mat`);
+    if (!b || !m) continue;
+    expect(strip(m), n).toBe(strip(b)); // same shader, keywords, colour: no new variant, no new SetPass
+    expect(m, n).toContain(`guid: ${ps.sheets[ps.ads[k]!.sheet].guid}, type: 3`);
+    const [u, v] = ps.ads[k]!.offset; expect(m, n).toContain(`m_Offset: {x: ${+u.toPrecision(8)}, y: ${+v.toPrecision(8)}}`);
+  }
+  const only: Kit = { ...kit, textures: [], colourways: undefined, landmarks: undefined, assets: [] }, dest = mkdtempSync(join(tmpdir(), 'kit-ps-'));
+  try { const r = copyAdopted(only, root, dest, GEN_ROOT); expect(r.errors).toEqual([]); expect(r.copied.length).toBe(ps.files.length); }
   finally { rmSync(dest, { recursive: true, force: true }); }
 });

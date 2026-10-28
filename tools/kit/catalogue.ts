@@ -2,7 +2,7 @@
 import { createHash } from 'node:crypto';
 import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs';
 import { join, relative } from 'node:path';
-import type { Kit, KitAsset, KitBuilt, KitColourways, KitFile, KitLandmarks, KitOrder, KitStatus } from '../../contracts/world/kit.schema';
+import type { Kit, KitAsset, KitBuilt, KitColourways, KitFile, KitLandmarks, KitOrder, KitPosters, KitStatus } from '../../contracts/world/kit.schema';
 import { WAVE1, tagsOf } from './tags';
 import { generatedTags } from './generated';
 import { FULL_DETAIL, LOD_CATEGORIES, LOD_CLASSES, lodCategoryOf, lodClassOf, lodScreens } from './lod';
@@ -147,5 +147,15 @@ export function buildCatalogue(root: string, prior?: Kit, gen?: string): Kit {
     }
     landmarks = { schema: lv.schema, brief: lv.brief, source: lv.source, keys, pieces, files };
   }
-  return { schema: 'suborned.kit/1', source: { manifest: 'decokit_manifest.json', materials: 'decokit_materials.json', manifestSha256: sha(manifestText), materialsSha256: sha(materialsText) }, lodCategories: LOD_CATEGORIES, ...(classed.some(a => a.lodClass) ? { lodClasses: LOD_CLASSES } : {}), ...(textures.length ? { textures } : {}), ...(colourways ? { colourways } : {}), ...(landmarks ? { landmarks } : {}), assets: classed }; // the classes ride once a classed piece is catalogued
+  // brief 075-F1: the billboard ad and poster-sheet variants (tools/decokit posters.py, Data/posters.json): the variant .mats and sheet B ride at the top level, like the livery.
+  const psFile = gen && join(gen, 'Data/posters.json');
+  let posters: KitPosters | undefined = prior?.posters;
+  if (psFile && existsSync(psFile)) {
+    const ps = JSON.parse(readFileSync(psFile, 'utf8')) as Omit<KitPosters, 'files'>;
+    const names = [...new Set([...Object.values(ps.ads).flatMap(a => Object.values(a.materials)), ...Object.values(ps.sheets.B.materials)])].sort();
+    const files = [...names.flatMap(n => pair('material', `Materials/${n}.mat`)), ...pair('texture', ps.sheets.B.texture)];
+    if (files.length !== names.length * 2 + 2) throw new Error(`posters: ${names.length * 2 + 2 - files.length} .mat/.meta/texture files missing in ${gen} (rerun bun run decokit --mats-only)`);
+    posters = { ...ps, files };
+  }
+  return { schema: 'suborned.kit/1', source: { manifest: 'decokit_manifest.json', materials: 'decokit_materials.json', manifestSha256: sha(manifestText), materialsSha256: sha(materialsText) }, lodCategories: LOD_CATEGORIES, ...(classed.some(a => a.lodClass) ? { lodClasses: LOD_CLASSES } : {}), ...(textures.length ? { textures } : {}), ...(colourways ? { colourways } : {}), ...(landmarks ? { landmarks } : {}), ...(posters ? { posters } : {}), assets: classed }; // the classes ride once a classed piece is catalogued
 }

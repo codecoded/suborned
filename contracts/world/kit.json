@@ -1018,6 +1018,811 @@
    }
   ]
  },
+ "posters": {
+  "schema": "suborned.posters/1",
+  "brief": "075-F1",
+  "source": "tools/decokit/posters.py",
+  "rule": "Per instance, swap the piece's base slot (DK_Billboard_Ads or DK_Billboard_Ads_Lit) for the chosen key's material. Billboards (`adPieces`, `litPieces`) take an ad key; `sheetPieces` take sheet A (keep the base) or sheet B. Same shader, keywords and colour as the base: only the texture and its offset differ.",
+  "sheets": {
+   "A": {
+    "texture": "Textures/billboard_ads_v1.png",
+    "guid": "35f069baf130147b183b68aa987cb8c7",
+    "source": "the old Art/DecoKit/Textures/billboard_ads_v1.png, byte-identical"
+   },
+   "B": {
+    "texture": "Textures/billboard_ads_v2.png",
+    "guid": "d3547b3dfb6bc766d1f5e12e23299ab5",
+    "source": "tools/decokit/art/posters (signage_art.py pack_b; PROVENANCE.json)",
+    "materials": {
+     "DK_Billboard_Ads": "DK_Billboard_Ads__sheetB",
+     "DK_Billboard_Ads_Lit": "DK_Billboard_Ads_Lit__sheetB"
+    }
+   }
+  },
+  "ads": {
+   "mars": {
+    "sheet": "A",
+    "words": "SEE MARS",
+    "offset": [
+     0,
+     0
+    ],
+    "materials": {
+     "DK_Billboard_Ads": "DK_Billboard_Ads__mars",
+     "DK_Billboard_Ads_Lit": "DK_Billboard_Ads_Lit__mars"
+    }
+   },
+   "fizz": {
+    "sheet": "A",
+    "words": "ATOM FIZZ",
+    "offset": [
+     0.5,
+     0
+    ],
+    "materials": {
+     "DK_Billboard_Ads": "DK_Billboard_Ads__fizz",
+     "DK_Billboard_Ads_Lit": "DK_Billboard_Ads_Lit__fizz"
+    }
+   },
+   "aircar": {
+    "sheet": "A",
+    "words": "NEW AIRCAR",
+    "offset": [
+     0,
+     -0.16650391
+    ],
+    "materials": {
+     "DK_Billboard_Ads": "DK_Billboard_Ads__aircar",
+     "DK_Billboard_Ads_Lit": "DK_Billboard_Ads_Lit__aircar"
+    }
+   },
+   "skyrail": {
+    "sheet": "A",
+    "words": "SKYRAIL PASS",
+    "offset": [
+     0.5,
+     -0.16650391
+    ],
+    "materials": {
+     "DK_Billboard_Ads": "DK_Billboard_Ads__skyrail",
+     "DK_Billboard_Ads_Lit": "DK_Billboard_Ads_Lit__skyrail"
+    }
+   },
+   "robot": {
+    "sheet": "A",
+    "words": "ROBOT BUTLER",
+    "offset": [
+     0,
+     -0.33300781
+    ],
+    "materials": {
+     "DK_Billboard_Ads": "DK_Billboard_Ads__robot",
+     "DK_Billboard_Ads_Lit": "DK_Billboard_Ads_Lit__robot"
+    }
+   },
+   "planetarium": {
+    "sheet": "A",
+    "words": "STAR SHOW",
+    "offset": [
+     0.5,
+     -0.33300781
+    ],
+    "materials": {
+     "DK_Billboard_Ads": "DK_Billboard_Ads__planetarium",
+     "DK_Billboard_Ads_Lit": "DK_Billboard_Ads_Lit__planetarium"
+    }
+   },
+   "cruise": {
+    "sheet": "A",
+    "words": "HARBOUR CRUISE",
+    "offset": [
+     0,
+     -0.49951172
+    ],
+    "materials": {
+     "DK_Billboard_Ads": "DK_Billboard_Ads__cruise",
+     "DK_Billboard_Ads_Lit": "DK_Billboard_Ads_Lit__cruise"
+    }
+   },
+   "cinema": {
+    "sheet": "A",
+    "words": "DOUBLE FEATURE",
+    "offset": [
+     0.5,
+     -0.49951172
+    ],
+    "materials": {
+     "DK_Billboard_Ads": "DK_Billboard_Ads__cinema",
+     "DK_Billboard_Ads_Lit": "DK_Billboard_Ads_Lit__cinema"
+    }
+   },
+   "luna": {
+    "sheet": "B",
+    "words": "FLY TO LUNA",
+    "offset": [
+     0,
+     0
+    ],
+    "materials": {
+     "DK_Billboard_Ads": "DK_Billboard_Ads__luna",
+     "DK_Billboard_Ads_Lit": "DK_Billboard_Ads_Lit__luna"
+    }
+   },
+   "suds": {
+    "sheet": "B",
+    "words": "NOVA SUDS",
+    "offset": [
+     0.5,
+     0
+    ],
+    "materials": {
+     "DK_Billboard_Ads": "DK_Billboard_Ads__suds",
+     "DK_Billboard_Ads_Lit": "DK_Billboard_Ads_Lit__suds"
+    }
+   },
+   "range": {
+    "sheet": "B",
+    "words": "ATOM RANGE",
+    "offset": [
+     0,
+     -0.16650391
+    ],
+    "materials": {
+     "DK_Billboard_Ads": "DK_Billboard_Ads__range",
+     "DK_Billboard_Ads_Lit": "DK_Billboard_Ads_Lit__range"
+    }
+   },
+   "venus": {
+    "sheet": "B",
+    "words": "VENUS BEACH",
+    "offset": [
+     0.5,
+     -0.16650391
+    ],
+    "materials": {
+     "DK_Billboard_Ads": "DK_Billboard_Ads__venus",
+     "DK_Billboard_Ads_Lit": "DK_Billboard_Ads_Lit__venus"
+    }
+   },
+   "tidy": {
+    "sheet": "B",
+    "words": "KEEP VESPER TIDY",
+    "offset": [
+     0,
+     -0.33300781
+    ],
+    "materials": {
+     "DK_Billboard_Ads": "DK_Billboard_Ads__tidy",
+     "DK_Billboard_Ads_Lit": "DK_Billboard_Ads_Lit__tidy"
+    }
+   },
+   "pearls": {
+    "sheet": "B",
+    "words": "LAGOON PEARLS",
+    "offset": [
+     0.5,
+     -0.33300781
+    ],
+    "materials": {
+     "DK_Billboard_Ads": "DK_Billboard_Ads__pearls",
+     "DK_Billboard_Ads_Lit": "DK_Billboard_Ads_Lit__pearls"
+    }
+   },
+   "mints": {
+    "sheet": "B",
+    "words": "STARDUST MINTS",
+    "offset": [
+     0,
+     -0.49951172
+    ],
+    "materials": {
+     "DK_Billboard_Ads": "DK_Billboard_Ads__mints",
+     "DK_Billboard_Ads_Lit": "DK_Billboard_Ads_Lit__mints"
+    }
+   },
+   "coral": {
+    "sheet": "B",
+    "words": "CORAL LINE",
+    "offset": [
+     0.5,
+     -0.49951172
+    ],
+    "materials": {
+     "DK_Billboard_Ads": "DK_Billboard_Ads__coral",
+     "DK_Billboard_Ads_Lit": "DK_Billboard_Ads_Lit__coral"
+    }
+   }
+  },
+  "adOrder": [
+   "mars",
+   "fizz",
+   "aircar",
+   "skyrail",
+   "robot",
+   "planetarium",
+   "cruise",
+   "cinema",
+   "luna",
+   "suds",
+   "range",
+   "venus",
+   "tidy",
+   "pearls",
+   "mints",
+   "coral"
+  ],
+  "backFace": {
+   "mars": "fizz",
+   "fizz": "mars",
+   "aircar": "skyrail",
+   "skyrail": "aircar",
+   "robot": "planetarium",
+   "planetarium": "robot",
+   "cruise": "cinema",
+   "cinema": "cruise",
+   "luna": "suds",
+   "suds": "luna",
+   "range": "venus",
+   "venus": "range",
+   "tidy": "pearls",
+   "pearls": "tidy",
+   "mints": "coral",
+   "coral": "mints"
+  },
+  "adPieces": {
+   "Billboard_Rooftop_A": "DK_Billboard_Ads",
+   "Billboard_Rooftop_B": "DK_Billboard_Ads",
+   "Billboard_Rooftop_C": "DK_Billboard_Ads",
+   "Billboard_Wall_A": "DK_Billboard_Ads",
+   "Billboard_Wall_B": "DK_Billboard_Ads",
+   "Billboard_Wall_C": "DK_Billboard_Ads",
+   "Billboard_Pylon_A": "DK_Billboard_Ads_Lit",
+   "Billboard_Pylon_B": "DK_Billboard_Ads_Lit"
+  },
+  "sheetPieces": {
+   "AdColumn": "DK_Billboard_Ads",
+   "SandwichBoard": "DK_Billboard_Ads",
+   "Marquee_Cinema": "DK_Billboard_Ads_Lit"
+  },
+  "defaults": {
+   "Billboard_Rooftop_A": "mars",
+   "Billboard_Rooftop_B": "fizz",
+   "Billboard_Rooftop_C": "skyrail",
+   "Billboard_Pylon_A": "planetarium",
+   "Billboard_Pylon_B": "cruise",
+   "Billboard_Wall_A": "cinema",
+   "Billboard_Wall_B": "robot",
+   "Billboard_Wall_C": "aircar"
+  },
+  "posters": {
+   "A": [
+    "saturn",
+    "expo",
+    "rocketrace",
+    "vesper"
+   ],
+   "B": [
+    "jupiter",
+    "aqua",
+    "revue",
+    "skyport"
+   ]
+  },
+  "boards": {
+   "A": [
+    [
+     "ROBOT MOON",
+     "+ SAUCER GIRL"
+    ],
+    [
+     "DOUBLE",
+     "FEATURE"
+    ]
+   ],
+   "B": [
+    [
+     "ATOM PRINCESS",
+     "+ COMET KID"
+    ],
+    [
+     "LATE",
+     "SHOW"
+    ]
+   ]
+  },
+  "files": [
+   {
+    "root": "generated",
+    "role": "material",
+    "path": "Materials/DK_Billboard_Ads_Lit__aircar.mat",
+    "sha256": "611fa877c01aa1bb0cf173e68f2067d8a18ccbde993a96fe4b3831df4a2d05b1",
+    "bytes": 4100
+   },
+   {
+    "root": "generated",
+    "role": "material-meta",
+    "path": "Materials/DK_Billboard_Ads_Lit__aircar.mat.meta",
+    "sha256": "a22098245dfb940cb0ec026dfce1c2dce06e960cb205edac60aeff5dad9459d0",
+    "bytes": 188
+   },
+   {
+    "root": "generated",
+    "role": "material",
+    "path": "Materials/DK_Billboard_Ads_Lit__cinema.mat",
+    "sha256": "6df5430f03db4c7aaaee9576da23e23eee34881fb069c5c706bd27cc511f4cfd",
+    "bytes": 4106
+   },
+   {
+    "root": "generated",
+    "role": "material-meta",
+    "path": "Materials/DK_Billboard_Ads_Lit__cinema.mat.meta",
+    "sha256": "255652db3158b8922485cecfdae5b1c7225b687643ab9db1c8a314c5eebadf55",
+    "bytes": 188
+   },
+   {
+    "root": "generated",
+    "role": "material",
+    "path": "Materials/DK_Billboard_Ads_Lit__coral.mat",
+    "sha256": "12cdcd205039ea1b45ae75d4727e41f9418af34fe8d1156078be422ff13ed2ea",
+    "bytes": 4105
+   },
+   {
+    "root": "generated",
+    "role": "material-meta",
+    "path": "Materials/DK_Billboard_Ads_Lit__coral.mat.meta",
+    "sha256": "503ed092756290a9310716514798175df8bdf6d23ec77ecca8bf227f0a0778c1",
+    "bytes": 188
+   },
+   {
+    "root": "generated",
+    "role": "material",
+    "path": "Materials/DK_Billboard_Ads_Lit__cruise.mat",
+    "sha256": "211e78a281ad447a9e3b6d57e1e78e92704640a801ef9d33561a0bdc3e467b3c",
+    "bytes": 4100
+   },
+   {
+    "root": "generated",
+    "role": "material-meta",
+    "path": "Materials/DK_Billboard_Ads_Lit__cruise.mat.meta",
+    "sha256": "ccf75c0281d66ee0265b25e7715f42a5537cba1d3f51ea181ce0a6c60c995d00",
+    "bytes": 188
+   },
+   {
+    "root": "generated",
+    "role": "material",
+    "path": "Materials/DK_Billboard_Ads_Lit__fizz.mat",
+    "sha256": "c0ae234f29d9254865566affe18ff67e15b43aea2090d71b9965bb65813eb732",
+    "bytes": 4074
+   },
+   {
+    "root": "generated",
+    "role": "material-meta",
+    "path": "Materials/DK_Billboard_Ads_Lit__fizz.mat.meta",
+    "sha256": "ab77dd857397ee692762304f0f368643092996e0ac5240c993f120d754c0b248",
+    "bytes": 188
+   },
+   {
+    "root": "generated",
+    "role": "material",
+    "path": "Materials/DK_Billboard_Ads_Lit__luna.mat",
+    "sha256": "0fcd93161e38a7c36c5255f8abc46d88f9407d566322246b22d2f2652914f0fb",
+    "bytes": 4068
+   },
+   {
+    "root": "generated",
+    "role": "material-meta",
+    "path": "Materials/DK_Billboard_Ads_Lit__luna.mat.meta",
+    "sha256": "63b325784cb479369e08a9c13ae26ad8968926467054fc72c11cd82ae750ae5e",
+    "bytes": 188
+   },
+   {
+    "root": "generated",
+    "role": "material",
+    "path": "Materials/DK_Billboard_Ads_Lit__mars.mat",
+    "sha256": "1b90d8effc4242a80be9d5d98a03bcbdc08d3f113c3946b103e5c33bf0203712",
+    "bytes": 4068
+   },
+   {
+    "root": "generated",
+    "role": "material-meta",
+    "path": "Materials/DK_Billboard_Ads_Lit__mars.mat.meta",
+    "sha256": "bc4de055f6ead4a5768c88398395987f55cf59865afe77dda3a27b6c5718372e",
+    "bytes": 188
+   },
+   {
+    "root": "generated",
+    "role": "material",
+    "path": "Materials/DK_Billboard_Ads_Lit__mints.mat",
+    "sha256": "3498d1452be6ec5ef67823d7557c8c1350dd1411b08d07e8852da34bd1c06686",
+    "bytes": 4099
+   },
+   {
+    "root": "generated",
+    "role": "material-meta",
+    "path": "Materials/DK_Billboard_Ads_Lit__mints.mat.meta",
+    "sha256": "39140aa7a7d2ee223ca6bcec5cbbb786a9af5355caea65efdb3137a17cb292dc",
+    "bytes": 188
+   },
+   {
+    "root": "generated",
+    "role": "material",
+    "path": "Materials/DK_Billboard_Ads_Lit__pearls.mat",
+    "sha256": "1474b92a3dde82ca5ba68f48f4cbc5954cc057d9c50e80f64999e85f92368b79",
+    "bytes": 4106
+   },
+   {
+    "root": "generated",
+    "role": "material-meta",
+    "path": "Materials/DK_Billboard_Ads_Lit__pearls.mat.meta",
+    "sha256": "4119e7f4607f1bff1a512f4a593775d04c72bc963f365c7447733cb2dad0d44c",
+    "bytes": 188
+   },
+   {
+    "root": "generated",
+    "role": "material",
+    "path": "Materials/DK_Billboard_Ads_Lit__planetarium.mat",
+    "sha256": "d0cdbba0261891b935d35f7ebf21324cf6101cc568663d843c7c3f345402325b",
+    "bytes": 4111
+   },
+   {
+    "root": "generated",
+    "role": "material-meta",
+    "path": "Materials/DK_Billboard_Ads_Lit__planetarium.mat.meta",
+    "sha256": "7892ecadd5495d4556d40c7684f183e278bd7dd5fe265d44846b4f4cf76cad97",
+    "bytes": 188
+   },
+   {
+    "root": "generated",
+    "role": "material",
+    "path": "Materials/DK_Billboard_Ads_Lit__range.mat",
+    "sha256": "1c049ce03e3a82d4f2e020df89491119be3c587bd499551ba5ada4f789fd808b",
+    "bytes": 4099
+   },
+   {
+    "root": "generated",
+    "role": "material-meta",
+    "path": "Materials/DK_Billboard_Ads_Lit__range.mat.meta",
+    "sha256": "9df01b30168c859575017ef2ec6caec3aeb60b2fa98a49447c1d108a357c3b6a",
+    "bytes": 188
+   },
+   {
+    "root": "generated",
+    "role": "material",
+    "path": "Materials/DK_Billboard_Ads_Lit__robot.mat",
+    "sha256": "f66a1a141c1f7633fe02d56d3abf11e26d045a77314979cb972ca7b83004fcff",
+    "bytes": 4099
+   },
+   {
+    "root": "generated",
+    "role": "material-meta",
+    "path": "Materials/DK_Billboard_Ads_Lit__robot.mat.meta",
+    "sha256": "5cbdc110b18f087e767321d44317b1bf918fe93ba915a011f4f3bc5fdaa3925c",
+    "bytes": 188
+   },
+   {
+    "root": "generated",
+    "role": "material",
+    "path": "Materials/DK_Billboard_Ads_Lit__sheetB.mat",
+    "sha256": "04527b4dbe6431fd12200755cc7202fca58e337eb6f5dc79bfa9111a1b1f9898",
+    "bytes": 4070
+   },
+   {
+    "root": "generated",
+    "role": "material-meta",
+    "path": "Materials/DK_Billboard_Ads_Lit__sheetB.mat.meta",
+    "sha256": "6d2677fb204de5ee291f52256bcdf70c6c190e20d1e12cc0a96c749690f4d180",
+    "bytes": 188
+   },
+   {
+    "root": "generated",
+    "role": "material",
+    "path": "Materials/DK_Billboard_Ads_Lit__skyrail.mat",
+    "sha256": "0b6677e5a49cffaa4d2117b2eaa7c45bef2b2529d3c217d7ef9bae9eb377f879",
+    "bytes": 4107
+   },
+   {
+    "root": "generated",
+    "role": "material-meta",
+    "path": "Materials/DK_Billboard_Ads_Lit__skyrail.mat.meta",
+    "sha256": "8f799f5966b696a8d0b0a0a6105fddc2590d1b055ff0c4634d6db30593deeab0",
+    "bytes": 188
+   },
+   {
+    "root": "generated",
+    "role": "material",
+    "path": "Materials/DK_Billboard_Ads_Lit__suds.mat",
+    "sha256": "c14104df1b7adf0e70fd3017aa265846282fed1b856f11a5fa015b1b7e17e5fd",
+    "bytes": 4074
+   },
+   {
+    "root": "generated",
+    "role": "material-meta",
+    "path": "Materials/DK_Billboard_Ads_Lit__suds.mat.meta",
+    "sha256": "e9e0bdc3f4057d2a553c6dc5edb1f7c0d2a367e03065ab6f3f96e47d218dace8",
+    "bytes": 188
+   },
+   {
+    "root": "generated",
+    "role": "material",
+    "path": "Materials/DK_Billboard_Ads_Lit__tidy.mat",
+    "sha256": "663f1f4017c618083c996b3cf95b46160b67482e3311e0669d690085af56a6cc",
+    "bytes": 4098
+   },
+   {
+    "root": "generated",
+    "role": "material-meta",
+    "path": "Materials/DK_Billboard_Ads_Lit__tidy.mat.meta",
+    "sha256": "a2197069407e37371c8e4da683fac1f89e5c1da431058514a3ad1b8e3e7e2114",
+    "bytes": 188
+   },
+   {
+    "root": "generated",
+    "role": "material",
+    "path": "Materials/DK_Billboard_Ads_Lit__venus.mat",
+    "sha256": "bd957ee6081f4c8351f3b1d9d29f19dcbe28f4bb29fd2b0515ae30307935658a",
+    "bytes": 4105
+   },
+   {
+    "root": "generated",
+    "role": "material-meta",
+    "path": "Materials/DK_Billboard_Ads_Lit__venus.mat.meta",
+    "sha256": "2a4ded8d0ad85b1b14a24bef164431065c300c222ced0fa9faccf265020fd8e4",
+    "bytes": 188
+   },
+   {
+    "root": "generated",
+    "role": "material",
+    "path": "Materials/DK_Billboard_Ads__aircar.mat",
+    "sha256": "c05b459456f98ae0630fac6b2e660c1e02c503e13d5b534ff94670508b4c1133",
+    "bytes": 3903
+   },
+   {
+    "root": "generated",
+    "role": "material-meta",
+    "path": "Materials/DK_Billboard_Ads__aircar.mat.meta",
+    "sha256": "798414840a216ffc51b742b4589ef765e3c89b64497b4633f413223f78acfd87",
+    "bytes": 188
+   },
+   {
+    "root": "generated",
+    "role": "material",
+    "path": "Materials/DK_Billboard_Ads__cinema.mat",
+    "sha256": "ec83cf6e3651dd6b86ee1a53d735330d5eacd578dffcfab2393c700bddf98121",
+    "bytes": 3905
+   },
+   {
+    "root": "generated",
+    "role": "material-meta",
+    "path": "Materials/DK_Billboard_Ads__cinema.mat.meta",
+    "sha256": "1bd77357269f6f81d6c7c14e54e56fa42f05b7f3fb0a921f1cca7cc758eb5c23",
+    "bytes": 188
+   },
+   {
+    "root": "generated",
+    "role": "material",
+    "path": "Materials/DK_Billboard_Ads__coral.mat",
+    "sha256": "9ecba91983376871c8f635ccc9c4ca8e6bc4b8be39d309b053134cc6c1d540d2",
+    "bytes": 3904
+   },
+   {
+    "root": "generated",
+    "role": "material-meta",
+    "path": "Materials/DK_Billboard_Ads__coral.mat.meta",
+    "sha256": "cf87f5b68ad16df86b128b150ebb2cfac6f74fcb4ea1ac460efe2e37354a37be",
+    "bytes": 188
+   },
+   {
+    "root": "generated",
+    "role": "material",
+    "path": "Materials/DK_Billboard_Ads__cruise.mat",
+    "sha256": "77df1537e333754f74e9e117ed9b5d25373a5dda0ffcca8868ab94575253e961",
+    "bytes": 3903
+   },
+   {
+    "root": "generated",
+    "role": "material-meta",
+    "path": "Materials/DK_Billboard_Ads__cruise.mat.meta",
+    "sha256": "10ea5286f0d340c563a19d2b3483a9d2ee6cf8bcdcb3bf3052f2b8136da76977",
+    "bytes": 188
+   },
+   {
+    "root": "generated",
+    "role": "material",
+    "path": "Materials/DK_Billboard_Ads__fizz.mat",
+    "sha256": "8906f11e466a9f2cb2808a468c5723ef83ad5641988598f4472b0ccca0cda856",
+    "bytes": 3893
+   },
+   {
+    "root": "generated",
+    "role": "material-meta",
+    "path": "Materials/DK_Billboard_Ads__fizz.mat.meta",
+    "sha256": "4d064673d7559defafea9dd7ce8a2beb7b640a1310051e1eff8da61437db35b9",
+    "bytes": 188
+   },
+   {
+    "root": "generated",
+    "role": "material",
+    "path": "Materials/DK_Billboard_Ads__luna.mat",
+    "sha256": "0550477f80ed55f068c6aada1c1c2e65b371b5fe75b90dfa487db8165951f655",
+    "bytes": 3891
+   },
+   {
+    "root": "generated",
+    "role": "material-meta",
+    "path": "Materials/DK_Billboard_Ads__luna.mat.meta",
+    "sha256": "fabddb4266a9dcba8fd6759e65147532799aa920eeccaef499545b3133833da1",
+    "bytes": 188
+   },
+   {
+    "root": "generated",
+    "role": "material",
+    "path": "Materials/DK_Billboard_Ads__mars.mat",
+    "sha256": "5b8209ba39c904d5699d0220b24b636bb2267f8af24ac2d0e753968db00ab13c",
+    "bytes": 3891
+   },
+   {
+    "root": "generated",
+    "role": "material-meta",
+    "path": "Materials/DK_Billboard_Ads__mars.mat.meta",
+    "sha256": "06e676d0e2390446af40cb915fce91db1841b6cf4a71bd497d0a1cf10d383a05",
+    "bytes": 188
+   },
+   {
+    "root": "generated",
+    "role": "material",
+    "path": "Materials/DK_Billboard_Ads__mints.mat",
+    "sha256": "ab8523a759a1ff1b559db87d0d0c908877785e366be8c14719478c0bd171788a",
+    "bytes": 3902
+   },
+   {
+    "root": "generated",
+    "role": "material-meta",
+    "path": "Materials/DK_Billboard_Ads__mints.mat.meta",
+    "sha256": "b1fbf2a6e03da3f2b792c16727814facc1c4b9d83dd7a575de1898173fe1aee6",
+    "bytes": 188
+   },
+   {
+    "root": "generated",
+    "role": "material",
+    "path": "Materials/DK_Billboard_Ads__pearls.mat",
+    "sha256": "b1c3d771c1efd7a6d1f41256de6a94fe11b549e144d87f967429884854551e09",
+    "bytes": 3905
+   },
+   {
+    "root": "generated",
+    "role": "material-meta",
+    "path": "Materials/DK_Billboard_Ads__pearls.mat.meta",
+    "sha256": "4459ead5a384248a451fcb5cf81d4d7369527b656c63b8d03493e08f25d2b246",
+    "bytes": 188
+   },
+   {
+    "root": "generated",
+    "role": "material",
+    "path": "Materials/DK_Billboard_Ads__planetarium.mat",
+    "sha256": "d7c0e61db17e23ee0123ee65aaa726f91b019d4bfe63ac3dd5e499343d796653",
+    "bytes": 3910
+   },
+   {
+    "root": "generated",
+    "role": "material-meta",
+    "path": "Materials/DK_Billboard_Ads__planetarium.mat.meta",
+    "sha256": "45dd02b45fc812a78037082c80060aa3faaeaecbabc7ea10722028483696b1bd",
+    "bytes": 188
+   },
+   {
+    "root": "generated",
+    "role": "material",
+    "path": "Materials/DK_Billboard_Ads__range.mat",
+    "sha256": "af8fe50ddb061cb988e3ce80783192cb82918cf6d1a7a65342f5f56dcfb53b99",
+    "bytes": 3902
+   },
+   {
+    "root": "generated",
+    "role": "material-meta",
+    "path": "Materials/DK_Billboard_Ads__range.mat.meta",
+    "sha256": "dced29dc49d2b7a9168eaf290f27c05dfc0e69c2ba933c6e7330659daf52b851",
+    "bytes": 188
+   },
+   {
+    "root": "generated",
+    "role": "material",
+    "path": "Materials/DK_Billboard_Ads__robot.mat",
+    "sha256": "5c55baf9418263004ed2dac0955d1865ae56cbeecca67050411f975b50e7f3ce",
+    "bytes": 3902
+   },
+   {
+    "root": "generated",
+    "role": "material-meta",
+    "path": "Materials/DK_Billboard_Ads__robot.mat.meta",
+    "sha256": "ce35505afd1f3d95d638673e4432b1476e661089f5a89dc5b47cecaf8102e545",
+    "bytes": 188
+   },
+   {
+    "root": "generated",
+    "role": "material",
+    "path": "Materials/DK_Billboard_Ads__sheetB.mat",
+    "sha256": "699cb2b25432b23e60b010f41631daa2b5652fcce9d99299471ebe755ea75fcd",
+    "bytes": 3893
+   },
+   {
+    "root": "generated",
+    "role": "material-meta",
+    "path": "Materials/DK_Billboard_Ads__sheetB.mat.meta",
+    "sha256": "05dc2d7cd8ecf5e5e41914fbcb87a0e6362625e35202baec4afec07e338d8f80",
+    "bytes": 188
+   },
+   {
+    "root": "generated",
+    "role": "material",
+    "path": "Materials/DK_Billboard_Ads__skyrail.mat",
+    "sha256": "7f4ca656ec4fcc52e7b103a7f5163c4c1722b408ef99b0d735c533271421f617",
+    "bytes": 3906
+   },
+   {
+    "root": "generated",
+    "role": "material-meta",
+    "path": "Materials/DK_Billboard_Ads__skyrail.mat.meta",
+    "sha256": "67cabc11394d8ffd1bb98e3ca6155034903de95eaa5045ceb3d159bf6444ae13",
+    "bytes": 188
+   },
+   {
+    "root": "generated",
+    "role": "material",
+    "path": "Materials/DK_Billboard_Ads__suds.mat",
+    "sha256": "9b7676be2847e053300e588e50888d4f82e96d18411d8801fc10c36246cbcf15",
+    "bytes": 3893
+   },
+   {
+    "root": "generated",
+    "role": "material-meta",
+    "path": "Materials/DK_Billboard_Ads__suds.mat.meta",
+    "sha256": "026367fb92eeb5560e96a7add5531f2ae5b07139f417e81ca79fb7f718ec9004",
+    "bytes": 188
+   },
+   {
+    "root": "generated",
+    "role": "material",
+    "path": "Materials/DK_Billboard_Ads__tidy.mat",
+    "sha256": "335d861946da854d51133575d5e3d82427b0181ce56b01aedfef061b8c44fbc2",
+    "bytes": 3901
+   },
+   {
+    "root": "generated",
+    "role": "material-meta",
+    "path": "Materials/DK_Billboard_Ads__tidy.mat.meta",
+    "sha256": "2e5c2b7e4219d9cbb13b559e77a363b6c82d49bcd4faecfd05590d2edf21d763",
+    "bytes": 188
+   },
+   {
+    "root": "generated",
+    "role": "material",
+    "path": "Materials/DK_Billboard_Ads__venus.mat",
+    "sha256": "ad94b4a5fcfaae6fed62564f36bbbe3c64ca5d1c83048681d816f2da4d23f383",
+    "bytes": 3904
+   },
+   {
+    "root": "generated",
+    "role": "material-meta",
+    "path": "Materials/DK_Billboard_Ads__venus.mat.meta",
+    "sha256": "4b6742c4ae68bd62b0e75566ec33eba0148201ce2620a9120c92f0864a1db8ce",
+    "bytes": 188
+   },
+   {
+    "root": "generated",
+    "role": "texture",
+    "path": "Textures/billboard_ads_v2.png",
+    "sha256": "dfac1450a487558366b097db05834bce49facb975048ffcfca7a2a41a5637f80",
+    "bytes": 7721060
+   },
+   {
+    "root": "generated",
+    "role": "texture-meta",
+    "path": "Textures/billboard_ads_v2.png.meta",
+    "sha256": "9af48f17ebc0b2ccc83aefad07e70f1c42d2722ba1d7a238eba2a5502c173a70",
+    "bytes": 2714
+   }
+  ]
+ },
  "assets": [
   {
    "id": "Bollard",
@@ -24478,7 +25283,11 @@
     9.17,
     4.4724
    ],
-   "pivot": "footprint-centre-ground",
+   "pivot": "origin-ground",
+   "pivotOffset": [
+    -0.147,
+    0.796
+   ],
    "front": "+Z",
    "tris": 5808,
    "materials": [
@@ -24491,15 +25300,28 @@
     "DK_Enamel_Teal",
     "DK_Iron",
     "DK_Lamp",
-    "DK_Signal_Red"
+    "DK_Beacon_Rose"
+   ],
+   "lods": [
+    {
+     "file": "Models/Signage/DK_Billboard_Rooftop_A_L1.fbx",
+     "tris": 1426,
+     "screen": 0.008
+    },
+    {
+     "file": "Models/Signage/DK_Billboard_Rooftop_A_L2.fbx",
+     "tris": 348,
+     "screen": 0.003
+    }
    ],
    "lodCategory": "street",
    "files": [
     {
+     "root": "generated",
      "role": "fbx",
      "path": "Models/Signage/DK_Billboard_Rooftop_A.fbx",
-     "sha256": "462c27230056cdb3e221212abb26a22da0fc9cd3ec3e700194bdf409745007b3",
-     "bytes": 158252
+     "sha256": "4bc4c3eff5755be457e19bd8d830c7b56eb077d33f9d5296ea164f62feaf04c0",
+     "bytes": 158044
     },
     {
      "role": "fbx-meta",
@@ -24644,15 +25466,15 @@
     {
      "root": "generated",
      "role": "material",
-     "path": "Materials/DK_Signal_Red.mat",
-     "sha256": "af27f44e7b6f61d5543b7bbcb964f3a793319e16a3cefd084e013754aacb4166",
-     "bytes": 3931
+     "path": "Materials/DK_Beacon_Rose.mat",
+     "sha256": "2dacf9e3914c1fa57a77a28fc9eba82272f04c550bf14f92912a67cfbaf492a8",
+     "bytes": 3947
     },
     {
      "root": "generated",
      "role": "material-meta",
-     "path": "Materials/DK_Signal_Red.mat.meta",
-     "sha256": "fd6388893e0ded49c829db67d88226e839f93935e7f4804924ef659320ce33a0",
+     "path": "Materials/DK_Beacon_Rose.mat.meta",
+     "sha256": "59a36a5faa060d3b3897dea4537f7909d9a555e8fe4512338129eb9eb0844347",
      "bytes": 188
     },
     {
@@ -24722,6 +25544,20 @@
      "path": "Textures/surface_metal_detail_v1_normal.png.meta",
      "sha256": "818ae432cca438c26b951fcf6aef34251cd221041a400a710e920a89f4de6d42",
      "bytes": 2718
+    },
+    {
+     "root": "generated",
+     "role": "lod",
+     "path": "Models/Signage/DK_Billboard_Rooftop_A_L1.fbx",
+     "sha256": "806200ec5de1c1ff9b3d1f2f4f2faba481025b8bcb24b83b7a76f9486bfce9ad",
+     "bytes": 80492
+    },
+    {
+     "root": "generated",
+     "role": "lod",
+     "path": "Models/Signage/DK_Billboard_Rooftop_A_L2.fbx",
+     "sha256": "ca2a9de7fa8265bfb6df2ec557cc4ee6710c6751413786903fc1230a48e25038",
+     "bytes": 44780
     }
    ],
    "tags": {
@@ -24745,7 +25581,11 @@
     9.17,
     4.4724
    ],
-   "pivot": "footprint-centre-ground",
+   "pivot": "origin-ground",
+   "pivotOffset": [
+    -0.147,
+    0.796
+   ],
    "front": "+Z",
    "tris": 5808,
    "materials": [
@@ -24758,15 +25598,28 @@
     "DK_Enamel_Red",
     "DK_Iron",
     "DK_Lamp",
-    "DK_Signal_Red"
+    "DK_Beacon_Rose"
+   ],
+   "lods": [
+    {
+     "file": "Models/Signage/DK_Billboard_Rooftop_B_L1.fbx",
+     "tris": 1426,
+     "screen": 0.008
+    },
+    {
+     "file": "Models/Signage/DK_Billboard_Rooftop_B_L2.fbx",
+     "tris": 348,
+     "screen": 0.003
+    }
    ],
    "lodCategory": "street",
    "files": [
     {
+     "root": "generated",
      "role": "fbx",
      "path": "Models/Signage/DK_Billboard_Rooftop_B.fbx",
-     "sha256": "c73f7ceb95565a0ed81c431bb582f82ed079ee7363583ca6c48a76bb997099d6",
-     "bytes": 158252
+     "sha256": "8da8c52132bff8b04a6d7f6e64156d4fb2c5021589eb4ab5784615fd00bcd8fd",
+     "bytes": 158044
     },
     {
      "role": "fbx-meta",
@@ -24911,15 +25764,15 @@
     {
      "root": "generated",
      "role": "material",
-     "path": "Materials/DK_Signal_Red.mat",
-     "sha256": "af27f44e7b6f61d5543b7bbcb964f3a793319e16a3cefd084e013754aacb4166",
-     "bytes": 3931
+     "path": "Materials/DK_Beacon_Rose.mat",
+     "sha256": "2dacf9e3914c1fa57a77a28fc9eba82272f04c550bf14f92912a67cfbaf492a8",
+     "bytes": 3947
     },
     {
      "root": "generated",
      "role": "material-meta",
-     "path": "Materials/DK_Signal_Red.mat.meta",
-     "sha256": "fd6388893e0ded49c829db67d88226e839f93935e7f4804924ef659320ce33a0",
+     "path": "Materials/DK_Beacon_Rose.mat.meta",
+     "sha256": "59a36a5faa060d3b3897dea4537f7909d9a555e8fe4512338129eb9eb0844347",
      "bytes": 188
     },
     {
@@ -24989,6 +25842,20 @@
      "path": "Textures/surface_metal_detail_v1_normal.png.meta",
      "sha256": "818ae432cca438c26b951fcf6aef34251cd221041a400a710e920a89f4de6d42",
      "bytes": 2718
+    },
+    {
+     "root": "generated",
+     "role": "lod",
+     "path": "Models/Signage/DK_Billboard_Rooftop_B_L1.fbx",
+     "sha256": "cfd7ff64e67a092b6145c46dfe9fb707b4a49f891ca8be1c6b6bf712cb7343cd",
+     "bytes": 80492
+    },
+    {
+     "root": "generated",
+     "role": "lod",
+     "path": "Models/Signage/DK_Billboard_Rooftop_B_L2.fbx",
+     "sha256": "249a8075bf5b7a1c2824807a1a0f9f30f259c1827821d921116f56252c0886fe",
+     "bytes": 44780
     }
    ],
    "tags": {
@@ -25049,7 +25916,7 @@
      "root": "generated",
      "role": "fbx",
      "path": "Models/Signage/DK_Billboard_Rooftop_C.fbx",
-     "sha256": "5c12739b43928fb5e9c177c6493644d99ba3b92bdc717c405c0e5e7f66f66a16",
+     "sha256": "588ee09da80ec8fda11247bc5c4a15597ee5e8536170a1ecf1130d112426fe82",
      "bytes": 158044
     },
     {
@@ -25278,7 +26145,7 @@
      "root": "generated",
      "role": "lod",
      "path": "Models/Signage/DK_Billboard_Rooftop_C_L1.fbx",
-     "sha256": "e2e4643cf38833a5f9140918d90f1d89e7d76ba0ae049ed3a80ffc076e452936",
+     "sha256": "9c6cae85bd641754d222c7830e71d1a10127a05642c3fcbbbee7dac3a428ab4b",
      "bytes": 80492
     },
     {
@@ -25348,8 +26215,8 @@
      "root": "generated",
      "role": "fbx",
      "path": "Models/Signage/DK_Billboard_Pylon_A.fbx",
-     "sha256": "b7ad09a82e779572756bfc15d6221a1e8d90093c20b4778788452cbe55da4a72",
-     "bytes": 218604
+     "sha256": "0ce881cb72fb3f0a8283d8d302e578b5a2d7c9f21bd5b15b9100c76158a813b8",
+     "bytes": 218620
     },
     {
      "role": "fbx-meta",
@@ -25681,15 +26548,15 @@
      "root": "generated",
      "role": "lod",
      "path": "Models/Signage/DK_Billboard_Pylon_A_L1.fbx",
-     "sha256": "2e61a12bee682bb544dbfd885d772d7684548bbf8c14a7da2f70402c51680063",
-     "bytes": 108796
+     "sha256": "d74a5d533fbcf696ec08557705911c672c81299a69144856d441c3de4a9e0d56",
+     "bytes": 108780
     },
     {
      "root": "generated",
      "role": "lod",
      "path": "Models/Signage/DK_Billboard_Pylon_A_L2.fbx",
-     "sha256": "b39557aa1d00a4fd0eb6b22b4af24d907a63dade951790f35d389df7a72e7c40",
-     "bytes": 56140
+     "sha256": "67230e1ce6797defe790ab7003ccbee32afce28e147d586e88e7a062dce56514",
+     "bytes": 56124
     }
    ],
    "tags": {
@@ -25752,8 +26619,8 @@
      "root": "generated",
      "role": "fbx",
      "path": "Models/Signage/DK_Billboard_Pylon_B.fbx",
-     "sha256": "2ca15a649e6a351d9207177e201ca90eb048ffe5dbf2e0e13166586d4feae594",
-     "bytes": 210060
+     "sha256": "a8340b5092f447e1027244138b7b1e8bf5e7ee5d076aa8bf5767b31af4c415ea",
+     "bytes": 210044
     },
     {
      "role": "fbx-meta",
@@ -26099,14 +26966,14 @@
      "root": "generated",
      "role": "lod",
      "path": "Models/Signage/DK_Billboard_Pylon_B_L1.fbx",
-     "sha256": "2c0a0d6306d4738cb8415b74e0b43c9ca9e2f25b00293cdd19e7ed2f994b39f8",
+     "sha256": "6f35a18101cf0bdf7329a22433424db290074e158e87418ab8987f97c67e3388",
      "bytes": 109484
     },
     {
      "root": "generated",
      "role": "lod",
      "path": "Models/Signage/DK_Billboard_Pylon_B_L2.fbx",
-     "sha256": "dacc050f87a8d9fd367d84f5d4af345980ca5bd3f1b4acd18bd4ab9e5c6689fa",
+     "sha256": "d0147fc832ca3bd9da3d48049d876e073169fb2bf2e82db2e4990ca925127efc",
      "bytes": 58684
     }
    ],
@@ -26131,7 +26998,11 @@
     3.2333,
     1.2067
    ],
-   "pivot": "footprint-centre-ground",
+   "pivot": "origin-ground",
+   "pivotOffset": [
+    0.12,
+    0.604
+   ],
    "front": "+Z",
    "tris": 2694,
    "materials": [
@@ -26144,13 +27015,26 @@
     "DK_Steel",
     "DK_Enamel_Charcoal"
    ],
+   "lods": [
+    {
+     "file": "Models/Signage/DK_Billboard_Wall_A_L1.fbx",
+     "tris": 672,
+     "screen": 0.008
+    },
+    {
+     "file": "Models/Signage/DK_Billboard_Wall_A_L2.fbx",
+     "tris": 158,
+     "screen": 0.003
+    }
+   ],
    "lodCategory": "street",
    "files": [
     {
+     "root": "generated",
      "role": "fbx",
      "path": "Models/Signage/DK_Billboard_Wall_A.fbx",
-     "sha256": "cc6c4acf1f43cf89e9c49bb828da3956d75bbd12b8a3007700f1b7d5424c3fcf",
-     "bytes": 93340
+     "sha256": "0040cebbbd2e1b130a41095519a9a7b31461bfebdd661b462a6618f0ef7c17f5",
+     "bytes": 93132
     },
     {
      "role": "fbx-meta",
@@ -26345,6 +27229,20 @@
      "path": "Textures/surface_metal_detail_v1_normal.png.meta",
      "sha256": "818ae432cca438c26b951fcf6aef34251cd221041a400a710e920a89f4de6d42",
      "bytes": 2718
+    },
+    {
+     "root": "generated",
+     "role": "lod",
+     "path": "Models/Signage/DK_Billboard_Wall_A_L1.fbx",
+     "sha256": "ad2ea342391ecc89422bec7753f38a22d1efb011a0959d44c93df9dd1c187e1c",
+     "bytes": 50380
+    },
+    {
+     "root": "generated",
+     "role": "lod",
+     "path": "Models/Signage/DK_Billboard_Wall_A_L2.fbx",
+     "sha256": "79cf74672f353ea32d19a86467e56040d6523c6961451fa78eae611ea189801f",
+     "bytes": 33452
     }
    ],
    "tags": {
@@ -26368,7 +27266,11 @@
     3.2333,
     1.2067
    ],
-   "pivot": "footprint-centre-ground",
+   "pivot": "origin-ground",
+   "pivotOffset": [
+    0.12,
+    0.604
+   ],
    "front": "+Z",
    "tris": 2694,
    "materials": [
@@ -26381,13 +27283,26 @@
     "DK_Steel",
     "DK_Enamel_Charcoal"
    ],
+   "lods": [
+    {
+     "file": "Models/Signage/DK_Billboard_Wall_B_L1.fbx",
+     "tris": 672,
+     "screen": 0.008
+    },
+    {
+     "file": "Models/Signage/DK_Billboard_Wall_B_L2.fbx",
+     "tris": 158,
+     "screen": 0.003
+    }
+   ],
    "lodCategory": "street",
    "files": [
     {
+     "root": "generated",
      "role": "fbx",
      "path": "Models/Signage/DK_Billboard_Wall_B.fbx",
-     "sha256": "0a6aa4a45a3731205d32bf48336ff011dd335fc85b7aa25cd10d06fd53a8ed08",
-     "bytes": 93340
+     "sha256": "0c968d2a2c51997a6054664ae42fb595a8e4dba2eb5b2c646091ac59357a4e94",
+     "bytes": 93132
     },
     {
      "role": "fbx-meta",
@@ -26582,6 +27497,20 @@
      "path": "Textures/surface_metal_detail_v1_normal.png.meta",
      "sha256": "818ae432cca438c26b951fcf6aef34251cd221041a400a710e920a89f4de6d42",
      "bytes": 2718
+    },
+    {
+     "root": "generated",
+     "role": "lod",
+     "path": "Models/Signage/DK_Billboard_Wall_B_L1.fbx",
+     "sha256": "3e26afdb128a30ba569ce29426daf39cec77c0ed3e85d251bb6c02960b6fdbab",
+     "bytes": 50380
+    },
+    {
+     "root": "generated",
+     "role": "lod",
+     "path": "Models/Signage/DK_Billboard_Wall_B_L2.fbx",
+     "sha256": "0140a42436c2cd759909bf0eaac961e6bc39a160df6da2475fa2a0e719203b33",
+     "bytes": 33452
     }
    ],
    "tags": {
@@ -26640,7 +27569,7 @@
      "root": "generated",
      "role": "fbx",
      "path": "Models/Signage/DK_Billboard_Wall_C.fbx",
-     "sha256": "fb2a55b35fd9ee54786e622b0c3ecc57e6504e36a08c7e6b649ad8b23a072f3c",
+     "sha256": "bb60b937ea264bdfb4bea72b724f4acfaa6d1e6f704bfd36b05129630299acc7",
      "bytes": 93132
     },
     {
@@ -26841,14 +27770,14 @@
      "root": "generated",
      "role": "lod",
      "path": "Models/Signage/DK_Billboard_Wall_C_L1.fbx",
-     "sha256": "a4fcb440b5b7c5cf73d340e05b6967a9bcf2b8a1b92054cb324d04cc28858597",
+     "sha256": "b33093ac5d40c6d1c0367d5b7f3a99af048190201779cedff168457325358320",
      "bytes": 50380
     },
     {
      "root": "generated",
      "role": "lod",
      "path": "Models/Signage/DK_Billboard_Wall_C_L2.fbx",
-     "sha256": "07781c04eb36f77cafbf0f9200dd1889c28acf73381392c22302adb015501a9f",
+     "sha256": "4c3cb5f13a4d584cd86ea212c0eb4836789e78f69af836513c24585dd5f24028",
      "bytes": 33452
     }
    ],

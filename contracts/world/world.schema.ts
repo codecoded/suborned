@@ -40,6 +40,8 @@ export type World = {
   signatures: SignatureOut[]; // plan signatures[] (SpaceHQ): the kit piece on its ground, no plot building on `ground`
   /** Brief 075-C, landmark livery (tools/world/gen/livery.ts, rule LV-1): the material slots each placed landmark piece paints, as `<slot>__<colour>` keys Latch swaps per instance. */
   liveries?: Liveries;
+  /** Brief 075-F (tools/world/gen/billboards.ts postersOf, Vela's kit.json `posters`): the ad each placed board shows and the poster sheet of each poster piece, per instance; Latch swaps each `slots` base material for its key's, as the liveries. Without it every board shows the canonical cell. */
+  posters?: { placed: PosterPlaced[] };
   gates: Mass[];
   horizon: Horizon; // derived (grammar §9): the sea plane and the distant band of kit pieces beyond the district; nothing here is in the plan
   counts: Record<string, number>; // elements per layer, as the Unity build must report them
@@ -232,6 +234,7 @@ export type StreetItem = {
   /** Parts of a crossing only: whether Unity casts a shadow from the item. The signal orb's body does (the piece's other parts never); every other part is flush paving or light and casts none. */
   castShadows?: boolean;
   source?: Source; kit?: KitRef; // wave 1: street furniture, plants, signs; absent on a layer the kit has not reached
+  /** Brief 075-F (tools/world/gen/billboards.ts, rules BB-1..BB-4): kind `billboard-pylon` stands on the ground (a Billboard_Pylon, `at` its pivot, `size` its footprint and height); kind `billboard-wall` hangs on a party wall above a lower neighbour: `z` = its foot, `edge` = `<mass id>#<edge index>` of the wall, `at` = its pivot (the piece's footprint centre + pivotOffset), its back in front of the wall modules. Both carry their kit piece; rooftop boards are `roofs[].kit` on the sign-frame roofs. */
   /** Brief 013: the item is a closed container that can hold a body out of every sightline (`holds` at a time), resolved from its kit piece's `tags.stash` (contracts/world/kit.json; a candidate piece too, so the world is right before Vela adopts it). Only `dumpster` today. Absent = it hides nothing. */
   stash?: { holds: number };
 };
@@ -290,3 +293,5 @@ export type WatcherNote = { id: string; kind: string; at: V; facings: number[]; 
  *  `<slot>__<colour>` (074's colourway form; Vela's tinted material of that name). Derived from the catalogue by rule, never by hand. */
 export type LiveryPlaced = { host: string; ref: string; piece: string; slots: Record<string, string> };
 export type Liveries = { colours: Record<string, { hex: string; metallic?: number; smoothness?: number }>; placed: LiveryPlaced[] };
+/** One placed board or poster piece (`host` = the element whose kit ref it is: a roof, a street item, a civic mass) and what it shows: `key` an ad of kit.json posters.adOrder (a billboard) or the sheet 'A' | 'B' (AdColumn, SandwichBoard, Marquee_Cinema); `back` the ad on a pylon's back face; `slots` base material → material (empty: sheet A keeps the base). */
+export type PosterPlaced = { host: string; piece: string; key: string; back?: string; slots: Record<string, string> };

@@ -9,8 +9,9 @@ import type { Circus, Drive, Flat, Landmark, Level, Mass, Road, SkyRail, Track, 
 import { FLAT_FOOT, LAND, ctxOf, rng } from './gen/common';
 import { type Generated, generate, toDeck } from './gen';
 import type { DeckRec } from './gen/types';
-import { adopted, adoptedBy, catalogued, landmarkKit } from './gen/kitrefs';
+import { adopted, adoptedBy, catalogued, kitPosters, landmarkKit } from './gen/kitrefs';
 import { liveriesOf } from './gen/livery';
+import { postersOf } from './gen/billboards';
 import { FACE_KIT, dressFields } from './gen/faces';
 import { horizonOf } from './gen/horizon';
 import { civicPorterGap, civicRobots } from './gen/street/capstone-civic';
@@ -328,11 +329,12 @@ export function worldOf(plan: Plan, d: Derived, civ: Civic): { world: World; gen
     levels: levelsOf(plan, gen.decks), megastructures: gen.megas, civic: civicW, ...(gen.takedown ? { takedown: gen.takedown } : {}), landmarks: landmarks(plan), signatures: gen.signatures, gates: gates(plan, d), horizon: horizonOf(plan, PROV.water, { level: PROV.beyond, bankBase: PROV.quayBase, bankDepth: 4 }),
   };
   const liveries = liveriesOf(w, catalogued, adopted()); // brief 075-C: landmark livery, after every kit ref is placed
+  const posters = postersOf(w, kitPosters()); // brief 075-F: the ad each board shows (Vela's posters), after every kit ref is placed
   const counts = {
     ground: g.roads.length + g.foot.length + g.medians.length + g.circuses.length + g.water.length + g.quays.length + g.flats.length + g.plots.length,
     transit: t.tram.length + t.skyRail.length + t.stops.length + t.stations.length,
     buildings: w.buildings.length, roofs: w.roofs.length, skins: w.skins.length, fabric: w.fabric.awnings.length + w.fabric.banners.length + w.fabric.flags.length, facades: w.facades.length, frontages: w.frontages.length, connectors: w.connectors.length, street: w.street.length,
     levels: w.levels.length, ...(w.crossings ? { crossings: w.crossings.length } : {}), decks: gen.decks.length, megastructures: w.megastructures.length, civic: w.civic.length, landmarks: w.landmarks.length, gates: w.gates.length, signatures: w.signatures.length, horizon: w.horizon.pieces.length,
   };
-  return { world: { ...w, liveries, counts }, gen };
+  return { world: { ...w, liveries, ...(posters ? { posters } : {}), counts }, gen };
 }

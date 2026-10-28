@@ -52,6 +52,13 @@ export function cataloguedFor(use: string): KitAsset | undefined {
   return everything.get(file)!.find(a => a.tags.use.includes(use));
 }
 export const forUse = (use: string) => adopted().filter(a => a.tags.use.includes(use));
+const posterSets = new Map<string, unknown>();
+/** Brief 075-F: the kit's poster variants (kit.json `posters`, Vela 075-F1) of the catalogue `withKit` names; undefined where it has none (a pinned digest from before). */
+export function kitPosters<T = any>(): T | undefined {
+  const file = pinned ?? KIT;
+  if (!posterSets.has(file)) posterSets.set(file, (JSON.parse(readFileSync(file, 'utf8')) as { posters?: unknown }).posters);
+  return posterSets.get(file) as T | undefined;
+}
 
 /** Metres within which two items of one kind must not use the same piece. */
 const NEAR: Record<string, number> = { tree: 16, 'tub-palm': 12, 'tub-palm:planted': 12, planter: 24, 'tram-shelter': 60, newsstand: 60, 'kiosk-food': 60, lamp: 50, bench: 40, bin: 40, bollard: 6, hydrant: 100, 'phone-booth': 100, 'ticket-machine': 40, 'pole-camera': 40, 'canopy-camera': 20, 'advertising-column': 100 };
@@ -83,6 +90,7 @@ export function slotOf(ctx: Ctx, s: Pick<StreetItem, 'kind' | 'variant' | 'size'
     case 'kiosk-food': { const r = ctx.S.catalogue['kiosk-food'].roof as [number, number, number]; return { h, hTol: 0.2, along: r[0], depth: r[1] }; }
     case 'tub-palm': { const sp = ctx.S.trees.species[s.variant ?? ''] as { top: number; spread: number } | undefined; return sp ? { h: sp.top, hTol: 0.5, along: sp.spread, depth: sp.spread } : null; } // brief 020: a tub palm may stand to half its plan height (FanPalm's crown is 2.8 m wide: 4.5 m at that crown is a 5 m crown in a 3 m room)
     case 'tree': { const sp = speciesOf(ctx.S, s.variant ?? '') as { top: number; spread: number } | undefined; return sp ? { h: sp.top, hTol: 0.35, along: sp.spread, depth: sp.spread } : null; }
+    case 'billboard-pylon': case 'billboard-wall': return { h: s.size[2], hTol: 0.01, along: s.size[0] + 0.001, depth: s.size[1] + 0.001 }; // brief 075-F (billboards.ts BB-2, BB-3): placed at the piece's own size, so the slot is the item, as the capstone pieces
     default: return CAPSTONE_KINDS.has(s.kind) ? { h: s.size[2], hTol: 0.01, along: s.size[0] + 0.001, depth: s.size[1] + 0.001 } : null; // the capstone programme's pieces are placed at the size their item states: the slot is the item
   }
 }

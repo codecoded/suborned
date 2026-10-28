@@ -3,6 +3,7 @@
 
 python3 Tools/Blender/decokit/signage_art.py --gen [--only a,b]   # missing sources -> Textures/gen/signage_src/
 python3 Tools/Blender/decokit/signage_art.py --pack               # -> Textures/gen/billboard_ads_v1.png
+python3 -I tools/decokit/signage_art.py --cells-b paid/075-posters/codex --pack-b   # brief 075-F1: sheet B -> tools/decokit/art/posters/billboard_ads_v2.png
 Layout (px, y down): 8 ads 1024x341 (3:1) in 2 cols x 4 rows | 4 posters 456x684 (2:3) along the bottom |
 letter boards drawn rotated 90 deg CCW in the 224 px strip at the bottom right. Top level stays import-light: Blender
 imports the layout from here.
@@ -64,6 +65,46 @@ BRIEF = {
     "rocketrace": ("poster", "ROCKET RACE", "Two finned racing rockets, one red and one teal, looping around a "
                    "chequered pylon above a cheering stadium crowd, vapour trails, speed and excitement."),
 }
+
+
+# ----------------------------------------------------------------- sheet B (brief 075-F1, Vela)
+# A second sheet in sheet A's exact layout (8 ads, 4 posters, 2 letter boards) so one set of piece UVs reads either sheet. Art: the Codex image tool ($0,
+# paid/075-posters, ledger rows in art/posters/PROVENANCE.json), the old sheet's cells as style refs; kept here at cell size. posters.py writes the variant .mats.
+ATLAS_B = "billboard_ads_v2.png"
+ART_B = Path(__file__).resolve().parent / "art/posters"
+ADS_B = ("luna", "suds", "range", "venus", "tidy", "pearls", "mints", "coral")
+POSTERS_B = ("jupiter", "aqua", "revue", "skyport")
+WORDS_B = {"luna": "FLY TO LUNA", "suds": "NOVA SUDS", "range": "ATOM RANGE", "venus": "VENUS BEACH", "tidy": "KEEP VESPER TIDY", "pearls": "LAGOON PEARLS",
+           "mints": "STARDUST MINTS", "coral": "CORAL LINE", "jupiter": "SEE JUPITER", "aqua": "AQUA DOME", "revue": "ROBOT REVUE", "skyport": "SKYPORT VESPER"}
+BOARD_B = {"front": ("ATOM PRINCESS", "+ COMET KID"), "side": ("LATE", "SHOW")}
+WORDS_A = {"mars": "SEE MARS", "fizz": "ATOM FIZZ", "aircar": "NEW AIRCAR", "skyrail": "SKYRAIL PASS", "robot": "ROBOT BUTLER", "planetarium": "STAR SHOW",
+           "cruise": "HARBOUR CRUISE", "cinema": "DOUBLE FEATURE", "saturn": "SEE SATURN", "expo": "EXPO", "rocketrace": "ROCKET RACE", "vesper": "VISIT VESPER"}
+
+
+def pack_b():
+    """billboard_ads_v2.png from art/posters/<key>.png (already cell size) in sheet A's layout; letter boards drawn like sheet A's."""
+    from PIL import Image
+    atlas = Image.new("RGB", (S, S), (243, 221, 176))
+    cells = {**dict(zip(ADS_B, AD.values())), **dict(zip(POSTERS_B, POSTER.values()))}
+    for k, (x, y, w, h) in cells.items():
+        src = ART_B / f"{k}.png"
+        if not src.exists():
+            raise SystemExit(f"[art] sheet B: missing {src}")
+        atlas.paste(fit(Image.open(src), w, h), (x, y))
+    for k, ((x, y, w, h), _) in BOARD.items():
+        atlas.paste(board(h, w, BOARD_B[k]).rotate(90, expand=True), (x, y))
+    atlas.save(ART_B / ATLAS_B, optimize=False)
+    print(ART_B / ATLAS_B, atlas.size)
+
+
+def cells_b(src_dir):
+    """Cell-size crops of the Codex originals (src_dir/<ad|poster>_<key>.png) into art/posters/<key>.png: centre-crop to the cell's aspect, Lanczos to its size."""
+    from PIL import Image
+    ART_B.mkdir(parents=True, exist_ok=True)
+    for i, k in enumerate(ADS_B + POSTERS_B):
+        kind = "ad" if k in ADS_B else "poster"
+        w, h = (1024, 341) if kind == "ad" else (456, 684)
+        fit(Image.open(Path(src_dir) / f"{kind}_{k}.png"), w, h).save(ART_B / f"{k}.png", optimize=False)
 
 
 def prompt(key):
@@ -167,3 +208,7 @@ if __name__ == "__main__":
         gen(o)
     if "--pack" in sys.argv:
         pack()
+    if "--cells-b" in sys.argv:
+        cells_b(sys.argv[sys.argv.index("--cells-b") + 1])
+    if "--pack-b" in sys.argv:
+        pack_b()

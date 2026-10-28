@@ -71,6 +71,8 @@ export function coverage(w: World, gen?: Generated): void {
   for (const l of w.landmarks) console.log(`landmark ${l.id}: ${l.source} ${l.kit ? `${l.kit.id} x ${l.kit.scale[0]}` : l.kits ? `${l.kits.length} x ${l.kits[0]!.id} x ${l.kits[0]!.scale[0]}` : ''}`);
   for (const m of w.megastructures) if (m.gateway) console.log(`gateway ${m.id}: ${m.gateway.id} x ${m.gateway.scale[0]} at ${m.gateway.at}`);
   console.log(`roof kit pads: ${w.roofs.filter(r => r.kit).length}`);
+  const bb = gen?.billboards; // brief 075-F: the BB rules' counts, the play-street cap's exclusions (Sky's question) and the ads shown
+  if (bb) console.log(`billboards (BB-1..4): rooftop ${bb.rooftop.placed}/${bb.rooftop.roofs} sign-frame roofs (cap: ${bb.rooftop.cap.map(c => `${c.roof} ${c.top} > ${c.cap} m`).join(', ') || 'none'}; left: ${bb.rooftop.left.map(l => `${l.roof} (${l.why})`).join(', ') || 'none'}), wall ${bb.wall.placed} of ${bb.wall.candidates} party walls, pylons ${bb.pylon.placed} (parade ${bb.pylon.parade}, quay ${bb.pylon.quay}, plaza ${bb.pylon.plaza}), advertising columns ${bb.column.before + bb.column.placed} (+${bb.column.placed}); posters ${w.posters?.placed.length ?? 0} picks, ${new Set((w.posters?.placed ?? []).filter(p => p.key.length > 1).map(p => p.key)).size} distinct ads`);
   for (const l of w.landmarks) if (l.why) console.log(`landmark ${l.id} procedural: ${l.why}`);
 }
 

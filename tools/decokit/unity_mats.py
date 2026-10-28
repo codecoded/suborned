@@ -347,6 +347,8 @@ def write(table_path, dst, retuned):
     out += colourways.write_mats(dst, legacy, meta_text)
     import livery  # brief 075-C: the landmark livery (vermilion lattices, brick sphere, SpaceHQ gold), the same recolour as the colourways
     out += livery.write_mats(dst, legacy, meta_text, colourways._recolour)
+    import posters  # brief 075-F1: the billboard ad and poster-sheet variants (sheet B + offsets), the same no-new-SetPass swap
+    out += posters.write_mats(dst, legacy, meta_text, tex_guid)
     (Path(dst) / "surface-detail-mats.json").write_text(json.dumps(dict(schema="suborned.surfacedetail/1", brief="072-F", source="tools/decokit/unity_mats.py surface_detail",
                                                                        materials=dict(sorted(detailed.items()))), indent=1) + "\n")
     return out

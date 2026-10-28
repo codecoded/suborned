@@ -16,6 +16,7 @@ import { ringWidth } from './kerbreturn';
 import { PART_KINDS, cycleOf, lookOf } from './street/parts';
 import { extraRules } from '../rules';
 import { ctxOf } from '../../plan/world-ctx';
+import { BOARD_KINDS } from './billboards';
 
 setDefaultTimeout(120000);
 const root = resolve(import.meta.dir, '../../..'), read = (p: string) => JSON.parse(readFileSync(resolve(root, p), 'utf8'));
@@ -206,13 +207,14 @@ const lawnless = (flats: { id: string }[]) => flats.filter(f => !f.id.startsWith
 test('with the standard on, nothing but crossings (their slabs gone, their parts added) and the bollards and beacons that flank them changes', () => {
   const was = new Map(old.street.map(s => [s.id, s])), moves = new Set(['crossing', 'bollard', 'beacon', ...kindsOf]), moved = new Set(w.crossingRules!.moved); // furniture a coverage site took out of a landing's way (its trees and lamps)
   const noKit = (x: StreetItem) => JSON.stringify({ ...x, kit: undefined }); // brief 028: which kit piece a street item draws is chosen against its neighbours' picks (kitrefs.ts choose): where a site moves furniture, a neighbour's piece may change; where it stands may not
-  const civicQuiet = (id: string) => id.startsWith('street/civic/') || id.startsWith('street/capstone/'); // + brief 026: the capstone programme stands last, on what everything else left // brief 013: the stash container, call boxes and police posts the civic block's rules stand AFTER the crossings, on what they leave, so they follow the standard
-  for (const s of w.street) { if (civicQuiet(s.id)) continue; const o = was.get(s.id); if (o) expect(noKit(s), s.id).toBe(noKit(o)); else expect(moves.has(s.kind), s.id).toBe(true); }
-  for (const o of old.street) if (!items.has(o.id) && !civicQuiet(o.id)) expect(moves.has(o.kind) || moved.has(o.id), o.id).toBe(true);
-  const keep = (x: { street: { id: string; kind: string }[] }) => x.street.filter(s => !moves.has(s.kind) && !civicQuiet(s.id)).length;
+  const civicQuiet = (x: { id: string; kind: string }) => x.id.startsWith('street/civic/') || x.id.startsWith('street/capstone/') || BOARD_KINDS.has(x.kind) || x.kind === 'advertising-column'; // + brief 075-F: the pylons, wall boards and advertising columns (billboards.ts) stand last, on what the crossings left; // + brief 026: the capstone programme stands last, on what everything else left // brief 013: the stash container, call boxes and police posts the civic block's rules stand AFTER the crossings, on what they leave, so they follow the standard
+  for (const s of w.street) { if (civicQuiet(s)) continue; const o = was.get(s.id); if (o) expect(noKit(s), s.id).toBe(noKit(o)); else expect(moves.has(s.kind), s.id).toBe(true); }
+  for (const o of old.street) if (!items.has(o.id) && !civicQuiet(o)) expect(moves.has(o.kind) || moved.has(o.id), o.id).toBe(true);
+  const keep = (x: { street: { id: string; kind: string }[] }) => x.street.filter(s => !moves.has(s.kind) && !civicQuiet(s)).length;
   expect(keep(w) + moved.size).toBe(keep(old));
+  // brief 075-F: `posters` names its boards by element id, so it follows the street's ids (compared above, item by item)
   expect(moved.size).toBe(1); // the circus island's four sites take one tree out of their way (brief 061; seven sites and eleven pieces of furniture before)
-  for (const k of Object.keys(old).filter(k => k !== 'street' && k !== 'counts' && k !== 'takedown')) expect(JSON.stringify(k === 'ground' ? { ...(w as any).ground, pieces: undefined, flats: lawnless((w as any).ground.flats) } : (w as any)[k]), k).toBe(JSON.stringify(k === 'ground' ? { ...(old as any).ground, pieces: undefined, flats: lawnless((old as any).ground.flats) } : (old as any)[k])); // every other layer (the ground less the capstone's flat pieces) is the same (the takedown section lists the call boxes and posts the rules stood on what the crossings left: it follows the standard)
+  for (const k of Object.keys(old).filter(k => k !== 'street' && k !== 'counts' && k !== 'takedown' && k !== 'posters')) expect(JSON.stringify(k === 'ground' ? { ...(w as any).ground, pieces: undefined, flats: lawnless((w as any).ground.flats) } : (w as any)[k]), k).toBe(JSON.stringify(k === 'ground' ? { ...(old as any).ground, pieces: undefined, flats: lawnless((old as any).ground.flats) } : (old as any)[k])); // every other layer (the ground less the capstone's flat pieces) is the same (the takedown section lists the call boxes and posts the rules stood on what the crossings left: it follows the standard)
 });
 
 test('every kerb crossing is a signal crossing on every road class; a stop or a bank crossing has no control (and no orb)', () => {
