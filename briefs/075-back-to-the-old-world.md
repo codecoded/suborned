@@ -114,3 +114,14 @@ Sky: **"thought we were using the original buildings? We're still nowhere near a
 5. The old rooftop billboards and billboard bands on the circus and boulevard.
 6. The flyby encode settings fixed against the old reel's (CRF, pixel format, scaling).
 7. Heights unchanged for now (the coordinator is asking Sky: old 7–8 storeys against our 3).
+
+## Remap step 2: the old builders themselves (2026-10-29)
+Sky, on a close-up of a remapped circus block (overlapping roof slabs, misjoined ends, gaps): **"surely the old suborned project should be easily transferrable."**
+Decision (relayed by the coordinator; Aster records): the old project is the same Unity (6000.6.2f1); the DecoKit builders are 56 C# editor files (7,310 lines) depending only on UnityEngine/Editor, URP and two small namespaces; the art is 760 MB under Art/DecoKit. Our TypeScript re-implementation is where the bugs and look drift come from. So:
+1. Copy the old DecoKit editor code into unity/Assets/Suborned/Editor/OldTown/ verbatim (namespaced), with the minimal TheSuborned.Sky/Robots pieces, and its materials, models, prefabs and HDRI (git-ignored or linked like Kit/, through bun run kit if it fits; Splice and Vela decide).
+2. Build the old town in Unity with the old builders, old materials, colourways, red, haze and grade exactly: the old reel's look by construction.
+3. Cut out the Handover zone and keep ours there (civic block, café, Records Office, points, unchanged); keep our network on top (S1/S2 with stations, stairs, levels, tram, reachability); where an old structure clashes, the old one gives way.
+4. Mission maths stays honest: the plan (transcribed from the same old C#) stays the source for missions and the checker; a Splice check exports the old-built scene's footprints, entrances, roads and pavements and compares them to the plan within a tolerance (any mismatch fails). The old builders are the source for the look.
+5. Heights pending with Sky (A: old heights on Crown Circus, the Boulevard and the harbour, 3 storeys in play streets; B: 3 everywhere; C: old everywhere): build at the old heights first (C), with one height parameter; render the circus and Boulevard at old height and at 3 storeys.
+6. Retire the TS frontage port and roof programmes for non-Handover blocks once the old builders reproduce them.
+First: one proof (the old builders running in our project rendering the old circus frame at the old reel's camera, next to the old reel). Then the full swap. Kept from the earlier list: the overlap check, the flyby encode fix, the Handover ships check after the swap.
