@@ -1,7 +1,7 @@
 // Brief 075, the remap (Sky 2026-10-28: "why can't we just remap the world around d handover using old buildings" · "And old props. So the sky trak and other things
 // all planned properly but looking great"): the district plan as the old DecoKit town, transcribed into suborned.plan/1, with the Handover zone fixed inside it.
 //
-//   bun tools/plan/oldtown/transcribe.ts [--base contracts/world/harbour-district.plan.json] [--out contracts/world/harbour-district.oldtown.plan.json]
+//   bun tools/plan/oldtown/transcribe.ts [--base briefs/075/remap/base.plan.json (the live plan as it stood before the remap, Datum's conformed blocks included)] [--out contracts/world/harbour-district.oldtown.plan.json]
 //
 // The frame. The old town's x is the plan's x (the Boulevard on x 0, as today) and its z less 206 is the plan's y, so Crown Circus, old (0, 206), is the plan's origin
 // (frame.origin), and every old coordinate and dimension lands unscaled. The Handover zone keeps its plan coordinates byte for byte (civic.blockToPlan, the civic plots,
@@ -17,13 +17,14 @@ import { readFileSync, writeFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { readOld, sources, OLD_DIR, type OldWall, type Seg } from './old';
 import { derive, type Plan } from '../plan';
+import { placements } from '../transit';
 import { civic } from '../civic';
 import { ctxOf } from '../../world/gen/common';
 import { buildingLine, plotRing, kindOf } from '../../world/gen/edges';
 
 const ROOT = resolve(import.meta.dir, '../../..');
 const args = process.argv.slice(2), opt = (k: string, d: string) => (args.includes(k) ? args[args.indexOf(k) + 1]! : d);
-const BASE = opt('--base', 'contracts/world/harbour-district.plan.json'), OUT = opt('--out', 'contracts/world/harbour-district.oldtown.plan.json');
+const BASE = opt('--base', 'briefs/075/remap/base.plan.json'), OUT = opt('--out', 'contracts/world/harbour-district.oldtown.plan.json');
 const live: any = JSON.parse(readFileSync(resolve(ROOT, BASE), 'utf8'));
 const old = readOld(), S = old.S;
 type V = [number, number];
@@ -160,9 +161,10 @@ manual(`Orbit Gardens are trimmed at the Handover zone's edge (y -148, old z 58)
 manual('The old west terrace (one 286 m wall facing the gardens at x -110, its back to the procedural massing) is one 28 m deep block south of the Gardens Gate at x -138..-110 (terrace-s, fronting Lamplight Lane, the garden walk at its back; the grammar wants 28 back to back, so its back faces Orbit Row); its 37 m north of the gate is lawn (gardens-n), where S1 turns north');
 // Sphere Park: the old sphere station's ground and the sky rail's loop round it; the park the old town left north of the gardens
 const swx = r2(old.skyrail.sphere[0]! - old.skyrail.ringR); // the sphere walk on the old ring's west point (x -218), under S1's north leg and its station
-plots.push({ id: 'sphere-park', name: 'Sphere Park', use: 'park', area: 'sphere', poly: [[-328, 9], [-156, 9], [-156, 50], [W0, 50], [W0, sheetY[1] + 1], [-328, sheetY[1] + 1]] });
+plots.push({ id: 'sphere-park', name: 'Sphere Park', use: 'park', area: 'sphere', poly: [[-328, 9], [-180, 9], [-180, 30], [-156, 30], [-156, 50], [W0, 50], [W0, sheetY[1] + 1], [-328, sheetY[1] + 1]] });
 plot('west-terraces', 'residential', 'westend', [-244, -164, -114, -45], { name: 'West Terraces' });
 plot('gardens-forecourt', 'open', 'westend', [-244, -164, -45, -9], { name: 'Gardens Forecourt (S1 Orbit Gardens station\'s south banks)' });
+plot('sphere-gate', 'open', 'sphere', [-180, -156, 9, 30], { name: 'Sphere Park gate (the garden walk\'s crossing of Circus Road lands here)' });
 plot('western-park-n', 'park', 'sphere', [sheetX[0], -352, 9, 60], { name: 'Western Park' });
 plot('western-park-s', 'park', 'westend', [sheetX[0], -352, -60, -9], { name: 'Western Park' });
 // Southside, east of the Handover zone (old DecoKitSouthside), the boulevard through it
@@ -184,7 +186,7 @@ manual('Southside trimmed: the Handover zone is where the old world sited the Ha
 // ------------------------------------------------------------------ foot paths, water, quay
 const foot = [
   byId(live.foot, 'garden-walk'),
-  { id: 'gardens-gate', name: 'Gardens Gate', kind: 'mall', w: 18, pts: [[-156, 0], [-circus.crescent, 0]] },
+  { id: 'gardens-gate', name: 'Gardens Gate', kind: 'mall', w: 18, pts: [[-146, 0], [-circus.crescent, 0]] },
   { id: 'crown-parade', name: 'Crown Parade', kind: 'walk', w: 18, pts: [[circus.crescent, 0], [harbour.quay, 0]] },
   { id: 'skyport-pier', name: 'Skyport Pier', kind: 'walk', w: 12, pts: [[harbour.quay, 0], [SK - 38, 0]] },
   { id: 'harbour-promenade', name: 'Harbour Promenade', kind: 'walk', w: harbour.promenade[1] - harbour.promenade[0], pts: [[r2((harbour.promenade[0] + harbour.promenade[1]) / 2), sheetY[0]], [r2((harbour.promenade[0] + harbour.promenade[1]) / 2), north + 4]] },
@@ -363,6 +365,20 @@ Object.assign(plan, {
 plan.routes = undefined; delete plan.routes;
 if (args.includes('--with-skyrail')) plan.skyrail = [S1, S2];
 
+plan.notes = {
+  ...live.notes,
+  concept: [
+    'The old DecoKit town at its own coordinates: Crown Circus at the origin (old z 206), the boulevard on x 0 with its walls at x ±18 and 28 m deep blocks, Market Street, the lanes, the four crescents, Orbit Gardens, the harbour terrace, steps, promenade and quay, the piers, the landmarks.',
+    'The Handover zone byte for byte: the civic block, its streets (Rocket Lane, Starline Street, Garden Row, Orbit Walk, Pylon Row, Apron Road, Satellite Street, Lantern Lane), its plots and gates, and today\'s neighbours on every edge of the plots in its walk window.',
+    'Seams: Satellite Street\'s east pavement is the boulevard\'s west wall (boulevard-west, old W1); Starline Street runs on as the old west lane through it; Market Street meets the boulevard at (0, -410); Lamplight Lane (today\'s line) fronts the garden terrace and the West Terraces; the garden walk crosses Circus Road into Sphere Park.',
+    'The boulevard runs through to the Sea Gates (old Comet Row and Satellite Street on its axis); Southside east of it (Constellation N2, Orbit Square, Starline Green, SS1–SS4); the Lantern Quarter south of Market Street.',
+    'T1 tram: street running from the West End down Sunset Way and Market Street, up the boulevard to the circus, where it turns on the ring road (R 25). No overhead wires.',
+    'S1 sky rail on the circus axis from the West End (Western Park and Orbit Gardens stations), north past the Sphere; the old main loop and harbour line are planned data (oldtown.skyrail) until the generator lays north-south station banks.',
+    'SpaceHQ closes the axis at the old place (0, 244), the gate towers either side of the forecourt, the Skylon, the Sphere, the Skyport on its caisson at the pier head, the liner at the Market Pier.',
+  ],
+  why: ['Sky 2026-10-28 (brief 075): "why can\'t we just remap the world around d handover using old buildings" and "And old props. So the sky trak and other things all planned properly but looking great".', ...MANUAL.slice(0, 0)],
+  sources: [...(live.notes?.sources ?? []), `old DecoKit town: ${OLD_DIR} (DecoKitCityPlan, CityBlocks, Block, StreetLayout, Circus, Southside, Gardens, SkyRail, Harbour, StreetSkyline), read by tools/plan/oldtown/old.ts`],
+};
 // standards that name today's roads, plots and lines
 const st = plan.standards;
 st.streetscape.sections.tramStreet.district.roads = ['boulevard', 'market-street'];
@@ -515,6 +531,14 @@ plan.oldtown = {
     levels: { street: 0, deck: 9.43, concourse: 24, oldMain: '24 on the boulevard, rising 1 m per ~35 m to 34 round the Sphere', oldHarbour: '21.15 over the quay (rail 22 over the promenade at -0.85), 24 round the Skyport' },
   },
 };
+
+// the timetable (Pulse's format): the new lines' runs, stop to stop, at today's speeds, headways and dwells; journeys left to Pulse
+{ const dT = derive(plan as Plan), speedOf = (l: string) => (live.timetable?.lines ?? []).find((x: any) => x.line === (l === 'T1' ? 'T1' : 'S1')) ?? { headwaySec: 180, dwellSec: 15, speed: 8 };
+  plan.timetable = { ...(live.timetable ?? {}), lines: [...plan.tram.map((l: any) => ({ l, mode: 'tram' as const })), ...plan.skyrail.map((l: any) => ({ l, mode: 'sky' as const }))].map(({ l, mode }) => {
+    const sp = speedOf(l.id), items = placements(plan as Plan, dT, l, mode).items;
+    return { line: l.id, headwaySec: sp.headwaySec, dwellSec: sp.dwellSec, speed: sp.speed, runs: items.slice(1).map((it, i) => ({ from: `${l.id}/${items[i]!.id}`, to: `${l.id}/${it.id}`, sec: Math.round((it.s - items[i]!.s) / sp.speed) })) };
+  }), journeys: [], notes: [...(live.timetable?.notes ?? []).slice(0, 0), 'brief 075 remap (Datum): lines regenerated from the remapped plan by tools/plan/oldtown/transcribe.ts at today\'s speeds, headways and dwells; journeys cleared for Pulse to set again'] };
+  manual('Timetable: T1 and S1 runs regenerated stop to stop at today\'s speeds; journeys cleared (they named T2 and today\'s stops) for Pulse'); }
 
 function bump(v: string) { const p = v.split('.').map(Number); p[1]! += 1; p[2] = 0; return p.join('.'); }
 writeFileSync(resolve(ROOT, OUT), JSON.stringify(plan, null, 1) + '\n');

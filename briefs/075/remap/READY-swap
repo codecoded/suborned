@@ -1,0 +1,1 @@
+live plan swapped (= oldtown draft, sha256 1042dbf7...). bun tools/plan/cli.ts exit 0; --overlay exit 0; sim site byte-identical.
