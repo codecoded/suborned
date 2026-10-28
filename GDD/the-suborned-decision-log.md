@@ -38,6 +38,7 @@ The GDD keeps a default for each (the draft's, or the build's) until Sky rules. 
 Q13 of brief 035 ("Vale exits north") is settled by brief 059: "Vale comes out of the official door".
 
 ## After v0.31.0 (2026-10-28; Sky's answers, relayed by main)
+- Sky, 2026-10-28: "Do building colors": a colourway per building from up to 12 district-wide families (brief 074); the civic block keeps seafoam and teal, the road stays powder blue.
 - Sky, 2026-10-28: "yeah, I more colors needed": Vela's extra colours stay and the district's colour range is pushed further (brief 072); the civic block keeps seafoam and teal, the road stays powder blue.
 - Sky, 2026-10-28: the queued crew items go ahead (064 A3 items 1, 5, 7; c040; the pinstripe retired).
 - Sky, 2026-10-28: the world is "a little too shiny / bright / clean". "Perhaps we add some pastel / 1950s comic book style effect to the atmosphere? Get some more concept work done on our world that sets the tone." Brief 073, concept art first; nothing changes until Sky picks.
