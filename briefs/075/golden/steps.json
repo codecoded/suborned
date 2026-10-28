@@ -1,0 +1,12 @@
+{
+  "schema": "latch.golden075-steps/1",
+  "steps": [
+    {
+      "step": "before",
+      "date": "2026-10-28 08:45Z",
+      "what": "the scene as built at HEAD bee1c95b (075-F1 billboards and posters, 075-E streamline), no golden-view changes yet",
+      "by": "Latch",
+      "export_sha256": "2de0d88e618ccbe5ab34ad33a93ed37a10413901e359da30de0ff905de13f254"
+    }
+  ]
+}
