@@ -104,3 +104,13 @@ Sky: **"the new town had the skytrak going through stations, and had stair cases
 - Coordinator's fixes: strip the lattice antenna masts (old rooftop programmes instead), give the waterfront the old promenade dressing, keep the boulevard golden view, match the old Gardens builder's lawn edges.
 - 2026-10-29 s6 (8d414bd2, 0812091d and the s6 commit): old rooftop programmes (masts 164 → 11), Orbit Gardens, harbour terrace and promenade, lawn borders, 341 old props, the old asphalt road, West Row, S2 Harbour Line to a Skyport station (every structure reachable, RCH-1 enforced), no placeholders anywhere (NP-1, builder throws), dithered sky (banding fixed), stable Handover zone ids (zone identical to c043; re-recorded c044). Frames: briefs/075/remap/s6/index.html, flyby briefs/075/flyby/grid-s6.png and new-s6.mp4.
 - Open: the S2 station sign reads "HARBOUR" and the bandstand's gold dome (Vela); the plain salmon station-bank ramps; two bare-shaft S2 pylons in the pier walk; the harbour steps need a two-level quay (Datum); stale people file naming t1-records (held: changing it re-records the Handover); the old tower regen orders (decokit fit test); a drift declaration for r011 and people runs; Redline's Air look at the 1,322 roof pieces.
+
+## Sky, 2026-10-29: "nowhere near as good as original" (top priority)
+Sky: **"thought we were using the original buildings? We're still nowhere near as good as original."**, **"our red is too red - we changed it when not much in the game, but now it needs to go back to old town."**, **"where's the haze effect?"**, **"buildings have now lower ground facades."** Parity with the old reel, judged side by side:
+1. Palette back to the old town (DecoKitColourways.cs, the old DK_*.mat colours): oxblood/brick sphere, mostly cream stone buildings with thin red/teal pinstripes, dark glass ribbons, occasional colour; the loosened palette (072/074 reds, yellows, apricot tints) goes; car paints checked against the reel.
+2. Haze: the old atmosphere (DecoKitAtmosphere, DecoKitLens, DecoKitStage.Grade) exactly on the flyby/presentation camera; on the play camera as far as A5 allows (Glint).
+3. Ground facades: the old tall glazed shopfront ground storey with canopies, signs and billboard bands (the old frontage's base course).
+4. Building masses must not intersect: a checker rule, the frontage port fixed, counts before and after.
+5. The old rooftop billboards and billboard bands on the circus and boulevard.
+6. The flyby encode settings fixed against the old reel's (CRF, pixel format, scaling).
+7. Heights unchanged for now (the coordinator is asking Sky: old 7–8 storeys against our 3).
