@@ -59,6 +59,7 @@ namespace Suborned.OldTown.Editor.Swap
         internal static Dictionary<string, object> PlanFacts = new();
         public static void Shoot() => Batch(() => WithOldSettings(SwapShots.Run));
         public static void Flyby() => Batch(() => WithOldSettings(SwapShots.Flyby));
+        public static void RecordsFlyby() => Batch(() => WithOldSettings(SwapShots.RecordsFlyby));
         public static void Verify() => Batch(SwapVerify.Run);
         /// <summary>The tram bed audit (SwapTramAudit) on a built scene, read only: -swapScene, -swapWorld, -swapOut (tram-audit-&lt;tag&gt;.json, -swapTag).</summary>
         public static void TramAudit() => Batch(() =>

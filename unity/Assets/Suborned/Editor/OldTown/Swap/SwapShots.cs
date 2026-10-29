@@ -108,6 +108,16 @@ namespace Suborned.OldTown.Editor.Swap
                     ("plan_full", new(0f, 1000f, 180f), new(0f, 0f, 181f), 60f, true),
                 })
                 { Perspective(cam, eye, look, fov); Cap($"district-{id}-{tag}.png", wide ? 1200f : 120f); }
+            if (shots.Contains("skyport"))  // the S2 Skyport station (plan (114, 0)) and the Skyport tower's island, close (2026-10-30, for Sky)
+                foreach (var (id, eye, look, fov) in new (string, Vector2, float, Vector2, float, float)[]
+                {
+                    ("quay", new(78f, -38f), 1.7f, new(114f, 0f), 14f, 62f),
+                    ("terrace", new(60f, -70f), 40f, new(120f, 0f), 14f, 50f),
+                    ("water", new(215f, -55f), 22f, new(125f, 0f), 18f, 50f),
+                    ("north", new(95f, 70f), 30f, new(118f, 0f), 12f, 55f),
+                    ("platform", new(108f, -14f), 26f, new(170f, 0f), 30f, 62f),
+                }.Select(v => (v.Item1, OldTownSwap.Old3(v.Item2, v.Item3), OldTownSwap.Old3(v.Item4, v.Item5), v.Item6)))
+                { Perspective(cam, eye, look, fov); Cap($"skyport-{id}-{tag}.png", 200f); }
             if (shots.Contains("tram")) Tram(cam, outDir, tag, sw, Cap, done);
             if (shots.Contains("play"))
                 foreach (var (id, f, yaw) in PlayViews)
@@ -203,7 +213,40 @@ namespace Suborned.OldTown.Editor.Swap
                 DecoKitStage.WithShadows(Mathf.Clamp(cam.transform.position.y * 8f, 120f, 1200f), () => DecoKitStage.Capture(cam, W, H, Path.Combine(outDir, "flyby", $"now-{tag}_t{t:00}.png"), ss));
             }
             if (Arg("swapVideo", "on") != "on") return;
-            var share = Path.Combine(outDir, "flyby", $"flyby-{tag}.mp4");
+            Encode(cam, t => Pose(cam, tr, ro, t), from, to, fps, Path.Combine(outDir, "flyby", $"flyby-{tag}.mp4"));
+        }
+
+        /// <summary>The records district flight (2026-10-29, for Sky): one turn round the Handover blocks (the Records Office front at plan
+        /// (-160, -281), the café square at (-170.5, -227.5)), coming down from 95 m to 50 m, then a glide in from the north-east to street
+        /// height across the café square to the Office front. The study camera with the old stage's look, encoded like Flyby.</summary>
+        internal static void RecordsFlyby()
+        {
+            var cam = Open(out _, out _, out var sw);
+            string tag = Arg("swapTag", sw != null ? sw.heights : "rule"), outDir = Path.Combine(Repo, Arg("swapOut", "briefs/075/oldbuild/swap"));
+            float fps = DecoKitStage.Arg("dkFps", 30f);
+            Vector2 c = new(-166f, -255f), office = new(-160f, -281f);
+            const float orbit = 26f, glide = 16f, r = 150f;
+            Vector3 Orbit(float u) { var a = (30f + 360f * u) * Mathf.Deg2Rad; return OldTownSwap.Old3(c + r * new Vector2(Mathf.Sin(a), Mathf.Cos(a)), Mathf.Lerp(95f, 50f, u)); }
+            void At(float t)
+            {
+                cam.orthographic = false; cam.fieldOfView = 50f;
+                if (t < orbit) { var u = t / orbit; u = u * u * (3f - 2f * u) * .5f + u * .5f; cam.transform.position = Orbit(u); cam.transform.LookAt(OldTownSwap.Old3(c, 6f), Vector3.up); return; }
+                var v = Mathf.Clamp01((t - orbit) / glide); v = v * v * (3f - 2f * v);
+                Vector3 a = Orbit(1f), k = OldTownSwap.Old3(new Vector2(-128f, -205f), 24f), b = OldTownSwap.Old3(new Vector2(-176f, -244f), 6.5f);
+                cam.transform.position = (1 - v) * (1 - v) * a + 2 * (1 - v) * v * k + v * v * b;
+                cam.transform.LookAt(Vector3.Lerp(OldTownSwap.Old3(c, 6f), OldTownSwap.Old3(office, 7f), v), Vector3.up);
+            }
+            At(0f); Object.DestroyImmediate(DecoKitStage.Render(cam, 1920, 1080));  // the first full-size frame flares green over the district
+            foreach (var t in new[] { 0f, 6.5f, 13f, 19.5f, 26f, 32f, 37f, 42f })
+            { At(t); DecoKitStage.WithShadows(Mathf.Clamp(cam.transform.position.y * 8f, 120f, 1200f), () => DecoKitStage.Capture(cam, 1920, 1080, Path.Combine(outDir, "flyby", $"records-{tag}_t{t:00}.png"), 2)); }
+            if (Arg("swapVideo", "on") != "on") return;
+            Encode(cam, At, 0f, orbit + glide, fps, Path.Combine(outDir, "flyby", $"records-{tag}.mp4"));
+        }
+
+        /// <summary>Renders cam at 2x, posed by pose(t) for each frame from..to, piped raw into ffmpeg with ReviewVideo's settings.</summary>
+        static void Encode(Camera cam, Action<float> pose, float from, float to, float fps, string share)
+        {
+            int W = 1920, H = 1080, ss = 2;
             Directory.CreateDirectory(Path.GetDirectoryName(share));
             var psi = new ProcessStartInfo(ReviewVideo.Ffmpeg, ReviewVideo.Args(W * ss, H * ss, W, H, (int)fps, share, false)) { UseShellExecute = false, RedirectStandardInput = true, RedirectStandardError = true, CreateNoWindow = true };
             using var ff = Process.Start(psi);
@@ -217,7 +260,7 @@ namespace Suborned.OldTown.Editor.Swap
             {
                 for (int f = 0; f < frames; f++)
                 {
-                    Pose(cam, tr, ro, from + f / fps);
+                    pose(from + f / fps);
                     DecoKitStage.WithShadows(Mathf.Clamp(cam.transform.position.y * 8f, 120f, 1200f), () =>
                     {
                         cam.targetTexture = big; ReflectionProbe.UpdateCachedState(); cam.Render(); cam.targetTexture = null;
