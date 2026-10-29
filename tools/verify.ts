@@ -142,6 +142,20 @@ if (!shotsChecked) bad.push('HUD budget: no play shots found');
   }
 }
 
+// brief 077: Latch's sibling leaf shader and its four includes are what briefs/077/shader/make_leaf_hlsl.py writes from DK_LitCutaway.shader and the locked URP (tools/kit/leaf-shader.ts)
+{
+  const { leafShaderDrift, urpDir } = await import('./kit/leaf-shader');
+  const urp = urpDir();
+  if (!urp) console.log('leaf shader: not checked (URP not in unity/Library/PackageCache on this machine)');
+  else { const r = leafShaderDrift(urp), off = r.filter(d => !d.ok); console.log(`leaf shader: ${off.length ? `DRIFTED (${off.map(d => d.file).join(', ')})` : `${r.length} files match make_leaf_hlsl.py`}`); if (off.length) bad.push(`leaf shader ${off.map(d => d.file).join(',')}`); }
+}
+
+// brief 077: the vendored testbed planting code (tools/decokit/vendor/testbed) is what its PROVENANCE.json pins
+{
+  const p = Bun.spawnSync(['bun', 'tools/decokit/vendor-testbed.ts'], { cwd: root, stdout: 'pipe', stderr: 'pipe' }), line = (p.stdout.toString() + p.stderr.toString()).trim().split('\n').pop() ?? '';
+  console.log(line); if (p.exitCode !== 0) bad.push('vendored testbed');
+}
+
 const [out, err, code] = await tscOut;
 console.log(`typecheck: ${code === 0 ? 'clean' : 'FAILED'}`);
 if (code !== 0) { bad.push('typecheck'); console.log((out + err).split('\n').slice(0, 15).join('\n')); }

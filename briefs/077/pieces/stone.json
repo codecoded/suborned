@@ -1,0 +1,423 @@
+{
+ "PlanterRun_2_A": [
+  {
+   "level": "inspection",
+   "stone_sha": "7a1de3563f878452a35c13e261d3e2c320f409d745536c94c75e9d962dd5337f",
+   "stone_faces": 18
+  },
+  {
+   "level": "close",
+   "stone_sha": "7a1de3563f878452a35c13e261d3e2c320f409d745536c94c75e9d962dd5337f",
+   "stone_faces": 18
+  },
+  {
+   "level": "near",
+   "stone_sha": "7a1de3563f878452a35c13e261d3e2c320f409d745536c94c75e9d962dd5337f",
+   "stone_faces": 18
+  },
+  {
+   "level": "gameplay",
+   "stone_sha": "7a1de3563f878452a35c13e261d3e2c320f409d745536c94c75e9d962dd5337f",
+   "stone_faces": 18
+  }
+ ],
+ "PlanterRun_2_B": [
+  {
+   "level": "inspection",
+   "stone_sha": "7a1de3563f878452a35c13e261d3e2c320f409d745536c94c75e9d962dd5337f",
+   "stone_faces": 18
+  },
+  {
+   "level": "close",
+   "stone_sha": "7a1de3563f878452a35c13e261d3e2c320f409d745536c94c75e9d962dd5337f",
+   "stone_faces": 18
+  },
+  {
+   "level": "near",
+   "stone_sha": "7a1de3563f878452a35c13e261d3e2c320f409d745536c94c75e9d962dd5337f",
+   "stone_faces": 18
+  },
+  {
+   "level": "gameplay",
+   "stone_sha": "7a1de3563f878452a35c13e261d3e2c320f409d745536c94c75e9d962dd5337f",
+   "stone_faces": 18
+  }
+ ],
+ "PlanterRun_2_C": [
+  {
+   "level": "inspection",
+   "stone_sha": "7a1de3563f878452a35c13e261d3e2c320f409d745536c94c75e9d962dd5337f",
+   "stone_faces": 18
+  },
+  {
+   "level": "close",
+   "stone_sha": "7a1de3563f878452a35c13e261d3e2c320f409d745536c94c75e9d962dd5337f",
+   "stone_faces": 18
+  },
+  {
+   "level": "near",
+   "stone_sha": "7a1de3563f878452a35c13e261d3e2c320f409d745536c94c75e9d962dd5337f",
+   "stone_faces": 18
+  },
+  {
+   "level": "gameplay",
+   "stone_sha": "7a1de3563f878452a35c13e261d3e2c320f409d745536c94c75e9d962dd5337f",
+   "stone_faces": 18
+  }
+ ],
+ "PlanterRun_4_A": [
+  {
+   "level": "inspection",
+   "stone_sha": "abcf78dfb626e0bd3d3d0260ebd4a623a99f37304e60e8ae65919d4ea3de2924",
+   "stone_faces": 30
+  },
+  {
+   "level": "close",
+   "stone_sha": "abcf78dfb626e0bd3d3d0260ebd4a623a99f37304e60e8ae65919d4ea3de2924",
+   "stone_faces": 30
+  },
+  {
+   "level": "near",
+   "stone_sha": "abcf78dfb626e0bd3d3d0260ebd4a623a99f37304e60e8ae65919d4ea3de2924",
+   "stone_faces": 30
+  },
+  {
+   "level": "gameplay",
+   "stone_sha": "abcf78dfb626e0bd3d3d0260ebd4a623a99f37304e60e8ae65919d4ea3de2924",
+   "stone_faces": 30
+  }
+ ],
+ "PlanterRun_4_B": [
+  {
+   "level": "inspection",
+   "stone_sha": "abcf78dfb626e0bd3d3d0260ebd4a623a99f37304e60e8ae65919d4ea3de2924",
+   "stone_faces": 30
+  },
+  {
+   "level": "close",
+   "stone_sha": "abcf78dfb626e0bd3d3d0260ebd4a623a99f37304e60e8ae65919d4ea3de2924",
+   "stone_faces": 30
+  },
+  {
+   "level": "near",
+   "stone_sha": "abcf78dfb626e0bd3d3d0260ebd4a623a99f37304e60e8ae65919d4ea3de2924",
+   "stone_faces": 30
+  },
+  {
+   "level": "gameplay",
+   "stone_sha": "abcf78dfb626e0bd3d3d0260ebd4a623a99f37304e60e8ae65919d4ea3de2924",
+   "stone_faces": 30
+  }
+ ],
+ "PlanterRun_4_C": [
+  {
+   "level": "inspection",
+   "stone_sha": "abcf78dfb626e0bd3d3d0260ebd4a623a99f37304e60e8ae65919d4ea3de2924",
+   "stone_faces": 30
+  },
+  {
+   "level": "close",
+   "stone_sha": "abcf78dfb626e0bd3d3d0260ebd4a623a99f37304e60e8ae65919d4ea3de2924",
+   "stone_faces": 30
+  },
+  {
+   "level": "near",
+   "stone_sha": "abcf78dfb626e0bd3d3d0260ebd4a623a99f37304e60e8ae65919d4ea3de2924",
+   "stone_faces": 30
+  },
+  {
+   "level": "gameplay",
+   "stone_sha": "abcf78dfb626e0bd3d3d0260ebd4a623a99f37304e60e8ae65919d4ea3de2924",
+   "stone_faces": 30
+  }
+ ],
+ "PlanterRun_Corner_A": [
+  {
+   "level": "inspection",
+   "stone_sha": "8b25402f74ee984e0ca57e291e5e7b64010753b8f038a30d839195655a895624",
+   "stone_faces": 102
+  },
+  {
+   "level": "close",
+   "stone_sha": "8b25402f74ee984e0ca57e291e5e7b64010753b8f038a30d839195655a895624",
+   "stone_faces": 102
+  },
+  {
+   "level": "near",
+   "stone_sha": "8b25402f74ee984e0ca57e291e5e7b64010753b8f038a30d839195655a895624",
+   "stone_faces": 102
+  },
+  {
+   "level": "gameplay",
+   "stone_sha": "8b25402f74ee984e0ca57e291e5e7b64010753b8f038a30d839195655a895624",
+   "stone_faces": 102
+  }
+ ],
+ "PlanterRun_Corner_B": [
+  {
+   "level": "inspection",
+   "stone_sha": "8b25402f74ee984e0ca57e291e5e7b64010753b8f038a30d839195655a895624",
+   "stone_faces": 102
+  },
+  {
+   "level": "close",
+   "stone_sha": "8b25402f74ee984e0ca57e291e5e7b64010753b8f038a30d839195655a895624",
+   "stone_faces": 102
+  },
+  {
+   "level": "near",
+   "stone_sha": "8b25402f74ee984e0ca57e291e5e7b64010753b8f038a30d839195655a895624",
+   "stone_faces": 102
+  },
+  {
+   "level": "gameplay",
+   "stone_sha": "8b25402f74ee984e0ca57e291e5e7b64010753b8f038a30d839195655a895624",
+   "stone_faces": 102
+  }
+ ],
+ "PlanterRun_Corner_C": [
+  {
+   "level": "inspection",
+   "stone_sha": "8b25402f74ee984e0ca57e291e5e7b64010753b8f038a30d839195655a895624",
+   "stone_faces": 102
+  },
+  {
+   "level": "close",
+   "stone_sha": "8b25402f74ee984e0ca57e291e5e7b64010753b8f038a30d839195655a895624",
+   "stone_faces": 102
+  },
+  {
+   "level": "near",
+   "stone_sha": "8b25402f74ee984e0ca57e291e5e7b64010753b8f038a30d839195655a895624",
+   "stone_faces": 102
+  },
+  {
+   "level": "gameplay",
+   "stone_sha": "8b25402f74ee984e0ca57e291e5e7b64010753b8f038a30d839195655a895624",
+   "stone_faces": 102
+  }
+ ],
+ "PlanterRun_End_A": [
+  {
+   "level": "inspection",
+   "stone_sha": "ed969f137ca09063b0d76979f1d7ff6cdedca78576ea486c68a6122a80de458e",
+   "stone_faces": 100
+  },
+  {
+   "level": "close",
+   "stone_sha": "ed969f137ca09063b0d76979f1d7ff6cdedca78576ea486c68a6122a80de458e",
+   "stone_faces": 100
+  },
+  {
+   "level": "near",
+   "stone_sha": "ed969f137ca09063b0d76979f1d7ff6cdedca78576ea486c68a6122a80de458e",
+   "stone_faces": 100
+  },
+  {
+   "level": "gameplay",
+   "stone_sha": "ed969f137ca09063b0d76979f1d7ff6cdedca78576ea486c68a6122a80de458e",
+   "stone_faces": 100
+  }
+ ],
+ "PlanterRun_End_B": [
+  {
+   "level": "inspection",
+   "stone_sha": "ed969f137ca09063b0d76979f1d7ff6cdedca78576ea486c68a6122a80de458e",
+   "stone_faces": 100
+  },
+  {
+   "level": "close",
+   "stone_sha": "ed969f137ca09063b0d76979f1d7ff6cdedca78576ea486c68a6122a80de458e",
+   "stone_faces": 100
+  },
+  {
+   "level": "near",
+   "stone_sha": "ed969f137ca09063b0d76979f1d7ff6cdedca78576ea486c68a6122a80de458e",
+   "stone_faces": 100
+  },
+  {
+   "level": "gameplay",
+   "stone_sha": "ed969f137ca09063b0d76979f1d7ff6cdedca78576ea486c68a6122a80de458e",
+   "stone_faces": 100
+  }
+ ],
+ "PlanterRun_End_C": [
+  {
+   "level": "inspection",
+   "stone_sha": "ed969f137ca09063b0d76979f1d7ff6cdedca78576ea486c68a6122a80de458e",
+   "stone_faces": 100
+  },
+  {
+   "level": "close",
+   "stone_sha": "ed969f137ca09063b0d76979f1d7ff6cdedca78576ea486c68a6122a80de458e",
+   "stone_faces": 100
+  },
+  {
+   "level": "near",
+   "stone_sha": "ed969f137ca09063b0d76979f1d7ff6cdedca78576ea486c68a6122a80de458e",
+   "stone_faces": 100
+  },
+  {
+   "level": "gameplay",
+   "stone_sha": "ed969f137ca09063b0d76979f1d7ff6cdedca78576ea486c68a6122a80de458e",
+   "stone_faces": 100
+  }
+ ],
+ "CafeTerrace": [
+  {
+   "level": "L0",
+   "parts": [
+    {
+     "object": "DK_CafeTerrace",
+     "stone_sha": "2929c7f35c99123e93bfa251df78e7af726e01c00c89c83f78dd6c165ad94edf",
+     "stone_faces": 156,
+     "dome_faces_removed": 1856
+    }
+   ]
+  },
+  {
+   "level": "L1",
+   "parts": [
+    {
+     "object": "DK_CafeTerrace_L1",
+     "stone_sha": "7586a8d13598c5785ff3f45098c32fe1cbbbe7daaa2c6f0cd6949f73eda66596",
+     "stone_faces": 122,
+     "dome_faces_removed": 576
+    }
+   ]
+  },
+  {
+   "level": "L2",
+   "parts": [
+    {
+     "object": "DK_CafeTerrace_L2",
+     "stone_sha": "eaf3a97520707b818a89b9190785243f3325029687067c31e0f367fc5af6368f",
+     "stone_faces": 58,
+     "dome_faces_removed": 135
+    }
+   ]
+  }
+ ],
+ "RecordsTower": [
+  {
+   "level": "L0",
+   "parts": [
+    {
+     "object": "DK_RecordsTower",
+     "stone_sha": "2845badec4b7cbb242c74c502c58253edd8e43c60ae0fb8fbf7f6977f767557f",
+     "stone_faces": 17208,
+     "dome_faces_removed": 3674
+    }
+   ]
+  },
+  {
+   "level": "L1",
+   "parts": [
+    {
+     "object": "DK_RecordsTower_L1",
+     "stone_sha": "1917db12d400c3cf4d90f21474ac9be0ea6f06a79fa898ac5b05c688440521b5",
+     "stone_faces": 3325,
+     "dome_faces_removed": 138
+    }
+   ]
+  },
+  {
+   "level": "L2",
+   "parts": [
+    {
+     "object": "DK_RecordsTower_L2",
+     "stone_sha": "44af3286fff91f2041064fe21e0f27480d8cb2452f9605d84476d29067808bef",
+     "stone_faces": 1656,
+     "dome_faces_removed": 0
+    }
+   ]
+  }
+ ],
+ "CafeUpper_3": [
+  {
+   "level": "L0",
+   "parts": [
+    {
+     "object": "DK_CafeUpper_3",
+     "stone_sha": "2c4032968e1717bb527ae85af7e517cf32d0f7cfb96b358cfd4ba241051daa70",
+     "stone_faces": 6692,
+     "dome_faces_removed": 5798
+    }
+   ]
+  },
+  {
+   "level": "L1",
+   "parts": [
+    {
+     "object": "DK_CafeUpper_3_L1",
+     "stone_sha": "ce0e35e9f75b33087f089287bb784d1448bf9bf9be5092795b22a9197a278488",
+     "stone_faces": 2300,
+     "dome_faces_removed": 2062
+    }
+   ]
+  },
+  {
+   "level": "L2",
+   "parts": [
+    {
+     "object": "DK_CafeUpper_3_L2",
+     "stone_sha": "6aafbd90b14a68f12dc7e76b043c714f134b2f7c0d93bacd61e57195c621eae1",
+     "stone_faces": 1005,
+     "dome_faces_removed": 12
+    }
+   ]
+  }
+ ],
+ "CafeUpper_4": [
+  {
+   "level": "L0",
+   "parts": [
+    {
+     "object": "DK_CafeUpper_4",
+     "stone_sha": "97bc5f0761c360839c4ccc593dc9fa5510ae801e0a09de446d841140bc0a6d55",
+     "stone_faces": 8598,
+     "dome_faces_removed": 5798
+    }
+   ]
+  },
+  {
+   "level": "L1",
+   "parts": [
+    {
+     "object": "DK_CafeUpper_4_L1",
+     "stone_sha": "b4098e3cdeaf2b6ff2b3840956b5fac757724a9b19a622aa53e13be9a963e450",
+     "stone_faces": 2920,
+     "dome_faces_removed": 2057
+    }
+   ]
+  },
+  {
+   "level": "L2",
+   "parts": [
+    {
+     "object": "DK_CafeUpper_4_L2",
+     "stone_sha": "d53d21f0a320468c2715d071a4b16789e6e4858ae0ae14343fbdc25e5c1e61ea",
+     "stone_faces": 1173,
+     "dome_faces_removed": 12
+    }
+   ]
+  }
+ ],
+ "PlanterArc": [
+  {
+   "level": "close",
+   "stone_sha": "7b1f2d7f6af7138708b125fdc15ed3d4e3b3a1b73e5b7905895a18784e98a2bd",
+   "stone_faces": 616
+  },
+  {
+   "level": "near",
+   "stone_sha": "7b1f2d7f6af7138708b125fdc15ed3d4e3b3a1b73e5b7905895a18784e98a2bd",
+   "stone_faces": 616
+  },
+  {
+   "level": "gameplay",
+   "stone_sha": "7b1f2d7f6af7138708b125fdc15ed3d4e3b3a1b73e5b7905895a18784e98a2bd",
+   "stone_faces": 616
+  }
+ ]
+}

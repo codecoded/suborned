@@ -5,11 +5,11 @@ import type { KitAsset } from '../../../contracts/world/kit.schema';
 import type { Mass } from '../../../contracts/world/world.schema';
 import type { Civic } from '../../plan/civic';
 import type { V } from '../../plan/geom';
-import { adoptedBy } from '../gen/kitrefs';
+import { adoptedBy, catalogued } from '../gen/kitrefs';
 import { r3, r4 } from '../gen/common';
 import { dressBeds } from './beds';
 import { footOf } from './foot';
-import { look } from './look';
+import { drawnPiece, look, withSwaps } from './look';
 export { footOf };
 
 type At = { id: string; at: V; yawDeg?: number; on?: string };
@@ -48,19 +48,23 @@ export function dressCivic(civ: Civic, toPlan: (p: V) => V, masses: Mass[], pav:
   const dr = dressingOf(civ);
   if (!dr) return masses;
   let out = masses.slice();
-  const fade = new Set(look.fade);
+  const fade = new Set(withSwaps(look.fade)); // brief 077: CafeUpper_3_TB fades as CafeUpper_3 did
   /** One kit mass: the piece at `at` (block frame) turned by the block yaw, standing on `base`. */
-  const put = (id: string, name: string, at: V, yawDeg: number, base: number, o: { scale?: [number, number, number]; ring?: V[]; height?: number } = {}): Mass | undefined => {
+  const put = (id: string, name0: string, at: V, yawDeg: number, base: number, o: { scale?: [number, number, number]; ring?: V[]; height?: number } = {}): Mass | undefined => {
+    const name = drawnPiece(name0, x => !!adoptedBy(x)); // brief 077: a piece the look swaps (PlanterRun_4_A -> PlanterRun_4_A_TB) is drawn as its swap once that is adopted
     const a = adoptedBy(name); if (!a) return undefined; // a piece the kit has not adopted is placed nowhere; rule CD-2 names it
     const kit = { id: name, scale: o.scale ?? [1, 1, 1] as [number, number, number], yaw: planYaw(yawDeg), at: rv(toPlan(at)), base: r3(base) };
-    return { id, surface: 'trim', ring: (o.ring ?? arcRing(a, kit) ?? footOf(a, kit)).map(rv), base: r3(base), height: o.height ?? r3(a.size[1] * kit.scale[1]), source: 'kit', kit, ...(fade.has(name) ? { fade: true as const } : {}) };
+    // brief 077 (Sky: same ids, footprints and frames): a swapped piece keeps the footprint and height of the piece it stands in for, so every reader of the mass (cover,
+    // occlusion, the keep-clear rules) sees the ground as it was; only the drawn piece changes. Its sight and walk come from its own kit.collide.json volumes.
+    const g = name !== name0 ? (catalogued(name0) ?? a) : a;
+    return { id, surface: 'trim', ring: (o.ring ?? arcRing(g, kit) ?? footOf(g, kit)).map(rv), base: r3(base), height: o.height ?? r3(g.size[1] * kit.scale[1]), source: 'kit', kit, ...(fade.has(name) ? { fade: true as const } : {}) };
   };
   const mass = (id: string) => out.find(m => m.id === id);
   /** civic-look.json `upper` (brief 066, Vela): the piece that draws a building's body above its ground-storey piece, the one of the listed pieces whose height is the
    *  body's (the café at 3 or 4 storeys: CafeUpper_3 or _4), at the ground piece's pivot and yaw. The body keeps its id, ring and heights (the sim's faces and the roof
    *  line); kit.base is the body's base, where the piece's lowest point stands (FacadeKit.Civic: PivotForLowest). No piece of that height adopted: the plain mass. */
   const upperOf = (body: Mass, p: { piece: string; at: V; yawDeg: number }, pivotBase: number): Mass | undefined => {
-    const a = (look.upper?.[p.piece] ?? []).map(n => adoptedBy(n)).find(x => !!x && Math.abs(x.size[1] - body.height) < 0.05); if (!a) return undefined;
+    const a = (look.upper?.[p.piece] ?? []).map(n => adoptedBy(drawnPiece(n, x => !!adoptedBy(x)))).find(x => !!x && Math.abs(x.size[1] - body.height) < 0.05); if (!a) return undefined;
     const k = put(body.id, a.id, p.at, p.yawDeg, pivotBase); if (!k) return undefined;
     return { ...body, source: 'kit', kit: { ...k.kit!, base: body.base }, ...(fade.has(a.id) ? { fade: true as const } : {}) };
   };
@@ -115,5 +119,6 @@ export function placementKinds(dr: Dressing): Map<string, 'planter' | 'lamp' | '
   m.set(dr.parasols.piece, 'parasol'); m.set(look.swaps[dr.parasols.piece] ?? dr.parasols.piece, 'parasol'); m.set(dr.lamps.piece, 'lamp'); m.set(dr.bollards.piece, 'bollard'); m.set(dr.cypress.piece, 'tree'); m.set(dr.topiary.piece, 'planter'); // a pot is a planter
   for (const r of dr.planterRuns.runs) for (const x of r.modules) m.set(x.piece, 'planter');
   for (const b of look.bands.pieces) m.set(b.piece, 'band');
+  for (const [k, v] of [...m]) if (look.swaps[k]) m.set(look.swaps[k]!, v); // brief 077: a swapped piece keeps its keep-clear kind (PlanterRun_4_A_TB is a planter)
   return m;
 }

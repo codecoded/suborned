@@ -89,9 +89,9 @@ test('service walls (AlleyWall) stand only on faces that front no street, side b
   expect(a.world.facades.filter(f => f.form === 'side').length).toBeGreaterThan(100);
 });
 
-test('the Records Office is one RecordsTower; its towers stay as data', () => {
+test('the Records Office is one RecordsTower (brief 077: drawn as its testbed rebuild RecordsTower_TB); its towers stay as data', () => {
   const o = a.world.civic.find(m => m.id === 'civic/civic-office')!;
-  expect(o.kit?.id).toBe('RecordsTower');
+  expect(o.kit?.id).toBe('RecordsTower_TB');
   for (const t of a.world.civic.filter(m => m.id.startsWith('civic/civic-office/tower-'))) expect(t.hidden).toBe(true);
 });
 

@@ -11,6 +11,10 @@
 //   sight   an occluder is a drawn volume that spans the engine's eye height (rulebook eye-cm) on a piece that stops sight: a street item the world marks `sight:
 //           "blocks"` (glazed and open items do not), every civic kit piece, shopfront and facade. Lower volumes are not blockers: they lower a hit chance through
 //           the cover file (contracts/world/civic-block.cover.json, Pulse), as the fight rules already say.
+//   render-only  brief 077 (Sky 2026-10-30, "yeah, see through"): a kit piece whose kit.collide.json entry declares `volumes: []` (planting: the civic beds'
+//           compositions, the troughs' and roofs' companions) stands no solid: it never blocks a walker or a sightline, and the grid's digest never names it.
+//           Its stonework is a separate piece with its own volumes. A piece with no entry at all is not render-only: it is unmeasured (a civic mass still stands as its
+//           prism, as before, but is listed, and the site refuses to build with any), and an entry with no volumes list is an error. Never guessed either way.
 //
 // Deterministic from the plan, the civic block, the generated world (tools/plan/world-ctx.ts generated, cached) and kit.collide.json.
 import { readFileSync } from 'node:fs';
@@ -45,6 +49,7 @@ type Box = { shape: 'box'; min: [number, number, number]; max: [number, number, 
 type Cyl = { shape: 'cylinder'; c: [number, number]; r: number; y0: number; y1: number; stand?: boolean };
 type Vol = Box | Cyl;
 type Piece = { sha256: string; bounds: [[number, number, number], [number, number, number]]; class: string; volumes: Vol[] };
+export type Collide = { schema: string; frame?: string; rule?: string; pieces: Record<string, Piece> };
 
 /** A placed volume, block frame. `poly` is the footprint (a rectangle, or a 16-gon round a cylinder) for sight; `circle` keeps a cylinder exact for the walk. */
 export type Solid = {
@@ -54,7 +59,15 @@ export type Solid = {
   x0: number; x1: number; y0: number; y1: number;
 };
 
-export type Drawn = { solids: Solid[]; elements: number; volumes: number; unmeasured: string[]; collideSha: string };
+export type Drawn = {
+  solids: Solid[]; elements: number; volumes: number; unmeasured: string[];
+  /** The pieces placed in the window that declare no volumes (render-only, brief 077): drawn, but no solid. */
+  renderOnly: string[];
+  /** The digest sites built before brief 077 carry (grid.drawn without `digest`): every piece placed, render-only ones included. */
+  collideSha: string;
+  /** Brief 077: the digest of the pieces that stand at least one solid in the window (and the camera pole). Render-only pieces never reach it. */
+  solidSha: string;
+};
 
 const sha = (t: string) => new Bun.CryptoHasher('sha256').update(t).digest('hex');
 /** The kit piece the mission cameras' poles stand as (missionPoles, tools/missions/handover/legs.ts cameraPoles): on the same grid, so in the digest. */
@@ -66,14 +79,24 @@ export function collideDigest(collide: { schema: string; frame?: string; rule?: 
   const pieces = Object.fromEntries([...new Set(kits)].filter((k) => collide.pieces[k]).sort().map((k) => [k, { bounds: collide.pieces[k]!.bounds, volumes: collide.pieces[k]!.volumes }]));
   return sha(JSON.stringify({ schema: collide.schema, frame: collide.frame ?? '', rule: collide.rule ?? '', pieces }));
 }
+/** Brief 077 (Keel; Sky 2026-10-30: planting is see-through): the digest of what of kit.collide.json can move the walk or the sight. The same fields as
+ *  collideDigest, read only for the pieces given that declare at least one volume: a render-only piece (`volumes: []`) adds nothing, so planting may come or go
+ *  without touching it, while any volume (or the bounds that place it) of a piece that stands a solid still does. Callers pass the pieces that stood a solid in
+ *  the window (drawnSolids `solidSha`), so a piece wholly outside it is not named either. */
+export function solidDigest(collide: { schema: string; frame?: string; rule?: string; pieces: Record<string, Piece> }, kits: string[]): string {
+  return collideDigest(collide, kits.filter((k) => (collide.pieces[k]?.volumes.length ?? 0) > 0));
+}
 
 /** Every drawn solid the world stands in (or within `pad` of) the window. */
-export function drawnSolids(plan: Plan, civ: Civic, w: World, win: Window = WINDOW, pad = 2): Drawn {
-  const text = readFileSync(join(root, COLLIDE_FILE), 'utf8'), collide = JSON.parse(text) as { schema: string; pieces: Record<string, Piece> };
+/** `collideIn`: a kit.collide.json to read instead of the file (tests; brief 077's adoption probe). */
+export function drawnSolids(plan: Plan, civ: Civic, w: World, win: Window = WINDOW, pad = 2, collideIn?: Collide): Drawn {
+  const collide = collideIn ?? (JSON.parse(readFileSync(join(root, COLLIDE_FILE), 'utf8')) as Collide);
   if (collide.schema !== 'suborned.kit.collide/1') throw new Error(`${COLLIDE_FILE} is not suborned.kit.collide/1`);
+  // brief 077: render-only is declared (`volumes: []`), never inferred; an entry without a volumes list is neither a solid nor render-only
+  for (const [k, p] of Object.entries(collide.pieces)) if (!Array.isArray(p.volumes)) throw new Error(`${COLLIDE_FILE} pieces.${k} has no volumes list: declare [] for a render-only piece, or measure it (bun run collide)`);
   const toBlock = toBlockFn(plan.civic), pave = pavementOf(plan);
   const inWin = (b: V) => b[0] >= win.x0 - pad && b[0] <= win.x1 + pad && b[1] >= win.y0 - pad && b[1] <= win.y1 + pad;
-  const solids: Solid[] = [], unmeasured = new Set<string>(), placed = new Set<string>();
+  const solids: Solid[] = [], unmeasured = new Set<string>(), placed = new Set<string>(), renderOnly = new Set<string>();
   let elements = 0;
   const push = (s: Omit<Solid, 'x0' | 'x1' | 'y0' | 'y1'>) => {
     if (!s.poly.some(inWin)) return;
@@ -89,8 +112,9 @@ export function drawnSolids(plan: Plan, civ: Civic, w: World, win: Window = WIND
   const placePiece = (id: string, kit: string, pivot: V, yaw: number, scale: [number, number, number], zOrigin: number, sight: Solid['sight'], face = false): boolean => {
     const p = collide.pieces[kit]; if (!p) { unmeasured.add(kit); return false; }
     placed.add(kit);
-    const [sx, sy, sz] = scale, T = at(pivot, yaw, sx, sz);
     elements++;
+    if (p.volumes.length === 0) { renderOnly.add(kit); return true; } // brief 077: drawn, no solid (see the head)
+    const [sx, sy, sz] = scale, T = at(pivot, yaw, sx, sz);
     for (const v of p.volumes) {
       if (v.shape === 'box') {
         const poly = [T(v.min[0], v.min[2]), T(v.max[0], v.min[2]), T(v.max[0], v.max[2]), T(v.min[0], v.max[2])];
@@ -114,6 +138,7 @@ export function drawnSolids(plan: Plan, civ: Civic, w: World, win: Window = WIND
     const face = faces.has(m.id);
     if (m.kit) {
       const p = collide.pieces[m.kit.id], from = solids.length;
+      if (!p) unmeasured.add(m.kit.id); // brief 077: no entry is not render-only; it still stands as its prism below, but is named (the site refuses it)
       if (p && placePiece(m.id, m.kit.id, m.kit.at, m.kit.yaw ?? 0, m.kit.scale, m.kit.base - p.bounds[0][1] * m.kit.scale[1], 'blocks', face)) {
         // brief 072 (Keel): a civic building's walls are the block's footprint and its towers' (civic-block.json polygons), as the block-only grid and the site's
         // sight have them; its kit piece's measured volumes add only what stands proud of them (the Office's pilasters, its step). Was every kit volume: the
@@ -152,7 +177,8 @@ export function drawnSolids(plan: Plan, civ: Civic, w: World, win: Window = WIND
     const boxes = [...(f.facade ? [] : [f.front, f.entrance]), ...(f.service ? [f.service] : [])];
     for (const b of boxes) if (b.shape === 'box' && b.size[2] >= 0.02) { const poly = rect(b.c, b.size[0], b.size[1], b.yaw); if (poly.some(inWin)) prism(b.id, poly, b.base, b.size[2], 'blocks', true); }
   }
-  return { solids, elements, volumes: solids.length, unmeasured: [...unmeasured].sort(), collideSha: collideDigest(collide, [...placed, POLE_PIECE]) };
+  const standing = solids.flatMap((s) => (s.piece ? [s.piece] : []));
+  return { solids, elements, volumes: solids.length, unmeasured: [...unmeasured].sort(), renderOnly: [...renderOnly].sort(), collideSha: collideDigest(collide, [...placed, POLE_PIECE]), solidSha: solidDigest(collide, [...standing, POLE_PIECE]) };
 }
 
 /** The pavement's height above the carriageway (standards.levels.datum.pavement): block z 0. */

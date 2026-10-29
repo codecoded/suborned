@@ -1,0 +1,37 @@
+077 the leaf shader · vertex colour, two-sided leaves, the ORM gloss · Latch (Opus 5.5) · 2026-10-30
+
+What's there
+- unity/Assets/Suborned/Shaders/DecoKit/DK_LitCutawayLeaf.shader ("DecoKit/Lit Cutaway Leaf"): a sibling of DK_LitCutaway.shader, generated from it. It has two opt-in material keywords:
+  _DK_VERTEX_COLOR (albedo x vertex colour, in the forward, GBuffer and Meta passes) and _DK_TWO_SIDED (on a back face the normal and the whole tangent frame flip, in the forward, GBuffer and DepthNormals passes).
+  Pass code: DK_LeafForward / DK_LeafGBuffer / DK_LeafDepthNormals / DK_LeafMeta.hlsl + DK_Leaf.hlsl. With no keyword each is URP's own pass file unchanged; with one, URP 17.6.0's file plus marked edits.
+- DK_LitCutaway.shader is UNCHANGED (= HEAD, sha256 44623fab0e019539711a4a84b85f8cd28326db13be3c3a62e9bdfa7e4446ac14). The keyword route was tried and rejected; see below.
+- briefs/077/shader/make_leaf_hlsl.py writes the sibling and the leaf includes (every edit asserted). Re-run it when DK_LitCutaway.shader or URP changes.
+- Mask: derived at build time from the testbed ORM, A = round(255 - k x ORM.g), R G B 0, at the source size. One botanical mask: leaf rows k 0.49, petal rows k 0.64 (the imported UVs confirm the split on every LOD). Soil: k 1. The texture set stays 9.0 MiB.
+- unity/Assets/Suborned/Editor/OldTown/Swap/LeafShader077.cs: Proof, Build (the review scene, the masks, the material import), Review (captures + numbers).
+- Review scene (git-ignored): unity/Assets/Scenes/probe-leafshader077.unity (+ probe-leafshader077/). It holds the swap's cameras, sun, volumes and the café probe only, a paving quad, and Vela's PlanterRun_4_A_TB and PlanterArc_TB as LODGroups on their kit stonework.
+- briefs/077/shader/index.html (self-contained), numbers.json, proof.json, make_index.py. Captures stay local in briefs/077/shader/captures (46 PNG).
+
+Proof (existing materials unchanged)
+- 269 materials on DecoKit/Lit Cutaway, 12 keyword sets, none with a leaf keyword. 242 compiled Metal programs (6 passes, vertex + fragment, no globals and a play set): 0 changed.
+- 14 captures (the swap's play and presentation looks, HarbourDistrict day and night): 13 bit-identical. The 14th is the swap's street view, 78 px at max diff 1, inside the run-to-run noise floor (before-a vs before-b: 8,423 px at max 10).
+- Rejected: the two keywords put into DK_LitCutaway.shader itself. That changed 36 ShadowCaster/DepthOnly _DK_CUT programs (passes the edit never touched) and every HarbourDistrict frame: the towers' shadows lost their glass strips. The new local keywords enter the keyword space at index 33-34, ahead of the globals. Putting HEAD back restored the frames exactly.
+
+Numbers
+- SRP Batcher: code 0 (OK) for both shaders after a render. Leaf variants compile clean: 66 programs, 0 errors. Console: no errors; only the existing DK_SurfaceDetail.hlsl:63 warning.
+- Review scene at play zoom (After072's estimator, an estimate): SetPass 10 on vs 7 off (+1 forward, +1 depth-normals, +1 shadow). Draws 12 main / 13 shadow and 5,565 tris, both unchanged.
+- LODs at play zoom: the run draws LOD3 (gameplay), the arc LOD2 (gameplay), as the testbed does.
+- Vertex colour imports unconverted (UNorm8): leaf 0.12-0.63, matching Vela's floats to within 0.002.
+
+Open
+- Soil still casts (its pass flag doesn't stick; it shares the renderer with the leaves). Its vertex colour imports as 0, so it must stay on DecoKit/Lit Cutaway without _DK_VERTEX_COLOR.
+- SetPass and draws are estimates. Redline measures on the Air after placement.
+- The keyword-space finding applies to future edits of DK_LitCutaway / DK_ComplexLitCutaway / FacadeLit.
+
+Commands (run, all exit 0)
+  bun briefs/075/oldbuild/swap/tools/unityrun.ts <log> -- -executeMethod Suborned.OldTown.Editor.Swap.LeafShader077.Proof -leafTag before-a | before-b -leafCompare before-a | final -leafCompare before-b
+  bun briefs/075/oldbuild/swap/tools/unityrun.ts <log> -- -executeMethod Suborned.OldTown.Editor.Swap.LeafShader077.Build
+  bun briefs/075/oldbuild/swap/tools/unityrun.ts <log> -- -executeMethod Suborned.OldTown.Editor.Swap.LeafShader077.Review
+  python3 -I briefs/077/shader/make_leaf_hlsl.py unity/Library/PackageCache/com.unity.render-pipelines.universal@1e1cf3dcbd40 unity/Assets/Suborned/Shaders/DecoKit
+  python3 -I briefs/077/shader/make_index.py
+
+Next: Glint (the look in the grade: gloss, night), then Vela and Splice (kit materials on DecoKit/Lit Cutaway Leaf, the soil split, a drift check for the sibling), then Latch places everything default-off, then Redline measures.

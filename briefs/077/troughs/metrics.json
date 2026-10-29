@@ -1,0 +1,622 @@
+{
+ "schema": "suborned.metrics077.troughs/1",
+ "brief": "077 steps 1-3",
+ "author": "Vela (Opus 5.5)",
+ "date": "2026-10-30",
+ "status": "candidate pieces, review only: not catalogued, not copied into Unity, no scene touched",
+ "measured_vs_estimated": {
+  "measured": [
+   "triangles and welded vertices per LOD (pieces.json, exact; welded = identical position, normal, uv, colour collapsed as Unity's importer welds)",
+   "submeshes, fit and bounds (troughs077.py)",
+   "current domes' triangles and L1 (contracts/world/kit.json)",
+   "texture source sizes (PNG headers) and sha256"
+  ],
+  "computed": [
+   "texture memory at the stated import format with full mip chains",
+   "caf\u00e9-square totals from the world export's placements",
+   "Unity LOD relative heights"
+  ],
+  "estimated": [
+   "frame time (Redline's models: k <= 0.7 ms per M drawn triangles incl. shadows, 1.5-3 us a draw, 2.1-2.5 ms/Mpx)",
+   "SetPass and draw deltas in Unity"
+  ],
+  "not_measured": [
+   "any Unity or Air frame time, SetPass or draw count",
+   "the shader variant the vertex colour needs",
+   "Unity import (tangents, weld, vertex colour) of these FBXs"
+  ]
+ },
+ "now": {
+  "A": {
+   "piece": "PlanterRun_4_A",
+   "status": "adopted",
+   "tris_L0": 732,
+   "trough_tris": 60,
+   "planting_tris_L0": 672,
+   "tris_L1": 179,
+   "l1_screen": 0.008,
+   "materials": [
+    "DK_Limestone",
+    "DK_Leaf_CivicDark",
+    "DK_Bloom_Coral",
+    "DK_Bloom_Cream",
+    "DK_Leaf_Civic"
+   ],
+   "submeshes": 5,
+   "top": 1.1201,
+   "textures": 0,
+   "alpha": "none (opaque flat colour)",
+   "note": "PlanterRun_4 planting = slots 1-4; the 60-triangle trough (slot 0) stays in both"
+  },
+  "B": {
+   "piece": "PlanterRun_4_B",
+   "status": "adopted",
+   "tris_L0": 672,
+   "trough_tris": 60,
+   "planting_tris_L0": 612,
+   "tris_L1": 165,
+   "l1_screen": 0.008,
+   "materials": [
+    "DK_Limestone",
+    "DK_Leaf_Civic",
+    "DK_Bloom_Peach",
+    "DK_Bloom_Flamingo",
+    "DK_Leaf_CivicDark"
+   ],
+   "submeshes": 5,
+   "top": 1.0616,
+   "textures": 0,
+   "alpha": "none (opaque flat colour)",
+   "note": "PlanterRun_4 planting = slots 1-4; the 60-triangle trough (slot 0) stays in both"
+  },
+  "C": {
+   "piece": "PlanterRun_4_C",
+   "status": "adopted",
+   "tris_L0": 642,
+   "trough_tris": 60,
+   "planting_tris_L0": 582,
+   "tris_L1": 157,
+   "l1_screen": 0.008,
+   "materials": [
+    "DK_Limestone",
+    "DK_Leaf_Civic",
+    "DK_Bloom_Cream",
+    "DK_Bloom_Peach",
+    "DK_Leaf_CivicDark"
+   ],
+   "submeshes": 5,
+   "top": 1.183,
+   "textures": 0,
+   "alpha": "none (opaque flat colour)",
+   "note": "PlanterRun_4 planting = slots 1-4; the 60-triangle trough (slot 0) stays in both"
+  }
+ },
+ "proposed": {
+  "A": {
+   "piece": "PlanterRun_4_A_TB",
+   "status": "candidate",
+   "fbx": {
+    "path": "out/decokit/troughs077/Models/DK_PlanterRun_4_A_TB.fbx",
+    "sha256": "7be3f3a5fbe04932e746293b88620544486289f772201e8c581fe0dd5f94f7c4",
+    "bytes": 1061436
+   },
+   "lods": {
+    "gameplay": {
+     "lod": 3,
+     "tris": 1487,
+     "vertices_welded": 1872,
+     "mesh_sha256": "9c45647604e6a4090b27eb77737356185fcb401567982359a7855619795df37a",
+     "top": 1.6614
+    },
+    "near": {
+     "lod": 2,
+     "tris": 2597,
+     "vertices_welded": 2835,
+     "mesh_sha256": "1314d6aff9ddae12fd52b9d2fb787c6ab5f89027bac72bdc3bac9d57c488c731",
+     "top": 1.6614
+    },
+    "close": {
+     "lod": 1,
+     "tris": 3777,
+     "vertices_welded": 3916,
+     "mesh_sha256": "8307f906d778de22a4f8d697517ec535e44d494c0692d3ae081c423fecf5e6fb",
+     "top": 1.6614
+    },
+    "inspection": {
+     "lod": 0,
+     "tris": 5595,
+     "vertices_welded": 5306,
+     "mesh_sha256": "a6db4545cb7e0d4eb377122e12169a0d1f673acdef566db6db9bb9446f4da320",
+     "top": 1.6718
+    }
+   },
+   "materials": [
+    "DK_Soil_TB",
+    "DK_Leaf_TB",
+    "DK_Petal_TB"
+   ],
+   "submeshes": 3,
+   "fit": {
+    "outside_xy": 0,
+    "below_coping": 0,
+    "zmin": 0.679,
+    "zmax": 1.6718,
+    "xmax": 1.9987,
+    "ymax": 0.34,
+    "pass": true
+   },
+   "composition": {
+    "leafCount": 131,
+    "flowerHeads": 12,
+    "footprintViolations": 0,
+    "bloomIntersections": 0,
+    "bloomLeafIntersections": 0,
+    "minimumBloomClearance": 0.025251873331027797,
+    "fittedGeometryVariants": 194,
+    "lod": {
+     "gameplay": 1519,
+     "near": 2725,
+     "close": 3905,
+     "inspection": 5723
+    },
+    "seed": 4278796513,
+    "clusters": 11,
+    "palette": "Concept coral and amber, dense tropical border"
+   },
+   "alpha": "none: opaque, the curved meshes make the silhouettes (testbed 'opaque: true'); no alpha test, no cards",
+   "shadow": "foliage (with stems) and flowers cast; soil does not (testbed castShadow kind != soil)"
+  },
+  "B": {
+   "piece": "PlanterRun_4_B_TB",
+   "status": "candidate",
+   "fbx": {
+    "path": "out/decokit/troughs077/Models/DK_PlanterRun_4_B_TB.fbx",
+    "sha256": "760abe71f68c069ff7d7839b3361191b5c0a68cfa8f6a38947a0aad67df02c95",
+    "bytes": 956012
+   },
+   "lods": {
+    "gameplay": {
+     "lod": 3,
+     "tris": 1355,
+     "vertices_welded": 1688,
+     "mesh_sha256": "67e9e0a4b52237d87e122ab553a62c8299bb1aed47a0c3059a3beff04c3a3763",
+     "top": 1.7553
+    },
+    "near": {
+     "lod": 2,
+     "tris": 2357,
+     "vertices_welded": 2555,
+     "mesh_sha256": "266c97e924f3e0bdae6a00ca1fbe7e315b46a71caa594d34aa27a8f732e02373",
+     "top": 1.7553
+    },
+    "close": {
+     "lod": 1,
+     "tris": 3481,
+     "vertices_welded": 3580,
+     "mesh_sha256": "ccdd10c7901e607250a0fc03699a0e025ec1fb81cf2662b39acf92a7760152b2",
+     "top": 1.7553
+    },
+    "inspection": {
+     "lod": 0,
+     "tris": 4849,
+     "vertices_welded": 4626,
+     "mesh_sha256": "028b65c437cbff57863d630b632ce759a09970b670c774d092edd10b219b21cf",
+     "top": 1.7658
+    }
+   },
+   "materials": [
+    "DK_Soil_TB",
+    "DK_Leaf_TB",
+    "DK_Petal_TB"
+   ],
+   "submeshes": 3,
+   "fit": {
+    "outside_xy": 0,
+    "below_coping": 0,
+    "zmin": 0.6792,
+    "zmax": 1.7658,
+    "xmax": 1.9989,
+    "ymax": 0.3399,
+    "pass": true
+   },
+   "composition": {
+    "leafCount": 124,
+    "flowerHeads": 9,
+    "footprintViolations": 0,
+    "bloomIntersections": 0,
+    "bloomLeafIntersections": 0,
+    "minimumBloomClearance": 0.02022551663262126,
+    "fittedGeometryVariants": 230,
+    "lod": {
+     "gameplay": 1387,
+     "near": 2485,
+     "close": 3609,
+     "inspection": 4977
+    },
+    "seed": 4228463656,
+    "clusters": 11,
+    "palette": "Concept coral and amber, dense tropical border"
+   },
+   "alpha": "none: opaque, the curved meshes make the silhouettes (testbed 'opaque: true'); no alpha test, no cards",
+   "shadow": "foliage (with stems) and flowers cast; soil does not (testbed castShadow kind != soil)"
+  },
+  "C": {
+   "piece": "PlanterRun_4_C_TB",
+   "status": "candidate",
+   "fbx": {
+    "path": "out/decokit/troughs077/Models/DK_PlanterRun_4_C_TB.fbx",
+    "sha256": "a64fe027ddddd2f0790da33637f01a03ce245a32dda4d4647a62ad550fb6ef0e",
+    "bytes": 1095964
+   },
+   "lods": {
+    "gameplay": {
+     "lod": 3,
+     "tris": 1518,
+     "vertices_welded": 1927,
+     "mesh_sha256": "90c8655ff1b30e0b461059f049a0c00c6e42e8ce1ca05238ad01570c917ec1f6",
+     "top": 1.6915
+    },
+    "near": {
+     "lod": 2,
+     "tris": 2666,
+     "vertices_welded": 2924,
+     "mesh_sha256": "c523d1c2461cf8d7aefb0b98e78a894ac30f44f108fadf640e635a7b182ff054",
+     "top": 1.6915
+    },
+    "close": {
+     "lod": 1,
+     "tris": 3846,
+     "vertices_welded": 4005,
+     "mesh_sha256": "f229c506f08e0bf27169ecaf455fa536f4c08f6644097667c618dd286d3e9e12",
+     "top": 1.6915
+    },
+    "inspection": {
+     "lod": 0,
+     "tris": 5916,
+     "vertices_welded": 5589,
+     "mesh_sha256": "d28f9bf7bc998d7dcf5eb6f6f4d23ee6e250a03809dbdac7281b1dcd2a7715e7",
+     "top": 1.6997
+    }
+   },
+   "materials": [
+    "DK_Soil_TB",
+    "DK_Leaf_TB",
+    "DK_Petal_TB"
+   ],
+   "submeshes": 3,
+   "fit": {
+    "outside_xy": 0,
+    "below_coping": 0,
+    "zmin": 0.6792,
+    "zmax": 1.6997,
+    "xmax": 1.9989,
+    "ymax": 0.3386,
+    "pass": true
+   },
+   "composition": {
+    "leafCount": 131,
+    "flowerHeads": 13,
+    "footprintViolations": 0,
+    "bloomIntersections": 0,
+    "bloomLeafIntersections": 0,
+    "minimumBloomClearance": 0.014091604413661557,
+    "fittedGeometryVariants": 235,
+    "lod": {
+     "gameplay": 1550,
+     "near": 2794,
+     "close": 3974,
+     "inspection": 6044
+    },
+    "seed": 4245241275,
+    "clusters": 11,
+    "palette": "Concept coral and amber, dense tropical border"
+   },
+   "alpha": "none: opaque, the curved meshes make the silhouettes (testbed 'opaque: true'); no alpha test, no cards",
+   "shadow": "foliage (with stems) and flowers cast; soil does not (testbed castShadow kind != soil)"
+  }
+ },
+ "lod_plan": {
+  "source": "the testbed's own authored levels (garden-runtime.js), not a decimation: each level is regenerated from the same leaves by the testbed's code (fewer rows per leaf, simpler blossoms)",
+  "fbx_naming": "DK_PlanterRun_4_<v>_TB_LOD0..LOD3 = inspection, close, near, gameplay (Unity's importer builds the LODGroup from the names)",
+  "testbed_rule": "projected 0.4 m leaf span: gameplay < 18 px, near < 32, close < 72, inspection above (hysteresis 16/28/60)",
+  "unity_relative_heights": {
+   "LOD0 inspection": 0.6667,
+   "LOD1 close": 0.2963,
+   "LOD2 near": 0.1667,
+   "LOD3 gameplay": 0.01
+  },
+  "play_zoom_relative_height": 0.1429,
+  "at_play_zoom": "gameplay (LOD3) at 1080 rows, as the testbed drew it; Unity's LOD is resolution independent, so on the Air's native 1864 rows the testbed would have drawn near and Unity still draws LOD3",
+  "full_detail_option": "drawing LOD0 everywhere (no LODGroup, as Latch's 075 trial did) costs <= 0.12 ms by Redline's k; both are affordable, so which one ships is Sky's call (brief 028: no compression without Sky)"
+ },
+ "textures": {
+  "maps": [
+   {
+    "file": "testbed-art/cafe-plants/botanical-atlas-v2.png",
+    "sha256": "da2573c3f98e3e502ad1a6acd9e786ae43ae0961f0b8dd7a80dc1a75fa2f9bbe",
+    "role": "albedo (sRGB)",
+    "source_px": [
+     1774,
+     887
+    ],
+    "npot": true,
+    "import_px": [
+     2048,
+     1024
+    ],
+    "import_note": "Non-Power of 2 = ToNearest (an upscale; BC needs multiple-of-4 sides and 887 is not)",
+    "format": "BC7",
+    "mips": 12,
+    "MiB_compressed": 2.67,
+    "MiB_rgba32_uncompressed_at_source": 8.0
+   },
+   {
+    "file": "testbed-art/cafe-plants/botanical-normal-v2.png",
+    "sha256": "9c95555b3906cf72a04fe28927dad2a6e6b0b97d84e770261f55819c65a29b79",
+    "role": "normal",
+    "source_px": [
+     1774,
+     887
+    ],
+    "npot": true,
+    "import_px": [
+     2048,
+     1024
+    ],
+    "import_note": "Non-Power of 2 = ToNearest (an upscale; BC needs multiple-of-4 sides and 887 is not)",
+    "format": "BC5",
+    "mips": 12,
+    "MiB_compressed": 2.67,
+    "MiB_rgba32_uncompressed_at_source": 8.0
+   },
+   {
+    "file": "testbed-art/cafe-plants/botanical-orm-v2.png",
+    "sha256": "c3574a250b1ea075f1b80b9c8fe51b805ab3e0dcb819ce5644d97c681b8d3130",
+    "role": "ORM (G = roughness, as three)",
+    "source_px": [
+     1774,
+     887
+    ],
+    "npot": true,
+    "import_px": [
+     2048,
+     1024
+    ],
+    "import_note": "Non-Power of 2 = ToNearest (an upscale; BC needs multiple-of-4 sides and 887 is not)",
+    "format": "BC7",
+    "mips": 12,
+    "MiB_compressed": 2.67,
+    "MiB_rgba32_uncompressed_at_source": 8.0
+   },
+   {
+    "file": "testbed-art/cafe-plants/soil-base.png",
+    "sha256": "1e90af1a2f00040f49999e3b4b72b9043ae19aecd39bdabb0aae4ad4d1ce8f55",
+    "role": "soil albedo (sRGB)",
+    "source_px": [
+     512,
+     512
+    ],
+    "npot": false,
+    "import_px": [
+     512,
+     512
+    ],
+    "import_note": "as is",
+    "format": "BC7",
+    "mips": 10,
+    "MiB_compressed": 0.33,
+    "MiB_rgba32_uncompressed_at_source": 1.33
+   },
+   {
+    "file": "testbed-art/cafe-plants/soil-normal.png",
+    "sha256": "aed2d8f06c5fd2bc4d4ae7c93b309e4710446669507951941f07bcf2be03bc73",
+    "role": "soil normal",
+    "source_px": [
+     512,
+     512
+    ],
+    "npot": false,
+    "import_px": [
+     512,
+     512
+    ],
+    "import_note": "as is",
+    "format": "BC5",
+    "mips": 10,
+    "MiB_compressed": 0.33,
+    "MiB_rgba32_uncompressed_at_source": 1.33
+   },
+   {
+    "file": "testbed-art/cafe-plants/soil-orm.png",
+    "sha256": "ff8db1f5b19b743c707284aedfb8536baff21f9df499675e0cfc422308e8c8cb",
+    "role": "soil ORM",
+    "source_px": [
+     512,
+     512
+    ],
+    "npot": false,
+    "import_px": [
+     512,
+     512
+    ],
+    "import_note": "as is",
+    "format": "BC7",
+    "mips": 10,
+    "MiB_compressed": 0.33,
+    "MiB_rgba32_uncompressed_at_source": 1.33
+   }
+  ],
+  "total_MiB_compressed": 9.0,
+  "total_MiB_uncompressed_rgba32": 27.99,
+  "shared": "one atlas set for leaves and petals, one soil set: shared by all three pieces and every future testbed planting port (fountain islands, civic beds, forest)",
+  "now": "0 MiB: the domes are flat colour",
+  "proposal": "BC4 from the ORM green (the only channel three reads) would save 1.33 MiB; a format choice, not a downscale; Sky's call"
+ },
+ "materials": {
+  "pieces": [
+   "DK_Soil_TB (soil maps, cull back, no shadow cast)",
+   "DK_Leaf_TB (atlas, normal 0.16, roughness 0.49 x ORM.g, base colour #afbea1, cull off)",
+   "DK_Petal_TB (atlas, normal 0.16, roughness 0.64 x ORM.g, white, cull off)"
+  ],
+  "setpass_estimate": "+1 to +2 forward (one new keyword set for leaf/petal: normal + mask + vertex colour + cull off; soil may match an existing DK set), +1 shadow (double-sided caster). Not measured.",
+  "needs": [
+   "vertex colour in DK Lit Cutaway (the testbed's per-leaf tint and root occlusion live there; without it the leaves read flat and lighter)",
+   "back-face normal flip for cull-off leaves (three's DoubleSide flips; check DK Lit Cutaway does)"
+  ]
+ },
+ "squares": {
+  "square": {
+   "label": "caf\u00e9 square: all 12 PlanterRun_4 troughs on its two street kerbs (the piece swap reaches every placement of the piece)",
+   "troughs": 12,
+   "by_piece": {
+    "A": 5,
+    "B": 4,
+    "C": 3
+   },
+   "now_planting_tris": 7554,
+   "proposed_tris": {
+    "gameplay (testbed's choice at play zoom, 1080 rows)": 17409,
+    "near (testbed's choice at 1864 rows, the Air's native)": 30411,
+    "LOD0 inspection (no LODGroup)": 65119
+   },
+   "geometry_estimate": {
+    "gameplay (testbed's choice at play zoom, 1080 rows)": {
+     "delta_view_tris": 9855,
+     "delta_caster_tris_per_cascade": 9831,
+     "gpu_ms_upper": 0.021,
+     "cascades_assumed": "1-2 (PC asset 1; Redline 075 cites two)"
+    },
+    "near (testbed's choice at 1864 rows, the Air's native)": {
+     "delta_view_tris": 22857,
+     "delta_caster_tris_per_cascade": 22833,
+     "gpu_ms_upper": 0.048,
+     "cascades_assumed": "1-2 (PC asset 1; Redline 075 cites two)"
+    },
+    "LOD0 inspection (no LODGroup)": {
+     "delta_view_tris": 57565,
+     "delta_caster_tris_per_cascade": 57541,
+     "gpu_ms_upper": 0.121,
+     "cascades_assumed": "1-2 (PC asset 1; Redline 075 cites two)"
+    }
+   },
+   "draws": {
+    "now": "the domes are slots 1-4 of the PlanterRun mesh; in the swap scene they are baked into the shared civic batches (Latch 075 trial), so removing them saves no draw",
+    "proposed_forward": "+9 (GPU Resident Drawer instancing: 3 pieces x 3 submeshes) to +36 (no instancing: 12 instances x 3)",
+    "proposed_shadow": "+6 to +24 per cascade (soil casts nothing)",
+    "render_thread_ms": "+0.013 to +0.252 (1.5-3 us a draw)"
+   }
+  },
+  "cafe": {
+   "label": "caf\u00e9 frontage: run-west-cafe/0-1 and run-east-cafe/0-3",
+   "troughs": 6,
+   "by_piece": {
+    "A": 3,
+    "B": 2,
+    "C": 1
+   },
+   "now_planting_tris": 3822,
+   "proposed_tris": {
+    "gameplay (testbed's choice at play zoom, 1080 rows)": 8689,
+    "near (testbed's choice at 1864 rows, the Air's native)": 15171,
+    "LOD0 inspection (no LODGroup)": 32399
+   },
+   "geometry_estimate": {
+    "gameplay (testbed's choice at play zoom, 1080 rows)": {
+     "delta_view_tris": 4867,
+     "delta_caster_tris_per_cascade": 4855,
+     "gpu_ms_upper": 0.01,
+     "cascades_assumed": "1-2 (PC asset 1; Redline 075 cites two)"
+    },
+    "near (testbed's choice at 1864 rows, the Air's native)": {
+     "delta_view_tris": 11349,
+     "delta_caster_tris_per_cascade": 11337,
+     "gpu_ms_upper": 0.024,
+     "cascades_assumed": "1-2 (PC asset 1; Redline 075 cites two)"
+    },
+    "LOD0 inspection (no LODGroup)": {
+     "delta_view_tris": 28577,
+     "delta_caster_tris_per_cascade": 28565,
+     "gpu_ms_upper": 0.06,
+     "cascades_assumed": "1-2 (PC asset 1; Redline 075 cites two)"
+    }
+   },
+   "draws": {
+    "now": "the domes are slots 1-4 of the PlanterRun mesh; in the swap scene they are baked into the shared civic batches (Latch 075 trial), so removing them saves no draw",
+    "proposed_forward": "+9 (GPU Resident Drawer instancing: 3 pieces x 3 submeshes) to +18 (no instancing: 6 instances x 3)",
+    "proposed_shadow": "+6 to +12 per cascade (soil casts nothing)",
+    "render_thread_ms": "+0.013 to +0.126 (1.5-3 us a draw)"
+   }
+  }
+ },
+ "pixels": {
+  "play_px_per_m": 38.57,
+  "per_trough_m2_on_screen": 7.03,
+  "square_px_upper": 125562,
+  "square_Mpx": 0.126,
+  "estimate_ms": "+0.01 to +0.04 (the planting replaces dome pixels that are already shaded; the delta is the textured, normal-mapped leaf shader over flat colour, about a quarter of the 2.1-2.5 ms/Mpx average on 0.126 Mpx at most)",
+  "overdraw": "opaque only: Apple's hidden-surface removal and early depth reject hidden leaves; no alpha-test overdraw (the old-town trial's leaves are alpha-clipped, these are not)"
+ },
+ "height": {
+  "now_top_local": {
+   "A": 1.1201,
+   "B": 1.0616,
+   "C": 1.183
+  },
+  "proposed_top_local": {
+   "A": 1.6718,
+   "B": 1.7658,
+   "C": 1.6997
+  },
+  "leaf_mass_p90_local": "1.08-1.21 m (inside today's 1.06-1.12 envelope give or take 0.1 m)",
+  "above": "fans, stems and flower heads rise to 1.61-1.77 m above the trough base (world 1.79-1.95 m at base 0.18), as the testbed's caf\u00e9 beds do (1.54-1.64 m above their bed base)",
+  "consequence": "render-only, no collider; but it is 0.55-0.65 m above the envelope Vela and Latch held in 075 for sight and the HOLD: Keel and Vantage say whether the sight raster reads render meshes before anything is placed"
+ },
+ "threats_to_60fps": "None from geometry or pixels on these numbers: the worst case (LOD0 on all 12 troughs, two cascades, no instancing) is about +0.12 ms GPU and +0.25 ms render thread (the render thread runs beside the GPU, so the frame pays the larger, not the sum) against Redline's 0.6 ms in hand at the opening (12.4 of 13.0). The real risks are a new shader variant (SetPass +1 to +2) and the +9 MiB of textures, both small; Redline measures in Unity.",
+ "provenance": {
+  "manifest": "out/decokit/troughs077/troughs077.manifest.json",
+  "sources": {
+   "testbed/src/cafe-garden-composition.js": "1698822e17b3e6aa8d8e34b0c00e8a6baece9c27fa2e66185b2b27208f821cd9",
+   "testbed/src/flower-look-shapes.js": "5f63e30ed3c6ab18051fbaae92e189cbcdbb615f06c1e31a30dd61dc7c48a840",
+   "testbed/src/garden-botanical-geometry.js": "a5c083357de2ce9e9ea6ba14658b98e42a67f83719269651cb2a1a96f6be0e03",
+   "testbed/src/cafe-botanical-geometry.js": "432d0ae591b324050e8fac827d2f940ca8585672afa91b6f1e0703317923c6ae",
+   "testbed/src/garden-stem-geometry.js": "d34dcd1f9c32d036cd6e101672da6c0f7b0642f0823d07ba3154005cb4d1284d",
+   "testbed/src/cafe-bed-geometry.js": "38b08a6b0bae95849393478d8f82a75ea0cccf947f12abb84f25e9ec51201f31",
+   "testbed/src/garden-render-batches.js": "c231ab67b8600532ff6f586b08e7ee7482af7f60ede6d5b06d7af6f1235877ad",
+   "testbed/src/garden-runtime.js": "d7fe5b48f4a67538a831ac010dc17373fb1df5125a9a40c1ad6905a0bb2dfdbf",
+   "testbed/src/garden-cache.js": "20d7766927bb5b25fb2c7b8e3433d4fb925bea623fa4884adfa45c5b0e4d1894",
+   "testbed/src/cafe-planting.js": "a864ab8a7d8c6ea47fc643a88e2a88b19c3ff54c672adbcde9628207a7d65a6f",
+   "testbed/src/cafe-planting-layout.js": "2bb63c8347e23df8f7632cfb24ed83d969c77e6ae8b82a9b113b4e3e54239585",
+   "testbed/src/flower-bed-layout.js": "62cd5b99a722bc01ec82caf99187999c21adc54a4737c34122b8c851c61b22db",
+   "testbed/src/civic-district-look.js": "d1dc8c5fb43a1eba7d22cb3c5c22be823bc846dc013152a6ff9396978f61d85f"
+  },
+  "three": {
+   "testbed/vendor/three-0.186.1/three.module.min.js": "f6079427efb0eef1149a44d361ff313279a2d8f5b30c7d42fa42aee1904028c9"
+  },
+  "art": {
+   "testbed-art/cafe-plants/botanical-atlas-v2.png": "da2573c3f98e3e502ad1a6acd9e786ae43ae0961f0b8dd7a80dc1a75fa2f9bbe",
+   "testbed-art/cafe-plants/botanical-normal-v2.png": "9c95555b3906cf72a04fe28927dad2a6e6b0b97d84e770261f55819c65a29b79",
+   "testbed-art/cafe-plants/botanical-orm-v2.png": "c3574a250b1ea075f1b80b9c8fe51b805ab3e0dcb819ce5644d97c681b8d3130",
+   "testbed-art/cafe-plants/soil-base.png": "1e90af1a2f00040f49999e3b4b72b9043ae19aecd39bdabb0aae4ad4d1ce8f55",
+   "testbed-art/cafe-plants/soil-normal.png": "aed2d8f06c5fd2bc4d4ae7c93b309e4710446669507951941f07bcf2be03bc73",
+   "testbed-art/cafe-plants/soil-orm.png": "ff8db1f5b19b743c707284aedfb8536baff21f9df499675e0cfc422308e8c8cb",
+   "testbed-art/cafe-plants/botanical-report-v2.json": "ef6cec00f44d4904ba5e46a84c402a2233c14ec4b877e4d4cfef01e0bee11116",
+   "testbed-art/cafe-plants/plaza-garden.manifest.json": "3149976fe672c79503b620faf39b9e46a4616220a870c3a7d0ee30684b34e769",
+   "testbed-art/cafe-plants/plaza-garden.bin.gz": "feeb10b6038ea97dd0540d55c8f264a8a56c8f0525c9b168d6f0d3a8040aea24",
+   "testbed-art/cafe-plants/plaza-garden-close.bin.gz": "ea79bc3d2396c2e7663bc0dfa5c4e41a896828023d1908213ede284ab4987e19",
+   "testbed-art/cafe-plants/plaza-garden-inspection.bin.gz": "af838effdd637673beffaecafcda2337059a68500e6b173d12a7cbfc0bae8d1b"
+  },
+  "generator": {
+   "tools/decokit/troughs077.ts": "be9b327d8c79a5256ab2b0d076d7a0679490e079546e7b329f9ce758437cad93",
+   "tools/decokit/troughs077.py": "41d1451a718a1d7ebb722b92b349f1965a368c79817dc49ec6c68462f0086104",
+   "tools/decokit/troughs077_lib.py": "171f4d4543c0bb544410de4dc7ce379da25ba2dd10ddb3dedf990c7712b21bbd",
+   "tools/decokit/review077_troughs.py": "cf1aeea9bb484f1cc5097e2720ba289edb7cbfd1f5ca0beb065c4806d1c3a77f",
+   "tools/decokit/review077_page.py": "3a17652c6feb22f6f2b32c63762399fc8b1c0111eb5abaad41b86fdcf24f8b92"
+  },
+  "bins": {
+   "PlanterRun_4_A_TB.bin": "e8e113ebb03ff452137f6f1013b85ace0ad9af862094ae1ab392e6ca5af575e0",
+   "PlanterRun_4_B_TB.bin": "49b6965628d4587c776fa281c9b15872dca16b48760fb3d6242925035dac5664",
+   "PlanterRun_4_C_TB.bin": "47bcdf29015d8f3a7290ca3515a18875e86e1391ad693f6a7e5bd4c11b4b3bee",
+   "testbed_cafe_beds.bin": "1df3230e31b2869fe97bbd7fd11b186933275cecf3a5c3b4e52682753b442ff5"
+  }
+ }
+}

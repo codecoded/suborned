@@ -33,8 +33,8 @@ test('the civic block\'s two buildings carry a roof terrace of their own (the of
   // brief 066 (Vela): the café's body above its ground storey is a kit piece (CafeUpper_3 or _4) whose crown is its own planted terrace and solarium, so only the office takes a generated one
   // brief 072 (Sky "yes"): once RecordsTower is adopted the office is that piece, whose roof terrace and rotunda are its own, so neither building takes a generated one
   const office = w.civic.find(c => c.id === 'civic/civic-office')!;
-  expect(roofs.map(r => r.building).sort()).toEqual(office.kit?.id === 'RecordsTower' ? [] : ['civic/civic-office']);
-  const cafe = w.civic.find(c => c.id === 'civic/cafe')!; expect(cafe.kit?.id).toMatch(/^CafeUpper_[34]$/);
+  expect(roofs.map(r => r.building).sort()).toEqual(/^RecordsTower(_TB)?$/.test(office.kit?.id ?? '') ? [] : ['civic/civic-office']); // brief 077: drawn as RecordsTower_TB
+  const cafe = w.civic.find(c => c.id === 'civic/cafe')!; expect(cafe.kit?.id).toMatch(/^CafeUpper_[34](_TB)?$/);
   for (const r of roofs) {
     const m = w.civic.find(c => c.id === r.building)!;
     expect(r.z).toBeCloseTo(m.base + m.height, 3);
@@ -66,12 +66,12 @@ test('brief 066: the café keeps its storey count; its body piece is the one bui
   expect(cafe.base + cafe.height - ground.base).toBeCloseTo(civ.buildings.find(b => b.id === 'cafe')!.height, 3); // the block's height, untouched
   expect(cafe.kit!.base).toBeCloseTo(cafe.base, 3); // the piece's lowest point stands on the body's base (FacadeKit.Civic: PivotForLowest)
   expect(cafe.kit!.at).toEqual(ground.kit!.at); expect(cafe.kit!.yaw).toBe(ground.kit!.yaw);
-  for (const n of [3, 4]) { const a = kit.assets.find(x => x.id === `CafeUpper_${n}`)!; expect(a.status).toBe('adopted'); expect(a.size[1]).toBeCloseTo(H(n) - (ground.height), 2); }
+  for (const n of [3, 4]) { const a = kit.assets.find(x => x.id === `CafeUpper_${n}_TB`)!; expect(a.status).toBe('adopted'); expect(a.size[1]).toBeCloseTo(H(n) - (ground.height), 2); } // brief 077: the testbed rebuilds (the domes rejected)
 });
 
 test('brief 066: at 3 storeys (main\'s recommendation, not yet Sky\'s pick) the same block draws CafeUpper_3 to H(3)', () => {
   const B = plan.standards.buildings, H3 = B.plinth + B.groundStorey + 2 * B.upperStorey + B.roofCrown;
   const low = { ...civ, buildings: civ.buildings.map(b => (b.id === 'cafe' ? { ...b, height: H3 } : b)) };
   const cafe = civicMasses(low, toPlanFn(plan.civic)).find(m => m.id === 'civic/cafe')!;
-  expect(cafe.kit?.id).toBe('CafeUpper_3'); expect(cafe.base + cafe.height - 0.18).toBeCloseTo(H3, 3);
+  expect(cafe.kit?.id).toBe('CafeUpper_3_TB'); expect(cafe.base + cafe.height - 0.18).toBeCloseTo(H3, 3); // brief 077: drawn as its testbed rebuild
 });

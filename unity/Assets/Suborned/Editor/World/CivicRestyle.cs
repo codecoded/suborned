@@ -77,7 +77,7 @@ namespace Suborned.World
 
         /// <summary>Before the ground and civic layers are built: the slots into the civic masses' `materials`, the two plots and the bed kerbs onto
         /// surfaces of their new material. Only material names and surface keys change; every rule must find what it names.</summary>
-        public string Prepare(WorldDto w, Look look)
+        public string Prepare(WorldDto w, Look look, Func<string, string> replaces = null)
         {
             var hit = new int[remap.Count];
             foreach (var m in w.Civic)
@@ -86,7 +86,8 @@ namespace Suborned.World
                 for (int i = 0; i < remap.Count; i++)
                 {
                     var (pieces, from, to) = remap[i];
-                    if (!pieces.Contains(m.Kit.Id)) continue;
+                    // brief 077: a rebuild (kit.json `replaces`) takes the bindings of the piece it replaces; it keeps those stone slots by name
+                    if (!pieces.Contains(m.Kit.Id) && !(replaces?.Invoke(m.Kit.Id) is string old && pieces.Contains(old))) continue;
                     m.Materials ??= new Dictionary<string, string>(StringComparer.Ordinal);
                     if (m.Materials.TryGetValue(from, out var had) && had != to) throw new InvalidDataException($"World: civic restyle: {m.Id} already draws `{from}` in {had} (export), the restyle asks {to}");
                     m.Materials[from] = to; hit[i]++; Slots++;

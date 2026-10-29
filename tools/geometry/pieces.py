@@ -1,6 +1,9 @@
 """Kit piece solids for `bun run geometry` (brief 055, Splice): the occupied height intervals of a kit piece on a plan grid.
 
-Blender -b -P tools/geometry/pieces.py -- <out dir> <cell m> <id>=<fbx path> [<id>=<fbx path> ...]
+Blender -b -P tools/geometry/pieces.py -- <out dir> <cell m> <id>=<fbx path>[|<mat>,<mat>...] [...]
+
+Brief 077: `|<materials>` names the see-through materials (kit.json seeThrough) the piece carries: their triangles are drawn but stop nothing, so the
+solid is voxelised without them (the trough stands, its planting does not). The bounds (bx*, bz*, minY, maxY) stay the whole mesh's: they place the piece.
 
 Each FBX (the Unity copy of the piece, the very mesh the player draws) is imported with the DecoKit export axes (forward -Z, up Y), so the piece
 stands in the frame the kit catalogue speaks: x across, y up, z front (Blender -Y becomes +Z, Blender +X becomes kit -X: the manifest's bounds
@@ -24,29 +27,41 @@ from mathutils import Vector
 from mathutils.bvhtree import BVHTree
 
 ARGS = sys.argv[sys.argv.index("--") + 1:]
-OUT = Path(ARGS[0]); CELL = float(ARGS[1]); JOBS = [a.split("=", 1) for a in ARGS[2:]]
+OUT = Path(ARGS[0]); CELL = float(ARGS[1]); JOBS = [(a.split("=", 1)[0], *(a.split("=", 1)[1].rsplit("|", 1) + [""])[:2]) for a in ARGS[2:]]
 OUT.mkdir(parents=True, exist_ok=True)
 CAP = 4.0     # nothing above this is stored (nothing here is walked under or shot through above 4 m)
 DX, DZ = 0.125, 0.05
 FLOOR_SHEET = 1.2  # a lone horizontal surface this low with nothing under it is a floor
 
 
-def load(path):
+def base_name(n):
+    """A material's kit name: Blender's import suffix (.001) dropped."""
+    import re
+    return re.sub(r"\.\d{3}$", "", n)
+
+
+def load(path, skip=()):
+    """All vertices and triangles, and the triangles that are solid (not on a see-through material)."""
     bpy.ops.wm.read_factory_settings(use_empty=True)
     bpy.ops.import_scene.fbx(filepath=path, axis_forward="-Z", axis_up="Y")
-    verts, tris = [], []
+    verts, tris, solid = [], [], []
     for o in bpy.context.scene.objects:
         if o.type != "MESH":
             continue
         m = o.matrix_world; me = o.data; me.calc_loop_triangles(); base = len(verts)
+        names = [base_name(s.material.name) if s.material else "" for s in o.material_slots]
         verts += [m @ v.co for v in me.vertices]
-        tris += [tuple(base + i for i in t.vertices) for t in me.loop_triangles]
-    return verts, tris
+        for t in me.loop_triangles:
+            tri = tuple(base + i for i in t.vertices); tris.append(tri)
+            if not (names and names[min(t.material_index, len(names) - 1)] in skip): solid.append(tri)
+    return verts, tris, solid
 
 
 def line_hits(bvh, o, d, length):
-    """Distances along the line o + t d, 0 < t < length, where it crosses the mesh, in order."""
+    """Distances along the line o + t d, 0 < t < length, where it crosses the mesh, in order (none when nothing of the piece is solid)."""
     out, t = [], 0.0
+    if bvh is None:
+        return out
     for _ in range(96):
         h = bvh.ray_cast(o + d * (t + 1e-4), d, length - t)
         if h[0] is None:
@@ -70,9 +85,9 @@ def intervals(ts):
     return spans, lone
 
 
-for pid, path in JOBS:
-    verts, tris = load(path)
-    bvh = BVHTree.FromPolygons(verts, tris)
+for pid, path, skipped in JOBS:
+    verts, tris, solid_tris = load(path, set(m for m in skipped.split(",") if m))
+    bvh = BVHTree.FromPolygons(verts, solid_tris) if solid_tris else None
     xs = [v.x for v in verts]; ys = [v.y for v in verts]; zs = [v.z for v in verts]
     bx0, bx1, by0, by1, bz0 = min(xs), max(xs), min(ys), max(ys), min(zs)
     bz1 = min(max(zs), CAP)
@@ -136,5 +151,5 @@ for pid, path in JOBS:
             cells.append(iv)
     # kit-frame bounds are those of the folded grid, anchored at the kit-x/z minimum (the grid's flipped edge lies on the far side of the fold)
     gx0 = ux1 - kx * CELL; gz0 = uz1 - kz * CELL  # fold cells are anchored at the Blender minimum, i.e. the kit maximum
-    (OUT / f"{pid}.json").write_text(json.dumps(dict(id=pid, cell=CELL, x0=round(gx0, 4), x1=round(ux1, 4), z0=round(gz0, 4), z1=round(uz1, 4), bx0=round(ux0, 4), bx1=round(ux1, 4), bz0=round(uz0, 4), bz1=round(uz1, 4), nx=kx, nz=kz, minY=round(min(zs), 4), maxY=round(max(zs), 4), tris=len(tris), cells=cells), separators=(",", ":")))
+    (OUT / f"{pid}.json").write_text(json.dumps(dict(id=pid, cell=CELL, x0=round(gx0, 4), x1=round(ux1, 4), z0=round(gz0, 4), z1=round(uz1, 4), bx0=round(ux0, 4), bx1=round(ux1, 4), bz0=round(uz0, 4), bz1=round(uz1, 4), nx=kx, nz=kz, minY=round(min(zs), 4), maxY=round(max(zs), 4), tris=len(tris), **({"seeThrough": sorted(set(m for m in skipped.split(",") if m)), "solidTris": len(solid_tris)} if skipped else {}), cells=cells), separators=(",", ":")))
     print(f"piece {pid}: {kx}x{kz} cells x {nz} layers, {len(tris)} tris")

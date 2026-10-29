@@ -8,7 +8,9 @@
   "out/decokit-008/measured.json": "76e9bd4314712f503f6a687d7b091af90604657e37a37a990c88a5c3b1ab01fb",
   "out/decokit-008/civic-beds.json": "a25f7437d54d9a975e37760ed7b467c71ddac2e367a1a03eae8f823d45661db6",
   "out/decokit-008/civic-overrides.json": "7f906f363782813ac1723a536af0317593efc1d86b97e9ff6f556f0034bb477f",
-  "out/decokit-brass/brass-family.json": "0189443f07256620d5a5ce534d04efa62aea91f6864e84354d5112ec3c7900d1"
+  "out/decokit-brass/brass-family.json": "0189443f07256620d5a5ce534d04efa62aea91f6864e84354d5112ec3c7900d1",
+  "testbed-art/cafe-plants/plaza-garden.bin.gz": "feeb10b6038ea97dd0540d55c8f264a8a56c8f0525c9b168d6f0d3a8040aea24",
+  "out/decokit-077/decokit_manifest.json": "fd87acf77fc3a817c3ac981ca1494286c445b3f3caa48bfe6444193be141c3c9"
  },
  "pieces": [
   "BollardSphere",
@@ -59,7 +61,24 @@
   "CafeBay": "CafeBay_v2",
   "RobotButler": "RobotButler_Play",
   "Parasol_Stripe": "Parasol_Testbed",
-  "AtomFountain": "AtomFountain_Testbed"
+  "AtomFountain": "AtomFountain_Testbed",
+  "CafeTerrace": "CafeTerrace_TB",
+  "CafeUpper_3": "CafeUpper_3_TB",
+  "CafeUpper_4": "CafeUpper_4_TB",
+  "PlanterArc": "PlanterArc_TB",
+  "PlanterRun_2_A": "PlanterRun_2_A_TB",
+  "PlanterRun_2_B": "PlanterRun_2_B_TB",
+  "PlanterRun_2_C": "PlanterRun_2_C_TB",
+  "PlanterRun_4_A": "PlanterRun_4_A_TB",
+  "PlanterRun_4_B": "PlanterRun_4_B_TB",
+  "PlanterRun_4_C": "PlanterRun_4_C_TB",
+  "PlanterRun_Corner_A": "PlanterRun_Corner_A_TB",
+  "PlanterRun_Corner_B": "PlanterRun_Corner_B_TB",
+  "PlanterRun_Corner_C": "PlanterRun_Corner_C_TB",
+  "PlanterRun_End_A": "PlanterRun_End_A_TB",
+  "PlanterRun_End_B": "PlanterRun_End_B_TB",
+  "PlanterRun_End_C": "PlanterRun_End_C_TB",
+  "RecordsTower": "RecordsTower_TB"
  },
  "grounded": [
   "BoardingPavilion_TB_Square"
@@ -110,8 +129,8 @@
   "CafeTerrace"
  ],
  "budget": {
-  "lod0Tris": 330000,
-  "note": "brief 026 (Splice, 2026-10-20): raised from 110000 to the 211,311 the restored original pieces cost (CafeSet_Tulip 3,984, PlazaSphereLamp 7,932, Cypress 5,004, PottedTopiary 4,720; Sky: old detail back). A performance call for Redline to confirm against 60 fps; lower it when the pieces get cheaper. Raised again to 260,000 (236,449 with the testbed cafe: CafeInterior_Testbed 18.7k, CafeSet_Testbed 3.6k a set, Parasol_Testbed 3.0k): Sky's rule, any compression goes through him, so the budget goes up with a note, no model is reduced; Redline to measure on the Air. Raised to 330,000 for the testbed bay (BoardingPavilion_TB_Square 28.8k) and fountain (AtomFountain_Testbed 41.9k), both at full detail (brief 028): the budget goes up with a note, no model is reduced."
+  "lod0Tris": 370000,
+  "note": "brief 026 (Splice, 2026-10-20): raised from 110000 to the 211,311 the restored original pieces cost (CafeSet_Tulip 3,984, PlazaSphereLamp 7,932, Cypress 5,004, PottedTopiary 4,720; Sky: old detail back). A performance call for Redline to confirm against 60 fps; lower it when the pieces get cheaper. Raised again to 260,000 (236,449 with the testbed cafe: CafeInterior_Testbed 18.7k, CafeSet_Testbed 3.6k a set, Parasol_Testbed 3.0k): Sky's rule, any compression goes through him, so the budget goes up with a note, no model is reduced; Redline to measure on the Air. Raised to 330,000 for the testbed bay (BoardingPavilion_TB_Square 28.8k) and fountain (AtomFountain_Testbed 41.9k), both at full detail (brief 028): the budget goes up with a note, no model is reduced. Raised to 370,000 for brief 077's testbed planting (Sky's yes on the Unity capture, 2026-10-30): the rebuilt troughs, the terrace and the arcs count at their inspection level (LOD0, 359,323 in the block); at play zoom each draws its gameplay level (+77,034 play-zoom triangles for the whole family, Vela's count; Redline measures on the Air). No model is reduced."
  },
  "slab": {
   "material": "DK_Pave_Civic",
@@ -155,26 +174,18 @@
   },
   "civic/fountain-garden-north-east": {
    "DK_Faience_Teal": "DK_Enamel_Seafoam",
-   "DK_Leaf_CoreShrub": "DK_Leaf_CivicDark",
-   "DK_Flower_Coral": "DK_Flower_CoralSoft",
    "DK_Accent_Gold": "DK_Brass_Civic"
   },
   "civic/fountain-garden-north-west": {
    "DK_Faience_Teal": "DK_Enamel_Seafoam",
-   "DK_Leaf_CoreShrub": "DK_Leaf_CivicDark",
-   "DK_Flower_Coral": "DK_Flower_Flamingo",
    "DK_Accent_Gold": "DK_Brass_Civic"
   },
   "civic/fountain-garden-south-east": {
    "DK_Faience_Teal": "DK_Enamel_Seafoam",
-   "DK_Leaf_CoreShrub": "DK_Leaf_CivicDark",
-   "DK_Flower_Coral": "DK_Flower_Flamingo",
    "DK_Accent_Gold": "DK_Brass_Civic"
   },
   "civic/fountain-garden-south-west": {
    "DK_Faience_Teal": "DK_Enamel_Seafoam",
-   "DK_Leaf_CoreShrub": "DK_Leaf_CivicDark",
-   "DK_Flower_Coral": "DK_Flower_CoralSoft",
    "DK_Accent_Gold": "DK_Brass_Civic"
   }
  },
@@ -208,7 +219,623 @@
     }
    ]
   },
-  "source": "out/decokit-008/civic-beds.json (Vela, 14 Oct): the recipe, constants as there; the tuft yaw is seeded from the mass id with the generator rng, not Vela's PRNG"
+  "source": "out/decokit-008/civic-beds.json (Vela, 14 Oct): the recipe, constants as there; the tuft yaw is seeded from the mass id with the generator rng, not Vela's PRNG",
+  "level": {
+   "soilProud": 0.003,
+   "tol": 0.001,
+   "beds": {
+    "civic/civic-facade-southwest": {
+     "piece": "CivicBedPlanting_facade-southwest",
+     "outline": [
+      [
+       1.6597,
+       -0.4935
+      ],
+      [
+       -1.0694,
+       1.3618
+      ],
+      [
+       -1.1918,
+       1.4234
+      ],
+      [
+       -1.326,
+       1.4512
+      ],
+      [
+       -1.4628,
+       1.4434
+      ],
+      [
+       -1.5929,
+       1.4004
+      ],
+      [
+       -1.7075,
+       1.3251
+      ],
+      [
+       -1.7987,
+       1.2228
+      ],
+      [
+       -1.8603,
+       1.1004
+      ],
+      [
+       -1.8881,
+       0.9662
+      ],
+      [
+       -1.8802,
+       0.8294
+      ],
+      [
+       -1.8372,
+       0.6992
+      ],
+      [
+       -1.762,
+       0.5847
+      ],
+      [
+       -1.6597,
+       0.4935
+      ],
+      [
+       1.0694,
+       -1.3618
+      ],
+      [
+       1.1918,
+       -1.4234
+      ],
+      [
+       1.326,
+       -1.4512
+      ],
+      [
+       1.4628,
+       -1.4434
+      ],
+      [
+       1.5929,
+       -1.4004
+      ],
+      [
+       1.7075,
+       -1.3251
+      ],
+      [
+       1.7987,
+       -1.2228
+      ],
+      [
+       1.8603,
+       -1.1004
+      ],
+      [
+       1.8881,
+       -0.9662
+      ],
+      [
+       1.8802,
+       -0.8294
+      ],
+      [
+       1.8372,
+       -0.6992
+      ],
+      [
+       1.762,
+       -0.5847
+      ]
+     ]
+    },
+    "civic/civic-facade-southeast": {
+     "piece": "CivicBedPlanting_facade-southeast",
+     "outline": [
+      [
+       1.0211,
+       1.457
+      ],
+      [
+       -1.6649,
+       -0.6275
+      ],
+      [
+       -1.7613,
+       -0.725
+      ],
+      [
+       -1.8291,
+       -0.844
+      ],
+      [
+       -1.8639,
+       -0.9766
+      ],
+      [
+       -1.8631,
+       -1.1137
+      ],
+      [
+       -1.8269,
+       -1.2459
+      ],
+      [
+       -1.7577,
+       -1.3642
+      ],
+      [
+       -1.6603,
+       -1.4605
+      ],
+      [
+       -1.5412,
+       -1.5284
+      ],
+      [
+       -1.4087,
+       -1.5632
+      ],
+      [
+       -1.2716,
+       -1.5624
+      ],
+      [
+       -1.1394,
+       -1.5262
+      ],
+      [
+       -1.0211,
+       -1.457
+      ],
+      [
+       1.6649,
+       0.6275
+      ],
+      [
+       1.7613,
+       0.725
+      ],
+      [
+       1.8291,
+       0.844
+      ],
+      [
+       1.8639,
+       0.9766
+      ],
+      [
+       1.8631,
+       1.1137
+      ],
+      [
+       1.8269,
+       1.2459
+      ],
+      [
+       1.7577,
+       1.3642
+      ],
+      [
+       1.6603,
+       1.4605
+      ],
+      [
+       1.5412,
+       1.5284
+      ],
+      [
+       1.4087,
+       1.5632
+      ],
+      [
+       1.2716,
+       1.5624
+      ],
+      [
+       1.1394,
+       1.5262
+      ]
+     ]
+    },
+    "civic/civic-office-west": {
+     "piece": "CivicBedPlanting_office-west",
+     "outline": [
+      [
+       0.9498,
+       -4.8362
+      ],
+      [
+       0.9498,
+       1.9638
+      ],
+      [
+       0.9205,
+       2.4313
+      ],
+      [
+       0.8332,
+       2.8915
+      ],
+      [
+       0.561,
+       3.9573
+      ],
+      [
+       0.4882,
+       4.1391
+      ],
+      [
+       0.3709,
+       4.2958
+      ],
+      [
+       0.217,
+       4.4168
+      ],
+      [
+       0.037,
+       4.4939
+      ],
+      [
+       -0.1568,
+       4.5217
+      ],
+      [
+       -0.3512,
+       4.4985
+      ],
+      [
+       -0.533,
+       4.4257
+      ],
+      [
+       -0.6897,
+       4.3083
+      ],
+      [
+       -0.8107,
+       4.1544
+      ],
+      [
+       -0.8878,
+       3.9744
+      ],
+      [
+       -0.9156,
+       3.7806
+      ],
+      [
+       -0.8923,
+       3.5862
+      ],
+      [
+       -0.6202,
+       2.5204
+      ],
+      [
+       -0.5678,
+       2.2443
+      ],
+      [
+       -0.5502,
+       1.9638
+      ],
+      [
+       -0.5502,
+       -4.8362
+      ],
+      [
+       -0.5246,
+       -5.0304
+      ],
+      [
+       -0.4497,
+       -5.2112
+      ],
+      [
+       -0.3305,
+       -5.3666
+      ],
+      [
+       -0.1752,
+       -5.4858
+      ],
+      [
+       0.0057,
+       -5.5607
+      ],
+      [
+       0.1998,
+       -5.5862
+      ],
+      [
+       0.394,
+       -5.5607
+      ],
+      [
+       0.5748,
+       -5.4857
+      ],
+      [
+       0.7302,
+       -5.3666
+      ],
+      [
+       0.8494,
+       -5.2112
+      ],
+      [
+       0.9243,
+       -5.0303
+      ]
+     ]
+    },
+    "civic/civic-office-north": {
+     "piece": "CivicBedPlanting_office-north",
+     "outline": [
+      [
+       1.8272,
+       0.5352
+      ],
+      [
+       -1.6477,
+       0.954
+      ],
+      [
+       -1.8434,
+       0.9519
+      ],
+      [
+       -2.032,
+       0.8992
+      ],
+      [
+       -2.2005,
+       0.7994
+      ],
+      [
+       -2.3374,
+       0.6595
+      ],
+      [
+       -2.4334,
+       0.4889
+      ],
+      [
+       -2.482,
+       0.2992
+      ],
+      [
+       -2.4799,
+       0.1034
+      ],
+      [
+       -2.4272,
+       -0.0851
+      ],
+      [
+       -2.3274,
+       -0.2536
+      ],
+      [
+       -2.1875,
+       -0.3905
+      ],
+      [
+       -2.0168,
+       -0.4866
+      ],
+      [
+       -1.8272,
+       -0.5352
+      ],
+      [
+       1.6477,
+       -0.954
+      ],
+      [
+       1.8434,
+       -0.9519
+      ],
+      [
+       2.032,
+       -0.8992
+      ],
+      [
+       2.2005,
+       -0.7994
+      ],
+      [
+       2.3374,
+       -0.6595
+      ],
+      [
+       2.4334,
+       -0.4889
+      ],
+      [
+       2.482,
+       -0.2992
+      ],
+      [
+       2.4799,
+       -0.1034
+      ],
+      [
+       2.4272,
+       0.0851
+      ],
+      [
+       2.3274,
+       0.2536
+      ],
+      [
+       2.1875,
+       0.3905
+      ],
+      [
+       2.0168,
+       0.4866
+      ]
+     ]
+    },
+    "civic/civic-dropoff-west": {
+     "piece": "CivicBedPlanting_dropoff-west",
+     "outline": [
+      [
+       -1.1257,
+       -1.1364
+      ],
+      [
+       -0.7484,
+       -1.2479
+      ],
+      [
+       -0.36,
+       -1.3116
+      ],
+      [
+       0.0332,
+       -1.3263
+      ],
+      [
+       0.4252,
+       -1.292
+      ],
+      [
+       0.8098,
+       -1.209
+      ],
+      [
+       1.1811,
+       -1.0787
+      ],
+      [
+       1.4175,
+       -0.9399
+      ],
+      [
+       1.6099,
+       -0.7446
+      ],
+      [
+       1.7452,
+       -0.5063
+      ],
+      [
+       1.8142,
+       -0.241
+      ],
+      [
+       1.8122,
+       0.0331
+      ],
+      [
+       1.7393,
+       0.2973
+      ],
+      [
+       1.6005,
+       0.5337
+      ],
+      [
+       1.4053,
+       0.7261
+      ],
+      [
+       1.1669,
+       0.8614
+      ],
+      [
+       0.9016,
+       0.9304
+      ],
+      [
+       0.6275,
+       0.9284
+      ],
+      [
+       0.3633,
+       0.8556
+      ],
+      [
+       0.2395,
+       0.8121
+      ],
+      [
+       0.1113,
+       0.7845
+      ],
+      [
+       -0.0193,
+       0.773
+      ],
+      [
+       -0.1504,
+       0.7779
+      ],
+      [
+       -0.2798,
+       0.7991
+      ],
+      [
+       -0.4056,
+       0.8363
+      ],
+      [
+       -0.6732,
+       0.8959
+      ],
+      [
+       -0.947,
+       0.8842
+      ],
+      [
+       -1.2085,
+       0.802
+      ],
+      [
+       -1.4398,
+       0.655
+      ],
+      [
+       -1.6252,
+       0.453
+      ],
+      [
+       -1.752,
+       0.21
+      ],
+      [
+       -1.8116,
+       -0.0575
+      ],
+      [
+       -1.7999,
+       -0.3314
+      ],
+      [
+       -1.7177,
+       -0.5929
+      ],
+      [
+       -1.5706,
+       -0.8242
+      ],
+      [
+       -1.3687,
+       -1.0096
+      ]
+     ]
+    }
+   },
+   "source": "testbed-art/cafe-plants/plaza-garden.bin.gz (sha256 feeb10b6038ea97dd0540d55c8f264a8a56c8f0525c9b168d6f0d3a8040aea24): the key's civic flowerBedRun beds, each moved into its piece's plan frame by the motion Vela built it with (out/decokit/troughs077/domes077.manifest.json sha256 69b7478f7bf31af89ed4fb5745ad9c3492c2409d39edd8e3c5bb3e21cecc2487: civicBeds, finals.place; pieces out/decokit-077/decokit_manifest.json sha256 fd87acf77fc3a817c3ac981ca1494286c445b3f3caa48bfe6444193be141c3c9); bun tools/world/civic/bed-level-import.ts --write; brief 077, Sky 2026-10-30. soilProud: the soil sits 3 mm above the kerb top (Vela, briefs/077/domes/metrics.json bedtuft.proposal_for_splice); tol: the rigid fit's largest vertex error, m"
+  }
  },
  "bands": {
   "frame": "block frame of contracts/world/civic-block.json: x south, y east, metres; angles from +x toward +y = the piece's yaw about +Z; arcs are quarter turns sweeping local +X to +Y, pivot at the arc centre",
@@ -1096,15 +1723,6 @@
     ]
    },
    {
-    "material": "DK_GlassDark",
-    "unlit": "#35585A",
-    "used_by": [
-     "CafeBay",
-     "RecordsEntrance",
-     "RecordsEntrance_Official"
-    ]
-   },
-   {
     "material": "DK_Glass_Clear",
     "unlit": "#B3D9DE",
     "used_by": [
@@ -1118,6 +1736,15 @@
     "used_by": [
      "CafeBay_v2",
      "CafeInterior"
+    ]
+   },
+   {
+    "material": "DK_GlassDark",
+    "unlit": "#35585A",
+    "used_by": [
+     "CafeBay",
+     "RecordsEntrance",
+     "RecordsEntrance_Official"
     ]
    },
    {
@@ -1302,6 +1929,35 @@
     ]
    },
    {
+    "material": "DK_Leaf_TB",
+    "unlit": "#D7DFCF",
+    "used_by": [
+     "CafeTerrace_Planting",
+     "CafeUpper_3_Planting",
+     "CafeUpper_4_Planting",
+     "CivicBedPlanting_dropoff-west",
+     "CivicBedPlanting_facade-southeast",
+     "CivicBedPlanting_facade-southwest",
+     "CivicBedPlanting_office-north",
+     "CivicBedPlanting_office-west",
+     "PlanterArc_TB",
+     "PlanterRun_2_A_TB",
+     "PlanterRun_2_B_TB",
+     "PlanterRun_2_C_TB",
+     "PlanterRun_4_A_TB",
+     "PlanterRun_4_B_TB",
+     "PlanterRun_4_C_TB",
+     "PlanterRun_Corner_A_TB",
+     "PlanterRun_Corner_B_TB",
+     "PlanterRun_Corner_C_TB",
+     "PlanterRun_End_A_TB",
+     "PlanterRun_End_B_TB",
+     "PlanterRun_End_C_TB",
+     "RecordsTower_Planting"
+    ],
+    "provisional": "brief 077 (Splice): the .mat _BaseColor (out/decokit-077/Materials), not a measured unlit read; Glint to set"
+   },
+   {
     "material": "DK_Limestone",
     "unlit": "#E7DECA",
     "used_by": [
@@ -1327,6 +1983,14 @@
     ]
    },
    {
+    "material": "DK_Opal_TB",
+    "unlit": "#FFFEF8",
+    "used_by": [
+     "GlobeLamp_TB"
+    ],
+    "provisional": "brief 077 (Splice): the .mat _BaseColor (out/decokit-077/Materials), not a measured unlit read; Glint to set"
+   },
+   {
     "material": "DK_Pave_Civic",
     "unlit": "#E4DACA",
     "used_by": [
@@ -1348,6 +2012,34 @@
     ]
    },
    {
+    "material": "DK_Petal_TB",
+    "unlit": "#FFFFFF",
+    "used_by": [
+     "CafeTerrace_Planting",
+     "CafeUpper_3_Planting",
+     "CafeUpper_4_Planting",
+     "CivicBedPlanting_dropoff-west",
+     "CivicBedPlanting_facade-southeast",
+     "CivicBedPlanting_facade-southwest",
+     "CivicBedPlanting_office-north",
+     "CivicBedPlanting_office-west",
+     "PlanterArc_TB",
+     "PlanterRun_2_A_TB",
+     "PlanterRun_2_B_TB",
+     "PlanterRun_2_C_TB",
+     "PlanterRun_4_A_TB",
+     "PlanterRun_4_B_TB",
+     "PlanterRun_4_C_TB",
+     "PlanterRun_Corner_A_TB",
+     "PlanterRun_Corner_B_TB",
+     "PlanterRun_Corner_C_TB",
+     "PlanterRun_End_A_TB",
+     "PlanterRun_End_B_TB",
+     "RecordsTower_Planting"
+    ],
+    "provisional": "brief 077 (Splice): the .mat _BaseColor (out/decokit-077/Materials), not a measured unlit read; Glint to set"
+   },
+   {
     "material": "DK_Petiole",
     "unlit": "#7F7A40",
     "used_by": [
@@ -1367,6 +2059,35 @@
     "used_by": [
      "PottedTopiary_Play"
     ]
+   },
+   {
+    "material": "DK_Soil_TB",
+    "unlit": "#FFFFFF",
+    "used_by": [
+     "CafeTerrace_Planting",
+     "CafeUpper_3_Planting",
+     "CafeUpper_4_Planting",
+     "CivicBedPlanting_dropoff-west",
+     "CivicBedPlanting_facade-southeast",
+     "CivicBedPlanting_facade-southwest",
+     "CivicBedPlanting_office-north",
+     "CivicBedPlanting_office-west",
+     "PlanterArc_TB",
+     "PlanterRun_2_A_TB",
+     "PlanterRun_2_B_TB",
+     "PlanterRun_2_C_TB",
+     "PlanterRun_4_A_TB",
+     "PlanterRun_4_B_TB",
+     "PlanterRun_4_C_TB",
+     "PlanterRun_Corner_A_TB",
+     "PlanterRun_Corner_B_TB",
+     "PlanterRun_Corner_C_TB",
+     "PlanterRun_End_A_TB",
+     "PlanterRun_End_B_TB",
+     "PlanterRun_End_C_TB",
+     "RecordsTower_Planting"
+    ],
+    "provisional": "brief 077 (Splice): the .mat _BaseColor (out/decokit-077/Materials), not a measured unlit read; Glint to set"
    },
    {
     "material": "DK_Steel",
@@ -1724,6 +2445,63 @@
   "BoardingPavilion_TB_Square": [
    "civic/square-pavilion-support-0",
    "civic/square-pavilion-support-1"
+  ]
+ },
+ "attach": {
+  "CafeTerrace_TB": [
+   {
+    "piece": "CafeTerrace_Planting",
+    "at": [
+     0,
+     0
+    ],
+    "dy": 0.678,
+    "as": "planting"
+   }
+  ],
+  "RecordsTower_TB": [
+   {
+    "piece": "RecordsTower_Planting",
+    "at": [
+     0,
+     0
+    ],
+    "dy": 14.758,
+    "as": "planting"
+   }
+  ],
+  "CafeUpper_3_TB": [
+   {
+    "piece": "CafeUpper_3_Planting",
+    "at": [
+     0,
+     0
+    ],
+    "dy": 8.808,
+    "as": "planting"
+   }
+  ],
+  "CafeUpper_4_TB": [
+   {
+    "piece": "CafeUpper_4_Planting",
+    "at": [
+     0,
+     0
+    ],
+    "dy": 12.408,
+    "as": "planting"
+   }
+  ],
+  "PlanterArc_TB": [
+   {
+    "piece": "GlobeLamp_TB",
+    "at": [
+     1.0151,
+     0.5416
+    ],
+    "dy": 0.465,
+    "as": "lamp"
+   }
   ]
  }
 }

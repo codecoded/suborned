@@ -316,7 +316,7 @@ test('the four fountain-garden beds are PlanterArc (Vela round 3): pivot 6.12 m 
   const block: Record<string, number> = { 'north-east': 224.94, 'north-west': 315.06, 'south-west': 45.06, 'south-east': 134.94 }; // Vela's yaws (block frame: x south, y east), ±0.06° measurement
   for (const [k, by] of Object.entries(block)) {
     const m = w.civic.find(x => x.id === `civic/fountain-garden-${k}`)!, at = m.kit!.at, y = m.kit!.yaw!;
-    expect(m.kit!.id).toBe('PlanterArc'); expect(m.kit!.scale).toEqual([1, 1, 1]); expect(m.source).toBe('kit');
+    expect(m.kit!.id).toBe('PlanterArc_TB'); expect(m.kit!.scale).toEqual([1, 1, 1]); expect(m.source).toBe('kit');
     expect(Math.hypot(at[0] - fc[0]!, at[1] - fc[1]!)).toBeCloseTo(6.12, 2);
     const front = [-Math.sin(y), Math.cos(y)], out = [(at[0] - fc[0]!) / 6.12, (at[1] - fc[1]!) / 6.12];
     expect(front[0]! * out[0]! + front[1]! * out[1]!).toBeCloseTo(1, 3); // kit +Z (the outer curved side) faces away from the fountain

@@ -1,0 +1,29 @@
+077 steps 1-3 · café troughs · Vela (Opus 5.5) · 2026-10-30
+
+What's there
+- tools/decokit/troughs077.ts: runs the testbed's own composition (createCafeGardenComposition + flowerLookLeafGeometry, the lush-tropical profile, the coral/amber palette it drew), read only from ~/Projects/the-suborned/testbed/src, on the PlanterRun_4 coping footprint (4.0 x 0.68 m). Also decodes the testbed's baked café beds. Writes out/decokit/troughs077/*.bin + troughs077.manifest.json (all source sha256s). Byte-stable over two runs.
+- tools/decokit/troughs077.py (+ troughs077_lib.py), Blender: candidate pieces PlanterRun_4_A_TB / _B_TB / _C_TB, out/decokit/troughs077/Models/DK_PlanterRun_4_<v>_TB.fbx (+ .blend), pieces.json. Each piece is soil + foliage + flowers, with four LODs: the testbed's own levels inspection / close / near / gameplay as _LOD0.._LOD3. Fit PASS: 0 vertices outside |x| <= 2.0, |y| <= 0.34; none below the coping top. mesh_sha256 per LOD is stable from run to run.
+- tools/decokit/review077_troughs.py: Blender renders of testbed | now | proposed at play zoom (ortho 14, pitch 38, yaw 30/210) and close (ortho 3), day and night, plus LOD0 forced at play zoom. Renders are in out/scratch/vela/077/r.
+- tools/decokit/review077_page.py -> briefs/077/troughs/index.html (self-contained, 7.2 MiB) and briefs/077/troughs/metrics.json.
+
+Commands (run, all passed)
+  bun tools/decokit/troughs077.ts
+  bun run guard --wait-timeout 60 /Applications/Blender.app/Contents/MacOS/Blender -b -t 4 -P tools/decokit/troughs077.py   -> TROUGHS077 PASS
+  bun run guard --wait-timeout 60 /Applications/Blender.app/Contents/MacOS/Blender -b -t 8 -P tools/decokit/review077_troughs.py -- out/scratch/vela/077/r <testbed|now|proposed> <day|night> [1920 inspection]
+  python3 -I tools/decokit/review077_page.py
+  bun run typecheck   -> clean
+
+Not done (by the brief's limits): no kit.json entry, no bun run kit copy, no Unity scene, no plan, sim or mission change, no paid call, no commit.
+
+Open issues
+- DK Lit Cutaway reads no vertex colour. The testbed's leaf tints and root occlusion are vertex colours, so Unity needs a keyword or the leaves read flat and lighter (probably SetPass +1).
+- Cull-off leaves: check the shader flips back-face normals as three does.
+- Height: stems and blooms reach 1.61-1.77 m above the trough base (today's envelope is 1.06-1.12). The leaf mass p90 is 1.08-1.21 m. The pieces are render-only, but Keel and Vantage confirm the sight raster ignores render meshes before any placement.
+- Atlas 1774 x 887 is NPOT. Importing with ToNearest gives 2048 x 1024 for BC7/BC5, an upscale. Textures total 9.0 MiB (0 today).
+- The generator imports the testbed's code from outside the repo (sha256 pinned). If adopted, Splice vendors it.
+- Look: Blender light, not the game's grade. Colour and darkness are judged from a Unity capture.
+
+Next owner
+- Latch: place PlanterRun_4_<v>_TB default-off at the 12 PlanterRun_4 placements (or the café 6 first). Keep slot 0 (the limestone trough, DK_Limestone_Tex restyle). Don't draw slots 1-4 (the domes). Same transform as the trough, no collider. LODGroup from the _LODn names at relative heights 0.667 / 0.296 / 0.167 / 0.01, with a switch to force LOD0. Materials per metrics.json `materials`. Done-check: the Unity capture pairs of 075 (café square y030/y210 day/night, trough detail y210), with the import checked (weld, tangents, vertex colour).
+- Redline: measure in Unity, then on the Air: SetPass, draws, frame time at play zoom over the café, against metrics.json (estimate <= +0.12 ms GPU at LOD0 everywhere).
+- Then Sky, via Aster: the look (dark glossy testbed green against the bright domes), LODGroup vs LOD0, and the stem height.

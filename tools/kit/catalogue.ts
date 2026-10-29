@@ -6,6 +6,7 @@ import type { Kit, KitAsset, KitBuilt, KitCarPaints, KitColourways, KitFile, Kit
 import { WAVE1, tagsOf } from './tags';
 import { generatedTags } from './generated';
 import { FULL_DETAIL, LOD_CATEGORIES, LOD_CLASSES, lodCategoryOf, lodClassOf, lodScreens } from './lod';
+import { SEE_THROUGH_SRC, extraAssets, seeThroughOf } from './extra';
 
 type Lod = { file: string; tris: number; screen: number };
 type GenRow = { name: string; bounds?: [number, number, number, number]; lods?: Lod[]; category: string; fbx: string; tris: number; size: number[]; materials: string[]; parts?: unknown; order?: KitOrder; built?: KitBuilt };
@@ -31,7 +32,8 @@ export function refreshMatFiles(prev: KitFile[], fresh: KitFile[]): KitFile[] {
   return [...lead, ...fresh, ...kept, ...prev.filter(f => !MAT_ROLE.test(f.role) && !/^fbx(-meta)?$/.test(f.role))];
 }
 
-export function buildCatalogue(root: string, prior?: Kit, gen?: string): Kit {
+/** `extras`: brief 077's extra generated roots (absolute paths), read after `gen` (tools/kit/extra.ts): their rows join as their own entries, never over another root's. */
+export function buildCatalogue(root: string, prior?: Kit, gen?: string, extras: string[] = []): Kit {
   const manifestText = readFileSync(join(root, 'decokit_manifest.json')), materialsText = readFileSync(join(root, 'decokit_materials.json'));
   const manifest = JSON.parse(manifestText.toString()).assets as { name: string; category: string; fbx: string; tris: number; size: number[]; materials: string[]; parts?: unknown; lod1?: unknown; lods?: Lod[] }[];
   type MatRow = { name: string; texture: string; normal: string; mask: string };
@@ -111,7 +113,15 @@ export function buildCatalogue(root: string, prior?: Kit, gen?: string): Kit {
     files.push(...matFiles(g.materials), ...lodsOf(g.name).files, ...dataFiles(g.name), ...(g.name === 'PatrolRobot' ? pair('texture', 'Textures/robot_face_stage_v1.png') : []));
     generated.push({ id: g.name, category: g.category, size: g.size as [number, number, number], ...pivotOf(g.name), front: '+Z', tris: g.tris, materials: g.materials, ...(g.parts ? { parts: g.parts } : {}), ...(g.lods?.length && !FULL_DETAIL.has(g.name) ? { lods: lodScreens(g.lods, lodCategoryOf(g.name, g.category), g.name) } : {}), lodCategory: lodCategoryOf(g.name, g.category), files, tags: tagsOf(g.name, g.category), status: status.get(g.name) ?? 'candidate', source: 'generated' });
   }
-  for (const a of prior?.assets ?? []) if (a.source === 'generated' && !plain.some(g => g.name === a.id) && !fresh.has(a.id) && !manifestIds.has(a.id)) { const lc = lodCategoryOf(a.id, a.category); const { files: prev, tags, status: st, source, order, built, ...rest } = a; const files = refreshMatFiles(prev, matFiles(a.materials)); generated.push({ ...rest, ...(a.lods ? { lods: lodScreens(a.lods, lc, a.id) } : {}), lodCategory: lc, files, tags, status: st, source, ...(order ? { order } : {}), ...(built ? { built } : {}) }); }
+  // brief 077: the extra roots' rows (their own ids, status, LOD screens and lodSize: no category flattening), then the prior catalogue's extra entries whose root was not read
+  const pivotFrom = (b?: [number, number, number, number]): Pick<KitAsset, 'pivot'> & { pivotOffset?: [number, number] } => { const c: [number, number] | undefined = b && [r3((b[0] + b[1]) / 2), r3((b[2] + b[3]) / 2)]; return c && Math.hypot(c[0], c[1]) > 0.05 ? { pivot: 'origin-ground', pivotOffset: c } : { pivot: 'footprint-centre-ground' }; };
+  const extraIds = new Set<string>();
+  for (const dir of extras) for (const a of extraAssets(dir, { prior: status, others: m => matFiles([m]), pivot: pivotFrom, lodCategoryOf, lodClassOf, tagsOf })) {
+    if (extraIds.has(a.id) || manifestIds.has(a.id) || generated.some(g => g.id === a.id) || plain.some(g => g.name === a.id)) throw new Error(`kit: extra root ${dir} row ${a.id} collides with a piece already catalogued (a rebuild needs replaces.id, so it joins as <id>_TB)`);
+    extraIds.add(a.id); generated.push(a);
+  }
+  for (const a of prior?.assets ?? []) if (a.extra && !extraIds.has(a.id)) { extraIds.add(a.id); generated.push(a); } // its root not given this run: kept exactly as it was
+  for (const a of prior?.assets ?? []) if (a.source === 'generated' && !a.extra && !extraIds.has(a.id) && !plain.some(g => g.name === a.id) && !fresh.has(a.id) && !manifestIds.has(a.id)) { const lc = lodCategoryOf(a.id, a.category); const { files: prev, tags, status: st, source, order, built, ...rest } = a; const files = refreshMatFiles(prev, matFiles(a.materials)); generated.push({ ...rest, ...(a.lods ? { lods: lodScreens(a.lods, lc, a.id) } : {}), lodCategory: lc, files, tags, status: st, source, ...(order ? { order } : {}), ...(built ? { built } : {}) }); }
   generated.sort((a, b) => a.id.localeCompare(b.id));
   assets.push(...generated);
   // brief 072-D: the every-face pieces' distance class (Redline's plan §3.1), after lodCategory so a piece keeps its category too
@@ -170,5 +180,10 @@ export function buildCatalogue(root: string, prior?: Kit, gen?: string): Kit {
     if (files.length !== names.length * 2) throw new Error(`carPaints: ${names.length * 2 - files.length} .mat/.meta files missing in ${gen}/Materials (rerun bun run decokit --mats-only)`);
     carPaints = { ...cp, files };
   }
-  return { schema: 'suborned.kit/1', source: { manifest: 'decokit_manifest.json', materials: 'decokit_materials.json', manifestSha256: sha(manifestText), materialsSha256: sha(materialsText) }, lodCategories: LOD_CATEGORIES, ...(classed.some(a => a.lodClass) ? { lodClasses: LOD_CLASSES } : {}), ...(textures.length ? { textures } : {}), ...(colourways ? { colourways } : {}), ...(landmarks ? { landmarks } : {}), ...(posters ? { posters } : {}), ...(carPaints ? { carPaints } : {}), assets: classed }; // the classes ride once a classed piece is catalogued
+  // brief 077: the see-through materials ride once a catalogued piece carries one (else a run's catalogue stays as it was); a prior list is kept when no extra root is read
+  function seeThroughField(): { seeThrough?: { materials: string[]; src: string } } {
+    const mats = extras.length ? seeThroughOf(extras) : prior?.seeThrough?.materials ?? seeThroughOf([]);
+    return classed.some(a => a.materials.some(m => mats.includes(m))) ? { seeThrough: { materials: mats, src: prior?.seeThrough && !extras.length ? prior.seeThrough.src : SEE_THROUGH_SRC } } : {};
+  }
+  return { schema: 'suborned.kit/1', source: { manifest: 'decokit_manifest.json', materials: 'decokit_materials.json', manifestSha256: sha(manifestText), materialsSha256: sha(materialsText) }, lodCategories: LOD_CATEGORIES, ...(classed.some(a => a.lodClass) ? { lodClasses: LOD_CLASSES } : {}), ...(textures.length ? { textures } : {}), ...(colourways ? { colourways } : {}), ...(landmarks ? { landmarks } : {}), ...(posters ? { posters } : {}), ...(carPaints ? { carPaints } : {}), ...seeThroughField(), assets: classed }; // the classes ride once a classed piece is catalogued
 }

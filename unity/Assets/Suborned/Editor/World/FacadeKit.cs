@@ -137,7 +137,9 @@ namespace Suborned.World
                     var el = Nodes.Element(layer, m.Id);
                     float z = placer.PivotForLowest(m.Kit, m.Kit.Base);
                     // what the play camera may ghost stays a piece of its own (FadeTags tags renderers); the rest joins the block's batches
-                    if (m.Fade) KitSlots.Swap(placer.Place(el, layer.name, m.Kit, m.Kit.At, z, 0f), m.Id, m.Materials);
+                    // brief 077 (Sky 2026-10-30: "use LoDs at game play"): a row that declares lodAtPlay stands as an instance too, so its LODGroup
+                    // switches to its gameplay level at play zoom; baked, it would join the batches at LOD0 (its inspection level)
+                    if (m.Fade || placer.AtPlay(m.Kit.Id)) KitSlots.Swap(placer.Place(el, layer.name, m.Kit, m.Kit.At, z, 0f), m.Id, m.Materials);
                     else placer.Bake(el, layer.name, m.Id, m.Kit, m.Kit.At, z, m.Materials);
                     // tools/world/build.ts `plinth` mode: a monument piece shorter than its mass stands on a plinth of the mass ring up to
                     // kit.base (the steward robot). A canopy piece (boarding pavilions) also starts above its mass base but hangs at the

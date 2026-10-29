@@ -231,6 +231,7 @@
         { "kind": "awning", "light": "spot", "intensity": 16, "range": 6.5, "spotAngle": 90, "inner": 0.35, "count": 4, "colour": "night.lampInterior", "aim": "paving 1.15 m out", "emissivePiece": "awning lamp" },
         { "kind": "palm", "light": "spot", "intensity": 14, "range": 6.5, "spotAngle": 45, "colour": "night.uplight", "aim": "up the trunk, +3 m", "emissivePiece": "uplight can", "note": "attach to the real palm meshes, not the empty transforms" },
         { "kind": "street", "light": "spot", "intensity": 19, "range": 6.5, "spotAngle": 85, "colour": "night.lampStreet", "aim": "down", "emissivePiece": "street-lamp globe", "note": "range 11 -> 6.5: the floor pool is only about 4 m from the head, so the cone volume shrinks by 3.4x with the pool unchanged; intensity x1.35 pays back the smaller range window (URP smooth window at 0.62 of range 0.73 against 0.97)" },
+        { "kind": "globe", "light": "point", "intensity": 7, "range": 5.8, "height": 2.31, "above": "the GlobeLamp_TB base (its pivot; the opal's centre)", "colour": "night.lampGlobe", "fixture": "GlobeLamp_TB (world.Civic Kit.Id, one per PlanterArc, the four fountain islands)", "emissivePiece": "GlobeLamp_TB opal (DK_Opal_TB): emissive globeOpal", "note": "Glint 077 (briefs/077/light/). The testbed's fountain-garden-lights.js: #fff1d8, 28 cd, distance 5.8, decay 2, no shadows, 2.31 m up, 0 by day (16 at evening). three.js divides direct diffuse by pi and URP does not, so 28 cd is about 9 here; 9 put the paving between the four islands near white (pools overlap at 9.5 m spacing), 7 keeps the cream paving in the pool readable and the frame unblown. Night only, like the street lamps: off at evening and by day. Unshadowed, no cookie; the light sits inside the opal, which casts no shadow from it." },
         { "kind": "office", "light": "mixed", "fixture": "RecordsEntrance* and RecordsEntrance_Official (the capstone front, played at yaw 210)", "note": "Glint 026 round 3. The Records Office front had no lamp kind. Five lights, all unshadowed, named by the entrance piece's own frame (door axis, landing 4.6 m wide, 0.75 m above street), placed relative to it.",
           "parts": [
             { "name": "door", "light": "point", "intensity": 9, "range": 5.5, "colour": "night.lampInterior", "at": "door axis, 2.9 m above the landing, 0.6 m out from the face", "emissivePiece": "AwningLamp (x2 flanking the door)" },
@@ -242,14 +243,16 @@
     },
     "emissive": {
       "note": "For Vela. HDR _EmissionColor intensity per material, on its own glow-only material so signals and the grade never meet it. One per-material night scalar (0 by day, so day frames do not move). Interior opal and cove exist already: add the multiplier.",
-      "night": { "tableOpal": 2.2, "wallAwningLampOpal": 4.0, "uplightLens": 2.3, "pendantCove": 2.6, "interiorOpal": 2.6, "sign": 3.2, "signCoral": 2.0, "roadLens": 5.0 },
-      "dayResidual": { "pendantCove": 0.35, "sign": 0.6, "roadLens": 1.4, "note": "what the testbed kept lit by day; optional. roadLens (Vela, brief 048): the kerb strip light, DK_Road_Lens #FFE6B5. The .mat is written at the day value (1.4: a pale cream line, no glow); the rig raises it to night.roadLens (5.0) at evening (about 3.0) and night (5.0), the testbed `auto`" },
+      "night": { "tableOpal": 2.2, "wallAwningLampOpal": 4.0, "uplightLens": 2.3, "pendantCove": 2.6, "interiorOpal": 2.6, "sign": 3.2, "signCoral": 2.0, "roadLens": 5.0, "globeOpal": 2.5 },
+      "globeOpalNote": "Glint 077: DK_Opal_TB's _EmissionColor = linear(#fff1d2) x level, alpha = level (the .mat is written at the day level 0.06, the testbed's). Day 0.06, evening 0.06 (the globe lamps are night lamps), night 2.5 (testbed 3.5; 3.5 blooms the globe wider than the pool reads, 2.5 reads as a lit opal). ABSOLUTE levels, not a multiplier: night / day is x41.7, past roadlight.json's emission cap (0..10, which would reject the whole file), so do not put it in roadlight.json `glow` as mode emission.",
+      "dayResidual": { "globeOpal": 0.06, "pendantCove": 0.35, "sign": 0.6, "roadLens": 1.4, "note": "what the testbed kept lit by day; optional. roadLens (Vela, brief 048): the kerb strip light, DK_Road_Lens #FFE6B5. The .mat is written at the day value (1.4: a pale cream line, no glow); the rig raises it to night.roadLens (5.0) at evening (about 3.0) and night (5.0), the testbed `auto`" },
       "evening": { "roadLens": 3.0, "roadPoolAlpha": 0.14, "windows": { "litShareEvening": 0.35, "litShareNight": 0.75 }, "note": "Glint, brief 048. The dusk lights (the road strip, the lit windows, any sign), driven at runtime by Runtime/RoadLight.cs from Resources/Atmosphere/roadlight.json (the same levels: lens 1.4 / 3.0 / 5.0 in the .mat's own scale, pool alpha 0 / 0.14 / 0.22 on DK_Road_Pool; `glow`: DK_GlassDark lit share 0.35 evening, 0.75 night, the neon and lightbox materials x1.25 / x1.7 of their own emission); change both files together. Runtime copies of the materials are driven, never the Kit .mat. The evening SUN, SKY, HAZE and GRADE are not built into the scene (the scene is saved in the day State): they are lens.json `evening` and haze.json `evening`, applied by LightPhase / AtmosphereLens / DistanceHaze by LightPhase.Dusk. The scene's day and night States here are unchanged." },
       "pieces": [
         { "name": "TableLamp_Opal", "size": "0.29 m tall, atom-age opal diffuser on a brass body (thin brass line, SF-21), diffuser tinted per lamp from the cycle", "emissive": "tableOpal" },
         { "name": "AwningLamp", "size": "chrome plate 0.24 x 0.07, opal strip 0.2 x 0.03, projecting chrome eyelid so the lens is not seen from the play view", "emissive": "wallAwningLampOpal" },
         { "name": "UplightCan_Palm", "size": "chrome can r 0.08 x 0.13 long, recessed lens r 0.063, on a short chrome stem, 0.425 m from the trunk", "emissive": "uplightLens" },
-        { "name": "StreetLampGlobe", "size": "opal globe on the existing DK_Lamp head (the head is only 0.2 m at y 4.3), clearly a globe at zoom 14", "emissive": "tableOpal", "intensity": 3.0 }
+        { "name": "StreetLampGlobe", "size": "opal globe on the existing DK_Lamp head (the head is only 0.2 m at y 4.3), clearly a globe at zoom 14", "emissive": "tableOpal", "intensity": 3.0 },
+        { "name": "GlobeLamp_TB", "size": "testbed atomic globe lamp, 2.62 m, opal 0.49 x 0.35 m at 2.31 m on a chrome stem (DK_Chrome)", "emissive": "globeOpal", "material": "DK_Opal_TB" }
       ]
     }
   },
@@ -281,6 +284,7 @@
     "night.lampLilac": { "hex": "#b79be4" },
     "night.lampInterior": { "hex": "#ffd39b" },
     "night.lampStreet": { "hex": "#ffe6bf" },
+    "night.lampGlobe": { "hex": "#fff1d8", "note": "Glint 077: the testbed's globe lamp light (fountain-garden-lights.js)" },
     "night.uplight": { "hex": "#e4efc7" },
     "light.sun": {
       "hex": "#ffedcc",

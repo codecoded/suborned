@@ -4,13 +4,17 @@
 // A piece without a measured mesh (a procedural stand-in) stands as its footprint box.
 import type { World, Mass, StreetItem, Prim } from '../../contracts/world/world.schema';
 import { inPoly, segDist, type V } from '../plan/geom';
-import { kitAssets, type PieceData } from './pieces';
+import { existsSync, readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
+import { kitAssets, ROOT, type PieceData } from './pieces';
 import { Raster } from './raster';
 import { returnFills } from './returns';
 import { slopeAt } from '../world/gen/street/footway';
 
 export type Place = { at: V; yaw: number; scale: [number, number, number]; z0: number };
-export type Meta = { id: string; layer: 'civic' | 'street' | 'facade' | 'frontage' | 'building' | 'ground'; kind: string; piece?: string; mesh: boolean; ring: V[]; base?: number; top: number; yaw?: number; place?: Place };
+export type Meta = { id: string; layer: 'civic' | 'street' | 'facade' | 'frontage' | 'building' | 'ground'; kind: string; piece?: string; mesh: boolean; ring: V[]; base?: number; top: number; yaw?: number; place?: Place;
+  /** Brief 077: drawn but solid to nothing (kit.collide.json declares the piece `volumes: []`): placed and checked (K-1), never stamped. */
+  renderOnly?: true };
 export type Check = { id: string; piece: string; ring: V[]; meshBox: V[]; offset: number };
 
 export type Visible = { R: Raster; meta: Map<string, Meta>; checks: Check[]; ground: { id: string; ring?: V[] }[]; unmeasured: Map<string, number> };
@@ -34,7 +38,14 @@ function distToLine(p: V, line: V[]): number {
   return d;
 }
 
-export function buildVisible(world: World, pieces: Map<string, PieceData>, win: { x0: number; y0: number; x1: number; y1: number }, pad = 6): Visible {
+/** Brief 077: the pieces kit.collide.json declares render-only (`volumes: []`, Keel's rule in tools/sim/solids.ts): drawn, solid to nothing. Declared, never inferred. */
+export function renderOnlyPieces(file = resolve(ROOT, 'contracts/world/kit.collide.json')): Set<string> {
+  if (!existsSync(file)) return new Set();
+  const c = JSON.parse(readFileSync(file, 'utf8')) as { pieces: Record<string, { volumes?: unknown[] }> };
+  return new Set(Object.entries(c.pieces).filter(([, p]) => Array.isArray(p.volumes) && p.volumes.length === 0).map(([k]) => k));
+}
+
+export function buildVisible(world: World, pieces: Map<string, PieceData>, win: { x0: number; y0: number; x1: number; y1: number }, pad = 6, renderOnly: Set<string> = renderOnlyPieces()): Visible {
   const R = new Raster(win.x0 - pad, win.y0 - pad, win.x1 + pad, win.y1 + pad);
   const meta = new Map<string, Meta>(), checks: Check[] = [], unmeasured = new Map<string, number>();
   const assets = kitAssets();
@@ -77,9 +88,10 @@ export function buildVisible(world: World, pieces: Map<string, PieceData>, win: 
   }
 
   // ---- stamping
-  const stampPiece = (owner: string, piece: PieceData, at: V, yaw: number, scale: [number, number, number], zOrigin: number): V[] => {
+  const stampPiece = (owner: string, piece: PieceData, at: V, yaw: number, scale: [number, number, number], zOrigin: number, stamp = true): V[] => {
     const [sx, sy, sz] = scale, o = R.owner(owner);
     const c = [toPlan(at, yaw, sx, sz, piece.bx0, piece.bz0), toPlan(at, yaw, sx, sz, piece.bx1, piece.bz0), toPlan(at, yaw, sx, sz, piece.bx1, piece.bz1), toPlan(at, yaw, sx, sz, piece.bx0, piece.bz1)];
+    if (!stamp) return c; // brief 077: a render-only piece's footprint, for K-1, and nothing in the raster
     const [i0, j0, i1, j1] = R.range(Math.min(...c.map(p => p[0])), Math.min(...c.map(p => p[1])), Math.max(...c.map(p => p[0])), Math.max(...c.map(p => p[1])));
     const cs = Math.cos(yaw), sn = Math.sin(yaw);
     for (let i = i0; i <= i1; i++) for (let j = j0; j <= j1; j++) {
@@ -102,13 +114,14 @@ export function buildVisible(world: World, pieces: Map<string, PieceData>, win: 
     if (m.kit) {
       const pd = pieces.get(m.kit.id), sc = m.kit.scale, yaw = m.kit.yaw ?? 0;
       if (pd) {
-        const zo = m.kit.base - pd.minY * sc[1];
-        const box = stampPiece(m.id, pd, m.kit.at, yaw, sc, zo);
+        const zo = m.kit.base - pd.minY * sc[1], ro = renderOnly.has(m.kit.id);
+        const box = stampPiece(m.id, pd, m.kit.at, yaw, sc, zo, !ro);
         const rb = bb(m.ring), mb = bb(box), off = Math.max(Math.abs(rb.x0 - mb.x0), Math.abs(rb.x1 - mb.x1), Math.abs(rb.y0 - mb.y0), Math.abs(rb.y1 - mb.y1));
         checks.push({ id: m.id, piece: m.kit.id, ring: m.ring, meshBox: box, offset: off });
-        note({ id: m.id, layer: 'civic', kind: m.kit.id, piece: m.kit.id, mesh: true, ring: m.ring, top: zo + pd.maxY * sc[1], yaw, place: { at: m.kit.at, yaw, scale: sc, z0: zo } });
+        note({ id: m.id, layer: 'civic', kind: m.kit.id, piece: m.kit.id, mesh: true, ring: m.ring, top: zo + pd.maxY * sc[1], yaw, place: { at: m.kit.at, yaw, scale: sc, z0: zo }, ...(ro ? { renderOnly: true as const } : {}) });
         continue;
       }
+      if (renderOnly.has(m.kit.id)) { note({ id: m.id, layer: 'civic', kind: m.kit.id, piece: m.kit.id, mesh: false, ring: m.ring, base: m.base, top: m.base + m.height, renderOnly: true }); continue; } // declared render-only: never its prism
       unmeas(m.kit.id);
     }
     if (m.height < 0.02) continue;
@@ -124,8 +137,8 @@ export function buildVisible(world: World, pieces: Map<string, PieceData>, win: 
     if (!pd) { unmeas(f.kit.id); continue; }
     const cx = (pd.bx0 + pd.bx1) / 2, cz = (pd.bz0 + pd.bz1) / 2, cs = Math.cos(yaw), sn = Math.sin(yaw);
     const pivot: V = [f.kit.at[0] - (cx * sc[0] * cs - cz * sc[2] * sn), f.kit.at[1] - (cx * sc[0] * sn + cz * sc[2] * cs)];
-    const box = stampPiece(f.id, pd, pivot, yaw, sc, f.base);
-    note({ id: f.id, layer: 'facade', kind: f.kit.id, piece: f.kit.id, mesh: true, ring: box, top: f.base + pd.maxY * sc[1], yaw, place: { at: pivot, yaw, scale: sc, z0: f.base } });
+    const ro = renderOnly.has(f.kit.id), box = stampPiece(f.id, pd, pivot, yaw, sc, f.base, !ro);
+    note({ id: f.id, layer: 'facade', kind: f.kit.id, piece: f.kit.id, mesh: true, ring: box, top: f.base + pd.maxY * sc[1], yaw, place: { at: pivot, yaw, scale: sc, z0: f.base }, ...(ro ? { renderOnly: true as const } : {}) });
   }
   // street items
   for (const s of world.street) {
@@ -137,7 +150,8 @@ export function buildVisible(world: World, pieces: Map<string, PieceData>, win: 
     const ring = rectRing(s.at, s.size[0], s.size[1], s.yaw);
     if (s.kit) {
       const pd = pieces.get(s.kit.id), yaw = s.kit.yaw ?? s.yaw;
-      if (pd) { const box = stampPiece(s.id, pd, s.at, yaw, s.kit.scale, s.z); note({ id: s.id, layer: 'street', kind: s.kind, piece: s.kit.id, mesh: true, ring: box, top: s.z + pd.maxY * s.kit.scale[1], yaw, place: { at: s.at, yaw, scale: s.kit.scale, z0: s.z } }); return; }
+      if (pd) { const ro = renderOnly.has(s.kit.id), box = stampPiece(s.id, pd, s.at, yaw, s.kit.scale, s.z, !ro); note({ id: s.id, layer: 'street', kind: s.kind, piece: s.kit.id, mesh: true, ring: box, top: s.z + pd.maxY * s.kit.scale[1], yaw, place: { at: s.at, yaw, scale: s.kit.scale, z0: s.z }, ...(ro ? { renderOnly: true as const } : {}) }); return; }
+      if (renderOnly.has(s.kit.id)) return; // declared render-only: never its box
       unmeas(s.kit.id);
     }
     if (s.size[2] < 0.02) return;

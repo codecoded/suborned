@@ -6,6 +6,7 @@ import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { BLENDER, fbxOf, kitAssets, ROOT } from '../geometry/pieces';
 import { GEN_ROOT } from '../kit/store';
+import { extraCollide } from '../kit/extra';
 
 /** Bump when collide.py changes what it writes. */
 export const COLLIDE_VERSION = 8;
@@ -22,10 +23,13 @@ const RULE = 'a volume blocks a walker standing at floor height f when y0 < f + 
 const sha = (b: Uint8Array) => new Bun.CryptoHasher('sha256').update(b).digest('hex');
 
 /** Volumes a piece's builder declared (geo.Shape.solid), written by the generator into the manifest: they replace the measured ones for that piece. */
+/** Brief 077: and the extra roots' (tools/kit/extra.ts, each kit.json asset's `extra`), by catalogue id; there an empty list is declared none (render-only planting). */
 function declaredVolumes(): Map<string, Volume[]> {
-  const f = resolve(GEN_ROOT, 'decokit_manifest.json'); if (!existsSync(f)) return new Map();
-  const rows = (JSON.parse(readFileSync(f, 'utf8')).assets as { name: string; collide?: Volume[] }[]).filter(r => r.collide?.length);
-  return new Map(rows.map(r => [r.name, r.collide!]));
+  const f = resolve(GEN_ROOT, 'decokit_manifest.json');
+  const rows = existsSync(f) ? (JSON.parse(readFileSync(f, 'utf8')).assets as { name: string; collide?: Volume[] }[]).filter(r => r.collide?.length) : [];
+  const out = new Map(rows.map(r => [r.name, r.collide!]));
+  for (const [id, v] of extraCollide([...kitAssets().values()])) out.set(id, v as Volume[]);
+  return out;
 }
 
 export function readCollide(): CollideFile | undefined { return existsSync(COLLIDE_FILE) ? JSON.parse(readFileSync(COLLIDE_FILE, 'utf8')) as CollideFile : undefined; }

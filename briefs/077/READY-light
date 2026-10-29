@@ -1,0 +1,14 @@
+077 lighting side: the globe lamps and the leaf gloss · Glint (Opus 5.5) · 2026-10-30
+
+What changed
+- unity/Assets/Suborned/Editor/World/light.json: night.lamps.kinds "globe" (point, #fff1d8 = palette night.lampGlobe, intensity 7, range 5.8, 2.31 m above the GlobeLamp_TB base, no shadows, night only); night.emissive.night.globeOpal 2.5, dayResidual.globeOpal 0.06, globeOpalNote, pieces GlobeLamp_TB (DK_Opal_TB). NightPhase ignores unknown kinds, so today's builds are unchanged.
+- unity/Assets/Suborned/Editor/OldTown/Swap/Glint077.cs (new, editor only): night and gloss checks in the probe, all in memory, nothing saved.
+- briefs/077/light/index.html (self-contained) + make_index.py. Captures are local in out/scratch/glint/077/{sweep,final}.
+
+Calls
+- Lamp: 7, not the testbed's 28 cd (about 9 in URP). At 9 the overlapping pools turn the paving near white. Opal at night 2.5 (testbed 3.5), day and evening 0.06.
+- Gloss: tame. Botanical mask k: leaves 0.49 -> 0.80, petals 0.64 -> 0.80. The leaves stay dark and glossy, and the white sun glints (day, play and presentation looks) and the wet-white lamp glints (night) soften. k 1.0 goes matte.
+- Cost: 4 unshadowed point lights, night only, Forward+: no SetPass, draw, shadow map or variant added; each reaches 50 to 66 renderers. The gloss costs 0.
+
+Next (Latch): spawn the "globe" kind in NightPhase from world.Civic GlobeLamp_TB; drive DK_Opal_TB to 2.5 at night as an absolute level (x41.7 is past roadlight.json's 0..10 emission cap, which would reject the file); set the Mats mask k to .80/.80 and rerun Mats (then Splice's catalogue). The probe's DK_Opal_TB.mat has lost _EMISSION (the kit copy is fine). The swap (OldTown.unity) has no night yet. Redline: confirm on the Air at night.
+Commands (exit 0): bun briefs/075/oldbuild/swap/tools/unityrun.ts out/scratch/glint/077/{sweep,final}.log -- -executeMethod Suborned.OldTown.Editor.Swap.Glint077.Run -glintStage sweep|final [...] · python3 -I briefs/077/light/make_index.py

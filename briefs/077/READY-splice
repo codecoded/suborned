@@ -1,0 +1,108 @@
+077 bed-level civic beds, world generator side, and the catalogue plan · Splice (Opus 5.5) · 2026-10-30
+Status (Vela revision 3 in; geometry audit see-through, 7b): rule in and tested; G-3a stays 59 with the candidates adopted in memory; 27 pieces catalogued as candidates (option A) from rev 3, with collision measured on the stonework alone; collide.test passes. Nothing adopted; world and sim/data byte-identical. Adoption BLOCKED on the sight/sim decision (3). Materials and textures wait on Latch (5).
+
+1. The rule (tools/world)
+- contracts/world/civic-look.json beds.level, written by `bun tools/world/civic/bed-level-import.ts --write` (never by hand). It's keyed by the bed's export id. For each of the five beds it holds the piece (CivicBedPlanting_<bed>, Vela's final ids) and the bed's outline in that piece's own plan frame. It also holds soilProud 0.003 and tol 0.001 m. Sources and sha256: the testbed's plaza-garden.bin.gz key outlines, Vela's domes077.manifest.json (civicBeds, finals.place) and out/decokit-077/decokit_manifest.json.
+- tools/world/civic/beds.ts: fitRigid fits the outline onto the bed ring, vertex i to vertex i (2D Kabsch). bedLevelOf, and dressBeds(masses, level). A bed whose piece is adopted and whose ring fits within tol gets exactly one mass `<bed>/planting`:
+  kit { id, yaw, at } = the fit, base = kerb top + 0.003 (KitPlacer puts the lowest point, the soil, at base). No hedge and no tufts. Its ring is the bed's ring and its height is the piece's height.
+  If the piece isn't adopted, or the ring no longer fits, the bed keeps today's kerb, hedge and tufts, so no planter is ever empty. The rule has no seed, so it's deterministic.
+- The start vertex is never searched. Three of the five beds are symmetric under a half turn, so a searched start fits them two ways, 0.01 mm apart, and can turn the composition 180°. That happened in Vela's 077 fit for facade-southwest: her k=13 fit, angle 0 against the true pi. The rule corrects it: it places that piece at yaw pi and the other four at yaw 0. Each placement lands as the testbed's bed moved whole.
+- CD-5 (tools/world/rules/civic-dress.ts): every named bed must fit its outline. A planted bed must have its one piece and no hedge or tufts. A bed whose piece isn't adopted yet passes, and is listed in the detail as waiting. It runs only when the look has beds.level, so recorded runs' pinned looks are unaffected.
+
+2. Evidence
+- Tests: tools/world/civic/beds.test.ts has 5 new tests, failing then passing. Against HEAD's beds.ts (mirror in out/scratch/splice/head-mirror) 5 fail and 7 pass; now 12 pass. tools/world/rules/civic-dress.test.ts has 4 new tests: the five real rings fit under 1 mm, the expected yaws, five waiting today, and the planted state under a pinned catalogue. The live world now passes CD-1..CD-5.
+- bun run plan: exit 0, 0 FAIL, CD-5 PASS 5/5. Handover overlay: exit 0, 0 FAIL. bun run world: exit 0. bun run typecheck: clean.
+- World sha256 before 1c38f7e61dd69718aa8b489023a80e3cf126117a05a9129e2a7388f87d69f1f5, after the same (nothing adopted).
+- sim/data: all 8 files byte-identical (shasum before and after). buildSite(as committed) === handover.site.json.
+- Wider suite (tools/world, kit, sim, geometry, plan): 732 pass, 8 fail. The 8 are in block-grammar, frontage-square, pylon-clear, oldmatch/match and overlap. They fail the same when run alone, and none of them reads the beds or the look.
+
+3. Sight: render-only planting is NOT ignored on its own
+- tools/sim/solids.ts places every civic kit mass by its kit.collide.json volumes. With no entry, it silently falls back to the mass's prism (no `unmeasured` row). Probe, adopting the five through a pinned catalogue (out/scratch/splice/adopt-probe077.ts):
+  the plantings stand from block z 0.523 to 1.76-1.89 m. The soil is 0.52 m up the kerb, and the blooms reach 1.24-1.36 m above the soil, so 1.76-1.89 m above the feet, over the 1.6 m eye.
+  handover.site.json would change: 5 new sight occluders (298 -> 303), grid.drawn.sightOccluders 301 -> 306, and grid.collide bd405cc8... -> f900e983.... The walk is unchanged (2439 cells).
+- If the five are declared render-only (a kit.collide.json entry with no volumes, which is what Vela's rows say), solids.ts adds no solid. grid.collide still changes, because BedTuft_A/B/C (in collide, placed in the window) leave the digest. A changed grid.collide changes every Handover recording's inputs.
+- G-3a: tools/geometry/visible.ts stamps the measured mesh cells. Foliage above 1.6 m with no occluder counts as a drawn eye-height solid, so G-3a would rise unless the geometry measure treats the planting as see-through.
+=> The stop condition holds at adoption. Keel (sim, digest) and Aster or Sky need to decide one of these:
+   (a) re-generate the site and re-record the Handover;
+   (b) Keel re-keys collideDigest to the volumes that reach the walk or the eye, and the geometry measure skips declared render-only foliage, then (a) once;
+   (c) keep the tufts in the Handover window.
+   Until then nothing is adopted, and the rule waits harmlessly.
+
+4. Vela's pieces (out/decokit-077), revision 2: in
+- The rev-2 soil fix and the vertex i to vertex i build landed (briefs/077/READY-pieces revision 2). bed-level-import was re-run, and all five beds now fit at yaw 0 (0.55-0.67 mm). The yaw pi workaround is gone, and the test now holds all five at 0.
+- Open for Vela: the collide entries several rebuilt rows declare are the dome pieces' volumes, copied as they were, and they reach outside the new meshes.
+  tools/decokit/collide.test.ts ("inside the piece bounds, to 10 cm") fails on 8 _TB pieces:
+  - PlanterRun_2_A/B/C_TB, PlanterRun_4_A/B_TB and PlanterRun_End_A_TB: x reaches +-2.19 m against the trough's +-2.0 m. The old domes overhung the ends; the testbed planting doesn't.
+  - PlanterRun_Corner_B_TB: x and z.
+  - CafeTerrace_TB: height 1.12 m against stonework 0.68 m. Its planting moved to CafeTerrace_Planting.
+  Either re-declare them from the new meshes, or drop `collide` from those rows so `bun run collide` measures them. That choice changes the walk at adoption, so it goes with the sim decision in 3.
+
+5. Catalogue (done for the pieces, through the kit tooling; option A, Aster 2026-10-30)
+- tools/kit/extra.ts and catalogue.ts add extra generated roots: `bun run kit --catalogue --extra out/decokit-077`, or DECOKIT_EXTRA. What they do:
+  - A row that rebuilds an adopted piece (`replaces.id`) joins as `<id>_TB`, with Kit/ file names carrying the id (DK_<id>_TB.fbx, DK_<id>_TB_L1.fbx...). Its generated prefab can't collide with the piece it would replace.
+  - Status comes from the prior catalogue, else candidate. A row that says adopted still joins as a candidate.
+  - Its own lods[].screen are kept; lodSize, objects (per-object materials and shadows: the soil objects are off) and replaces are passed through. Every file's sha256 is checked against the manifest.
+  - An extra id that collides with another root's piece fails the build.
+  - A plain `bun run kit` keeps the extra entries exactly as they are.
+  - copy.ts copies an extra file from its source path. tools/decokit/collide.ts reads the declared collision from each asset's extra manifest; an empty list is declared none, so render-only stays render-only. tools/geometry/pieces.ts fbxOf finds extra-root FBXs.
+  - kit.schema.ts gains KitFile.root 'extra' and src, and KitAsset extra, replaces, lodSize and objects.
+- contracts/world/kit.json: 27 candidates added, 0 existing entries changed (checked by id against HEAD; patience diff +4110 lines, no deletions).
+  - Rebuilds: PlanterRun_2/4/Corner/End_A-C_TB, CafeTerrace_TB, CafeUpper_3_TB, CafeUpper_4_TB, RecordsTower_TB (lodClass landmark kept), PlanterArc_TB.
+  - New ids: CafeTerrace_Planting, RecordsTower_Planting, CafeUpper_3_Planting, CafeUpper_4_Planting, CivicBedPlanting_x5, GlobeLamp_TB.
+  - Both a rerun with the extra root and a rerun without it give byte-identical output.
+- contracts/world/kit.collide.json: `bun run collide` added 27 entries and changed 0. The 21 rows with a collide list are declared (companions and civic beds: none). GlobeLamp_TB is measured (7 volumes).
+- contracts/world/civic-block.cover.json: `bun run cover` changed only from.kit, the kit.json hash it pins as provenance. Its points, blockers and refuge are unchanged, so handover.site.json is byte-identical (rebuild === committed). Pulse may prefer the cover to hash only the pieces it reads.
+- Not catalogued: the four materials (DK_Soil_TB, DK_Leaf_TB, DK_Petal_TB, DK_Opal_TB) and the six textures. No .mat or texture .meta exists in any root; the only copies are Latch's probe materials in unity/Assets/Scenes/probe-leafshader077 (three of them, no Opal), which are a probe, not a source. `bun run kit --catalogue` now warns for every extra piece with a material that has no .mat.
+  Handoff: Latch (+ Glint) writes the four .mat/.meta (Leaf and Petal on DecoKit/Lit Cutaway Leaf, Soil on DK Lit Cutaway with shadows off, Opal) and the six texture .meta (import settings in briefs/077/troughs/metrics.json) into out/decokit-077/Materials and Textures. A rerun of the same command then lists them with the pieces, matched by the .mat's guids.
+- Pivot note for adoption: catalogue pivotOffset comes from the row bounds, which now include the planting. PlanterRun_Corner_*_TB is offset (-0.17, 0.17) against the adopted (-0.094, 0.104), and End is (-0.17, 0) against (-0.076, 0). Under look.swaps, footOf would move those footprints a few cm. Check this at the swap (CD-1).
+- Rejections unchanged: BedTuft_A/B/C once the five CivicBedPlanting are adopted and placed, and each dome id once its _TB swap lands. Nothing is adopted or rejected now.
+- For Latch at adoption: a _TB FBX's internal object names are still DK_<old id> (e.g. DK_PlanterRun_4_A inside DK_PlanterRun_4_A_TB.fbx); check KitLods' LOD0 detection. KitLods needs to honour `lodSize` and `objects[].shadows`.
+
+6. Also this round
+- Leaf shader drift: tools/kit/leaf-shader.ts (+ test; wired into bun run verify). It runs briefs/077/shader/make_leaf_hlsl.py in a temp folder on a copy of DK_LitCutaway.shader and the locked URP (17.6.0, from unity/Library/PackageCache), then compares DK_LitCutawayLeaf.shader and DK_LeafForward/GBuffer/DepthNormals/Meta byte for byte. DK_Leaf.hlsl is hand-written: the check only requires that it exists. Today all five match. A hand edit to an include fails it, and so does a DK_LitCutaway.shader change that isn't re-run.
+- Vendored testbed code: tools/decokit/vendor/testbed (34 files, 1.2 MB: the 20 src modules the generators reach plus three.js 0.186.1 as the testbed vendors it, with its MIT licence), with PROVENANCE.json (source ~/Projects/the-suborned/testbed, which isn't a git repo, copied 2026-10-30, sha256 per file; bare three/addons imports listed as not vendored).
+  The check is `bun tools/decokit/vendor-testbed.ts` (also in verify); the copy is `--write`.
+  Proof: TESTBED_SRC=tools/decokit/vendor/testbed/src bun tools/decokit/domes077.ts --out out/scratch/splice/vendorproof gives all 43 bins identical to Vela's.
+  domes077.ts and troughs077.ts still default to ~/Projects; switching their default to the vendored path is Vela's one-line change.
+
+7b. Geometry audit: planting is see-through (Keel's finding, briefs/077/READY-keel)
+- tools/geometry/visible.ts: a piece kit.collide.json declares `volumes: []` is render-only (renderOnlyPieces, the same declaration Keel's tools/sim/solids.ts reads; never inferred). It is placed and K-1 checked, but nothing goes into the raster: no mesh cells, and no fallback prism or box when it has no measured mesh. This covers civic masses, facades and street items. Meta carries renderOnly.
+- Mixed stone and planting pieces are chosen by declared material, never by height:
+  - kit.json gains a top-level `seeThrough` { materials: DK_Leaf_TB, DK_Petal_TB, DK_Soil_TB; src }, written by the catalogue (tools/kit/extra.ts SEE_THROUGH plus any extra manifest's own `seeThrough`).
+  - tools/geometry/pieces.ts passes each piece's see-through materials to pieces.py, which voxelises the solid without those triangles. The bounds (minY, maxY, footprint) stay the whole mesh's, because they place the piece. The cache key carries the list.
+  - A piece without one is measured byte-identically (MEASURE_VERSION unchanged).
+  - PlanterRun_4_A_TB: 5,655 tris, 60 of them solid, solid top 0.65 m, mesh maxY 1.67 m.
+- G-3a:
+  - Today, with nothing adopted: 59, and every geometry count is identical (`bun run geometry --check` before and after: G-1a..K-1 the same).
+  - With the 27 candidates adopted in memory (Keel's probe, re-run as out/scratch/splice/adopt-g3.ts, output in out/scratch/splice/g3probe/): 59, with the same groups as today (it was 75, or 71 skipping render-only alone).
+  - The ratchet is still 58; the 59 is the old open issue.
+- Tests: tools/geometry/seethrough.test.ts, 6 tests. Against HEAD's visible.ts, pieces.ts and pieces.py (mirror in out/scratch/splice/head-geo, with export shims) 5 fail and the control passes; now 6 pass.
+- kit.json changed only by the new top-level seeThrough. The 27 candidates are still candidates; no entry changed; nothing adopted. `bun run cover` again moved only from.kit.
+- Checks: typecheck clean; geometry, kit, sim, collide, cover, world/civic and civic-dress 189 pass, 0 fail; bun run world sha256 1c38f7e6... unchanged; plan and overlay 0 FAIL; sim/data byte-identical.
+
+7a. Revision 3 (re-run 2026-10-30)
+- bun run kit --catalogue --extra out/decokit-077: 457 assets. Against HEAD: 27 added, all candidates, 0 existing entries changed.
+- bun run collide: 27 re-measured from the rev-3 meshes and declarations, 0 existing entries changed. The 16 rebuilt rows now declare stonework-only volumes (CafeTerrace_TB to 0.68 m, troughs within +-1.0/+-2.0 m).
+- bun tools/world/civic/bed-level-import.ts --write: the outlines are byte-identical. Only the recorded sha256 of out/decokit-077/decokit_manifest.json moved, and all five beds still fit at yaw 0 (0.55-0.67 mm).
+- bun run cover: only from.kit changed (the kit.json hash).
+- bun run world: exit 0, sha256 1c38f7e61dd69718aa8b489023a80e3cf126117a05a9129e2a7388f87d69f1f5 (unchanged). bun run plan: 0 FAIL. Overlay: 0 FAIL. sim/data: 8 files byte-identical. typecheck: clean.
+- tools/decokit/collide.test.ts, tools/kit, sim, world/civic, civic-dress, geometry and cover: 177 pass, 0 fail.
+- Section 4's collide item is closed. The walk still changes at adoption, which stays with the decision in 3.
+
+7. Evidence (previous round)
+- bun run typecheck: clean.
+- bun run plan: exit 0, 0 FAIL. Overlay: exit 0, 0 FAIL. bun run world: exit 0, sha256 1c38f7e61dd69718aa8b489023a80e3cf126117a05a9129e2a7388f87d69f1f5 (unchanged). sim/data: 8 files byte-identical.
+- tools/kit, sim, world/civic, civic-dress, geometry and cover: 171 pass, 0 fail. bun run test: 2347 pass, 15 fail:
+  - 1 is mine to hand on: collide.test, the copied dome volumes in 4.
+  - The other 14 don't touch this work:
+    - the 8 plan/overlap/oldmatch failures from before;
+    - fit and regen orders, and the skyline kit digest fixture (SpaceHQ and the tower orders);
+    - the people drift runs;
+    - presentation life walkLoopsDropped;
+    - the comment lint in AvatarCheck069.cs and ProofFire.cs.
+- The old tooling's failure is recorded by the earlier dry run (out/scratch/splice/kit-dryrun077.ts: it swapped 17 adopted FBXs and flattened the LODs). The new path is out/scratch/splice/kit-dryrun077b.ts (0 existing entries changed) plus tools/kit/extra.test.ts (9 tests).
+
+Next owners
+- Latch (+ Glint): the four .mat and six texture .meta into out/decokit-077 (then I re-run the catalogue); KitLods lodSize, objects[].shadows and the _TB internal names; placement stays default-off.
+- Vela: re-declare or drop the copied collide on the 8 _TB rows (4); optionally switch the generators' TESTBED_SRC default to the vendored copy.
+- Keel and Aster or Sky: the sight and sim decision (3), unchanged, before any adoption.

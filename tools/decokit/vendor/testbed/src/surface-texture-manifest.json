@@ -1,0 +1,53 @@
+{
+  "cafe-terrace": {
+    "limestone-base.png": "srgb",
+    "limestone-normal.png": "linear",
+    "limestone-orm.png": "linear"
+  },
+  "cafe-plants": {
+    "botanical-atlas-v2.png": "srgb",
+    "botanical-normal-v2.png": "linear",
+    "botanical-orm-v2.png": "linear",
+    "soil-base.png": "srgb",
+    "soil-normal.png": "linear",
+    "soil-orm.png": "linear"
+  },
+  "district-road": {
+    "marble-base-v2.webp": "srgb",
+    "marble-normal-v2.webp": "linear",
+    "marble-orm-v2.webp": "linear",
+    "gold-base-v2.webp": "srgb",
+    "gold-normal-v2.webp": "linear",
+    "gold-orm-v2.webp": "linear",
+    "enamel-base-v1.webp": "srgb",
+    "enamel-normal-v1.webp": "linear",
+    "enamel-orm-v1.webp": "linear",
+    "asphalt-base.webp": "srgb",
+    "asphalt-normal.webp": "linear"
+  },
+  "civic-fountain": {
+    "marble-base.webp": "srgb",
+    "marble-normal.webp": "linear",
+    "marble-orm.webp": "linear",
+    "polish-normal.webp": "linear",
+    "polish-orm.webp": "linear",
+    "ceramic-base.webp": "srgb",
+    "ceramic-orm.webp": "linear",
+    "pool-mosaic.webp": "srgb"
+  },
+  "decokit-sky": {
+    "DK_Sky_Noise.webp": "linear",
+    "DK_Planet_Bands.webp": "srgb",
+    "DK_Planet_Ring.webp": "srgb",
+    "DK_Moon.webp": "srgb",
+    "DK_Skyline_Far.webp": "linear"
+  },
+  "window-test": {
+    "back-wall-v1.png": "srgb",
+    "surface-atlas-v1.png": "srgb"
+  },
+  "civic-office": {
+    "banner-cloth-base-v1.png": "srgb",
+    "roof-panel-base-v1.png": "srgb"
+  }
+}

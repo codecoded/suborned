@@ -11,6 +11,7 @@ import { type Ctx, r3, r4, rng } from '../common';
 import { adoptedBy } from '../kitrefs';
 import { facing, pivotFor, robotPiece, type CapLog } from './capstone';
 import { PAVE, RULES } from './capstone-rules';
+import { takesNoGround } from '../../civic/attach';
 
 export function civicRobots(ctx: Ctx, civic: Mass[], log: CapLog | undefined): StreetItem[] {
   const out: StreetItem[] = [], terrace = civic.find(m => m.id === 'civic/cafe/terrace'), a = robotPiece('waiter');
@@ -18,7 +19,7 @@ export function civicRobots(ctx: Ctx, civic: Mass[], log: CapLog | undefined): S
   if (!terrace || !a) { if (log) gap('R-waiter', 'civic/cafe/terrace', a ? 'the block has no café terrace' : 'no waiter robot adopted'); return out; }
   const toPlan = toPlanFn(ctx.plan.civic), points = handoverPoints(toPlan), xs = terrace.ring.map(p => p[0]), ys = terrace.ring.map(p => p[1]);
   const x0 = Math.min(...xs), x1 = Math.max(...xs), y0 = Math.min(...ys), y1 = Math.max(...ys);
-  const others = civic.filter(m => m.id !== terrace.id && m.base < 1.2 && !(m.kit && /Parasol/.test(m.kit.id)) && m.id !== 'civic/cafe' && m.id !== 'civic/cafe/ground');
+  const others = civic.filter(m => m.id !== terrace.id && m.base < 1.2 && !(m.kit && /Parasol/.test(m.kit.id)) && m.id !== 'civic/cafe' && m.id !== 'civic/cafe/ground' && !takesNoGround(m)); // brief 077: the terrace's planting companion is inside the terrace, as its dome planting was
   const zones = ((ctx.civ.dressing as { keepClear?: { id: string; bars: string[]; polygon?: V[] }[] } | undefined)?.keepClear ?? []).filter(z => z.polygon && z.bars.includes('planter')).map(z => z.polygon!.map(toPlan));
   const east = rng('cap/civic/waiter').chance(0.5), ends = east ? [x1, x0] : [x0, x1];
   for (const end of ends) {

@@ -1,0 +1,85 @@
+{
+  "package": "three",
+  "version": "0.186.1",
+  "revision": "186",
+  "runtimeDirectory": "three-0.186.1",
+  "source": "https://registry.npmjs.org/three/-/three-0.186.1.tgz",
+  "license": "MIT",
+  "licenseFile": "three-0.186.1/THREE-LICENSE.txt",
+  "build": {
+    "tool": "esbuild",
+    "version": "0.25.12",
+    "minify": true,
+    "target": "es2020"
+  },
+  "files": {
+    "three-0.186.1/three.module.min.js": {
+      "source": "build/three.module.js",
+      "sha256": "f6079427efb0eef1149a44d361ff313279a2d8f5b30c7d42fa42aee1904028c9"
+    },
+    "three-0.186.1/three.core.min.js": {
+      "source": "build/three.core.js",
+      "sha256": "18a5180401c49b330ac2f45422503a17145ad456460f88b64fb1aaf80ec7ef18"
+    },
+    "three-0.186.1/GLTFLoader.js": {
+      "source": "examples/jsm/loaders/GLTFLoader.js",
+      "sha256": "f33de53455b1530c1fcbf790457928cbf2341600687f4f8ffbd197202c4c6871"
+    },
+    "three-0.186.1/KTX2Loader.js": {
+      "source": "examples/jsm/loaders/KTX2Loader.js",
+      "sha256": "ebbe055926c01691dc7539b8602e9af7f12d1f171d92ddd32f9d5cf0d95fd13a"
+    },
+    "three-0.186.1/HDRLoader.js": {
+      "source": "examples/jsm/loaders/HDRLoader.js",
+      "sha256": "b7fdf0fc7c5b4fd8bd220332d60d30d063920e6f0eff072462b3ce4d94aee56f"
+    },
+    "three-0.186.1/BufferGeometryUtils.js": {
+      "source": "examples/jsm/utils/BufferGeometryUtils.js",
+      "sha256": "03b30772eae1a9342de8032ac8e269ceb586aa798f9d782f8f7a53ad37b8e1ff"
+    },
+    "three-0.186.1/utils/SkeletonUtils.js": {
+      "source": "examples/jsm/utils/SkeletonUtils.js",
+      "sha256": "4430da0bcff43e639b4240406462a6667ac8965730d7be2836cc4a4bb13aec56"
+    },
+    "three-0.186.1/utils/WorkerPool.js": {
+      "source": "examples/jsm/utils/WorkerPool.js",
+      "sha256": "5ac7095fd566bc9ae48376055fd66edf27cb9ebbf9e1269dc206bfd4933ae9eb"
+    },
+    "three-0.186.1/math/ColorSpaces.js": {
+      "source": "examples/jsm/math/ColorSpaces.js",
+      "sha256": "c2b18e656fd27bc4b1857d7e8aa8b147259c28e0b5a154c8c63c43f402fad8ef"
+    },
+    "three-0.186.1/libs/ktx-parse.module.js": {
+      "source": "examples/jsm/libs/ktx-parse.module.js",
+      "sha256": "f40c491f6c44dde511268121f778a0050e73b1a15fd844c1ae2c78c73213eafc"
+    },
+    "three-0.186.1/libs/zstddec.module.js": {
+      "source": "examples/jsm/libs/zstddec.module.js",
+      "sha256": "5cbf818e842628a4464e748594a6deae18ceddda3c2f541e7b3a0ff5fc7611e2"
+    },
+    "three-0.186.1/libs/meshopt_decoder.module.js": {
+      "source": "examples/jsm/libs/meshopt_decoder.module.js",
+      "sha256": "d428e73a000057c6c94bfcedc3412d0c2dc14ca8800e88553aab05113ad2bf19"
+    },
+    "three-0.186.1/basis/basis_transcoder.js": {
+      "source": "examples/jsm/libs/basis/basis_transcoder.js",
+      "sha256": "8478b5b6d6b74e7d3082b89f6417321d8d1dc0307f2b30d4484bb11b441696a1"
+    },
+    "three-0.186.1/basis/basis_transcoder.wasm": {
+      "source": "examples/jsm/libs/basis/basis_transcoder.wasm",
+      "sha256": "6cf17dc889352c42e9acf8897107978d127005fe3386c36a0e3845e27967630a"
+    },
+    "three-0.186.1/basis/README.md": {
+      "source": "examples/jsm/libs/basis/README.md",
+      "sha256": "a578df416c1e0852e9c36a1cf91b4d28d91a251294f87ce610a3bc7ca4df15e0"
+    },
+    "three-0.186.1/THREE-LICENSE.txt": {
+      "source": "LICENSE",
+      "sha256": "8b378ebe60e2fe500158cb0ac71cb5e8b7d92953c2abcc63a0eb90499653b5bc"
+    },
+    "three-0.186.1/RGBELoader.js": {
+      "source": "local compatibility alias",
+      "sha256": "169c1ec21a9a3f86e9d1a549998a3f044c0dcf5c9297abfd8fb3b7f22dc0bf46"
+    }
+  }
+}

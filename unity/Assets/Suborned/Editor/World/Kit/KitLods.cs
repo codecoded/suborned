@@ -34,7 +34,7 @@ namespace Suborned.World
 
         public static void Build(KitPlacer kit)
         {
-            CullSmallCount = CullOnly = LevelsBelowCull = Classed = 0; RobotFaces = Groups = Levels = Colliders = ConcaveMesh = ConvexMesh = Boxes = OtherColliders = ExtraSlots = OldLodGroups = MissingPrefabs = MissingScripts = 0; ExtraSlotPieces.Clear();
+            CullSmallCount = CullOnly = LevelsBelowCull = Classed = ShadowsOff = 0; RobotFaces = Groups = Levels = Colliders = ConcaveMesh = ConvexMesh = Boxes = OtherColliders = ExtraSlots = OldLodGroups = MissingPrefabs = MissingScripts = 0; ExtraSlotPieces.Clear();
             Folder(KitPlacer.BuiltRoot.TrimEnd('/'));
             var written = new Dictionary<string, string>(System.StringComparer.Ordinal); // built path → id
             foreach (var id in kit.Prefabs.Keys.OrderBy(k => k, System.StringComparer.Ordinal))
@@ -52,7 +52,8 @@ namespace Suborned.World
                 try
                 {
                     Strip(go);
-                    Lod(id, kit.Categories.TryGetValue(id, out var cat) ? cat : "", go, kit.Lods[id], kit.LodClass.TryGetValue(id, out var lc) ? lc.distances : null);
+                    Lod(id, kit.Categories.TryGetValue(id, out var cat) ? cat : "", go, kit.Lods[id], kit.LodClass.TryGetValue(id, out var lc) ? lc.distances : null,
+                        new Row { LodSize = kit.LodSizeOf(id), Objects = kit.ObjectsOf(id) });
                     if (RobotKit.Rig(go, id)) RobotFaces++; // brief 026: a service robot's face and head, from robots.json (view only)
                     if (!PrefabUtility.SaveAsPrefabAsset(go, path)) throw new IOException($"World: could not save {path}");
                 }
@@ -133,12 +134,39 @@ namespace Suborned.World
             return 1;
         }
 
-        static void Lod(string id, string category, GameObject go, List<(string file, float screen)> lods, float[] dist = null)
+        /// <summary>Brief 077 (Latch): what a row adds to its LODs: `lodSize` (the LODGroup's size, 0 = its bounds) and `objects[]` (per-object shadows).</summary>
+        public sealed class Row { public float LodSize; public IReadOnlyList<(string name, bool shadows)> Objects = System.Array.Empty<(string, bool)>(); }
+
+        /// <summary>One piece's LODs on `go`, as Build makes them (the brief 077 tests call it).</summary>
+        public static void Piece(string id, string category, GameObject go, List<(string file, float screen)> lods, float[] dist, Row row) => Lod(id, category, go, lods, dist, row);
+
+        /// <summary>Brief 077: a row's `objects[].shadows` on LOD0 (each LOD level copies its LOD0 part's shadow mode): every renderer whose part name is
+        /// an object turned off casts no shadow. An object with no renderer = reject.</summary>
+        public static int ObjectShadows(string id, GameObject go, IReadOnlyList<(string name, bool shadows)> objects)
         {
+            int off = 0; var r0 = Lod0(go).ToArray();
+            foreach (var (name, shadows) in objects)
+            {
+                var rs = r0.Where(r => Part(r.name) == name || Part(r.transform.parent ? r.transform.parent.name : "") == name && r.transform.parent != go.transform).ToArray();
+                // a single-object FBX imports as one renderer named after the file (DK_CafeTerrace_TB for its object DK_CafeTerrace): a one-object row is that renderer
+                if (rs.Length == 0 && objects.Count == 1 && r0.Length == 1) rs = r0;
+                if (rs.Length == 0 && shadows) continue; // nothing to change on a part that casts as it always did
+                if (rs.Length == 0) throw new InvalidDataException($"World: kit `{id}` objects[] names `{name}` (shadows off) but LOD0 has no such part ({string.Join(", ", r0.Select(r => r.name))})");
+                if (shadows) continue;
+                foreach (var r in rs) { r.shadowCastingMode = ShadowCastingMode.Off; off++; }
+            }
+            return off;
+        }
+        public static int ShadowsOff;
+
+        static void Lod(string id, string category, GameObject go, List<(string file, float screen)> lods, float[] dist = null, Row row = null)
+        {
+            if (row != null && row.Objects.Count > 0) ShadowsOff += ObjectShadows(id, go, row.Objects);
             var r0 = Lod0(go).ToArray();
             if (r0.Length == 0) { if (lods.Count == 0) return; throw new InvalidDataException($"World: kit `{id}` has no renderers for LOD0"); }
             var bounds = new Bounds(go.transform.position, Vector3.zero); foreach (var r in r0) bounds.Encapsulate(r.bounds);
             float size = Mathf.Max(bounds.size.x, bounds.size.y, bounds.size.z);
+            if (row != null && row.LodSize > 0f) size = row.LodSize; // brief 077: the row's heights (and so its cull) are against its lodSize, not its bounds
             bool small = size < CullSmallM;
             if (dist != null)
             {   // brief 072: switch by distance from the piece's own unscaled size (the LODGroup's size is its bounds' largest side), not the catalogue's screens
@@ -200,6 +228,7 @@ namespace Suborned.World
             lg.fadeMode = LODFadeMode.None;
             lg.SetLODs(levels.ToArray());
             lg.RecalculateBounds();
+            if (row != null && row.LodSize > 0f) lg.size = row.LodSize; // brief 077: after SetLODs and RecalculateBounds, which set the size from the renderers
             Groups++; if (small) CullSmallCount++;
         }
 
@@ -207,8 +236,14 @@ namespace Suborned.World
         /// size (LODGroup.size × the largest lossy scale, as Unity measures it). Under the layers that hold buildings (facades, civic,
         /// signatures, landmarks, megastructures, frontages) and the roof crowns (roofs) one nearer than GuardM fails the build: the play camera would
         /// draw it below L0. Elsewhere (street props, trees) it is counted and logged as a warning. Returns (groups checked, nearest L1 distance, failures).</summary>
-        public static (int groups, float nearest, string nearestName, int failed, int otherBelow) PlayZoomGuard(Transform root)
+        public static (int groups, float nearest, string nearestName, int failed, int otherBelow) PlayZoomGuard(Transform root) => PlayZoomGuard(root, null);
+
+        /// <summary>Brief 077: `atPlay` names the groups whose catalogue row declares `lodAtPlay` (their own LODs switch at play zoom by design); they are
+        /// counted in AtPlayExempt and never fail. Everything else as before.</summary>
+        public static int AtPlayExempt;
+        public static (int groups, float nearest, string nearestName, int failed, int otherBelow) PlayZoomGuard(Transform root, System.Func<LODGroup, bool> atPlay)
         {
+            AtPlayExempt = 0;
             // `roofs` (Redline phase 2 F2): the roof crowns have their own `crown` class (L1 at 45 m) since 072, so a crown below L0 at play zoom fails too
             var strict = new HashSet<string>(System.StringComparer.Ordinal) { "facades", "civic", "signatures", "landmarks", "megastructures", "frontages", "roofs" };
             int n = 0, failed = 0, other = 0; float nearest = float.PositiveInfinity; string nearestName = "";
@@ -216,6 +251,7 @@ namespace Suborned.World
             foreach (var g in root.GetComponentsInChildren<LODGroup>(true))
             {
                 var lods = g.GetLODs(); if (lods.Length < 2) continue; // a cull-only group never draws below L0
+                if (atPlay != null && atPlay(g)) { AtPlayExempt++; continue; }
                 var t = g.transform; while (t.parent && t.parent != root) t = t.parent;
                 if (t.name == "horizon") continue; // the sky bodies draw L0 always; the band is 1–8 km out
                 var s = g.transform.lossyScale; float size = g.size * Mathf.Max(Mathf.Abs(s.x), Mathf.Abs(s.y), Mathf.Abs(s.z));

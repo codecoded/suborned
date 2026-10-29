@@ -19,7 +19,8 @@ import { civicPorterGap, civicRobots } from './gen/street/capstone-civic';
 import { WATER_LEVEL } from './gen/signatures';
 import { dressCivic, dressingOf, footOf } from './civic/dress';
 import { seededYaw } from './civic/cafe';
-import { look } from './civic/look';
+import { drawnPiece, look, withSwaps } from './civic/look';
+import { attachPieces, takesNoGround } from './civic/attach';
 import { civicRoofs } from './civic/roof';
 import { finishSet } from '../plan/finish-set';
 import { baysOf, fillRing, noseRing, returnsOf } from './gen/kerbreturn';
@@ -251,8 +252,9 @@ export function civicClearance(civic: Mass[]): string[] {
     for (const o of civic) {
       if (o === m || o.base > m.base + 1.2 || o.base + o.height < m.base + 0.05) continue; // only what stands in the same body of air
       if (o.kit && o.id === `${m.id}/lamp`) continue; // the table lamp stands on its own set (brief 026)
-      if (o.kit && look.overhead.includes(o.kit.id)) continue; // a parasol stands over its table: only its pole is on the ground
-      if (o.kit && look.frame.includes(o.kit.id)) continue; // the terrace's box is open ground inside its wall: the tables and palms belong there
+      if (o.kit && withSwaps(look.overhead).includes(o.kit.id)) continue; // a parasol stands over its table: only its pole is on the ground
+      if (o.kit && withSwaps(look.frame).includes(o.kit.id)) continue; // the terrace's box is open ground inside its wall: the tables and palms belong there
+      if (takesNoGround(o)) continue; // brief 077: a companion's planting takes no ground (it sits in its stonework's troughs)
       const ring = o.kit && person.has(o.kit.id) ? foot(o) : o.ring;
       if (pieces.indexOf(o) >= 0 && pieces.indexOf(o) < pieces.indexOf(m)) continue; // each pair once
       if (overlap(f, ring)) out.push(`${m.id} (${m.kit!.id} x1) overlaps ${o.id}`);
@@ -290,7 +292,7 @@ const plotOf = (b: string) => (b.startsWith('bld/') ? b.split('/')[1]! : b);
  *  block's west, plan yaw = block yaw 0 + 90°). The wings mass carries it; the two tower masses stay as data (`hidden`: ids, footprints and clearance) and draw nothing. Not adopted: the office
  *  stays as it is. The block (civic-block.json, C-0) is unchanged. */
 export function recordsTower(plan: Plan, civic: Mass[]): Mass[] {
-  const a = adoptedBy(FACE_KIT.landmark), id = `civic/${(plan.standards.buildings as any).playStreets?.landmark ?? 'civic-office'}`, office = civic.find(m => m.id === id);
+  const a = adoptedBy(drawnPiece(FACE_KIT.landmark, x => !!adoptedBy(x))), id = `civic/${(plan.standards.buildings as any).playStreets?.landmark ?? 'civic-office'}`, office = civic.find(m => m.id === id);
   if (!a || !office) return civic;
   const towers = civic.filter(m => m.id.startsWith(`${id}/tower-`)), xs = office.ring.map(p => p[0]), ys = office.ring.map(p => p[1]);
   const c: V = [(Math.min(...xs) + Math.max(...xs)) / 2, (Math.min(...ys) + Math.max(...ys)) / 2], door = civic.find(m => m.id === 'civic/office-public-entrance');
@@ -335,7 +337,7 @@ export function worldOf(plan: Plan, d: Derived, civ: Civic): { world: World; gen
   const st = skyTrack(plan, d, { ground: g, transit: t }, ring => walkBlock(gctx as never, [...ring, ...ring.map((p, i) => { const q = ring[(i + 1) % ring.length]!; return [(p[0] + q[0]) / 2, (p[1] + q[1]) / 2] as V; })], 'skyrail'));
   if (st) { t.skyTrack = st.track; gen.skyTrack = st.log; for (const r of t.skyRail) { r.width = st.track.beam.width; r.capDepth = 0; } } // the old beam is 1.2 wide (Vela, 'Roll-out: sky track'); the heads are the kit's, so the ribbon fallback draws no procedural cross-head
   if (gen.tram) gen.tram.log = tlog; else if (tg) gen.tram = { bays: [], islands: [], log: tlog };
-  const civicM = recordsTower(plan, civicMasses(civ, toPlanFn(plan.civic)));
+  const civicM = attachPieces(recordsTower(plan, civicMasses(civ, toPlanFn(plan.civic)))); // brief 077: the companions' planting and the arcs' globe lamps (civic-look.json attach)
   if (gen.capstone) { gen.street.push(...civicRobots(ctxOf(plan, d, civ, PROV.pavement), civicM, gen.capstone)); civicPorterGap(gen.capstone, civ); } // brief 026: after the civic masses exist
   // brief 074 (Sky 2026-10-28, "Do building colors"): each building's colourway (a facade.json wall family) on every mass and facade piece of it; the civic block's are `civic`
   const cw = assignColourways(gen.blds.map(b => ({ id: b.id, area: b.area, ring: b.ring.p })), gen.frontages, oldStreetFamilies(gctx, gen.blds), piecesAt(gen.facades)); // brief 075 old palette: the old ensembles (colourways.ts ensembleOf) // brief 075: the old high street's families on the old-street roads (oldstreet.ts)

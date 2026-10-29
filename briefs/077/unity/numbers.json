@@ -1,0 +1,3143 @@
+{
+ "schema": "suborned.unity077.numbers/1",
+ "brief": "077",
+ "author": "Latch",
+ "date": "2026-10-29",
+ "unity": "6000.6.2f1",
+ "world": "out/scratch/latch/075swap2/harbour.world.json",
+ "worldSha256": "f469704e9df3b7a6ce091d6b05dbcb1edc4f4ad231847307cd4862079e3c5e18",
+ "models": [
+  {
+   "row": "PlanterRun_4_A",
+   "file": "Models/Plaza/DK_PlanterRun_4_A.fbx",
+   "sha256": "4d957d0f9c3c4d7745eb778536bbbeebe69138d05c2a7c5fa2269006a3c4f9c1"
+  },
+  {
+   "row": "PlanterRun_4_A",
+   "file": "Models/Plaza/DK_PlanterRun_4_A_L1.fbx",
+   "sha256": "9c5a4c01617306a31d39a1e17b2e3217b61f899db225f224e79bac188dabe34a"
+  },
+  {
+   "row": "PlanterRun_4_A",
+   "file": "Models/Plaza/DK_PlanterRun_4_A_L2.fbx",
+   "sha256": "75d16a26c188a43b9c38f9d6b5a45b32bf4139929316c6c63b29b53e60da6ebb"
+  },
+  {
+   "row": "PlanterRun_4_A",
+   "file": "Models/Plaza/DK_PlanterRun_4_A_L3.fbx",
+   "sha256": "244bd4c086c2baed81c3c50246b5cb2cf9684520ed68595392a862db6c304674"
+  },
+  {
+   "row": "PlanterRun_4_B",
+   "file": "Models/Plaza/DK_PlanterRun_4_B.fbx",
+   "sha256": "b238788d11bd8737f0fd6449a4662ac65dcf4b72a373b64df984c76440f809e0"
+  },
+  {
+   "row": "PlanterRun_4_B",
+   "file": "Models/Plaza/DK_PlanterRun_4_B_L1.fbx",
+   "sha256": "2c0bbd3b0eb81d36cafd232757134ac9d8e55df3f35f7e6e0c8340f744c97e31"
+  },
+  {
+   "row": "PlanterRun_4_B",
+   "file": "Models/Plaza/DK_PlanterRun_4_B_L2.fbx",
+   "sha256": "86e52a5ba4e7744d3e91843d772aaa953736ef4a0b8e30b8df4e0fe0ce4a227f"
+  },
+  {
+   "row": "PlanterRun_4_B",
+   "file": "Models/Plaza/DK_PlanterRun_4_B_L3.fbx",
+   "sha256": "a9168012f9444d5d9cf3e97399a243ba3752cd685ca99f2ca0f4827df93f3275"
+  },
+  {
+   "row": "PlanterRun_4_C",
+   "file": "Models/Plaza/DK_PlanterRun_4_C.fbx",
+   "sha256": "8c01e3bc498c66fafc49b68b17bcb93124fc2dd21aba960d6612370d60ff9c67"
+  },
+  {
+   "row": "PlanterRun_4_C",
+   "file": "Models/Plaza/DK_PlanterRun_4_C_L1.fbx",
+   "sha256": "1529be2a2481a4b2cfe91c1f3b44ef2074014dae6758692308480417a16d4bdb"
+  },
+  {
+   "row": "PlanterRun_4_C",
+   "file": "Models/Plaza/DK_PlanterRun_4_C_L2.fbx",
+   "sha256": "6d3c13733e9d91f162f882e5eeac6ac8355dc139acd6fb863beb30ab2dd8f152"
+  },
+  {
+   "row": "PlanterRun_4_C",
+   "file": "Models/Plaza/DK_PlanterRun_4_C_L3.fbx",
+   "sha256": "6a7fab72ade580090f05b93b03810c8f6b0d2fbfb7467cda96ba57c0b522f30b"
+  },
+  {
+   "row": "PlanterArc",
+   "file": "Models/Plaza/DK_PlanterArc.fbx",
+   "sha256": "e27f2879967cfe95876e99a3c4d3f4a5bab2ed3a379fc9fe5aef6378c7911da3"
+  },
+  {
+   "row": "PlanterArc",
+   "file": "Models/Plaza/DK_PlanterArc_L1.fbx",
+   "sha256": "e119aba79dea9d291eccd5deddaa32d65274be94c12df5e009093ac37082b603"
+  },
+  {
+   "row": "PlanterArc",
+   "file": "Models/Plaza/DK_PlanterArc_L2.fbx",
+   "sha256": "b8fec2bfa6c197c54b99a8d88433a8eacdef50ccf1c1028a2c35fab9414d90d1"
+  },
+  {
+   "row": "CafeTerrace",
+   "file": "Models/Plaza/DK_CafeTerrace.fbx",
+   "sha256": "a5e5501a51e1c5ca2c336e531a43864631a124c0b8945a382406a47b30f9ec6a"
+  },
+  {
+   "row": "CafeTerrace",
+   "file": "Models/Plaza/DK_CafeTerrace_L1.fbx",
+   "sha256": "cbe095f12729dca5e69ecce81ae59ab0687a9516961000678e9ae3e29fe82eb2"
+  },
+  {
+   "row": "CafeTerrace",
+   "file": "Models/Plaza/DK_CafeTerrace_L2.fbx",
+   "sha256": "c39f3da117ab5b303451e0a7617666e431bd309e233b59f61a87aefe8520edf5"
+  },
+  {
+   "row": "CafeTerrace_Planting",
+   "file": "Models/Plaza/DK_CafeTerrace_Planting.fbx",
+   "sha256": "e3c18cda77eebcedb0df2a86412c8cbbf4eef0131d9ebe2c872c20601e6ea810"
+  },
+  {
+   "row": "CafeTerrace_Planting",
+   "file": "Models/Plaza/DK_CafeTerrace_Planting_L1.fbx",
+   "sha256": "4e1fc3a014ae551a2d2342904da73c1a23bca954fd11b6ab65fbdd92ad962f91"
+  },
+  {
+   "row": "CafeTerrace_Planting",
+   "file": "Models/Plaza/DK_CafeTerrace_Planting_L2.fbx",
+   "sha256": "f243d1172fabd9733836fd603151eded1291e998248cab5164463c45e43f36ac"
+  },
+  {
+   "row": "CafeTerrace_Planting",
+   "file": "Models/Plaza/DK_CafeTerrace_Planting_L3.fbx",
+   "sha256": "3995967c040fa90e6314047c6a0fc013bb6d8036ef214dd6a74f19936c9b2d7b"
+  },
+  {
+   "row": "RecordsTower",
+   "file": "Models/Landmarks/DK_RecordsTower.fbx",
+   "sha256": "c82e668e5ae6fa746e7553be693231469c1ccb58db86d9979354e64470cd518b"
+  },
+  {
+   "row": "RecordsTower",
+   "file": "Models/Landmarks/DK_RecordsTower_L1.fbx",
+   "sha256": "6942496b2c911ff473050bc5189ffaf4b45593e6eccad1e75cb16cfde413605c"
+  },
+  {
+   "row": "RecordsTower",
+   "file": "Models/Landmarks/DK_RecordsTower_L2.fbx",
+   "sha256": "35598ea2e992491c26f6563e12056a223841210a11d8ebb7236b624cf40fa55f"
+  },
+  {
+   "row": "RecordsTower_Planting",
+   "file": "Models/Landmarks/DK_RecordsTower_Planting.fbx",
+   "sha256": "798e3c714de175b3d05ced9bff27082b4de50fff9d3696321b628b62773c5969"
+  },
+  {
+   "row": "RecordsTower_Planting",
+   "file": "Models/Landmarks/DK_RecordsTower_Planting_L1.fbx",
+   "sha256": "e22ec7f5d8c4c232f94581be79bd72a1e1a9293bca10f4209e6cf1003d432b51"
+  },
+  {
+   "row": "RecordsTower_Planting",
+   "file": "Models/Landmarks/DK_RecordsTower_Planting_L2.fbx",
+   "sha256": "0f8632aa796de729a7ec478e7b8bb0ca8aabf4ef49d7a247c6eb5296515951b6"
+  },
+  {
+   "row": "RecordsTower_Planting",
+   "file": "Models/Landmarks/DK_RecordsTower_Planting_L3.fbx",
+   "sha256": "707dd39895649b0680d12ddd3fccce7d3ac42aec09c36dcb6c60c22947d0802b"
+  },
+  {
+   "row": "CafeUpper_3",
+   "file": "Models/Plaza/DK_CafeUpper_3.fbx",
+   "sha256": "b57923990a2686bdc9e6b3e7f1cc7baa41d8089f43529014627a3e25e9f86587"
+  },
+  {
+   "row": "CafeUpper_3",
+   "file": "Models/Plaza/DK_CafeUpper_3_L1.fbx",
+   "sha256": "5e1d476750ac58d3ec0ae83d9f840fee6810e56293292a5dbb804ee5d8f0bc38"
+  },
+  {
+   "row": "CafeUpper_3",
+   "file": "Models/Plaza/DK_CafeUpper_3_L2.fbx",
+   "sha256": "264f3bfcd0ae8ab01fab12dd7fd49a2deeef71c48282897c67d831708c23cdb4"
+  },
+  {
+   "row": "CafeUpper_3_Planting",
+   "file": "Models/Plaza/DK_CafeUpper_3_Planting.fbx",
+   "sha256": "0e85ca5e0ff8714cf862e610730ccb98fad601769aa7467d50a81296231a5fb3"
+  },
+  {
+   "row": "CafeUpper_3_Planting",
+   "file": "Models/Plaza/DK_CafeUpper_3_Planting_L1.fbx",
+   "sha256": "8efb79f4780d63f8811f98cf6659bfe6a790f11996180041dd70b05ec5e7d217"
+  },
+  {
+   "row": "CafeUpper_3_Planting",
+   "file": "Models/Plaza/DK_CafeUpper_3_Planting_L2.fbx",
+   "sha256": "4ea65eaacbb15bb94c4cc7b37e1a73e51d5cae2f68e0433ac4ef2557ff233d6e"
+  },
+  {
+   "row": "CafeUpper_3_Planting",
+   "file": "Models/Plaza/DK_CafeUpper_3_Planting_L3.fbx",
+   "sha256": "c4e1c3a3ab78ac7ffbb26a6df701dfc2c5c521de356345351d1421c7ba025237"
+  },
+  {
+   "row": "GlobeLamp_TB",
+   "file": "Models/Plaza/DK_GlobeLamp_TB.fbx",
+   "sha256": "fe9e8fd91a58fd628b9cdb3fd483fa8ab85297f6a9122b968ba1bc1a9306d583"
+  },
+  {
+   "row": "CivicBedPlanting_facade-southwest",
+   "file": "Models/Plaza/DK_CivicBedPlanting_facade-southwest.fbx",
+   "sha256": "15c5b84abbdfe1b4405c9a823c0bd8a775e8bf36e714747a8158a35d7f0b3128"
+  },
+  {
+   "row": "CivicBedPlanting_facade-southwest",
+   "file": "Models/Plaza/DK_CivicBedPlanting_facade-southwest_L1.fbx",
+   "sha256": "65e79268c1424a5d738547db20701c8fdfc994cadec199664dcfce2c974c1ea1"
+  },
+  {
+   "row": "CivicBedPlanting_facade-southwest",
+   "file": "Models/Plaza/DK_CivicBedPlanting_facade-southwest_L2.fbx",
+   "sha256": "8033b1c4520cd42b86a86fcfd5b120e7847f622bb8f1073e9dea6189d3ad68a8"
+  },
+  {
+   "row": "CivicBedPlanting_facade-southwest",
+   "file": "Models/Plaza/DK_CivicBedPlanting_facade-southwest_L3.fbx",
+   "sha256": "4ac9214abd9422e8e01928f9ff4f8afa06199416428e8c4ce4cc05aa814ac994"
+  },
+  {
+   "row": "CivicBedPlanting_facade-southeast",
+   "file": "Models/Plaza/DK_CivicBedPlanting_facade-southeast.fbx",
+   "sha256": "56ac74cb8feadc9cd045842dc4ee605ee458cd18b1c73a02cdc9a63f2201499e"
+  },
+  {
+   "row": "CivicBedPlanting_facade-southeast",
+   "file": "Models/Plaza/DK_CivicBedPlanting_facade-southeast_L1.fbx",
+   "sha256": "9a7d226475c987933430deb6cc06d2d72a099b338cfe5eddc2325001e7a22349"
+  },
+  {
+   "row": "CivicBedPlanting_facade-southeast",
+   "file": "Models/Plaza/DK_CivicBedPlanting_facade-southeast_L2.fbx",
+   "sha256": "a08de8b6e431acf28a6972e2f623520e315de8aec4c1205f493671eb2cac9a7e"
+  },
+  {
+   "row": "CivicBedPlanting_facade-southeast",
+   "file": "Models/Plaza/DK_CivicBedPlanting_facade-southeast_L3.fbx",
+   "sha256": "05f4e7312860ac3f031d5ac744d115282a331b4dbba9f3882e5d55e1221ec828"
+  },
+  {
+   "row": "CivicBedPlanting_office-west",
+   "file": "Models/Plaza/DK_CivicBedPlanting_office-west.fbx",
+   "sha256": "177832c9b353809efacf268af84fc9537dbc6b74b85c55e44edec41cea7b70c1"
+  },
+  {
+   "row": "CivicBedPlanting_office-west",
+   "file": "Models/Plaza/DK_CivicBedPlanting_office-west_L1.fbx",
+   "sha256": "11895c0b2e9015377a74bd549ed5270a4a1e6898bb5125c6a7202794c6e84707"
+  },
+  {
+   "row": "CivicBedPlanting_office-west",
+   "file": "Models/Plaza/DK_CivicBedPlanting_office-west_L2.fbx",
+   "sha256": "e32b7cfb8c2a39e2ab31b25423a159e369f1a92d817ec0a4cafa5e20a045f313"
+  },
+  {
+   "row": "CivicBedPlanting_office-west",
+   "file": "Models/Plaza/DK_CivicBedPlanting_office-west_L3.fbx",
+   "sha256": "2783159abb16c0184d809a1fa8e84e46d4a75e7659f5018a05eb5336a4b53230"
+  },
+  {
+   "row": "CivicBedPlanting_office-north",
+   "file": "Models/Plaza/DK_CivicBedPlanting_office-north.fbx",
+   "sha256": "45b57e6f0f16f5be5c16b94f446000864cd3091f7416e70b7c27150a5b6619f9"
+  },
+  {
+   "row": "CivicBedPlanting_office-north",
+   "file": "Models/Plaza/DK_CivicBedPlanting_office-north_L1.fbx",
+   "sha256": "be888e5f5bdc966add4ffe71952b4d2ebb8cb64a42cc53f52aad742b1a36f8ba"
+  },
+  {
+   "row": "CivicBedPlanting_office-north",
+   "file": "Models/Plaza/DK_CivicBedPlanting_office-north_L2.fbx",
+   "sha256": "e75ff8ae5d85884a6febb083057bf63303d3bb223110106435f17f7afa2f6d25"
+  },
+  {
+   "row": "CivicBedPlanting_office-north",
+   "file": "Models/Plaza/DK_CivicBedPlanting_office-north_L3.fbx",
+   "sha256": "d219439f801eae94fb5e8a8ff45d26e7031627b95025460351b960c773086b7d"
+  },
+  {
+   "row": "CivicBedPlanting_dropoff-west",
+   "file": "Models/Plaza/DK_CivicBedPlanting_dropoff-west.fbx",
+   "sha256": "83967dc7b61aa1de21eea87a2b499471be598236a3edbf5decfa3dd520cb3a04"
+  },
+  {
+   "row": "CivicBedPlanting_dropoff-west",
+   "file": "Models/Plaza/DK_CivicBedPlanting_dropoff-west_L1.fbx",
+   "sha256": "b7f3f3d41dce30ed1d17e50cb4c7c10a437033bd691401083fde32869f1e08c5"
+  },
+  {
+   "row": "CivicBedPlanting_dropoff-west",
+   "file": "Models/Plaza/DK_CivicBedPlanting_dropoff-west_L2.fbx",
+   "sha256": "f88804fb4eaa8708b9e8bf7ee2a35bb4a7cc16bb0fc235bfbb6ad4811237fea1"
+  },
+  {
+   "row": "CivicBedPlanting_dropoff-west",
+   "file": "Models/Plaza/DK_CivicBedPlanting_dropoff-west_L3.fbx",
+   "sha256": "83803b6ae0c8c9470ba390b6112c7a35f6c8f29839476d44108d06ee6a944966"
+  }
+ ],
+ "frame": "old (plan y + DZ)",
+ "countsBefore": [
+  {
+   "view": "cafe-square-y030",
+   "kind": "play",
+   "focusPlan": [-170.5, -227.5],
+   "yaw": 30,
+   "camera": "ortho 14, pitch 38, yaw 30",
+   "setPassEstimate": {
+    "forward": 27,
+    "depthNormals": 8,
+    "shadow": 19,
+    "total": 54
+   },
+   "draws": {
+    "main": 698,
+    "shadow": 1125,
+    "perCascade": [54, 1071]
+   },
+   "mainRenderers": 298,
+   "mainTriangles": 714814,
+   "opaqueTriangles": 706216,
+   "shadowsOnlyInFrustum": 23,
+   "censusVisibleRenderers": 321,
+   "censusTriangles": 718016,
+   "lodCulled": 62,
+   "shadow": {
+    "casters": 345,
+    "triangles": 732880,
+    "note": "TacticalShadows on, focusDepth 160; 2 cascades, shadow distance 200 m, splits 0.500/0.000/0.000, tile 2048",
+    "cascades": [
+     {
+      "casters": 27,
+      "draws": 54,
+      "triangles": 42941,
+      "variants": 8,
+      "sphereRadius": 57.504
+     },
+     {
+      "casters": 345,
+      "draws": 1071,
+      "triangles": 689939,
+      "variants": 11,
+      "sphereRadius": 57.504
+     }
+    ]
+   },
+   "materials": 145,
+   "shaders": 10,
+   "shaderVariantsForward": 27,
+   "groups": {
+
+   },
+   "ground": {
+
+   },
+   "probesInFrame": 2,
+   "probes": ["Gardens probe", "Handover zone probe"],
+   "sun": {
+    "inFrame": false,
+    "viewport": [-24.134, 24.029],
+    "angleFromViewAxis": 166.923
+   },
+   "flare": "LensFlareComponentSRP enabled, occlusion on, intensity 1",
+   "byLayer": {
+    "Ours (Handover zone + network, our pipeline)/batches": {
+     "renderers": 210,
+     "triangles": 424879
+    },
+    "Ours (Handover zone + network, our pipeline)/HarbourDistrict": {
+     "renderers": 87,
+     "triangles": 289098
+    },
+    "Ours (Handover zone + network, our pipeline)/contact": {
+     "renderers": 8,
+     "triangles": 2258
+    },
+    "Deco City Mass/CityMass_-1_-1": {
+     "renderers": 1,
+     "triangles": 1072
+    },
+    "Deco Street/Crossing tactile pads": {
+     "renderers": 1,
+     "triangles": 124
+    },
+    "Street west verge W": {
+     "renderers": 1,
+     "triangles": 106
+    },
+    "Deco Street/Road markings": {
+     "renderers": 1,
+     "triangles": 96
+    },
+    "Street west verge N": {
+     "renderers": 1,
+     "triangles": 84
+    },
+    "West (plan blocks, old builders)/West courts kerb": {
+     "renderers": 1,
+     "triangles": 80
+    },
+    "West (plan blocks, old builders)/West courts lawn": {
+     "renderers": 1,
+     "triangles": 80
+    },
+    "Harbour/Harbour steps": {
+     "renderers": 1,
+     "triangles": 62
+    },
+    "West base (old stone under our ground)": {
+     "renderers": 1,
+     "triangles": 39
+    },
+    "Street west verge S": {
+     "renderers": 1,
+     "triangles": 11
+    },
+    "Street west verge C": {
+     "renderers": 1,
+     "triangles": 8
+    }
+   },
+   "frameMs": {
+    "Disabled": {
+     "median": 4.18,
+     "p90": 4.51,
+     "drawerActive": "inactive",
+     "renderCountersDelta": {
+      "SetPass Calls Count": 0,
+      "Draw Calls Count": 0,
+      "Batches Count": 0,
+      "Triangles Count": 0,
+      "Vertices Count": 0,
+      "Shadow Casters Count": 0,
+      "Visible Skinned Meshes Count": 0
+     }
+    },
+    "InstancedDrawing": {
+     "median": 4.07,
+     "p90": 4.44,
+     "drawerActive": "active",
+     "renderCountersDelta": {
+      "SetPass Calls Count": 0,
+      "Draw Calls Count": 0,
+      "Batches Count": 0,
+      "Triangles Count": 0,
+      "Vertices Count": 0,
+      "Shadow Casters Count": 0,
+      "Visible Skinned Meshes Count": 0
+     }
+    }
+   }
+  },
+  {
+   "view": "cafe-square-y210",
+   "kind": "play",
+   "focusPlan": [-170.5, -227.5],
+   "yaw": 210,
+   "camera": "ortho 14, pitch 38, yaw 210",
+   "setPassEstimate": {
+    "forward": 27,
+    "depthNormals": 8,
+    "shadow": 19,
+    "total": 54
+   },
+   "draws": {
+    "main": 601,
+    "shadow": 842,
+    "perCascade": [46, 796]
+   },
+   "mainRenderers": 280,
+   "mainTriangles": 717522,
+   "opaqueTriangles": 708478,
+   "shadowsOnlyInFrustum": 19,
+   "censusVisibleRenderers": 299,
+   "censusTriangles": 720946,
+   "lodCulled": 48,
+   "shadow": {
+    "casters": 329,
+    "triangles": 661217,
+    "note": "TacticalShadows on, focusDepth 160; 2 cascades, shadow distance 200 m, splits 0.500/0.000/0.000, tile 2048",
+    "cascades": [
+     {
+      "casters": 22,
+      "draws": 46,
+      "triangles": 42829,
+      "variants": 8,
+      "sphereRadius": 57.504
+     },
+     {
+      "casters": 329,
+      "draws": 796,
+      "triangles": 618388,
+      "variants": 11,
+      "sphereRadius": 57.504
+     }
+    ]
+   },
+   "materials": 146,
+   "shaders": 11,
+   "shaderVariantsForward": 27,
+   "groups": {
+
+   },
+   "ground": {
+
+   },
+   "probesInFrame": 2,
+   "probes": ["Gardens probe", "Handover zone probe"],
+   "sun": {
+    "inFrame": false,
+    "viewport": [25.134, 174.966],
+    "angleFromViewAxis": 83.812
+   },
+   "flare": "LensFlareComponentSRP enabled, occlusion on, intensity 1",
+   "byLayer": {
+    "Ours (Handover zone + network, our pipeline)/batches": {
+     "renderers": 201,
+     "triangles": 422062
+    },
+    "Ours (Handover zone + network, our pipeline)/HarbourDistrict": {
+     "renderers": 72,
+     "triangles": 275982
+    },
+    "Network (our routes, old pieces)/Sky track (old beam on our route)": {
+     "renderers": 1,
+     "triangles": 18432
+    },
+    "Ours (Handover zone + network, our pipeline)/contact": {
+     "renderers": 8,
+     "triangles": 2258
+    },
+    "Deco City Mass/CityMass_-1_-1": {
+     "renderers": 1,
+     "triangles": 1072
+    },
+    "Roof decks": {
+     "renderers": 1,
+     "triangles": 431
+    },
+    "Deco Street/Crossing tactile pads": {
+     "renderers": 1,
+     "triangles": 124
+    },
+    "Street west verge W": {
+     "renderers": 1,
+     "triangles": 106
+    },
+    "Deco Street/Road markings": {
+     "renderers": 1,
+     "triangles": 96
+    },
+    "Street west verge N": {
+     "renderers": 1,
+     "triangles": 84
+    },
+    "West (plan blocks, old builders)/West courts kerb": {
+     "renderers": 1,
+     "triangles": 80
+    },
+    "West (plan blocks, old builders)/West courts lawn": {
+     "renderers": 1,
+     "triangles": 80
+    },
+    "Harbour/Harbour steps": {
+     "renderers": 1,
+     "triangles": 62
+    },
+    "West base (old stone under our ground)": {
+     "renderers": 1,
+     "triangles": 39
+    }
+   },
+   "frameMs": {
+    "Disabled": {
+     "median": 3.97,
+     "p90": 4.21,
+     "drawerActive": "inactive",
+     "renderCountersDelta": {
+      "SetPass Calls Count": 0,
+      "Draw Calls Count": 0,
+      "Batches Count": 0,
+      "Triangles Count": 0,
+      "Vertices Count": 0,
+      "Shadow Casters Count": 0,
+      "Visible Skinned Meshes Count": 0
+     }
+    },
+    "InstancedDrawing": {
+     "median": 3.92,
+     "p90": 4.35,
+     "drawerActive": "active",
+     "renderCountersDelta": {
+      "SetPass Calls Count": 0,
+      "Draw Calls Count": 0,
+      "Batches Count": 0,
+      "Triangles Count": 0,
+      "Vertices Count": 0,
+      "Shadow Casters Count": 0,
+      "Visible Skinned Meshes Count": 0
+     }
+    }
+   }
+  },
+  {
+   "view": "office-front-y030",
+   "kind": "play",
+   "focusPlan": [-160, -281],
+   "yaw": 30,
+   "camera": "ortho 14, pitch 38, yaw 30",
+   "setPassEstimate": {
+    "forward": 24,
+    "depthNormals": 6,
+    "shadow": 17,
+    "total": 47
+   },
+   "draws": {
+    "main": 378,
+    "shadow": 434,
+    "perCascade": [30, 404]
+   },
+   "mainRenderers": 230,
+   "mainTriangles": 566562,
+   "opaqueTriangles": 559735,
+   "shadowsOnlyInFrustum": 10,
+   "censusVisibleRenderers": 240,
+   "censusTriangles": 567802,
+   "lodCulled": 36,
+   "shadow": {
+    "casters": 162,
+    "triangles": 312545,
+    "note": "TacticalShadows on, focusDepth 160; 2 cascades, shadow distance 200 m, splits 0.500/0.000/0.000, tile 2048",
+    "cascades": [
+     {
+      "casters": 13,
+      "draws": 30,
+      "triangles": 7009,
+      "variants": 7,
+      "sphereRadius": 57.504
+     },
+     {
+      "casters": 162,
+      "draws": 404,
+      "triangles": 305536,
+      "variants": 10,
+      "sphereRadius": 57.504
+     }
+    ]
+   },
+   "materials": 93,
+   "shaders": 11,
+   "shaderVariantsForward": 24,
+   "groups": {
+
+   },
+   "ground": {
+
+   },
+   "probesInFrame": 3,
+   "probes": ["Southside north probe", "Southside west probe", "Handover zone probe"],
+   "sun": {
+    "inFrame": false,
+    "viewport": [-24.134, 24.029],
+    "angleFromViewAxis": 166.923
+   },
+   "flare": "LensFlareComponentSRP enabled, occlusion on, intensity 1",
+   "byLayer": {
+    "Ours (Handover zone + network, our pipeline)/batches": {
+     "renderers": 157,
+     "triangles": 473112
+    },
+    "Ours (Handover zone + network, our pipeline)/HarbourDistrict": {
+     "renderers": 59,
+     "triangles": 88634
+    },
+    "Ours (Handover zone + network, our pipeline)/contact": {
+     "renderers": 10,
+     "triangles": 3537
+    },
+    "Deco City Mass/CityMass_-1_-1": {
+     "renderers": 1,
+     "triangles": 1072
+    },
+    "Southside/Podium decks": {
+     "renderers": 1,
+     "triangles": 840
+    },
+    "Deco Street/Crossing tactile pads": {
+     "renderers": 1,
+     "triangles": 124
+    },
+    "Street west verge W": {
+     "renderers": 1,
+     "triangles": 106
+    },
+    "Deco Street/Road markings": {
+     "renderers": 1,
+     "triangles": 96
+    },
+    "West (plan blocks, old builders)/West courts kerb": {
+     "renderers": 1,
+     "triangles": 80
+    },
+    "West (plan blocks, old builders)/West courts lawn": {
+     "renderers": 1,
+     "triangles": 80
+    },
+    "Harbour/Harbour steps": {
+     "renderers": 1,
+     "triangles": 62
+    },
+    "West base (old stone under our ground)": {
+     "renderers": 1,
+     "triangles": 39
+    },
+    "Street west verge C": {
+     "renderers": 1,
+     "triangles": 8
+    },
+    "Southside/Southside road deck": {
+     "renderers": 1,
+     "triangles": 6
+    }
+   },
+   "frameMs": {
+    "Disabled": {
+     "median": 3.45,
+     "p90": 3.74,
+     "drawerActive": "inactive",
+     "renderCountersDelta": {
+      "SetPass Calls Count": 0,
+      "Draw Calls Count": 0,
+      "Batches Count": 0,
+      "Triangles Count": 0,
+      "Vertices Count": 0,
+      "Shadow Casters Count": 0,
+      "Visible Skinned Meshes Count": 0
+     }
+    },
+    "InstancedDrawing": {
+     "median": 3.08,
+     "p90": 3.39,
+     "drawerActive": "active",
+     "renderCountersDelta": {
+      "SetPass Calls Count": 0,
+      "Draw Calls Count": 0,
+      "Batches Count": 0,
+      "Triangles Count": 0,
+      "Vertices Count": 0,
+      "Shadow Casters Count": 0,
+      "Visible Skinned Meshes Count": 0
+     }
+    }
+   }
+  },
+  {
+   "view": "office-front-y210",
+   "kind": "play",
+   "focusPlan": [-160, -281],
+   "yaw": 210,
+   "camera": "ortho 14, pitch 38, yaw 210",
+   "setPassEstimate": {
+    "forward": 23,
+    "depthNormals": 7,
+    "shadow": 18,
+    "total": 48
+   },
+   "draws": {
+    "main": 295,
+    "shadow": 311,
+    "perCascade": [32, 279]
+   },
+   "mainRenderers": 212,
+   "mainTriangles": 562070,
+   "opaqueTriangles": 555091,
+   "shadowsOnlyInFrustum": 2,
+   "censusVisibleRenderers": 214,
+   "censusTriangles": 562190,
+   "lodCulled": 13,
+   "shadow": {
+    "casters": 156,
+    "triangles": 318153,
+    "note": "TacticalShadows on, focusDepth 160; 2 cascades, shadow distance 200 m, splits 0.500/0.000/0.000, tile 2048",
+    "cascades": [
+     {
+      "casters": 16,
+      "draws": 32,
+      "triangles": 19149,
+      "variants": 8,
+      "sphereRadius": 57.504
+     },
+     {
+      "casters": 156,
+      "draws": 279,
+      "triangles": 299004,
+      "variants": 10,
+      "sphereRadius": 57.504
+     }
+    ]
+   },
+   "materials": 92,
+   "shaders": 11,
+   "shaderVariantsForward": 23,
+   "groups": {
+
+   },
+   "ground": {
+
+   },
+   "probesInFrame": 3,
+   "probes": ["Southside north probe", "Southside west probe", "Handover zone probe"],
+   "sun": {
+    "inFrame": false,
+    "viewport": [25.134, 174.966],
+    "angleFromViewAxis": 83.812
+   },
+   "flare": "LensFlareComponentSRP enabled, occlusion on, intensity 1",
+   "byLayer": {
+    "Ours (Handover zone + network, our pipeline)/batches": {
+     "renderers": 150,
+     "triangles": 477515
+    },
+    "Ours (Handover zone + network, our pipeline)/HarbourDistrict": {
+     "renderers": 39,
+     "triangles": 78188
+    },
+    "Ours (Handover zone + network, our pipeline)/contact": {
+     "renderers": 10,
+     "triangles": 3537
+    },
+    "Deco City Mass/CityMass_-1_-1": {
+     "renderers": 1,
+     "triangles": 1072
+    },
+    "Southside/Podium decks": {
+     "renderers": 1,
+     "triangles": 840
+    },
+    "Roof decks": {
+     "renderers": 1,
+     "triangles": 431
+    },
+    "Deco Street/Crossing tactile pads": {
+     "renderers": 1,
+     "triangles": 124
+    },
+    "Street west verge W": {
+     "renderers": 1,
+     "triangles": 106
+    },
+    "Deco Street/Road markings": {
+     "renderers": 1,
+     "triangles": 96
+    },
+    "West (plan blocks, old builders)/West courts kerb": {
+     "renderers": 1,
+     "triangles": 80
+    },
+    "West (plan blocks, old builders)/West courts lawn": {
+     "renderers": 1,
+     "triangles": 80
+    },
+    "Harbour/Harbour steps": {
+     "renderers": 1,
+     "triangles": 62
+    },
+    "West base (old stone under our ground)": {
+     "renderers": 1,
+     "triangles": 39
+    },
+    "Street west verge C": {
+     "renderers": 1,
+     "triangles": 8
+    }
+   },
+   "frameMs": {
+    "Disabled": {
+     "median": 3.1,
+     "p90": 3.31,
+     "drawerActive": "inactive",
+     "renderCountersDelta": {
+      "SetPass Calls Count": 0,
+      "Draw Calls Count": 0,
+      "Batches Count": 0,
+      "Triangles Count": 0,
+      "Vertices Count": 0,
+      "Shadow Casters Count": 0,
+      "Visible Skinned Meshes Count": 0
+     }
+    },
+    "InstancedDrawing": {
+     "median": 2.95,
+     "p90": 3.23,
+     "drawerActive": "active",
+     "renderCountersDelta": {
+      "SetPass Calls Count": 0,
+      "Draw Calls Count": 0,
+      "Batches Count": 0,
+      "Triangles Count": 0,
+      "Vertices Count": 0,
+      "Shadow Casters Count": 0,
+      "Visible Skinned Meshes Count": 0
+     }
+    }
+   }
+  }
+ ],
+ "swap": {
+  "bakedMatch": {
+   "civic/civic-office": "40740/40740 (+4 degenerate, never baked)",
+   "civic/fountain-garden-north-east": "3014/3016",
+   "civic/fountain-garden-north-west": "3016/3016",
+   "civic/fountain-garden-south-west": "3016/3016",
+   "civic/fountain-garden-south-east": "3016/3016",
+   "civic/cafe/terrace": "3372/3372",
+   "civic/run-west-cafe/0": "732/732",
+   "civic/run-west-cafe/1": "672/672",
+   "civic/run-west-south/0": "642/642",
+   "civic/run-west-south/1": "732/732",
+   "civic/run-west-south/2": "672/672",
+   "civic/run-east-cafe/0": "732/732",
+   "civic/run-east-cafe/1": "672/672",
+   "civic/run-east-cafe/2": "642/642",
+   "civic/run-east-cafe/3": "732/732",
+   "civic/run-east-south/0": "672/672",
+   "civic/run-east-south/1": "642/642",
+   "civic/run-east-south/2": "732/732",
+   "civic/civic-dropoff-west/tuft-0": "90/95",
+   "civic/civic-dropoff-west/tuft-1": "89/95",
+   "civic/civic-dropoff-west/tuft-2": "80/80",
+   "civic/civic-dropoff-west/tuft-3": "89/95",
+   "civic/civic-dropoff-west/tuft-4": "92/95",
+   "civic/civic-dropoff-west/tuft-5": "80/80",
+   "civic/civic-dropoff-west/tuft-6": "89/95",
+   "civic/civic-dropoff-west/tuft-7": "95/95",
+   "civic/civic-dropoff-west/tuft-8": "80/80",
+   "civic/civic-dropoff-west/tuft-9": "95/95",
+   "civic/civic-dropoff-west/tuft-10": "95/95",
+   "civic/civic-dropoff-west/tuft-11": "80/80",
+   "civic/civic-dropoff-west/tuft-12": "90/95",
+   "civic/civic-dropoff-west/tuft-13": "95/95",
+   "civic/civic-dropoff-west/tuft-14": "80/80",
+   "civic/civic-dropoff-west/tuft-15": "95/95",
+   "civic/civic-dropoff-west/tuft-16": "95/95",
+   "civic/civic-facade-southeast/tuft-0": "95/95",
+   "civic/civic-facade-southeast/tuft-1": "80/80",
+   "civic/civic-facade-southeast/tuft-2": "95/95",
+   "civic/civic-facade-southeast/tuft-3": "95/95",
+   "civic/civic-facade-southeast/tuft-4": "80/80",
+   "civic/civic-facade-southeast/tuft-5": "95/95",
+   "civic/civic-facade-southeast/tuft-6": "95/95",
+   "civic/civic-facade-southeast/tuft-7": "80/80",
+   "civic/civic-facade-southeast/tuft-8": "95/95",
+   "civic/civic-facade-southeast/tuft-9": "90/95",
+   "civic/civic-facade-southeast/tuft-10": "80/80",
+   "civic/civic-facade-southeast/tuft-11": "85/95",
+   "civic/civic-facade-southeast/tuft-12": "95/95",
+   "civic/civic-facade-southwest/tuft-0": "80/80",
+   "civic/civic-facade-southwest/tuft-1": "89/95",
+   "civic/civic-facade-southwest/tuft-2": "90/95",
+   "civic/civic-facade-southwest/tuft-3": "72/80",
+   "civic/civic-facade-southwest/tuft-4": "85/95",
+   "civic/civic-facade-southwest/tuft-5": "95/95",
+   "civic/civic-facade-southwest/tuft-6": "80/80",
+   "civic/civic-facade-southwest/tuft-7": "95/95",
+   "civic/civic-facade-southwest/tuft-8": "90/95",
+   "civic/civic-facade-southwest/tuft-9": "80/80",
+   "civic/civic-facade-southwest/tuft-10": "95/95",
+   "civic/civic-facade-southwest/tuft-11": "95/95",
+   "civic/civic-office-north/tuft-0": "95/95",
+   "civic/civic-office-north/tuft-1": "92/95",
+   "civic/civic-office-north/tuft-2": "80/80",
+   "civic/civic-office-north/tuft-3": "95/95",
+   "civic/civic-office-north/tuft-4": "95/95",
+   "civic/civic-office-north/tuft-5": "80/80",
+   "civic/civic-office-north/tuft-6": "90/95",
+   "civic/civic-office-north/tuft-7": "95/95",
+   "civic/civic-office-north/tuft-8": "80/80",
+   "civic/civic-office-north/tuft-9": "92/95",
+   "civic/civic-office-north/tuft-10": "95/95",
+   "civic/civic-office-north/tuft-11": "74/80",
+   "civic/civic-office-north/tuft-12": "90/95",
+   "civic/civic-office-north/tuft-13": "95/95",
+   "civic/civic-office-north/tuft-14": "80/80",
+   "civic/civic-office-north/tuft-15": "95/95",
+   "civic/civic-office-west/tuft-0": "95/95",
+   "civic/civic-office-west/tuft-1": "80/80",
+   "civic/civic-office-west/tuft-2": "95/95",
+   "civic/civic-office-west/tuft-3": "95/95",
+   "civic/civic-office-west/tuft-4": "80/80",
+   "civic/civic-office-west/tuft-5": "95/95",
+   "civic/civic-office-west/tuft-6": "92/95",
+   "civic/civic-office-west/tuft-7": "80/80",
+   "civic/civic-office-west/tuft-8": "95/95",
+   "civic/civic-office-west/tuft-9": "95/95",
+   "civic/civic-office-west/tuft-10": "80/80",
+   "civic/civic-office-west/tuft-11": "95/95",
+   "civic/civic-office-west/tuft-12": "95/95",
+   "civic/civic-office-west/tuft-13": "74/80",
+   "civic/civic-office-west/tuft-14": "84/95",
+   "civic/civic-office-west/tuft-15": "95/95",
+   "civic/civic-office-west/tuft-16": "75/80",
+   "civic/civic-office-west/tuft-17": "95/95",
+   "civic/civic-office-west/tuft-18": "87/95",
+   "civic/civic-office-west/tuft-19": "80/80",
+   "civic/civic-office-west/tuft-20": "90/95",
+   "civic/civic-office-west/tuft-21": "90/95",
+   "civic/civic-office-west/tuft-22": "80/80",
+   "civic/civic-office-west/tuft-23": "95/95",
+   "civic/civic-office-west/tuft-24": "95/95",
+   "civic/civic-office-west/tuft-25": "80/80",
+   "civic/civic-office-west/tuft-26": "95/95",
+   "civic/civic-office-west/tuft-27": "92/95",
+   "civic/civic-office-west/tuft-28": "75/80",
+   "civic/civic-office-west/tuft-29": "87/95",
+   "civic/civic-office-west/tuft-30": "95/95",
+   "civic/civic-office-west/tuft-31": "80/80",
+   "civic/civic-office-west/tuft-32": "95/95",
+   "civic/civic-office-west/tuft-33": "95/95"
+  },
+  "unmatchedBySlot": {
+   "civic/fountain-garden-north-east": {
+    "DK_Leaf_Shrub": 2
+   },
+   "civic/civic-dropoff-west/tuft-0": {
+    "DK_Bloom_Coral": 5
+   },
+   "civic/civic-dropoff-west/tuft-1": {
+    "DK_Leaf_CivicDark": 6
+   },
+   "civic/civic-dropoff-west/tuft-3": {
+    "DK_Leaf_Civic": 6
+   },
+   "civic/civic-dropoff-west/tuft-4": {
+    "DK_Bloom_Flamingo": 3
+   },
+   "civic/civic-dropoff-west/tuft-6": {
+    "DK_Leaf_Civic": 6
+   },
+   "civic/civic-dropoff-west/tuft-12": {
+    "DK_Bloom_Cream": 5
+   },
+   "civic/civic-facade-southeast/tuft-9": {
+    "DK_Bloom_Peach": 5
+   },
+   "civic/civic-facade-southeast/tuft-11": {
+    "DK_Bloom_Coral": 5,
+    "DK_Bloom_Cream": 5
+   },
+   "civic/civic-facade-southwest/tuft-1": {
+    "DK_Bloom_Coral": 3,
+    "DK_Bloom_Cream": 3
+   },
+   "civic/civic-facade-southwest/tuft-2": {
+    "DK_Leaf_CivicDark": 5
+   },
+   "civic/civic-facade-southwest/tuft-3": {
+    "DK_Leaf_CivicDark": 5,
+    "DK_Bloom_Peach": 3
+   },
+   "civic/civic-facade-southwest/tuft-4": {
+    "DK_Bloom_Coral": 10
+   },
+   "civic/civic-facade-southwest/tuft-8": {
+    "DK_Bloom_Flamingo": 5
+   },
+   "civic/civic-office-north/tuft-1": {
+    "DK_Bloom_Flamingo": 3
+   },
+   "civic/civic-office-north/tuft-6": {
+    "DK_Leaf_Civic": 5
+   },
+   "civic/civic-office-north/tuft-9": {
+    "DK_Bloom_Coral": 3
+   },
+   "civic/civic-office-north/tuft-11": {
+    "DK_Leaf_CivicDark": 6
+   },
+   "civic/civic-office-north/tuft-12": {
+    "DK_Bloom_Cream": 5
+   },
+   "civic/civic-office-west/tuft-6": {
+    "DK_Bloom_Flamingo": 3
+   },
+   "civic/civic-office-west/tuft-13": {
+    "DK_Leaf_CivicDark": 6
+   },
+   "civic/civic-office-west/tuft-14": {
+    "DK_Bloom_Coral": 8,
+    "DK_Bloom_Cream": 3
+   },
+   "civic/civic-office-west/tuft-16": {
+    "DK_Bloom_Cream": 5
+   },
+   "civic/civic-office-west/tuft-18": {
+    "DK_Leaf_CivicDark": 3,
+    "DK_Bloom_Flamingo": 5
+   },
+   "civic/civic-office-west/tuft-20": {
+    "DK_Bloom_Coral": 5
+   },
+   "civic/civic-office-west/tuft-21": {
+    "DK_Bloom_Flamingo": 5
+   },
+   "civic/civic-office-west/tuft-27": {
+    "DK_Bloom_Peach": 3
+   },
+   "civic/civic-office-west/tuft-28": {
+    "DK_Bloom_Cream": 5
+   },
+   "civic/civic-office-west/tuft-29": {
+    "DK_Bloom_Coral": 8
+   }
+  },
+  "bakedMatchTotal": "72592/72755",
+  "batchesChanged": [
+   {
+    "renderer": "Ours (Handover zone + network, our pipeline)/batches/civic/DK_Bloom_Coral@-3,-4#-11,-14",
+    "trianglesOut": 130,
+    "pass": 0
+   },
+   {
+    "renderer": "Ours (Handover zone + network, our pipeline)/batches/civic/DK_Bloom_Coral@-3,-4#-12,-14",
+    "trianglesOut": 105,
+    "pass": 0
+   },
+   {
+    "renderer": "Ours (Handover zone + network, our pipeline)/batches/civic/DK_Bloom_Coral@-3,-4#-12,-16",
+    "trianglesOut": 105,
+    "pass": 0
+   },
+   {
+    "renderer": "Ours (Handover zone + network, our pipeline)/batches/civic/DK_Bloom_Coral@-3,-4#-9,-14",
+    "trianglesOut": 105,
+    "pass": 0
+   },
+   {
+    "renderer": "Ours (Handover zone + network, our pipeline)/batches/civic/DK_Bloom_Coral@-3,-4#-9,-15",
+    "trianglesOut": 105,
+    "pass": 0
+   },
+   {
+    "renderer": "Ours (Handover zone + network, our pipeline)/batches/civic/DK_Bloom_Coral@-3,-4#-9,-16",
+    "trianglesOut": 105,
+    "pass": 0
+   },
+   {
+    "renderer": "Ours (Handover zone + network, our pipeline)/batches/civic/DK_Bloom_Coral@-3,-5#-10,-18",
+    "trianglesOut": 120,
+    "pass": 0
+   },
+   {
+    "renderer": "Ours (Handover zone + network, our pipeline)/batches/civic/DK_Bloom_Coral@-3,-5#-10,-20",
+    "trianglesOut": 180,
+    "pass": 0
+   },
+   {
+    "renderer": "Ours (Handover zone + network, our pipeline)/batches/civic/DK_Bloom_Coral@-3,-5#-11,-18",
+    "trianglesOut": 120,
+    "pass": 0
+   },
+   {
+    "renderer": "Ours (Handover zone + network, our pipeline)/batches/civic/DK_Bloom_Coral@-3,-5#-11,-19",
+    "trianglesOut": 956,
+    "pass": 0
+   },
+   {
+    "renderer": "Ours (Handover zone + network, our pipeline)/batches/civic/DK_Bloom_Coral@-3,-5#-11,-20",
+    "trianglesOut": 180,
+    "pass": 0
+   },
+   {
+    "renderer": "Ours (Handover zone + network, our pipeline)/batches/civic/DK_Bloom_Coral@-3,-5#-9,-19",
+    "trianglesOut": 330,
+    "pass": 0
+   },
+   {
+    "renderer": "Ours (Handover zone + network, our pipeline)/batches/civic/DK_Bloom_Cream@-3,-4#-11,-14",
+    "trianglesOut": 210,
+    "pass": 0
+   },
+   {
+    "renderer": "Ours (Handover zone + network, our pipeline)/batches/civic/DK_Bloom_Cream@-3,-4#-12,-14",
+    "trianglesOut": 135,
+    "pass": 0
+   },
+   {
+    "renderer": "Ours (Handover zone + network, our pipeline)/batches/civic/DK_Bloom_Cream@-3,-4#-12,-16",
+    "trianglesOut": 225,
+    "pass": 0
+   },
+   {
+    "renderer": "Ours (Handover zone + network, our pipeline)/batches/civic/DK_Bloom_Cream@-3,-4#-9,-14",
+    "trianglesOut": 130,
+    "pass": 0
+   },
+   {
+    "renderer": "Ours (Handover zone + network, our pipeline)/batches/civic/DK_Bloom_Cream@-3,-4#-9,-15",
+    "trianglesOut": 220,
+    "pass": 0
+   },
+   {
+    "renderer": "Ours (Handover zone + network, our pipeline)/batches/civic/DK_Bloom_Cream@-3,-4#-9,-16",
+    "trianglesOut": 225,
+    "pass": 0
+   },
+   {
+    "renderer": "Ours (Handover zone + network, our pipeline)/batches/civic/DK_Bloom_Cream@-3,-5#-10,-18",
+    "trianglesOut": 120,
+    "pass": 0
+   },
+   {
+    "renderer": "Ours (Handover zone + network, our pipeline)/batches/civic/DK_Bloom_Cream@-3,-5#-10,-19",
+    "trianglesOut": 980,
+    "pass": 0
+   },
+   {
+    "renderer": "Ours (Handover zone + network, our pipeline)/batches/civic/DK_Bloom_Cream@-3,-5#-10,-20",
+    "trianglesOut": 165,
+    "pass": 0
+   },
+   {
+    "renderer": "Ours (Handover zone + network, our pipeline)/batches/civic/DK_Bloom_Cream@-3,-5#-11,-18",
+    "trianglesOut": 120,
+    "pass": 0
+   },
+   {
+    "renderer": "Ours (Handover zone + network, our pipeline)/batches/civic/DK_Bloom_Cream@-3,-5#-11,-20",
+    "trianglesOut": 165,
+    "pass": 0
+   },
+   {
+    "renderer": "Ours (Handover zone + network, our pipeline)/batches/civic/DK_Bloom_Cream@-3,-5#-9,-19",
+    "trianglesOut": 330,
+    "pass": 0
+   },
+   {
+    "renderer": "Ours (Handover zone + network, our pipeline)/batches/civic/DK_Bloom_Flamingo@-3,-4#-10,-14",
+    "trianglesOut": 150,
+    "pass": 0
+   },
+   {
+    "renderer": "Ours (Handover zone + network, our pipeline)/batches/civic/DK_Bloom_Flamingo@-3,-4#-12,-14",
+    "trianglesOut": 90,
+    "pass": 0
+   },
+   {
+    "renderer": "Ours (Handover zone + network, our pipeline)/batches/civic/DK_Bloom_Flamingo@-3,-4#-9,-14",
+    "trianglesOut": 90,
+    "pass": 0
+   },
+   {
+    "renderer": "Ours (Handover zone + network, our pipeline)/batches/civic/DK_Bloom_Flamingo@-3,-4#-9,-16",
+    "trianglesOut": 90,
+    "pass": 0
+   },
+   {
+    "renderer": "Ours (Handover zone + network, our pipeline)/batches/civic/DK_Bloom_Flamingo@-3,-5#-10,-18",
+    "trianglesOut": 120,
+    "pass": 0
+   },
+   {
+    "renderer": "Ours (Handover zone + network, our pipeline)/batches/civic/DK_Bloom_Flamingo@-3,-5#-10,-20",
+    "trianglesOut": 150,
+    "pass": 0
+   },
+   {
+    "renderer": "Ours (Handover zone + network, our pipeline)/batches/civic/DK_Bloom_Flamingo@-3,-5#-11,-18",
+    "trianglesOut": 150,
+    "pass": 0
+   },
+   {
+    "renderer": "Ours (Handover zone + network, our pipeline)/batches/civic/DK_Bloom_Flamingo@-3,-5#-11,-20",
+    "trianglesOut": 180,
+    "pass": 0
+   },
+   {
+    "renderer": "Ours (Handover zone + network, our pipeline)/batches/civic/DK_Bloom_Flamingo@-3,-5#-12,-17",
+    "trianglesOut": 90,
+    "pass": 0
+   },
+   {
+    "renderer": "Ours (Handover zone + network, our pipeline)/batches/civic/DK_Bloom_Flamingo@-3,-5#-9,-19",
+    "trianglesOut": 360,
+    "pass": 0
+   },
+   {
+    "renderer": "Ours (Handover zone + network, our pipeline)/batches/civic/DK_Bloom_Peach@-3,-4#-10,-14",
+    "trianglesOut": 105,
+    "pass": 0
+   },
+   {
+    "renderer": "Ours (Handover zone + network, our pipeline)/batches/civic/DK_Bloom_Peach@-3,-4#-12,-14",
+    "trianglesOut": 90,
+    "pass": 0
+   },
+   {
+    "renderer": "Ours (Handover zone + network, our pipeline)/batches/civic/DK_Bloom_Peach@-3,-4#-12,-16",
+    "trianglesOut": 55,
+    "pass": 0
+   },
+   {
+    "renderer": "Ours (Handover zone + network, our pipeline)/batches/civic/DK_Bloom_Peach@-3,-4#-9,-14",
+    "trianglesOut": 90,
+    "pass": 0
+   },
+   {
+    "renderer": "Ours (Handover zone + network, our pipeline)/batches/civic/DK_Bloom_Peach@-3,-4#-9,-15",
+    "trianglesOut": 57,
+    "pass": 0
+   },
+   {
+    "renderer": "Ours (Handover zone + network, our pipeline)/batches/civic/DK_Bloom_Peach@-3,-4#-9,-16",
+    "trianglesOut": 145,
+    "pass": 0
+   },
+   {
+    "renderer": "Ours (Handover zone + network, our pipeline)/batches/civic/DK_Bloom_Peach@-3,-5#-10,-18",
+    "trianglesOut": 120,
+    "pass": 0
+   },
+   {
+    "renderer": "Ours (Handover zone + network, our pipeline)/batches/civic/DK_Bloom_Peach@-3,-5#-10,-20",
+    "trianglesOut": 150,
+    "pass": 0
+   },
+   {
+    "renderer": "Ours (Handover zone + network, our pipeline)/batches/civic/DK_Bloom_Peach@-3,-5#-11,-18",
+    "trianglesOut": 135,
+    "pass": 0
+   },
+   {
+    "renderer": "Ours (Handover zone + network, our pipeline)/batches/civic/DK_Bloom_Peach@-3,-5#-11,-20",
+    "trianglesOut": 165,
+    "pass": 0
+   },
+   {
+    "renderer": "Ours (Handover zone + network, our pipeline)/batches/civic/DK_Bloom_Peach@-3,-5#-12,-17",
+    "trianglesOut": 85,
+    "pass": 0
+   },
+   {
+    "renderer": "Ours (Handover zone + network, our pipeline)/batches/civic/DK_Bloom_Peach@-3,-5#-9,-19",
+    "trianglesOut": 345,
+    "pass": 0
+   },
+   {
+    "renderer": "Ours (Handover zone + network, our pipeline)/batches/civic/DK_Brass_Civic@-3,-4#-10,-15",
+    "trianglesOut": 218,
+    "pass": 0
+   },
+   {
+    "renderer": "Ours (Handover zone + network, our pipeline)/batches/civic/DK_Brass_Civic@-3,-4#-10,-16",
+    "trianglesOut": 218,
+    "pass": 0
+   },
+   {
+    "renderer": "Ours (Handover zone + network, our pipeline)/batches/civic/DK_Brass_Civic@-3,-4#-11,-15",
+    "trianglesOut": 218,
+    "pass": 0
+   },
+   {
+    "renderer": "Ours (Handover zone + network, our pipeline)/batches/civic/DK_Brass_Civic@-3,-4#-11,-16",
+    "trianglesOut": 218,
+    "pass": 0
+   },
+   {
+    "renderer": "Ours (Handover zone + network, our pipeline)/batches/civic/DK_Brass_Civic@-3,-5#-10,-19",
+    "trianglesOut": 2890,
+    "pass": 0
+   },
+   {
+    "renderer": "Ours (Handover zone + network, our pipeline)/batches/civic/DK_Chrome@-3,-5#-10,-19",
+    "trianglesOut": 7238,
+    "pass": 0
+   },
+   {
+    "renderer": "Ours (Handover zone + network, our pipeline)/batches/civic/DK_Enamel_Ivory@-3,-5#-10,-19",
+    "trianglesOut": 7822,
+    "pass": 0
+   },
+   {
+    "renderer": "Ours (Handover zone + network, our pipeline)/batches/civic/DK_Enamel_Seafoam@-3,-4#-10,-15",
+    "trianglesOut": 112,
+    "pass": 0
+   },
+   {
+    "renderer": "Ours (Handover zone + network, our pipeline)/batches/civic/DK_Enamel_Seafoam@-3,-4#-10,-16",
+    "trianglesOut": 112,
+    "pass": 0
+   },
+   {
+    "renderer": "Ours (Handover zone + network, our pipeline)/batches/civic/DK_Enamel_Seafoam@-3,-4#-11,-15",
+    "trianglesOut": 112,
+    "pass": 0
+   },
+   {
+    "renderer": "Ours (Handover zone + network, our pipeline)/batches/civic/DK_Enamel_Seafoam@-3,-4#-11,-16",
+    "trianglesOut": 112,
+    "pass": 0
+   },
+   {
+    "renderer": "Ours (Handover zone + network, our pipeline)/batches/civic/DK_Enamel_Seafoam@-3,-5#-10,-19",
+    "trianglesOut": 3320,
+    "pass": 0
+   },
+   {
+    "renderer": "Ours (Handover zone + network, our pipeline)/batches/civic/DK_Enamel_Teal@-3,-5#-10,-19",
+    "trianglesOut": 2944,
+    "pass": 0
+   },
+   {
+    "renderer": "Ours (Handover zone + network, our pipeline)/batches/civic/DK_Flower_CoralSoft@-3,-4#-10,-15",
+    "trianglesOut": 376,
+    "pass": 0
+   },
+   {
+    "renderer": "Ours (Handover zone + network, our pipeline)/batches/civic/DK_Flower_CoralSoft@-3,-4#-11,-16",
+    "trianglesOut": 374,
+    "pass": 0
+   },
+   {
+    "renderer": "Ours (Handover zone + network, our pipeline)/batches/civic/DK_Flower_Flamingo@-3,-4#-10,-16",
+    "trianglesOut": 382,
+    "pass": 0
+   },
+   {
+    "renderer": "Ours (Handover zone + network, our pipeline)/batches/civic/DK_Flower_Flamingo@-3,-4#-11,-15",
+    "trianglesOut": 374,
+    "pass": 0
+   },
+   {
+    "renderer": "Ours (Handover zone + network, our pipeline)/batches/civic/DK_GlassDark@-3,-5#-10,-19",
+    "trianglesOut": 1312,
+    "pass": 0
+   },
+   {
+    "renderer": "Ours (Handover zone + network, our pipeline)/batches/civic/DK_GroundCover@-3,-4#-10,-15",
+    "trianglesOut": 53,
+    "pass": 0
+   },
+   {
+    "renderer": "Ours (Handover zone + network, our pipeline)/batches/civic/DK_GroundCover@-3,-4#-10,-16",
+    "trianglesOut": 45,
+    "pass": 0
+   },
+   {
+    "renderer": "Ours (Handover zone + network, our pipeline)/batches/civic/DK_GroundCover@-3,-4#-11,-15",
+    "trianglesOut": 53,
+    "pass": 0
+   },
+   {
+    "renderer": "Ours (Handover zone + network, our pipeline)/batches/civic/DK_GroundCover@-3,-4#-11,-16",
+    "trianglesOut": 45,
+    "pass": 0
+   },
+   {
+    "renderer": "Ours (Handover zone + network, our pipeline)/batches/civic/DK_Leaf_CivicDark@-3,-4#-10,-14",
+    "trianglesOut": 1210,
+    "pass": 0
+   },
+   {
+    "renderer": "Ours (Handover zone + network, our pipeline)/batches/civic/DK_Leaf_CivicDark@-3,-4#-10,-15",
+    "trianglesOut": 336,
+    "pass": 0
+   },
+   {
+    "renderer": "Ours (Handover zone + network, our pipeline)/batches/civic/DK_Leaf_CivicDark@-3,-4#-10,-16",
+    "trianglesOut": 302,
+    "pass": 0
+   },
+   {
+    "renderer": "Ours (Handover zone + network, our pipeline)/batches/civic/DK_Leaf_CivicDark@-3,-4#-11,-15",
+    "trianglesOut": 336,
+    "pass": 0
+   },
+   {
+    "renderer": "Ours (Handover zone + network, our pipeline)/batches/civic/DK_Leaf_CivicDark@-3,-4#-11,-16",
+    "trianglesOut": 302,
+    "pass": 0
+   },
+   {
+    "renderer": "Ours (Handover zone + network, our pipeline)/batches/civic/DK_Leaf_CivicDark@-3,-4#-12,-14",
+    "trianglesOut": 429,
+    "pass": 0
+   },
+   {
+    "renderer": "Ours (Handover zone + network, our pipeline)/batches/civic/DK_Leaf_CivicDark@-3,-4#-12,-16",
+    "trianglesOut": 419,
+    "pass": 0
+   },
+   {
+    "renderer": "Ours (Handover zone + network, our pipeline)/batches/civic/DK_Leaf_CivicDark@-3,-4#-9,-14",
+    "trianglesOut": 429,
+    "pass": 0
+   },
+   {
+    "renderer": "Ours (Handover zone + network, our pipeline)/batches/civic/DK_Leaf_CivicDark@-3,-4#-9,-15",
+    "trianglesOut": 413,
+    "pass": 0
+   },
+   {
+    "renderer": "Ours (Handover zone + network, our pipeline)/batches/civic/DK_Leaf_CivicDark@-3,-4#-9,-16",
+    "trianglesOut": 619,
+    "pass": 0
+   },
+   {
+    "renderer": "Ours (Handover zone + network, our pipeline)/batches/civic/DK_Leaf_CivicDark@-3,-5#-10,-18",
+    "trianglesOut": 448,
+    "pass": 0
+   },
+   {
+    "renderer": "Ours (Handover zone + network, our pipeline)/batches/civic/DK_Leaf_CivicDark@-3,-5#-10,-19",
+    "trianglesOut": 2335,
+    "pass": 0
+   },
+   {
+    "renderer": "Ours (Handover zone + network, our pipeline)/batches/civic/DK_Leaf_CivicDark@-3,-5#-10,-20",
+    "trianglesOut": 551,
+    "pass": 0
+   },
+   {
+    "renderer": "Ours (Handover zone + network, our pipeline)/batches/civic/DK_Leaf_CivicDark@-3,-5#-11,-18",
+    "trianglesOut": 497,
+    "pass": 0
+   },
+   {
+    "renderer": "Ours (Handover zone + network, our pipeline)/batches/civic/DK_Leaf_CivicDark@-3,-5#-11,-20",
+    "trianglesOut": 618,
+    "pass": 0
+   },
+   {
+    "renderer": "Ours (Handover zone + network, our pipeline)/batches/civic/DK_Leaf_CivicDark@-3,-5#-12,-17",
+    "trianglesOut": 200,
+    "pass": 0
+   },
+   {
+    "renderer": "Ours (Handover zone + network, our pipeline)/batches/civic/DK_Leaf_CivicDark@-3,-5#-9,-19",
+    "trianglesOut": 1214,
+    "pass": 0
+   },
+   {
+    "renderer": "Ours (Handover zone + network, our pipeline)/batches/civic/DK_Leaf_Civic@-3,-4#-10,-14",
+    "trianglesOut": 1202,
+    "pass": 0
+   },
+   {
+    "renderer": "Ours (Handover zone + network, our pipeline)/batches/civic/DK_Leaf_Civic@-3,-4#-12,-14",
+    "trianglesOut": 432,
+    "pass": 0
+   },
+   {
+    "renderer": "Ours (Handover zone + network, our pipeline)/batches/civic/DK_Leaf_Civic@-3,-4#-12,-16",
+    "trianglesOut": 427,
+    "pass": 0
+   },
+   {
+    "renderer": "Ours (Handover zone + network, our pipeline)/batches/civic/DK_Leaf_Civic@-3,-4#-9,-14",
+    "trianglesOut": 432,
+    "pass": 0
+   },
+   {
+    "renderer": "Ours (Handover zone + network, our pipeline)/batches/civic/DK_Leaf_Civic@-3,-4#-9,-15",
+    "trianglesOut": 432,
+    "pass": 0
+   },
+   {
+    "renderer": "Ours (Handover zone + network, our pipeline)/batches/civic/DK_Leaf_Civic@-3,-4#-9,-16",
+    "trianglesOut": 647,
+    "pass": 0
+   },
+   {
+    "renderer": "Ours (Handover zone + network, our pipeline)/batches/civic/DK_Leaf_Civic@-3,-5#-10,-18",
+    "trianglesOut": 200,
+    "pass": 0
+   },
+   {
+    "renderer": "Ours (Handover zone + network, our pipeline)/batches/civic/DK_Leaf_Civic@-3,-5#-10,-19",
+    "trianglesOut": 1611,
+    "pass": 0
+   },
+   {
+    "renderer": "Ours (Handover zone + network, our pipeline)/batches/civic/DK_Leaf_Civic@-3,-5#-10,-20",
+    "trianglesOut": 300,
+    "pass": 0
+   },
+   {
+    "renderer": "Ours (Handover zone + network, our pipeline)/batches/civic/DK_Leaf_Civic@-3,-5#-11,-18",
+    "trianglesOut": 200,
+    "pass": 0
+   },
+   {
+    "renderer": "Ours (Handover zone + network, our pipeline)/batches/civic/DK_Leaf_Civic@-3,-5#-11,-20",
+    "trianglesOut": 300,
+    "pass": 0
+   },
+   {
+    "renderer": "Ours (Handover zone + network, our pipeline)/batches/civic/DK_Leaf_Civic@-3,-5#-12,-17",
+    "trianglesOut": 232,
+    "pass": 0
+   },
+   {
+    "renderer": "Ours (Handover zone + network, our pipeline)/batches/civic/DK_Leaf_Civic@-3,-5#-9,-19",
+    "trianglesOut": 550,
+    "pass": 0
+   },
+   {
+    "renderer": "Ours (Handover zone + network, our pipeline)/batches/civic/DK_Leaf_Shrub@-3,-4#-10,-15",
+    "trianglesOut": 996,
+    "pass": 0
+   },
+   {
+    "renderer": "Ours (Handover zone + network, our pipeline)/batches/civic/DK_Leaf_Shrub@-3,-4#-10,-16",
+    "trianglesOut": 1008,
+    "pass": 0
+   },
+   {
+    "renderer": "Ours (Handover zone + network, our pipeline)/batches/civic/DK_Leaf_Shrub@-3,-4#-11,-15",
+    "trianglesOut": 1005,
+    "pass": 0
+   },
+   {
+    "renderer": "Ours (Handover zone + network, our pipeline)/batches/civic/DK_Leaf_Shrub@-3,-4#-11,-16",
+    "trianglesOut": 993,
+    "pass": 0
+   },
+   {
+    "renderer": "Ours (Handover zone + network, our pipeline)/batches/civic/DK_Limestone_Tex@-3,-4#-10,-14",
+    "trianglesOut": 312,
+    "pass": 0
+   },
+   {
+    "renderer": "Ours (Handover zone + network, our pipeline)/batches/civic/DK_Limestone_Tex@-3,-4#-10,-15",
+    "trianglesOut": 112,
+    "pass": 0
+   },
+   {
+    "renderer": "Ours (Handover zone + network, our pipeline)/batches/civic/DK_Limestone_Tex@-3,-4#-10,-16",
+    "trianglesOut": 112,
+    "pass": 0
+   },
+   {
+    "renderer": "Ours (Handover zone + network, our pipeline)/batches/civic/DK_Limestone_Tex@-3,-4#-11,-15",
+    "trianglesOut": 112,
+    "pass": 0
+   },
+   {
+    "renderer": "Ours (Handover zone + network, our pipeline)/batches/civic/DK_Limestone_Tex@-3,-4#-11,-16",
+    "trianglesOut": 112,
+    "pass": 0
+   },
+   {
+    "renderer": "Ours (Handover zone + network, our pipeline)/batches/civic/DK_Limestone_Tex@-3,-4#-12,-14",
+    "trianglesOut": 120,
+    "pass": 0
+   },
+   {
+    "renderer": "Ours (Handover zone + network, our pipeline)/batches/civic/DK_Limestone_Tex@-3,-4#-12,-16",
+    "trianglesOut": 120,
+    "pass": 0
+   },
+   {
+    "renderer": "Ours (Handover zone + network, our pipeline)/batches/civic/DK_Limestone_Tex@-3,-4#-9,-14",
+    "trianglesOut": 120,
+    "pass": 0
+   },
+   {
+    "renderer": "Ours (Handover zone + network, our pipeline)/batches/civic/DK_Limestone_Tex@-3,-4#-9,-15",
+    "trianglesOut": 120,
+    "pass": 0
+   },
+   {
+    "renderer": "Ours (Handover zone + network, our pipeline)/batches/civic/DK_Limestone_Tex@-3,-4#-9,-16",
+    "trianglesOut": 180,
+    "pass": 0
+   },
+   {
+    "renderer": "Ours (Handover zone + network, our pipeline)/batches/civic/DK_Limestone_Tex@-3,-5#-10,-19",
+    "trianglesOut": 5462,
+    "pass": 0
+   },
+   {
+    "renderer": "Ours (Handover zone + network, our pipeline)/batches/civic/DK_Limestone_Tex@-3,-5#-12,-17",
+    "trianglesOut": 60,
+    "pass": 0
+   },
+   {
+    "renderer": "Ours (Handover zone + network, our pipeline)/batches/civic/DK_Limestone@-3,-4#-10,-15",
+    "trianglesOut": 764,
+    "pass": 0
+   },
+   {
+    "renderer": "Ours (Handover zone + network, our pipeline)/batches/civic/DK_Limestone@-3,-4#-10,-16",
+    "trianglesOut": 754,
+    "pass": 0
+   },
+   {
+    "renderer": "Ours (Handover zone + network, our pipeline)/batches/civic/DK_Limestone@-3,-4#-11,-15",
+    "trianglesOut": 764,
+    "pass": 0
+   },
+   {
+    "renderer": "Ours (Handover zone + network, our pipeline)/batches/civic/DK_Limestone@-3,-4#-11,-16",
+    "trianglesOut": 754,
+    "pass": 0
+   },
+   {
+    "renderer": "Ours (Handover zone + network, our pipeline)/batches/civic/DK_Stone_Dark@-3,-5#-10,-19",
+    "trianglesOut": 3072,
+    "pass": 0
+   },
+   {
+    "renderer": "Ours (Handover zone + network, our pipeline)/batches/civic/DK_Bloom_Coral@-3,-4#-11,-14",
+    "trianglesOut": 5,
+    "pass": 1
+   },
+   {
+    "renderer": "Ours (Handover zone + network, our pipeline)/batches/civic/DK_Bloom_Coral@-3,-5#-11,-19",
+    "trianglesOut": 34,
+    "pass": 1
+   },
+   {
+    "renderer": "Ours (Handover zone + network, our pipeline)/batches/civic/DK_Bloom_Cream@-3,-4#-9,-14",
+    "trianglesOut": 5,
+    "pass": 1
+   },
+   {
+    "renderer": "Ours (Handover zone + network, our pipeline)/batches/civic/DK_Bloom_Cream@-3,-4#-9,-15",
+    "trianglesOut": 5,
+    "pass": 1
+   },
+   {
+    "renderer": "Ours (Handover zone + network, our pipeline)/batches/civic/DK_Bloom_Cream@-3,-5#-10,-19",
+    "trianglesOut": 10,
+    "pass": 1
+   },
+   {
+    "renderer": "Ours (Handover zone + network, our pipeline)/batches/civic/DK_Bloom_Peach@-3,-4#-12,-16",
+    "trianglesOut": 5,
+    "pass": 1
+   },
+   {
+    "renderer": "Ours (Handover zone + network, our pipeline)/batches/civic/DK_Bloom_Peach@-3,-4#-9,-15",
+    "trianglesOut": 3,
+    "pass": 1
+   },
+   {
+    "renderer": "Ours (Handover zone + network, our pipeline)/batches/civic/DK_Bloom_Peach@-3,-4#-9,-16",
+    "trianglesOut": 5,
+    "pass": 1
+   },
+   {
+    "renderer": "Ours (Handover zone + network, our pipeline)/batches/civic/DK_Bloom_Peach@-3,-5#-12,-17",
+    "trianglesOut": 5,
+    "pass": 1
+   },
+   {
+    "renderer": "Ours (Handover zone + network, our pipeline)/batches/civic/DK_Brass_Civic@-3,-4#-10,-15",
+    "trianglesOut": 6,
+    "pass": 1
+   },
+   {
+    "renderer": "Ours (Handover zone + network, our pipeline)/batches/civic/DK_Brass_Civic@-3,-4#-10,-16",
+    "trianglesOut": 6,
+    "pass": 1
+   },
+   {
+    "renderer": "Ours (Handover zone + network, our pipeline)/batches/civic/DK_Brass_Civic@-3,-4#-11,-15",
+    "trianglesOut": 6,
+    "pass": 1
+   },
+   {
+    "renderer": "Ours (Handover zone + network, our pipeline)/batches/civic/DK_Brass_Civic@-3,-4#-11,-16",
+    "trianglesOut": 6,
+    "pass": 1
+   },
+   {
+    "renderer": "Ours (Handover zone + network, our pipeline)/batches/civic/DK_Brass_Civic@-3,-5#-10,-19",
+    "trianglesOut": 158,
+    "pass": 1
+   },
+   {
+    "renderer": "Ours (Handover zone + network, our pipeline)/batches/civic/DK_Chrome@-3,-5#-10,-19",
+    "trianglesOut": 158,
+    "pass": 1
+   },
+   {
+    "renderer": "Ours (Handover zone + network, our pipeline)/batches/civic/DK_Enamel_Ivory@-3,-5#-10,-19",
+    "trianglesOut": 250,
+    "pass": 1
+   },
+   {
+    "renderer": "Ours (Handover zone + network, our pipeline)/batches/civic/DK_Enamel_Seafoam@-3,-5#-10,-19",
+    "trianglesOut": 12,
+    "pass": 1
+   },
+   {
+    "renderer": "Ours (Handover zone + network, our pipeline)/batches/civic/DK_Enamel_Teal@-3,-5#-10,-19",
+    "trianglesOut": 12,
+    "pass": 1
+   },
+   {
+    "renderer": "Ours (Handover zone + network, our pipeline)/batches/civic/DK_Flower_CoralSoft@-3,-4#-10,-15",
+    "trianglesOut": 8,
+    "pass": 1
+   },
+   {
+    "renderer": "Ours (Handover zone + network, our pipeline)/batches/civic/DK_Flower_CoralSoft@-3,-4#-11,-16",
+    "trianglesOut": 10,
+    "pass": 1
+   },
+   {
+    "renderer": "Ours (Handover zone + network, our pipeline)/batches/civic/DK_Flower_Flamingo@-3,-4#-10,-16",
+    "trianglesOut": 2,
+    "pass": 1
+   },
+   {
+    "renderer": "Ours (Handover zone + network, our pipeline)/batches/civic/DK_Flower_Flamingo@-3,-4#-11,-15",
+    "trianglesOut": 10,
+    "pass": 1
+   },
+   {
+    "renderer": "Ours (Handover zone + network, our pipeline)/batches/civic/DK_GroundCover@-3,-4#-10,-15",
+    "trianglesOut": 3,
+    "pass": 1
+   },
+   {
+    "renderer": "Ours (Handover zone + network, our pipeline)/batches/civic/DK_GroundCover@-3,-4#-10,-16",
+    "trianglesOut": 11,
+    "pass": 1
+   },
+   {
+    "renderer": "Ours (Handover zone + network, our pipeline)/batches/civic/DK_GroundCover@-3,-4#-11,-15",
+    "trianglesOut": 3,
+    "pass": 1
+   },
+   {
+    "renderer": "Ours (Handover zone + network, our pipeline)/batches/civic/DK_GroundCover@-3,-4#-11,-16",
+    "trianglesOut": 11,
+    "pass": 1
+   },
+   {
+    "renderer": "Ours (Handover zone + network, our pipeline)/batches/civic/DK_Leaf_CivicDark@-3,-4#-10,-14",
+    "trianglesOut": 20,
+    "pass": 1
+   },
+   {
+    "renderer": "Ours (Handover zone + network, our pipeline)/batches/civic/DK_Leaf_CivicDark@-3,-4#-10,-16",
+    "trianglesOut": 34,
+    "pass": 1
+   },
+   {
+    "renderer": "Ours (Handover zone + network, our pipeline)/batches/civic/DK_Leaf_CivicDark@-3,-4#-11,-16",
+    "trianglesOut": 34,
+    "pass": 1
+   },
+   {
+    "renderer": "Ours (Handover zone + network, our pipeline)/batches/civic/DK_Leaf_CivicDark@-3,-4#-12,-14",
+    "trianglesOut": 3,
+    "pass": 1
+   },
+   {
+    "renderer": "Ours (Handover zone + network, our pipeline)/batches/civic/DK_Leaf_CivicDark@-3,-4#-12,-16",
+    "trianglesOut": 13,
+    "pass": 1
+   },
+   {
+    "renderer": "Ours (Handover zone + network, our pipeline)/batches/civic/DK_Leaf_CivicDark@-3,-4#-9,-14",
+    "trianglesOut": 3,
+    "pass": 1
+   },
+   {
+    "renderer": "Ours (Handover zone + network, our pipeline)/batches/civic/DK_Leaf_CivicDark@-3,-4#-9,-15",
+    "trianglesOut": 19,
+    "pass": 1
+   },
+   {
+    "renderer": "Ours (Handover zone + network, our pipeline)/batches/civic/DK_Leaf_CivicDark@-3,-4#-9,-16",
+    "trianglesOut": 13,
+    "pass": 1
+   },
+   {
+    "renderer": "Ours (Handover zone + network, our pipeline)/batches/civic/DK_Leaf_CivicDark@-3,-5#-10,-19",
+    "trianglesOut": 67,
+    "pass": 1
+   },
+   {
+    "renderer": "Ours (Handover zone + network, our pipeline)/batches/civic/DK_Leaf_Civic@-3,-4#-10,-14",
+    "trianglesOut": 28,
+    "pass": 1
+   },
+   {
+    "renderer": "Ours (Handover zone + network, our pipeline)/batches/civic/DK_Leaf_Civic@-3,-4#-12,-16",
+    "trianglesOut": 5,
+    "pass": 1
+   },
+   {
+    "renderer": "Ours (Handover zone + network, our pipeline)/batches/civic/DK_Leaf_Civic@-3,-4#-9,-16",
+    "trianglesOut": 17,
+    "pass": 1
+   },
+   {
+    "renderer": "Ours (Handover zone + network, our pipeline)/batches/civic/DK_Leaf_Civic@-3,-5#-10,-19",
+    "trianglesOut": 39,
+    "pass": 1
+   },
+   {
+    "renderer": "Ours (Handover zone + network, our pipeline)/batches/civic/DK_Leaf_Shrub@-3,-4#-10,-15",
+    "trianglesOut": 10,
+    "pass": 1
+   },
+   {
+    "renderer": "Ours (Handover zone + network, our pipeline)/batches/civic/DK_Leaf_Shrub@-3,-4#-11,-15",
+    "trianglesOut": 3,
+    "pass": 1
+   },
+   {
+    "renderer": "Ours (Handover zone + network, our pipeline)/batches/civic/DK_Leaf_Shrub@-3,-4#-11,-16",
+    "trianglesOut": 15,
+    "pass": 1
+   },
+   {
+    "renderer": "Ours (Handover zone + network, our pipeline)/batches/civic/DK_Limestone_Tex@-3,-5#-10,-19",
+    "trianglesOut": 34,
+    "pass": 1
+   },
+   {
+    "renderer": "Ours (Handover zone + network, our pipeline)/batches/civic/DK_Limestone@-3,-4#-10,-15",
+    "trianglesOut": 20,
+    "pass": 1
+   },
+   {
+    "renderer": "Ours (Handover zone + network, our pipeline)/batches/civic/DK_Limestone@-3,-4#-10,-16",
+    "trianglesOut": 30,
+    "pass": 1
+   },
+   {
+    "renderer": "Ours (Handover zone + network, our pipeline)/batches/civic/DK_Limestone@-3,-4#-11,-15",
+    "trianglesOut": 20,
+    "pass": 1
+   },
+   {
+    "renderer": "Ours (Handover zone + network, our pipeline)/batches/civic/DK_Limestone@-3,-4#-11,-16",
+    "trianglesOut": 30,
+    "pass": 1
+   },
+   {
+    "renderer": "Ours (Handover zone + network, our pipeline)/batches/civic/DK_Stone_Dark@-3,-5#-10,-19",
+    "trianglesOut": 24,
+    "pass": 1
+   }
+  ],
+  "hedgeTrianglesOut": {
+   "facade-southwest": 82,
+   "facade-southeast": 62,
+   "office-west": 123,
+   "office-north": 73,
+   "dropoff-west": 99
+  },
+  "hedgeMaterials": {
+   "DK_Bloom_Coral": 47,
+   "DK_Bloom_Cream": 31,
+   "DK_Bloom_Flamingo": 24,
+   "DK_Bloom_Peach": 11,
+   "DK_Leaf_Civic": 17,
+   "DK_Leaf_CivicDark": 309
+  },
+  "targets": {
+   "CafeUpper_3": 1,
+   "RecordsTower": 1,
+   "PlanterArc": 4,
+   "CafeTerrace": 1,
+   "PlanterRun_4_A": 5,
+   "PlanterRun_4_B": 4,
+   "PlanterRun_4_C": 3,
+   "BedTuft_A": 31,
+   "BedTuft_B": 32,
+   "BedTuft_C": 29
+  },
+  "placed": [
+   {
+    "mass": "civic/cafe",
+    "piece": "CafeUpper_3_TB",
+    "how": "fade instance's renderers off, rebuild in",
+    "size": 23.16989,
+    "heights": [0.008, 0.004],
+    "trisPerLod": [13543, 3325],
+    "renderersPerLod": [1, 1],
+    "shadowOff": 0,
+    "playZoomLod": "L0 (0.827)",
+    "position": [-159, 0.18, -13.3]
+   },
+   {
+    "mass": "civic/cafe",
+    "piece": "CafeUpper_3_Planting",
+    "how": "companion at its parent's transform",
+    "size": 4,
+    "heights": [0.6667, 0.2963, 0.1667, 0.01],
+    "trisPerLod": [32835, 22665, 15493, 8911],
+    "renderersPerLod": [2, 2, 2, 2],
+    "shadowOff": 4,
+    "playZoomLod": "L3 (0.143)",
+    "position": [-159, 0.18, -13.3]
+   },
+   {
+    "mass": "civic/civic-office",
+    "piece": "RecordsTower_TB",
+    "how": "baked dome out (exact triangle match), rebuild in",
+    "size": 38,
+    "heights": [0.15, 0.05, 0.004],
+    "trisPerLod": [34712, 6732, 3380],
+    "renderersPerLod": [1, 1, 1],
+    "shadowOff": 0,
+    "playZoomLod": "L0 (1.357)",
+    "position": [-160, 0.18, -88]
+   },
+   {
+    "mass": "civic/civic-office",
+    "piece": "RecordsTower_Planting",
+    "how": "companion at its parent's transform",
+    "size": 4,
+    "heights": [0.6667, 0.2963, 0.1667, 0.01],
+    "trisPerLod": [65692, 50194, 33462, 19430],
+    "renderersPerLod": [2, 2, 2, 2],
+    "shadowOff": 4,
+    "playZoomLod": "L3 (0.143)",
+    "position": [-160, 0.18, -88]
+   },
+   {
+    "mass": "civic/fountain-garden-north-east",
+    "piece": "PlanterArc_TB",
+    "how": "baked dome out (exact triangle match), rebuild in",
+    "size": 4.64711,
+    "heights": [0.3442, 0.1878, 0.01],
+    "trisPerLod": [12284, 6236, 4016],
+    "renderersPerLod": [2, 2, 2],
+    "shadowOff": 3,
+    "playZoomLod": "L2 (0.166)",
+    "position": [-155.673, 0.18, -26.173]
+   },
+   {
+    "mass": "civic/fountain-garden-north-east",
+    "piece": "GlobeLamp_TB",
+    "how": "one per PlanterArc, in the arc's frame",
+    "size": 2.62339,
+    "heights": [0.01],
+    "trisPerLod": [1016],
+    "renderersPerLod": [1],
+    "shadowOff": 0,
+    "playZoomLod": "L0 (0.094)",
+    "position": [-154.57225, 0.645, -26.50781]
+   },
+   {
+    "mass": "civic/fountain-garden-north-west",
+    "piece": "PlanterArc_TB",
+    "how": "baked dome out (exact triangle match), rebuild in",
+    "size": 4.64711,
+    "heights": [0.3442, 0.1878, 0.01],
+    "trisPerLod": [12284, 6236, 4016],
+    "renderersPerLod": [2, 2, 2],
+    "shadowOff": 3,
+    "playZoomLod": "L2 (0.166)",
+    "position": [-164.327, 0.18, -26.173]
+   },
+   {
+    "mass": "civic/fountain-garden-north-west",
+    "piece": "GlobeLamp_TB",
+    "how": "one per PlanterArc, in the arc's frame",
+    "size": 2.62339,
+    "heights": [0.01],
+    "trisPerLod": [1016],
+    "renderersPerLod": [1],
+    "shadowOff": 0,
+    "playZoomLod": "L0 (0.094)",
+    "position": [-163.99219, 0.645, -25.07225]
+   },
+   {
+    "mass": "civic/fountain-garden-south-west",
+    "piece": "PlanterArc_TB",
+    "how": "baked dome out (exact triangle match), rebuild in",
+    "size": 4.64711,
+    "heights": [0.3442, 0.1878, 0.01],
+    "trisPerLod": [12284, 6236, 4016],
+    "renderersPerLod": [2, 2, 2],
+    "shadowOff": 3,
+    "playZoomLod": "L2 (0.166)",
+    "position": [-164.327, 0.18, -34.827]
+   },
+   {
+    "mass": "civic/fountain-garden-south-west",
+    "piece": "GlobeLamp_TB",
+    "how": "one per PlanterArc, in the arc's frame",
+    "size": 2.62339,
+    "heights": [0.01],
+    "trisPerLod": [1016],
+    "renderersPerLod": [1],
+    "shadowOff": 0,
+    "playZoomLod": "L0 (0.094)",
+    "position": [-165.42775, 0.645, -34.49219]
+   },
+   {
+    "mass": "civic/fountain-garden-south-east",
+    "piece": "PlanterArc_TB",
+    "how": "baked dome out (exact triangle match), rebuild in",
+    "size": 4.64711,
+    "heights": [0.3442, 0.1878, 0.01],
+    "trisPerLod": [12284, 6236, 4016],
+    "renderersPerLod": [2, 2, 2],
+    "shadowOff": 3,
+    "playZoomLod": "L2 (0.166)",
+    "position": [-155.673, 0.18, -34.827]
+   },
+   {
+    "mass": "civic/fountain-garden-south-east",
+    "piece": "GlobeLamp_TB",
+    "how": "one per PlanterArc, in the arc's frame",
+    "size": 2.62339,
+    "heights": [0.01],
+    "trisPerLod": [1016],
+    "renderersPerLod": [1],
+    "shadowOff": 0,
+    "playZoomLod": "L0 (0.094)",
+    "position": [-156.00781, 0.645, -35.92775]
+   },
+   {
+    "mass": "civic/cafe/terrace",
+    "piece": "CafeTerrace_TB",
+    "how": "baked dome out (exact triangle match), rebuild in",
+    "size": 34.61243,
+    "heights": [0.008, 0.004],
+    "trisPerLod": [312, 216],
+    "renderersPerLod": [1, 1],
+    "shadowOff": 0,
+    "playZoomLod": "L0 (1.236)",
+    "position": [-159, 0.18, -13.3]
+   },
+   {
+    "mass": "civic/cafe/terrace",
+    "piece": "CafeTerrace_Planting",
+    "how": "companion at its parent's transform",
+    "size": 4,
+    "heights": [0.6667, 0.2963, 0.1667, 0.01],
+    "trisPerLod": [44694, 31194, 21282, 12182],
+    "renderersPerLod": [2, 2, 2, 2],
+    "shadowOff": 4,
+    "playZoomLod": "L3 (0.143)",
+    "position": [-159, 0.18, -13.3]
+   },
+   {
+    "mass": "civic/run-west-cafe/0",
+    "piece": "PlanterRun_4_A_TB",
+    "how": "baked dome out (exact triangle match), rebuild in",
+    "size": 4,
+    "heights": [0.6667, 0.2963, 0.1667, 0.01],
+    "trisPerLod": [5655, 3837, 2657, 1547],
+    "renderersPerLod": [2, 2, 2, 2],
+    "shadowOff": 4,
+    "playZoomLod": "L3 (0.143)",
+    "position": [-179.5, 0.18, -12.5]
+   },
+   {
+    "mass": "civic/run-west-cafe/1",
+    "piece": "PlanterRun_4_B_TB",
+    "how": "baked dome out (exact triangle match), rebuild in",
+    "size": 4,
+    "heights": [0.6667, 0.2963, 0.1667, 0.01],
+    "trisPerLod": [4909, 3541, 2417, 1415],
+    "renderersPerLod": [2, 2, 2, 2],
+    "shadowOff": 4,
+    "playZoomLod": "L3 (0.143)",
+    "position": [-179.5, 0.18, -16.5]
+   },
+   {
+    "mass": "civic/run-west-south/0",
+    "piece": "PlanterRun_4_C_TB",
+    "how": "baked dome out (exact triangle match), rebuild in",
+    "size": 4,
+    "heights": [0.6667, 0.2963, 0.1667, 0.01],
+    "trisPerLod": [5976, 3906, 2726, 1578],
+    "renderersPerLod": [2, 2, 2, 2],
+    "shadowOff": 4,
+    "playZoomLod": "L3 (0.143)",
+    "position": [-179.5, 0.18, -43.5]
+   },
+   {
+    "mass": "civic/run-west-south/1",
+    "piece": "PlanterRun_4_A_TB",
+    "how": "baked dome out (exact triangle match), rebuild in",
+    "size": 4,
+    "heights": [0.6667, 0.2963, 0.1667, 0.01],
+    "trisPerLod": [5655, 3837, 2657, 1547],
+    "renderersPerLod": [2, 2, 2, 2],
+    "shadowOff": 4,
+    "playZoomLod": "L3 (0.143)",
+    "position": [-179.5, 0.18, -47.5]
+   },
+   {
+    "mass": "civic/run-west-south/2",
+    "piece": "PlanterRun_4_B_TB",
+    "how": "baked dome out (exact triangle match), rebuild in",
+    "size": 4,
+    "heights": [0.6667, 0.2963, 0.1667, 0.01],
+    "trisPerLod": [4909, 3541, 2417, 1415],
+    "renderersPerLod": [2, 2, 2, 2],
+    "shadowOff": 4,
+    "playZoomLod": "L3 (0.143)",
+    "position": [-179.5, 0.18, -51.5]
+   },
+   {
+    "mass": "civic/run-east-cafe/0",
+    "piece": "PlanterRun_4_A_TB",
+    "how": "baked dome out (exact triangle match), rebuild in",
+    "size": 4,
+    "heights": [0.6667, 0.2963, 0.1667, 0.01],
+    "trisPerLod": [5655, 3837, 2657, 1547],
+    "renderersPerLod": [2, 2, 2, 2],
+    "shadowOff": 4,
+    "playZoomLod": "L3 (0.143)",
+    "position": [-138.5, 0.18, -12.5]
+   },
+   {
+    "mass": "civic/run-east-cafe/1",
+    "piece": "PlanterRun_4_B_TB",
+    "how": "baked dome out (exact triangle match), rebuild in",
+    "size": 4,
+    "heights": [0.6667, 0.2963, 0.1667, 0.01],
+    "trisPerLod": [4909, 3541, 2417, 1415],
+    "renderersPerLod": [2, 2, 2, 2],
+    "shadowOff": 4,
+    "playZoomLod": "L3 (0.143)",
+    "position": [-138.5, 0.18, -16.5]
+   },
+   {
+    "mass": "civic/run-east-cafe/2",
+    "piece": "PlanterRun_4_C_TB",
+    "how": "baked dome out (exact triangle match), rebuild in",
+    "size": 4,
+    "heights": [0.6667, 0.2963, 0.1667, 0.01],
+    "trisPerLod": [5976, 3906, 2726, 1578],
+    "renderersPerLod": [2, 2, 2, 2],
+    "shadowOff": 4,
+    "playZoomLod": "L3 (0.143)",
+    "position": [-138.5, 0.18, -20.5]
+   },
+   {
+    "mass": "civic/run-east-cafe/3",
+    "piece": "PlanterRun_4_A_TB",
+    "how": "baked dome out (exact triangle match), rebuild in",
+    "size": 4,
+    "heights": [0.6667, 0.2963, 0.1667, 0.01],
+    "trisPerLod": [5655, 3837, 2657, 1547],
+    "renderersPerLod": [2, 2, 2, 2],
+    "shadowOff": 4,
+    "playZoomLod": "L3 (0.143)",
+    "position": [-138.5, 0.18, -24.5]
+   },
+   {
+    "mass": "civic/run-east-south/0",
+    "piece": "PlanterRun_4_B_TB",
+    "how": "baked dome out (exact triangle match), rebuild in",
+    "size": 4,
+    "heights": [0.6667, 0.2963, 0.1667, 0.01],
+    "trisPerLod": [4909, 3541, 2417, 1415],
+    "renderersPerLod": [2, 2, 2, 2],
+    "shadowOff": 4,
+    "playZoomLod": "L3 (0.143)",
+    "position": [-138.5, 0.18, -36.5]
+   },
+   {
+    "mass": "civic/run-east-south/1",
+    "piece": "PlanterRun_4_C_TB",
+    "how": "baked dome out (exact triangle match), rebuild in",
+    "size": 4,
+    "heights": [0.6667, 0.2963, 0.1667, 0.01],
+    "trisPerLod": [5976, 3906, 2726, 1578],
+    "renderersPerLod": [2, 2, 2, 2],
+    "shadowOff": 4,
+    "playZoomLod": "L3 (0.143)",
+    "position": [-138.5, 0.18, -40.5]
+   },
+   {
+    "mass": "civic/run-east-south/2",
+    "piece": "PlanterRun_4_A_TB",
+    "how": "baked dome out (exact triangle match), rebuild in",
+    "size": 4,
+    "heights": [0.6667, 0.2963, 0.1667, 0.01],
+    "trisPerLod": [5655, 3837, 2657, 1547],
+    "renderersPerLod": [2, 2, 2, 2],
+    "shadowOff": 4,
+    "playZoomLod": "L3 (0.143)",
+    "position": [-138.5, 0.18, -44.5]
+   },
+   {
+    "mass": "civic/civic-facade-southwest",
+    "piece": "CivicBedPlanting_facade-southwest",
+    "how": "bed level at the kerb top 0.703 m, hedge and tufts out",
+    "size": 4,
+    "heights": [0.6667, 0.2963, 0.1667, 0.01],
+    "trisPerLod": [28285, 19033, 13125, 7483],
+    "renderersPerLod": [2, 2, 2, 2],
+    "shadowOff": 4,
+    "playZoomLod": "L3 (0.143)",
+    "position": [-151.96466, 0.18, -79.77246]
+   },
+   {
+    "mass": "civic/civic-facade-southeast",
+    "piece": "CivicBedPlanting_facade-southeast",
+    "how": "bed level at the kerb top 0.703 m, hedge and tufts out",
+    "size": 4,
+    "heights": [0.6667, 0.2963, 0.1667, 0.01],
+    "trisPerLod": [26521, 19339, 13023, 7521],
+    "renderersPerLod": [2, 2, 2, 2],
+    "shadowOff": 4,
+    "playZoomLod": "L3 (0.143)",
+    "position": [-167.14301, 0.18, -79.09225]
+   },
+   {
+    "mass": "civic/civic-office-west",
+    "piece": "CivicBedPlanting_office-west",
+    "how": "bed level at the kerb top 0.703 m, hedge and tufts out",
+    "size": 4,
+    "heights": [0.6667, 0.2963, 0.1667, 0.01],
+    "trisPerLod": [52252, 44962, 29058, 17138],
+    "renderersPerLod": [2, 2, 2, 2],
+    "shadowOff": 4,
+    "playZoomLod": "L3 (0.143)",
+    "position": [-141.09984, 0.18, -88.86365]
+   },
+   {
+    "mass": "civic/civic-office-north",
+    "piece": "CivicBedPlanting_office-north",
+    "how": "bed level at the kerb top 0.703 m, hedge and tufts out",
+    "size": 4,
+    "heights": [0.6667, 0.2963, 0.1667, 0.01],
+    "trisPerLod": [21426, 18294, 11886, 6946],
+    "renderersPerLod": [2, 2, 2, 2],
+    "shadowOff": 4,
+    "playZoomLod": "L3 (0.143)",
+    "position": [-153.33742, 0.18, -98.7905]
+   },
+   {
+    "mass": "civic/civic-dropoff-west",
+    "piece": "CivicBedPlanting_dropoff-west",
+    "how": "bed level at the kerb top 0.703 m, hedge and tufts out",
+    "size": 4,
+    "heights": [0.6667, 0.2963, 0.1667, 0.01],
+    "trisPerLod": [23303, 15617, 10777, 6151],
+    "renderersPerLod": [2, 2, 2, 2],
+    "shadowOff": 4,
+    "playZoomLod": "L3 (0.143)",
+    "position": [-171.93433, 0.18, -102.15009]
+   }
+  ],
+  "stoneMatch": {
+   "civic/civic-office": "33217/34712 rebuild stone triangles on the dome's (34712 dome stone)",
+   "civic/fountain-garden-north-east": "1232/1232 rebuild stone triangles on the dome's (1232 dome stone)",
+   "civic/fountain-garden-north-west": "1232/1232 rebuild stone triangles on the dome's (1232 dome stone)",
+   "civic/fountain-garden-south-west": "1226/1232 rebuild stone triangles on the dome's (1232 dome stone)",
+   "civic/fountain-garden-south-east": "1226/1232 rebuild stone triangles on the dome's (1232 dome stone)",
+   "civic/cafe/terrace": "312/312 rebuild stone triangles on the dome's (312 dome stone)",
+   "civic/run-west-cafe/0": "60/60 rebuild stone triangles on the dome's (60 dome stone)",
+   "civic/run-west-cafe/1": "60/60 rebuild stone triangles on the dome's (60 dome stone)",
+   "civic/run-west-south/0": "60/60 rebuild stone triangles on the dome's (60 dome stone)",
+   "civic/run-west-south/1": "60/60 rebuild stone triangles on the dome's (60 dome stone)",
+   "civic/run-west-south/2": "60/60 rebuild stone triangles on the dome's (60 dome stone)",
+   "civic/run-east-cafe/0": "60/60 rebuild stone triangles on the dome's (60 dome stone)",
+   "civic/run-east-cafe/1": "60/60 rebuild stone triangles on the dome's (60 dome stone)",
+   "civic/run-east-cafe/2": "60/60 rebuild stone triangles on the dome's (60 dome stone)",
+   "civic/run-east-cafe/3": "60/60 rebuild stone triangles on the dome's (60 dome stone)",
+   "civic/run-east-south/0": "60/60 rebuild stone triangles on the dome's (60 dome stone)",
+   "civic/run-east-south/1": "60/60 rebuild stone triangles on the dome's (60 dome stone)",
+   "civic/run-east-south/2": "60/60 rebuild stone triangles on the dome's (60 dome stone)"
+  },
+  "batchCopies": 119
+ },
+ "countsAfter": [
+  {
+   "view": "cafe-square-y030",
+   "kind": "play",
+   "focusPlan": [-170.5, -227.5],
+   "yaw": 30,
+   "camera": "ortho 14, pitch 38, yaw 30",
+   "setPassEstimate": {
+    "forward": 29,
+    "depthNormals": 9,
+    "shadow": 20,
+    "total": 58
+   },
+   "draws": {
+    "main": 753,
+    "shadow": 1206,
+    "perCascade": [63, 1143]
+   },
+   "mainRenderers": 322,
+   "mainTriangles": 726415,
+   "opaqueTriangles": 717817,
+   "shadowsOnlyInFrustum": 23,
+   "censusVisibleRenderers": 345,
+   "censusTriangles": 729617,
+   "lodCulled": 112,
+   "shadow": {
+    "casters": 367,
+    "triangles": 769199,
+    "note": "TacticalShadows on, focusDepth 160; 2 cascades, shadow distance 200 m, splits 0.500/0.000/0.000, tile 2048",
+    "cascades": [
+     {
+      "casters": 28,
+      "draws": 63,
+      "triangles": 48997,
+      "variants": 8,
+      "sphereRadius": 57.504
+     },
+     {
+      "casters": 367,
+      "draws": 1143,
+      "triangles": 720202,
+      "variants": 12,
+      "sphereRadius": 57.504
+     }
+    ]
+   },
+   "materials": 149,
+   "shaders": 11,
+   "shaderVariantsForward": 29,
+   "groups": {
+
+   },
+   "ground": {
+
+   },
+   "probesInFrame": 2,
+   "probes": ["Gardens probe", "Handover zone probe"],
+   "sun": {
+    "inFrame": false,
+    "viewport": [-24.134, 24.029],
+    "angleFromViewAxis": 166.923
+   },
+   "flare": "LensFlareComponentSRP enabled, occlusion on, intensity 1",
+   "byLayer": {
+    "Ours (Handover zone + network, our pipeline)/batches": {
+     "renderers": 210,
+     "triangles": 405608
+    },
+    "Ours (Handover zone + network, our pipeline)/HarbourDistrict": {
+     "renderers": 86,
+     "triangles": 266305
+    },
+    "planting077 (testbed swap, review probe)/civic/cafe -> CafeUpper_3_TB": {
+     "renderers": 1,
+     "triangles": 13543
+    },
+    "planting077 (testbed swap, review probe)/civic/cafe/terrace -> CafeTerrace_Planting": {
+     "renderers": 2,
+     "triangles": 12182
+    },
+    "planting077 (testbed swap, review probe)/civic/fountain-garden-north-east -> PlanterArc_TB": {
+     "renderers": 2,
+     "triangles": 4016
+    },
+    "planting077 (testbed swap, review probe)/civic/fountain-garden-south-west -> PlanterArc_TB": {
+     "renderers": 2,
+     "triangles": 4016
+    },
+    "planting077 (testbed swap, review probe)/civic/fountain-garden-north-west -> PlanterArc_TB": {
+     "renderers": 2,
+     "triangles": 4016
+    },
+    "planting077 (testbed swap, review probe)/civic/fountain-garden-south-east -> PlanterArc_TB": {
+     "renderers": 2,
+     "triangles": 4016
+    },
+    "Ours (Handover zone + network, our pipeline)/contact": {
+     "renderers": 8,
+     "triangles": 2258
+    },
+    "planting077 (testbed swap, review probe)/civic/run-west-south/0 -> PlanterRun_4_C_TB": {
+     "renderers": 2,
+     "triangles": 1578
+    },
+    "planting077 (testbed swap, review probe)/civic/run-west-cafe/0 -> PlanterRun_4_A_TB": {
+     "renderers": 2,
+     "triangles": 1547
+    },
+    "planting077 (testbed swap, review probe)/civic/run-east-cafe/0 -> PlanterRun_4_A_TB": {
+     "renderers": 1,
+     "triangles": 1545
+    },
+    "planting077 (testbed swap, review probe)/civic/run-west-cafe/1 -> PlanterRun_4_B_TB": {
+     "renderers": 2,
+     "triangles": 1415
+    },
+    "planting077 (testbed swap, review probe)/civic/run-east-cafe/1 -> PlanterRun_4_B_TB": {
+     "renderers": 2,
+     "triangles": 1415
+    }
+   },
+   "frameMs": {
+    "Disabled": {
+     "median": 3.18,
+     "p90": 3.34,
+     "drawerActive": "inactive",
+     "renderCountersDelta": {
+      "SetPass Calls Count": 0,
+      "Draw Calls Count": 0,
+      "Batches Count": 0,
+      "Triangles Count": 0,
+      "Vertices Count": 0,
+      "Shadow Casters Count": 0,
+      "Visible Skinned Meshes Count": 0
+     }
+    },
+    "InstancedDrawing": {
+     "median": 5.16,
+     "p90": 6.4,
+     "drawerActive": "active",
+     "renderCountersDelta": {
+      "SetPass Calls Count": 0,
+      "Draw Calls Count": 0,
+      "Batches Count": 0,
+      "Triangles Count": 0,
+      "Vertices Count": 0,
+      "Shadow Casters Count": 0,
+      "Visible Skinned Meshes Count": 0
+     }
+    }
+   }
+  },
+  {
+   "view": "cafe-square-y210",
+   "kind": "play",
+   "focusPlan": [-170.5, -227.5],
+   "yaw": 210,
+   "camera": "ortho 14, pitch 38, yaw 210",
+   "setPassEstimate": {
+    "forward": 29,
+    "depthNormals": 9,
+    "shadow": 20,
+    "total": 58
+   },
+   "draws": {
+    "main": 659,
+    "shadow": 928,
+    "perCascade": [46, 882]
+   },
+   "mainRenderers": 306,
+   "mainTriangles": 738079,
+   "opaqueTriangles": 729035,
+   "shadowsOnlyInFrustum": 19,
+   "censusVisibleRenderers": 325,
+   "censusTriangles": 741503,
+   "lodCulled": 104,
+   "shadow": {
+    "casters": 357,
+    "triangles": 728612,
+    "note": "TacticalShadows on, focusDepth 160; 2 cascades, shadow distance 200 m, splits 0.500/0.000/0.000, tile 2048",
+    "cascades": [
+     {
+      "casters": 22,
+      "draws": 46,
+      "triangles": 42829,
+      "variants": 8,
+      "sphereRadius": 57.504
+     },
+     {
+      "casters": 357,
+      "draws": 882,
+      "triangles": 685783,
+      "variants": 12,
+      "sphereRadius": 57.504
+     }
+    ]
+   },
+   "materials": 150,
+   "shaders": 12,
+   "shaderVariantsForward": 29,
+   "groups": {
+
+   },
+   "ground": {
+
+   },
+   "probesInFrame": 2,
+   "probes": ["Gardens probe", "Handover zone probe"],
+   "sun": {
+    "inFrame": false,
+    "viewport": [25.134, 174.966],
+    "angleFromViewAxis": 83.812
+   },
+   "flare": "LensFlareComponentSRP enabled, occlusion on, intensity 1",
+   "byLayer": {
+    "Ours (Handover zone + network, our pipeline)/batches": {
+     "renderers": 201,
+     "triangles": 402836
+    },
+    "Ours (Handover zone + network, our pipeline)/HarbourDistrict": {
+     "renderers": 71,
+     "triangles": 253189
+    },
+    "Network (our routes, old pieces)/Sky track (old beam on our route)": {
+     "renderers": 1,
+     "triangles": 18432
+    },
+    "planting077 (testbed swap, review probe)/civic/cafe -> CafeUpper_3_TB": {
+     "renderers": 1,
+     "triangles": 13543
+    },
+    "planting077 (testbed swap, review probe)/civic/cafe/terrace -> CafeTerrace_Planting": {
+     "renderers": 2,
+     "triangles": 12182
+    },
+    "planting077 (testbed swap, review probe)/civic/cafe -> CafeUpper_3_Planting": {
+     "renderers": 2,
+     "triangles": 8911
+    },
+    "planting077 (testbed swap, review probe)/civic/fountain-garden-north-east -> PlanterArc_TB": {
+     "renderers": 2,
+     "triangles": 4016
+    },
+    "planting077 (testbed swap, review probe)/civic/fountain-garden-south-west -> PlanterArc_TB": {
+     "renderers": 2,
+     "triangles": 4016
+    },
+    "planting077 (testbed swap, review probe)/civic/fountain-garden-north-west -> PlanterArc_TB": {
+     "renderers": 2,
+     "triangles": 4016
+    },
+    "planting077 (testbed swap, review probe)/civic/fountain-garden-south-east -> PlanterArc_TB": {
+     "renderers": 2,
+     "triangles": 4016
+    },
+    "Ours (Handover zone + network, our pipeline)/contact": {
+     "renderers": 8,
+     "triangles": 2258
+    },
+    "planting077 (testbed swap, review probe)/civic/run-west-south/0 -> PlanterRun_4_C_TB": {
+     "renderers": 1,
+     "triangles": 1576
+    },
+    "planting077 (testbed swap, review probe)/civic/run-west-cafe/0 -> PlanterRun_4_A_TB": {
+     "renderers": 2,
+     "triangles": 1547
+    },
+    "planting077 (testbed swap, review probe)/civic/run-east-cafe/0 -> PlanterRun_4_A_TB": {
+     "renderers": 2,
+     "triangles": 1547
+    }
+   },
+   "frameMs": {
+    "Disabled": {
+     "median": 3.19,
+     "p90": 3.78,
+     "drawerActive": "inactive",
+     "renderCountersDelta": {
+      "SetPass Calls Count": 0,
+      "Draw Calls Count": 0,
+      "Batches Count": 0,
+      "Triangles Count": 0,
+      "Vertices Count": 0,
+      "Shadow Casters Count": 0,
+      "Visible Skinned Meshes Count": 0
+     }
+    },
+    "InstancedDrawing": {
+     "median": 6.13,
+     "p90": 6.33,
+     "drawerActive": "active",
+     "renderCountersDelta": {
+      "SetPass Calls Count": 0,
+      "Draw Calls Count": 0,
+      "Batches Count": 0,
+      "Triangles Count": 0,
+      "Vertices Count": 0,
+      "Shadow Casters Count": 0,
+      "Visible Skinned Meshes Count": 0
+     }
+    }
+   }
+  },
+  {
+   "view": "office-front-y030",
+   "kind": "play",
+   "focusPlan": [-160, -281],
+   "yaw": 30,
+   "camera": "ortho 14, pitch 38, yaw 30",
+   "setPassEstimate": {
+    "forward": 26,
+    "depthNormals": 7,
+    "shadow": 18,
+    "total": 51
+   },
+   "draws": {
+    "main": 402,
+    "shadow": 453,
+    "perCascade": [30, 423]
+   },
+   "mainRenderers": 241,
+   "mainTriangles": 612077,
+   "opaqueTriangles": 605250,
+   "shadowsOnlyInFrustum": 10,
+   "censusVisibleRenderers": 251,
+   "censusTriangles": 613317,
+   "lodCulled": 68,
+   "shadow": {
+    "casters": 168,
+    "triangles": 357838,
+    "note": "TacticalShadows on, focusDepth 160; 2 cascades, shadow distance 200 m, splits 0.500/0.000/0.000, tile 2048",
+    "cascades": [
+     {
+      "casters": 13,
+      "draws": 30,
+      "triangles": 7009,
+      "variants": 7,
+      "sphereRadius": 57.504
+     },
+     {
+      "casters": 168,
+      "draws": 423,
+      "triangles": 350829,
+      "variants": 11,
+      "sphereRadius": 57.504
+     }
+    ]
+   },
+   "materials": 96,
+   "shaders": 12,
+   "shaderVariantsForward": 26,
+   "groups": {
+
+   },
+   "ground": {
+
+   },
+   "probesInFrame": 3,
+   "probes": ["Southside north probe", "Southside west probe", "Handover zone probe"],
+   "sun": {
+    "inFrame": false,
+    "viewport": [-24.134, 24.029],
+    "angleFromViewAxis": 166.923
+   },
+   "flare": "LensFlareComponentSRP enabled, occlusion on, intensity 1",
+   "byLayer": {
+    "Ours (Handover zone + network, our pipeline)/batches": {
+     "renderers": 157,
+     "triangles": 425397
+    },
+    "Ours (Handover zone + network, our pipeline)/HarbourDistrict": {
+     "renderers": 59,
+     "triangles": 88634
+    },
+    "planting077 (testbed swap, review probe)/civic/civic-office -> RecordsTower_TB": {
+     "renderers": 1,
+     "triangles": 34712
+    },
+    "planting077 (testbed swap, review probe)/civic/civic-office -> RecordsTower_Planting": {
+     "renderers": 2,
+     "triangles": 19430
+    },
+    "planting077 (testbed swap, review probe)/civic/civic-office-west -> CivicBedPlanting_office-west": {
+     "renderers": 2,
+     "triangles": 17138
+    },
+    "planting077 (testbed swap, review probe)/civic/civic-facade-southeast -> CivicBedPlanting_facade-southeast": {
+     "renderers": 2,
+     "triangles": 7521
+    },
+    "planting077 (testbed swap, review probe)/civic/civic-facade-southwest -> CivicBedPlanting_facade-southwest": {
+     "renderers": 2,
+     "triangles": 7483
+    },
+    "planting077 (testbed swap, review probe)/civic/civic-office-north -> CivicBedPlanting_office-north": {
+     "renderers": 2,
+     "triangles": 6946
+    },
+    "Ours (Handover zone + network, our pipeline)/contact": {
+     "renderers": 10,
+     "triangles": 3537
+    },
+    "Deco City Mass/CityMass_-1_-1": {
+     "renderers": 1,
+     "triangles": 1072
+    },
+    "Southside/Podium decks": {
+     "renderers": 1,
+     "triangles": 840
+    },
+    "Deco Street/Crossing tactile pads": {
+     "renderers": 1,
+     "triangles": 124
+    },
+    "Street west verge W": {
+     "renderers": 1,
+     "triangles": 106
+    },
+    "Deco Street/Road markings": {
+     "renderers": 1,
+     "triangles": 96
+    }
+   },
+   "frameMs": {
+    "Disabled": {
+     "median": 2.98,
+     "p90": 3.51,
+     "drawerActive": "inactive",
+     "renderCountersDelta": {
+      "SetPass Calls Count": 0,
+      "Draw Calls Count": 0,
+      "Batches Count": 0,
+      "Triangles Count": 0,
+      "Vertices Count": 0,
+      "Shadow Casters Count": 0,
+      "Visible Skinned Meshes Count": 0
+     }
+    },
+    "InstancedDrawing": {
+     "median": 3.65,
+     "p90": 3.77,
+     "drawerActive": "active",
+     "renderCountersDelta": {
+      "SetPass Calls Count": 0,
+      "Draw Calls Count": 0,
+      "Batches Count": 0,
+      "Triangles Count": 0,
+      "Vertices Count": 0,
+      "Shadow Casters Count": 0,
+      "Visible Skinned Meshes Count": 0
+     }
+    }
+   }
+  },
+  {
+   "view": "office-front-y210",
+   "kind": "play",
+   "focusPlan": [-160, -281],
+   "yaw": 210,
+   "camera": "ortho 14, pitch 38, yaw 210",
+   "setPassEstimate": {
+    "forward": 25,
+    "depthNormals": 8,
+    "shadow": 19,
+    "total": 52
+   },
+   "draws": {
+    "main": 319,
+    "shadow": 332,
+    "perCascade": [32, 300]
+   },
+   "mainRenderers": 223,
+   "mainTriangles": 607585,
+   "opaqueTriangles": 600606,
+   "shadowsOnlyInFrustum": 2,
+   "censusVisibleRenderers": 225,
+   "censusTriangles": 607705,
+   "lodCulled": 45,
+   "shadow": {
+    "casters": 163,
+    "triangles": 367955,
+    "note": "TacticalShadows on, focusDepth 160; 2 cascades, shadow distance 200 m, splits 0.500/0.000/0.000, tile 2048",
+    "cascades": [
+     {
+      "casters": 16,
+      "draws": 32,
+      "triangles": 19149,
+      "variants": 8,
+      "sphereRadius": 57.504
+     },
+     {
+      "casters": 163,
+      "draws": 300,
+      "triangles": 348806,
+      "variants": 11,
+      "sphereRadius": 57.504
+     }
+    ]
+   },
+   "materials": 95,
+   "shaders": 12,
+   "shaderVariantsForward": 25,
+   "groups": {
+
+   },
+   "ground": {
+
+   },
+   "probesInFrame": 3,
+   "probes": ["Southside north probe", "Southside west probe", "Handover zone probe"],
+   "sun": {
+    "inFrame": false,
+    "viewport": [25.134, 174.966],
+    "angleFromViewAxis": 83.812
+   },
+   "flare": "LensFlareComponentSRP enabled, occlusion on, intensity 1",
+   "byLayer": {
+    "Ours (Handover zone + network, our pipeline)/batches": {
+     "renderers": 150,
+     "triangles": 429800
+    },
+    "Ours (Handover zone + network, our pipeline)/HarbourDistrict": {
+     "renderers": 39,
+     "triangles": 78188
+    },
+    "planting077 (testbed swap, review probe)/civic/civic-office -> RecordsTower_TB": {
+     "renderers": 1,
+     "triangles": 34712
+    },
+    "planting077 (testbed swap, review probe)/civic/civic-office -> RecordsTower_Planting": {
+     "renderers": 2,
+     "triangles": 19430
+    },
+    "planting077 (testbed swap, review probe)/civic/civic-office-west -> CivicBedPlanting_office-west": {
+     "renderers": 2,
+     "triangles": 17138
+    },
+    "planting077 (testbed swap, review probe)/civic/civic-facade-southeast -> CivicBedPlanting_facade-southeast": {
+     "renderers": 2,
+     "triangles": 7521
+    },
+    "planting077 (testbed swap, review probe)/civic/civic-facade-southwest -> CivicBedPlanting_facade-southwest": {
+     "renderers": 2,
+     "triangles": 7483
+    },
+    "planting077 (testbed swap, review probe)/civic/civic-office-north -> CivicBedPlanting_office-north": {
+     "renderers": 2,
+     "triangles": 6946
+    },
+    "Ours (Handover zone + network, our pipeline)/contact": {
+     "renderers": 10,
+     "triangles": 3537
+    },
+    "Deco City Mass/CityMass_-1_-1": {
+     "renderers": 1,
+     "triangles": 1072
+    },
+    "Southside/Podium decks": {
+     "renderers": 1,
+     "triangles": 840
+    },
+    "Roof decks": {
+     "renderers": 1,
+     "triangles": 431
+    },
+    "Deco Street/Crossing tactile pads": {
+     "renderers": 1,
+     "triangles": 124
+    },
+    "Street west verge W": {
+     "renderers": 1,
+     "triangles": 106
+    }
+   },
+   "frameMs": {
+    "Disabled": {
+     "median": 2.91,
+     "p90": 3.38,
+     "drawerActive": "inactive",
+     "renderCountersDelta": {
+      "SetPass Calls Count": 0,
+      "Draw Calls Count": 0,
+      "Batches Count": 0,
+      "Triangles Count": 0,
+      "Vertices Count": 0,
+      "Shadow Casters Count": 0,
+      "Visible Skinned Meshes Count": 0
+     }
+    },
+    "InstancedDrawing": {
+     "median": 3.52,
+     "p90": 3.71,
+     "drawerActive": "active",
+     "renderCountersDelta": {
+      "SetPass Calls Count": 0,
+      "Draw Calls Count": 0,
+      "Batches Count": 0,
+      "Triangles Count": 0,
+      "Vertices Count": 0,
+      "Shadow Casters Count": 0,
+      "Visible Skinned Meshes Count": 0
+     }
+    }
+   }
+  }
+ ],
+ "captures": [
+  {
+   "file": "captures/cafe-square-y030-before.png",
+   "view": "cafe-square-y030",
+   "state": "before"
+  },
+  {
+   "file": "captures/cafe-square-y210-before.png",
+   "view": "cafe-square-y210",
+   "state": "before"
+  },
+  {
+   "file": "captures/office-front-y030-before.png",
+   "view": "office-front-y030",
+   "state": "before"
+  },
+  {
+   "file": "captures/office-front-y210-before.png",
+   "view": "office-front-y210",
+   "state": "before"
+  },
+  {
+   "file": "captures/close-troughs-y030-before.png",
+   "view": "close-troughs-y030",
+   "state": "before"
+  },
+  {
+   "file": "captures/close-troughs-y210-before.png",
+   "view": "close-troughs-y210",
+   "state": "before"
+  },
+  {
+   "file": "captures/close-island-y030-before.png",
+   "view": "close-island-y030",
+   "state": "before"
+  },
+  {
+   "file": "captures/close-island-y210-before.png",
+   "view": "close-island-y210",
+   "state": "before"
+  },
+  {
+   "file": "captures/close-bed-y030-before.png",
+   "view": "close-bed-y030",
+   "state": "before"
+  },
+  {
+   "file": "captures/close-bed-y210-before.png",
+   "view": "close-bed-y210",
+   "state": "before"
+  },
+  {
+   "file": "captures/cafe-square-y030-after.png",
+   "view": "cafe-square-y030",
+   "state": "after"
+  },
+  {
+   "file": "captures/cafe-square-y210-after.png",
+   "view": "cafe-square-y210",
+   "state": "after"
+  },
+  {
+   "file": "captures/office-front-y030-after.png",
+   "view": "office-front-y030",
+   "state": "after"
+  },
+  {
+   "file": "captures/office-front-y210-after.png",
+   "view": "office-front-y210",
+   "state": "after"
+  },
+  {
+   "file": "captures/close-troughs-y030-after.png",
+   "view": "close-troughs-y030",
+   "state": "after"
+  },
+  {
+   "file": "captures/close-troughs-y210-after.png",
+   "view": "close-troughs-y210",
+   "state": "after"
+  },
+  {
+   "file": "captures/close-island-y030-after.png",
+   "view": "close-island-y030",
+   "state": "after"
+  },
+  {
+   "file": "captures/close-island-y210-after.png",
+   "view": "close-island-y210",
+   "state": "after"
+  },
+  {
+   "file": "captures/close-bed-y030-after.png",
+   "view": "close-bed-y030",
+   "state": "after"
+  },
+  {
+   "file": "captures/close-bed-y210-after.png",
+   "view": "close-bed-y210",
+   "state": "after"
+  }
+ ],
+ "views": [
+  {
+   "id": "cafe-square-y030",
+   "focusPlan": [-170.5, -227.5],
+   "yaw": 30,
+   "ortho": 14
+  },
+  {
+   "id": "cafe-square-y210",
+   "focusPlan": [-170.5, -227.5],
+   "yaw": 210,
+   "ortho": 14
+  },
+  {
+   "id": "office-front-y030",
+   "focusPlan": [-160, -281],
+   "yaw": 30,
+   "ortho": 14
+  },
+  {
+   "id": "office-front-y210",
+   "focusPlan": [-160, -281],
+   "yaw": 210,
+   "ortho": 14
+  },
+  {
+   "id": "close-troughs-y030",
+   "focusPlan": [-179.5, -220.5],
+   "yaw": 30,
+   "ortho": 4.5
+  },
+  {
+   "id": "close-troughs-y210",
+   "focusPlan": [-179.5, -220.5],
+   "yaw": 210,
+   "ortho": 4.5
+  },
+  {
+   "id": "close-island-y030",
+   "focusPlan": [-164.3, -232.2],
+   "yaw": 30,
+   "ortho": 5
+  },
+  {
+   "id": "close-island-y210",
+   "focusPlan": [-155.7, -240.8],
+   "yaw": 210,
+   "ortho": 5
+  },
+  {
+   "id": "close-bed-y030",
+   "focusPlan": [-141.10001, -294.89999],
+   "yaw": 30,
+   "ortho": 6
+  },
+  {
+   "id": "close-bed-y210",
+   "focusPlan": [-141.10001, -294.89999],
+   "yaw": 210,
+   "ortho": 6
+  }
+ ],
+ "scene": "Assets/Scenes/probe-planting077.unity",
+ "seconds": 26.1
+}

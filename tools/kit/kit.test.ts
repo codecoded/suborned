@@ -71,6 +71,7 @@ test('LOD categories (Vela, brief 007 round 3): every piece names one; its LOD s
   expect(kit.lodCategories.street).toEqual({ l1: 0.008, l2: 0.003 }); expect(kit.lodCategories.towers).toEqual({ l1: 0.3, l2: 0.1 });
   for (const a of kit.assets) {
     expect(Object.keys(kit.lodCategories), a.id).toContain(a.lodCategory);
+    if (a.extra) continue; // brief 077: an extra root's piece keeps its own screens (Vela's per-piece testbed rule, three levels), held in tools/kit/extra.test.ts
     const sw = LOD_BY_ID[a.id] ?? kit.lodCategories[a.lodCategory]; // an id's own switch points (the palms) win over the category's
     (a.lods ?? []).forEach((l, i) => expect(l.screen, `${a.id} LOD${i + 1}`).toBe(i === 0 ? sw.l1 : sw.l2));
   }
@@ -102,7 +103,7 @@ test('brief 007 round 3 wrap-up: the concept-B liner (hand-built far L2) and Pla
   const hq = by('SpaceHQ'), fbx = hq.files.find(f => f.role === 'fbx')!;
   expect(hq.status).toBe('adopted'); expect(fbx.root).toBeUndefined(); expect(fbx.sha256).toBe('f5399b467978a4aa3cabc5e21e6c3ce2ba233a8972b22f792b98b98d46838f42');
   expect(hq.lods).toBeUndefined(); expect(hq.files.some(f => f.role === 'lod')).toBe(false); expect(hq.size).toEqual([80, 252, 88.8]);
-  expect(by('PlanterArc').status).toBe('adopted'); expect(by('PlanterArc').pivot).toBe('footprint-centre-ground');
+  expect(by('PlanterArc').status).toBe('rejected'); expect(by('PlanterArc_TB').status).toBe('adopted'); expect(by('PlanterArc_TB').pivot).toBe('footprint-centre-ground'); // brief 077: the dome version rejected for its testbed rebuild
   const liner = by('OceanLiner');
   expect(liner.status).toBe('adopted'); expect(liner.lods?.length).toBe(2);
   for (const m of ['DK_Accent_Coral', 'DK_Accent_Teal', 'DK_Accent_Gold', 'DK_Liner_White', 'DK_Liner_Teak', 'DK_Liner_Dome', 'DK_Liner_Pool']) expect(liner.materials, m).toContain(m);

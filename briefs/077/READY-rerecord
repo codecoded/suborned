@@ -1,0 +1,56 @@
+077 re-record, steps 6-7 of briefs/077/READY-keel §6 · Waymark (Opus 5.5) · 2026-10-30
+Status: done. The Handover SHIPS on the adopted site and is recorded as c045. DP1, cp-loud and cp-safe are re-stamped.
+No outcome changed. Nothing committed. Logs: out/scratch/waymark/077/. Copies of the files before re-stamping: out/scratch/waymark/077/prev/.
+
+Inputs: 1cab7a51f3b152c1 (Keel's "after", 2065879346478928577). Pre-077: 31d009edc248707f.
+
+Step 6: the mission check
+- `bun run guard bun run missions:check handover --engine tree --inputs tree`: exit 0. SHIPS, 893 plays in 23.6 s, MC-1..MC-15 ok (log check.log).
+- `bun run missions:check replay handover c044`: exit 1, as expected.
+  - The only input that fails is sim/data/handover.site.json (ea0217ca7cf2 -> 1d3eb751d979).
+  - 893 of 893 plays miss their recorded final hash, because the site bytes move the start hash.
+  - Every play keeps its outcome, fail and clock: compared line by line, no play differs except in the hash (log replay-c044.log).
+- `bun run guard bun run missions:rerecord "brief 077: testbed planting adopted, planting see-through; site 4 walk cells freed at the café terrace, grid.collide solid digest; inputs re-stamped; careless-body-found's final checkpoint moved (officer-2's return run), outcome unchanged; every other play identical bar the inputs stamp"`: exit 0.
+  - SHIPS, 893 plays. Recorded runs/missions/handover/c045 (run.json, report.html, routes/).
+  - The compose step rewrote no route script. The scripts in contracts/missions/handover/routes and briefs/011/motive-fights carry no inputs stamp, so they needed nothing.
+- `bun run missions:check replay handover c045`: exit 0, REPLAY OK.
+
+Step 7: pinned scripts
+- `bun run guard bun run sim batch sim/Suborned.Sim/Fixtures briefs/027/checkpoints briefs/045/runs briefs/057`, before re-stamping: 16 played, 10 not ok.
+  - On inputs: drive-session, cp-loud, cp-safe, sky-0.2.58-session1 and session2, n185-go-held.
+  - Each of those stamps was already older than the pre-077 inputs 31d009ed, so all six were already failing on inputs before 077.
+  - The other 4 are briefs/045/runs/*.shots.json (unknown key 'status'). They are shot lists, not scripts, so they were not touched.
+- DP1: `bun run guard bun run sim drive-session`: exit 0. 141 drive orders, 18 corrected, None at 0:30.0.
+  - Diff: orders and samples are identical. Only expect.inputs, expect.start, expect.mvid and the 3 chained checkpoint hashes moved.
+- cp-loud and cp-safe: `bun run guard bun run sim fight-lab`: exit 0, 16.7 s. CP-LOUD at 1:43.3, CP-SAFE at 4:47.0. Every run replays identically.
+  - cp-loud: only stamps moved (engine 0.34.1 -> 0.35.2, inputs, start, mvid) and the checkpoint hashes.
+  - cp-safe: stamps moved too, and its orders moved by one tick: orders[12-13] (enforcer enter, tech reroute) 2491 -> 2490, and until 2871 -> 2870.
+  - fight-lab also rewrites briefs/027/keel/fight-lab.json. Its matrix rows move a lot against the committed copy, e.g. today L2/L3 and lethality.
+  - This is not 077. I ran fight-lab on a temporary worktree of HEAD (the pre-077 site, the same engine source). It writes the same cp-loud orders, the same cp-safe orders (2490 / 2870) and the same fight-lab.json, with only the inputs, start and mvid stamps different.
+  - So the tick shift and the matrix moves come from the engine changes since the last fight-lab write (0.34.1, commit cb1604f6). They do not come from the planting. The worktree has been removed.
+  - Flag for Keel/Motive: fight-lab.json is now rewritten at 0.35.2. If the old matrix should stay as the reference, restore it from out/scratch/waymark/077/prev/fight-lab.json.
+- Not re-stamped, because Keel didn't list them: sky-0.2.58-session1/2 (briefs/045/runs) and n185-go-held (briefs/057). They still fail on inputs, as they did before 077.
+- Batch after re-stamping: 9 not ok. DP1 now passes.
+  - cp-loud and cp-safe now fail a different check: "record: 11 checkpoints, the record has 10" (cp-safe 29 vs 28).
+  - The fight-lab writer leaves out the closing checkpoint at the until tick, and the batch replay counts it.
+  - The old records had the same counts (10 and 28) and the batch counted the closing one before too. The inputs failure was masking this. It is not 077.
+  - Next owner: Keel, the writer (sim/cli/FightLab.cs Script.Write) or the batch record check.
+
+Step 7 checks
+- `bun run guard bun run sim check`: exit 1, 358/360 ok (log simcheck.log).
+  - N67 throws "site has no camera 'mast-314'". N110 throws a NullReferenceException.
+  - Both predate 077: the camera id was renamed mast-314 -> records-square/mast-camera-z0 in handover.takedown.json. Not fixed here.
+  - DP1 now passes (it was the 3rd failure in Keel's run).
+- `bun run guard bun run test tools/missions`: exit 0, 78 pass, 0 fail.
+
+Diff summary (working tree)
+- new: runs/missions/handover/c045/
+- M sim/Suborned.Sim/Fixtures/drive-session.script.json: stamps and chained checkpoint hashes only.
+- M briefs/027/checkpoints/cp-loud.script.json: stamps and checkpoint hashes.
+- M briefs/027/checkpoints/cp-safe.script.json: stamps and checkpoint hashes, plus the 1-tick order shift (engine, pre-077).
+- M briefs/027/keel/fight-lab.json: the regenerated matrix at 0.35.2 (engine, pre-077; see above).
+
+Next owners
+- Aster: commit c045 and the re-stamps.
+- Keel: the cp-* closing-checkpoint mismatch; N67/N110 (mast-314); whether fight-lab.json at 0.35.2 stands.
+- Owners of the sky-0.2.58 sessions and n185-go-held: re-stamp them if they should pass.

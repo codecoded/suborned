@@ -2,8 +2,9 @@
 // Source of the binaries: SUBORNED_OLD (default ~/Projects/the-suborned) / SUBORNED_STORE; paths below are relative to the DecoKit root.
 // Frame: 1 unit = 1 m, pivot = footprint centre at ground, front = +Z. `status` is edited by hand (or by a brief); `bun run kit` keeps it.
 export type KitStatus = 'candidate' | 'adopted' | 'rejected';
-/** root: 'generated' = under the generator's output (tools/decokit: $DECOKIT_OUT, default out/decokit), else under the DecoKit root. */
-export type KitFile = { root?: 'generated'; role: 'fbx' | 'lod' | 'fbx-meta' | 'prefab' | 'prefab-meta' | 'material' | 'material-meta' | 'texture' | 'texture-meta' | 'data'; path: string; sha256: string; bytes: number };
+/** root: 'generated' = under the generator's output (tools/decokit: $DECOKIT_OUT, default out/decokit); 'extra' = under the asset's `extra` folder (brief 077, tools/kit/extra.ts),
+ *  at `src` there when the Kit/ path (`path`) is renamed for the asset's id; else under the DecoKit root. */
+export type KitFile = { root?: 'generated' | 'extra'; src?: string; role: 'fbx' | 'lod' | 'fbx-meta' | 'prefab' | 'prefab-meta' | 'material' | 'material-meta' | 'texture' | 'texture-meta' | 'data'; path: string; sha256: string; bytes: number };
 /** Generator tags. `scale` = allowed uniform scale on height; `squash` = the smallest allowed ratio of the width scale to the height scale (1 = uniform only). */
 /** reach: the side the piece's working end extends to from the pivot (`axis` in kit axes, `m` metres), e.g. a streetlamp's head over the road. */
 export type KitReach = { axis: '+x' | '-x' | '+z' | '-z'; m: number };
@@ -27,6 +28,17 @@ export type KitAsset = {
   id: string; category: string; size: [number, number, number]; pivot: 'footprint-centre-ground' | 'origin-ground'; pivotOffset?: [number, number]; front: '+Z';
   tris: number; materials: string[]; parts?: unknown; lod1?: unknown; lods?: KitLod[]; lodCategory: KitLodCategory; /** brief 072-D: its distance class (lodClasses): the every-face pieces, RecordsTower and (072 F2) the roof crowns */ lodClass?: KitLodClass; files: KitFile[]; tags: KitTags; status: KitStatus;
   source?: 'generated'; order?: KitOrder; built?: KitBuilt;
+  /** Brief 077: the extra generated root (repo-relative, e.g. out/decokit-077) the piece's 'extra' files come from (tools/kit/extra.ts). */
+  extra?: string;
+  /** Brief 077: the adopted piece this candidate rebuilds (catalogued as `<replaces>_TB`; civic-look.json swaps it in on adoption, and the old one is rejected). */
+  replaces?: string;
+  /** Brief 077: the LODGroup reference size, m, Unity's KitLods sets in place of the group's extent (the leaf-scale switch heights on 20-35 m companions). */
+  lodSize?: number;
+  /** Brief 077 (Latch's KitLods play-zoom guard, briefs/077/READY-build): this row's own LODs switch at play zoom by design (the testbed planting rule), so the guard counts it and never
+   *  fails it. Declared, never inferred from an id. */
+  lodAtPlay?: boolean;
+  /** Brief 077: per FBX object, its materials and whether it casts shadows (the soil objects: off), for KitImport. */
+  objects?: { name: string; materials: string[]; shadows: 'on' | 'off' }[];
   /** The tools/decokit script that built a piece made without a plan order (brief 008 civic pieces). */
   sourceScript?: string;
 };
@@ -57,4 +69,7 @@ export type KitPosters = { schema: 'suborned.posters/1'; brief: string; source: 
  *  variants of DK_CarEnamel_Ivory); `slots[piece]` names the base material of each paint slot on that sedan, which a traffic car swaps for the key's. */
 export type KitCarPaintKey = { body: string; roof: string; bodyHex: string; roofHex: string; family: 'pastel' | 'saturated' | 'reversed' | 'old' };
 export type KitCarPaints = { schema: 'suborned.carpaint/1'; brief: string; source: string; base: string; rule: string; slots: Record<string, { body: string; roof: string }>; keys: Record<string, KitCarPaintKey>; colours: Record<string, string>; files: KitFile[] };
-export type Kit = { schema: 'suborned.kit/1'; source: { manifest: string; materials: string; manifestSha256: string; materialsSha256: string }; lodCategories: Record<KitLodCategory, KitLodSwitch>; /** brief 072-D */ lodClasses?: Record<KitLodClass, KitLodClassSpec>; /** brief 072-F: kit-wide textures no piece's material references (the FacadeLit surface-detail array, the kit detail pairs the builder's Look materials take): `surface_*` from the generator's Textures/, hash-checked and copied like a piece's */ textures?: KitFile[]; /** brief 074-B */ colourways?: KitColourways; /** brief 075-C */ landmarks?: KitLandmarks; /** brief 075-F1 */ posters?: KitPosters; /** brief 075 roll-out */ carPaints?: KitCarPaints; assets: KitAsset[] };
+export type Kit = { schema: 'suborned.kit/1'; source: { manifest: string; materials: string; manifestSha256: string; materialsSha256: string }; lodCategories: Record<KitLodCategory, KitLodSwitch>; /** brief 072-D */ lodClasses?: Record<KitLodClass, KitLodClassSpec>; /** brief 072-F: kit-wide textures no piece's material references (the FacadeLit surface-detail array, the kit detail pairs the builder's Look materials take): `surface_*` from the generator's Textures/, hash-checked and copied like a piece's */ textures?: KitFile[]; /** brief 074-B */ colourways?: KitColourways; /** brief 075-C */ landmarks?: KitLandmarks; /** brief 075-F1 */ posters?: KitPosters; /** brief 075 roll-out */ carPaints?: KitCarPaints;
+  /** Brief 077 (Sky 2026-10-30, planting is see-through): materials that are drawn but stop no sight and no walker, wherever a piece carries them; the geometry audit measures a piece without them (tools/geometry/pieces.ts). */
+  seeThrough?: KitSeeThrough; assets: KitAsset[] };
+export type KitSeeThrough = { materials: string[]; src: string };

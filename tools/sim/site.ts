@@ -51,11 +51,15 @@ type Place = { at: number[]; src: string; reason?: string };
 export type SiteOptions = { drawnWalk?: boolean; drawnOccluders?: boolean;
   /** Brief 059 (Splice): fold the getaway stands and the rival car's way in into the site itself (`getaway.stands`, `rivals.car`, `rivals.posts`). Off, they are the second file sim/data/handover.stands.json and the site keeps the shape the engine reads (Site.cs rejects a key it does not know).
    *  Keel's 059 round turns it on (`bun run sim:site --fold-stands`) when the engine reads them from the site. */
-  foldStands?: boolean };
+  foldStands?: boolean;
+  /** Brief 077 (Keel; Sky 2026-10-30, planting is see-through): grid.collide is solidDigest (tools/sim/solids.ts: only the pieces that stand a solid in the
+   *  window; a render-only piece never moves it) and grid.drawn says so (`digest: "solid"`). Off, it is the digest every site before 077 carries (every piece placed,
+   *  render-only ones included), so a plain rebuild stays byte-identical. Turned on once, at the 077 adoption (`bun run sim:site --solid-digest`), then kept. */
+  solidDigest?: boolean };
 /** The options the committed site was built with (grid.drawn), so a check rebuilds it the same way. */
 export const optionsOfSite = (): SiteOptions => {
   const site = JSON.parse(readFileSync(join(root, SITE_FILE), 'utf8')), d = site.grid?.drawn;
-  return { drawnWalk: !!d?.walk, drawnOccluders: !!d?.sight, foldStands: !!site.getaway?.stands };
+  return { drawnWalk: !!d?.walk, drawnOccluders: !!d?.sight, foldStands: !!site.getaway?.stands, solidDigest: d?.digest === 'solid' };
 };
 /** Brief 059: the getaway stands and the rival car's way in, as the committed files hold them: in the site when folded, else the second file. */
 export const STANDS_FILE = 'sim/data/handover.stands.json';
@@ -74,6 +78,8 @@ export function buildSite(src: Source = { people: PROMOTED_PEOPLE }, opts: SiteO
   const rulebook = JSON.parse(read('contracts/rules/rulebook.json')), eyeCm: number = rulebook.values['eye-cm'].v;
   // brief 055: the walk grid with the drawn solids (tools/sim/solids.ts), a floor per cell and the drawn occluders
   const G = simGrid(plan, d, civ, eyeCm / 100, WINDOW, CELL, !!opts.drawnWalk), { solids, nx, ny, rows, free, nearestFree } = G;
+  // brief 077: a kit piece the window places with no kit.collide.json entry is unmeasured, never taken as render-only nor guessed: no site until it is declared
+  if (G.drawn.unmeasured.length) throw new Error(`${COLLIDE_FILE} has no entry for ${G.drawn.unmeasured.join(', ')}, placed in the Handover window: measure it (bun run collide) or declare it render-only (volumes [])`);
 
   // ---- sight: the civic buildings and their towers at their heights, and the built plots around the square (each behind its building line: the pavement is not a wall)
   const toBlock = (p: V): V => { // invert plan = o + bx·ax + by·ay
@@ -219,8 +225,8 @@ export function buildSite(src: Source = { people: PROMOTED_PEOPLE }, opts: SiteO
     grid: {
       x0: cm(WINDOW.x0), y0: cm(WINDOW.y0), cell: cm(CELL), nx, ny, body: cm(solids.r), rows,
       floor: floorRows(G.floor, nx, ny),
-      collide: G.drawn.collideSha,
-      drawn: { walk: !!opts.drawnWalk, sight: !!opts.drawnOccluders, walkCells: G.added.size, sightOccluders: G.occluders.length },
+      collide: opts.solidDigest ? G.drawn.solidSha : G.drawn.collideSha,
+      drawn: { walk: !!opts.drawnWalk, sight: !!opts.drawnOccluders, walkCells: G.added.size, sightOccluders: G.occluders.length, ...(opts.solidDigest ? { digest: 'solid' } : {}) },
       src: 'tools/plan/walk.ts blockersOf (built plots behind their building lines, civic footprints and towers, water, landmarks) and walk-solids.ts (the block\'s ground solids, BODY clearance), and, with drawn.walk, the drawn solids (tools/sim/solids.ts: every piece the world places, with its kit.collide.json volumes; a building\'s face by the cell centre, every other solid BODY clear, where it blocks a walker at the cell\'s floor; drawn.walkCells counts the cells they block, held or not), and the mission cameras\' poles the host stands (tools/missions/handover/legs.ts cameraPoles, kit.collide.json CCTVPole at the host\'s scale; engine 0.30.0): a cell is free when its centre is. floor: per row, run-length pairs [cm, cells], block z (the pavement 0, the carriageway -18): the ground drawn there or the floor civic-block.json declares (tools/plan/civic.ts floorAt)',
     },
     occluders,
@@ -331,7 +337,7 @@ if (import.meta.main) {
   // the drawn solids stay as the committed site has them (grid.drawn: engine 0.30 adopted both); --drawn-walk / --drawn-occluders force one on, --no-drawn-walk / --no-drawn-occluders off. Without a site file both default to off.
   const had: SiteOptions = existsSync(join(root, SITE_FILE)) ? optionsOfSite() : {};
   const flag = (on: string, off: string, was?: boolean) => (a.includes(off) ? false : a.includes(on) || !!was);
-  const { json, stands } = buildSite(src, { drawnWalk: flag('--drawn-walk', '--no-drawn-walk', had.drawnWalk), drawnOccluders: flag('--drawn-occluders', '--no-drawn-occluders', had.drawnOccluders), foldStands: flag('--fold-stands', '--no-fold-stands', had.foldStands) });
+  const { json, stands } = buildSite(src, { drawnWalk: flag('--drawn-walk', '--no-drawn-walk', had.drawnWalk), drawnOccluders: flag('--drawn-occluders', '--no-drawn-occluders', had.drawnOccluders), foldStands: flag('--fold-stands', '--no-fold-stands', had.foldStands), solidDigest: flag('--solid-digest', '--no-solid-digest', had.solidDigest) });
   writeFileSync(join(root, SITE_FILE), json);
   if (!JSON.parse(json).getaway.stands) writeFileSync(join(root, STANDS_FILE), stands); else rmSync(join(root, STANDS_FILE), { force: true }); // folded into the site: no second file
   const people = buildPeople(src);

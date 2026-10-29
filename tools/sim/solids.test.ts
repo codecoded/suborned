@@ -3,10 +3,12 @@
 import { describe, expect, test } from 'bun:test';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { civic } from '../plan/civic';
+import { civic, toPlanFn } from '../plan/civic';
 import { derive } from '../plan/plan';
-import { walkGrid } from '../plan/walk-grid';
-import { collideDigest, floorRows, HEAD, hull, simGrid, STEP } from './solids';
+import { walkGrid, WINDOW } from '../plan/walk-grid';
+import { generated } from '../plan/world-ctx';
+import { collideDigest, drawnSolids, floorRows, HEAD, hull, pavementOf, simGrid, solidDigest, STEP } from './solids';
+import { buildSite, optionsOfSite, sourceOfSite } from './site';
 import { inPoly, type V } from '../plan/geom';
 
 const root = join(import.meta.dir, '..', '..');
@@ -38,7 +40,7 @@ describe('the walk grid with the drawn solids', () => {
     expect(site.grid.rows).toEqual(site.grid.drawn.walk ? G.rows : B.rows);
     expect(site.grid.drawn.walkCells).toBe(G.added.size);
     expect(site.grid.floor).toEqual(floorRows(G.floor, G.nx, G.ny));
-    expect(site.grid.collide).toBe(G.drawn.collideSha);
+    expect(site.grid.collide).toBe(site.grid.drawn.digest === 'solid' ? G.drawn.solidSha : G.drawn.collideSha);
   });
 });
 
@@ -95,5 +97,66 @@ describe('the drawn occluders (adopted in engine 0.28.0 with the cameras\' mount
   });
   test('hull: a square and its centre give the square', () => {
     expect(hull([[0, 0], [1, 0], [1, 1], [0, 1], [0.5, 0.5]])).toEqual([[0, 0], [1, 0], [1, 1], [0, 1]]);
+  });
+});
+
+describe('brief 077: render-only planting (Sky 2026-10-30, "yeah, see through"): declared, never guessed', () => {
+  const w = generated(plan, d, civ).w, collide = read('contracts/world/kit.collide.json'), pave = pavementOf(plan), toPlan = toPlanFn(plan.civic);
+  // a walk cell with 3 m of free ground round it: a test planting 1.2 m across and 1.9 m tall (over the eye) stands there
+  const spot = (() => { for (let i = 12; i < G.nx - 12; i++) for (let j = 12; j < G.ny - 12; j++) { let ok = true; for (let a = -12; a <= 12 && ok; a++) for (let b = -12; b <= 12 && ok; b++) ok = G.cellFree(i + a, j + b); if (ok) return { i, j }; } throw new Error('no 6 m square of free ground'); })();
+  const c0 = toPlan(G.centre(spot.i, spot.j)), sq = ([[-0.6, -0.6], [0.6, -0.6], [0.6, 0.6], [-0.6, 0.6]] as V[]).map(([x, y]): V => [c0[0] + x, c0[1] + y]);
+  const withMass = (kit: string) => ({ ...w, civic: [...w.civic, { id: 'civic/zz-planting', surface: 'trim', ring: sq, base: pave, height: 1.9, source: 'kit', kit: { id: kit, scale: [1, 1, 1], yaw: 0, at: c0, base: pave } }] }) as typeof w;
+  const tall = { sha256: '', bounds: [[-0.6, 0, -0.6], [0.6, 1.9, 0.6]], class: 'solid', volumes: [{ shape: 'box', min: [-0.6, 0, -0.6], max: [0.6, 1.9, 0.6] }] };
+  const withPieces = (pieces: Record<string, unknown>) => ({ ...collide, pieces: { ...collide.pieces, ...pieces } });
+  const base = drawnSolids(plan, civ, w, WINDOW, 2, collide);
+  const own = (dr: ReturnType<typeof drawnSolids>) => dr.solids.filter((s) => s.id === 'civic/zz-planting');
+
+  test('a piece that declares no volumes (volumes: []) stands no solid: no walk cell, no occluder, and the solid digest does not move', () => {
+    const dr = drawnSolids(plan, civ, withMass('ZZ_Planting'), WINDOW, 2, withPieces({ ZZ_Planting: { ...tall, volumes: [] } }));
+    expect(own(dr)).toEqual([]);
+    expect(dr.renderOnly).toEqual([...base.renderOnly, 'ZZ_Planting'].sort());
+    expect(dr.unmeasured).toEqual([]);
+    expect(dr.volumes).toBe(base.volumes);
+    expect(dr.solidSha).toBe(base.solidSha);
+    expect(dr.collideSha).not.toBe(base.collideSha); // the digest before 077 named every piece placed: why adopting planting moved every recording's inputs
+  });
+  test('the control: the same piece with one volume blocks (a solid over the eye) and moves the solid digest', () => {
+    const dr = drawnSolids(plan, civ, withMass('ZZ_Planting'), WINDOW, 2, withPieces({ ZZ_Planting: tall }));
+    expect(own(dr).map((s) => [s.piece, +(s.z1 - s.z0).toFixed(2)])).toEqual([['ZZ_Planting', 1.9]]);
+    expect(dr.renderOnly).not.toContain('ZZ_Planting');
+    expect(dr.solidSha).not.toBe(base.solidSha);
+  });
+  test('no entry at all is not render-only: it is named unmeasured and stands as its prism, as before (the site refuses to build with it)', () => {
+    const dr = drawnSolids(plan, civ, withMass('ZZ_Unmeasured'), WINDOW, 2, collide);
+    expect(dr.unmeasured).toEqual(['ZZ_Unmeasured']);
+    expect(own(dr).map((s) => [s.piece ?? 'prism', +(s.z1 - s.z0).toFixed(2)])).toEqual([['prism', 1.9]]);
+  });
+  test('an entry without a volumes list is an error, never read as render-only', () => {
+    const { volumes: _, ...noList } = tall;
+    expect(() => drawnSolids(plan, civ, withMass('ZZ_NoList'), WINDOW, 2, withPieces({ ZZ_NoList: noList }))).toThrow(/ZZ_NoList has no volumes list/);
+  });
+  test('solidDigest: render-only pieces coming or going (or re-measured) leave it; any volume or bounds change of a piece that stands a solid, or its leaving, moves it', () => {
+    const kits = Object.keys(collide.pieces).filter((k) => collide.pieces[k].volumes.length > 0).slice(0, 3), a = solidDigest(collide, kits);
+    const ro = withPieces({ ZZ_Planting: { ...tall, volumes: [] } });
+    expect(solidDigest(ro, [...kits, 'ZZ_Planting'])).toBe(a);
+    const reMeasured = withPieces({ ZZ_Planting: { ...tall, bounds: [[-1, 0, -1], [1, 2.5, 1]], volumes: [] } });
+    expect(solidDigest(reMeasured, [...kits, 'ZZ_Planting'])).toBe(a);
+    const moved = structuredClone(collide); moved.pieces[kits[0]!].volumes[0].shape === 'box' ? (moved.pieces[kits[0]!].volumes[0].max[1] += 0.01) : (moved.pieces[kits[0]!].volumes[0].y1 += 0.01);
+    expect(solidDigest(moved, kits)).not.toBe(a);
+    const rebound = structuredClone(collide); rebound.pieces[kits[0]!].bounds[0][1] -= 0.01;
+    expect(solidDigest(rebound, kits)).not.toBe(a);
+    expect(solidDigest(collide, kits.slice(1))).not.toBe(a);
+    // and the volume a real piece stands: drop one of the window's own solids' volumes, and the drawn digest moves
+    const piece = base.solids.find((s) => s.piece && s.piece !== 'CCTVPole')!.piece!, cut = structuredClone(collide); cut.pieces[piece].volumes = cut.pieces[piece].volumes.slice(1);
+    expect(drawnSolids(plan, civ, w, WINDOW, 2, cut).solidSha).not.toBe(base.solidSha);
+  });
+  test('the site keeps the digest it was built with: off, a rebuild is byte-identical; on (sim:site --solid-digest), only grid.collide and grid.drawn.digest differ', () => {
+    const committed = readFileSync(join(root, 'sim/data/handover.site.json'), 'utf8'), opts = optionsOfSite();
+    const off = buildSite(sourceOfSite(), { ...opts, solidDigest: false }).json, on = JSON.parse(buildSite(sourceOfSite(), { ...opts, solidDigest: true }).json);
+    if (!opts.solidDigest) expect(off).toBe(committed);
+    expect(on.grid.collide).toBe(G.drawn.solidSha);
+    expect(on.grid.drawn.digest).toBe('solid');
+    const strip = (x: { grid: { collide?: string; drawn: { digest?: string } } }) => { const y = structuredClone(x); delete y.grid.collide; delete y.grid.drawn.digest; return JSON.stringify(y); };
+    expect(strip(on)).toBe(strip(JSON.parse(off)));
   });
 });

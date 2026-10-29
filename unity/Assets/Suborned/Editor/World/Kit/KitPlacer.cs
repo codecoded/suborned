@@ -69,6 +69,13 @@ namespace Suborned.World
                 if (J.S(a, "lodClass") is { } lc)
                     lodClass[id] = (lc, classes.TryGetValue(lc, out var dist) ? dist : throw new InvalidDataException($"World: kit `{id}` lodClass `{lc}` is not in kit.json lodClasses"));
                 categories_[id] = J.S(a, "category") ?? "";
+                // brief 077: a row's LODGroup size (`lodSize`), per-object shadows (`objects[].shadows` on/off) and its declared `lodAtPlay` (its own
+                // LODs switch at play zoom by design: the testbed planting, Sky 2026-10-30), which exempts it from the play-zoom guard
+                if (J.Get(a, "lodSize") is { } lsz) lodSize[id] = System.Convert.ToSingle(lsz, System.Globalization.CultureInfo.InvariantCulture);
+                if (J.Get(a, "objects") is List<object> objs)
+                    objects[id] = objs.Select(o => (J.S(o, "name"), J.S(o, "shadows") switch { "off" => false, "on" or null => true, var x => throw new InvalidDataException($"World: kit `{id}` objects[].shadows `{x}` is not on/off") })).ToArray();
+                if (J.B(a, "lodAtPlay")) { atPlay.Add(id); atPlayBuilt.Add(prefabs[id]); }
+                if (J.Get(a, "replaces") is string rp) replacesOf[id] = rp; else if (J.Get(a, "replaces") is { } ro && J.S(ro, "id") is string rid) replacesOf[id] = rid;
                 if (J.Get(a, "tags") is { } tags && J.Get(tags, "use") is List<object> use) foreach (var u in use) uses.Add(((string)u, id));
             }
         }
@@ -86,6 +93,19 @@ namespace Suborned.World
         readonly Dictionary<string, float[]> classDistances = new(System.StringComparer.Ordinal);
         /// <summary>id → the catalogue's `category` (Street, Ground, Plants, ...; "" when it has none).</summary>
         public IReadOnlyDictionary<string, string> Categories => categories_;
+        /// <summary>Brief 077 (Latch; the seam, before): the row's `lodSize` (0 = none), its `objects[]` shadow flags and its declared `lodAtPlay`.</summary>
+        public float LodSizeOf(string id) => lodSize.TryGetValue(id, out var v) ? v : 0f;
+        public IReadOnlyList<(string name, bool shadows)> ObjectsOf(string id) => objects.TryGetValue(id, out var v) ? v : System.Array.Empty<(string, bool)>();
+        public bool AtPlay(string id) => atPlay.Contains(id);
+        /// <summary>Brief 077: the adopted piece a rebuild replaces (kit.json `replaces`, e.g. RecordsTower_TB -> RecordsTower), else null: rules written
+        /// against the old id (the civic restyle's slot bindings) follow the rebuild, which keeps its stone slots by name.</summary>
+        public string ReplacesOf(string id) => replacesOf.TryGetValue(id, out var v) ? v : null;
+        readonly Dictionary<string, string> replacesOf = new(System.StringComparer.Ordinal);
+        /// <summary>Whether a placed instance's built prefab (Prefabs/Built/...) is a row that declares `lodAtPlay` (the play-zoom guard's exemption).</summary>
+        public bool AtPlayPrefab(string builtPath) => !string.IsNullOrEmpty(builtPath) && atPlayBuilt.Contains(builtPath);
+        readonly Dictionary<string, float> lodSize = new(System.StringComparer.Ordinal);
+        readonly Dictionary<string, (string, bool)[]> objects = new(System.StringComparer.Ordinal);
+        readonly HashSet<string> atPlay = new(System.StringComparer.Ordinal), atPlayBuilt = new(System.StringComparer.Ordinal);
         /// <summary>Generated pieces: id → FBX asset path.</summary>
         public IReadOnlyDictionary<string, string> Generated => generated;
         /// <summary>Every adopted piece's `tags.use` entries (e.g. `site:harbour-hotel`, `landmark:skyport-tower`), in catalogue order.</summary>

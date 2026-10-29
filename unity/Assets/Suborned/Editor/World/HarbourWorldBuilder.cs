@@ -101,7 +101,7 @@ namespace Suborned.World
             var skyline = new SkylineKit(placer, look) { SkyBodyHaze = kit.SkyBodyHaze };
             ProcFacade.Today = kit.EveryFaceToday; ProcFacade.ShellWalls = 0; // brief 072-E
             var restyle = CivicRestyle.Load(); // brief 075: Vela's civic restyle (visual only: kit slots, two plots' and the bed kerbs' material, collider-free overlays)
-            if (restyle != null) Debug.Log(restyle.Prepare(world, look));
+            if (restyle != null) Debug.Log(restyle.Prepare(world, look, placer.ReplacesOf));
             var root = Nodes.Group(null, RootName);
             var stamp = root.gameObject.AddComponent<WorldStamp>(); // what this scene was built from (the walk tool reads it)
             stamp.source = world.Source; stamp.exportSha256 = world.Sha256;
@@ -180,7 +180,8 @@ namespace Suborned.World
             Debug.Log($"World: shadow proxies {proxies} ({proxyTris} triangles), of them {ShadowProxies.Modules} every-face module proxies from L2 ({ShadowProxies.ModuleTris} triangles), {(kit.ModuleShadowProxies ? "on: no module LOD casts" : "built off")}; " +
                 $"kit facades and trees from LOD1 {(kit.ShadowProxies ? "on: kit facades and street trees cast from LOD1, no LOD of theirs casts" : "built off (kit.json shadowProxies): every LOD casts as before; the perf harness switches them")}; " +
                 $"every module's L2 is one renderer (F4); {ShadowProxies.MultiLevel} kit facade or tree groups have more than one in their proxy level, cast from the first{(ShadowProxies.MultiLevel > 0 ? ": " + string.Join(", ", ShadowProxies.MultiLevelNames) : "")}");
-            var guard = KitLods.PlayZoomGuard(root); // brief 072 (Redline's plan 3.1): throws if a building-layer group switches to L1 nearer than 36 m
+            var guard = KitLods.PlayZoomGuard(root, g => placer.AtPlayPrefab(PrefabUtility.GetPrefabAssetPathOfNearestInstanceRoot(g.gameObject))); // brief 077: rows declaring lodAtPlay are exempt
+            Debug.Log($"World: play-zoom guard exempts {KitLods.AtPlayExempt} groups whose row declares lodAtPlay (brief 077); kit soil and other objects[] shadows off: {KitLods.ShadowsOff} LOD0 renderers"); // brief 072 (Redline's plan 3.1): throws if a building-layer group switches to L1 nearer than 36 m
             Debug.Log($"World: play-zoom guard: {guard.groups} LOD groups checked; nearest L1 switch on the building layers {guard.nearest:F1} m ({guard.nearestName}) >= {KitLods.GuardM} m; {guard.otherBelow} groups outside the facade layers switch nearer (warned above)");
             ProcKit.Report(world, facade);
             ContactShade.Build(look, world, root); // brief 026: contact shade at building feet, kerb feet and under street pieces (SSAO is blind at ortho play zoom)

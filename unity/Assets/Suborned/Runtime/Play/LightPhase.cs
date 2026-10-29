@@ -34,6 +34,25 @@ namespace Suborned.Play
         public int liveCap = 32; public float liveRadius = 60f;
         float[] lampBase; // the lamps' built intensities, kept by NightFloor when a group is scaled
 
+        /// <summary>Brief 077 (Latch; Glint, light.json night.emissive globeOpal): a glow driven at an ABSOLUTE level per phase, _EmissionColor = colour x level
+        /// (alpha = level), on a scene-owned material NightPhase writes beside the scene (never the Kit .mat). Absolute, not a multiplier like roadlight.json's
+        /// glow list, whose 0..10 cap a x41.7 night (the globe opal's 0.06 -> 2.5) would break. The scene is saved at the day level.</summary>
+        [Serializable] public sealed class Glow { public Material material; public Color colour = Color.white; public float day, evening, night; }
+        public Glow[] glows = Array.Empty<Glow>();
+
+        static readonly int EmissionId = Shader.PropertyToID("_EmissionColor");
+        /// <summary>Every glow at its level for the phase.</summary>
+        public void ApplyGlows(Phase p)
+        {
+            foreach (var g in glows)
+            {
+                if (g == null || !g.material) continue;
+                float level = p == Phase.Night ? g.night : p == Phase.Evening ? g.evening : g.day;
+                var c = g.colour * level; c.a = level;
+                g.material.SetColor(EmissionId, c); g.material.EnableKeyword("_EMISSION");
+            }
+        }
+
         /// <summary>The phase of the day the look is in (Glint, brief 048). Day and Night are full looks (the two States above, built into the scene). Evening is the day State
         /// leaned toward the evening values of Resources/Atmosphere/lens.json `evening` by Dusk (0 day .. 1 evening, eased): a low warm sun with long shadows, a warmer ambient, softer reflections
         /// (here); the haze, the sky and the grade follow Dusk in DistanceHaze and AtmosphereLens; the dusk lights (the road's strip light, the lit windows) in RoadLight. Nothing of it is in the scene,
@@ -54,10 +73,10 @@ namespace Suborned.Play
         void OnDisable() { if (Instance == this) Instance = null; }
 
         /// <summary>Day or night, now. Same mission, same replay: only the look changes.</summary>
-        public void Set(bool toNight) { if (toNight) Dusk = 0f; Apply(toNight); Current = toNight ? Phase.Night : Phase.Day; } // RoadLight reads Current; day eases the dusk out
+        public void Set(bool toNight) { if (toNight) Dusk = 0f; Apply(toNight); Current = toNight ? Phase.Night : Phase.Day; ApplyGlows(Current); } // RoadLight reads Current; day eases the dusk out
 
         /// <summary>Evening: the low warm sun, the dusk haze, sky and grade (eased in over lens.json evening.easeSeconds) and the dusk lights (the road's strip light, the lit windows). The street lamps stay off: they are night lamps.</summary>
-        public void SetEvening() { Apply(false); Current = Phase.Evening; }
+        public void SetEvening() { Apply(false); Current = Phase.Evening; ApplyGlows(Current); }
 
         void Apply(bool toNight)
         {

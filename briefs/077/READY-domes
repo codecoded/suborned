@@ -1,0 +1,38 @@
+077 "the domes go" · the whole dome planting family · Vela (Opus 5.5) · 2026-10-30
+
+What's there
+- tools/decokit/domes077_paths.py (Blender): the paths the pieces plant along, read from the generator itself (civic_street._run, civic_cafe terrace runs, plaza.py arc constants) -> out/decokit/troughs077/paths.json.
+- tools/decokit/domes077.ts: the testbed's own code (createCafeGardenComposition + flowerLookLeafGeometry; createFountainGarden; createFountainGardenLights), read only from ~/Projects/the-suborned/testbed/src, sha256 pinned. Writes domes077.manifest.json and the .bin meshes. Byte-stable over two runs. footprintViolations 0.
+- tools/decokit/domes077.py (Blender): candidate pieces in out/decokit/troughs077/Models (FBX + .blend), domes_pieces.json (tris and welded verts per LOD, mesh_sha256, bounds), census.json (today's planting tris per piece, by material):
+  PlanterRun_2_A/B/C_TB, PlanterRun_Corner_A/B/C_TB, PlanterRun_End_A/B/C_TB, BedTuft_A/B/C_TB (per unit), CivicBed_<5 beds>_TB (bed level), PlanterArc_TB, GlobeLamp_TB, CafeTerrace_Planting_TB. PlanterRun_4_A/B/C_TB are from READY-troughs.
+- tools/decokit/review077_domes.py: Blender renders, day, play zoom (yaw 30/210) and close. Scenes: testbed (its own baked café and civic beds, its fountain garden and lamps), now, proposed (per-unit tufts), proposed-bed (bed level), runs-now / runs-proposed (studio assembly). Renders are in out/scratch/vela/077/d.
+- tools/decokit/review077_domes_page.py -> briefs/077/domes/index.html (self-contained, 7.2 MiB, 40 images) and briefs/077/domes/metrics.json.
+
+Findings
+- Zone total at play zoom (all dome-family placements in the civic block): today 26,055 triangles. Proposed at the testbed's gameplay LOD: 56,469 per unit (+0.06 ms GPU upper) or 90,030 bed level (+0.13 ms). At the top LOD everywhere: 206,815 / 309,872 (+0.38 / +0.60 ms). The last one uses up the 0.6 ms in hand, so keep the testbed's authored LODs (Sky's call under 028).
+- BedTuft: the ~12k is per BED, not per unit. The five tufted beds are the testbed's own civic beds moved rigidly (< 1 mm); their bed-level planting is 45,239 tris at gameplay, equal to the bake triangle for triangle. Per unit is 92-144 tris (11,678 for 92) but up to +184 draws without instancing, and it reads as clumps on the flat hedge slab. Recommended: bed level. A generator rule for Splice is in metrics.json `bedtuft`.
+- Leaf shader (Latch / Glint, can start now): DK Lit Cutaway uses URP's stock passes, so there's no vertex colour and no back-face normal flip. Roughness also needs a derived mask. Details are in metrics.json `leaf_shader` and on the page.
+- No alpha anywhere. Textures 0 new (the troughs' 9.0 MiB set is shared). The lamps add 4 night point lights (5.8 m, no shadows).
+
+Commands (run, all passed)
+  bun run guard --wait-timeout 60 /Applications/Blender.app/Contents/MacOS/Blender -b -P tools/decokit/domes077_paths.py
+  bun tools/decokit/domes077.ts
+  bun run guard --wait-timeout 60 /Applications/Blender.app/Contents/MacOS/Blender -b -t 8 -P tools/decokit/domes077.py   -> DOMES077 BUILD DONE 20
+  bun run guard --wait-timeout 60 /Applications/Blender.app/Contents/MacOS/Blender -b -t 8 -P tools/decokit/review077_domes.py -- out/scratch/vela/077/d <testbed|now|proposed|proposed-bed|runs-now|runs-proposed>
+  python3 -I tools/decokit/review077_domes_page.py
+  bun run typecheck   -> clean
+
+Not done (by the brief's limits): no catalogue entry or rejection, no kit copy, no scene, plan, sim or mission change, no paid call, no commit.
+
+Open issues
+- Run joints: the soil insets 5.5 cm at the open ends, so a thin stone bar shows between pieces. Generator fix: inset the side walls only.
+- Bed level drops the world's bed-hedge surface (a world generator change, Splice). The lamps are new placements (Vantage / Datum) with night lights (Glint).
+- Heights: café-recipe blooms reach about 1.0-1.1 m above soil; civic bed canopy blooms reach 1.24-1.36 m above soil (1.76-1.89 above the bed base). Render-only, but Keel and Vantage confirm sight ignores render meshes.
+- Still domes, not on this list: records_tower.py and cafe_upper.py embed planting(). The same recipe applies.
+- Same-id merge: folding the _TB planting into the stonework pieces' generator (so DK_PlanterRun_4_A etc. rebuild with it) is my next step once Sky picks. Then Splice catalogues and rejects the dome versions.
+
+Next owner
+- Latch + Glint: the leaf shader changes (vertex colour, back faces, roughness mask), then a default-off placement of the candidates with LODGroups from the _LODn names. Done-check: Unity captures of the café square and the office beds, yaw 30 / 210, day and night.
+- Splice: the bed-level generator rule and the bed-hedge drop (metrics.json `bedtuft`), and vendoring the testbed modules if adopted.
+- Redline: measure SetPass, draws and ms on the Air against metrics.json `zone_total`.
+- Sky, via Aster: bed level vs per unit, LODGroup vs top LOD, the look against the domes, the lamps.

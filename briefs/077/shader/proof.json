@@ -1,0 +1,596 @@
+{
+ "schema": "suborned.leaf077.proof/1",
+ "brief": "077",
+ "author": "Latch",
+ "method": "Unity batch (briefs/075/oldbuild/swap/tools/unityrun.ts), LeafShader077.Proof: (1) every material asset on DecoKit/Lit Cutaway and its keyword set; (2) each pass's vertex and fragment program compiled for Metal / StandaloneOSX for every existing keyword set, with no globals and with a play set, sha256 of the bytes; (3) 1920x1080 captures (2x supersampled) of the swap (OldTown.unity: our play look at the caf\u00e9 square and the Office front, yaw 30 and 210; the presentation look at the same poses and at street level) and our district (HarbourDistrict.unity, its play camera, the same four poses and the Office front at night), each pixel-diffed against an earlier run. Neither scene is saved.",
+ "existingMaterials": {
+  "count": 269,
+  "withLeafKeywords": 0,
+  "byCull": {
+   "cull 0": 8,
+   "cull 2": 261
+  },
+  "keywordSets": 12
+ },
+ "headShaderSha256": "44623fab0e019539711a4a84b85f8cd28326db13be3c3a62e9bdfa7e4446ac14",
+ "compiledPrograms": 242,
+ "leafVariants": {
+  "programs": 66,
+  "failed": 0
+ },
+ "runs": [
+  {
+   "what": "control: the same state twice (before-a, before-b) gives the run-to-run noise floor",
+   "tag": "before-b",
+   "against": "before-a",
+   "framesIdentical": 12,
+   "framesDiffering": 2,
+   "compiledProgramsCompared": 242,
+   "compiledProgramsChanged": 0,
+   "changedPrograms": [],
+   "frames": [
+    {
+     "name": "harbour-play-cafe-y030.png",
+     "differing": 0,
+     "maxChannelDiff": 0,
+     "bbox": "-"
+    },
+    {
+     "name": "harbour-play-cafe-y210.png",
+     "differing": 3,
+     "maxChannelDiff": 54,
+     "bbox": "862,117..866,121"
+    },
+    {
+     "name": "harbour-play-office-y030.png",
+     "differing": 0,
+     "maxChannelDiff": 0,
+     "bbox": "-"
+    },
+    {
+     "name": "harbour-play-office-y210-night.png",
+     "differing": 0,
+     "maxChannelDiff": 0,
+     "bbox": "-"
+    },
+    {
+     "name": "harbour-play-office-y210.png",
+     "differing": 0,
+     "maxChannelDiff": 0,
+     "bbox": "-"
+    },
+    {
+     "name": "swap-play-cafe-y030.png",
+     "differing": 0,
+     "maxChannelDiff": 0,
+     "bbox": "-"
+    },
+    {
+     "name": "swap-play-cafe-y210.png",
+     "differing": 0,
+     "maxChannelDiff": 0,
+     "bbox": "-"
+    },
+    {
+     "name": "swap-play-office-y030.png",
+     "differing": 0,
+     "maxChannelDiff": 0,
+     "bbox": "-"
+    },
+    {
+     "name": "swap-play-office-y210.png",
+     "differing": 0,
+     "maxChannelDiff": 0,
+     "bbox": "-"
+    },
+    {
+     "name": "swap-presentation-cafe-street.png",
+     "differing": 8423,
+     "maxChannelDiff": 10,
+     "bbox": "905,601..1494,1052"
+    },
+    {
+     "name": "swap-presentation-cafe-y030.png",
+     "differing": 0,
+     "maxChannelDiff": 0,
+     "bbox": "-"
+    },
+    {
+     "name": "swap-presentation-cafe-y210.png",
+     "differing": 0,
+     "maxChannelDiff": 0,
+     "bbox": "-"
+    },
+    {
+     "name": "swap-presentation-office-y030.png",
+     "differing": 0,
+     "maxChannelDiff": 0,
+     "bbox": "-"
+    },
+    {
+     "name": "swap-presentation-office-y210.png",
+     "differing": 0,
+     "maxChannelDiff": 0,
+     "bbox": "-"
+    }
+   ],
+   "shaderSha256": "44623fab0e019539711a4a84b85f8cd28326db13be3c3a62e9bdfa7e4446ac14",
+   "existingMaterialsOnTheSibling": false
+  },
+  {
+   "what": "REJECTED route: the two keywords added to DK_LitCutaway.shader itself, against before-b",
+   "tag": "after",
+   "against": "before-b",
+   "framesIdentical": 5,
+   "framesDiffering": 9,
+   "compiledProgramsCompared": 242,
+   "compiledProgramsChanged": 36,
+   "changedPrograms": [
+    "ShadowCaster|Vertex||_DK_CUT",
+    "ShadowCaster|Fragment||_DK_CUT",
+    "ShadowCaster|Vertex|_ALPHAPREMULTIPLY_ON _SURFACE_TYPE_TRANSPARENT|_DK_CUT",
+    "ShadowCaster|Fragment|_ALPHAPREMULTIPLY_ON _SURFACE_TYPE_TRANSPARENT|_DK_CUT",
+    "ShadowCaster|Vertex|_DETAIL_MULX2|_DK_CUT",
+    "ShadowCaster|Fragment|_DETAIL_MULX2|_DK_CUT",
+    "ShadowCaster|Vertex|_DETAIL_MULX2 _METALLICSPECGLOSSMAP _NORMALMAP _OCCLUSIONMAP|_DK_CUT",
+    "ShadowCaster|Fragment|_DETAIL_MULX2 _METALLICSPECGLOSSMAP _NORMALMAP _OCCLUSIONMAP|_DK_CUT",
+    "ShadowCaster|Vertex|_EMISSION|_DK_CUT",
+    "ShadowCaster|Fragment|_EMISSION|_DK_CUT",
+    "ShadowCaster|Vertex|_EMISSION _ENVIRONMENTREFLECTIONS_OFF _RECEIVE_SHADOWS_OFF _SPECULARHIGHLIGHTS_OFF|_DK_CUT",
+    "ShadowCaster|Fragment|_EMISSION _ENVIRONMENTREFLECTIONS_OFF _RECEIVE_SHADOWS_OFF _SPECULARHIGHLIGHTS_OFF|_DK_CUT",
+    "ShadowCaster|Vertex|_METALLICSPECGLOSSMAP _NORMALMAP _OCCLUSIONMAP|_DK_CUT",
+    "ShadowCaster|Fragment|_METALLICSPECGLOSSMAP _NORMALMAP _OCCLUSIONMAP|_DK_CUT",
+    "ShadowCaster|Vertex|_METALLICSPECGLOSSMAP _OCCLUSIONMAP|_DK_CUT",
+    "ShadowCaster|Fragment|_METALLICSPECGLOSSMAP _OCCLUSIONMAP|_DK_CUT",
+    "ShadowCaster|Vertex|_NORMALMAP|_DK_CUT",
+    "ShadowCaster|Fragment|_NORMALMAP|_DK_CUT",
+    "DepthOnly|Vertex||_DK_CUT",
+    "DepthOnly|Fragment||_DK_CUT",
+    "DepthOnly|Vertex|_ALPHAPREMULTIPLY_ON _SURFACE_TYPE_TRANSPARENT|_DK_CUT",
+    "DepthOnly|Fragment|_ALPHAPREMULTIPLY_ON _SURFACE_TYPE_TRANSPARENT|_DK_CUT",
+    "DepthOnly|Vertex|_DETAIL_MULX2|_DK_CUT",
+    "DepthOnly|Fragment|_DETAIL_MULX2|_DK_CUT",
+    "DepthOnly|Vertex|_DETAIL_MULX2 _METALLICSPECGLOSSMAP _NORMALMAP _OCCLUSIONMAP|_DK_CUT",
+    "DepthOnly|Fragment|_DETAIL_MULX2 _METALLICSPECGLOSSMAP _NORMALMAP _OCCLUSIONMAP|_DK_CUT",
+    "DepthOnly|Vertex|_EMISSION|_DK_CUT",
+    "DepthOnly|Fragment|_EMISSION|_DK_CUT",
+    "DepthOnly|Vertex|_EMISSION _ENVIRONMENTREFLECTIONS_OFF _RECEIVE_SHADOWS_OFF _SPECULARHIGHLIGHTS_OFF|_DK_CUT",
+    "DepthOnly|Fragment|_EMISSION _ENVIRONMENTREFLECTIONS_OFF _RECEIVE_SHADOWS_OFF _SPECULARHIGHLIGHTS_OFF|_DK_CUT",
+    "DepthOnly|Vertex|_METALLICSPECGLOSSMAP _NORMALMAP _OCCLUSIONMAP|_DK_CUT",
+    "DepthOnly|Fragment|_METALLICSPECGLOSSMAP _NORMALMAP _OCCLUSIONMAP|_DK_CUT",
+    "DepthOnly|Vertex|_METALLICSPECGLOSSMAP _OCCLUSIONMAP|_DK_CUT",
+    "DepthOnly|Fragment|_METALLICSPECGLOSSMAP _OCCLUSIONMAP|_DK_CUT",
+    "DepthOnly|Vertex|_NORMALMAP|_DK_CUT",
+    "DepthOnly|Fragment|_NORMALMAP|_DK_CUT"
+   ],
+   "frames": [
+    {
+     "name": "harbour-play-cafe-y030.png",
+     "differing": 1560166,
+     "maxChannelDiff": 140,
+     "bbox": "0,0..1919,1079"
+    },
+    {
+     "name": "harbour-play-cafe-y210.png",
+     "differing": 1350778,
+     "maxChannelDiff": 196,
+     "bbox": "0,0..1919,1079"
+    },
+    {
+     "name": "harbour-play-office-y030.png",
+     "differing": 1762317,
+     "maxChannelDiff": 234,
+     "bbox": "0,0..1919,1079"
+    },
+    {
+     "name": "harbour-play-office-y210-night.png",
+     "differing": 398337,
+     "maxChannelDiff": 139,
+     "bbox": "0,0..1919,1079"
+    },
+    {
+     "name": "harbour-play-office-y210.png",
+     "differing": 1518993,
+     "maxChannelDiff": 195,
+     "bbox": "0,0..1919,1079"
+    },
+    {
+     "name": "swap-play-cafe-y030.png",
+     "differing": 0,
+     "maxChannelDiff": 0,
+     "bbox": "-"
+    },
+    {
+     "name": "swap-play-cafe-y210.png",
+     "differing": 166,
+     "maxChannelDiff": 55,
+     "bbox": "326,0..1015,1079"
+    },
+    {
+     "name": "swap-play-office-y030.png",
+     "differing": 0,
+     "maxChannelDiff": 0,
+     "bbox": "-"
+    },
+    {
+     "name": "swap-play-office-y210.png",
+     "differing": 3,
+     "maxChannelDiff": 1,
+     "bbox": "1591,779..1653,785"
+    },
+    {
+     "name": "swap-presentation-cafe-street.png",
+     "differing": 4112,
+     "maxChannelDiff": 4,
+     "bbox": "905,584..1494,1036"
+    },
+    {
+     "name": "swap-presentation-cafe-y030.png",
+     "differing": 0,
+     "maxChannelDiff": 0,
+     "bbox": "-"
+    },
+    {
+     "name": "swap-presentation-cafe-y210.png",
+     "differing": 132,
+     "maxChannelDiff": 68,
+     "bbox": "342,4..1041,1014"
+    },
+    {
+     "name": "swap-presentation-office-y030.png",
+     "differing": 0,
+     "maxChannelDiff": 0,
+     "bbox": "-"
+    },
+    {
+     "name": "swap-presentation-office-y210.png",
+     "differing": 0,
+     "maxChannelDiff": 0,
+     "bbox": "-"
+    }
+   ],
+   "shaderSha256": "ce244c9193d97b4ff3ed3e2d4302e50eff40bf5294b6900493cf94501bfdb6dc",
+   "existingMaterialsOnTheSibling": false
+  },
+  {
+   "what": "DK_LitCutaway.shader put back to HEAD, against the rejected route: the old frames come back",
+   "tag": "revert",
+   "against": "after",
+   "framesIdentical": 5,
+   "framesDiffering": 9,
+   "compiledProgramsCompared": 242,
+   "compiledProgramsChanged": 36,
+   "changedPrograms": [
+    "ShadowCaster|Vertex||_DK_CUT",
+    "ShadowCaster|Fragment||_DK_CUT",
+    "ShadowCaster|Vertex|_ALPHAPREMULTIPLY_ON _SURFACE_TYPE_TRANSPARENT|_DK_CUT",
+    "ShadowCaster|Fragment|_ALPHAPREMULTIPLY_ON _SURFACE_TYPE_TRANSPARENT|_DK_CUT",
+    "ShadowCaster|Vertex|_DETAIL_MULX2|_DK_CUT",
+    "ShadowCaster|Fragment|_DETAIL_MULX2|_DK_CUT",
+    "ShadowCaster|Vertex|_DETAIL_MULX2 _METALLICSPECGLOSSMAP _NORMALMAP _OCCLUSIONMAP|_DK_CUT",
+    "ShadowCaster|Fragment|_DETAIL_MULX2 _METALLICSPECGLOSSMAP _NORMALMAP _OCCLUSIONMAP|_DK_CUT",
+    "ShadowCaster|Vertex|_EMISSION|_DK_CUT",
+    "ShadowCaster|Fragment|_EMISSION|_DK_CUT",
+    "ShadowCaster|Vertex|_EMISSION _ENVIRONMENTREFLECTIONS_OFF _RECEIVE_SHADOWS_OFF _SPECULARHIGHLIGHTS_OFF|_DK_CUT",
+    "ShadowCaster|Fragment|_EMISSION _ENVIRONMENTREFLECTIONS_OFF _RECEIVE_SHADOWS_OFF _SPECULARHIGHLIGHTS_OFF|_DK_CUT",
+    "ShadowCaster|Vertex|_METALLICSPECGLOSSMAP _NORMALMAP _OCCLUSIONMAP|_DK_CUT",
+    "ShadowCaster|Fragment|_METALLICSPECGLOSSMAP _NORMALMAP _OCCLUSIONMAP|_DK_CUT",
+    "ShadowCaster|Vertex|_METALLICSPECGLOSSMAP _OCCLUSIONMAP|_DK_CUT",
+    "ShadowCaster|Fragment|_METALLICSPECGLOSSMAP _OCCLUSIONMAP|_DK_CUT",
+    "ShadowCaster|Vertex|_NORMALMAP|_DK_CUT",
+    "ShadowCaster|Fragment|_NORMALMAP|_DK_CUT",
+    "DepthOnly|Vertex||_DK_CUT",
+    "DepthOnly|Fragment||_DK_CUT",
+    "DepthOnly|Vertex|_ALPHAPREMULTIPLY_ON _SURFACE_TYPE_TRANSPARENT|_DK_CUT",
+    "DepthOnly|Fragment|_ALPHAPREMULTIPLY_ON _SURFACE_TYPE_TRANSPARENT|_DK_CUT",
+    "DepthOnly|Vertex|_DETAIL_MULX2|_DK_CUT",
+    "DepthOnly|Fragment|_DETAIL_MULX2|_DK_CUT",
+    "DepthOnly|Vertex|_DETAIL_MULX2 _METALLICSPECGLOSSMAP _NORMALMAP _OCCLUSIONMAP|_DK_CUT",
+    "DepthOnly|Fragment|_DETAIL_MULX2 _METALLICSPECGLOSSMAP _NORMALMAP _OCCLUSIONMAP|_DK_CUT",
+    "DepthOnly|Vertex|_EMISSION|_DK_CUT",
+    "DepthOnly|Fragment|_EMISSION|_DK_CUT",
+    "DepthOnly|Vertex|_EMISSION _ENVIRONMENTREFLECTIONS_OFF _RECEIVE_SHADOWS_OFF _SPECULARHIGHLIGHTS_OFF|_DK_CUT",
+    "DepthOnly|Fragment|_EMISSION _ENVIRONMENTREFLECTIONS_OFF _RECEIVE_SHADOWS_OFF _SPECULARHIGHLIGHTS_OFF|_DK_CUT",
+    "DepthOnly|Vertex|_METALLICSPECGLOSSMAP _NORMALMAP _OCCLUSIONMAP|_DK_CUT",
+    "DepthOnly|Fragment|_METALLICSPECGLOSSMAP _NORMALMAP _OCCLUSIONMAP|_DK_CUT",
+    "DepthOnly|Vertex|_METALLICSPECGLOSSMAP _OCCLUSIONMAP|_DK_CUT",
+    "DepthOnly|Fragment|_METALLICSPECGLOSSMAP _OCCLUSIONMAP|_DK_CUT",
+    "DepthOnly|Vertex|_NORMALMAP|_DK_CUT",
+    "DepthOnly|Fragment|_NORMALMAP|_DK_CUT"
+   ],
+   "frames": [
+    {
+     "name": "harbour-play-cafe-y030.png",
+     "differing": 1560166,
+     "maxChannelDiff": 140,
+     "bbox": "0,0..1919,1079"
+    },
+    {
+     "name": "harbour-play-cafe-y210.png",
+     "differing": 1350778,
+     "maxChannelDiff": 196,
+     "bbox": "0,0..1919,1079"
+    },
+    {
+     "name": "harbour-play-office-y030.png",
+     "differing": 1762317,
+     "maxChannelDiff": 234,
+     "bbox": "0,0..1919,1079"
+    },
+    {
+     "name": "harbour-play-office-y210-night.png",
+     "differing": 398337,
+     "maxChannelDiff": 139,
+     "bbox": "0,0..1919,1079"
+    },
+    {
+     "name": "harbour-play-office-y210.png",
+     "differing": 1518993,
+     "maxChannelDiff": 195,
+     "bbox": "0,0..1919,1079"
+    },
+    {
+     "name": "swap-play-cafe-y030.png",
+     "differing": 0,
+     "maxChannelDiff": 0,
+     "bbox": "-"
+    },
+    {
+     "name": "swap-play-cafe-y210.png",
+     "differing": 166,
+     "maxChannelDiff": 55,
+     "bbox": "326,0..1015,1079"
+    },
+    {
+     "name": "swap-play-office-y030.png",
+     "differing": 0,
+     "maxChannelDiff": 0,
+     "bbox": "-"
+    },
+    {
+     "name": "swap-play-office-y210.png",
+     "differing": 3,
+     "maxChannelDiff": 1,
+     "bbox": "1591,779..1653,785"
+    },
+    {
+     "name": "swap-presentation-cafe-street.png",
+     "differing": 4111,
+     "maxChannelDiff": 4,
+     "bbox": "905,584..1852,1036"
+    },
+    {
+     "name": "swap-presentation-cafe-y030.png",
+     "differing": 0,
+     "maxChannelDiff": 0,
+     "bbox": "-"
+    },
+    {
+     "name": "swap-presentation-cafe-y210.png",
+     "differing": 132,
+     "maxChannelDiff": 68,
+     "bbox": "342,4..1041,1014"
+    },
+    {
+     "name": "swap-presentation-office-y030.png",
+     "differing": 0,
+     "maxChannelDiff": 0,
+     "bbox": "-"
+    },
+    {
+     "name": "swap-presentation-office-y210.png",
+     "differing": 0,
+     "maxChannelDiff": 0,
+     "bbox": "-"
+    }
+   ],
+   "shaderSha256": "44623fab0e019539711a4a84b85f8cd28326db13be3c3a62e9bdfa7e4446ac14",
+   "existingMaterialsOnTheSibling": false
+  },
+  {
+   "what": "stress test (not the shipping set-up): every existing DecoKit/Lit Cutaway material moved in memory onto the sibling, against revert",
+   "tag": "sibling",
+   "against": "revert",
+   "framesIdentical": 0,
+   "framesDiffering": 14,
+   "compiledProgramsCompared": 242,
+   "compiledProgramsChanged": 0,
+   "changedPrograms": [],
+   "frames": [
+    {
+     "name": "harbour-play-cafe-y030.png",
+     "differing": 327,
+     "maxChannelDiff": 108,
+     "bbox": "211,77..1304,1077"
+    },
+    {
+     "name": "harbour-play-cafe-y210.png",
+     "differing": 93244,
+     "maxChannelDiff": 120,
+     "bbox": "99,0..1919,1079"
+    },
+    {
+     "name": "harbour-play-office-y030.png",
+     "differing": 2683,
+     "maxChannelDiff": 127,
+     "bbox": "3,0..1780,1047"
+    },
+    {
+     "name": "harbour-play-office-y210-night.png",
+     "differing": 75,
+     "maxChannelDiff": 14,
+     "bbox": "413,743..1919,1078"
+    },
+    {
+     "name": "harbour-play-office-y210.png",
+     "differing": 1814,
+     "maxChannelDiff": 78,
+     "bbox": "331,719..1919,1079"
+    },
+    {
+     "name": "swap-play-cafe-y030.png",
+     "differing": 2230,
+     "maxChannelDiff": 41,
+     "bbox": "0,0..1575,1079"
+    },
+    {
+     "name": "swap-play-cafe-y210.png",
+     "differing": 44784,
+     "maxChannelDiff": 62,
+     "bbox": "197,0..1919,1079"
+    },
+    {
+     "name": "swap-play-office-y030.png",
+     "differing": 2649,
+     "maxChannelDiff": 99,
+     "bbox": "150,3..1642,1077"
+    },
+    {
+     "name": "swap-play-office-y210.png",
+     "differing": 493,
+     "maxChannelDiff": 44,
+     "bbox": "3,7..1736,1079"
+    },
+    {
+     "name": "swap-presentation-cafe-street.png",
+     "differing": 4296,
+     "maxChannelDiff": 11,
+     "bbox": "385,521..1889,1055"
+    },
+    {
+     "name": "swap-presentation-cafe-y030.png",
+     "differing": 955,
+     "maxChannelDiff": 39,
+     "bbox": "1,0..1527,1079"
+    },
+    {
+     "name": "swap-presentation-cafe-y210.png",
+     "differing": 54863,
+     "maxChannelDiff": 68,
+     "bbox": "225,0..1919,1078"
+    },
+    {
+     "name": "swap-presentation-office-y030.png",
+     "differing": 1622,
+     "maxChannelDiff": 86,
+     "bbox": "256,27..1720,1079"
+    },
+    {
+     "name": "swap-presentation-office-y210.png",
+     "differing": 684,
+     "maxChannelDiff": 17,
+     "bbox": "8,0..1832,1079"
+    }
+   ],
+   "shaderSha256": "44623fab0e019539711a4a84b85f8cd28326db13be3c3a62e9bdfa7e4446ac14",
+   "existingMaterialsOnTheSibling": true
+  },
+  {
+   "what": "SHIPPING state: DK_LitCutaway.shader byte-identical to HEAD, the sibling and leaf includes present, against before-b",
+   "tag": "final",
+   "against": "before-b",
+   "framesIdentical": 13,
+   "framesDiffering": 1,
+   "compiledProgramsCompared": 242,
+   "compiledProgramsChanged": 0,
+   "changedPrograms": [],
+   "frames": [
+    {
+     "name": "harbour-play-cafe-y030.png",
+     "differing": 0,
+     "maxChannelDiff": 0,
+     "bbox": "-"
+    },
+    {
+     "name": "harbour-play-cafe-y210.png",
+     "differing": 0,
+     "maxChannelDiff": 0,
+     "bbox": "-"
+    },
+    {
+     "name": "harbour-play-office-y030.png",
+     "differing": 0,
+     "maxChannelDiff": 0,
+     "bbox": "-"
+    },
+    {
+     "name": "harbour-play-office-y210-night.png",
+     "differing": 0,
+     "maxChannelDiff": 0,
+     "bbox": "-"
+    },
+    {
+     "name": "harbour-play-office-y210.png",
+     "differing": 0,
+     "maxChannelDiff": 0,
+     "bbox": "-"
+    },
+    {
+     "name": "swap-play-cafe-y030.png",
+     "differing": 0,
+     "maxChannelDiff": 0,
+     "bbox": "-"
+    },
+    {
+     "name": "swap-play-cafe-y210.png",
+     "differing": 0,
+     "maxChannelDiff": 0,
+     "bbox": "-"
+    },
+    {
+     "name": "swap-play-office-y030.png",
+     "differing": 0,
+     "maxChannelDiff": 0,
+     "bbox": "-"
+    },
+    {
+     "name": "swap-play-office-y210.png",
+     "differing": 0,
+     "maxChannelDiff": 0,
+     "bbox": "-"
+    },
+    {
+     "name": "swap-presentation-cafe-street.png",
+     "differing": 78,
+     "maxChannelDiff": 1,
+     "bbox": "1052,761..1399,853"
+    },
+    {
+     "name": "swap-presentation-cafe-y030.png",
+     "differing": 0,
+     "maxChannelDiff": 0,
+     "bbox": "-"
+    },
+    {
+     "name": "swap-presentation-cafe-y210.png",
+     "differing": 0,
+     "maxChannelDiff": 0,
+     "bbox": "-"
+    },
+    {
+     "name": "swap-presentation-office-y030.png",
+     "differing": 0,
+     "maxChannelDiff": 0,
+     "bbox": "-"
+    },
+    {
+     "name": "swap-presentation-office-y210.png",
+     "differing": 0,
+     "maxChannelDiff": 0,
+     "bbox": "-"
+    }
+   ],
+   "shaderSha256": "44623fab0e019539711a4a84b85f8cd28326db13be3c3a62e9bdfa7e4446ac14",
+   "existingMaterialsOnTheSibling": false
+  }
+ ],
+ "keywordSpace": {
+  "original": 74,
+  "sibling": 76,
+  "inserted": [
+   "_DK_VERTEX_COLOR",
+   "_DK_TWO_SIDED"
+  ],
+  "note": "the two keywords enter the keyword space at index 33-34, ahead of the global (overridable) keywords, so every global's index shifts by 2"
+ }
+}
