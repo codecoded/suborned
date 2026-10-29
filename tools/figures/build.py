@@ -82,17 +82,23 @@ def opaque(img):
 
 
 def write_tex(rel_dir, base, img, size, kind, out_root, tint=None, lift=0.0, repair=None):
-    """Copy or rescale `img` to People/<rel_dir>/<base>.<ext> (+.meta); big opaque PNG albedo and normal maps become JPEG q90. Returns (path relative to People, size)."""
+    """Copy or rescale an image (+.meta). Normal sources stay lossless: copy
+    unchanged bytes, or use PNG when resizing. Only colour maps use JPEG q90.
+    Existing JPEG normal sources are copied as-is, never recompressed at full size.
+    Returns (path relative to People, size)."""
     w = img.size[0]; sz = min(size or w, w)
     srcext = ext_of(img)
-    heavy = sz >= 1024 and kind in ('albedo', 'normal') and (srcext == 'png' or len(image_bytes(img)) > 1_200_000) and opaque(img)   # re-encode as JPEG q90
+    heavy = sz >= 1024 and kind == 'albedo' and (srcext == 'png' or len(image_bytes(img)) > 1_200_000) and opaque(img)   # re-encode colour only
     raw = sz == w and tint is None and not heavy and not lift and not repair
-    ext = srcext if raw else ('jpg' if (kind in ('albedo', 'normal') and (heavy or srcext == 'jpg' or opaque(img))) else 'png')
+    ext = srcext if raw else ('jpg' if (kind == 'albedo' and (heavy or srcext == 'jpg' or opaque(img))) else 'png')
     rel = f'{rel_dir}/{base}.{ext}'; dst = os.path.join(out_root, rel)
     os.makedirs(os.path.dirname(dst), exist_ok=True)
     if raw: open(dst, 'wb').write(image_bytes(img))
     else:
         c = img.copy()
+        # A file-backed copy can be lazy. Load its pixels before changing the
+        # filepath, otherwise Blender tries to read the not-yet-written output.
+        _ = c.pixels[0]
         if sz != w: c.scale(sz, sz)
         for r in (repair or []): repair_albedo(c, r)
         for t in ([] if tint is None else tint if isinstance(tint, list) else [tint]): apply_tint(c, t)
@@ -477,4 +483,5 @@ def main():
     json.dump(rows, open(os.path.join(out_root, f'.rows.{"_".join(only) or "all"}.json'), 'w'), indent=1)
 
 
-main()
+if __name__ == '__main__':
+    main()
