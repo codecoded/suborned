@@ -36,7 +36,11 @@ namespace Suborned.OldTown.Editor.DecoKit
         internal static Vector2 Lane(float t, float off) => RocketFrom + V2(P.Dir(RocketPhi)) * t + V2(P.Dir(RocketPhi + 90f)) * off;
         static Vector2 V2(Vector3 v) => new(v.x, v.z);
 
-        internal static readonly DecoKitBlock[] Blocks = Plan();
+        /// Edit E10 (brief 075 swap): settable, so OldTownSwap can move the old blocks onto plan 0.5.5's blocks (and puts them back); Plan()
+        /// is the old builders' set. SatelliteHalf: the half width of the street on the boulevard axis south of the square (old 4; plan
+        /// 0.5.5 runs the 20 m boulevard on there, 10), read by the green lawns and the square's south kerbs.
+        internal static DecoKitBlock[] Blocks = Plan();
+        internal static float SatelliteHalf = 4f;
         /// Block names a world plan gives to something else (a mission block); Build leaves their parcels empty.
         internal static readonly HashSet<string> Reserved = new();
         /// Blocks the world plan sets in reserved parcels: the city's pavements, pits and kerbside life round them;
@@ -72,9 +76,9 @@ namespace Suborned.OldTown.Editor.DecoKit
         /// Green between Satellite Street and Quay Road, both down to SS1 / SS2's pavements; Launch Green the triangle the
         /// lane leaves west of SS1, down to Apollo Way.
         const float Foot = -194f, Apollo = -248f;  // SS1 / SS2's head and tail pavement edges
-        internal static Vector2[] RocketGreen => new[] { new Vector2(-4f, Square.yMin), LaneKerb(Square.yMin), LaneKerb(Foot), new Vector2(-4f, Foot) };
+        internal static Vector2[] RocketGreen => new[] { new Vector2(-SatelliteHalf, Square.yMin), LaneKerb(Square.yMin), LaneKerb(Foot), new Vector2(-SatelliteHalf, Foot) };
         internal static Vector2[] LaunchGreen => new[] { new Vector2(-40f, Foot), new Vector2(-40f, Apollo), LaneKerb(Apollo), LaneKerb(Foot) };
-        internal static readonly Vector2[] StarlineGreen = { new(4f, -150f), new(38f, -150f), new(38f, Foot), new(4f, Foot) };
+        internal static Vector2[] StarlineGreen => new Vector2[] { new(SatelliteHalf, -150f), new(38f, -150f), new(38f, Foot), new(SatelliteHalf, Foot) };
 
         static Vector2 LaneKerb(float z)  // Rocket Lane's east kerb at z
         {
@@ -163,12 +167,12 @@ namespace Suborned.OldTown.Editor.DecoKit
                     Flags(p, x, n + 1f);
                     if (x > L.FrontX) Flags(p, x, n + 3f);
                 }
-            KerbLine(p, new Vector2(Bounds.xMin, n), new Vector2(-L.KerbX - 2f, n), Vector3.forward);
-            KerbLine(p, new Vector2(L.KerbX + 2f, n), new Vector2(P.EastBack, n), Vector3.forward);
+            KerbLine(p, new Vector2(Bounds.xMin, n), new Vector2(-L.Kx(n) - 2f, n), Vector3.forward);
+            KerbLine(p, new Vector2(L.Kx(n) + 2f, n), new Vector2(P.EastBack, n), Vector3.forward);
             // the square where roads end on it (Comet Row, Orbit Walk, the south streets), the terrace edge
-            KerbLine(p, new Vector2(-L.KerbX, Square.yMax), new Vector2(L.KerbX, Square.yMax), Vector3.back);
+            KerbLine(p, new Vector2(-L.Kx(Square.yMax), Square.yMax), new Vector2(L.Kx(Square.yMax), Square.yMax), Vector3.back);
             KerbLine(p, new Vector2(Square.xMin, -112f), new Vector2(Square.xMin, Square.yMax), Vector3.right);
-            foreach (var (x0, x1) in new[] { (Square.xMin, -10f), (-4f, 4f), (38f, P.EastBack) })
+            foreach (var (x0, x1) in new[] { (Square.xMin, -SatelliteHalf - 6f), (-SatelliteHalf, SatelliteHalf), (38f, P.EastBack) })
                 KerbLine(p, new Vector2(x0, Square.yMin), new Vector2(x1, Square.yMin), Vector3.forward);
             KerbLine(p, new Vector2(P.EastBack, Bounds.yMin), new Vector2(P.EastBack, Square.yMin), Vector3.right);
             KerbLine(p, new Vector2(P.EastBack, -52f), new Vector2(P.EastBack, n), Vector3.right);

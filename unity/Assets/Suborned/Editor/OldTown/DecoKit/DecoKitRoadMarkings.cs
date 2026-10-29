@@ -17,7 +17,8 @@ namespace Suborned.OldTown.Editor.DecoKit
         const float MinW = 3f, MaxW = 30f, Lateral = 1.2f, Step = 2f;
         const float DashMin = 7f, DashMax = 17f;  // kerb-to-kerb widths with two running lanes
         const float Kerb = .675f;                  // kerb stone + gutter courses, road side of the pivot
-        const float Y = .004f, Walk = .152f;       // paint over the deck (-0.002); pads on the walk (0.15)
+        const float Y = .004f;                     // paint over the deck (-0.002)
+        static float Walk => DecoKitStreetLayout.Walk + .002f;  // pads on the walk (0.15); E10: the walk is a parameter
         const float RunMin = 10f;                  // shortest run that earns a crossing
         static readonly Regex Stone = new(@"^DK_Kerb_Granite_\d$");
 

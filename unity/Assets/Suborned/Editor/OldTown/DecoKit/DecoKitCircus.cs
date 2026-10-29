@@ -20,11 +20,12 @@ namespace Suborned.OldTown.Editor.DecoKit
             Vector2 c = new(P.Circus.x, P.Circus.z);
             float v = L.Walk - .006f, plaza = L.Walk + .002f;
             new G().Annulus(c, P.IslandR, P.RingR, -.002f).Emit("Circus ring road", G.Road(), true, root);
-            new G().RectCut(Rect.MinMaxRect(Square.xMin, Square.yMin, -L.KerbX, Square.yMax), c, P.RingR, v)
-                   .RectCut(Rect.MinMaxRect(L.KerbX, Square.yMin, Square.xMax, Square.yMax), c, P.RingR, v)
+            float kb = L.Kx(Square.yMin);  // E10: the boulevard's kerb line (the wider of the two mouths)
+            new G().RectCut(Rect.MinMaxRect(Square.xMin, Square.yMin, -kb, Square.yMax), c, P.RingR, v)
+                   .RectCut(Rect.MinMaxRect(kb, Square.yMin, Square.xMax, Square.yMax), c, P.RingR, v)
                    .Emit("Circus verge", G.Mat("DK_Limestone_Tex"), true, root);
             new G().Disc(c, P.IslandR, L.Walk).Emit("Circus island", G.Mat("DK_Terrazzo_Seafoam"), true, root);
-            new G().Annulus(c, P.RingR, P.CrescentR, plaza, gap: L.KerbX)  // the boulevard's two openings stay road
+            new G().Annulus(c, P.RingR, P.CrescentR, plaza, gap: kb)  // the boulevard's two openings stay road
                    .RectCut(Rect.MinMaxRect(L.FrontX, P.CircusSouth, P.EastBack, P.CircusNorth), c, P.CrescentR, plaza)
                    .RectCut(Rect.MinMaxRect(P.WestBack, P.CircusSouth, -L.FrontX, P.CircusNorth), c, P.CrescentR, plaza)
                    .Emit("Circus walk and parade", G.Mat("DK_Terrazzo_Ivory"), false, root);
@@ -44,7 +45,8 @@ namespace Suborned.OldTown.Editor.DecoKit
             for (int k = 0; k < 16; k++)
             {
                 float phi = 11.25f + 22.5f * k;
-                if (Mathf.Abs(Mathf.Sin(phi * Mathf.Deg2Rad) * P.RingR) < L.KerbX + 2f) continue;  // boulevard openings
+                var lamp = P.Circus + P.Dir(phi) * P.RingR;
+                if (Mathf.Abs(lamp.x) < L.Kx(lamp.z) + 2f) continue;  // boulevard openings (E10: each mouth its own kerb line)
                 p.Put("PlazaSphereLamp", P.Circus + P.Dir(phi) * (P.RingR + 1.2f) + Vector3.up * L.Walk, phi);
             }
         }
@@ -59,7 +61,7 @@ namespace Suborned.OldTown.Editor.DecoKit
                 float phi = 360f * (k + .5f) / n;
                 var radial = P.Dir(phi);
                 var at = new Vector3(c.x, 0f, c.y) + radial * r;
-                if (outer && Mathf.Abs(at.x) < L.KerbX + 1f) continue;
+                if (outer && Mathf.Abs(at.x) < L.Kx(at.z) + 1f) continue;
                 p.Put($"Kerb_Granite_{k & 1}", at, P.Yaw(outer ? -radial : radial));  // module +Z = road side
             }
         }

@@ -64,7 +64,7 @@ namespace Suborned.OldTown.Editor.DecoKit
             {
                 float phi = R(0f, 360f), r = R(P.RingR + 1.5f, P.CrescentR - 1.5f);
                 var at = P.Circus + P.Dir(phi) * r;
-                if (Mathf.Abs(at.x) < L.KerbX + 1.5f) continue;
+                if (Mathf.Abs(at.x) < L.Kx(at.z) + 1.5f) continue;  // E10
                 Walker(at.x, at.z, L.Walk, Either(phi + 90f), new Vector2(Mathf.Sin(phi * Mathf.Deg2Rad), Mathf.Cos(phi * Mathf.Deg2Rad)) * -1f);
             }
         }
@@ -107,8 +107,8 @@ namespace Suborned.OldTown.Editor.DecoKit
             city.Lane(new(WestLane, P.NorthFacade), new(WestLane, L.Z.x + 2f), Headway,
                       at => Road(at) || at.z > Island.x && at.z < Island.y);
             float mid = (L.SideZ.x + L.SideZ.y) * .5f;  // Market Street: eastbound on its south side
-            city.Lane(new(L.KerbX + 1f, mid - 2.1f), new(L.SideEnd, mid - 2.1f), Headway, _ => false);
-            city.Lane(new(L.SideEnd, mid + 2.1f), new(L.KerbX + 1f, mid + 2.1f), Headway, _ => false);
+            city.Lane(new(L.Kx(mid) + 1f, mid - 2.1f), new(L.SideEnd, mid - 2.1f), Headway, _ => false);
+            city.Lane(new(L.SideEnd, mid + 2.1f), new(L.Kx(mid) + 1f, mid + 2.1f), Headway, _ => false);
             foreach (var (r, n) in new[] { (P.IslandR + 3.5f, 5), (P.RingR - 3f, 8) })
             {
                 float phi0 = R(0f, 360f);

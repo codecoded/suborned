@@ -72,7 +72,7 @@ namespace Suborned.OldTown.Editor.DecoKit
             p.Put("VendingMachine_Snack", At(e - .42f, 16.3f), -90f);
             p.Put("PneumaticPost", At(e - .6f, 22.5f), -90f);
             p.Put("BladeSign_Hotel", At(e, 98f, SignY), -90f);
-            p.Put("AdColumn", At(L.KerbX + 3f, 84f));
+            p.Put("AdColumn", At(L.Kx(84f) + 3f, 84f));
             p.Put("Automat", At(e - .27f, 146.5f + 3f), -90f);  // wall unit: back 0.25 m behind the pivot
             p.Put("StreetClock", At(-5f, 112f));  // on the tram stop island, between the canopies
             Terrace(p, At(e, 262f), Vector3.forward, Vector3.left, 3, 2);
@@ -81,7 +81,7 @@ namespace Suborned.OldTown.Editor.DecoKit
             p.Put("Billboard_Rooftop_A", At(-25f, 70f, 10.95f), 180f);
             p.Put("Billboard_Rooftop_C", At(-25.5f, 32f, 10.95f), 90f);
             p.Put("BladeSign_Hotel", At(w, 104f, SignY), 90f);
-            p.Put("AdColumn", At(-L.KerbX - 3f, 12f));
+            p.Put("AdColumn", At(-L.Kx(12f) - 3f, 12f));
             p.Put("VendingMachine_Snack", At(w + .42f, 161.1f), 90f);
             p.Put("VendingMachine_Cola", At(w + .42f, 162.3f), 90f);
             p.Put("PneumaticPost", At(w + .6f, 140f), 90f);

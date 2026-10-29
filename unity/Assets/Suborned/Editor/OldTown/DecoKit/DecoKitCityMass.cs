@@ -26,6 +26,11 @@ namespace Suborned.OldTown.Editor.DecoKit
         static readonly Vector3[] Keep = new[] { new Vector3(-130f, 330f, 125f), new Vector3(-260f, 1700f, 230f) }
             .Concat(DecoKitStreetSkyline.Towers.Select(t => new Vector3(t.at.x, t.at.z, 45f))).ToArray();
 
+        /// Edit E10 (brief 075 swap): null = the old builders, or a rule given each block centre (x, z, old Unity frame) and the old ceiling,
+        /// returning the ceiling to use (0 = keep clear) and whether the block must stand (no park gap): OldTownSwap keeps the massing off the
+        /// plan's roads, parks, stations and the Handover zone and lets it fill the plan's blocks at domestic height.
+        internal static System.Func<float, float, float, (float cap, bool always)> Rule;
+
         internal static void Build(Vector3[] railRoute)
         {
             var rng = new System.Random(1951);
@@ -34,10 +39,11 @@ namespace Suborned.OldTown.Editor.DecoKit
             for (float x = -Extent; x <= Extent; x += Cell)             // block centres; x = 0 is the boulevard
                 for (float z = -1085f; z < Extent + 35f; z += Cell)     // the ground slab ends at +-1500
                 {
-                    float cap = Cap(x, z, railRoute);
+                    float cap = Cap(x, z, railRoute); bool always = false;
+                    if (Rule != null) (cap, always) = Rule(x, z, cap);
                     if (cap <= 0f) continue;
                     float cluster = Mathf.PerlinNoise(x * .0021f + 3.1f, z * .0021f + 7.7f);
-                    if (rng.NextDouble() > .35 + .75 * cluster) continue;  // parks and sparse districts between clusters
+                    if (rng.NextDouble() > .35 + .75 * cluster && !always) continue;  // parks and sparse districts between clusters
                     var key = new Vector2Int(Mathf.FloorToInt(x / Chunk), Mathf.FloorToInt(z / Chunk));
                     if (!chunks.TryGetValue(key, out var mesh)) chunks[key] = mesh = new DecoKitMassMesh(Slots.Length);
                     Block(mesh, rng, new Vector3(x, L.Walk, z), cap, cluster);

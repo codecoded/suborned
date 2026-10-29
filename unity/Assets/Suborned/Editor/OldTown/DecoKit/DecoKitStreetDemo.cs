@@ -212,23 +212,23 @@ namespace Suborned.OldTown.Editor.DecoKit
         {
             var asphalt = DecoKitGroundMesh.Road();
             var stone = AssetDatabase.LoadAssetAtPath<Material>($"{MaterialDir}/DK_Limestone_Tex.mat");
-            float k = L.KerbX, s0 = L.SideZ.x, s1 = L.SideZ.y, e = P.StepsX, v = L.Walk - .006f;  // verge: just under the flags
+            float k = L.KerbX, kb = L.BoulevardKerbX, s0 = L.SideZ.x, s1 = L.SideZ.y, e = P.StepsX, v = L.Walk - .006f;  // verge: just under the flags (E10: kb south of the circus)
             var sq = DecoKitCircus.Square;
             // Southside (its own deck) cuts the boulevard's ground from its south edge to the walks' end
             float n = L.Z.x, s = DecoKitSouthside.Bounds.yMin, w = DecoKitSouthside.Bounds.xMin;
-            DecoKitStage.Slab("Street road deck", Rect.MinMaxRect(-k, n, k + 2f, Far), -.002f, asphalt);  // + corner cells
-            DecoKitStage.Slab("Street road deck S", Rect.MinMaxRect(-k, -Far, k + 2f, s), -.002f, asphalt);
-            DecoKitStage.Slab("Side street deck", Rect.MinMaxRect(k, s0, L.SideEnd, s1), -.002f, asphalt);
-            DecoKitStage.Slab("Street east verge S", Rect.MinMaxRect(k, n, e, s0 - 2f), v, stone);
-            DecoKitStage.Slab("Street east verge SS", Rect.MinMaxRect(k + 2f, -Far, e, s), v, stone);
-            DecoKitStage.Slab("Street east verge SC", Rect.MinMaxRect(k + 2f, s0 - 2f, e, s0), v, stone);
-            DecoKitStage.Slab("Street east verge NC", Rect.MinMaxRect(k + 2f, s1, e, s1 + 2f), v, stone);
-            DecoKitStage.Slab("Street east verge N", Rect.MinMaxRect(k, s1 + 2f, e, sq.yMin), v, stone);
+            DecoKitStage.Slab("Street road deck", Rect.MinMaxRect(-kb, n, kb + 2f, Far), -.002f, asphalt);  // + corner cells
+            DecoKitStage.Slab("Street road deck S", Rect.MinMaxRect(-kb, -Far, kb + 2f, s), -.002f, asphalt);
+            DecoKitStage.Slab("Side street deck", Rect.MinMaxRect(kb, s0, L.SideEnd, s1), -.002f, asphalt);
+            DecoKitStage.Slab("Street east verge S", Rect.MinMaxRect(kb, n, e, s0 - 2f), v, stone);
+            DecoKitStage.Slab("Street east verge SS", Rect.MinMaxRect(kb + 2f, -Far, e, s), v, stone);
+            DecoKitStage.Slab("Street east verge SC", Rect.MinMaxRect(kb + 2f, s0 - 2f, e, s0), v, stone);
+            DecoKitStage.Slab("Street east verge NC", Rect.MinMaxRect(kb + 2f, s1, e, s1 + 2f), v, stone);
+            DecoKitStage.Slab("Street east verge N", Rect.MinMaxRect(kb, s1 + 2f, e, sq.yMin), v, stone);
             DecoKitStage.Slab("Street east verge C", Rect.MinMaxRect(sq.xMax, sq.yMin, e, sq.yMax), v, stone);
             DecoKitStage.Slab("Street east verge NN", Rect.MinMaxRect(k, sq.yMax, e, Far), v, stone);
-            DecoKitStage.Slab("Street west verge S", Rect.MinMaxRect(w, n, -k, sq.yMin), v, stone);
+            DecoKitStage.Slab("Street west verge S", Rect.MinMaxRect(w, n, -kb, sq.yMin), v, stone);
             DecoKitStage.Slab("Street west verge W", Rect.MinMaxRect(-Far, -Far, w, sq.yMin), v, stone);
-            DecoKitStage.Slab("Street west verge SS", Rect.MinMaxRect(w, -Far, -k, s), v, stone);
+            DecoKitStage.Slab("Street west verge SS", Rect.MinMaxRect(w, -Far, -kb, s), v, stone);
             DecoKitStage.Slab("Street west verge C", Rect.MinMaxRect(-Far, sq.yMin, sq.xMin, sq.yMax), v, stone);
             DecoKitStage.Slab("Street west verge N", Rect.MinMaxRect(-Far, sq.yMax, -k, Far), v, stone);
         }

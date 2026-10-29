@@ -54,7 +54,7 @@ namespace Suborned.OldTown.Editor.DecoKit
         }
 
         static float R(float a, float b) => a + (b - a) * (float)rng.NextDouble();
-        static Vector3 W(float x, float z, float y = L.Walk) => new(x, y, z);
+        static Vector3 W(float x, float z, float y = float.NaN) => new(x, float.IsNaN(y) ? L.Walk : y, z);  // E10: the walk is a parameter
 
         /// Pits: a tree each; a lamp between every other pair, 0.6 m off the kerb; the kerb programme every third;
         /// a car parked against the kerb in most gaps (not across a block end).

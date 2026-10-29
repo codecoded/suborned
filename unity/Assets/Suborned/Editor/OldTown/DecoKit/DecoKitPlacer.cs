@@ -36,13 +36,18 @@ namespace Suborned.OldTown.Editor.DecoKit
             return null;
         }
 
+        /// Edit E10 (brief 075 swap): the ground modules (kerbs, paving, tree pits) are modelled to top out at the old walk (0.15); placed at
+        /// y = 0 they are scaled in height by GroundScaleY (1 = the old builders; OldTownSwap sets 0.18 / 0.15 for plan 0.5.5's one kerb height).
+        internal static float GroundScaleY = 1f;
+        static bool Ground(string name) => name.StartsWith("Kerb_") || name.StartsWith("Pave_") || name.StartsWith("TreePit_");
+
         /// Pivot placement: position + yaw (degrees), optional X mirror (for handed modules).
         internal GameObject Put(string name, Vector3 pos, float yaw = 0f, bool mirror = false, float scale = 1f)
         {
             if (!prefabs.TryGetValue(name, out var prefab)) { missing.Add(name); return null; }
             var go = (GameObject)PrefabUtility.InstantiatePrefab(prefab, Group(name));
             go.transform.SetPositionAndRotation(pos, Quaternion.Euler(0f, yaw, 0f));
-            go.transform.localScale = new Vector3(mirror ? -scale : scale, scale, scale);
+            go.transform.localScale = new Vector3(mirror ? -scale : scale, scale * (GroundScaleY != 1f && Mathf.Abs(pos.y) < .01f && Ground(name) ? GroundScaleY : 1f), scale);
             return go;
         }
 

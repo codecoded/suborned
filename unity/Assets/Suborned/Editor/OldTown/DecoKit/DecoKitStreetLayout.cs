@@ -11,8 +11,14 @@ namespace Suborned.OldTown.Editor.DecoKit
     /// Yaws (Unity): kerb walk side +X = -90, -X = 90, -Z = 0, +Z = 180; paving 90 (courses along Z).
     internal static class DecoKitStreetLayout
     {
-        internal const float Walk = .15f;
+        /// Brief 075 swap (Latch), edit E10 of the verbatim copy: plan 0.5.5's street parameters. The defaults are the old builders as they
+        /// were (walk 0.15, the boulevard's kerbs at +-8, the same as the avenue's); OldTownSwap sets them for the build and puts them back:
+        /// Walk 0.18 (one kerb height with the Handover zone), BoulevardKerbX 10 (the boulevard south of the circus is the plan's 20 m tram
+        /// street; Crown Avenue north of it keeps the old +-8). Kx(z) is the kerb line at z.
+        internal static float Walk = .15f;
         internal const float KerbX = 8f;            // kerb lines at +-KerbX; road between
+        internal static float BoulevardKerbX = KerbX;
+        internal static float Kx(float z) => z < P.CircusSouth ? BoulevardKerbX : KerbX;
         internal const float FrontX = 18f;          // facade plane: a 10 m promenade (5 paving modules)
         internal const float TrackX = -2.5f;        // tram lane centre
         internal const float SideEnd = P.EastBack;  // Market Street runs from the kerb to the harbour terrace
@@ -50,11 +56,12 @@ namespace Suborned.OldTown.Editor.DecoKit
                 {
                     if (s > 0f && InSide(z)) continue;
                     bool end = z < Z.x + 2f;  // the promenades' south ends turn the corner into Sunset Way (Southside)
-                    if (end) p.Put($"Kerb_GraniteCorner_{Pave(s * (KerbX + 1f), z)}", new Vector3(s * (KerbX + 1f), 0f, z), s > 0f ? -90f : 180f);
-                    else if (Paved(s * (KerbX + 1f), z)) PaveOrPit(p, s * (KerbX + 1f), z, Pit(z, s < 0f ? 1f : -5f));  // west pits 6 m off
-                    for (float x = KerbX + 3f; x < FrontX; x += 2f)
+                    float k = Kx(z);
+                    if (end) p.Put($"Kerb_GraniteCorner_{Pave(s * (k + 1f), z)}", new Vector3(s * (k + 1f), 0f, z), s > 0f ? -90f : 180f);
+                    else if (Paved(s * (k + 1f), z)) PaveOrPit(p, s * (k + 1f), z, Pit(z, s < 0f ? 1f : -5f));  // west pits 6 m off
+                    for (float x = k + 3f; x < FrontX; x += 2f)
                         if (Paved(s * x, z)) Flags(p, s * x, z);
-                    if (!end && Kerbed(s * KerbX, z)) p.Put($"Kerb_Granite_{Parity(z)}", new Vector3(s * KerbX, 0f, z), -90f * s);
+                    if (!end && Kerbed(s * k, z)) p.Put($"Kerb_Granite_{Parity(z)}", new Vector3(s * k, 0f, z), -90f * s);
                 }
             }
         }
@@ -70,6 +77,7 @@ namespace Suborned.OldTown.Editor.DecoKit
         /// Corner cells at the kerb (R 2 m arcs), one flags row + kerb along each side-street edge out to SideEnd.
         static void SideStreet(DecoKitPlacer p)
         {
+            float KerbX = Kx(SideZ.x);  // E10
             p.Put($"Kerb_GraniteCorner_{Pave(KerbX + 1f, SideZ.x - 1f)}", new Vector3(KerbX + 1f, 0f, SideZ.x - 1f), 0f);
             p.Put($"Kerb_GraniteCorner_{Pave(KerbX + 1f, SideZ.y + 1f)}", new Vector3(KerbX + 1f, 0f, SideZ.y + 1f), -90f);
             for (float x = KerbX + 3f; x < SideEnd; x += 2f)
@@ -103,13 +111,13 @@ namespace Suborned.OldTown.Editor.DecoKit
         {
             for (float z = 0f; z < Z.y; z += 24f)
             {
-                if (!InSide(z) && Paved(KerbX, z)) p.Put("Streetlamp", new Vector3(KerbX + .6f, Walk, z), -90f);
-                if (Paved(-KerbX, z + 12f)) p.Put("Streetlamp", new Vector3(-KerbX - .6f, Walk, z + 12f), 90f);
+                if (!InSide(z) && Paved(Kx(z), z)) p.Put("Streetlamp", new Vector3(Kx(z) + .6f, Walk, z), -90f);
+                if (Paved(-Kx(z + 12f), z + 12f)) p.Put("Streetlamp", new Vector3(-Kx(z + 12f) - .6f, Walk, z + 12f), 90f);
             }
             foreach (var z in new[] { 30f, 90f, 126f }) p.Put("Bench", new Vector3(FrontX - 1.2f, Walk, z), -90f);
             p.Put("RecyclingBins", new Vector3(FrontX - .8f, Walk, 54f), -90f);
-            p.Put("Hydrant", new Vector3(KerbX + .7f, Walk, 43f));
-            foreach (var z in new[] { SideZ.x - 2.6f, SideZ.y + 2.6f }) p.Put("Bollard", new Vector3(KerbX + 2.4f, Walk, z));
+            p.Put("Hydrant", new Vector3(Kx(43f) + .7f, Walk, 43f));
+            foreach (var z in new[] { SideZ.x - 2.6f, SideZ.y + 2.6f }) p.Put("Bollard", new Vector3(Kx(z) + 2.4f, Walk, z));
             p.Put("Tram", new Vector3(TrackX, 0f, 112f));
         }
     }

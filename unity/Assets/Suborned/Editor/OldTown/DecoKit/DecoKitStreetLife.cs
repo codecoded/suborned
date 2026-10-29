@@ -69,8 +69,9 @@ namespace Suborned.OldTown.Editor.DecoKit
             : Mathf.Max(r.size[0], r.size[2]) * .5f;
 
         /// Places `name` if its footprint clears everything taken; the flat pieces take nothing.
-        static bool Try(DecoKitPlacer p, string name, float x, float z, float yaw, float y = L.Walk, bool flat = false)
+        static bool Try(DecoKitPlacer p, string name, float x, float z, float yaw, float y = float.NaN, bool flat = false)
         {
+            if (float.IsNaN(y)) y = L.Walk;  // E10: the walk is a parameter
             float r = Radius(name);
             var at = new Vector2(x, z);
             if (!flat && taken.Any(t => (t.at - at).magnitude < t.r + r + Gap)) { refused++; return false; }
@@ -169,7 +170,7 @@ namespace Suborned.OldTown.Editor.DecoKit
             foreach (var s in new[] { 1f, -1f })
             {
                 for (float z = s > 0f ? -27f : -37f; z < L.Z.y; z += 20f)
-                    if (L.Kerbed(s * L.KerbX, z) && !(s > 0f && L.InSide(z))) Try(p, "DrainGrate", s * 7.7f, z, 90f, .003f, true);
+                    if (L.Kerbed(s * L.Kx(z), z) && !(s > 0f && L.InSide(z))) Try(p, "DrainGrate", s * (L.Kx(z) - .3f), z, 90f, .003f, true);  // E10: 0.3 m off the kerb line
                 float lane = s > 0f ? 4.2f : -6f;  // west: between the rails (x -2.5) and the kerb
                 for (float z = s > 0f ? 15f : 38f; z < L.Z.y; z += 45f)
                     if (L.Kerbed(lane, z) && (s > 0f || z < 98f || z > 126f)) Try(p, "ManholeCover", lane, z, z * 7f, -.001f, true);

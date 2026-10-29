@@ -19,7 +19,9 @@ namespace Suborned.OldTown.Editor.DecoKit
         internal const float Depth = 28f, LaneW = 6f;
         // Crown Circus: island kerb, ring-road outer kerb, crescent facades (the boulevard facades meet it at z 176 / 236)
         internal static readonly Vector3 Circus = new(0f, 0f, 206f);
-        internal const float IslandR = 14f, RingR = 26f, CrescentR = 35f;
+        internal const float IslandR = 14f, CrescentR = 35f;
+        /// Edit E10 (brief 075 swap): the ring road's outer kerb, a parameter (old 26; plan 0.5.5 lays it at r 29).
+        internal static float RingR = 26f;
         internal static float CircusSouth => Circus.z - Mathf.Sqrt(CrescentR * CrescentR - L.FrontX * L.FrontX);  // 176
         internal static float CircusNorth => Circus.z + Mathf.Sqrt(CrescentR * CrescentR - L.FrontX * L.FrontX);  // 236
         // blocks
