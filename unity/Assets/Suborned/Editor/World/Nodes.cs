@@ -49,6 +49,7 @@ namespace Suborned.World
             if (surface == Placeholder && drum == 0) throw new System.IO.InvalidDataException($"World: NP-1 {el.name}/{name} would draw in the placeholder surface `{Placeholder}` (a procedural stand-in; its kit piece is missing)");
             if (look.Tile(surface) is > 0f and var tile)
             {
+                if (look.UvBox(surface)) { kit.BoxUv(tile); Part(el, name, kit, look.Mat(surface)); return; } // brief 075 civic restyle: the bed kerbs' panel stone
                 kit.PlanarUv(tile, UvInset);
                 if (look.SeededPeriod(surface) is > 0f and var period) kit.SeedUv(el.name + "/" + name, period); // brief 026: no sheet repeat across patches
             }

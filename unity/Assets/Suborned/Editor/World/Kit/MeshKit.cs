@@ -59,6 +59,28 @@ namespace Suborned.World
             return this;
         }
 
+        /// <summary>Brief 075 civic restyle: UVs in world metres per `tile`, box-wise: a top or bottom face on plan, a wall along its own face
+        /// (the horizontal of its normal turned a quarter) and up, as a kit mesh's world-metre UVs (a panel sheet stands upright on a kerb's face).
+        /// Each wall quad has its own vertices (Walls), so a vertex never sits on two faces.</summary>
+        public MeshKit BoxUv(float tile)
+        {
+            PadUv();
+            for (int i = 0; i < t.Count; i += 3)
+            {
+                Vector3 a = v[t[i]], b = v[t[i + 1]], c = v[t[i + 2]];
+                var n = Vector3.Cross(b - a, c - a);
+                if (n.sqrMagnitude < 1e-12f) continue;
+                bool top = Mathf.Abs(n.y) > 0.5f * n.magnitude;
+                var along = new Vector2(-n.z, n.x).normalized;
+                for (int k = 0; k < 3; k++)
+                {
+                    var p = v[t[i + k]];
+                    uv[t[i + k]] = (top ? new Vector2(p.x, p.z) : new Vector2(along.x * p.x + along.y * p.z, p.y)) / tile;
+                }
+            }
+            return this;
+        }
+
         /// <summary>Brief 026 (Vela's round 1): breaks a periodic ground sheet's repeat across patches. Each patch (seeded by its id, FNV-1a, so
         /// the same export lays the same ground) shifts its world-metre UVs by up to one `period` and mirrors them in u and/or v; never a 90°
         /// turn, so flags keep their bond along the street. Within a patch the sheet stays continuous.</summary>

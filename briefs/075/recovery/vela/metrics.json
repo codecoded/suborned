@@ -1,0 +1,372 @@
+{
+  "assets": {
+    "BedTuft_A": {
+      "before": {
+        "bounds": [
+          [
+            -0.3100000023841858,
+            -0.29482752084732056,
+            0.0
+          ],
+          [
+            0.3100000023841858,
+            0.29482752084732056,
+            0.44661745429039
+          ]
+        ],
+        "triangles": 95,
+        "materials": [
+          "DK_Leaf_Civic",
+          "DK_Bloom_Coral",
+          "DK_Bloom_Cream"
+        ]
+      },
+      "candidate": {
+        "bounds": [
+          [
+            -0.3100000023841858,
+            -0.29482752084732056,
+            0.0
+          ],
+          [
+            0.3100000023841858,
+            0.29482752084732056,
+            0.4440544545650482
+          ]
+        ],
+        "triangles": 1946,
+        "materials": [
+          "DK_Leaf_CoreShrub",
+          "DK_Leaf_Shrub",
+          "DK_Bloom_Coral",
+          "DK_Bloom_Cream"
+        ]
+      },
+      "fbx": "out/scratch/vela/recovery/BedTuft_A_Recovery075.fbx",
+      "sha256": "9fb503ffc80c396724db4e53457362cdcee4802400cbd258e0aa207fe7108aad",
+      "non_foliage_exact": true,
+      "bounds_contained": true
+    },
+    "BedTuft_B": {
+      "before": {
+        "bounds": [
+          [
+            -0.3100000023841858,
+            -0.29482752084732056,
+            0.0
+          ],
+          [
+            0.3100000023841858,
+            0.29482752084732056,
+            0.3776944577693939
+          ]
+        ],
+        "triangles": 95,
+        "materials": [
+          "DK_Leaf_CivicDark",
+          "DK_Bloom_Flamingo",
+          "DK_Bloom_Peach"
+        ]
+      },
+      "candidate": {
+        "bounds": [
+          [
+            -0.3100000023841858,
+            -0.29482752084732056,
+            0.0
+          ],
+          [
+            0.3100000023841858,
+            0.29482752084732056,
+            0.37541666626930237
+          ]
+        ],
+        "triangles": 1946,
+        "materials": [
+          "DK_Leaf_CoreShrub",
+          "DK_Leaf_Shrub",
+          "DK_Bloom_Flamingo",
+          "DK_Bloom_Cream",
+          "DK_Bloom_Peach"
+        ]
+      },
+      "fbx": "out/scratch/vela/recovery/BedTuft_B_Recovery075.fbx",
+      "sha256": "90418b34a3958ce70cbe9bbcf6a909389ba1a5822587958c32ba74bc20a5cf2b",
+      "non_foliage_exact": true,
+      "bounds_contained": true
+    },
+    "BedTuft_C": {
+      "before": {
+        "bounds": [
+          [
+            -0.3100000023841858,
+            -0.29482752084732056,
+            0.0
+          ],
+          [
+            0.3100000023841858,
+            0.29482752084732056,
+            0.5059999823570251
+          ]
+        ],
+        "triangles": 80,
+        "materials": [
+          "DK_Leaf_CivicDark",
+          "DK_Bloom_Cream",
+          "DK_Bloom_Peach"
+        ]
+      },
+      "candidate": {
+        "bounds": [
+          [
+            -0.3100000023841858,
+            -0.29482752084732056,
+            0.0
+          ],
+          [
+            0.3100000023841858,
+            0.29482752084732056,
+            0.4872461259365082
+          ]
+        ],
+        "triangles": 1442,
+        "materials": [
+          "DK_Leaf_CoreShrub",
+          "DK_Leaf_Shrub",
+          "DK_Bloom_Cream",
+          "DK_Bloom_Peach"
+        ]
+      },
+      "fbx": "out/scratch/vela/recovery/BedTuft_C_Recovery075.fbx",
+      "sha256": "8fdb2425c6eaf49302a0219fe66968b3573ffa943d275af6039b72df18e2df82",
+      "non_foliage_exact": true,
+      "bounds_contained": true
+    },
+    "PlanterRun_4_A": {
+      "before": {
+        "bounds": [
+          [
+            -2.189413547515869,
+            -0.3400000035762787,
+            0.0
+          ],
+          [
+            2.179849863052368,
+            0.3400000035762787,
+            1.1201403141021729
+          ]
+        ],
+        "triangles": 732,
+        "materials": [
+          "DK_Limestone",
+          "DK_Leaf_CivicDark",
+          "DK_Bloom_Coral",
+          "DK_Bloom_Cream",
+          "DK_Leaf_Civic"
+        ]
+      },
+      "candidate": {
+        "bounds": [
+          [
+            -2.189413547515869,
+            -0.3400000035762787,
+            0.0
+          ],
+          [
+            2.179849863052368,
+            0.3400000035762787,
+            1.1118229627609253
+          ]
+        ],
+        "triangles": 11628,
+        "materials": [
+          "DK_Limestone",
+          "DK_Leaf_CivicDark",
+          "DK_Leaf_CoreShrub",
+          "DK_Leaf_Shrub",
+          "DK_Bloom_Coral",
+          "DK_Bloom_Cream"
+        ]
+      },
+      "fbx": "out/scratch/vela/recovery/PlanterRun_4_A_Recovery075.fbx",
+      "sha256": "2bd5e48e78614bdfbf0150575fcc8f576702156d8a0b7427bfaa79eb5e869468",
+      "non_foliage_exact": true,
+      "bounds_contained": true
+    },
+    "PlanterRun_4_B": {
+      "before": {
+        "bounds": [
+          [
+            -2.1376352310180664,
+            -0.3400000035762787,
+            0.0
+          ],
+          [
+            2.1635351181030273,
+            0.3400000035762787,
+            1.0615774393081665
+          ]
+        ],
+        "triangles": 672,
+        "materials": [
+          "DK_Limestone",
+          "DK_Leaf_Civic",
+          "DK_Bloom_Peach",
+          "DK_Bloom_Flamingo",
+          "DK_Leaf_CivicDark"
+        ]
+      },
+      "candidate": {
+        "bounds": [
+          [
+            -2.137381076812744,
+            -0.3400000035762787,
+            0.0
+          ],
+          [
+            2.1469924449920654,
+            0.3400000035762787,
+            1.058955192565918
+          ]
+        ],
+        "triangles": 9612,
+        "materials": [
+          "DK_Limestone",
+          "DK_Leaf_Civic",
+          "DK_Leaf_CoreShrub",
+          "DK_Leaf_Shrub",
+          "DK_Bloom_Peach",
+          "DK_Bloom_Cream",
+          "DK_Bloom_Flamingo"
+        ]
+      },
+      "fbx": "out/scratch/vela/recovery/PlanterRun_4_B_Recovery075.fbx",
+      "sha256": "4f3b68278c110c6a748da58c0b3ac3d9f201e3df40969fdcc3ff176aecc9d907",
+      "non_foliage_exact": true,
+      "bounds_contained": true
+    },
+    "PlanterRun_4_C": {
+      "before": {
+        "bounds": [
+          [
+            -2.1463093757629395,
+            -0.3400000035762787,
+            0.0
+          ],
+          [
+            2.147174596786499,
+            0.3400000035762787,
+            1.1829514503479004
+          ]
+        ],
+        "triangles": 642,
+        "materials": [
+          "DK_Limestone",
+          "DK_Leaf_Civic",
+          "DK_Bloom_Cream",
+          "DK_Bloom_Peach",
+          "DK_Leaf_CivicDark"
+        ]
+      },
+      "candidate": {
+        "bounds": [
+          [
+            -2.1463093757629395,
+            -0.3400000035762787,
+            0.0
+          ],
+          [
+            2.147174596786499,
+            0.3400000035762787,
+            1.17288076877594
+          ]
+        ],
+        "triangles": 8604,
+        "materials": [
+          "DK_Limestone",
+          "DK_Leaf_Civic",
+          "DK_Leaf_CoreShrub",
+          "DK_Leaf_Shrub",
+          "DK_Bloom_Cream",
+          "DK_Bloom_Peach"
+        ]
+      },
+      "fbx": "out/scratch/vela/recovery/PlanterRun_4_C_Recovery075.fbx",
+      "sha256": "0c517b290c943078d6ea8a29a2c31d2d15f26601b4d3bb45f5acc9de53fada28",
+      "non_foliage_exact": true,
+      "bounds_contained": true
+    },
+    "Cypress_Play": {
+      "before": {
+        "bounds": [
+          [
+            -0.7833912968635559,
+            -0.7990145087242126,
+            -0.021810542792081833
+          ],
+          [
+            0.8238263130187988,
+            0.8336006999015808,
+            6.3038330078125
+          ]
+        ],
+        "triangles": 1488,
+        "materials": [
+          "DK_Bark_Fibre",
+          "DK_Leaf_CoreConifer",
+          "DK_Leaf_CypressOlive",
+          "DK_Leaf_Cypress"
+        ]
+      },
+      "candidate": {
+        "bounds": [
+          [
+            -0.7418251037597656,
+            -0.7467553615570068,
+            0.0
+          ],
+          [
+            0.7772886157035828,
+            0.761101484298706,
+            6.3038330078125
+          ]
+        ],
+        "triangles": 5004,
+        "materials": [
+          "DK_Bark_Fibre",
+          "DK_Leaf_CoreConifer",
+          "DK_Leaf_CypressOlive",
+          "DK_Leaf_Cypress"
+        ]
+      },
+      "fbx": "out/scratch/vela/recovery/Cypress_Play_Recovery075.fbx",
+      "sha256": "f31e692944527cb8ffb849558a7623afbe5717af1c3c462c38ce8cd11fba0bed",
+      "non_foliage_exact": true,
+      "bounds_contained": true
+    }
+  },
+  "textures": {
+    "DK_Leaf_Shrub": {
+      "path": "/Users/sky/Projects/the-suborned-store/source-art/DecoKit/Textures/derived/shrub_leaves_v1_alpha.png",
+      "dimensions": [
+        1024,
+        1024
+      ],
+      "sha256": "22b8fc29d29f4902bb07879db3443dd01d79aeddb86b226b91ea0cfd3dcc3c9f"
+    },
+    "DK_Leaf_Cypress": {
+      "path": "/Users/sky/Projects/the-suborned-store/source-art/DecoKit/Textures/derived/cypress_foliage_v1_alpha.png",
+      "dimensions": [
+        1024,
+        1024
+      ],
+      "sha256": "b0af29a7978ee0052902b2126d873fbf879aebcec3b5fe2a2e189e88f8ca9280"
+    }
+  },
+  "checks": [
+    "7 candidate bounds contained",
+    "7 non-foliage polygon lists exact",
+    "no DECIMATE modifiers",
+    "2 reused textures present at full resolution"
+  ]
+}

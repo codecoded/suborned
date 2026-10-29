@@ -100,6 +100,8 @@ namespace Suborned.World
             var megas = new MegaKit(nodes, facade, world);
             var skyline = new SkylineKit(placer, look) { SkyBodyHaze = kit.SkyBodyHaze };
             ProcFacade.Today = kit.EveryFaceToday; ProcFacade.ShellWalls = 0; // brief 072-E
+            var restyle = CivicRestyle.Load(); // brief 075: Vela's civic restyle (visual only: kit slots, two plots' and the bed kerbs' material, collider-free overlays)
+            if (restyle != null) Debug.Log(restyle.Prepare(world, look));
             var root = Nodes.Group(null, RootName);
             var stamp = root.gameObject.AddComponent<WorldStamp>(); // what this scene was built from (the walk tool reads it)
             stamp.source = world.Source; stamp.exportSha256 = world.Sha256;
@@ -140,7 +142,9 @@ namespace Suborned.World
             layers.Levels(Nodes.Group(root, "levels"), Nodes.Group(root, "decks"), world.Levels);
             megas.Megastructures(Nodes.Group(root, "megastructures"), world.Megastructures, placer, standIns);
             if (world.HiddenCivic > 0) Debug.Log($"World: {world.HiddenCivic} civic masses `hidden` in the export, not drawn (data only)");
-            facade.Civic(Nodes.Group(root, "civic"), Coplanar.Masses(world.Civic), placer);
+            var civicLayer = Nodes.Group(root, "civic");
+            facade.Civic(civicLayer, Coplanar.Masses(world.Civic), placer);
+            if (restyle != null) Debug.Log(restyle.PlaceOverlays(civicLayer, placer));
             Debug.Log($"World: civic monument plinths {facade.Plinths}");
             if (world.Entrances.Count > 0) ServiceDoors.Build(nodes, Nodes.Group(root, "takedown"), world); // brief 013: the service doors (export takedown.entrances)
             megas.Gates(Nodes.Group(root, "gates"), world.Gates);
@@ -180,7 +184,9 @@ namespace Suborned.World
             Debug.Log($"World: play-zoom guard: {guard.groups} LOD groups checked; nearest L1 switch on the building layers {guard.nearest:F1} m ({guard.nearestName}) >= {KitLods.GuardM} m; {guard.otherBelow} groups outside the facade layers switch nearer (warned above)");
             ProcKit.Report(world, facade);
             ContactShade.Build(look, world, root); // brief 026: contact shade at building feet, kerb feet and under street pieces (SSAO is blind at ortho play zoom)
-            Nodes.Group(Nodes.Group(null, "source"), world.Source ?? Path.GetFileName(path));
+            var sourceGroup = Nodes.Group(null, "source");
+            Nodes.Group(sourceGroup, world.Source ?? Path.GetFileName(path));
+            Nodes.Group(sourceGroup, restyle != null ? $"civic-restyle {Path.GetFileName(restyle.Path)} sha256 {restyle.Sha256}" : "civic-restyle off"); // what the civic block was dressed with
             Play.PlayInstall.Install(world); // the live Handover host (brief 011 D): its own root, `play`
             Debug.Log($"World: kit parts spinning {KitParts.Spin(root)} (kit.json `parts`; view only)");
             RobotKit.EnsureStageAtlas(); // item 24: the patrol face atlas at its own 16 x 60 (no power-of-two scaling)

@@ -1,0 +1,18 @@
+{
+  "schema": "vela.recovery-asset-delta/1",
+  "status": "handoff-only; not applied",
+  "scope": "Existing cafe/civic placements only; no global kit substitution",
+  "ground": [
+    {"plot": "plot/records-square", "from": "Kit/Materials/DK_Terrazzo_Ivory.mat", "to": "Kit/Materials/DK_Pave_Flags.mat", "tile": 4},
+    {"plot": "plot/records-office", "from": "Kit/Materials/DK_Terrazzo_Ivory.mat", "to": "Kit/Materials/DK_Pave_Flags.mat", "tile": 4}
+  ],
+  "renderMeshCandidates": [
+    "BedTuft_A", "BedTuft_B", "BedTuft_C",
+    "PlanterRun_4_A", "PlanterRun_4_B", "PlanterRun_4_C", "Cypress_Play"
+  ],
+  "meshFilePattern": "out/scratch/vela/recovery/{piece}_Recovery075.fbx",
+  "materialResolution": "Exact material name under Kit/Materials; retain civic DK_Limestone -> DK_Limestone_Tex remap",
+  "adoption": "Selective pending Unity play-zoom and performance evidence; do not globally enable",
+  "preserve": ["ids", "transforms", "colliders", "footprints", "bed boundaries", "route boundaries", "inlays", "world export", "kit.collide", "sim/data"],
+  "nextOwner": "Latch via Aster"
+}

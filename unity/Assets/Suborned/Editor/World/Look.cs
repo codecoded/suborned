@@ -173,6 +173,24 @@ namespace Suborned.World
         /// surface key with the buildings on them, so the textured ground sheet is keyed apart), else the surface itself.</summary>
         public bool Has(string surface) => J.Get(Entry("surfaces"), surface) != null;
 
+        /// <summary>Brief 075 civic restyle (CivicRestyle): a surface added in memory, a kit material laid `tile` metres a repeat (box: walls take
+        /// their own face's metres, not the plan's), never written to look.json. A key look.json already has is rejected.</summary>
+        public void AddSurface(string key, string material, float tile, bool box)
+        {
+            var s = J.O(Entry("surfaces"));
+            if (s.TryGetValue(key, out var had))
+            {
+                if (J.S(had, "material") == material && J.Get(had, "tile") is double t && Mathf.Approximately((float)t, tile) && (J.S(had, "uv") == "box") == box) return;
+                throw new InvalidDataException($"World: surface `{key}` is already in look.json");
+            }
+            var e = new Dictionary<string, object> { ["material"] = material, ["tile"] = (double)tile, ["value"] = 1.0 };
+            if (box) e["uv"] = "box";
+            s[key] = e;
+        }
+
+        /// <summary>A surface whose texture is laid box-wise (AddSurface's `box`): tops on plan, walls along their face and up.</summary>
+        public bool UvBox(string surface) => J.S(Surface(surface), "uv") == "box";
+
         public string Ground(string surface) => surface != null && J.Get(Entry("surfaces"), "ground/" + surface) != null ? "ground/" + surface : surface;
 
         public float SeededPeriod(string surface)
