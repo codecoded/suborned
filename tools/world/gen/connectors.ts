@@ -18,6 +18,11 @@ const ringRect = (r: Rect): V[] => rectPts(r).map(rv);
 type ForecourtBank = { serves: { line: string; station: string; side: string }; span: [number, number]; axisClear: [number, number]; keepClear: Rect[]; bridge: { w: number; from: number; to: number } };
 /** True if the point stands on a plan signature's ground (SpaceHQ's hall). */
 export const inSignature = (ctx: Ctx, p: V): boolean => (ctx.plan.signatures ?? []).some(s => inRect(p, s.ground as Rect));
+/** True if the point stands on a public floor the plan declares inside a signature structure: a `levels[]` entry of that level with `floor: 'public'` (SpaceHQ
+ *  ours: the drum's ground hall, open between its legs) makes the signature's ground, less its `legs`, public ground at that level. Declared, never by id: a
+ *  signature without the entry, or a point on a leg, is not public. */
+export const onSignatureFloor = (ctx: Ctx, p: V, level = 'street'): boolean =>
+  (ctx.plan.signatures ?? []).some(s => (s.levels ?? []).some(l => l.level === level && l.floor === 'public') && inRect(p, s.ground as Rect) && !(s.legs ?? []).some(g => inRect(p, g as Rect)));
 
 export function forecourtBank(ctx: Ctx, line: string, station: string, side: string): ForecourtBank | null {
   for (const p of ctx.plan.plots as { bank?: unknown }[]) {
@@ -121,7 +126,7 @@ export function generateConnectors(ctx: Ctx, megas: MegaOut[], stations: Mass[],
   const tw = std.stairTower.size as [number, number, number], runA = std.escalators.runA, runB = std.escalators.runB, mz = std.escalators.mezzanine as [number, number];
   const tower = { along: tw[1], across: tw[0] }, liftSz = ctx.L.connectors.lift.car as [number, number], pairW = 4;
   const publicOk = (p: V, occ: Rect[]) => {
-    const land = ctx.d.plots.some(pl => ['park', 'open', 'square'].includes(pl.use) && pointInRing(p, pl.polyV)) || ctx.plan.foot.some(f => lineDist(p, f.pts) <= f.w / 2) || ctx.plan.quay.some(q => pointInRing(p, q));
+    const land = ctx.d.plots.some(pl => ['park', 'open', 'square'].includes(pl.use) && pointInRing(p, pl.polyV)) || ctx.plan.foot.some(f => lineDist(p, f.pts) <= f.w / 2) || ctx.plan.quay.some(q => pointInRing(p, q)) || onSignatureFloor(ctx, p);
     return land && !solids.some(s => pointInRing(p, s)) && !occ.some(o => inRect(p, o)) && !ctx.d.pylons.some(py => dist(py.p, p) < 3 + 0.8);
   };
   const occupied: Rect[] = [], beam: V[] = ctx.d.sky.flatMap(p => p.samples.filter((_, i) => i % 2 === 0).map(x => x.p));

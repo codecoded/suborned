@@ -1,8 +1,8 @@
-// bun run oldbuild:match [--built <path>] [--example]: the plan-match check (brief 075 remap step 2; match.ts). Reads the old-built scene's geometry
+// bun run oldbuild:match [--built <path>] [--out <dir>] [--tag <t>] [--example]: the plan-match check (brief 075 remap step 2; match.ts). Reads the old-built scene's geometry
 // (briefs/075/oldbuild/built.json, suborned.oldbuilt/1), compares it with the plan's world export, runs OV-1 on the old-built footprints, writes
 // briefs/075/oldbuild/match.json (every mismatch) and briefs/075/oldbuild/plan-patch.json (the proposed plan patch for Datum, outside the Handover zone), and
 // exits 1 on any mismatch or overlap (or a missing export). --example writes our own world in the export format to out/oldbuild/built.self.json (the identity:
-// it must match with 0 mismatches) as a reference for Latch.
+// it must match with 0 mismatches) as a reference for Latch. --tag t writes match-t.json and plan-patch-t.json instead (a later build's run beside the decided one).
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname, relative, resolve } from 'node:path';
 import type { OldBuilt } from '../../../contracts/world/oldbuilt.schema';
@@ -13,7 +13,7 @@ import { readBuilt } from './latch';
 import { MATCH, builtOf, builtOverlap, builtSide, compare, patchOf, worldSide } from './match';
 
 const root = resolve(import.meta.dir, '../../..'), arg = (k: string) => { const i = process.argv.indexOf(k); return i > 0 ? process.argv[i + 1] : undefined; };
-const planPath = 'contracts/world/harbour-district.plan.json', builtPath = arg('--built') ?? (existsSync(resolve(root, 'briefs/075/oldbuild/built.json')) ? 'briefs/075/oldbuild/built.json' : 'briefs/075/oldbuild/swap/built.json'), outDir = arg('--out') ?? 'briefs/075/oldbuild';
+const planPath = 'contracts/world/harbour-district.plan.json', builtPath = arg('--built') ?? (existsSync(resolve(root, 'briefs/075/oldbuild/built.json')) ? 'briefs/075/oldbuild/built.json' : 'briefs/075/oldbuild/swap/built.json'), outDir = arg('--out') ?? 'briefs/075/oldbuild', tag = arg('--tag'), matchFile = tag ? `match-${tag}.json` : 'match.json', patchFile = tag ? `plan-patch-${tag}.json` : 'plan-patch.json';
 const read = (p: string) => JSON.parse(readFileSync(resolve(root, p), 'utf8'));
 const plan: Plan = read(planPath), d = derive(plan), civ = civic(plan.civic, read(plan.civic.block)), { w } = generated(plan, d, civ);
 
@@ -29,8 +29,8 @@ if (!existsSync(resolve(root, builtPath))) { console.error(`plan-match: ${builtP
 const raw = read(builtPath), built: OldBuilt = readBuilt(raw), ov = builtOverlap(built), rep = compare(builtSide(built), worldSide(w, plan as any), plan as any, ov);
 const patch = patchOf(rep, plan, built, builtPath, planPath, w.ground.roads);
 mkdirSync(resolve(root, outDir), { recursive: true });
-writeFileSync(resolve(root, outDir, 'match.json'), JSON.stringify({ built: builtPath, builtSchema: raw.schema, builtSource: built.source, plan: planPath, planVersion: plan.version, ...rep }, null, 1));
-writeFileSync(resolve(root, outDir, 'plan-patch.json'), JSON.stringify(patch, null, 1));
+writeFileSync(resolve(root, outDir, matchFile), JSON.stringify({ built: builtPath, builtSchema: raw.schema, builtSource: built.source, plan: planPath, planVersion: plan.version, ...rep }, null, 1));
+writeFileSync(resolve(root, outDir, patchFile), JSON.stringify(patch, null, 1));
 
 const n = rep.mismatches.length;
 console.log(`plan-match: ${builtPath} against ${planPath} v${plan.version} (footprints ${rep.tolerance.footprint} m, kerbs/pavements ${rep.tolerance.kerb} m, entrances ${rep.tolerance.entrance} m, levels exact)`);
@@ -55,7 +55,7 @@ for (const s of rep.skipped) console.log(`  skipped: ${s}`);
 const src = (raw.export?.source ?? '') as string, ver = src.match(/v(\d+\.\d+\.\d+)/)?.[1];
 if (ver && ver !== plan.version) console.log(`  STALE: the scene was built from ${src} (sha256 ${String(raw.export?.sha256 ?? '?').slice(0, 12)}…), the plan is v${plan.version}: rebuild the swap on the current export before reading plan-only network differences`);
 for (const m of rep.mismatches.filter(m => m.zone).slice(0, 20)) console.log(`  ZONE ${m.id} ${m.kind} ${m.side} ${m.el} ${m.dev ?? '-'} m at ${m.at.join(',')}`);
-console.log(`  wrote ${outDir}/match.json, ${outDir}/plan-patch.json`);
+console.log(`  wrote ${outDir}/${matchFile}, ${outDir}/${patchFile}`);
 const fail = n > 0 || ov.faults.length > 0;
 console.log(fail ? 'FAIL' : 'PASS');
 process.exit(fail ? 1 : 0);

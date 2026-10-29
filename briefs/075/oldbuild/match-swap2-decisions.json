@@ -1,0 +1,729 @@
+{
+ "by": "Datum, brief 075 remap step 2, 2026-10-29",
+ "match": "briefs/075/oldbuild/match-swap2.json",
+ "plan": "harbour-district plan 0.5.6 (form ours)",
+ "classes": [
+  {
+   "id": "rounded-corner",
+   "n": 201,
+   "proposal": "apply to plan",
+   "decision": "apply to plan (standard), value measured first",
+   "why": "One geometry: the old 8 x 8 corner cell is a StreamCorner whose outside corner is an arc; the plan already lays those cells (blocks[].corners, caps corner) but draws their outside corner square. Datum adds standards.blocks.corner.radius (the outside radius of a perimeter block's corner cell) once Splice measures it from the adopted StreamCorner outline (the 1.6 / 2.3 m deviations suggest about 5.5 m = 2.3 / (sqrt 2 - 1)); the matcher then rounds the plan's outside corners by it. Not written now: a guessed radius would move the pass line on a number nobody measured."
+  },
+  {
+   "id": "handover-street",
+   "n": 187,
+   "proposal": "old gives way",
+   "decision": "old gives way (Latch)",
+   "why": "Protected by the brief: KEEP_ROADS and KEEP_PLOTS are byte for byte. The swap cut takes old kerb stones, flags and city mass too, and the kept plots carry the export's masses as the zone does."
+  },
+  {
+   "id": "old-flags",
+   "n": 179,
+   "proposal": "accept as drift",
+   "decision": "accept as drift (confirmed)",
+   "why": "A plan plot runs from the kerb: its pavement and yard are plot ground, so old flags inside a plot are plot paving. The matcher counts them so; only flags off every plot and off the plan pavements fail."
+  },
+  {
+   "id": "doors",
+   "n": 149,
+   "proposal": "accept as drift",
+   "decision": "accept as information outside the civic block (confirmed)",
+   "why": "Doors are no plan field outside the civic block (26 ops rejected in round 1); our generator and the old builders each place them by bay. Inside the Handover zone they stay failures."
+  },
+  {
+   "id": "southside",
+   "n": 88,
+   "proposal": "old gives way",
+   "decision": "old gives way (Latch)",
+   "why": "Market Street is T1's tram street and carries the Handover's official and getaway routes (M-1 1124 / 447 m), and Apollo Way keeps the Boulevard's 60 m junction spacing; the plan keeps both lines, so the old diagonal kerb runs and the flags off the plan pavements give way. No street takes an old line."
+  },
+  {
+   "id": "kerb-lines",
+   "n": 69,
+   "proposal": "apply to plan",
+   "decision": "per road, below: none taken this round beyond the own pavements",
+   "why": "Each road decided in the per-id list."
+  },
+  {
+   "id": "megastructure",
+   "n": 66,
+   "proposal": "old gives way",
+   "decision": "old gives way (confirmed)",
+   "why": "The plan keeps the Lantern and West Terraces megastructures (multilevel, MS-1); round 1 rejected RL2/RB1 on the same ground."
+  },
+  {
+   "id": "other",
+   "n": 61,
+   "proposal": "apply to plan",
+   "decision": "op by op, below",
+   "why": "E1 and N2 re-laid this round (own pavements); the rest kept, with the reason per group."
+  },
+  {
+   "id": "landmark-outline",
+   "n": 27,
+   "proposal": "matcher",
+   "decision": "matcher: compare by centre and containment (agreed)",
+   "why": "Plan landmarks are reservations (centre, r). Note for Latch: in plan 0.5.6 (form ours) the Sphere stands at (-172, 124), 42 m west of the old Put; move the SphereStation Put to old (-172, 0, 330) or the centre test fails there."
+  },
+  {
+   "id": "spacehq-form",
+   "n": 3,
+   "proposal": "apply to plan",
+   "decision": "applied",
+   "why": "Plan 0.5.6 is form \"ours\": the SpaceHQ_Portal at (0, 244), ground x +-40, y 204..284, S1 through the drum. The old HQ's ground (x +-54, y 178..298) is gone from the plan."
+  }
+ ],
+ "ids": {
+  "M0346": {
+   "class": "kerb-lines",
+   "decision": "reject (old gives way)",
+   "why": "Crown Avenue ends at n_avenue (y 136), its end kerb on the forecourt's edge (y 144); the forecourt is open ground at pavement level, so the old stones up the forecourt (to y 174) go"
+  },
+  "M0347": {
+   "class": "kerb-lines",
+   "decision": "reject (old gives way)",
+   "why": "Crown Avenue ends at n_avenue (y 136), its end kerb on the forecourt's edge (y 144); the forecourt is open ground at pavement level, so the old stones up the forecourt (to y 174) go"
+  },
+  "M0353": {
+   "class": "kerb-lines",
+   "decision": "reject (old gives way)",
+   "why": "the old kerbs across the Boulevard at Orbit Square: the plan keeps the Boulevard through as T1's tram street (stops at the circus and Orbit) to the Sea Gates, so the square stays two halves either side of it"
+  },
+  "M0419": {
+   "class": "kerb-lines",
+   "decision": "reject (old gives way)",
+   "why": "the old kerbs across the Boulevard at Orbit Square: the plan keeps the Boulevard through as T1's tram street (stops at the circus and Orbit) to the Sea Gates, so the square stays two halves either side of it"
+  },
+  "M0420": {
+   "class": "kerb-lines",
+   "decision": "reject (old gives way)",
+   "why": "the old kerbs across the Boulevard at Orbit Square: the plan keeps the Boulevard through as T1's tram street (stops at the circus and Orbit) to the Sea Gates, so the square stays two halves either side of it"
+  },
+  "M0435": {
+   "class": "kerb-lines",
+   "decision": "accept as drift (matcher)",
+   "why": "the side street ends on a kerb at the terrace (x 46) in both: the matcher should read a road's end as its kerb"
+  },
+  "M0446": {
+   "class": "kerb-lines",
+   "decision": "reject",
+   "why": "the Boulevard's kerbs at x +-10 (20 m, T1's stop islands need 10 m a half); round 1 kept the 20 m section"
+  },
+  "M0448": {
+   "class": "kerb-lines",
+   "decision": "reject",
+   "why": "the Boulevard's kerbs at x +-10 (20 m, T1's stop islands need 10 m a half); round 1 kept the 20 m section"
+  },
+  "M0455": {
+   "class": "kerb-lines",
+   "decision": "reject",
+   "why": "the Boulevard's kerbs at x +-10 (20 m, T1's stop islands need 10 m a half); round 1 kept the 20 m section"
+  },
+  "M0456": {
+   "class": "kerb-lines",
+   "decision": "reject",
+   "why": "the Boulevard's kerbs at x +-10 (20 m, T1's stop islands need 10 m a half); round 1 kept the 20 m section"
+  },
+  "M0457": {
+   "class": "kerb-lines",
+   "decision": "reject (old gives way)",
+   "why": "the old tram stop island (IslandZ) and its noses: T1's circus stop is laid by sections.tramStreet.district (edge 3.2 + island 3.0 + 0.5 + lane 3.3), so the old island gives way"
+  },
+  "M0458": {
+   "class": "kerb-lines",
+   "decision": "reject (old gives way)",
+   "why": "the old tram stop island (IslandZ) and its noses: T1's circus stop is laid by sections.tramStreet.district (edge 3.2 + island 3.0 + 0.5 + lane 3.3), so the old island gives way"
+  },
+  "M0459": {
+   "class": "kerb-lines",
+   "decision": "reject",
+   "why": "the Boulevard's kerbs at x +-10 (20 m, T1's stop islands need 10 m a half); round 1 kept the 20 m section"
+  },
+  "M0461": {
+   "class": "kerb-lines",
+   "decision": "accept as drift (matcher)",
+   "why": "the side street ends on a kerb at the terrace (x 46) in both: the matcher should read a road's end as its kerb"
+  },
+  "M0466": {
+   "class": "kerb-lines",
+   "decision": "reject",
+   "why": "the Boulevard's kerbs at x +-10 (20 m, T1's stop islands need 10 m a half); round 1 kept the 20 m section"
+  },
+  "M0468": {
+   "class": "kerb-lines",
+   "decision": "reject",
+   "why": "the Boulevard's kerbs at x +-10 (20 m, T1's stop islands need 10 m a half); round 1 kept the 20 m section"
+  },
+  "M0473": {
+   "class": "kerb-lines",
+   "decision": "reject (old gives way)",
+   "why": "the old tram stop island (IslandZ) and its noses: T1's circus stop is laid by sections.tramStreet.district (edge 3.2 + island 3.0 + 0.5 + lane 3.3), so the old island gives way"
+  },
+  "M0482": {
+   "class": "kerb-lines",
+   "decision": "reject (old gives way)",
+   "why": "the old tram stop island (IslandZ) and its noses: T1's circus stop is laid by sections.tramStreet.district (edge 3.2 + island 3.0 + 0.5 + lane 3.3), so the old island gives way"
+  },
+  "M0493": {
+   "class": "kerb-lines",
+   "decision": "reject (old gives way)",
+   "why": "the old tram stop island (IslandZ) and its noses: T1's circus stop is laid by sections.tramStreet.district (edge 3.2 + island 3.0 + 0.5 + lane 3.3), so the old island gives way"
+  },
+  "M0494": {
+   "class": "kerb-lines",
+   "decision": "reject (old gives way)",
+   "why": "the old tram stop island (IslandZ) and its noses: T1's circus stop is laid by sections.tramStreet.district (edge 3.2 + island 3.0 + 0.5 + lane 3.3), so the old island gives way"
+  },
+  "M0498": {
+   "class": "kerb-lines",
+   "decision": "accept as drift",
+   "why": "the corner return (KR-1, R 2) against the old corner stone, within 1.6 m; the side streets' own pavements (roads[].pavement) landed this round"
+  },
+  "M0500": {
+   "class": "kerb-lines",
+   "decision": "reject",
+   "why": "the Boulevard's kerbs at x +-10 (20 m, T1's stop islands need 10 m a half); round 1 kept the 20 m section"
+  },
+  "M0502": {
+   "class": "kerb-lines",
+   "decision": "reject",
+   "why": "the Boulevard's kerbs at x +-10 (20 m, T1's stop islands need 10 m a half); round 1 kept the 20 m section"
+  },
+  "M0503": {
+   "class": "kerb-lines",
+   "decision": "reject",
+   "why": "the Boulevard's kerbs at x +-10 (20 m, T1's stop islands need 10 m a half); round 1 kept the 20 m section"
+  },
+  "M0506": {
+   "class": "kerb-lines",
+   "decision": "accept as drift",
+   "why": "the corner return (KR-1, R 2) against the old corner stone, within 1.6 m; the side streets' own pavements (roads[].pavement) landed this round"
+  },
+  "M0507": {
+   "class": "kerb-lines",
+   "decision": "accept as drift",
+   "why": "the corner return (KR-1, R 2) against the old corner stone, within 1.6 m; the side streets' own pavements (roads[].pavement) landed this round"
+  },
+  "M0508": {
+   "class": "kerb-lines",
+   "decision": "accept as drift",
+   "why": "the corner return (KR-1, R 2) against the old corner stone, within 1.6 m; the side streets' own pavements (roads[].pavement) landed this round"
+  },
+  "M0509": {
+   "class": "kerb-lines",
+   "decision": "reject",
+   "why": "the Boulevard's kerbs at x +-10 (20 m, T1's stop islands need 10 m a half); round 1 kept the 20 m section"
+  },
+  "M0512": {
+   "class": "kerb-lines",
+   "decision": "reject",
+   "why": "the Boulevard's kerbs at x +-10 (20 m, T1's stop islands need 10 m a half); round 1 kept the 20 m section"
+  },
+  "M0516": {
+   "class": "kerb-lines",
+   "decision": "reject",
+   "why": "the Boulevard's kerbs at x +-10 (20 m, T1's stop islands need 10 m a half); round 1 kept the 20 m section"
+  },
+  "M0517": {
+   "class": "kerb-lines",
+   "decision": "accept as drift",
+   "why": "the circus mouth's kerb return against the old stone, 0.9 m"
+  },
+  "M0518": {
+   "class": "kerb-lines",
+   "decision": "accept as drift",
+   "why": "the circus mouth's kerb return against the old stone, 0.9 m"
+  },
+  "M0521": {
+   "class": "kerb-lines",
+   "decision": "accept as drift",
+   "why": "the corner return (KR-1, R 2) against the old corner stone, within 1.6 m; the side streets' own pavements (roads[].pavement) landed this round"
+  },
+  "M0522": {
+   "class": "kerb-lines",
+   "decision": "reject",
+   "why": "an open square, forecourt, green or walk mouth: its edge on the pavement is a plot or walk line at pavement level with no flag edge to meet"
+  },
+  "M0523": {
+   "class": "kerb-lines",
+   "decision": "reject",
+   "why": "an open square, forecourt, green or walk mouth: its edge on the pavement is a plot or walk line at pavement level with no flag edge to meet"
+  },
+  "M0571": {
+   "class": "kerb-lines",
+   "decision": "reject",
+   "why": "a Handover plot (KEEP_PLOTS): never moves"
+  },
+  "M0574": {
+   "class": "kerb-lines",
+   "decision": "reject",
+   "why": "an open square, forecourt, green or walk mouth: its edge on the pavement is a plot or walk line at pavement level with no flag edge to meet"
+  },
+  "M0575": {
+   "class": "kerb-lines",
+   "decision": "reject",
+   "why": "an open square, forecourt, green or walk mouth: its edge on the pavement is a plot or walk line at pavement level with no flag edge to meet"
+  },
+  "M0664": {
+   "class": "kerb-lines",
+   "decision": "reject",
+   "why": "an open square, forecourt, green or walk mouth: its edge on the pavement is a plot or walk line at pavement level with no flag edge to meet"
+  },
+  "M0666": {
+   "class": "kerb-lines",
+   "decision": "reject",
+   "why": "an open square, forecourt, green or walk mouth: its edge on the pavement is a plot or walk line at pavement level with no flag edge to meet"
+  },
+  "M0667": {
+   "class": "kerb-lines",
+   "decision": "reject",
+   "why": "an open square, forecourt, green or walk mouth: its edge on the pavement is a plot or walk line at pavement level with no flag edge to meet"
+  },
+  "M0669": {
+   "class": "kerb-lines",
+   "decision": "reject",
+   "why": "an open square, forecourt, green or walk mouth: its edge on the pavement is a plot or walk line at pavement level with no flag edge to meet"
+  },
+  "M0671": {
+   "class": "kerb-lines",
+   "decision": "reject",
+   "why": "an open square, forecourt, green or walk mouth: its edge on the pavement is a plot or walk line at pavement level with no flag edge to meet"
+  },
+  "M0680": {
+   "class": "kerb-lines",
+   "decision": "reject",
+   "why": "an open square, forecourt, green or walk mouth: its edge on the pavement is a plot or walk line at pavement level with no flag edge to meet"
+  },
+  "M0683": {
+   "class": "kerb-lines",
+   "decision": "reject",
+   "why": "an open square, forecourt, green or walk mouth: its edge on the pavement is a plot or walk line at pavement level with no flag edge to meet"
+  },
+  "M0687": {
+   "class": "kerb-lines",
+   "decision": "reject",
+   "why": "plot ground runs from the kerb to 2 m behind the old back walls (x 48 / the crescent chords): its edge is a plot line, not a flag edge; the old flags there are plot paving (old-flags)"
+  },
+  "M0719": {
+   "class": "kerb-lines",
+   "decision": "reject",
+   "why": "plot ground runs from the kerb to 2 m behind the old back walls (x 48 / the crescent chords): its edge is a plot line, not a flag edge; the old flags there are plot paving (old-flags)"
+  },
+  "M0720": {
+   "class": "kerb-lines",
+   "decision": "reject",
+   "why": "plot ground runs from the kerb to 2 m behind the old back walls (x 48 / the crescent chords): its edge is a plot line, not a flag edge; the old flags there are plot paving (old-flags)"
+  },
+  "M0721": {
+   "class": "kerb-lines",
+   "decision": "reject",
+   "why": "plot ground runs from the kerb to 2 m behind the old back walls (x 48 / the crescent chords): its edge is a plot line, not a flag edge; the old flags there are plot paving (old-flags)"
+  },
+  "M0722": {
+   "class": "kerb-lines",
+   "decision": "reject",
+   "why": "plot ground runs from the kerb to 2 m behind the old back walls (x 48 / the crescent chords): its edge is a plot line, not a flag edge; the old flags there are plot paving (old-flags)"
+  },
+  "M0723": {
+   "class": "kerb-lines",
+   "decision": "reject",
+   "why": "plot ground runs from the kerb to 2 m behind the old back walls (x 48 / the crescent chords): its edge is a plot line, not a flag edge; the old flags there are plot paving (old-flags)"
+  },
+  "M0724": {
+   "class": "kerb-lines",
+   "decision": "reject",
+   "why": "plot ground runs from the kerb to 2 m behind the old back walls (x 48 / the crescent chords): its edge is a plot line, not a flag edge; the old flags there are plot paving (old-flags)"
+  },
+  "M0729": {
+   "class": "kerb-lines",
+   "decision": "reject",
+   "why": "plot ground runs from the kerb to 2 m behind the old back walls (x 48 / the crescent chords): its edge is a plot line, not a flag edge; the old flags there are plot paving (old-flags)"
+  },
+  "M0730": {
+   "class": "kerb-lines",
+   "decision": "reject",
+   "why": "plot ground runs from the kerb to 2 m behind the old back walls (x 48 / the crescent chords): its edge is a plot line, not a flag edge; the old flags there are plot paving (old-flags)"
+  },
+  "M0735": {
+   "class": "kerb-lines",
+   "decision": "reject",
+   "why": "plot ground runs from the kerb to 2 m behind the old back walls (x 48 / the crescent chords): its edge is a plot line, not a flag edge; the old flags there are plot paving (old-flags)"
+  },
+  "M0738": {
+   "class": "kerb-lines",
+   "decision": "reject",
+   "why": "plot ground runs from the kerb to 2 m behind the old back walls (x 48 / the crescent chords): its edge is a plot line, not a flag edge; the old flags there are plot paving (old-flags)"
+  },
+  "M0742": {
+   "class": "kerb-lines",
+   "decision": "reject",
+   "why": "an open square, forecourt, green or walk mouth: its edge on the pavement is a plot or walk line at pavement level with no flag edge to meet"
+  },
+  "M0763": {
+   "class": "kerb-lines",
+   "decision": "reject",
+   "why": "plot ground runs from the kerb to 2 m behind the old back walls (x 48 / the crescent chords): its edge is a plot line, not a flag edge; the old flags there are plot paving (old-flags)"
+  },
+  "M0764": {
+   "class": "kerb-lines",
+   "decision": "reject",
+   "why": "plot ground runs from the kerb to 2 m behind the old back walls (x 48 / the crescent chords): its edge is a plot line, not a flag edge; the old flags there are plot paving (old-flags)"
+  },
+  "M0765": {
+   "class": "kerb-lines",
+   "decision": "reject",
+   "why": "plot ground runs from the kerb to 2 m behind the old back walls (x 48 / the crescent chords): its edge is a plot line, not a flag edge; the old flags there are plot paving (old-flags)"
+  },
+  "M0766": {
+   "class": "kerb-lines",
+   "decision": "reject",
+   "why": "plot ground runs from the kerb to 2 m behind the old back walls (x 48 / the crescent chords): its edge is a plot line, not a flag edge; the old flags there are plot paving (old-flags)"
+  },
+  "M0803": {
+   "class": "kerb-lines",
+   "decision": "reject",
+   "why": "plot ground runs from the kerb to 2 m behind the old back walls (x 48 / the crescent chords): its edge is a plot line, not a flag edge; the old flags there are plot paving (old-flags)"
+  },
+  "M0804": {
+   "class": "kerb-lines",
+   "decision": "reject",
+   "why": "plot ground runs from the kerb to 2 m behind the old back walls (x 48 / the crescent chords): its edge is a plot line, not a flag edge; the old flags there are plot paving (old-flags)"
+  },
+  "M0812": {
+   "class": "kerb-lines",
+   "decision": "reject",
+   "why": "plot ground runs from the kerb to 2 m behind the old back walls (x 48 / the crescent chords): its edge is a plot line, not a flag edge; the old flags there are plot paving (old-flags)"
+  },
+  "M0815": {
+   "class": "kerb-lines",
+   "decision": "reject",
+   "why": "plot ground runs from the kerb to 2 m behind the old back walls (x 48 / the crescent chords): its edge is a plot line, not a flag edge; the old flags there are plot paving (old-flags)"
+  },
+  "M0816": {
+   "class": "kerb-lines",
+   "decision": "reject",
+   "why": "plot ground runs from the kerb to 2 m behind the old back walls (x 48 / the crescent chords): its edge is a plot line, not a flag edge; the old flags there are plot paving (old-flags)"
+  },
+  "M0817": {
+   "class": "kerb-lines",
+   "decision": "reject",
+   "why": "plot ground runs from the kerb to 2 m behind the old back walls (x 48 / the crescent chords): its edge is a plot line, not a flag edge; the old flags there are plot paving (old-flags)"
+  },
+  "M0822": {
+   "class": "kerb-lines",
+   "decision": "reject",
+   "why": "plot ground runs from the kerb to 2 m behind the old back walls (x 48 / the crescent chords): its edge is a plot line, not a flag edge; the old flags there are plot paving (old-flags)"
+  },
+  "M0824": {
+   "class": "kerb-lines",
+   "decision": "reject",
+   "why": "plot ground runs from the kerb to 2 m behind the old back walls (x 48 / the crescent chords): its edge is a plot line, not a flag edge; the old flags there are plot paving (old-flags)"
+  },
+  "M0003": {
+   "class": "other",
+   "decision": "matcher",
+   "why": "old city mass beyond the sheet edge (y 298..300): compare on the sheet only"
+  },
+  "M0004": {
+   "class": "other",
+   "decision": "matcher",
+   "why": "old city mass beyond the sheet edge (y 298..300): compare on the sheet only"
+  },
+  "M0010": {
+   "class": "other",
+   "decision": "reject",
+   "why": "old E1 on the harbour terrace (x 46..74): no plot can carry it (R-F1: Orbit Square East fronts only the Boulevard, even with frontageSquare.reach); it stands as built"
+  },
+  "M0041": {
+   "class": "other",
+   "decision": "reject",
+   "why": "round 1 op 16: the old west terrace bar (14 m) against the grammar's 28 m back-to-back block, its ends at Lamplight Lane and the Gardens Gate"
+  },
+  "M0042": {
+   "class": "other",
+   "decision": "reject",
+   "why": "round 1 op 16: the old west terrace bar (14 m) against the grammar's 28 m back-to-back block, its ends at Lamplight Lane and the Gardens Gate"
+  },
+  "M0052": {
+   "class": "other",
+   "decision": "reject (old gives way)",
+   "why": "a Handover plot (KEEP_PLOTS): its buildings never move; the old pieces standing on it give way (handover-street)"
+  },
+  "M0055": {
+   "class": "other",
+   "decision": "reject (old gives way)",
+   "why": "a Handover plot (KEEP_PLOTS): its buildings never move; the old pieces standing on it give way (handover-street)"
+  },
+  "M0060": {
+   "class": "other",
+   "decision": "reject",
+   "why": "the old W1 / W2 walls: under 1 m at the lane mouths (bays on the 2 m module), and W1's back at x -46 against the block's 28 m band, which BG-3 needs back to back"
+  },
+  "M0062": {
+   "class": "other",
+   "decision": "reject (old gives way)",
+   "why": "a Handover plot (KEEP_PLOTS): its buildings never move; the old pieces standing on it give way (handover-street)"
+  },
+  "M0063": {
+   "class": "other",
+   "decision": "reject (old gives way)",
+   "why": "a Handover plot (KEEP_PLOTS): its buildings never move; the old pieces standing on it give way (handover-street)"
+  },
+  "M0065": {
+   "class": "other",
+   "decision": "reject (old gives way)",
+   "why": "a Handover plot (KEEP_PLOTS): its buildings never move; the old pieces standing on it give way (handover-street)"
+  },
+  "M0066": {
+   "class": "other",
+   "decision": "reject (old gives way)",
+   "why": "a Handover plot (KEEP_PLOTS): its buildings never move; the old pieces standing on it give way (handover-street)"
+  },
+  "M0067": {
+   "class": "other",
+   "decision": "reject (old gives way)",
+   "why": "a Handover plot (KEEP_PLOTS): its buildings never move; the old pieces standing on it give way (handover-street)"
+  },
+  "M0070": {
+   "class": "other",
+   "decision": "applied",
+   "why": "E1 re-laid: 13 bays at y -242.75..-148.75 between Sunset Way's own 3.25 m and Market Street's own 2.75 m pavements (old -242..-148)"
+  },
+  "M0071": {
+   "class": "other",
+   "decision": "applied",
+   "why": "E1 re-laid: 13 bays at y -242.75..-148.75 between Sunset Way's own 3.25 m and Market Street's own 2.75 m pavements (old -242..-148)"
+  },
+  "M0072": {
+   "class": "other",
+   "decision": "reject",
+   "why": "round 1 op 16: the old west terrace bar (14 m) against the grammar's 28 m back-to-back block, its ends at Lamplight Lane and the Gardens Gate"
+  },
+  "M0074": {
+   "class": "other",
+   "decision": "reject",
+   "why": "round 1 op 16: the old west terrace bar (14 m) against the grammar's 28 m back-to-back block, its ends at Lamplight Lane and the Gardens Gate"
+  },
+  "M0079": {
+   "class": "other",
+   "decision": "reject",
+   "why": "E2 keeps 7 of its 8 old bays: from Market Street's 2.75 m line (y -127.25, R-PV1's narrowest) to the east lane (-72) is 55.25 m, under 56; the lane and E3's arc end fix the north end"
+  },
+  "M0080": {
+   "class": "other",
+   "decision": "reject",
+   "why": "E2 keeps 7 of its 8 old bays: from Market Street's 2.75 m line (y -127.25, R-PV1's narrowest) to the east lane (-72) is 55.25 m, under 56; the lane and E3's arc end fix the north end"
+  },
+  "M0081": {
+   "class": "other",
+   "decision": "reject",
+   "why": "E2 keeps 7 of its 8 old bays: from Market Street's 2.75 m line (y -127.25, R-PV1's narrowest) to the east lane (-72) is 55.25 m, under 56; the lane and E3's arc end fix the north end"
+  },
+  "M0082": {
+   "class": "other",
+   "decision": "reject",
+   "why": "a crescent end wing: the crescents are the old walls exactly (chords on r 35); built eyebrows and chords differ by the curve (rounded-corner)"
+  },
+  "M0083": {
+   "class": "other",
+   "decision": "reject",
+   "why": "a crescent end wing: the crescents are the old walls exactly (chords on r 35); built eyebrows and chords differ by the curve (rounded-corner)"
+  },
+  "M0084": {
+   "class": "other",
+   "decision": "reject",
+   "why": "a crescent end wing: the crescents are the old walls exactly (chords on r 35); built eyebrows and chords differ by the curve (rounded-corner)"
+  },
+  "M0085": {
+   "class": "other",
+   "decision": "reject",
+   "why": "a crescent end wing: the crescents are the old walls exactly (chords on r 35); the built wing's eyebrow and the chord differ by its curve (rounded-corner)"
+  },
+  "M0087": {
+   "class": "other",
+   "decision": "applied",
+   "why": "E1 re-laid: 13 bays at y -242.75..-148.75 between Sunset Way's own 3.25 m and Market Street's own 2.75 m pavements (old -242..-148)"
+  },
+  "M0088": {
+   "class": "other",
+   "decision": "applied",
+   "why": "E1 re-laid: 13 bays at y -242.75..-148.75 between Sunset Way's own 3.25 m and Market Street's own 2.75 m pavements (old -242..-148)"
+  },
+  "M0089": {
+   "class": "other",
+   "decision": "applied",
+   "why": "E1 re-laid: 13 bays at y -242.75..-148.75 between Sunset Way's own 3.25 m and Market Street's own 2.75 m pavements (old -242..-148)"
+  },
+  "M0090": {
+   "class": "other",
+   "decision": "reject",
+   "why": "a crescent end wing: the crescents are the old walls exactly (chords on r 35); built eyebrows and chords differ by the curve (rounded-corner)"
+  },
+  "M0091": {
+   "class": "other",
+   "decision": "reject",
+   "why": "a crescent end wing: the crescents are the old walls exactly (chords on r 35); built eyebrows and chords differ by the curve (rounded-corner)"
+  },
+  "M0094": {
+   "class": "other",
+   "decision": "reject",
+   "why": "a crescent end wing: the crescents are the old walls exactly (chords on r 35); built eyebrows and chords differ by the curve (rounded-corner)"
+  },
+  "M0097": {
+   "class": "other",
+   "decision": "reject",
+   "why": "a crescent end wing: the crescents are the old walls exactly (chords on r 35); built eyebrows and chords differ by the curve (rounded-corner)"
+  },
+  "M0098": {
+   "class": "other",
+   "decision": "reject",
+   "why": "a crescent end wing: the crescents are the old walls exactly (chords on r 35); built eyebrows and chords differ by the curve (rounded-corner)"
+  },
+  "M0099": {
+   "class": "other",
+   "decision": "reject",
+   "why": "a crescent end wing: the crescents are the old walls exactly (chords on r 35); the built wing's eyebrow and the chord differ by its curve (rounded-corner)"
+  },
+  "M0100": {
+   "class": "other",
+   "decision": "reject",
+   "why": "a crescent end wing: the crescents are the old walls exactly (chords on r 35); built eyebrows and chords differ by the curve (rounded-corner)"
+  },
+  "M0101": {
+   "class": "other",
+   "decision": "reject",
+   "why": "the avenue walls' north corners on the forecourt line (y 144): the old corner tower's overhang (to 141.3 at x +-50) is a piece, not the plot line"
+  },
+  "M0102": {
+   "class": "other",
+   "decision": "reject",
+   "why": "the avenue walls' north corners on the forecourt line (y 144): the old corner tower's overhang (to 141.3 at x +-50) is a piece, not the plot line"
+  },
+  "M0103": {
+   "class": "other",
+   "decision": "reject",
+   "why": "a crescent end wing: the crescents are the old walls exactly (chords on r 35); built eyebrows and chords differ by the curve (rounded-corner)"
+  },
+  "M0204": {
+   "class": "other",
+   "decision": "reject (old gives way)",
+   "why": "a Handover plot (KEEP_PLOTS): its buildings never move; the old pieces standing on it give way (handover-street)"
+  },
+  "M0209": {
+   "class": "other",
+   "decision": "reject",
+   "why": "a crescent end wing: the crescents are the old walls exactly (chords on r 35); built eyebrows and chords differ by the curve (rounded-corner)"
+  },
+  "M0298": {
+   "class": "other",
+   "decision": "reject",
+   "why": "a crescent end wing: the crescents are the old walls exactly (chords on r 35); built eyebrows and chords differ by the curve (rounded-corner)"
+  },
+  "M0299": {
+   "class": "other",
+   "decision": "reject",
+   "why": "a crescent end wing: the crescents are the old walls exactly (chords on r 35); built eyebrows and chords differ by the curve (rounded-corner)"
+  },
+  "M0300": {
+   "class": "other",
+   "decision": "reject",
+   "why": "a crescent end wing: the crescents are the old walls exactly (chords on r 35); built eyebrows and chords differ by the curve (rounded-corner)"
+  },
+  "M0308": {
+   "class": "other",
+   "decision": "reject (old gives way)",
+   "why": "a Handover plot (KEEP_PLOTS): its buildings never move; the old pieces standing on it give way (handover-street)"
+  },
+  "M0315": {
+   "class": "other",
+   "decision": "reject",
+   "why": "E2 keeps 7 of its 8 old bays: from Market Street's 2.75 m line (y -127.25, R-PV1's narrowest) to the east lane (-72) is 55.25 m, under 56; the lane and E3's arc end fix the north end"
+  },
+  "M0316": {
+   "class": "other",
+   "decision": "reject",
+   "why": "E2 keeps 7 of its 8 old bays: from Market Street's 2.75 m line (y -127.25, R-PV1's narrowest) to the east lane (-72) is 55.25 m, under 56; the lane and E3's arc end fix the north end"
+  },
+  "M0317": {
+   "class": "other",
+   "decision": "reject",
+   "why": "a crescent end wing: the crescents are the old walls exactly (chords on r 35); the built wing's eyebrow and the chord differ by its curve (rounded-corner)"
+  },
+  "M0318": {
+   "class": "other",
+   "decision": "reject",
+   "why": "E2 keeps 7 of its 8 old bays: from Market Street's 2.75 m line (y -127.25, R-PV1's narrowest) to the east lane (-72) is 55.25 m, under 56; the lane and E3's arc end fix the north end"
+  },
+  "M0319": {
+   "class": "other",
+   "decision": "reject",
+   "why": "a crescent end wing: the crescents are the old walls exactly (chords on r 35); built eyebrows and chords differ by the curve (rounded-corner)"
+  },
+  "M0320": {
+   "class": "other",
+   "decision": "reject",
+   "why": "a crescent end wing: the crescents are the old walls exactly (chords on r 35); built eyebrows and chords differ by the curve (rounded-corner)"
+  },
+  "M0321": {
+   "class": "other",
+   "decision": "reject",
+   "why": "a crescent end wing: the crescents are the old walls exactly (chords on r 35); the built wing's eyebrow and the chord differ by its curve (rounded-corner)"
+  },
+  "M0322": {
+   "class": "other",
+   "decision": "reject",
+   "why": "a crescent end wing: the crescents are the old walls exactly (chords on r 35); built eyebrows and chords differ by the curve (rounded-corner)"
+  },
+  "M0323": {
+   "class": "other",
+   "decision": "reject",
+   "why": "the old W1 / W2 walls: under 1 m at the lane mouths (bays on the 2 m module), and W1's back at x -46 against the block's 28 m band, which BG-3 needs back to back"
+  },
+  "M0324": {
+   "class": "other",
+   "decision": "reject",
+   "why": "the old W1 / W2 walls: under 1 m at the lane mouths (bays on the 2 m module), and W1's back at x -46 against the block's 28 m band, which BG-3 needs back to back"
+  },
+  "M0325": {
+   "class": "other",
+   "decision": "reject",
+   "why": "a crescent end wing: the crescents are the old walls exactly (chords on r 35); built eyebrows and chords differ by the curve (rounded-corner)"
+  },
+  "M0330": {
+   "class": "other",
+   "decision": "reject",
+   "why": "a crescent end wing: the crescents are the old walls exactly (chords on r 35); built eyebrows and chords differ by the curve (rounded-corner)"
+  },
+  "M0331": {
+   "class": "other",
+   "decision": "reject",
+   "why": "a crescent end wing: the crescents are the old walls exactly (chords on r 35); built eyebrows and chords differ by the curve (rounded-corner)"
+  },
+  "M0332": {
+   "class": "other",
+   "decision": "reject",
+   "why": "a crescent end wing: the crescents are the old walls exactly (chords on r 35); the built wing's eyebrow and the chord differ by its curve (rounded-corner)"
+  },
+  "M0333": {
+   "class": "other",
+   "decision": "reject",
+   "why": "a crescent end wing: the crescents are the old walls exactly (chords on r 35); built eyebrows and chords differ by the curve (rounded-corner)"
+  },
+  "M0343": {
+   "class": "other",
+   "decision": "reject",
+   "why": "the old W1 / W2 walls: under 1 m at the lane mouths (bays on the 2 m module), and W1's back at x -46 against the block's 28 m band, which BG-3 needs back to back"
+  },
+  "M0344": {
+   "class": "other",
+   "decision": "reject",
+   "why": "the old W1 / W2 walls: under 1 m at the lane mouths (bays on the 2 m module), and W1's back at x -46 against the block's 28 m band, which BG-3 needs back to back"
+  },
+  "M0345": {
+   "class": "other",
+   "decision": "reject",
+   "why": "the old W1 / W2 walls: under 1 m at the lane mouths (bays on the 2 m module), and W1's back at x -46 against the block's 28 m band, which BG-3 needs back to back"
+  }
+ }
+}

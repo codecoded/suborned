@@ -7,7 +7,7 @@ import type { OldBuilt } from '../../../contracts/world/oldbuilt.schema';
 import { civic } from '../../plan/civic';
 import { derive, type Plan } from '../../plan/plan';
 import { generated } from '../../plan/world-ctx';
-import { type LatchBuilt, fromLatch, joinLines, kerbLine, tileTurns } from './latch';
+import { type LatchBuilt, fromLatch, joinLines, kerbLine, pavementTurns, tileTurns } from './latch';
 import { builtOf, builtSide, compare, worldSide } from './match';
 
 setDefaultTimeout(180000);
@@ -38,6 +38,14 @@ test('pavement modules take their turn from their grid: a 30° grid reads 30°, 
   expect(t[0]).toBeCloseTo(a, 2);
   expect(t[2]).toBeCloseTo(a, 2);
   expect(t[3]).toBe(0);
+});
+
+test('pavement modules with a Unity yaw take it (clockwise, so plan -yaw, folded to a quarter turn), even a lone module; a yaw-less file reads its grid', () => {
+  const t = pavementTurns([{ at: [0, 0], size: 2, yaw: 125 }, { at: [100, 100], size: 2, yaw: 90 }, { at: [200, 0], size: 2, yaw: -30 }]);
+  expect(t[0]).toBeCloseTo((55 * Math.PI) / 180, 6); // -125° ≡ 55° on a square
+  expect(t[1]).toBe(0);
+  expect(t[2]).toBeCloseTo(Math.PI / 6, 6);
+  expect(pavementTurns([{ at: [0, 0], size: 2 }, { at: [100, 100], size: 2 }])).toEqual([0, 0]);
 });
 
 test('fromLatch: levels, decks, bays as entrances, zone ours, coverage, and the old water left out', () => {
@@ -97,4 +105,13 @@ test('bays: doors 5 m off their bay (beyond w/2 + 1 m) are plan-only, and the bu
   expect(e.some(m => m.side === 'plan-only')).toBe(true);
   expect(e.some(m => m.side === 'built-only')).toBe(true);
   expect(e.every(m => !m.zone)).toBe(true);
+});
+
+test('bays off the ground coverage (the west\'s old blocks on flat ground): our doors on them are compared and carried, never left uncovered with their buildings built-only', () => {
+  const b = asSwap(2); b.coverage = [{ id: 'far', ring: [[5000, 5000], [5002, 5000], [5002, 5002], [5000, 5002]] }];
+  const r = compare(builtSide(b), ours, P);
+  expect(r.mismatches.filter(m => m.kind === 'entrance')).toEqual([]);
+  expect(r.uncovered['doors (count)'] ?? 0).toBe(0);
+  const off = asSwap(5); off.coverage = b.coverage; // 5 m off: within w/2 + MATCH.coverBay, so compared (plan-only and built-only), not skipped
+  expect(compare(builtSide(off), ours, P).mismatches.some(m => m.kind === 'entrance' && m.side === 'plan-only')).toBe(true);
 });

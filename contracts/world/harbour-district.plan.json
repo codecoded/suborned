@@ -2,7 +2,7 @@
  "schema": "suborned.plan/1",
  "id": "harbour-district",
  "name": "Harbour District",
- "version": "0.5.5",
+ "version": "0.5.6",
  "date": "2026-10-29",
  "status": "brief 075 remap (Sky 2026-10-28: \"why can't we just remap the world around d handover using old buildings\"): the old DecoKit town transcribed by tools/plan/oldtown/transcribe.ts from /Users/sky/Projects/the-suborned/game/Assets/TheSuborned/Editor/DecoKit (sources sha256 in oldtown.sources), the Handover zone kept byte for byte. transit from A04 run r008, accepted; world program brief 004; skyline and threaded sky rail brief 007 A; skyline text (why, crownWhy, conceptTiles, station kitWhy) from skyline run r011, accepted; play-street height cap brief 066 (Sky 2026-10-26)",
  "frame": {
@@ -78,7 +78,11 @@
     "span": 36,
     "remnant": 0.5,
     "status": "Datum 2026-10-14: opt-in, key by key. landmark: derive keeps a pylon's centre this far outside every landmark disc (landmarks[].c, r). span: a span that crosses a landmark disc may be this long. remnant: no span next to a forced pylon (a landmark's edge, a portal's stand-off, the line's ends) is shorter than this fraction of its standard span. Absent, pylons are placed as before, so recorded runs rederive what they were made with. Splice, on Aster's call, 2026-10-14 (version kept at 0.2.0): landmark 0.8 → 3.8 (Latch's rebuild: the 0.8 left the pylon face 0.2 m off the basin rim), span 36 and remnant 0.5 added (the 0.8 left spans of 8.5 and 8 m)",
-    "why": "Sky's walk of 2026-10-14, note 3, \"pillar in middle of steps\": S1/trunk's pylon at 6.5, 0 stood inside the Crown monument (landmarks.monument, r 14), whose basin and steps fill that disc: the CircusMonument piece is the orrery on a fluted column in a basin, 27.8 × 28.7 m (kitFit), r 6 → 14 = the basin, so walkers go round it in the garden ring. pylonZones said where a pylon may stand (the island is a disc r 24), not what else stands there. landmark 3.8 = half the pylon footprint (pylonSize 1.6 → 0.8) + streetscape keepClear.pylonFace 3: the face stands at least 3 m off the disc. The ground allows one pylon each side of the disc (island ring, r 24; x −44 to −24 and 24.5 to 43 along the trunk is not pylon ground), at −18 and 18 on the 0.5 m sample grid, so the beam crosses in one span of 36 m. span 36 = a deeper steel box beam over a landmark disc (Las Vegas monorail spans reach 36.6 m, Disney 33.5 m); S-P1/S-P2 take it as the limit for a span that crosses a disc only, everywhere else spanStraight / spanCurve / spanTight hold. remnant 0.5 = half the standard span (15 m): the pylons west of the monument are set again as equal spans on allowed ground (−83.5, −61.5, −45.5, −18: 22, 16, 27.5 m instead of 30, 30, 8.5 behind a pylon at −15), and the last pylon before a portal stands where the greedy left it when the pylon 3 m outside the jamb would leave a stub (5, 2 and 12 m at Space HQ, the Parade gate and the Skyport: the building carries the beam from its jamb). The terminus stub past the Skyport portal (570 to 575) stays: both its pylons are forced. SF-18 (a pylon's footprint clears steps, landmarks, bays, buildings; 2 m from crossings and doorways) checks the export"
+    "why": "Sky's walk of 2026-10-14, note 3, \"pillar in middle of steps\": S1/trunk's pylon at 6.5, 0 stood inside the Crown monument (landmarks.monument, r 14), whose basin and steps fill that disc: the CircusMonument piece is the orrery on a fluted column in a basin, 27.8 × 28.7 m (kitFit), r 6 → 14 = the basin, so walkers go round it in the garden ring. pylonZones said where a pylon may stand (the island is a disc r 24), not what else stands there. landmark 3.8 = half the pylon footprint (pylonSize 1.6 → 0.8) + streetscape keepClear.pylonFace 3: the face stands at least 3 m off the disc. The ground allows one pylon each side of the disc (island ring, r 24; x −44 to −24 and 24.5 to 43 along the trunk is not pylon ground), at −18 and 18 on the 0.5 m sample grid, so the beam crosses in one span of 36 m. span 36 = a deeper steel box beam over a landmark disc (Las Vegas monorail spans reach 36.6 m, Disney 33.5 m); S-P1/S-P2 take it as the limit for a span that crosses a disc only, everywhere else spanStraight / spanCurve / spanTight hold. remnant 0.5 = half the standard span (15 m): the pylons west of the monument are set again as equal spans on allowed ground (−83.5, −61.5, −45.5, −18: 22, 16, 27.5 m instead of 30, 30, 8.5 behind a pylon at −15), and the last pylon before a portal stands where the greedy left it when the pylon 3 m outside the jamb would leave a stub (5, 2 and 12 m at Space HQ, the Parade gate and the Skyport: the building carries the beam from its jamb). The terminus stub past the Skyport portal (570 to 575) stays: both its pylons are forced. SF-18 (a pylon's footprint clears steps, landmarks, bays, buildings; 2 m from crossings and doorways) checks the export",
+    "walk": {
+     "post": 1.6,
+     "why": "brief 075 (Splice, 345b1e19): no part of a pylon's post (1.6 m square, any yaw) stands in a foot path's clear walk (SF-1: inside the walk's edge bands, a mall's walk band); the beam spans the walk instead (S2 on the Skyport and Market piers)"
+    }
    },
    "beamUnderside": 21.5,
    "beamUndersideWhy": "[S] height 24 − 1.0 (car floor over beam top, Alweg straddle) − 1.5 (beam depth, Seattle 1962). SF-4 (tree canopies ≥ 5 m from the beam envelope) and levels.headroom.underBeam measure from it; streetscape.skyrailEnvelope.underside repeats it",
@@ -120,8 +124,8 @@
    "rule": "brief 007 (Sky 2026-10-13): one dominant icon, a cluster of rival spires, crowns everywhere. The plan makes sites for the signature structures (signatures[], towers.sites, landmarks); scale, levels, clearances and the checker still rule how they stand",
    "dominant": {
     "id": "space-hq",
-    "tip": 340.2,
-    "why": "the old gold SpaceHQ as the old reel stood it (the kit SpaceHQ × 1.35, 340.2 m; brief 075 remap step 2, plan.spacehq.form 'old'): the tallest thing in the district; every other tip stays under rivalMax"
+    "tip": 252,
+    "why": "SpaceHQ as built (kit 252.0 tall): the tallest thing in the district (Sky 2026-10-13); every other tip stays under rivalMax"
    },
    "rivalMax": 200,
    "rivalMaxWhy": "≤ 0.8 × dominant (201.6), rounded down: the dominant stays at least a quarter taller than its tallest rival, as SpaceHQ over the needle trio in Blocks/needle_trio.png and mixed_skyline.png. The rival cluster sits 0.45–0.8 of the dominant",
@@ -143,7 +147,7 @@
     "exceptionsWhy": "brief 075 remap (Aster, under Sky's scope: only the Handover is protected): the Crown Avenue gate towers stand as the old reel stood them, the kit DiscTower × 1.0 (156.6 on the 0.2 landmark base, tip 156.8), not a × 0.69 stand-in the fit rejects (tags.scale 0.9–1.1). In the remap the quay runs to x 46, so the 150 m band reaches x −104 and takes the whole axis; the pair stands inland of the harbour front at (±44, 166), under rivalMax 200 and under the dominant. Scoped to these two landmarks only; every other tip within the band keeps 108. Bends GDD §10's harbour line for this pair: the note goes in the next GDD version (Aster)"
    },
    "tiers": [
-    "dominant 340.2: space-hq (signatures; the old gold SpaceHQ, the kit × 1.35, plan.spacehq.form 'old')",
+    "dominant 252: space-hq (signatures)",
     "vista 250: crown-vista (landmarks: the gold banded tower closing the Boulevard and Crown Avenue axis past the sheet edge, brief 075 golden vista 2; standards.skyline.vista; today the DiscTower@crown-vista × 1.1 at 172.4 stands until Vela's regen)",
     "rival spires 120–200: avenue-starburst 194.3, avenue-needle 167.8, avenue-gate-w / -e 165.6 (DiscTower pair + SkyBridge), crescent-terrace 122.7",
     "gate pair 156.8: disc-west / disc-east (landmarks, the kit DiscTower × 1.0 either side of Crown Avenue at (±44, 166); standards.skyline.harbour.exceptions)",
@@ -164,7 +168,12 @@
     "primary": 250,
     "district": 60
    },
-   "frontage": 1
+   "frontage": 1,
+   "frontageSquare": {
+    "reach": 45,
+    "source": "Approved Document B B5 (a pump appliance within 45 m of every point of a building's footprint) · brief 075 ask 3",
+    "why": "R-F1: a plot may front an open square that fronts an access road, the whole plot within reach of that road's kerb. Old E1 on the harbour terrace still cannot be mapped by it: Orbit Square East fronts only the Boulevard (district)"
+   }
   },
   "walking": {
    "crossAnywhere": true,
@@ -980,7 +989,25 @@
     "crescents": "circus.crescents, one per circus quadrant: c and r (the circle; chord midpoints on r, the building line, so nothing stands past it), rEnds (r / cos(half chord angle): the chord joints), chord 6, stepDeg (the angle one chord turns), deg [start, end] (plan degrees counter-clockwise from +x), sweep, bays, caps [open: joins the N-S street wall's run, end: rounds off toward the E-W face], gapM (m of arc left before the E-W face), band 14 (behind each chord; the wedges between chord bands are closed to the roofline, DecoKitFrontage.Wedges)"
    },
    "check": "BG-1..BG-5 (tools/plan/block-grammar.ts)",
-   "owner": "Datum (the blocks, crescents and values). Splice: the generator places the old frontage on them (runs, caps, crescent chords and wedges) and the zone-aware kerb return. Vela: missing caps and classes"
+   "owner": "Datum (the blocks, crescents and values). Splice: the generator places the old frontage on them (runs, caps, crescent chords and wedges) and the zone-aware kerb return. Vela: missing caps and classes",
+   "massing": {
+    "composed": [
+     [
+      -112,
+      380,
+      -508,
+      194
+     ],
+     [
+      -158,
+      46,
+      -506,
+      -246
+     ]
+    ],
+    "source": "DecoKitCityPlan.InDistrict (x > GardensX.x - 2, HarbourZ.x - 2 < z < HarbourZ.y + 20) and DecoKitSouthside.Bounds, in the plan frame (old z - 206)",
+    "why": "BG-1 massing (brief 075 ask 2): a town plot outside these rects may be left to the old DecoKitCityMass; none is today (swap2 builds every plan block as old blocks)"
+   }
   },
   "frontage": {
    "source": "brief 004 A1 · GDD §01 (exteriors only: a trade is a frontage) · §15 (no text on signs; palette) · Buchanan 1963 (no frontage access on primary distributors) · Gruen, Shopping Towns USA (1960) · Googie roadside commerce (Lautner, Armet & Davis)",
@@ -4112,6 +4139,14 @@
    "name": "Sunset Way",
    "class": "access",
    "w": 12,
+   "pavement": {
+    "w": 3.25,
+    "kerb": 1.25,
+    "walk": 2,
+    "frontage": 0,
+    "why": "the old side-street flags (DecoKitStreetLayout: E1 from old z -36, N2 to -52 + 2 m: 4 m off the kerb), at 3.25 so old E1's 13 bays fit between the two side streets with Market Street at its 2.75 minimum (R-PV1: clear walk 2, kerb zone 0.75)",
+    "source": "brief 075 plan-match ops 3, 11 · old DecoKitStreetLayout.cs · tools/plan/sections.ts"
+   },
    "path": [
     "b_sunset",
     "s_terrace"
@@ -4123,6 +4158,14 @@
    "name": "Market Street",
    "class": "access",
    "w": 16,
+   "pavement": {
+    "w": 2.75,
+    "kerb": 0.75,
+    "walk": 2,
+    "frontage": 0,
+    "why": "the old side street's one 2 m flag row (DecoKitStreetLayout SideStreet: E1 to old z 58, E2 from 78), widened to the narrowest R-PV1 allows (the access clear walk 2 + a 0.75 m kerb zone; 2 m would put the lamps in the walk)",
+    "source": "brief 075 plan-match ops 3, 4 · old DecoKitStreetLayout.cs · tools/plan/sections.ts"
+   },
    "path": [
     "b_market",
     "m_terrace"
@@ -4725,7 +4768,7 @@
    "use": "commercial",
    "area": "crown",
    "rect": [
-    -50,
+    -54,
     -8,
     9,
     144
@@ -4801,7 +4844,7 @@
    "area": "gardens",
    "rect": [
     -156,
-    -50,
+    -54,
     9,
     50
    ],
@@ -4846,32 +4889,24 @@
      50
     ],
     [
-     -50,
+     -54,
      50
     ],
     [
-     -50,
-     144
+     -54,
+     238
+    ],
+    [
+     -66,
+     238
+    ],
+    [
+     -66,
+     250
     ],
     [
      -54,
-     144
-    ],
-    [
-     -54,
-     247
-    ],
-    [
-     -121,
-     247
-    ],
-    [
-     -121,
-     259
-    ],
-    [
-     -54,
-     259
+     250
     ],
     [
      -54,
@@ -5092,7 +5127,7 @@
     -54,
     48,
     144,
-    178.12
+    204
    ],
    "name": "Crown Forecourt"
   },
@@ -5764,8 +5799,8 @@
    "rect": [
     18,
     46,
-    -234.5,
-    -152.5
+    -242.75,
+    -148.75
    ],
    "depth": 14,
    "court": "solid",
@@ -5774,11 +5809,11 @@
      "face": "w",
      "a": [
       18,
-      -234.5
+      -242.75
      ],
      "b": [
       18,
-      -152.5
+      -148.75
      ],
      "n": [
       -1,
@@ -5789,11 +5824,11 @@
       "corner",
       "corner"
      ],
-     "bays": 11,
+     "bays": 13,
      "segs": [
       {
        "cls": "S9",
-       "n": 2
+       "n": 4
       },
       {
        "cls": "D10",
@@ -5810,11 +5845,11 @@
      "face": "e",
      "a": [
       46,
-      -234.5
+      -242.75
      ],
      "b": [
       46,
-      -152.5
+      -148.75
      ],
      "n": [
       1,
@@ -5825,11 +5860,11 @@
       "corner",
       "corner"
      ],
-     "bays": 11,
+     "bays": 13,
      "segs": [
       {
        "cls": "S6",
-       "n": 2
+       "n": 4
       },
       {
        "cls": "B8",
@@ -5846,11 +5881,11 @@
      "face": "s",
      "a": [
       18,
-      -234.5
+      -242.75
      ],
      "b": [
       46,
-      -234.5
+      -242.75
      ],
      "n": [
       0,
@@ -5878,11 +5913,11 @@
      "face": "n",
      "a": [
       18,
-      -152.5
+      -148.75
      ],
      "b": [
       46,
-      -152.5
+      -148.75
      ],
      "n": [
       0,
@@ -5906,19 +5941,19 @@
    "corners": [
     [
      18,
-     -234.5
+     -242.75
     ],
     [
      18,
-     -152.5
+     -148.75
     ],
     [
      46,
-     -234.5
+     -242.75
     ],
     [
      46,
-     -152.5
+     -148.75
     ]
    ]
   },
@@ -6368,8 +6403,8 @@
    "rect": [
     18,
     46,
-    -304.5,
-    -264.5
+    -301.25,
+    -261.25
    ],
    "depth": 14,
    "court": "solid",
@@ -6378,11 +6413,11 @@
      "face": "w",
      "a": [
       18,
-      -304.5
+      -301.25
      ],
      "b": [
       18,
-      -264.5
+      -261.25
      ],
      "n": [
       -1,
@@ -6399,11 +6434,11 @@
      "face": "e",
      "a": [
       46,
-      -304.5
+      -301.25
      ],
      "b": [
       46,
-      -264.5
+      -261.25
      ],
      "n": [
       1,
@@ -6420,11 +6455,11 @@
      "face": "s",
      "a": [
       18,
-      -304.5
+      -301.25
      ],
      "b": [
       46,
-      -304.5
+      -301.25
      ],
      "n": [
       0,
@@ -6441,11 +6476,11 @@
      "face": "n",
      "a": [
       18,
-      -264.5
+      -261.25
      ],
      "b": [
       46,
-      -264.5
+      -261.25
      ],
      "n": [
       0,
@@ -6462,19 +6497,19 @@
    "corners": [
     [
      18,
-     -304.5
+     -301.25
     ],
     [
      18,
-     -264.5
+     -261.25
     ],
     [
      46,
-     -304.5
+     -301.25
     ],
     [
      46,
-     -264.5
+     -261.25
     ]
    ]
   },
@@ -8568,14 +8603,49 @@
    "w": 12,
    "pts": [
     [
-     -115,
-     253
+     -40,
+     244
     ],
     [
-     -54,
-     253
+     40,
+     244
     ]
-   ]
+   ],
+   "why": "through the drum's ground hall between the legs (y 224..264), under Crown Circus station"
+  },
+  {
+   "id": "crown-walk-west",
+   "name": "Crown Walk",
+   "kind": "mall",
+   "w": 12,
+   "pts": [
+    [
+     -60,
+     244
+    ],
+    [
+     -40,
+     244
+    ]
+   ],
+   "why": "Crown Walk from Sphere Park to the drum's west portal: a mall, its centre band the pylon ground before the jamb"
+  },
+  {
+   "id": "crown-walk-east",
+   "name": "Crown Walk",
+   "kind": "mall",
+   "w": 12,
+   "pts": [
+    [
+     40,
+     244
+    ],
+    [
+     48,
+     244
+    ]
+   ],
+   "why": "Crown Walk from the drum's east portal to the quay: a mall, its centre band the pylon ground past the jamb"
   },
   {
    "id": "gardens-gate",
@@ -9006,7 +9076,7 @@
    "id": "sphere",
    "name": "The Sphere",
    "c": [
-    -130,
+    -172,
     124
    ],
    "r": 72.5,
@@ -9024,7 +9094,8 @@
     "scale": 1,
     "src": "p.Put(\"SphereStation\", new Vector3(-130f, 0f, 330f), 20f);"
    },
-   "scale": 1
+   "scale": 1,
+   "moveWhy": "SpaceHQ ours (brief 075, Datum 2026-10-29): 42 m west of the old SphereStation (plan (-130,124) → (-172, 124)), so S1's north leg (x -95.5) clears its disc and turns onto the drum's axis with a straight platform inside; the old builders' Put moves with it (old (-172, 0, 330))"
   },
   {
    "id": "skylon",
@@ -9395,10 +9466,9 @@
  "signatures": [
   {
    "id": "space-hq",
-   "name": "SpaceHQ",
-   "kind": "tower",
+   "name": "SpaceHQ · Crown Terminal",
+   "kind": "portal tower",
    "role": "dominant",
-   "form": "old",
    "areas": [
     "crown"
    ],
@@ -9406,27 +9476,145 @@
     0,
     244
    ],
-   "yaw": "grand stair to the south (−y), facing Crown Circus through the arch down the Boulevard",
-   "yawDeg": 180,
-   "oldYaw": 0,
+   "yaw": "the portal axis east–west on y 244 (S1 through the drum); Latch stands the SpaceHQ_Portal piece at yaw -90 (swap2)",
+   "yawDeg": 90,
    "base": 0.18,
+   "standWhy": "the old SpaceHQ's place: on the axis at old z 450 (plan 0,244), closing the boulevard and Crown Avenue through the arch; the plan's SpaceHQ_Portal (252 m) at × 1 (the old stood the kit at × 1.35)",
    "ground": [
-    -54,
-    54,
-    178.12,
-    298
+    -40,
+    40,
+    204,
+    284
    ],
-   "kit": "SpaceHQ",
-   "scale": 1.35,
-   "height": 340.2,
-   "size": [
-    108,
-    340.2,
-    119.88
-   ],
+   "groundWhy": "the drum's own ground at the old HQ's place, closing the Boulevard and Crown Avenue: x -40 to 40, y 204 to 284 (r 40 round (0, 244)), north of Crown Forecourt (y 144..204). No plot building stands on it; the legs (y 204..224 and 264..284) are the only solids, so the hall between them (y 224..264) is open at street level and Crown Walk runs through it on the axis",
    "spans": {
     "plots": [],
     "foot": []
+   },
+   "kit": "SpaceHQ",
+   "regen": {
+    "from": "SpaceHQ",
+    "variant": "SpaceHQ_Portal",
+    "drum": {
+     "r": 40,
+     "z": [
+      0,
+      34
+     ],
+     "roof": [
+      30,
+      34
+     ]
+    },
+    "keep": "the tower above the drum as Vela rebuilt it (tools/decokit/spacehq.py tower; brief 007 Decisions, Sky 2026-10-13: an atom over a needle mast, not a rocket): four stepped fluted cream limestone tiers with gold ribs and teal glazing slots (r 29 to z 78, r 22.5 to 126, r 16.5 to 166, r 11.5 to 190), turquoise speed-band pairs at the setbacks, eight streamline buttress fins from the drum roof to the third tier, two chrome-and-gold galleries (z 119.4–125.4 at r 30; z 184–188.2 at r 23), a halo ring at 194 and the crown 190–252: a chrome-and-gold atom (sphere r 9, three orbits 54 m across, centre z 223) through which a needle mast with a gold star and a rose beacon rises to the tip 252",
+    "change": "the kit's 5 m limestone podium becomes a terminal drum r 40, 0 → 34 (limestone with the gold band at the deck line 9.43 and a teal speed band at the concourse 24); inside, the station hall's ribbed coffered ceiling, rib soffit 30 (drum.roof[0], portal.soffit) and coffer backs 31, under the drum roof slab 31–34; the tower stands on the drum roof at 34. The kit's flared skirt, observation discs, 52 m landing pad, standing rocket liner and gantry come off (rockets stay at the horizon launch pads)",
+    "portal": "the S1 trunk passes through the drum on y 244 from x -40 to 40: arched openings 12 × 7.5 (z 21.5–29.0, standards.skyrail.portal.running twin) in the drum wall at both ends; inside, the station hall clear ±16 from the line up to the drum roof soffit 30 (portal.station)",
+    "tip": 252
+   },
+   "height": 252,
+   "legs": [
+    [
+     -40,
+     40,
+     264,
+     284
+    ],
+    [
+     -40,
+     40,
+     204,
+     224
+    ]
+   ],
+   "legsWhy": "the drum's bearing halves, 20 m off the line on either side (≥ portal.station.clearHalfWidth 16); between them the ground hall (a public floor, levels[street].floor) carries Crown Walk and the station banks; the station hall is at the concourse",
+   "levels": [
+    {
+     "level": "street",
+     "what": "the ground hall, open 40 m wide between the legs (y 224..264): Crown Walk runs through it on the axis and the station banks stand in it (stair towers and lifts outside the platforms' outer edge, levels.station)",
+     "mix": {
+      "travel-bureau": 30,
+      "newsstand": 25,
+      "florist": 15,
+      "skyrail-kiosk": 30
+     },
+     "floor": "public",
+     "floorWhy": "a public floor (tools/world/gen/connectors.ts onSignatureFloor): the signature's ground less its legs is street-level public ground, where Crown Circus station's banks stand"
+    },
+    {
+     "level": "deck",
+     "what": "a gallery ring round the hall at 9.43"
+    },
+    {
+     "level": "concourse",
+     "what": "Crown Circus station: both platforms inside the drum on y 244, a departure hall round them",
+     "mix": {
+      "skyrail-kiosk": 25,
+      "automat": 20,
+      "newsstand": 20,
+      "cocktail-lounge": 20,
+      "travel-bureau": 15
+     }
+    },
+    {
+     "level": "galleries",
+     "z": [
+      [
+       119.4,
+       125.4
+      ],
+      [
+       184,
+       188.2
+      ]
+     ],
+     "what": "the tower's two chrome-and-gold galleries: the fleet's offices behind the lower (r 30), a public observation gallery on the upper (r 23); lifts from the concourse; not street frontage"
+    },
+    {
+     "level": "crown",
+     "z": [
+      190,
+      252
+     ],
+     "what": "the halo ring at 194 and the atom (sphere r 9, three orbits 54 m across, centre 223) on the needle mast, gold star and rose beacon at the tip 252: the city's sign, no floor"
+    }
+   ],
+   "cores": {
+    "where": "four lift-and-stair cores in the legs (two each side) from the street to the concourse; the tower's lifts from the drum roof to the two galleries",
+    "size": "standards.levels.cores.stairLift"
+   },
+   "crownType": "atom",
+   "crownWhy": "Sky 2026-10-13: an atom over a needle mast, not a rocket; the kit's rocket liner, landing pad and gantry come off. The atom is the exposition motif of atomic/exposition_palace. The other atom, crescent-tower, is 239.7 m away (over the 150 m neighbour rule).",
+   "watchers": "the station's own (watchers.sites: station); the drum adds none",
+   "why": "Sky 2026-10-13: SpaceHQ is the dominant icon, the tallest thing in the district at 252 m, at Crown Circus, the hub. It closes Circus Road's view from the West End and the Parade's view from the harbour. S1 runs through its drum with Crown Circus station inside at the concourse, as the monorail enters the hall in atomic/monorail_terminal and the tower in blocks/rail_through. Everything else composes round it: the rival spires (122.7 to 194.3 m) stand north of the circus along Crown Avenue and in the Crescent, all under rivalMax 200, and the Skyport Tower (108) holds the harbour end of the same axis.",
+   "source": "brief 007 · W. Disney, EPCOT film (1966): the Cosmopolitan Hotel over the transportation lobby, monorail through the hub · LAX Theme Building (1961) · Seattle Space Needle (1962)",
+   "concept": "~/Projects/the-suborned-store/concepts/Streets/spaceage/spaceport_hq.png (the piece); AtomicAge/exposition_palace.png (the axis and stair); AtomicAge/monorail_terminal.png (the station hall); Blocks/rail_through.png (the beam through the base)",
+   "conceptTiles": [
+    "atomic/exposition_palace",
+    "atomic/monorail_terminal",
+    "blocks/rail_through",
+    "blocks/needle_trio"
+   ],
+   "portalWas": {
+    "kind": "station",
+    "beams": "twin",
+    "line": "S1",
+    "path": "trunk",
+    "axis": "y 0, x 56 → 136",
+    "clearHalfWidth": 20,
+    "soffit": 30,
+    "openings": {
+     "at": [
+      56,
+      136
+     ],
+     "clearHalfWidth": 6,
+     "z": [
+      21.5,
+      29
+     ]
+    },
+    "station": "S1/circus",
+    "platforms": "x 70–120 at z 24, both sides, inside the drum (Crown Circus station: the platform decks of SkyRailStation_Twin without its roof or lift tower; the drum is the roof)"
    },
    "oldPut": {
     "kit": "SpaceHQ",
@@ -9439,15 +9627,33 @@
     "scale": 1.35,
     "src": "p.Put(\"SpaceHQ\", new Vector3(0f, 0f, L.Z.y + 70f), 0f, scale: 1.35f);"
    },
-   "standWhy": "the old SpaceHQ as the old reel stood it: DecoKitStreetSkyline Put(\"SpaceHQ\", (0, 0, Z.y + 70 = 450), yaw 0, scale 1.35), plan (0,244); the kit SpaceHQ (80 × 252 × 88.8, pivotOffset z -4.4) × 1.35 = 108 × 340.2 × 119.88 m, tip 340.2; it closes the Boulevard and Crown Avenue through the arch, between the gate towers",
-   "groundWhy": "the scaled kit box round the old pivot: x -54..54, y 178.12 (the grand stair's foot, old z 384) to 298. No plot building stands on it; Crown Forecourt (open) runs from the north walls (y 144) to the stair foot",
-   "station": "S1/crown-circus beside it, on S1's north leg (x -95), no beam through the HQ",
-   "oldBuilder": "the old DecoKit builders place the piece (DecoKitStreetSkyline.Landmarks), with its old gold (DecoKitColourways: DK_Gold #F2C14E, metallic 1, smoothness 0.45) and the showpiece probe (DecoKitStreetDemo: DecoKitShowpiece.Apply(\"SpaceHQ\")). Our kit has SpaceHQ rejected, so the TS world carries it as a procedural signature to its tip (data only, nothing drawn from it)",
-   "crownType": "atom",
-   "crownWhy": "the old kit's own crown (the old reel's gold HQ); the other atom (crescent-tower) is not in the remap",
-   "watchers": "the station's own (watchers.sites: station); the drum adds none",
-   "why": "Sky's call between the forms (brief 075 remap step 2); the old reel's gold tower closing the Boulevard, the tallest thing in the district (standards.skyline.dominant)",
-   "source": "old DecoKit: DecoKitStreetSkyline.cs (Landmarks), DecoKitStreetLayout.cs (Z), the kit SpaceHQ (contracts/world/kit.json)"
+   "form": "ours",
+   "stationIn": "S1/crown-circus",
+   "portal": {
+    "kind": "station",
+    "beams": "twin",
+    "line": "S1",
+    "path": "trunk",
+    "axis": "y 0, x 56 → 136",
+    "clearHalfWidth": 20,
+    "soffit": 30,
+    "openings": {
+     "at": [
+      -40,
+      40
+     ],
+     "clearHalfWidth": 6,
+     "z": [
+      21.5,
+      29
+     ]
+    },
+    "station": "S1/crown-circus",
+    "platforms": "x 70–120 at z 24, both sides, inside the drum (Crown Circus station: the platform decks of SkyRailStation_Twin without its roof or lift tower; the drum is the roof)",
+    "y": 244,
+    "why": "the remake's portal moved with the drum to the old place: S1 runs east on y 244 through the drum (openings in its wall at x ±40), Crown Circus station in the hall; y is the portal's axis (portalsOf reads it, default 0)"
+   },
+   "formWhy": "our remake (brief 007, Sky 2026-10-13): the SpaceHQ_Portal piece, 252 m, at the old place; S1 through its drum with Crown Circus station inside at the concourse"
   },
   {
    "id": "ocean-liner",
@@ -9636,7 +9842,7 @@
   {
    "id": "S1",
    "name": "Sphere Line",
-   "beyond": "west off-sheet along Circus Road to the West End; north off-sheet past the Sphere toward the old main loop's north arc",
+   "beyond": "west off-sheet along Circus Road to the West End; east off-sheet over the harbour north of the Skyport",
    "paths": [
     {
      "id": "trunk",
@@ -9648,23 +9854,18 @@
        0
       ],
       [
-       -52,
+       -95.5,
        0,
        70
       ],
       [
-       -52,
-       156,
+       -95.5,
+       244,
        70
       ],
       [
-       -95,
-       198,
-       70
-      ],
-      [
-       -95,
-       300
+       379.5,
+       244
       ]
      ]
     }
@@ -9703,13 +9904,14 @@
      "name": "Crown Circus",
      "path": "trunk",
      "at": [
-      -95,
-      253
+      0,
+      244
      ],
      "length": 50,
      "fronts": "crown-walk",
+     "in": "signatures/space-hq",
      "kit": "SkyRailStation_Twin",
-     "kitWhy": "open-air on S1's north leg beside the old SpaceHQ (its west face x -54), north of the Sphere, north–south; banks (stairs, escalators, lifts to the deck 9.43 and the concourse 24) on Sphere Park either side of the line; the old HQ is the old builders' piece and carries no beam"
+     "kitWhy": "inside the SpaceHQ_Portal drum at the concourse (24), east–west on the HQ's axis; the drum carries the beam (portal openings at x ±40), the banks stand in the ground hall between the legs"
     }
    ]
   },
@@ -9916,9 +10118,9 @@
    "The boulevard runs through to the Sea Gates (old Comet Row and Satellite Street on its axis); Southside east of it (Constellation N2, Orbit Square, Starline Green, SS1–SS4); the Lantern Quarter south of Market Street.",
    "West Row west of Sunset Way (the old procedural massing's place): an access street off Circus Road, lanes, old-grammar blocks; Western Park north of Circus Road to Crown Road.",
    "T1 tram: street running from the West End down Sunset Way and Market Street, up the boulevard to the circus, where it turns on the ring road (R 25). No overhead wires.",
-   "S1 sky rail on the circus axis from the West End (Western Park and Orbit Gardens stations), north past the Sphere with Crown Circus station beside the SpaceHQ; the old main loop is planned data (oldtown.skyrail).",
+   "S1 sky rail on the circus axis from the West End (Western Park and Orbit Gardens stations), north past the Sphere and east through the SpaceHQ drum (Crown Circus station inside); the old main loop is planned data (oldtown.skyrail).",
    "S2 sky rail (Harbour Line) from the south over the water, Harbour station on the Market Pier's landing stage (the T1 interchange at Crown Circus), and a terminal loop round the Skyport Tower with the Skyport station on the Skyport apron: the old harbour line's sweep round the Skyport.",
-   "SpaceHQ closes the axis at the old place (0, 244) (plan.spacehq.form old: the old gold HQ, 340 m), the gate towers either side of the forecourt, the Skylon, the Sphere, the Skyport on its caisson at the pier head, the liner at the Market Pier."
+   "SpaceHQ closes the axis at the old place (0, 244) (plan.spacehq.form ours: the SpaceHQ_Portal remake, 252 m), the gate towers either side of the forecourt, the Skylon, the Sphere, the Skyport on its caisson at the pier head, the liner at the Market Pier."
   ],
   "questions": [
    "Skyline (brief 007): the rival spires stand 122–194 m inland, north of Crown Circus, so the Skyport Tower (108) is the harbour's icon but no longer the district's second-tallest. Keep that reading of 'the Skyport stays the harbour's second icon', or cap every rival at 108?",
@@ -9930,6 +10132,7 @@
    "Records Precinct: two vehicle gates (Rocket, Satellite) to seal against cars, but on foot the crew can leave across any street. Is the escape on foot meant to be open like that, with the police sealing stations rather than streets?"
   ],
   "history": [
+   "2026-10-29 (Datum, brief 075 SpaceHQ ours; version 0.5.6): Sky picked SpaceHQ 'ours', now the default form (plan.spacehq.form): the SpaceHQ_Portal at (0, 244), S1 north on x -95.5 from Circus Road and east on y 244 through the drum (signatures[space-hq].portal, y 244, openings x ±40), Crown Circus station inside at (0, 244), its banks on the drum's ground hall declared a public floor (levels[street].floor, Splice's onSignatureFloor), off the sheet east over the quay. To lay that turn with a straight platform the Sphere moves 42 m west to (-172, 124) (form ours only; no other way onto the axis holds R 70, the spans and Orbit Gardens' platform). Crown Walk runs through the hall (walk) with mall ends either side of the drum (their centre bands carry the last pylons 3 m outside the jambs), the west end's cap in a slot cut from Sphere Park. Opt-in fields of 345b1e19 adopted: pylonClear.walk (pylons out of clear walks), roads[].pavement on Sunset Way east (3.25) and Market Street east (2.75, R-PV1's narrowest; old 2 m), so E1 stands at its old 13 bays (y -242.75..-148.75) and N2 at y -301.25..-261.25 (E2 keeps 7 of 8: the east lane fixes its end), standards.blocks.massing (the old composed district; no plot exempted, swap2 builds every plan block) and standards.roads.frontageSquare.reach 45. Handover zone, routes and site unchanged. Notes: briefs/075/notes.md 'SpaceHQ ours'.",
    "2026-10-29 (Datum, brief 075 plan-match; version 0.5.5): Splice's plan-match patch (briefs/075/oldbuild/plan-patch.json, 175 ops from match.json) decided op by op in briefs/075/oldbuild/plan-patch-applied.json; the old-built town wins outside the Handover where the plan's rules let it. Applied: Crown Avenue at its old-built 16 m (kerbs x ±8, 10 m pavements to the old walls; no tram), its plots' kerb edges and circus-mouth faces with it, n_avenue 2 m north so its end kerb stays on the forecourt; the old Southside blocks on the plan's lines (N1 on its old line y -302..-262; SS1 and SS3 as ss3/a y -473..-427 and ss3/b y -525..-491, the old 18 m gap kept; SS4 34 m at y -518.5..-484.5); ss1 open ground (no old building stands there). Recorded: the old harbour promenade (-0.85) as street-level ground (standards.levels.grounds), not a fourth level. Kept: the Boulevard at 20 m (T1's stop islands need 10 m a half: two stops stand on it); the 0.18 pavement everywhere (one kerb height; the Handover zone fixes it); every Handover plot and street; the crescents, landmarks and old walls as transcribed (box artefacts rejected). Asked of Splice: a per-road pavement width (the old 2-4 m side-street flags at E1, E2, N2), a BG-1 'massing' exemption (the old CityMass west of the gardens), R-F1 for a plot fronting a square (old E1 on the harbour terrace). Handover zone, routes, timings and points unchanged.",
    "2026-10-29 (Datum, brief 075 swap: network; version 0.5.4): Latch's old-built town (cc903ae0) stands the old SphereStation at ×1 (188 m, legs to r 67, service towers to r 72.4) and S1's north leg on x -95 ran through its leg ring. The Sphere landmark is now the old ×1 (r 72.5, top 188.4; was ×0.425, r 31, top 80), and S1 goes round its east side: east on Circus Road's line past Orbit Gardens station, north (R 70) onto x -52 (78 m off the Sphere's centre, so pylons keep pylonClear.landmark outside its disc), then an S of two R 70 curves (corners (-52, 156) and (-95, 198)) between the Sphere and the west gate tower's shaft onto x -95 north of the Sphere. Crown Circus station moves north 15 m on that straight to (-95, 253) (platforms y 228..278), Crown Walk with it (y 253) and Sphere Park's slot. Sphere Park and the north lawn take x -54..-50 of west-wall-n's back yard for y 9..144 (the old W4 wall's back is at x -46), so the line and its pylons stand on park (S-C1, S-P2). S1 gardens → Crown Circus 304 → 374 m (run 25 → 31 s). T1 is unchanged: its streets (Crown Road, Sunset Way, Market Street) are the Handover's mission streets (official 1124, getaway 447, rivals 593) and its stops are kept, so the old pieces give way to Market Street at the Southside seam (briefs/075/notes.md, Swap: network). Handover zone unchanged (overlay: C-0, C-3, M-1, M-2, M-3, V-1, W-1 identical). The 'ours' form keeps S1 on x -95 (data only, through the ×1 Sphere: it would need the same detour if Sky picks it).",
    "2026-10-29 (Datum, brief 075 remap step 2, Aster; version 0.5.3): the SpaceHQ switch, plan.spacehq.form (Sky's call; default 'old'). 'old': the old gold SpaceHQ as the old reel stood it (DecoKitStreetSkyline: the kit SpaceHQ × 1.35 at old (0, 450)), ground x -54..54, y 178.12..298, tip 340.2 = standards.skyline.dominant (rivalMax 200 kept; SK-1 exempts the dominant from the harbour band, so no exception), Crown Forecourt to the grand stair's foot (y 178.12), and S1's third station, Crown Circus, on its north leg beside it (x -95, y 238; banks, stairs and lifts on Sphere Park). 'ours': the SpaceHQ_Portal remake (252) at (0, 244) with S1 east on y 244 through its drum and the station inside. Both forms in plan.spacehq.forms; tools/plan/oldtown/transcribe.ts writes the chosen one. Handover zone untouched; Pulse's journeys kept (no journey rides the new run). Notes: briefs/075/notes.md 'SpaceHQ switch'.",
@@ -10130,9 +10333,9 @@
   ]
  },
  "spacehq": {
-  "form": "old",
-  "setting": "the one switch: set form to \"old\" or \"ours\" and run bun tools/plan/oldtown/transcribe.ts --out contracts/world/harbour-district.plan.json (or pass --spacehq old|ours); it writes the chosen form into signatures[space-hq], skyrail S1, the Crown Forecourt plot and standards.skyline.dominant, and keeps both here",
-  "why": "brief 075 remap step 2 (Aster): the SpaceHQ form is Sky's call; \"old\" is the default until Sky picks",
+  "form": "ours",
+  "setting": "the one switch: set form to \"old\" or \"ours\" and run bun tools/plan/oldtown/transcribe.ts --out contracts/world/harbour-district.plan.json (or pass --spacehq old|ours); it writes the chosen form into signatures[space-hq], skyrail S1, Crown Walk, the Sphere Park, gardens and wall plots, the Sphere landmark's centre, the Crown Forecourt plot and standards.skyline.dominant, and keeps both here",
+  "why": "brief 075 remap step 2 (Aster): the SpaceHQ form is Sky's call; Sky picked \"ours\" (2026-10-29: SpaceHQ_Portal with the atom crown, S1's station in its drum, finished in the old materials), so \"ours\" is the default; \"old\" is kept as data",
   "forms": {
    "old": {
     "what": "the old gold SpaceHQ (the old reel's tower closing the Boulevard), placed by the old builders; S1 Crown Circus station beside it",
@@ -10282,7 +10485,11 @@
      "id": "space-hq",
      "tip": 340.2,
      "why": "the old gold SpaceHQ as the old reel stood it (the kit SpaceHQ × 1.35, 340.2 m; brief 075 remap step 2, plan.spacehq.form 'old'): the tallest thing in the district; every other tip stays under rivalMax"
-    }
+    },
+    "sphere": [
+     -130,
+     124
+    ]
    },
    "ours": {
     "what": "our SpaceHQ_Portal remake at the old place with S1 through its drum and Crown Circus station inside",
@@ -10298,7 +10505,7 @@
       0,
       244
      ],
-     "yaw": "grand stair to the west (−x), facing Crown Circus down the Parade's axis",
+     "yaw": "the portal axis east–west on y 244 (S1 through the drum); Latch stands the SpaceHQ_Portal piece at yaw -90 (swap2)",
      "yawDeg": 90,
      "base": 0.18,
      "standWhy": "the old SpaceHQ's place: on the axis at old z 450 (plan 0,244), closing the boulevard and Crown Avenue through the arch; the plan's SpaceHQ_Portal (252 m) at × 1 (the old stood the kit at × 1.35)",
@@ -10308,7 +10515,7 @@
       204,
       284
      ],
-     "groundWhy": "The drum's own ground at Crown Circus east: x 56 to 136, y -40 to 40, across the head of Crown Parade and the ends of plots parade-north, harbour-boulevard and parade-south. No plot building stands on it: the Parade Galleries start at x 136, and the legs (y ±20 to ±40) are the only solids, so the Parade passes 40 m wide through the ground hall.",
+     "groundWhy": "the drum's own ground at the old HQ's place, closing the Boulevard and Crown Avenue: x -40 to 40, y 204 to 284 (r 40 round (0, 244)), north of Crown Forecourt (y 144..204). No plot building stands on it; the legs (y 204..224 and 264..284) are the only solids, so the hall between them (y 224..264) is open at street level and Crown Walk runs through it on the axis",
      "spans": {
       "plots": [],
       "foot": []
@@ -10330,7 +10537,7 @@
       },
       "keep": "the tower above the drum as Vela rebuilt it (tools/decokit/spacehq.py tower; brief 007 Decisions, Sky 2026-10-13: an atom over a needle mast, not a rocket): four stepped fluted cream limestone tiers with gold ribs and teal glazing slots (r 29 to z 78, r 22.5 to 126, r 16.5 to 166, r 11.5 to 190), turquoise speed-band pairs at the setbacks, eight streamline buttress fins from the drum roof to the third tier, two chrome-and-gold galleries (z 119.4–125.4 at r 30; z 184–188.2 at r 23), a halo ring at 194 and the crown 190–252: a chrome-and-gold atom (sphere r 9, three orbits 54 m across, centre z 223) through which a needle mast with a gold star and a rose beacon rises to the tip 252",
       "change": "the kit's 5 m limestone podium becomes a terminal drum r 40, 0 → 34 (limestone with the gold band at the deck line 9.43 and a teal speed band at the concourse 24); inside, the station hall's ribbed coffered ceiling, rib soffit 30 (drum.roof[0], portal.soffit) and coffer backs 31, under the drum roof slab 31–34; the tower stands on the drum roof at 34. The kit's flared skirt, observation discs, 52 m landing pad, standing rocket liner and gantry come off (rockets stay at the horizon launch pads)",
-      "portal": "the S1 trunk passes through the drum on y 0 from x 56 to 136: arched openings 12 × 7.5 (z 21.5–29.0, standards.skyrail.portal.running twin) in the drum wall at both ends; inside, the station hall clear ±16 from the line up to the drum roof soffit 30 (portal.station)",
+      "portal": "the S1 trunk passes through the drum on y 244 from x -40 to 40: arched openings 12 × 7.5 (z 21.5–29.0, standards.skyrail.portal.running twin) in the drum wall at both ends; inside, the station hall clear ±16 from the line up to the drum roof soffit 30 (portal.station)",
       "tip": 252
      },
      "height": 252,
@@ -10348,25 +10555,27 @@
        224
       ]
      ],
-     "legsWhy": "the drum's bearing halves stand on the plots either side of the mall, ≥ 20 m off the line (≥ portal.station.clearHalfWidth 16); between them, under the drum, the Parade runs through at street level and the station hall at the concourse",
+     "legsWhy": "the drum's bearing halves, 20 m off the line on either side (≥ portal.station.clearHalfWidth 16); between them the ground hall (a public floor, levels[street].floor) carries Crown Walk and the station banks; the station hall is at the concourse",
      "levels": [
       {
        "level": "street",
-       "what": "the Parade passes through the drum's ground hall, open 40 m wide between the legs; the station banks stand in it (stair towers and lifts outside the platforms' outer edge, levels.station)",
+       "what": "the ground hall, open 40 m wide between the legs (y 224..264): Crown Walk runs through it on the axis and the station banks stand in it (stair towers and lifts outside the platforms' outer edge, levels.station)",
        "mix": {
         "travel-bureau": 30,
         "newsstand": 25,
         "florist": 15,
         "skyrail-kiosk": 30
-       }
+       },
+       "floor": "public",
+       "floorWhy": "a public floor (tools/world/gen/connectors.ts onSignatureFloor): the signature's ground less its legs is street-level public ground, where Crown Circus station's banks stand"
       },
       {
        "level": "deck",
-       "what": "a gallery ring round the hall at 9.43, joined to the Parade Galleries' deck galleries at x 136"
+       "what": "a gallery ring round the hall at 9.43"
       },
       {
        "level": "concourse",
-       "what": "Crown Circus station: both platforms inside the drum, a departure hall round them; the Parade Galleries' sky promenades enter at x 136 (bridges circus-north / circus-south)",
+       "what": "Crown Circus station: both platforms inside the drum on y 244, a departure hall round them",
        "mix": {
         "skyrail-kiosk": 25,
         "automat": 20,
@@ -10449,12 +10658,12 @@
      },
      "form": "ours",
      "stationIn": "S1/crown-circus",
-     "portalOnAxis": {
+     "portal": {
       "kind": "station",
       "beams": "twin",
       "line": "S1",
       "path": "trunk",
-      "axis": "y 244, x -40 → 40",
+      "axis": "y 0, x 56 → 136",
       "clearHalfWidth": 20,
       "soffit": 30,
       "openings": {
@@ -10470,7 +10679,8 @@
       },
       "station": "S1/crown-circus",
       "platforms": "x 70–120 at z 24, both sides, inside the drum (Crown Circus station: the platform decks of SkyRailStation_Twin without its roof or lift tower; the drum is the roof)",
-      "why": "the remake's portal moved with the drum to the old place: S1 runs east on y 244 through it. Not in signatures[].portal: P-1 (signature-checks.ts) and portalsOf (plan.ts) read a portal corridor on y 0 (Splice: read the portal's axis)"
+      "y": 244,
+      "why": "the remake's portal moved with the drum to the old place: S1 runs east on y 244 through the drum (openings in its wall at x ±40), Crown Circus station in the hall; y is the portal's axis (portalsOf reads it, default 0)"
      },
      "formWhy": "our remake (brief 007, Sky 2026-10-13): the SpaceHQ_Portal piece, 252 m, at the old place; S1 through its drum with Crown Circus station inside at the concourse"
     },
@@ -10489,17 +10699,17 @@
          0
         ],
         [
-         -95,
+         -95.5,
          0,
          70
         ],
         [
-         -95,
+         -95.5,
          244,
          70
         ],
         [
-         380,
+         379.5,
          244
         ]
        ]
@@ -10560,7 +10770,11 @@
      "id": "space-hq",
      "tip": 252,
      "why": "SpaceHQ as built (kit 252.0 tall): the tallest thing in the district (Sky 2026-10-13); every other tip stays under rivalMax"
-    }
+    },
+    "sphere": [
+     -172,
+     124
+    ]
    }
   }
  },
@@ -10607,7 +10821,8 @@
    "The gate towers (old DiscTower pair at x ±44, z 372) stand at the old 156.6 (× 1.0, tip 156.8): within 150 m of the quay, so standards.skyline.harbour.exceptions names the pair (brief 075 remap, Aster); every other tip there keeps 108",
    "The ParabolicArch across Crown Avenue (old (0, 250) → plan (0, 44)) stands as landmarks[disc-west].gateway: its plinths (x ±14–17, y 41–47) in the avenue's frontage zone, which here runs to the old walls' building line at |x| 18 (K-1, Splice's measure, briefs/075/notes.md)",
    "The old SkyBridge between the gate towers (60 m up) is in oldtown.props, not placed: no plan structure carries it yet",
-   "SpaceHQ switch (plan.spacehq.form = old; brief 075 remap step 2, Sky's call): 'old' = the old gold SpaceHQ, the kit SpaceHQ × 1.35 at the old place (plan (0,244), ground x -54..54, y 178.12..298, tip 340.2, the dominant), S1's Crown Circus station beside it on x -95; 'ours' = the SpaceHQ_Portal remake (252 m, drum r 40 at (0, 244)) with S1 east on y 244 through the drum and the station inside. Both forms are in plan.spacehq.forms",
+   "SpaceHQ switch (plan.spacehq.form = ours; brief 075 remap step 2, Sky's call): 'old' = the old gold SpaceHQ, the kit SpaceHQ × 1.35 at the old place (plan (0,244), ground x -54..54, y 178.12..298, tip 340.2, the dominant), S1's Crown Circus station beside it on x -95; 'ours' = the SpaceHQ_Portal remake (252 m, drum r 40 at (0, 244)) with S1 east on y 244 through the drum and the station inside. Both forms are in plan.spacehq.forms",
+   "SpaceHQ ours (Sky's pick, brief 075 2026-10-29): S1 north on x -95.5 from Circus Road and east on y 244 through the drum (portal y 244, openings x ±40), Crown Circus station inside at (0, 244), its banks on the drum's public ground floor (levels[street].floor); the Sphere 42 m west of the old place at (-172, 124), the one landmark move, so the north leg clears its disc (no other way onto the axis holds the radius, span and station rules); Crown Walk from Sphere Park's edge (x -54) through the hall to the quay",
    "Lantern Terraces (a second terraced-housing megastructure, Crown Terraces' kind) on lantern-court, facing south over Lantern Lane: MS-1 keeps 2–4 megastructures and the old town's only one (the Skyport) cannot be today's portal tower without a sky line",
    "Crown Terraces (megastructure) move to the West Terraces plot (x -244..-164, y -114..-45) facing south over Lamplight Lane, keeping MS-1's 2–4: the old town had procedural massing there (DecoKitCityMass); no bridges",
    "T1's stops: Sunset Terraces (-340, 131, the S1 interchange) and Crown Circus (0, -68, the old island's place) fixed; Lamplight, Rocket and Orbit Square at equal chainage between them (300.38 m)",
@@ -10619,7 +10834,7 @@
    "W2 starts at y -126 (old -198: the west lane), north of lamplight-south-e: 12 bays off its south end (old civic hall run S6 2, H 12 → H 2), its garden wall the same",
    "W2's garden wall (old: End, Corner at z 178) ends square here: its corner cell at the crescent's back had no perpendicular run (BG-2); 27 bays from the lane as old",
    "W4 and E4's boulevard walls end on their short walls at y 140 (old: they started at CircusNorth 236.017 and ran 110 m, 1.7 cm past the short walls at 346); their garden and terrace walls (old: a corner at z 234 meeting no run) start one cell on with an end",
-   "E1: 11 bays (old 13, 2 off its south segment), between the plan's 6.5 m pavements on Sunset Way and Market Street (y -234.5..-152.5; old -242..-148)",
+   "E1: 13 bays (old 13, 0 off its south segment), between Sunset Way's own 3.25 m and Market Street's own 2.75 m pavements (roads[].pavement; y -242.75..-148.75; old -242..-148)",
    "E2: 7 bays (old 8), from Market Street's building line to the east lane (y -122..-72; old -128..-72)",
    "E3's terrace wall (old: End, Corner at z 178, the parade's corner) ends square: no perpendicular run meets that corner (BG-2)",
    "The old Southside blocks shift onto the plan's lines (brief 075 plan-match): N1 on its old line y -302..-262 (28 deep: its west half is Satellite Street); SS1 (46) and SS3 (34) on ss3 at y -473..-427 and -525..-491 (the old 18 m gap between them; old SS1 stood across Market Street); SS4 (34) at y -518.5..-484.5 from Apollo Way's building line (old: across Apollo Way's plan line); SS2 at the plan's 40 (old 46: its plot's building line is 40.5 between Market Street and Apollo Way); ss1 open (no old building stands there); N2 at y -304.5..-264.5, 2.5 m south of its old line (Sunset Way east's 6.5 m access pavement; old 4 m)",

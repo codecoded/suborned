@@ -48,7 +48,7 @@ export function signatureChecks(c: WCtx): Check[] {
   if (portals.length) {
     const bad: string[] = [];
     for (const p of portals) {
-      const line = Number(String(p.line).startsWith('S1') ? 0 : 0), corridor: Rect = [p.rect[0], p.rect[1], line - p.half, line + p.half];
+      const line = p.y, corridor: Rect = [p.rect[0], p.rect[1], line - p.half, line + p.half];
       for (const s of solids) {
         if (s.base >= p.ceiling - TOL || s.top <= p.z[0] + TOL) continue; // clear of the opening's height band [sill, ceiling)
         if (areaIn(s.ring, corridor) > 0.5) bad.push(`${s.id} stands in ${p.id}'s opening (z ${f1(Math.max(s.base, p.z[0]))}–${f1(Math.min(s.top, p.ceiling))})`);

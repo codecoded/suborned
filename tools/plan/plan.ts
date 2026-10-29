@@ -20,7 +20,9 @@ export type Megastructure = {
 /** A landmark disc: r its ground, `top` the height cap (above the datum), `kit` the piece standing on it; the skyport has a caisson and `pads` (c, yaw in degrees) for its kit pieces. */
 export type Landmark = { id: string; name: string; c: V; r: number; kit?: string; top?: number; caisson?: { r: number; deck: number; how?: string }; pads?: { c: V; yaw: number }[]; [k: string]: unknown };
 /** brief 007 A: a signature structure outside the megastructure list (SpaceHQ): `ground` its rect (no plot building stands on it), `kit` the piece, `regen.variant` the regenerated version, `portal` its declared sky rail portal, `height` its tip. */
-export type Signature = { id: string; name: string; c: V; ground: [number, number, number, number]; kit?: string; yaw?: unknown; height?: number; regen?: { variant?: string; tip?: number; [k: string]: unknown }; portal?: { kind?: string; beams?: string; line?: string; path?: string; clearHalfWidth?: number; soffit?: number; openings?: { at: [number, number]; clearHalfWidth: number; z: [number, number] }; station?: string; [k: string]: unknown }; [k: string]: unknown };
+export type Signature = { id: string; name: string; c: V; ground: [number, number, number, number]; kit?: string; yaw?: unknown; height?: number; regen?: { variant?: string; tip?: number; [k: string]: unknown }; portal?: { kind?: string; beams?: string; line?: string; path?: string; clearHalfWidth?: number; soffit?: number; openings?: { at: [number, number]; clearHalfWidth: number; z: [number, number] }; /** the line's axis through the portal (an east-west portal on y = this; default 0) */ y?: number; station?: string; [k: string]: unknown };
+  /** rects a drum or portal stands on (solid at the foot) */ legs?: [number, number, number, number][];
+  /** its floors; `floor: 'public'` declares that level's floor public ground inside `ground` less `legs` (station banks may stand there) */ levels?: { level: string; floor?: 'public'; [k: string]: unknown }[]; [k: string]: unknown };
 export type Plan = {
   id: string; name: string; version: string; date: string; status: string;
   sheet: { drawing: string; x: V; y: V; grid: number; scale: string; inset: { drawing: string; name: string; x: V; y: V; scale: string } };
@@ -219,17 +221,18 @@ function placePylons(std: any, path: PathGeo, allowed: (p: V) => boolean, portal
 
 type R4p = [number, number, number, number];
 /** A declared sky rail portal: where, the opening's half width and z range (the building carries the beam inside it). */
-export type Portal = { id: string; line: string; rect: R4p; half: number; z: [number, number]; ceiling: number };
+export type Portal = { id: string; line: string; rect: R4p; half: number; z: [number, number]; ceiling: number; /** the line's axis through it (y of an east-west portal) */ y: number };
 export function portalsOf(plan: Plan): Portal[] {
   const out: Portal[] = [], run = plan.standards.skyrail?.portal?.running?.twin;
   for (const s of plan.signatures ?? []) {
     const p = s.portal; if (!p?.openings) continue;
-    out.push({ id: `signatures/${s.id}`, line: `${p.line}/${p.path}`, rect: [p.openings.at[0], p.openings.at[1], -p.clearHalfWidth!, p.clearHalfWidth!], half: p.openings.clearHalfWidth, z: p.openings.z, ceiling: p.soffit ?? p.openings.z[1] });
+    const y = p.y ?? 0; // the portal's axis: an east-west line through the openings on y
+    out.push({ id: `signatures/${s.id}`, line: `${p.line}/${p.path}`, rect: [p.openings.at[0], p.openings.at[1], y - p.clearHalfWidth!, y + p.clearHalfWidth!], half: p.openings.clearHalfWidth, z: p.openings.z, ceiling: p.soffit ?? p.openings.z[1], y });
   }
   for (const m of plan.megastructures ?? []) {
-    for (const q of ((m as { portals?: { id: string; rect: R4p; opening: { clearHalfWidth: number; z: [number, number] } }[] }).portals ?? [])) out.push({ id: `${m.id}/${q.id}`, line: 'S1/trunk', rect: q.rect, half: q.opening?.clearHalfWidth ?? run?.clearHalfWidth ?? 6, z: q.opening?.z ?? run?.z ?? [21.5, 29], ceiling: (q.opening?.z ?? run?.z ?? [21.5, 29])[1] });
+    for (const q of ((m as { portals?: { id: string; rect: R4p; opening: { clearHalfWidth: number; z: [number, number] } }[] }).portals ?? [])) out.push({ id: `${m.id}/${q.id}`, line: 'S1/trunk', rect: q.rect, half: q.opening?.clearHalfWidth ?? run?.clearHalfWidth ?? 6, z: q.opening?.z ?? run?.z ?? [21.5, 29], ceiling: (q.opening?.z ?? run?.z ?? [21.5, 29])[1], y: 0 });
     const sp = (m.supports as { portal?: { clearHalfWidth: number } } | undefined)?.portal;
-    if (sp) for (const f of m.footprint as R4p[]) out.push({ id: `${m.id}/supports`, line: 'S1/trunk', rect: f, half: sp.clearHalfWidth, z: [0, plan.standards.skyrail?.portal?.station?.soffit ?? 30], ceiling: plan.standards.skyrail?.portal?.station?.soffit ?? 30 });
+    if (sp) for (const f of m.footprint as R4p[]) out.push({ id: `${m.id}/supports`, line: 'S1/trunk', rect: f, half: sp.clearHalfWidth, z: [0, plan.standards.skyrail?.portal?.station?.soffit ?? 30], ceiling: plan.standards.skyrail?.portal?.station?.soffit ?? 30, y: 0 });
   }
   return out;
 }

@@ -194,7 +194,7 @@ export function check(plan: Plan, d: Derived, civic: Civic, strict = false, over
     const pub = (p: V) => d.roads.some(r => nearLine(p, r.line, r.w / 2 + .01)) || plan.foot.some(w => nearLine(p, w.pts, w.w / 2 + .01))
       || d.zones.some(z => ['park', 'quay', 'water'].includes(z.kind) && inZone(p, z)) || dist(p, plan.circus.c) <= plan.circus.island;
     // brief 007: a beam may also pass over a plot through a declared portal (signatures[].portal, megastructures[].portals, supports.portal), where the building carries it (P-1)
-    const portals = portalsOf(plan), inPortal = (p: V) => portals.some(q => p[0] >= q.rect[0] && p[0] <= q.rect[1] && Math.abs(p[1]) <= q.rect[3] && p[1] >= q.rect[2]);
+    const portals = portalsOf(plan), inPortal = (p: V) => portals.some(q => p[0] >= q.rect[0] && p[0] <= q.rect[1] && p[1] <= q.rect[3] && p[1] >= q.rect[2]);
     const off = paths.flatMap(p => p.samples).filter(s => !pub(s.p) && !inPortal(s.p));
     add({ id: 'S-C1', group: 'Sky rail', rule: `${line.id} passes over public space only (no plots)`, value: `${f(off.length / 2)} m over plots`, limit: '0', ok: !off.length });
   }

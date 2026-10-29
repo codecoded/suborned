@@ -9,8 +9,8 @@
 //     the perpendicular); corners are R 2 m quarter arcs about the cell's walk-side corner; noses half-rounds R 1; returned as kerb lines (no road centrelines:
 //     the asphalt meshes are decks laid under the pavements, not carriageway extents, so they are not used);
 //   - kerb stones joined end to end into kerb lines (ends within 2 cm), so a mismatch is a run along a kerb, not a stone;
-//   - pavements: 2 m flag modules centred on `at`; the file carries no yaw (the boulevard's courses are axis-aligned, Southside's are turned), so each module's
-//     turn is read from its neighbours on the same grid (a module 2 m away: the direction to it, folded to a quarter turn), axis-aligned when it has none;
+//   - pavements: 2 m flag modules centred on `at`, turned by their Unity `yaw` (swap2 on), folded to a quarter turn; a file without yaw (the first swap) has
+//     each module's turn read from its neighbours on the same grid (a module 2 m away: the direction to it, folded to a quarter turn), axis-aligned when none;
 //   - levels: old/road and old/walk are the street level's z and walk; old/promenade is kept as a level (plan-match reads it as the plan ground at its walk height, standards.levels.grounds); old/water is no walk level;
 //     the export's ringed levels (our decks and station platforms, kept by the swap) are decks;
 //   - coverage: the old builders lay kerb stones and flags only in the core (the boulevard, Southside, the side street, the circus); the district beyond is
@@ -25,7 +25,7 @@ export type LatchBuilt = {
   buildings: { piece: string; kind: 'mass' | 'frontage' | 'building' | 'landmark' | string; ring: V[]; base: number; top: number; building: string; front?: V; at?: V }[];
   frontages: { building: string; piece: string; at: V; normal: V; w: number; kind?: string }[];
   kerbs: { piece: string; at: V; yaw: number; top: number }[];
-  pavements: { piece: string; at: V; size: number; top: number }[];
+  pavements: { piece: string; at: V; size: number; top: number; yaw?: number }[];
   roads: { name: string; top: number; triangles: number[] }[];
   levels: { id: string; height: number; ring?: V[]; what?: string }[];
   counts?: Record<string, number>;
@@ -58,7 +58,7 @@ export function fromLatch(b: LatchBuilt): OldBuilt {
   const raised = new Map<string, number>();
   for (const l of b.levels) if (l.ring && l.ring.length >= 3 && !raised.has(levelName(l))) raised.set(levelName(l), l.height);
   const levels: OldBuilt['levels'] = [street, ...[...raised].map(([id, z]) => ({ id, z, walk: z })), ...b.levels.filter(l => l.id === 'old/promenade').map(l => ({ id: l.id, z: l.height }))];
-  const turns = tileTurns(b.pavements);
+  const turns = pavementTurns(b.pavements);
   const tile = (p: LatchBuilt['pavements'][number], i: number): V[] => { const h = p.size / 2, a = turns[i]!, c = Math.cos(a) * h, s = Math.sin(a) * h, [x, y] = p.at; return [[x - c + s, y - s - c], [x + c + s, y + s - c], [x + c - s, y + s + c], [x - c - s, y - s + c]].map(q => [r3(q[0]!), r3(q[1]!)] as V); };
   const grow = (pts: V[], g: number): V[] => { const xs = pts.map(p => p[0]), ys = pts.map(p => p[1]), x0 = Math.min(...xs) - g, x1 = Math.max(...xs) + g, y0 = Math.min(...ys) - g, y1 = Math.max(...ys) + g; return [[x0, y0], [x1, y0], [x1, y1], [x0, y1]]; };
   const kerbs = joinLines(b.kerbs.map((k, i) => ({ id: `kerb/${k.piece}#${i}`, line: kerbLine(k), top: k.top })));
@@ -81,6 +81,13 @@ export function fromLatch(b: LatchBuilt): OldBuilt {
       ...(b.handoverZone ? [`handover zone ${b.handoverZone.join(',')}: not in the file, taken from our export`] : []),
     ],
   };
+}
+
+/** Each module's turn (radians in [0, π/2)): from its Unity yaw (clockwise from +Z seen from above, so a plan turn of -yaw) when the file has one, else from
+ *  its neighbours (tileTurns). */
+export function pavementTurns(ps: { at: V; size: number; yaw?: number }[]): number[] {
+  const q = Math.PI / 2, near = ps.some(p => typeof p.yaw !== 'number') ? tileTurns(ps) : [];
+  return ps.map((p, i) => { if (typeof p.yaw !== 'number') return near[i]!; const t = (((-p.yaw * Math.PI) / 180) % q + q) % q; return t > q - 1e-3 ? 0 : t; });
 }
 
 /** Each module's turn (radians in [0, π/2)): the direction to a neighbour 2 m away (±5 cm), folded to a quarter turn; 0 when it has none. */

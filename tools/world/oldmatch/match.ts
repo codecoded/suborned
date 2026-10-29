@@ -34,6 +34,8 @@ export const MATCH = {
   probe: 0.5,
   /** m: nothing on the other side within this = "none" */
   far: 40,
+  /** m: a door of ours within a bay front's w/2 + this is compared with the bays even off the ground coverage (the west's old blocks on flat ground) */
+  coverBay: 6,
   /** m: a footprint at the foot: masses standing on the ground (base at or under this) */
   ground: 1,
 };
@@ -352,10 +354,13 @@ export function compare(built: Side, ours: Side, plan: { standards: any; sheet?:
     };
     const bg = grid(bays, b => bbOf([b.at]), 8), dg = grid(doors, d => bbOf([d.at]), 8), carried = new Set<string>();
     for (const e of ours.entrances) {
-      if ((cov && !cov(e.at)) || !onSheet(e.at)) { uncovered['doors (count)'] = (uncovered['doors (count)'] ?? 0) + 1; continue; } // the old builders laid no bays here
-      const hit = bg(e.at, 8).map(i => bays[i]!).filter(b => onBay(e, b));
+      // a door is compared on the sheet where the old builders laid ground (the coverage) or bays (a bay front within w/2 + MATCH.coverBay m: the west's old blocks
+      // stand on flat ground, so their bays are compared with our doors there too, both ways)
+      const near = bg(e.at, 8 + MATCH.coverBay).map(i => bays[i]!), hit = near.filter(b => onBay(e, b));
       hit.forEach(b => carried.add(b.building));
       if (hit.length) continue;
+      const byBay = near.some(b => Math.hypot(b.at[0] - e.at[0], b.at[1] - e.at[1]) <= b.w! / 2 + MATCH.coverBay);
+      if ((cov && !cov(e.at) && !byBay) || !onSheet(e.at)) { uncovered['doors (count)'] = (uncovered['doors (count)'] ?? 0) + 1; continue; } // the old builders laid no ground or bays here
       if (dg(e.at, MATCH.entrance).some(i => { const d = doors[i]!; return Math.hypot(d.at[0] - e.at[0], d.at[1] - e.at[1]) <= MATCH.entrance && levelOf(d.z, ours.levels)?.l.id === levelOf(e.z, ours.levels)?.l.id; })) continue;
       let best = Infinity, bid: string | null = null;
       for (const i of bg(e.at, MATCH.far)) { const b = bays[i]!, d = Math.hypot(b.at[0] - e.at[0], b.at[1] - e.at[1]); if (d < best) { best = d; bid = b.id; } }
