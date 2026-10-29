@@ -1,0 +1,3 @@
+variant today: sun #FFEDCC x1.800 euler (44.70, 330.00, 0.00); skybox DecoKit/Space Age Sky; ambient sky #8F9399 eq #989188 gr #A09582
+urp: hdr precision _32Bits, grading LowDynamicRange lut 32
+posters off: 78 slots back on their base

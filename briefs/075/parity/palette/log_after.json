@@ -1,0 +1,97 @@
+{
+ "tag": "after",
+ "root": "out/decokit",
+ "run": [
+  {
+   "piece": "StreamCorner_4",
+   "colourway": "soft-apricot",
+   "swap": {
+    "DK_Limestone_Tex": "DK_Limestone_Tex__soft-apricot",
+    "DK_Render_White": "DK_Render_White__soft-apricot",
+    "DK_Enamel_Teal": "DK_Enamel_Teal__soft-apricot",
+    "DK_Enamel_Ivory": "DK_Enamel_Ivory__soft-apricot"
+   }
+  },
+  {
+   "piece": "StreamBay_4",
+   "colourway": "soft-apricot",
+   "swap": {
+    "DK_Limestone_Tex": "DK_Limestone_Tex__soft-apricot",
+    "DK_Render_White": "DK_Render_White__soft-apricot",
+    "DK_Enamel_Teal": "DK_Enamel_Teal__soft-apricot",
+    "DK_Enamel_Ivory": "DK_Enamel_Ivory__soft-apricot"
+   }
+  },
+  {
+   "piece": "StreamBay_3W",
+   "colourway": "soft-apricot",
+   "swap": {
+    "DK_Limestone_Tex": "DK_Limestone_Tex__soft-apricot",
+    "DK_Render_White": "DK_Render_White__soft-apricot",
+    "DK_Enamel_Teal": "DK_Enamel_Teal__soft-apricot",
+    "DK_Enamel_Ivory": "DK_Enamel_Ivory__soft-apricot"
+   }
+  },
+  {
+   "piece": "StreamBay_4",
+   "colourway": "boulevard",
+   "swap": {
+    "DK_Enamel_Teal": "DK_Enamel_Teal__boulevard"
+   }
+  },
+  {
+   "piece": "StreamBay_3W",
+   "colourway": "boulevard",
+   "swap": {
+    "DK_Enamel_Teal": "DK_Enamel_Teal__boulevard"
+   }
+  },
+  {
+   "piece": "StreamBay_4",
+   "colourway": "soft-celadon",
+   "swap": {
+    "DK_Limestone_Tex": "DK_Limestone_Tex__soft-celadon",
+    "DK_Render_White": "DK_Render_White__soft-celadon",
+    "DK_Enamel_Teal": "DK_Enamel_Teal__soft-celadon",
+    "DK_Enamel_Ivory": "DK_Enamel_Ivory__soft-celadon"
+   }
+  },
+  {
+   "piece": "StreamEnd_4",
+   "colourway": "soft-celadon",
+   "swap": {
+    "DK_Limestone_Tex": "DK_Limestone_Tex__soft-celadon",
+    "DK_Render_White": "DK_Render_White__soft-celadon",
+    "DK_Enamel_Teal": "DK_Enamel_Teal__soft-celadon",
+    "DK_Enamel_Ivory": "DK_Enamel_Ivory__soft-celadon"
+   }
+  }
+ ],
+ "cars": [
+  {
+   "key": "ivory-turquoise",
+   "body": "DK_CarPaint_Ivory",
+   "roof": "DK_CarPaint_Turquoise",
+   "bodyHex": "#F9F0D7",
+   "roofHex": "#0A6D82"
+  },
+  {
+   "key": "ivory-tomato",
+   "body": "DK_CarPaint_Ivory",
+   "roof": "DK_CarPaint_Tomato",
+   "bodyHex": "#F9F0D7",
+   "roofHex": "#E25E47"
+  },
+  {
+   "key": "ivory-canary",
+   "body": "DK_CarPaint_Ivory",
+   "roof": "DK_CarPaint_Canary",
+   "bodyHex": "#F9F0D7",
+   "roofHex": "#E7B84C"
+  }
+ ],
+ "sphere": {
+  "DK_Steel_Ivory": "DK_Steel_Ivory__vermilion",
+  "DK_Hull_Ivory": "DK_Hull_Ivory__brick"
+ }
+}

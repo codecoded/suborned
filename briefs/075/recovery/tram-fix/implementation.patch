@@ -1,0 +1,201 @@
+--- before/OldTownSwap.cs
++++ after/OldTownSwap.cs
+@@ -65,6 +65,26 @@
+             var outDir = Abs(Arg("swapOut", "briefs/075/oldbuild/tram")); Directory.CreateDirectory(outDir);
+             SwapTramAudit.Run(new Report(), world, Path.Combine(outDir, $"tram-audit-{Arg("swapTag", "scene")}.json"));
+         });
++        /// <summary>Controlled render-only correction of the pinned provisional scene; no old builders or civic imports rerun.</summary>
++        public static void TramFix() => Batch(() => WithOldSettings(() =>
++        {
++            var source = Arg("swapScene", "probe-recovery075-swap");
++            UnityEditor.SceneManagement.EditorSceneManager.OpenScene($"Assets/Scenes/{source}.unity");
++            var world = WorldReader.Load(Abs(Arg("swapWorld", "out/world/harbour-district.world.json")));
++            var dir = Abs(Arg("swapOut", "briefs/075/recovery/tram-fix")); Directory.CreateDirectory(dir);
++            var rep = new Report();
++            SwapTramAudit.Run(rep, world, Path.Combine(dir, "audit-before.json"));
++            SwapNetwork.ClearImportedGround(rep);
++            SwapTramAudit.Run(rep, world, Path.Combine(dir, "audit-after.json"));
++            const string meshes = "Assets/Suborned/OldTownArt/Swap/TramFix";
++            Directory.CreateDirectory(meshes);
++            int i = 0;
++            foreach (var mf in UnityEngine.Object.FindObjectsByType<MeshFilter>(FindObjectsInactive.Include))
++                if (mf.sharedMesh && mf.sharedMesh.name.EndsWith(" (tram surface cut)") && !AssetDatabase.Contains(mf.sharedMesh))
++                    AssetDatabase.CreateAsset(mf.sharedMesh, $"{meshes}/surface-{i++}.asset");
++            AssetDatabase.SaveAssets();
++            UnityEditor.SceneManagement.EditorSceneManager.SaveScene(UnityEngine.SceneManagement.SceneManager.GetActiveScene(), "Assets/Scenes/probe-recovery075-tramfix.unity");
++        }));
+         /// <summary>Brief 075 Perf A/B item A (SwapPerf): -abScene OldTown|HarbourDistrict, -abPipeline old|ours (OldTown; old = inside WithOldSettings).</summary>
+         public static void PerfAB() => Batch(() => { if (Arg("abScene", "OldTown") == "OldTown" && Arg("abPipeline", "old") == "old") WithOldSettings(SwapPerf.Run); else SwapPerf.Run(); });
+ 
+@@ -230,6 +250,7 @@
+ 
+                 // ---- 7. the old gives way: the zone, our structures, the beam corridor, the pylons, the tram corridor
+                 SwapCut.Run(rep, world, ours, net, hq, plan);
++                SwapNetwork.ClearImportedGround(rep);
+ 
+                 // ---- 8. SpaceHQ switch: both stand, one is off (ours: our SpaceHQ_Portal in the old finish, SwapHq)
+                 SwapHq.Place(rep, ours.Root, skyGain);
+--- before/SwapNetwork.cs
++++ after/SwapNetwork.cs
+@@ -174,6 +174,71 @@
+             CrossGround(plan, Ours);
+         }
+ 
++        /// <summary>Ground surface ownership at the actual laid tile edges. Only the demonstrated gutter-setts and granite
++        /// rail/kerb material classes in the road-to-walk band give way; crossing lights and the asphalt below stay.
++        /// Render meshes only: no collider, navigation or source mesh is modified.</summary>
++        internal static void ClearImportedGround(OldTownSwap.Report report)
++        {
++            var bed = new SwapShapes();
++            foreach (var root in Object.FindObjectsByType<Transform>(FindObjectsInactive.Exclude).Where(t => t.name == RailsRoot))
++                foreach (Transform t in root)
++                {
++                    var c = t.position; var u = t.right; var v = t.forward;
++                    bed.Add("tile", t.name, new[] { c-u-v, c+u-v, c+u+v, c-u+v }.Select(q => new Vector2(q.x, q.z)).ToArray());
++                }
++            int changed = 0, clipped = 0;
++            foreach (var mf in Object.FindObjectsByType<MeshFilter>(FindObjectsInactive.Exclude))
++            {
++                bool ours = false;
++                for (var t = mf.transform; t; t = t.parent) if (t.name.StartsWith("Ours (")) { ours = true; break; }
++                if (!ours || !mf.sharedMesh || !mf.sharedMesh.isReadable) continue;
++                var mr = mf.GetComponent<MeshRenderer>(); if (!mr || !mr.enabled) continue;
++                var mats = mr.sharedMaterials;
++                bool Ground(int sub) => sub < mats.Length && mats[sub] &&
++                    (mats[sub].name == "DK_Gutter_Setts" || mats[sub].name == "DK_Granite_Kerb");
++                if (!Enumerable.Range(0, mats.Length).Any(Ground)) continue;
++                var rd = new SwapMesh.Read(mf.sharedMesh, mf.transform.localToWorldMatrix);
++                var wr = new SwapMesh.Write(rd); int cuts = 0;
++                for (int sub = 0; sub < rd.Subs.Count; sub++)
++                    for (int j = 0; j < rd.Subs[sub].Length; j += 3)
++                    {
++                        int a = rd.Subs[sub][j], b = rd.Subs[sub][j+1], c = rd.Subs[sub][j+2];
++                        var bounds = new Bounds(rd.Verts[a].W, Vector3.zero); bounds.Encapsulate(rd.Verts[b].W); bounds.Encapsulate(rd.Verts[c].W);
++                        var box = SwapMesh.XZ(bounds);
++                        var near = Ground(sub) && bounds.max.y >= BedLift && bounds.min.y <= BedLift + .25f
++                            ? bed.Near(box).Where(h => h.Overlaps(box)).ToArray() : new SwapShapes.Shape[0];
++                        if (near.Length == 0) { wr.Keep(sub, a, b, c); continue; }
++                        var polys = new List<List<SwapMesh.V>> { new() { rd.Verts[a], rd.Verts[b], rd.Verts[c] } };
++                        foreach (var h in near)
++                        {
++                            var next = new List<List<SwapMesh.V>>();
++                            // Disjoint outside regions of a convex tile. Keep the first failed half-plane,
++                            // with all earlier inside planes applied; this subtracts the footprint exactly.
++                            foreach (var poly in polys)
++                            {
++                                var inside = poly;
++                                for (int e = 0; e < h.Poly.Length && inside.Count >= 3; e++)
++                                {
++                                    var x = h.Poly[e]; var y = h.Poly[(e+1)%h.Poly.Length];
++                                    float A = -(y.y-x.y), B = y.x-x.x, C = -A*x.x-B*x.y;
++                                    var outside = SwapMesh.Clip(inside, new SwapMesh.Half(-A,-B,-C));
++                                    if (outside.Count >= 3) next.Add(outside);
++                                    inside = SwapMesh.Clip(inside, new SwapMesh.Half(A,B,C));
++                                }
++                            }
++                            polys = next;
++                        }
++                        foreach (var poly in polys) wr.Poly(sub, poly);
++                        cuts++;
++                    }
++                if (cuts == 0) continue;
++                mf.sharedMesh = wr.Mesh(mf.sharedMesh.name + " (tram surface cut)");
++                changed++; clipped += cuts;
++                report.Log($"tram surface ownership: {mf.name}: {cuts} candidate triangles clipped; collider mesh retained");
++            }
++            report.Log($"tram surface ownership: {changed} imported render meshes, {clipped} candidate triangles clipped at laid tile footprints");
++        }
++
+         /// <summary>E12, the old walk-level ground across the plan's tram streets (Orbit Square: the old Southside's pedestrian square spans the
+         /// boulevard axis at the walk, plan 0.5.5 runs the Boulevard and T1 through it). In each corridor quad of a tram road (kerb to kerb)
+         /// that carries our bed: old flat modules standing over the bed (top 1 cm to 1 m, under 45 cm tall) whose centre is more than 0.8 m in
+--- before/SwapTramAudit.cs
++++ after/SwapTramAudit.cs
+@@ -77,7 +77,7 @@
+             var faces = new Dictionary<Vector2Int, List<(Vector3 a, Vector3 b, Vector3 c, int src, int rid)>>();
+             var srcs = new List<Src>(); var srcOf = new Dictionary<string, int>();
+             int Source(string k) { if (!srcOf.TryGetValue(k, out var i)) { srcOf[k] = i = srcs.Count; srcs.Add(new Src { Key = k }); } return i; }
+-            int renderers = 0, unreadable = 0, rid = 0; var unreadableNames = new SortedSet<string>();
++            int renderers = 0, unreadable = 0, editorRead = 0, rid = 0; var unreadableNames = new SortedSet<string>();
+             foreach (var mr in Object.FindObjectsByType<MeshRenderer>(FindObjectsInactive.Exclude))
+             {
+                 if (!mr.enabled || tileRs.Contains(mr) || lodHidden.Contains(mr)) continue;
+@@ -88,23 +88,34 @@
+                 if (!near) continue;
+                 var mesh = mr.GetComponent<MeshFilter>()?.sharedMesh; if (!mesh) continue;
+                 renderers++; rid++;
+-                if (!mesh.isReadable)
+-                {
+-                    unreadable++; unreadableNames.Add(Name(mr.transform));
+-                    if (bb.size.y < .03f)  // a flat piece: its top as one face over its bounds
++                if (!mesh.isReadable) editorRead++;
++                Vector3[] vs; int[][] indices;
++                try
++                {
++                    using var data = UnityEditor.MeshUtility.AcquireReadOnlyMeshData(mesh);
++                    var md = data[0];
++                    using var verts = new Unity.Collections.NativeArray<Vector3>(md.vertexCount, Unity.Collections.Allocator.Temp);
++                    md.GetVertices(verts); vs = verts.ToArray();
++                    indices = new int[md.subMeshCount][];
++                    for (int sub = 0; sub < md.subMeshCount; sub++)
+                     {
+-                        var k0 = Source(Name(mr.transform) + " [bounds]"); var y = bb.max.y;
+-                        Add(faces, cells, new Vector3(bb.min.x, y, bb.min.z), new Vector3(bb.max.x, y, bb.min.z), new Vector3(bb.max.x, y, bb.max.z), k0, rid);
+-                        Add(faces, cells, new Vector3(bb.min.x, y, bb.min.z), new Vector3(bb.max.x, y, bb.max.z), new Vector3(bb.min.x, y, bb.max.z), k0, rid);
++                        var desc = md.GetSubMesh(sub);
++                        if (desc.topology != MeshTopology.Triangles) { indices[sub] = new int[0]; continue; }
++                        using var ix = new Unity.Collections.NativeArray<int>(desc.indexCount, Unity.Collections.Allocator.Temp);
++                        md.GetIndices(ix, sub); indices[sub] = ix.ToArray();
+                     }
+-                    continue;
+-                }
+-                var m = mr.transform.localToWorldMatrix; var vs = mesh.vertices; var mats = mr.sharedMaterials;
++                }
++                catch (System.Exception ex)
++                {
++                    unreadable++; unreadableNames.Add(Name(mr.transform) + " : " + ex.Message);
++                    continue; // coverage warning only; bounds are never counted as real faces
++                }
++                var m = mr.transform.localToWorldMatrix; var mats = mr.sharedMaterials;
+                 for (int s = 0; s < mesh.subMeshCount; s++)
+                 {
+                     if (mesh.GetSubMesh(s).topology != MeshTopology.Triangles) continue;
+                     int k = Source(Name(mr.transform) + " [" + (s < mats.Length && mats[s] ? mats[s].name : "?") + "]");
+-                    var tri = mesh.GetTriangles(s);
++                    var tri = indices[s];
+                     for (int t = 0; t < tri.Length; t += 3)
+                     {
+                         Vector3 a = m.MultiplyPoint3x4(vs[tri[t]]), b = m.MultiplyPoint3x4(vs[tri[t + 1]]), c = m.MultiplyPoint3x4(vs[tri[t + 2]]);
+@@ -118,6 +129,7 @@
+ 
+             // classify
+             int onBed = 0, gaps = 0, level = 0, over = 0, levelNoBed = 0;
++            var offBedAt = new List<object>();
+             var byTrack = new SortedDictionary<string, int[]>();  // samples, on bed, level, over, level no bed
+             foreach (var (track, q, plan) in samples)
+             {
+@@ -141,7 +153,7 @@
+                 }
+                 else
+                 {
+-                    gaps++;
++                    gaps++; offBedAt.Add(new object[] { track, plan.x, plan.y });
+                     if (hs.Count < 2) continue;
+                     var hi = hs.Where(z => z.h <= Over).OrderByDescending(z => z.h).ToList(); if (hi.Count < 2) continue;
+                     var twins = hi.Where(z => z.rid != hi[0].rid && Mathf.Abs(z.h - hi[0].h) < Level).ToList();
+@@ -155,13 +167,13 @@
+                 .Select(s => (object)new Dictionary<string, object> { ["source"] = s.Key, ["samples"] = by(s), ["at"] = s.At.Take(6).Select(a => (object)new[] { a[0], a[1] }).ToList() }).ToList();
+             var doc = new Dictionary<string, object>
+             {
+-                ["schema"] = "latch.tram-bed-audit/1",
++                ["schema"] = "latch.tram-bed-audit/2",
+                 ["scene"] = UnityEngine.SceneManagement.SceneManager.GetActiveScene().path,
+                 ["export"] = w.Sha256,
+                 ["rule"] = "every 1 m along each tram track of ours (both lines of a double track), at the centre and 0.6 m either side; on our bed = a tile of ours covers the sample; level = another face within 0.8 mm of the tile top; over = another face 0.8 mm to 25 cm over it; level, no bed = off our bed, two renderers' faces within 0.8 mm at the top",
+                 ["ourTiles"] = tiles.Count,
+                 ["samples"] = samples.Count, ["onBed"] = onBed, ["offBed"] = gaps, ["level"] = level, ["over"] = over, ["levelNoBed"] = levelNoBed,
+-                ["renderersRead"] = renderers, ["unreadable"] = unreadable, ["unreadableNames"] = unreadableNames.Take(40).Cast<object>().ToList(),
++                ["renderersRead"] = renderers - unreadable, ["editorReadDespiteRuntimeFlag"] = editorRead, ["proxyPolicy"] = "no bounds proxies counted as faces; failed mesh reads remain coverage warnings", ["offBedAt"] = offBedAt, ["unreadable"] = unreadable, ["unreadableNames"] = unreadableNames.Take(40).Cast<object>().ToList(),
+                 ["byTrack"] = byTrack.ToDictionary(k => k.Key, k => (object)new Dictionary<string, object> { ["samples"] = k.Value[0], ["onBed"] = k.Value[1], ["level"] = k.Value[2], ["over"] = k.Value[3], ["levelNoBed"] = k.Value[4] }),
+                 ["levelBySource"] = Top(s => s.Level), ["overBySource"] = Top(s => s.Over), ["levelNoBedBySource"] = Top(s => s.LevelNoBed),
+             };

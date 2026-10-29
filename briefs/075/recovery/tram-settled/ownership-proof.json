@@ -1,0 +1,10 @@
+{
+ "status":"read-only saved candidate check; no overlap accepted",
+ "tilePlanarFaces":154733,
+ "signalTriangles":7395,
+ "coplanarPositiveAreaPairs":7519,
+ "coplanarIntersectionAreaM2":2.734,
+ "largestIntersectionM2":0.007,
+ "examples":[["DK_LightDotRow_2",0,[16.687,-17.692]],["DK_LightDotRow_2",0,[16.687,-17.692]],["DK_LightDotRow_2",0,[16.687,-17.692]],["DK_LightDotRow_2",0,[16.687,-17.692]],["DK_LightDotRow_2",0.001,[16.687,-17.692]],["DK_LightDotRow_2",0.001,[16.687,-17.692]],["DK_LightDotRow_2",0,[16.687,-17.692]],["DK_LightDotRow_2",0,[16.687,-17.692]],["DK_LightDotRow_2",0,[16.687,-17.692]],["DK_LightDotRow_2",0,[16.687,-17.692]],["DK_LightDotRow_2",0,[16.687,-17.692]],["DK_LightDotRow_2",0,[16.687,-17.692]],["DK_LightDotRow_2",0,[16.635,-17.687]],["DK_LightDotRow_2",0,[16.635,-17.687]],["DK_LightDotRow_2",0,[16.635,-17.687]],["DK_LightDotRow_2",0.001,[16.635,-17.687]],["DK_LightDotRow_2",0,[16.635,-17.687]],["DK_LightDotRow_2",0.001,[16.635,-17.687]],["DK_LightDotRow_2",0.001,[16.635,-17.687]],["DK_LightDotRow_2",0,[16.635,-17.687]]],
+ "arithmetic":"double planar triangle intersection of actual float world vertices; heights within 1 micrometre; pair area >1e-12m2 recorded, no bounds proxy or audit filtering"
+}

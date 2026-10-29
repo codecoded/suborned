@@ -36,6 +36,11 @@ namespace Suborned.OldTown.Editor.Swap
         /// <summary>Kept solids, old frame: XZ box, height band, id (each a hole the old gives way to).</summary>
         public readonly List<(Rect box, float y0, float y1, string id)> Solids = new();
         readonly SwapShapes net = new(), exclude = new();
+        /// <summary>E12: our flush rail tiles' footprints (ground.pieces tram-rail, plan frame): in the west our ground stays, but our flush rails
+        /// give way to the old Tile_TramRail SwapNetwork lays on the same route (keep/drop row "Tram rails"; they were batched by material
+        /// into the west ground and stood 2 cm over the old tiles).</summary>
+        readonly SwapShapes railFoot = new();
+        int railParts;
         readonly Dictionary<SwapShapes.Shape, float> maxExtent = new(), minTop = new();
         Rect hqRect;
         int keptUnits, droppedUnits, keptComps, droppedComps, clippedComps;
@@ -48,6 +53,7 @@ namespace Suborned.OldTown.Editor.Swap
             var o = new SwapOurs();
             o.Shapes(w);
             o.KeepFlat = KeepRegions();
+            o.KeepInside = SwapMesh.Inside(OldTownSwap.ZonePlan).Concat(SwapKeep.Regions()).ToArray();  // zone + kept plots and megastructures (less zone and west): disjoint
             var target = SceneManager.GetActiveScene();
             // second build: the palette edits are committed (dfda73fa) and the kit on disk is HEAD's, so HEAD's older copies are no longer swapped in
             var heads = Suborned.OldTown.Editor.DecoKit.DecoKitStage.Arg("swapHeadMats", "off") == "on" ? HeadMats(rep) : new Dictionary<string, Material>();
@@ -90,7 +96,7 @@ namespace Suborned.OldTown.Editor.Swap
                 if (ch) r.sharedMaterials = mats;
             }
             rep.Log($"ours kept: {o.keptUnits} objects ({string.Join(", ", o.keptBy.OrderBy(k => k.Key).Select(k => $"{k.Key} {k.Value}"))}), dropped {o.droppedUnits}; batched meshes: {o.keptComps} parts kept, {o.clippedComps} clipped at the zone edge, {o.droppedComps} dropped; {o.Solids.Count} solids the old gives way to; HEAD material slots {swapped} ({heads.Count} materials)");
-            rep.Log($"ours in the west (our ground under the old builders' west blocks): {o.westUnits} flat objects, {o.westParts} batched parts kept whole, {o.westClipped} clipped to the west; old materials by name on {o.remapped} slots");
+            rep.Log($"ours in the west (our ground under the old builders' west blocks): {o.westUnits} flat objects, {o.westParts} batched parts kept whole, {o.westClipped} clipped to the west; old materials by name on {o.remapped} slots; {o.railParts} parts of our flush rails dropped (E12: the old Tile_TramRail on our route instead)");
             return o;
         }
 
@@ -155,6 +161,12 @@ namespace Suborned.OldTown.Editor.Swap
                 if (sig.Id == "signature/space-hq") hqRect = r;  // dropped: the old builders place the old HQ, SwapHq ours
             }
             foreach (var p in w.Transit.SkyTrack.Pylons) exclude.Circle("pylon (old pieces instead)", p.Id, p.At, 3f);
+            foreach (var g in w.Ground.Pieces.Where(x => x.Kind == "tram-rail"))
+            {
+                Vector2 d = new(Mathf.Cos(g.Yaw), Mathf.Sin(g.Yaw)), n = new(-d.y, d.x);
+                float hl = g.Size.x * .5f + .1f, hw = g.Size.y * .5f + .1f;
+                railFoot.Add("rail", g.Id, new[] { g.At - d * hl + n * hw, g.At + d * hl + n * hw, g.At + d * hl - n * hw, g.At - d * hl - n * hw });
+            }
         }
 
         static Vector2[] Grow(Vector2[] ring, float g)
@@ -216,12 +228,15 @@ namespace Suborned.OldTown.Editor.Swap
             var c = new Vector2(b.center.x, b.center.z);
             float ext = Mathf.Max(b.size.x, b.size.z);
             if (SwapMesh.Inside(hqRect, c) && b.max.y > 60f) { droppedUnits++; UnityEngine.Object.DestroyImmediate(go); return; }  // our scene's (old) SpaceHQ piece
+            for (var t = go.transform; t; t = t.parent) if (t.name.StartsWith("DK_SpaceHQ")) { droppedUnits++; UnityEngine.Object.DestroyImmediate(go); return; }  // 0.5.6: our scene's portal, all of it (SwapHq places ours; the station in the drum stays)
             // the zone keeps what reaches into it whole (zoneWhy: "every plot that reaches into it keeps the massing it has"); flat pieces by their centre
             bool inZone = b.size.y < .6f ? SwapMesh.Inside(OldTownSwap.ZonePlan, c) : SwapMesh.Overlaps(SwapMesh.XZ(b), OldTownSwap.ZonePlan, .05f);
             if (inZone) { keptUnits++; Keep("zone"); Solid(b, "zone:" + go.name); return; }
+            if (!(FlatGround(b) && (OurRail(b) || SwapPlan.InWest(c))) && SwapKeep.At(c) is { } ka) { keptUnits++; Keep("keep " + ka); Solid(b, ka + ":" + go.name); return; }  // 0.5.6: kept plots, megastructures
             var n = Network(c, ext, go.name, b.max.y);
             if (n != null) { keptUnits++; Keep(n.Kind); Solid(b, $"{n.Kind}:{n.Id}"); return; }
-            if (FlatGround(b) && SwapPlan.InWest(c)) { keptUnits++; westUnits++; Keep("west-ground"); foreach (var r in go.GetComponentsInChildren<Renderer>(true)) Remap(r); return; }
+            bool rail = FlatGround(b) && OurRail(b); if (rail) railParts++;  // E12: our flush rail drops (below) like the rest of ours outside the zone
+            if (!rail && FlatGround(b) && SwapPlan.InWest(c)) { keptUnits++; westUnits++; Keep("west-ground"); foreach (var r in go.GetComponentsInChildren<Renderer>(true)) Remap(r); return; }
             droppedUnits++;
             if (lod || go.transform.childCount == 0) UnityEngine.Object.DestroyImmediate(go);
             else { var mr = go.GetComponent<Renderer>(); var mf = go.GetComponent<MeshFilter>(); if (mr) UnityEngine.Object.DestroyImmediate(mr); if (mf) UnityEngine.Object.DestroyImmediate(mf); }
@@ -247,18 +262,21 @@ namespace Suborned.OldTown.Editor.Swap
                 var b = cb[k]; var box = SwapMesh.XZ(b); var c = new Vector2(b.center.x, b.center.z);
                 bool flat = b.size.y < .6f;
                 if (box.xMin >= zone.xMin && box.xMax <= zone.xMax && box.yMin >= zone.yMin && box.yMax <= zone.yMax) { act[k] = 1; Solid(b, "zone:" + mesh.name); continue; }
+                if (FlatGround(b) && OurRail(b)) { railParts++; continue; }  // E12: our flush rail outside the zone, dropped (act 0)
                 if (FlatGround(b) && SwapPlan.West.Any(r => SwapMesh.Overlaps(box, r)))
                 {
                     bool whole = !SwapMesh.Overlaps(box, zone) && SwapPlan.West.Any(r => box.xMin >= r.xMin && box.xMax <= r.xMax && box.yMin >= r.yMin && box.yMax <= r.yMax);
                     act[k] = whole ? 3 : 2; continue;
                 }
                 if (flat && SwapMesh.Overlaps(box, zone)) { act[k] = 2; continue; }
+                if (flat && SwapKeep.Near(box)) { act[k] = 2; continue; }  // 0.5.6: clipped exactly to the kept plots and megastructures (KeepInside)
+                if (!flat && SwapKeep.At(c) is { } ka) { act[k] = 1; Keep("keep " + ka); Solid(b, ka + ":" + mesh.name); continue; }
                 if (!flat && SwapMesh.Overlaps(box, zone, .05f)) { act[k] = 1; Solid(b, "zone:" + mesh.name); continue; }
                 var n = Network(c, Mathf.Max(b.size.x, b.size.z), r.name, b.max.y);
                 if (n != null) { act[k] = 1; Keep(n.Kind); Solid(b, $"{n.Kind}:{n.Id}"); }
             }
             var w = new SwapMesh.Write(rd); var ww = new SwapMesh.Write(rd);
-            var inside = SwapMesh.Inside(zone);
+            var inside = KeepInside;
             for (int s = 0; s < rd.Subs.Count; s++)
                 for (int t = 0; t < ids[s].Length; t++)
                 {
@@ -286,8 +304,11 @@ namespace Suborned.OldTown.Editor.Swap
 
         static bool FlatGround(Bounds b) => b.size.y < .6f && b.max.y < 1f;
 
+        /// <summary>A part of one of our flush rail tiles: at road level (top under 10 cm), no longer than a 12 m tile, its centre in a tile's footprint.</summary>
+        bool OurRail(Bounds b) => b.max.y < .1f && Mathf.Max(b.size.x, b.size.z) < 12.6f && railFoot.Hit(new Vector2(b.center.x, b.center.z)) != null;
+
         /// <summary>The west outside the zone, as disjoint convex regions (each west rect cut by the four regions outside the zone).</summary>
-        SwapMesh.Half[][] KeepFlat;
+        SwapMesh.Half[][] KeepFlat, KeepInside;
         static SwapMesh.Half[][] KeepRegions()
         {
             var o = new List<SwapMesh.Half[]>();

@@ -1,0 +1,39 @@
+{
+  "tests": "bun test tools/world/tram-topology.test.ts: 4 pass, 5722 assertions",
+  "typecheck": "bun run typecheck: exit 0",
+  "protected_files": 802,
+  "protected_drift": {
+    "tools/world/gen/street/tramstreet.ts": {
+      "before": "cdc131dc92a47d6da0febaac20c8e056c3d2b55ff24a1e0433389cea058363dc",
+      "after": "df0255929470389c33526a622eeda57519cb5501a6e5a12390e03fd175fe9a07"
+    }
+  },
+  "world_sha256": "1c38f7e61dd69718aa8b489023a80e3cf126117a05a9129e2a7388f87d69f1f5",
+  "counts": {
+    "parents": 454,
+    "tiles": 1584,
+    "omitted": 0,
+    "classified": 188,
+    "parallel": 178,
+    "maxExactParallelOffset": 1.3322676295501878e-15
+  },
+  "rounding": {
+    "code": "tools/world/gen/common.ts: Math.round(n*1000)/1000 (rv/r3), Math.round(n*10000)/10000 (r4)",
+    "centerAxisBound": 0.0005,
+    "centerEuclideanBound": 0.0007071067811865476,
+    "yawBoundRadians": 5e-05,
+    "tangentVectorBound": 4.999999999479167e-05,
+    "parentLengthBound": 0.0005,
+    "scaleBound": 5e-05,
+    "subdivision": "Use pinned n=max(1,round(exportedLength/2)); exact centre=sourceCenter+tangent*(-exactLength/2+exactLength/n*(i+.5)). It is not independently rounded: rounded counterpart is reconstructed from the exactly matched parent export.",
+    "maxParentCenterError": 0.0006529930298321301,
+    "maxParentYawError": 4.770424681066476e-05,
+    "maxParentLengthError": 0.0004954084936206193,
+    "maxSubdivisionCenterError": 0.0006529930298321301,
+    "maxTangentError": 4.770424680618879e-05,
+    "maxStepError": 0.0004954084936206193,
+    "subdivisionCenterBound": 0.0012571067811552976
+  },
+  "normal_world_or_walk_written": false,
+  "rendered_continuity_proven": false
+}

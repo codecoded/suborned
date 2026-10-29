@@ -1,0 +1,1527 @@
+[
+  {
+    "path": "out/latch-play/harbour-district.world.2e5fec616795.json",
+    "sha256": "2e5fec6167955f1e38b131858f2a6a7cda94eeb54f6e0f90c3410dda09c6bb28",
+    "bytes": 6069502
+  },
+  {
+    "path": "out/unity/crossings/harbour-district.world.pinned.json",
+    "sha256": "93e793f92bf093047bcc02e263fc51da192240865116f028b654517b25eb7042",
+    "bytes": 4104898
+  },
+  {
+    "path": "out/unity/crossings/harbour-district.world.nostripes.json",
+    "sha256": "3089f7f5312b44b7cb61bbb5d3a48df3d2e219b1a616a7666e9059e79768c7a8",
+    "bytes": 4574825
+  },
+  {
+    "path": "out/keel041/base/contracts/world/harbour-district.world.example.json",
+    "sha256": "7dc6e4f3ebfe63d8245031c041eb2b7aef13a7f6d401ac8f8672fc64a89037cc",
+    "bytes": 49218
+  },
+  {
+    "path": "out/keel040/base/contracts/world/harbour-district.world.example.json",
+    "sha256": "7dc6e4f3ebfe63d8245031c041eb2b7aef13a7f6d401ac8f8672fc64a89037cc",
+    "bytes": 49218
+  },
+  {
+    "path": "out/splice042/fl/contracts/world/harbour-district.world.example.json",
+    "sha256": "7dc6e4f3ebfe63d8245031c041eb2b7aef13a7f6d401ac8f8672fc64a89037cc",
+    "bytes": 49218
+  },
+  {
+    "path": "out/cache/world-harbour-district.json",
+    "sha256": "5c11b118c80cfefca04984e23ceb8cf80db276038d504aedb00b1a3932b23701",
+    "bytes": 10027001
+  },
+  {
+    "path": "out/keel-s15/head/contracts/world/harbour-district.world.example.json",
+    "sha256": "7dc6e4f3ebfe63d8245031c041eb2b7aef13a7f6d401ac8f8672fc64a89037cc",
+    "bytes": 49218
+  },
+  {
+    "path": "out/keel-s15/base/contracts/world/harbour-district.world.example.json",
+    "sha256": "7dc6e4f3ebfe63d8245031c041eb2b7aef13a7f6d401ac8f8672fc64a89037cc",
+    "bytes": 49218
+  },
+  {
+    "path": "out/latch-plates/harbour-district.world.16a3d779f123.json",
+    "sha256": "16a3d779f123bec42419b3ae8b27a4a5057d9e7b412845b95b6c79dcbc74d1c9",
+    "bytes": 5707680
+  },
+  {
+    "path": "out/world/test-a.world.json",
+    "sha256": "85e335c58d81ff017ff1fefbb17e70c7800ab8aa88302142d7fe0f229c720afa",
+    "bytes": 9603485
+  },
+  {
+    "path": "out/world/harbour-district.world.json",
+    "sha256": "1c38f7e61dd69718aa8b489023a80e3cf126117a05a9129e2a7388f87d69f1f5",
+    "bytes": 5144199
+  },
+  {
+    "path": "out/world/probe-pinned.world.json",
+    "sha256": "64d334cbfe26e20bd2544ad4da19ed052b8e455c70ceb1fd556a65aecc9e7839",
+    "bytes": 2964591
+  },
+  {
+    "path": "out/world/latch-pinned.world.json",
+    "sha256": "01aaa0cd70a40cb23ae0797192e151f300f4df67bd96e255fbe41729a6252164",
+    "bytes": 2687953
+  },
+  {
+    "path": "out/world/before-020.world.json",
+    "sha256": "f8191fa9bef403b92f4746cdb05a74b36d7c98d773adab5c7c11b63c97983c10",
+    "bytes": 6078555
+  },
+  {
+    "path": "out/world/after-020.world.json",
+    "sha256": "f17228483fa08204b5d496151446b073fef80cba94e74103e070a20a6ba82543",
+    "bytes": 5974826
+  },
+  {
+    "path": "out/world/step1.world.json",
+    "sha256": "3fb88690c2081e1e18ed6dbb4f785ad6341c3cff779e9931696be7b076f66d61",
+    "bytes": 6078823
+  },
+  {
+    "path": "out/world/test-b.world.json",
+    "sha256": "85e335c58d81ff017ff1fefbb17e70c7800ab8aa88302142d7fe0f229c720afa",
+    "bytes": 9603485
+  },
+  {
+    "path": "out/world/harbour-district.road-asphalt.world.json",
+    "sha256": "7a88eb758b29303fd199bce48e4b0345a40fab361cc9fa2e368084396aba0dc6",
+    "bytes": 6724418
+  },
+  {
+    "path": "out/world/harbour-district.world.walked.json",
+    "sha256": "995d569d8890df10d37adde717247667d13e834ec1ede5b3c51894a16082cf45",
+    "bytes": 4130252
+  },
+  {
+    "path": "out/world/variants/crossings-009.kit.world.json",
+    "sha256": "6551ebc4c2064fd0845a0a9273be06284d7dd88f9ab2bcc81223dcdd34c374dd",
+    "bytes": 4926209
+  },
+  {
+    "path": "out/world/variants/live.world.json",
+    "sha256": "3b17cb9e197c2454d5bde8f6addc6a94d71ca8647cfa8d8bcd1fee076b9098a0",
+    "bytes": 4198984
+  },
+  {
+    "path": "out/world/variants/crossings-009.world.json",
+    "sha256": "0e280420994e3a20bd4c4848b35a3fbbf0d736ffd0d3ab035374e514f3e99f52",
+    "bytes": 4831128
+  },
+  {
+    "path": "out/world/variants/heights-cut.world.json",
+    "sha256": "976b748ed98b7e82b658f6276649b9427ff0abc0908d28685a4ef328aed7125e",
+    "bytes": 4198992
+  },
+  {
+    "path": "out/world/check/pre-promotion.world.json",
+    "sha256": "eb0f0787c6cfc9605c774f7dc859e908c0e4458a07478285bcfd1886a35c7429",
+    "bytes": 4198984
+  },
+  {
+    "path": "out/world/check/followup.world.json",
+    "sha256": "4192797f2e7f02dce17bac0fed447ec0fb4a9b9ed99957a9e642f876d0ca8c12",
+    "bytes": 4198972
+  },
+  {
+    "path": "out/world/check/committed-871dd13.world.json",
+    "sha256": "3b17cb9e197c2454d5bde8f6addc6a94d71ca8647cfa8d8bcd1fee076b9098a0",
+    "bytes": 4198984
+  },
+  {
+    "path": "out/world/check/heights-cut.again.world.json",
+    "sha256": "976b748ed98b7e82b658f6276649b9427ff0abc0908d28685a4ef328aed7125e",
+    "bytes": 4198992
+  },
+  {
+    "path": "out/keel038/no12/contracts/world/harbour-district.world.example.json",
+    "sha256": "7dc6e4f3ebfe63d8245031c041eb2b7aef13a7f6d401ac8f8672fc64a89037cc",
+    "bytes": 49218
+  },
+  {
+    "path": "out/keel038/base/contracts/world/harbour-district.world.example.json",
+    "sha256": "7dc6e4f3ebfe63d8245031c041eb2b7aef13a7f6d401ac8f8672fc64a89037cc",
+    "bytes": 49218
+  },
+  {
+    "path": "out/keel039/rootC/contracts/world/harbour-district.world.example.json",
+    "sha256": "7dc6e4f3ebfe63d8245031c041eb2b7aef13a7f6d401ac8f8672fc64a89037cc",
+    "bytes": 49218
+  },
+  {
+    "path": "out/keel039/base/contracts/world/harbour-district.world.example.json",
+    "sha256": "7dc6e4f3ebfe63d8245031c041eb2b7aef13a7f6d401ac8f8672fc64a89037cc",
+    "bytes": 49218
+  },
+  {
+    "path": "out/keel-runbase/contracts/world/harbour-district.world.example.json",
+    "sha256": "7dc6e4f3ebfe63d8245031c041eb2b7aef13a7f6d401ac8f8672fc64a89037cc",
+    "bytes": 49218
+  },
+  {
+    "path": "out/scratch/splice-world-palms.json",
+    "sha256": "0bfe61544da5b44f447f87ba95e3b3ca21c962d1de2bb66e0a983c13753927ea",
+    "bytes": 14913899
+  },
+  {
+    "path": "out/scratch/splice-world-nopalms.json",
+    "sha256": "ebf986bcf6790d91b1bd085b7a39bd52c31847c400433afaabd70b6f4cdae7f2",
+    "bytes": 14861020
+  },
+  {
+    "path": "out/scratch/splice-roofs-off.world.json",
+    "sha256": "963172b1e07445c8749455e4b28c23465f95d777eafe11d734c50c19e88950b2",
+    "bytes": 5105381
+  },
+  {
+    "path": "out/scratch/splice-roofs-before.world.json",
+    "sha256": "2c4faf37e217063e78aedb2c5ee7f660dd2a5fbff4be048f6549383eb39ba33b",
+    "bytes": 5017094
+  },
+  {
+    "path": "out/scratch/keel/b057/rootN/contracts/world/harbour-district.world.example.json",
+    "sha256": "7dc6e4f3ebfe63d8245031c041eb2b7aef13a7f6d401ac8f8672fc64a89037cc",
+    "bytes": 49218
+  },
+  {
+    "path": "out/scratch/keel/b057/base/contracts/world/harbour-district.world.example.json",
+    "sha256": "7dc6e4f3ebfe63d8245031c041eb2b7aef13a7f6d401ac8f8672fc64a89037cc",
+    "bytes": 49218
+  },
+  {
+    "path": "out/scratch/keel/b056/rootO/contracts/world/harbour-district.world.example.json",
+    "sha256": "7dc6e4f3ebfe63d8245031c041eb2b7aef13a7f6d401ac8f8672fc64a89037cc",
+    "bytes": 49218
+  },
+  {
+    "path": "out/scratch/keel/b056/rootAround/contracts/world/harbour-district.world.example.json",
+    "sha256": "7dc6e4f3ebfe63d8245031c041eb2b7aef13a7f6d401ac8f8672fc64a89037cc",
+    "bytes": 49218
+  },
+  {
+    "path": "out/scratch/keel/b056/rootNone/contracts/world/harbour-district.world.example.json",
+    "sha256": "7dc6e4f3ebfe63d8245031c041eb2b7aef13a7f6d401ac8f8672fc64a89037cc",
+    "bytes": 49218
+  },
+  {
+    "path": "out/scratch/keel/b056/rootNoMount/contracts/world/harbour-district.world.example.json",
+    "sha256": "7dc6e4f3ebfe63d8245031c041eb2b7aef13a7f6d401ac8f8672fc64a89037cc",
+    "bytes": 49218
+  },
+  {
+    "path": "out/scratch/keel/b056/base/contracts/world/harbour-district.world.example.json",
+    "sha256": "7dc6e4f3ebfe63d8245031c041eb2b7aef13a7f6d401ac8f8672fc64a89037cc",
+    "bytes": 49218
+  },
+  {
+    "path": "out/scratch/keel/b056/rootWalk/contracts/world/harbour-district.world.example.json",
+    "sha256": "7dc6e4f3ebfe63d8245031c041eb2b7aef13a7f6d401ac8f8672fc64a89037cc",
+    "bytes": 49218
+  },
+  {
+    "path": "out/scratch/keel/b056/rootCompose/contracts/world/harbour-district.world.example.json",
+    "sha256": "7dc6e4f3ebfe63d8245031c041eb2b7aef13a7f6d401ac8f8672fc64a89037cc",
+    "bytes": 49218
+  },
+  {
+    "path": "out/scratch/keel/b058/oldDebrief/contracts/world/harbour-district.world.example.json",
+    "sha256": "7dc6e4f3ebfe63d8245031c041eb2b7aef13a7f6d401ac8f8672fc64a89037cc",
+    "bytes": 49218
+  },
+  {
+    "path": "out/scratch/keel/b058/rootP/contracts/world/harbour-district.world.example.json",
+    "sha256": "7dc6e4f3ebfe63d8245031c041eb2b7aef13a7f6d401ac8f8672fc64a89037cc",
+    "bytes": 49218
+  },
+  {
+    "path": "out/scratch/keel/b058/rootW/contracts/world/harbour-district.world.example.json",
+    "sha256": "7dc6e4f3ebfe63d8245031c041eb2b7aef13a7f6d401ac8f8672fc64a89037cc",
+    "bytes": 49218
+  },
+  {
+    "path": "out/scratch/keel/b058/rootOld/contracts/world/harbour-district.world.example.json",
+    "sha256": "7dc6e4f3ebfe63d8245031c041eb2b7aef13a7f6d401ac8f8672fc64a89037cc",
+    "bytes": 49218
+  },
+  {
+    "path": "out/scratch/keel/b058/base/contracts/world/harbour-district.world.example.json",
+    "sha256": "7dc6e4f3ebfe63d8245031c041eb2b7aef13a7f6d401ac8f8672fc64a89037cc",
+    "bytes": 49218
+  },
+  {
+    "path": "out/scratch/keel/b065/rootHEAD/out/cache/world-harbour-district.json",
+    "sha256": "b276edfa09460d6246a6365c64f1147732f0538edb05c51d7915a7ab0cc697cc",
+    "bytes": 23275204
+  },
+  {
+    "path": "out/scratch/keel/b065/rootHEAD/contracts/world/harbour-district.world.example.json",
+    "sha256": "7dc6e4f3ebfe63d8245031c041eb2b7aef13a7f6d401ac8f8672fc64a89037cc",
+    "bytes": 49218
+  },
+  {
+    "path": "out/scratch/keel/b065/base/contracts/world/harbour-district.world.example.json",
+    "sha256": "7dc6e4f3ebfe63d8245031c041eb2b7aef13a7f6d401ac8f8672fc64a89037cc",
+    "bytes": 49218
+  },
+  {
+    "path": "out/scratch/keel/b055/rootO/contracts/world/harbour-district.world.example.json",
+    "sha256": "7dc6e4f3ebfe63d8245031c041eb2b7aef13a7f6d401ac8f8672fc64a89037cc",
+    "bytes": 49218
+  },
+  {
+    "path": "out/scratch/keel/b055/rootA/contracts/world/harbour-district.world.example.json",
+    "sha256": "7dc6e4f3ebfe63d8245031c041eb2b7aef13a7f6d401ac8f8672fc64a89037cc",
+    "bytes": 49218
+  },
+  {
+    "path": "out/scratch/keel/b055/rootF/contracts/world/harbour-district.world.example.json",
+    "sha256": "7dc6e4f3ebfe63d8245031c041eb2b7aef13a7f6d401ac8f8672fc64a89037cc",
+    "bytes": 49218
+  },
+  {
+    "path": "out/scratch/keel/b055/rootG/contracts/world/harbour-district.world.example.json",
+    "sha256": "7dc6e4f3ebfe63d8245031c041eb2b7aef13a7f6d401ac8f8672fc64a89037cc",
+    "bytes": 49218
+  },
+  {
+    "path": "out/scratch/keel/b055/rootN/contracts/world/harbour-district.world.example.json",
+    "sha256": "7dc6e4f3ebfe63d8245031c041eb2b7aef13a7f6d401ac8f8672fc64a89037cc",
+    "bytes": 49218
+  },
+  {
+    "path": "out/scratch/keel/b055/rootU/contracts/world/harbour-district.world.example.json",
+    "sha256": "7dc6e4f3ebfe63d8245031c041eb2b7aef13a7f6d401ac8f8672fc64a89037cc",
+    "bytes": 49218
+  },
+  {
+    "path": "out/scratch/keel/b055/flC/contracts/world/harbour-district.world.example.json",
+    "sha256": "7dc6e4f3ebfe63d8245031c041eb2b7aef13a7f6d401ac8f8672fc64a89037cc",
+    "bytes": 49218
+  },
+  {
+    "path": "out/scratch/keel/b055/rootB/contracts/world/harbour-district.world.example.json",
+    "sha256": "7dc6e4f3ebfe63d8245031c041eb2b7aef13a7f6d401ac8f8672fc64a89037cc",
+    "bytes": 49218
+  },
+  {
+    "path": "out/scratch/keel/b055/rootC/contracts/world/harbour-district.world.example.json",
+    "sha256": "7dc6e4f3ebfe63d8245031c041eb2b7aef13a7f6d401ac8f8672fc64a89037cc",
+    "bytes": 49218
+  },
+  {
+    "path": "out/scratch/keel/b055/flG/contracts/world/harbour-district.world.example.json",
+    "sha256": "7dc6e4f3ebfe63d8245031c041eb2b7aef13a7f6d401ac8f8672fc64a89037cc",
+    "bytes": 49218
+  },
+  {
+    "path": "out/scratch/keel/b055/base/contracts/world/harbour-district.world.example.json",
+    "sha256": "7dc6e4f3ebfe63d8245031c041eb2b7aef13a7f6d401ac8f8672fc64a89037cc",
+    "bytes": 49218
+  },
+  {
+    "path": "out/scratch/keel/b064/base/contracts/world/harbour-district.world.example.json",
+    "sha256": "7dc6e4f3ebfe63d8245031c041eb2b7aef13a7f6d401ac8f8672fc64a89037cc",
+    "bytes": 49218
+  },
+  {
+    "path": "out/scratch/keel/b0342/unity/Assets/Suborned/Editor/World/Samples/sample.world.json",
+    "sha256": "785deb5ecf997f3f73d09c7c343dc1efd71f8c0269caff571c329e5dc45a2d4f",
+    "bytes": 2710
+  },
+  {
+    "path": "out/scratch/keel/b0342/out/cache/world-harbour-district.json",
+    "sha256": "7a68784c6d6cc685cac05918bc75fef2ed7ae527541c0f0d148d5c7f84f9cf1b",
+    "bytes": 15973671
+  },
+  {
+    "path": "out/scratch/keel/b0342/contracts/world/harbour-district.world.example.json",
+    "sha256": "8beb7daf0fc0c76fb91ce6ed7e58b0146d24683b7aec0f2df1333e0316b2e86b",
+    "bytes": 51119
+  },
+  {
+    "path": "out/scratch/keel/b0342/briefs/055/geometry.summary.json",
+    "sha256": "b01636eb1a9fc711b5fb4a791f2edf544a6d9aba441fa61ecff3d2297d19af38",
+    "bytes": 2973
+  },
+  {
+    "path": "out/scratch/vela-applied2/before/world.json",
+    "sha256": "6841dcfc6f91ddea79ec6f275e5191f516dc91ffad884005c85724decbe1ce88",
+    "bytes": 17882745
+  },
+  {
+    "path": "out/scratch/vela-applied2/after/world.json",
+    "sha256": "3154c84019f4d861f5d896f25230b5bdbeb763c648e39ad94c37cb67fc338ed2",
+    "bytes": 17883494
+  },
+  {
+    "path": "out/scratch/vela-applied/before/world.json",
+    "sha256": "a50c649a5c84b23ab799a32c9cff945fd77fde25a01013483ea0702c5fbb4fc2",
+    "bytes": 17883418
+  },
+  {
+    "path": "out/scratch/vela-applied/after/world.json",
+    "sha256": "6841dcfc6f91ddea79ec6f275e5191f516dc91ffad884005c85724decbe1ce88",
+    "bytes": 17882745
+  },
+  {
+    "path": "out/scratch/motive/067sq/tree/out/cache/world-harbour-district.json",
+    "sha256": "b097c87d89937db669d3bf0edf6ef2639dd7600b688a585578a7365d27164b37",
+    "bytes": 15973852
+  },
+  {
+    "path": "out/scratch/motive/067sq/tree/contracts/world/harbour-district.world.example.json",
+    "sha256": "8beb7daf0fc0c76fb91ce6ed7e58b0146d24683b7aec0f2df1333e0316b2e86b",
+    "bytes": 51119
+  },
+  {
+    "path": "out/scratch/motive/067sq/tree2/out/cache/world-harbour-district.json",
+    "sha256": "b097c87d89937db669d3bf0edf6ef2639dd7600b688a585578a7365d27164b37",
+    "bytes": 15973852
+  },
+  {
+    "path": "out/scratch/motive/067sq/tree2/contracts/world/harbour-district.world.example.json",
+    "sha256": "8beb7daf0fc0c76fb91ce6ed7e58b0146d24683b7aec0f2df1333e0316b2e86b",
+    "bytes": 51119
+  },
+  {
+    "path": "out/scratch/motive/067sq/tree3/out/cache/world-harbour-district.json",
+    "sha256": "b097c87d89937db669d3bf0edf6ef2639dd7600b688a585578a7365d27164b37",
+    "bytes": 15973852
+  },
+  {
+    "path": "out/scratch/motive/067sq/tree3/contracts/world/harbour-district.world.example.json",
+    "sha256": "8beb7daf0fc0c76fb91ce6ed7e58b0146d24683b7aec0f2df1333e0316b2e86b",
+    "bytes": 51119
+  },
+  {
+    "path": "out/scratch/motive/067/tree/contracts/world/harbour-district.world.example.json",
+    "sha256": "8beb7daf0fc0c76fb91ce6ed7e58b0146d24683b7aec0f2df1333e0316b2e86b",
+    "bytes": 51119
+  },
+  {
+    "path": "out/scratch/motive/067/tree2/contracts/world/harbour-district.world.example.json",
+    "sha256": "8beb7daf0fc0c76fb91ce6ed7e58b0146d24683b7aec0f2df1333e0316b2e86b",
+    "bytes": 51119
+  },
+  {
+    "path": "out/scratch/motive/067/e0122/contracts/world/harbour-district.world.example.json",
+    "sha256": "8beb7daf0fc0c76fb91ce6ed7e58b0146d24683b7aec0f2df1333e0316b2e86b",
+    "bytes": 51119
+  },
+  {
+    "path": "out/scratch/motive/059c/tree/contracts/world/harbour-district.world.example.json",
+    "sha256": "8beb7daf0fc0c76fb91ce6ed7e58b0146d24683b7aec0f2df1333e0316b2e86b",
+    "bytes": 51119
+  },
+  {
+    "path": "out/scratch/redline/simperf/w030/contracts/world/harbour-district.world.example.json",
+    "sha256": "7dc6e4f3ebfe63d8245031c041eb2b7aef13a7f6d401ac8f8672fc64a89037cc",
+    "bytes": 49218
+  },
+  {
+    "path": "out/scratch/redline/simperf/w031/contracts/world/harbour-district.world.example.json",
+    "sha256": "8beb7daf0fc0c76fb91ce6ed7e58b0146d24683b7aec0f2df1333e0316b2e86b",
+    "bytes": 51119
+  },
+  {
+    "path": "out/scratch/redline/simperf/w032/contracts/world/harbour-district.world.example.json",
+    "sha256": "8beb7daf0fc0c76fb91ce6ed7e58b0146d24683b7aec0f2df1333e0316b2e86b",
+    "bytes": 51119
+  },
+  {
+    "path": "out/scratch/motive-split/tree/contracts/world/harbour-district.world.example.json",
+    "sha256": "8beb7daf0fc0c76fb91ce6ed7e58b0146d24683b7aec0f2df1333e0316b2e86b",
+    "bytes": 51119
+  },
+  {
+    "path": "out/scratch/latch/075s6/test.world.json",
+    "sha256": "426edb0260ef869f08d2554248561bf5554bf07a1a4f82f4bea1d90e38852913",
+    "bytes": 5137552
+  },
+  {
+    "path": "out/scratch/latch/075swap/head.world.json",
+    "sha256": "d9262e4f74534a4497f9fa984896297df9bbfc0f818188b3d4a2ff4fc3d2b052",
+    "bytes": 5138709
+  },
+  {
+    "path": "out/scratch/latch/075swap/wt-backup/unity__Assets__Suborned__Editor__World__facade.json",
+    "sha256": "4f2fc47b0cbedb89611511c79e677cce8cfd925ac0b0a079efa0e262818882c2",
+    "bytes": 13914
+  },
+  {
+    "path": "out/scratch/latch/075swap/wt-backup/contracts__world__kit.json",
+    "sha256": "3a9ad5f9e097152b8e3e0deb5324d43ee6e73b6da57d7e935e0b08d0bd5c11ff",
+    "bytes": 3193978
+  },
+  {
+    "path": "out/scratch/latch/075swap/wt-backup/unity__Assets__Suborned__Editor__World__looks__harbour.json",
+    "sha256": "7637faffdf1039ce8a425809bd53686a81d1882e85803fdb851a924af9484d01",
+    "bytes": 12056
+  },
+  {
+    "path": "out/scratch/latch/075swap/wt-backup/contracts__world__kit.collide.json",
+    "sha256": "117e88c31da49ef96014a6e1d2626d5bb3af0507f7fd0bea0606b8bd911f0083",
+    "bytes": 559869
+  },
+  {
+    "path": "out/scratch/latch/075swap/wt-backup/unity__Assets__Suborned__Editor__World__look.json",
+    "sha256": "db38715ffb1e032ea57f541a2b869bd75ee063c381b363176cc64e5b45768aea",
+    "bytes": 20616
+  },
+  {
+    "path": "out/scratch/latch/075swap/head/unity/Assets/Suborned/Editor/World/Samples/sample.world.json",
+    "sha256": "785deb5ecf997f3f73d09c7c343dc1efd71f8c0269caff571c329e5dc45a2d4f",
+    "bytes": 2710
+  },
+  {
+    "path": "out/scratch/latch/075swap/head/contracts/world/harbour-district.world.example.json",
+    "sha256": "8f374e9ddb00df94f2235ff41d06dab720f0d911a2021d009e93c35f820522a7",
+    "bytes": 53799
+  },
+  {
+    "path": "out/scratch/latch/075swap/head/briefs/055/geometry.summary.json",
+    "sha256": "b01636eb1a9fc711b5fb4a791f2edf544a6d9aba441fa61ecff3d2297d19af38",
+    "bytes": 2973
+  },
+  {
+    "path": "out/scratch/latch/075remap/remap.world.json",
+    "sha256": "f41a0df93416f9bb144e1ddf883286e004fa1217091743afbd4b66c2efca70fb",
+    "bytes": 4168388
+  },
+  {
+    "path": "out/scratch/latch/road/asphalt.world.json",
+    "sha256": "954d014cda2ea74366c8e5e537d99b733f86898435ada5863310efe6f034c521",
+    "bytes": 11277290
+  },
+  {
+    "path": "out/scratch/latch/075tram/harbour.world.json",
+    "sha256": "1c38f7e61dd69718aa8b489023a80e3cf126117a05a9129e2a7388f87d69f1f5",
+    "bytes": 5144199
+  },
+  {
+    "path": "out/scratch/latch/075f1/neg.world.json",
+    "sha256": "acdd21aad9233def9c9aaabd5662b1830ebeb59cb993f3a4e706455c09bc140d",
+    "bytes": 16775576
+  },
+  {
+    "path": "out/scratch/latch/075f1/def.world.json",
+    "sha256": "bd5522e0dac65e6de099e82c6032f8f1cc133f7cd13e96d52130001147f1edaf",
+    "bytes": 16775253
+  },
+  {
+    "path": "out/scratch/latch/075f1/pin/075f1.world.json",
+    "sha256": "2de0d88e618ccbe5ab34ad33a93ed37a10413901e359da30de0ff905de13f254",
+    "bytes": 15082304
+  },
+  {
+    "path": "out/scratch/latch/075swap2/harbour.world.json",
+    "sha256": "f469704e9df3b7a6ce091d6b05dbcb1edc4f4ad231847307cd4862079e3c5e18",
+    "bytes": 5116951
+  },
+  {
+    "path": "out/scratch/latch/074/pin/074.world.json",
+    "sha256": "67a3a07b6ffcc1b4ae9bcc8a822e6a3a8b61b56bbc38595deba19a009960d6c4",
+    "bytes": 17939535
+  },
+  {
+    "path": "out/scratch/latch/075/pin/075.world.json",
+    "sha256": "ec0339f9e26ffc1b65a7f496d585d32c5f9e1efd8f3bd10796956bce3b3c1155",
+    "bytes": 15374044
+  },
+  {
+    "path": "out/scratch/latch/072/baseline.world.json",
+    "sha256": "d6f7560de2f1ccfc89f156c715d3ee1d70d72adc54330cf896a2567395596edb",
+    "bytes": 8026988
+  },
+  {
+    "path": "out/scratch/latch/072/g/g.world.json",
+    "sha256": "6841dcfc6f91ddea79ec6f275e5191f516dc91ffad884005c85724decbe1ce88",
+    "bytes": 17882745
+  },
+  {
+    "path": "out/scratch/latch/072/v4/v4.world.json",
+    "sha256": "a50c649a5c84b23ab799a32c9cff945fd77fde25a01013483ea0702c5fbb4fc2",
+    "bytes": 17883418
+  },
+  {
+    "path": "out/scratch/latch/072/after/regen.world.json",
+    "sha256": "0c4ae4ebda5fedb6114efc83d69b4e434713ad844c20283dc9d16d83ecf2a645",
+    "bytes": 17649605
+  },
+  {
+    "path": "out/scratch/latch/golden075/pin/s3-life.world.json",
+    "sha256": "8297649696698b39764c168a1dfd0d9b299b6f654f40bb95b82194c32064af11",
+    "bytes": 14866411
+  },
+  {
+    "path": "out/scratch/latch/golden075/pin/street-probe.world.json",
+    "sha256": "25429f9940472be19f330a717ce040a35d78d549dfb684edb106b77a01a6128a",
+    "bytes": 15042617
+  },
+  {
+    "path": "out/scratch/latch/golden075/pin/s4-oldtown.world.json",
+    "sha256": "85559b335cf390176be9d7c3a63b0feadf751785b920e911afa354a135ae53b9",
+    "bytes": 9267496
+  },
+  {
+    "path": "out/scratch/latch/golden075/pin/s5-remap.world.json",
+    "sha256": "f41a0df93416f9bb144e1ddf883286e004fa1217091743afbd4b66c2efca70fb",
+    "bytes": 4168388
+  },
+  {
+    "path": "out/scratch/latch/golden075/pin/s6-oldtown.world.json",
+    "sha256": "d9262e4f74534a4497f9fa984896297df9bbfc0f818188b3d4a2ff4fc3d2b052",
+    "bytes": 5138709
+  },
+  {
+    "path": "out/scratch/latch/golden075/pin/s2-street.world.json",
+    "sha256": "25429f9940472be19f330a717ce040a35d78d549dfb684edb106b77a01a6128a",
+    "bytes": 15042617
+  },
+  {
+    "path": "out/scratch/latch/golden075/pin/probe-cross.world.json",
+    "sha256": "45753c72ded62f48a50252c571796e3376a5d38fa483368ec5eab590c1e0d55d",
+    "bytes": 16735353
+  },
+  {
+    "path": "out/scratch/latch/golden075/pin/harness-check.world.json",
+    "sha256": "2de0d88e618ccbe5ab34ad33a93ed37a10413901e359da30de0ff905de13f254",
+    "bytes": 15082304
+  },
+  {
+    "path": "out/scratch/latch/075e/pin/075e.world.json",
+    "sha256": "a6c76f6a9f041e1b6f542631ad01f2797ddb85397e429e01eeba562f83e782f5",
+    "bytes": 15068690
+  },
+  {
+    "path": "out/scratch/datum/head.world.json",
+    "sha256": "d2f618f09c18a84d9049e603968edd305109c717e750498346c4f1eb559809b5",
+    "bytes": 4263252
+  },
+  {
+    "path": "out/scratch/datum/new.world.json",
+    "sha256": "5a40d366fbe44e04fe5fcb92fd1c3acf00d8faf54501074446f6bee94a576a89",
+    "bytes": 5179333
+  },
+  {
+    "path": "out/scratch/datum/tree/out/world.json",
+    "sha256": "f8e8025a5ef9983e40649b67044c0bc0e16de5ee01ff3d5fb509708a5c6b14a9",
+    "bytes": 84543
+  },
+  {
+    "path": "out/scratch/datum/tree/out/cache/world-harbour-district.json",
+    "sha256": "bfad534407b83f5b44d4124e13b24389c07507d21f56d12fb72eb85913f719d2",
+    "bytes": 10027024
+  },
+  {
+    "path": "out/scratch/datum/tree/contracts/world/harbour-district.world.example.json",
+    "sha256": "8f374e9ddb00df94f2235ff41d06dab720f0d911a2021d009e93c35f820522a7",
+    "bytes": 53799
+  },
+  {
+    "path": "out/scratch/datum/height-cap/harbour-district.world.json",
+    "sha256": "c7f55af0ccfbbcf6bd3ba77011adf322972f36b29f83767ae5ad686152773f52",
+    "bytes": 8030510
+  },
+  {
+    "path": "out/scratch/datum/height-cap/today.world.json",
+    "sha256": "333e3ddd2c84a4d1cc8ed5120cc84d615ba69a14cfadef70d84812a735d761bd",
+    "bytes": 8083688
+  },
+  {
+    "path": "out/scratch/datum/height-cap/tree/out/cache/world-harbour-district.json",
+    "sha256": "24b32bcf77b472c3c21e92672c5f127a690bdf175a026100b619f798842f32b4",
+    "bytes": 15881079
+  },
+  {
+    "path": "out/scratch/datum/height-cap/tree/out/world/test-a.world.json",
+    "sha256": "127133c1fbd0498e822e25a3905799b8dd81589264b59daa44192eeb97a95239",
+    "bytes": 8034841
+  },
+  {
+    "path": "out/scratch/datum/height-cap/tree/out/world/test-b.world.json",
+    "sha256": "127133c1fbd0498e822e25a3905799b8dd81589264b59daa44192eeb97a95239",
+    "bytes": 8034841
+  },
+  {
+    "path": "out/scratch/datum/height-cap/tree/contracts/world/harbour-district.world.example.json",
+    "sha256": "8beb7daf0fc0c76fb91ce6ed7e58b0146d24683b7aec0f2df1333e0316b2e86b",
+    "bytes": 51119
+  },
+  {
+    "path": "out/scratch/datum/height-cap/real/v3.world.json",
+    "sha256": "58ad69940b00d67519353dab32a0fe1f577e2bfb8d6426f37f6fbe0e8f64189d",
+    "bytes": 8035837
+  },
+  {
+    "path": "out/scratch/datum/height-cap/real/cap.world.json",
+    "sha256": "127133c1fbd0498e822e25a3905799b8dd81589264b59daa44192eeb97a95239",
+    "bytes": 8034841
+  },
+  {
+    "path": "out/scratch/datum/height-cap/real/v2.world.json",
+    "sha256": "973232b61ccbb5ad98644d316b7bf0938e204b71497bc4b509e45ba2e7413947",
+    "bytes": 8034841
+  },
+  {
+    "path": "out/scratch/datum/cafe-3/tree/out/after.world.json",
+    "sha256": "d6f7560de2f1ccfc89f156c715d3ee1d70d72adc54330cf896a2567395596edb",
+    "bytes": 8026988
+  },
+  {
+    "path": "out/scratch/datum/cafe-3/tree/out/before.world.json",
+    "sha256": "a97814c65d68d3e7b7a7c1ca9e16aa2068213e3f2163ab40f154551afec311ce",
+    "bytes": 8026988
+  },
+  {
+    "path": "out/scratch/datum/cafe-3/tree/out/cache/world-harbour-district.json",
+    "sha256": "e3d30341bd26f11ef0b81b37d36c508fea39f1b262c57c787b16e489ad16b905",
+    "bytes": 15866701
+  },
+  {
+    "path": "out/scratch/datum/cafe-3/tree/out/world/test-a.world.json",
+    "sha256": "d6f7560de2f1ccfc89f156c715d3ee1d70d72adc54330cf896a2567395596edb",
+    "bytes": 8026988
+  },
+  {
+    "path": "out/scratch/datum/cafe-3/tree/out/world/test-b.world.json",
+    "sha256": "d6f7560de2f1ccfc89f156c715d3ee1d70d72adc54330cf896a2567395596edb",
+    "bytes": 8026988
+  },
+  {
+    "path": "out/scratch/datum/cafe-3/tree/contracts/world/harbour-district.world.example.json",
+    "sha256": "8beb7daf0fc0c76fb91ce6ed7e58b0146d24683b7aec0f2df1333e0316b2e86b",
+    "bytes": 51119
+  },
+  {
+    "path": "out/scratch/pulse/075/live.world.json",
+    "sha256": "a63dcc05f6d91cfd536bee80310282b4ef34de5a9e5be2db06b3fa2a24e3cd45",
+    "bytes": 5165746
+  },
+  {
+    "path": "out/scratch/splice-f1/f1.world.json",
+    "sha256": "15d103f2bcdf9e7dfb5892de209f0630773fcaf8683110aeb0ed72e8c74b67be",
+    "bytes": 15063194
+  },
+  {
+    "path": "out/scratch/splice-f1/base.world.json",
+    "sha256": "a6c76f6a9f041e1b6f542631ad01f2797ddb85397e429e01eeba562f83e782f5",
+    "bytes": 15068690
+  },
+  {
+    "path": "out/scratch/occlusion/22923fe73994/unity/Assets/Suborned/Editor/World/Samples/sample.world.json",
+    "sha256": "785deb5ecf997f3f73d09c7c343dc1efd71f8c0269caff571c329e5dc45a2d4f",
+    "bytes": 2710
+  },
+  {
+    "path": "out/scratch/occlusion/22923fe73994/out/occlusion.world.json",
+    "sha256": "1559cf2122094f94ea4818c6a762701eeb8810ca16ffac238d88e4ef4aaa8953",
+    "bytes": 14866147
+  },
+  {
+    "path": "out/scratch/occlusion/22923fe73994/contracts/world/harbour-district.world.example.json",
+    "sha256": "8f374e9ddb00df94f2235ff41d06dab720f0d911a2021d009e93c35f820522a7",
+    "bytes": 53799
+  },
+  {
+    "path": "out/scratch/occlusion/22923fe73994/briefs/055/geometry.summary.json",
+    "sha256": "b01636eb1a9fc711b5fb4a791f2edf544a6d9aba441fa61ecff3d2297d19af38",
+    "bytes": 2973
+  },
+  {
+    "path": "out/scratch/occlusion/5e0abf867c00/unity/Assets/Suborned/Editor/World/Samples/sample.world.json",
+    "sha256": "785deb5ecf997f3f73d09c7c343dc1efd71f8c0269caff571c329e5dc45a2d4f",
+    "bytes": 2710
+  },
+  {
+    "path": "out/scratch/occlusion/5e0abf867c00/out/occlusion.world.json",
+    "sha256": "85559b335cf390176be9d7c3a63b0feadf751785b920e911afa354a135ae53b9",
+    "bytes": 9267496
+  },
+  {
+    "path": "out/scratch/occlusion/5e0abf867c00/contracts/world/harbour-district.world.example.json",
+    "sha256": "8f374e9ddb00df94f2235ff41d06dab720f0d911a2021d009e93c35f820522a7",
+    "bytes": 53799
+  },
+  {
+    "path": "out/scratch/occlusion/5e0abf867c00/briefs/055/geometry.summary.json",
+    "sha256": "b01636eb1a9fc711b5fb4a791f2edf544a6d9aba441fa61ecff3d2297d19af38",
+    "bytes": 2973
+  },
+  {
+    "path": "out/scratch/vela-style/world.json",
+    "sha256": "d6f7560de2f1ccfc89f156c715d3ee1d70d72adc54330cf896a2567395596edb",
+    "bytes": 8026988
+  },
+  {
+    "path": "out/scratch/fable/head/contracts/world/harbour-district.world.example.json",
+    "sha256": "8beb7daf0fc0c76fb91ce6ed7e58b0146d24683b7aec0f2df1333e0316b2e86b",
+    "bytes": 51119
+  },
+  {
+    "path": "out/scratch/glint/evening/repo/unity/Assets/Suborned/Editor/World/Samples/sample.world.json",
+    "sha256": "785deb5ecf997f3f73d09c7c343dc1efd71f8c0269caff571c329e5dc45a2d4f",
+    "bytes": 2710
+  },
+  {
+    "path": "out/scratch/vela/world-base.json",
+    "sha256": "6a8243a8b5e7b81cbe24c0fb571ad61688861655d83524b892cdb6bdef7e4b2a",
+    "bytes": 10668442
+  },
+  {
+    "path": "out/scratch/vela/world-before2.json",
+    "sha256": "6a8243a8b5e7b81cbe24c0fb571ad61688861655d83524b892cdb6bdef7e4b2a",
+    "bytes": 10668442
+  },
+  {
+    "path": "out/scratch/vela/world.before.json",
+    "sha256": "6a8243a8b5e7b81cbe24c0fb571ad61688861655d83524b892cdb6bdef7e4b2a",
+    "bytes": 10668442
+  },
+  {
+    "path": "out/scratch/vela/world-default2.json",
+    "sha256": "6a8243a8b5e7b81cbe24c0fb571ad61688861655d83524b892cdb6bdef7e4b2a",
+    "bytes": 10668442
+  },
+  {
+    "path": "out/scratch/vela/world-after2.json",
+    "sha256": "ff124a96163be834d733759d894b6be076ec42e8e157c308e4f44a37a7cc6725",
+    "bytes": 10663450
+  },
+  {
+    "path": "out/scratch/vela/world-asphalt.json",
+    "sha256": "7a88eb758b29303fd199bce48e4b0345a40fab361cc9fa2e368084396aba0dc6",
+    "bytes": 6724418
+  },
+  {
+    "path": "out/scratch/vela/world-asphalt-nr.json",
+    "sha256": "7a88eb758b29303fd199bce48e4b0345a40fab361cc9fa2e368084396aba0dc6",
+    "bytes": 6724418
+  },
+  {
+    "path": "out/scratch/vela/road/world-final.json",
+    "sha256": "0c574dfcc24b1fbced0d80f7759e37d13fae1a7a1c12a5a4df2a49e0800d3264",
+    "bytes": 10277623
+  },
+  {
+    "path": "out/scratch/vela/road/world-final-crown.json",
+    "sha256": "3342d59ead2d3dd3b3f36366021d33c5fd6e8338f4359266b0fa99c254c69c37",
+    "bytes": 11465712
+  },
+  {
+    "path": "out/scratch/vela/road/world-new-noshoulder.json",
+    "sha256": "0004c277da9995cf984fce42a1025d05dc7e5e04b424c8e2f029f738bbe822b2",
+    "bytes": 11408230
+  },
+  {
+    "path": "out/scratch/vela/road/world-before.json",
+    "sha256": "ff124a96163be834d733759d894b6be076ec42e8e157c308e4f44a37a7cc6725",
+    "bytes": 10663450
+  },
+  {
+    "path": "out/scratch/vela/road/world-crown.json",
+    "sha256": "0289a06792e383ba9cd6cf06f508519789596d23e99bed3fa725e586ef7f94d9",
+    "bytes": 12768210
+  },
+  {
+    "path": "out/scratch/vela/road/world-new.json",
+    "sha256": "a613f2ac5915e07986ecebff0f233cf90727d47eea8e7649108d16c4bde52fbd",
+    "bytes": 11452742
+  },
+  {
+    "path": "out/scratch/vela/road/world-lawn-noshoulder.json",
+    "sha256": "26e02f942e84458d7a7fca8b1d150f700605ee4da829a947670b6cd78298bedb",
+    "bytes": 10535009
+  },
+  {
+    "path": "out/scratch/vela/road/world-lawn.json",
+    "sha256": "cc1e9318818ab84e58e1268306457b69949858e6d6106dd7ff18c7ed1b6690cf",
+    "bytes": 10665213
+  },
+  {
+    "path": "out/scratch/vela/asphalt/harbour-district.world.json",
+    "sha256": "41f8d560d5a168d324a49d9259ea278273dbfa2b517a1602bbf5c36aee99afd6",
+    "bytes": 4390808
+  },
+  {
+    "path": "out/scratch/splice/before.world.json",
+    "sha256": "0c574dfcc24b1fbced0d80f7759e37d13fae1a7a1c12a5a4df2a49e0800d3264",
+    "bytes": 10277623
+  },
+  {
+    "path": "out/scratch/splice/world.3b938191.json",
+    "sha256": "973232b61ccbb5ad98644d316b7bf0938e204b71497bc4b509e45ba2e7413947",
+    "bytes": 8034841
+  },
+  {
+    "path": "out/scratch/splice/world.before-butler-op.json",
+    "sha256": "4ff817c2384c27f035b484d97ec3de62489789e189fd3d3aaa4d146e68bf4a47",
+    "bytes": 8082274
+  },
+  {
+    "path": "out/scratch/splice/dev.world.json",
+    "sha256": "42d40c85eba5f43214c18220e6ee26ce25c9edf7c4bc7034bd2fbddb3a0e683e",
+    "bytes": 10883201
+  },
+  {
+    "path": "out/scratch/splice/world.head.json",
+    "sha256": "d6f7560de2f1ccfc89f156c715d3ee1d70d72adc54330cf896a2567395596edb",
+    "bytes": 8026988
+  },
+  {
+    "path": "out/scratch/splice/world.oldcov.json",
+    "sha256": "1b92bc96db21ed1a185d55605b35bd67614d3790ea6498fa3986de2d429a4b3d",
+    "bytes": 8558882
+  },
+  {
+    "path": "out/scratch/splice/world.cb1604f6.json",
+    "sha256": "4ff817c2384c27f035b484d97ec3de62489789e189fd3d3aaa4d146e68bf4a47",
+    "bytes": 8082274
+  },
+  {
+    "path": "out/scratch/splice/world.pre-hq.json",
+    "sha256": "a330039ff58513d088aa55bac8ab5283fb0b8ac1671fc6cd2d237d2ef9386f6d",
+    "bytes": 5152096
+  },
+  {
+    "path": "out/scratch/splice/t2.world.json",
+    "sha256": "5e9bae2e1ddb0cc1ee4a22dc7b0c989e50c4c8297e6cc6016c1b896b4b762009",
+    "bytes": 17861975
+  },
+  {
+    "path": "out/scratch/splice/world.now.json",
+    "sha256": "d6f7560de2f1ccfc89f156c715d3ee1d70d72adc54330cf896a2567395596edb",
+    "bytes": 8026988
+  },
+  {
+    "path": "out/scratch/splice/world.fede05f0.json",
+    "sha256": "d6f7560de2f1ccfc89f156c715d3ee1d70d72adc54330cf896a2567395596edb",
+    "bytes": 8026988
+  },
+  {
+    "path": "out/scratch/splice/world-before.json",
+    "sha256": "4ff817c2384c27f035b484d97ec3de62489789e189fd3d3aaa4d146e68bf4a47",
+    "bytes": 8082274
+  },
+  {
+    "path": "out/scratch/splice/world.nofoot.json",
+    "sha256": "f2ff4838da08d18d47156c3f8d231e527cedcc4f3a1077fc543664324e97ee1b",
+    "bytes": 8271636
+  },
+  {
+    "path": "out/scratch/splice/dbg.world.json",
+    "sha256": "54663baf14ddd2fc8466830ccf2584b33e105f526b2c25c39d7799f2eb9c2b85",
+    "bytes": 11110515
+  },
+  {
+    "path": "out/scratch/splice/world.2653569f.json",
+    "sha256": "4ff817c2384c27f035b484d97ec3de62489789e189fd3d3aaa4d146e68bf4a47",
+    "bytes": 8082274
+  },
+  {
+    "path": "out/scratch/splice/t4.world.json",
+    "sha256": "259aee7d81b9f05b82ef27607200b9c796dead14ff0a674755c0b1b63aae8ef1",
+    "bytes": 17868665
+  },
+  {
+    "path": "out/scratch/splice/world-off.json",
+    "sha256": "180a6dd974ca783d27e3655c8580973fccbad4314558e7b873953764792565bd",
+    "bytes": 14508039
+  },
+  {
+    "path": "out/scratch/splice/t1.world.json",
+    "sha256": "56591e4a3787211dd0545241e6b1ee1779089f8d10fe6a8db1961e6a8883e3d0",
+    "bytes": 17839306
+  },
+  {
+    "path": "out/scratch/splice/fx.world.json",
+    "sha256": "6e31eddb711903b70b985028bdd277a8ca84dbddaebc49ff7c0167b72d7a907e",
+    "bytes": 15055895
+  },
+  {
+    "path": "out/scratch/splice/world-on.json",
+    "sha256": "e39d78392ad8f81ec591487775d56ecfdc23bb2b48076154a50656b6e78ffb7f",
+    "bytes": 14520954
+  },
+  {
+    "path": "out/scratch/splice/world.467850e8.json",
+    "sha256": "973232b61ccbb5ad98644d316b7bf0938e204b71497bc4b509e45ba2e7413947",
+    "bytes": 8034841
+  },
+  {
+    "path": "out/scratch/splice/t3.world.json",
+    "sha256": "8c424a0091db25c8f94e86714b68e802d2e6b4f1a10d8a92b67e852fab58d04e",
+    "bytes": 17868597
+  },
+  {
+    "path": "out/scratch/splice/world.e2b5d806.json",
+    "sha256": "a97814c65d68d3e7b7a7c1ca9e16aa2068213e3f2163ab40f154551afec311ce",
+    "bytes": 8026988
+  },
+  {
+    "path": "out/scratch/splice/pw.world.json",
+    "sha256": "ea2f55b3fbb7c82c186be08832672cd371cbf1850c96f541cfc830e683311867",
+    "bytes": 5117134
+  },
+  {
+    "path": "out/scratch/splice/stable/old/contracts/world/harbour-district.world.example.json",
+    "sha256": "8f374e9ddb00df94f2235ff41d06dab720f0d911a2021d009e93c35f820522a7",
+    "bytes": 53799
+  },
+  {
+    "path": "out/scratch/splice/geo-bisect/out/world/harbour-district.world.json",
+    "sha256": "6a8243a8b5e7b81cbe24c0fb571ad61688861655d83524b892cdb6bdef7e4b2a",
+    "bytes": 10668442
+  },
+  {
+    "path": "out/scratch/splice/geo-bisect/out/geometry/geometry.json",
+    "sha256": "b2abeae0d42c571f31188d43b5dc433f464760f4f4beb08eaf9ce8bb4b66306c",
+    "bytes": 159502
+  },
+  {
+    "path": "out/scratch/splice/geo-bisect/contracts/world/harbour-district.world.example.json",
+    "sha256": "7dc6e4f3ebfe63d8245031c041eb2b7aef13a7f6d401ac8f8672fc64a89037cc",
+    "bytes": 49218
+  },
+  {
+    "path": "out/scratch/splice/geo-bisect/briefs/055/geometry.summary.json",
+    "sha256": "237277b2dfdff48c27f652d543197156046caea95ca5d80f3d57a5ac79368c8d",
+    "bytes": 3022
+  },
+  {
+    "path": "out/scratch/splice/075occ/after.world.json",
+    "sha256": "85559b335cf390176be9d7c3a63b0feadf751785b920e911afa354a135ae53b9",
+    "bytes": 9267496
+  },
+  {
+    "path": "out/scratch/splice/075occ/before.world.json",
+    "sha256": "1559cf2122094f94ea4818c6a762701eeb8810ca16ffac238d88e4ef4aaa8953",
+    "bytes": 14866147
+  },
+  {
+    "path": "out/scratch/splice/075occ/now.world.json",
+    "sha256": "85559b335cf390176be9d7c3a63b0feadf751785b920e911afa354a135ae53b9",
+    "bytes": 9267496
+  },
+  {
+    "path": "out/scratch/splice/ab/before/out/cache/world-harbour-district.json",
+    "sha256": "2937bd754f2af62dbb2c3667ac314423e916d7c7a4ea112d21b432dce497c771",
+    "bytes": 15973671
+  },
+  {
+    "path": "out/scratch/splice/ab/before/contracts/world/harbour-district.world.example.json",
+    "sha256": "8beb7daf0fc0c76fb91ce6ed7e58b0146d24683b7aec0f2df1333e0316b2e86b",
+    "bytes": 51119
+  },
+  {
+    "path": "out/scratch/splice/ab/after/out/cache/world-harbour-district.json",
+    "sha256": "f6b90f0f486177d2c17c50a57be85ab5f856c598d15fb91eabed5227517ea5c6",
+    "bytes": 15973671
+  },
+  {
+    "path": "out/scratch/splice/ab/after/contracts/world/harbour-district.world.example.json",
+    "sha256": "8beb7daf0fc0c76fb91ce6ed7e58b0146d24683b7aec0f2df1333e0316b2e86b",
+    "bytes": 51119
+  },
+  {
+    "path": "out/scratch/splice/probe-head/out/cache/world-harbour-district.json",
+    "sha256": "f732a59cd7ff5305393b3a6bb47a05a11217fda73e6938569722023b1483256e",
+    "bytes": 15866701
+  },
+  {
+    "path": "out/scratch/splice/probe-head/out/world/harbour-district.world.json",
+    "sha256": "d6f7560de2f1ccfc89f156c715d3ee1d70d72adc54330cf896a2567395596edb",
+    "bytes": 8026988
+  },
+  {
+    "path": "out/scratch/splice/probe-head/out/scratch/splice/geometry/world.json",
+    "sha256": "da8a3528adae1284a52b8231550c3dceef1a4ac093817fc7f21cf1200a63879f",
+    "bytes": 10668434
+  },
+  {
+    "path": "out/scratch/splice/probe-head/contracts/world/harbour-district.world.example.json",
+    "sha256": "8beb7daf0fc0c76fb91ce6ed7e58b0146d24683b7aec0f2df1333e0316b2e86b",
+    "bytes": 51119
+  },
+  {
+    "path": "out/scratch/splice/061/base.world.json",
+    "sha256": "ce2bd128138664af28c57d1dbc101a44196aa2f8f738524fdfb105b02f9420d1",
+    "bytes": 9536460
+  },
+  {
+    "path": "out/scratch/splice/061/a1.world.json",
+    "sha256": "bd33e97d57e8c94af0b293faa17f59b110260f765b123f755425d3ce3048bf0a",
+    "bytes": 8269679
+  },
+  {
+    "path": "out/scratch/splice/061/export-before.world.json",
+    "sha256": "54674e07759210c3b21ce4b19bab752f5fac80ffabad430f537df3434f59e36d",
+    "bytes": 11739589
+  },
+  {
+    "path": "out/scratch/splice/061/again.world.json",
+    "sha256": "6cf882c67d03bebcf4f9e30026103100a8ffbadaebed12eaa59ea88541b79a29",
+    "bytes": 8269933
+  },
+  {
+    "path": "out/scratch/splice/072aw/before.world.json",
+    "sha256": "7f024c0c393a19293966e8131ada2f2ae322b2bc8047d993a0b3813c297f4b85",
+    "bytes": 8175815
+  },
+  {
+    "path": "out/scratch/splice/072aw/v3a.world.json",
+    "sha256": "dc32c4e4b6a38cdc2690adb41a7705cb73987ca15e3ff6b4c3da2dfdad5e0b2f",
+    "bytes": 17763545
+  },
+  {
+    "path": "out/scratch/splice/072aw/v3c.world.json",
+    "sha256": "0a52d03585fb8c53945a07154a7b65a869aa7682a08ed8cec24c795a7cec0a37",
+    "bytes": 17760604
+  },
+  {
+    "path": "out/scratch/splice/072aw/v3final.world.json",
+    "sha256": "73d61e881adf6d654b7e24df55a3ab3e1c994a37a59a25b8cfb5a5144dc28873",
+    "bytes": 17797937
+  },
+  {
+    "path": "out/scratch/splice/072aw/run1.world.json",
+    "sha256": "9d46935e3fa04c92aab2bc435c5275c43ee39d44f393fb49f5bb96d13bbf2bbd",
+    "bytes": 17649062
+  },
+  {
+    "path": "out/scratch/splice/072aw/v3b.world.json",
+    "sha256": "aa9d25e61d70831e33aed7213c70c4e21a443610cf9cef3eae320d7ed3524e06",
+    "bytes": 17759832
+  },
+  {
+    "path": "out/scratch/splice/geometry/world.json",
+    "sha256": "da8a3528adae1284a52b8231550c3dceef1a4ac093817fc7f21cf1200a63879f",
+    "bytes": 10668434
+  },
+  {
+    "path": "out/scratch/splice/overlap/before.world.json",
+    "sha256": "d9262e4f74534a4497f9fa984896297df9bbfc0f818188b3d4a2ff4fc3d2b052",
+    "bytes": 5138709
+  },
+  {
+    "path": "out/scratch/splice/075e/after.world.json",
+    "sha256": "a6c76f6a9f041e1b6f542631ad01f2797ddb85397e429e01eeba562f83e782f5",
+    "bytes": 15068690
+  },
+  {
+    "path": "out/scratch/splice/075e/before.world.json",
+    "sha256": "ec0339f9e26ffc1b65a7f496d585d32c5f9e1efd8f3bd10796956bce3b3c1155",
+    "bytes": 15374044
+  },
+  {
+    "path": "out/scratch/vantage/059b4/tree/contracts/world/harbour-district.world.example.json",
+    "sha256": "8beb7daf0fc0c76fb91ce6ed7e58b0146d24683b7aec0f2df1333e0316b2e86b",
+    "bytes": 51119
+  },
+  {
+    "path": "out/scratch/vantage/067/tree/out/cache/world-harbour-district.json",
+    "sha256": "79898cfd5e7f78c9d1da3ee78cd931d2b028828c21011ec05719ad2436db9403",
+    "bytes": 15974297
+  },
+  {
+    "path": "out/scratch/vantage/067/tree/contracts/world/harbour-district.world.example.json",
+    "sha256": "8beb7daf0fc0c76fb91ce6ed7e58b0146d24683b7aec0f2df1333e0316b2e86b",
+    "bytes": 51119
+  },
+  {
+    "path": "out/scratch/datum-remap/tree/out/cache/world-harbour-district.json",
+    "sha256": "9640dbf23d991a14a85667e707de4b061bb5228340c0d9412e82f1c6e06d183c",
+    "bytes": 8186825
+  },
+  {
+    "path": "out/scratch/datum-remap/tree/contracts/world/harbour-district.world.example.json",
+    "sha256": "8f374e9ddb00df94f2235ff41d06dab720f0d911a2021d009e93c35f820522a7",
+    "bytes": 53799
+  },
+  {
+    "path": "out/scratch/datum-remap/tree/.claude/worktrees/agent-ad654047fa24cd1cb/contracts/world/harbour-district.world.example.json",
+    "sha256": "8beb7daf0fc0c76fb91ce6ed7e58b0146d24683b7aec0f2df1333e0316b2e86b",
+    "bytes": 51119
+  },
+  {
+    "path": "out/scratch/waymark/root061/contracts/world/harbour-district.world.example.json",
+    "sha256": "8beb7daf0fc0c76fb91ce6ed7e58b0146d24683b7aec0f2df1333e0316b2e86b",
+    "bytes": 51119
+  },
+  {
+    "path": "out/scratch/waymark/b0342/out/cache/world-harbour-district.json",
+    "sha256": "3e51b8d3b4302aee2a337f198d012c6d3f66aeccdea8ad634665880aaf2a8edc",
+    "bytes": 15973676
+  },
+  {
+    "path": "out/scratch/waymark/b0342/contracts/world/harbour-district.world.example.json",
+    "sha256": "8beb7daf0fc0c76fb91ce6ed7e58b0146d24683b7aec0f2df1333e0316b2e86b",
+    "bytes": 51119
+  },
+  {
+    "path": "out/scratch/waymark/b0342/briefs/055/geometry.summary.json",
+    "sha256": "b01636eb1a9fc711b5fb4a791f2edf544a6d9aba441fa61ecff3d2297d19af38",
+    "bytes": 2973
+  },
+  {
+    "path": "out/keel-drift/contracts/world/harbour-district.world.example.json",
+    "sha256": "7dc6e4f3ebfe63d8245031c041eb2b7aef13a7f6d401ac8f8672fc64a89037cc",
+    "bytes": 49218
+  },
+  {
+    "path": "out/drift-auto/base/278ef3ecb336/contracts/world/harbour-district.world.example.json",
+    "sha256": "8beb7daf0fc0c76fb91ce6ed7e58b0146d24683b7aec0f2df1333e0316b2e86b",
+    "bytes": 51119
+  },
+  {
+    "path": "out/drift-auto/base/cb1604f66798/contracts/world/harbour-district.world.example.json",
+    "sha256": "8beb7daf0fc0c76fb91ce6ed7e58b0146d24683b7aec0f2df1333e0316b2e86b",
+    "bytes": 51119
+  },
+  {
+    "path": "out/drift-auto/base/42f915a193d3/contracts/world/harbour-district.world.example.json",
+    "sha256": "8beb7daf0fc0c76fb91ce6ed7e58b0146d24683b7aec0f2df1333e0316b2e86b",
+    "bytes": 51119
+  },
+  {
+    "path": "out/drift-auto/base/5b52042432ba/contracts/world/harbour-district.world.example.json",
+    "sha256": "8beb7daf0fc0c76fb91ce6ed7e58b0146d24683b7aec0f2df1333e0316b2e86b",
+    "bytes": 51119
+  },
+  {
+    "path": "out/drift-auto/base/d4361806c675/contracts/world/harbour-district.world.example.json",
+    "sha256": "8beb7daf0fc0c76fb91ce6ed7e58b0146d24683b7aec0f2df1333e0316b2e86b",
+    "bytes": 51119
+  },
+  {
+    "path": "out/drift-auto/base/64f36d8a44aa/contracts/world/harbour-district.world.example.json",
+    "sha256": "7dc6e4f3ebfe63d8245031c041eb2b7aef13a7f6d401ac8f8672fc64a89037cc",
+    "bytes": 49218
+  },
+  {
+    "path": "out/drift-auto/base/eef690a93e4c/contracts/world/harbour-district.world.example.json",
+    "sha256": "8beb7daf0fc0c76fb91ce6ed7e58b0146d24683b7aec0f2df1333e0316b2e86b",
+    "bytes": 51119
+  },
+  {
+    "path": "out/drift-auto/base/a87f3e41f0f1/contracts/world/harbour-district.world.example.json",
+    "sha256": "7dc6e4f3ebfe63d8245031c041eb2b7aef13a7f6d401ac8f8672fc64a89037cc",
+    "bytes": 49218
+  },
+  {
+    "path": "out/drift-auto/base/8db2c6c9ee44/contracts/world/harbour-district.world.example.json",
+    "sha256": "8beb7daf0fc0c76fb91ce6ed7e58b0146d24683b7aec0f2df1333e0316b2e86b",
+    "bytes": 51119
+  },
+  {
+    "path": "out/drift-auto/base/45589e0f8d02/contracts/world/harbour-district.world.example.json",
+    "sha256": "7dc6e4f3ebfe63d8245031c041eb2b7aef13a7f6d401ac8f8672fc64a89037cc",
+    "bytes": 49218
+  },
+  {
+    "path": "out/drift-auto/base/b84f1b8c51cf/contracts/world/harbour-district.world.example.json",
+    "sha256": "8beb7daf0fc0c76fb91ce6ed7e58b0146d24683b7aec0f2df1333e0316b2e86b",
+    "bytes": 51119
+  },
+  {
+    "path": "out/drift-auto/base/fede05f0db26/contracts/world/harbour-district.world.example.json",
+    "sha256": "8beb7daf0fc0c76fb91ce6ed7e58b0146d24683b7aec0f2df1333e0316b2e86b",
+    "bytes": 51119
+  },
+  {
+    "path": "out/drift-auto/base/84a312037ded/contracts/world/harbour-district.world.example.json",
+    "sha256": "8beb7daf0fc0c76fb91ce6ed7e58b0146d24683b7aec0f2df1333e0316b2e86b",
+    "bytes": 51119
+  },
+  {
+    "path": "out/drift-auto/base/467850e84ba7/contracts/world/harbour-district.world.example.json",
+    "sha256": "8beb7daf0fc0c76fb91ce6ed7e58b0146d24683b7aec0f2df1333e0316b2e86b",
+    "bytes": 51119
+  },
+  {
+    "path": "out/drift-auto/base/0c46896c41a6/contracts/world/harbour-district.world.example.json",
+    "sha256": "8beb7daf0fc0c76fb91ce6ed7e58b0146d24683b7aec0f2df1333e0316b2e86b",
+    "bytes": 51119
+  },
+  {
+    "path": "out/drift-auto/base/51d9de94839f/contracts/world/harbour-district.world.example.json",
+    "sha256": "8beb7daf0fc0c76fb91ce6ed7e58b0146d24683b7aec0f2df1333e0316b2e86b",
+    "bytes": 51119
+  },
+  {
+    "path": "out/drift-auto/base/e2b5d8067ac1/contracts/world/harbour-district.world.example.json",
+    "sha256": "8beb7daf0fc0c76fb91ce6ed7e58b0146d24683b7aec0f2df1333e0316b2e86b",
+    "bytes": 51119
+  },
+  {
+    "path": "out/drift-auto/base/70299c9dd91c/contracts/world/harbour-district.world.example.json",
+    "sha256": "8beb7daf0fc0c76fb91ce6ed7e58b0146d24683b7aec0f2df1333e0316b2e86b",
+    "bytes": 51119
+  },
+  {
+    "path": "out/drift-auto/base/0b65ead8278c/contracts/world/harbour-district.world.example.json",
+    "sha256": "8beb7daf0fc0c76fb91ce6ed7e58b0146d24683b7aec0f2df1333e0316b2e86b",
+    "bytes": 51119
+  },
+  {
+    "path": "out/drift-auto/base/3b6b06357093/contracts/world/harbour-district.world.example.json",
+    "sha256": "8beb7daf0fc0c76fb91ce6ed7e58b0146d24683b7aec0f2df1333e0316b2e86b",
+    "bytes": 51119
+  },
+  {
+    "path": "out/drift-auto/base/566bb8cf1d16/contracts/world/harbour-district.world.example.json",
+    "sha256": "8beb7daf0fc0c76fb91ce6ed7e58b0146d24683b7aec0f2df1333e0316b2e86b",
+    "bytes": 51119
+  },
+  {
+    "path": "out/drift-auto/base/3e0561fae508/contracts/world/harbour-district.world.example.json",
+    "sha256": "8beb7daf0fc0c76fb91ce6ed7e58b0146d24683b7aec0f2df1333e0316b2e86b",
+    "bytes": 51119
+  },
+  {
+    "path": "out/drift-auto/base/7807966136c5/contracts/world/harbour-district.world.example.json",
+    "sha256": "8beb7daf0fc0c76fb91ce6ed7e58b0146d24683b7aec0f2df1333e0316b2e86b",
+    "bytes": 51119
+  },
+  {
+    "path": "out/drift-auto/base/c5fa88598c18/contracts/world/harbour-district.world.example.json",
+    "sha256": "7dc6e4f3ebfe63d8245031c041eb2b7aef13a7f6d401ac8f8672fc64a89037cc",
+    "bytes": 49218
+  },
+  {
+    "path": "out/drift-auto/base/f65936f1daeb/contracts/world/harbour-district.world.example.json",
+    "sha256": "8beb7daf0fc0c76fb91ce6ed7e58b0146d24683b7aec0f2df1333e0316b2e86b",
+    "bytes": 51119
+  },
+  {
+    "path": "out/drift-auto/base/7145220135e8/contracts/world/harbour-district.world.example.json",
+    "sha256": "7dc6e4f3ebfe63d8245031c041eb2b7aef13a7f6d401ac8f8672fc64a89037cc",
+    "bytes": 49218
+  },
+  {
+    "path": "out/drift-auto/base/56f3499deb3b/contracts/world/harbour-district.world.example.json",
+    "sha256": "8beb7daf0fc0c76fb91ce6ed7e58b0146d24683b7aec0f2df1333e0316b2e86b",
+    "bytes": 51119
+  },
+  {
+    "path": "out/drift-auto/base/92adf81b2dd5/contracts/world/harbour-district.world.example.json",
+    "sha256": "7dc6e4f3ebfe63d8245031c041eb2b7aef13a7f6d401ac8f8672fc64a89037cc",
+    "bytes": 49218
+  },
+  {
+    "path": "out/drift-auto/base/43ae35cdf446/contracts/world/harbour-district.world.example.json",
+    "sha256": "8beb7daf0fc0c76fb91ce6ed7e58b0146d24683b7aec0f2df1333e0316b2e86b",
+    "bytes": 51119
+  },
+  {
+    "path": "out/drift-auto/base/5d44a539c533/contracts/world/harbour-district.world.example.json",
+    "sha256": "7dc6e4f3ebfe63d8245031c041eb2b7aef13a7f6d401ac8f8672fc64a89037cc",
+    "bytes": 49218
+  },
+  {
+    "path": "out/drift-auto/base/0c08ad1d1e5b/contracts/world/harbour-district.world.example.json",
+    "sha256": "8beb7daf0fc0c76fb91ce6ed7e58b0146d24683b7aec0f2df1333e0316b2e86b",
+    "bytes": 51119
+  },
+  {
+    "path": "out/drift-auto/base/94d2eed8bb51/contracts/world/harbour-district.world.example.json",
+    "sha256": "8beb7daf0fc0c76fb91ce6ed7e58b0146d24683b7aec0f2df1333e0316b2e86b",
+    "bytes": 51119
+  },
+  {
+    "path": "out/drift-auto/base/3b9381916249/contracts/world/harbour-district.world.example.json",
+    "sha256": "8beb7daf0fc0c76fb91ce6ed7e58b0146d24683b7aec0f2df1333e0316b2e86b",
+    "bytes": 51119
+  },
+  {
+    "path": "out/drift-auto/base/febb821e72c0/contracts/world/harbour-district.world.example.json",
+    "sha256": "8beb7daf0fc0c76fb91ce6ed7e58b0146d24683b7aec0f2df1333e0316b2e86b",
+    "bytes": 51119
+  },
+  {
+    "path": "out/drift-auto/base/511058c3c928/contracts/world/harbour-district.world.example.json",
+    "sha256": "8beb7daf0fc0c76fb91ce6ed7e58b0146d24683b7aec0f2df1333e0316b2e86b",
+    "bytes": 51119
+  },
+  {
+    "path": "out/drift-auto/base/04a4fb757ef6/contracts/world/harbour-district.world.example.json",
+    "sha256": "7dc6e4f3ebfe63d8245031c041eb2b7aef13a7f6d401ac8f8672fc64a89037cc",
+    "bytes": 49218
+  },
+  {
+    "path": "out/drift-auto/base/2fceccc45132/contracts/world/harbour-district.world.example.json",
+    "sha256": "8beb7daf0fc0c76fb91ce6ed7e58b0146d24683b7aec0f2df1333e0316b2e86b",
+    "bytes": 51119
+  },
+  {
+    "path": "out/drift-auto/base/42cfce1e2040/contracts/world/harbour-district.world.example.json",
+    "sha256": "8beb7daf0fc0c76fb91ce6ed7e58b0146d24683b7aec0f2df1333e0316b2e86b",
+    "bytes": 51119
+  },
+  {
+    "path": "out/drift-auto/base/685faea6d720/contracts/world/harbour-district.world.example.json",
+    "sha256": "8beb7daf0fc0c76fb91ce6ed7e58b0146d24683b7aec0f2df1333e0316b2e86b",
+    "bytes": 51119
+  },
+  {
+    "path": "out/drift-auto/base/233b54eace3d/contracts/world/harbour-district.world.example.json",
+    "sha256": "8beb7daf0fc0c76fb91ce6ed7e58b0146d24683b7aec0f2df1333e0316b2e86b",
+    "bytes": 51119
+  },
+  {
+    "path": "out/drift-auto/base/e17d8ca7f247/contracts/world/harbour-district.world.example.json",
+    "sha256": "8beb7daf0fc0c76fb91ce6ed7e58b0146d24683b7aec0f2df1333e0316b2e86b",
+    "bytes": 51119
+  },
+  {
+    "path": "out/drift-auto/base/0f0ada75c727/contracts/world/harbour-district.world.example.json",
+    "sha256": "7dc6e4f3ebfe63d8245031c041eb2b7aef13a7f6d401ac8f8672fc64a89037cc",
+    "bytes": 49218
+  },
+  {
+    "path": "out/drift-auto/base/f22ee7bd0fe9/contracts/world/harbour-district.world.example.json",
+    "sha256": "8beb7daf0fc0c76fb91ce6ed7e58b0146d24683b7aec0f2df1333e0316b2e86b",
+    "bytes": 51119
+  },
+  {
+    "path": "out/drift-auto/base/7c27e980565a/contracts/world/harbour-district.world.example.json",
+    "sha256": "8beb7daf0fc0c76fb91ce6ed7e58b0146d24683b7aec0f2df1333e0316b2e86b",
+    "bytes": 51119
+  },
+  {
+    "path": "out/drift-auto/base/887fcd6137c1/contracts/world/harbour-district.world.example.json",
+    "sha256": "7dc6e4f3ebfe63d8245031c041eb2b7aef13a7f6d401ac8f8672fc64a89037cc",
+    "bytes": 49218
+  },
+  {
+    "path": "out/drift-auto/base/9974dba886f2/contracts/world/harbour-district.world.example.json",
+    "sha256": "8beb7daf0fc0c76fb91ce6ed7e58b0146d24683b7aec0f2df1333e0316b2e86b",
+    "bytes": 51119
+  },
+  {
+    "path": "out/drift-auto/base/ce10693f76fb/contracts/world/harbour-district.world.example.json",
+    "sha256": "8beb7daf0fc0c76fb91ce6ed7e58b0146d24683b7aec0f2df1333e0316b2e86b",
+    "bytes": 51119
+  },
+  {
+    "path": "out/drift-auto/base/82eaae773013/contracts/world/harbour-district.world.example.json",
+    "sha256": "8beb7daf0fc0c76fb91ce6ed7e58b0146d24683b7aec0f2df1333e0316b2e86b",
+    "bytes": 51119
+  },
+  {
+    "path": "out/drift-auto/base/2653569f4728/contracts/world/harbour-district.world.example.json",
+    "sha256": "8beb7daf0fc0c76fb91ce6ed7e58b0146d24683b7aec0f2df1333e0316b2e86b",
+    "bytes": 51119
+  },
+  {
+    "path": "out/drift-auto/base/71bf4032f881/contracts/world/harbour-district.world.example.json",
+    "sha256": "8beb7daf0fc0c76fb91ce6ed7e58b0146d24683b7aec0f2df1333e0316b2e86b",
+    "bytes": 51119
+  },
+  {
+    "path": "out/drift-auto/base/ca82b41408ce/contracts/world/harbour-district.world.example.json",
+    "sha256": "8beb7daf0fc0c76fb91ce6ed7e58b0146d24683b7aec0f2df1333e0316b2e86b",
+    "bytes": 51119
+  },
+  {
+    "path": "out/drift-auto/base/307a68f53e91/contracts/world/harbour-district.world.example.json",
+    "sha256": "8beb7daf0fc0c76fb91ce6ed7e58b0146d24683b7aec0f2df1333e0316b2e86b",
+    "bytes": 51119
+  },
+  {
+    "path": "out/drift-auto/base/f123c5f52239/contracts/world/harbour-district.world.example.json",
+    "sha256": "8beb7daf0fc0c76fb91ce6ed7e58b0146d24683b7aec0f2df1333e0316b2e86b",
+    "bytes": 51119
+  },
+  {
+    "path": "out/drift-auto/base/f84b8aa25717/contracts/world/harbour-district.world.example.json",
+    "sha256": "8beb7daf0fc0c76fb91ce6ed7e58b0146d24683b7aec0f2df1333e0316b2e86b",
+    "bytes": 51119
+  },
+  {
+    "path": "out/026/check.world.json",
+    "sha256": "b1c82b56735b04a5ed722927764c55281a662a4933f59396d3b9823812cf44ed",
+    "bytes": 5955903
+  },
+  {
+    "path": "out/mac-studio-verification/world-b.json",
+    "sha256": "f4df30acdfc28e29563a4f6a9ee436d8a8958fcdece99aab65c706fbb088f4ca",
+    "bytes": 2947564
+  },
+  {
+    "path": "out/mac-studio-verification/world-a.json",
+    "sha256": "f4df30acdfc28e29563a4f6a9ee436d8a8958fcdece99aab65c706fbb088f4ca",
+    "bytes": 2947564
+  },
+  {
+    "path": "out/motive027/s13/tree/contracts/world/harbour-district.world.example.json",
+    "sha256": "7dc6e4f3ebfe63d8245031c041eb2b7aef13a7f6d401ac8f8672fc64a89037cc",
+    "bytes": 49218
+  },
+  {
+    "path": "out/motive027/s14/tree/contracts/world/harbour-district.world.example.json",
+    "sha256": "7dc6e4f3ebfe63d8245031c041eb2b7aef13a7f6d401ac8f8672fc64a89037cc",
+    "bytes": 49218
+  },
+  {
+    "path": "out/motive027/s14/treewf/contracts/world/harbour-district.world.example.json",
+    "sha256": "7dc6e4f3ebfe63d8245031c041eb2b7aef13a7f6d401ac8f8672fc64a89037cc",
+    "bytes": 49218
+  },
+  {
+    "path": "out/motive027/s15/tree/contracts/world/harbour-district.world.example.json",
+    "sha256": "7dc6e4f3ebfe63d8245031c041eb2b7aef13a7f6d401ac8f8672fc64a89037cc",
+    "bytes": 49218
+  },
+  {
+    "path": "out/motive027/s15/tree2/contracts/world/harbour-district.world.example.json",
+    "sha256": "7dc6e4f3ebfe63d8245031c041eb2b7aef13a7f6d401ac8f8672fc64a89037cc",
+    "bytes": 49218
+  },
+  {
+    "path": "out/motive027/s12/tree/contracts/world/harbour-district.world.example.json",
+    "sha256": "7dc6e4f3ebfe63d8245031c041eb2b7aef13a7f6d401ac8f8672fc64a89037cc",
+    "bytes": 49218
+  },
+  {
+    "path": "out/geometry/geometry.json",
+    "sha256": "5075245cea273afbac8873df9130a3495a15cf67df83fb54e9bdae4aa735ce4f",
+    "bytes": 181475
+  },
+  {
+    "path": "out/waymark/start/world-before.json",
+    "sha256": "f8191fa9bef403b92f4746cdb05a74b36d7c98d773adab5c7c11b63c97983c10",
+    "bytes": 6078555
+  },
+  {
+    "path": "out/keel-approach/base/contracts/world/harbour-district.world.example.json",
+    "sha256": "7dc6e4f3ebfe63d8245031c041eb2b7aef13a7f6d401ac8f8672fc64a89037cc",
+    "bytes": 49218
+  },
+  {
+    "path": "out/palette/areas.world.json",
+    "sha256": "4e8c05de6a1bba48d695c33e0aa49eec975f4e7231b456c59533d872863ddae4",
+    "bytes": 126886
+  },
+  {
+    "path": "briefs/055/geometry.summary.json",
+    "sha256": "001c2622bb8a6be2561c1bc243fed7bd69e0aea9700d935f1a317976cb298c3f",
+    "bytes": 2973
+  },
+  {
+    "path": "unity/Assets/Suborned/Editor/World/Samples/sample.world.json",
+    "sha256": "785deb5ecf997f3f73d09c7c343dc1efd71f8c0269caff571c329e5dc45a2d4f",
+    "bytes": 2710
+  },
+  {
+    "path": "contracts/world/harbour-district.world.example.json",
+    "sha256": "8f374e9ddb00df94f2235ff41d06dab720f0d911a2021d009e93c35f820522a7",
+    "bytes": 53799
+  }
+]

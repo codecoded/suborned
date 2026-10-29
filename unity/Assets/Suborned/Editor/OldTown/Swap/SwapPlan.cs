@@ -24,6 +24,10 @@ namespace Suborned.OldTown.Editor.Swap
         public readonly List<(string id, float w, Vector2[] pts)> Roads = new();
         public readonly List<(string id, string use, Vector2[] poly, Rect box)> Plots = new();
         public readonly List<(string id, Rect r)> Blocks = new();
+        /// <summary>Roads that carry a tram line (the plan's road `tram` field): E12's tram streets.</summary>
+        public readonly HashSet<string> TramRoads = new();
+        /// <summary>Megastructure footprints (plan `megastructures[].footprint`, [x0, x1, y0, y1] rects).</summary>
+        public readonly List<(string id, Rect r)> Megas = new();
 
         /// <summary>The plan sheet (plan frame), CAD sheet extent (tools/plan).</summary>
         internal static readonly Rect Sheet = Rect.MinMaxRect(-460f, -560f, 380f, 300f);
@@ -52,6 +56,7 @@ namespace Suborned.OldTown.Editor.Swap
             {
                 var path0 = J.A(r, "path").Select(n => p.Nodes[(string)n]).ToArray();
                 p.Roads.Add((J.S(r, "id"), J.F(r, "w"), path0));
+                if (J.Get(r, "tram") != null) p.TramRoads.Add(J.S(r, "id"));
             }
             foreach (var pl in J.A(root, "plots"))
             {
@@ -61,6 +66,10 @@ namespace Suborned.OldTown.Editor.Swap
                 if (poly == null) continue;
                 p.Plots.Add((J.S(pl, "id"), J.S(pl, "use") ?? J.S(pl, "kind"), poly, Box(poly)));
             }
+            if (J.Get(root, "megastructures") is List<object> megas)
+                foreach (var m in megas)
+                    if (J.Get(m, "footprint") is List<object> fps)
+                        foreach (var fp in fps) if (fp is List<object> rc && rc.Count == 4) { var a = rc.Select(x => (float)(double)x).ToArray(); p.Megas.Add((J.S(m, "id"), Rect.MinMaxRect(a[0], a[2], a[1], a[3]))); }
             foreach (var b in J.A(root, "blocks"))
                 if (J.Get(b, "rect") is List<object> rc && rc.Count == 4) { var a = rc.Select(x => (float)(double)x).ToArray(); p.Blocks.Add((J.S(b, "id"), Rect.MinMaxRect(a[0], a[2], a[1], a[3]))); }
             return p;

@@ -1,0 +1,7 @@
+{"verdict":"PROVISIONAL ACCEPT targeted tram surface geometry (editor-only checkpoint); HOLD kerb-cut finish; whole tram HOLD; G-3a 59>58 and sight HOLD unchanged; no perf/replay/release clearance",
+"findings":[
+{"p":"P2","title":"Kerb-cut finish: detached on-bed vertical fins + partially capped oblique kerb end + streaky cap UVs","files":["unity/Assets/Suborned/Editor/OldTown/Swap/SwapTramKerbCaps.cs","unity/Assets/Suborned/Editor/OldTown/Swap/SwapNetwork.cs"],"evidence":["checks/final/after/curve-north.png","checks/final/after/curve-south.png","cn-crop-far.png","cs-crop-kerbend.png"],"blocks":"kerb finish acceptance only"},
+{"p":"P2","title":"Introduced cost: 18.6M vertex records (~1.04 GB, readable), 1,584 unique meshes, normal Build default-on embeds in OldTown.unity untested","files":["SwapMesh.cs Write.Poly/Mesh","SwapNetwork.cs:121","OldTownSwap.cs BuildBody"],"blocks":"normal build/player use until gated"},
+{"p":"P3","title":"Per-triangle tangents replace source MikkTSpace; attribute proof circular"},
+{"p":"P3","title":"Bed coverage not height-checked; frame probe uses Derivatives not BasisOf; seams ≤1 ulp not bitwise-shared"},
+{"p":"P3","title":"Replacement renderers lack static flags (87→0); 106 scene materials re-serialized by URP init; MeshRead cache never cleared"}]}

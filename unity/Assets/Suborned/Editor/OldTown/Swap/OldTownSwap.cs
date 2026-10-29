@@ -51,12 +51,25 @@ namespace Suborned.OldTown.Editor.Swap
         static string Arg(string k, string d) => DecoKitStage.Arg(k, d);
         static string F(float v) => v.ToString("0.###", CultureInfo.InvariantCulture);
 
+        internal static void SettledBatch(Action body) => Batch(()=>WithOldSettings(body));
+        // The full joined-surface rewrite is an editor experiment until its memory/build cost is cleared.
+        internal static bool JoinedTram => Arg("swapJoinedTram", "off") == "on";
         public static void Build() => Batch(() => WithOldSettings(BuildBody));
         /// <summary>The plan the build read (path, sha256, version, SpaceHQ form), for the exports.</summary>
         internal static Dictionary<string, object> PlanFacts = new();
         public static void Shoot() => Batch(() => WithOldSettings(SwapShots.Run));
         public static void Flyby() => Batch(() => WithOldSettings(SwapShots.Flyby));
         public static void Verify() => Batch(SwapVerify.Run);
+        /// <summary>The tram bed audit (SwapTramAudit) on a built scene, read only: -swapScene, -swapWorld, -swapOut (tram-audit-&lt;tag&gt;.json, -swapTag).</summary>
+        public static void TramAudit() => Batch(() =>
+        {
+            UnityEditor.SceneManagement.EditorSceneManager.OpenScene($"Assets/Scenes/{Arg("swapScene", "OldTown")}.unity", UnityEditor.SceneManagement.OpenSceneMode.Single);
+            var world = WorldReader.Load(Abs(Arg("swapWorld", "out/scratch/latch/075swap2/harbour.world.json")));
+            var outDir = Abs(Arg("swapOut", "briefs/075/oldbuild/tram")); Directory.CreateDirectory(outDir);
+            SwapTramAudit.Run(new Report(), world, Path.Combine(outDir, $"tram-audit-{Arg("swapTag", "scene")}.json"));
+        });
+        /// <summary>Controlled render-only correction of the pinned provisional scene; no old builders or civic imports rerun.</summary>
+        public static void TramFix() => SwapTramSettled.Run();
         /// <summary>Brief 075 Perf A/B item A (SwapPerf): -abScene OldTown|HarbourDistrict, -abPipeline old|ours (OldTown; old = inside WithOldSettings).</summary>
         public static void PerfAB() => Batch(() => { if (Arg("abScene", "OldTown") == "OldTown" && Arg("abPipeline", "old") == "old") WithOldSettings(SwapPerf.Run); else SwapPerf.Run(); });
 
@@ -152,6 +165,7 @@ namespace Suborned.OldTown.Editor.Swap
             DecoKitSouthside.Blocks = SwapPlan.Southside(oldBlocks, rep);
             var reserved = new[] { "SS5", "W1" }.Where(n => DecoKitSouthside.Reserved.Add(n)).ToArray();
             DecoKitCityMass.Rule = plan.MassRule(rep);
+            SwapKeep.Set(plan, rep);  // 0.5.6: Datum's handover-street and megastructure classes (old gives way, ours kept)
             rep.Log($"plan 0.5.5 parameters (E10): walk {L.Walk}, boulevard kerbs +-{L.BoulevardKerbX} (Crown Avenue +-{L.KerbX}), circus ring outer kerb r {P.RingR}, ground modules x{DecoKitPlacer.GroundScaleY:0.###} in height, Southside on its plan blocks (SS5, W1 stand down), city mass by the plan");
             try
             {
@@ -183,6 +197,7 @@ namespace Suborned.OldTown.Editor.Swap
                 DecoKitCityMass.Build(massRoute);  // the mid-ground city keeps clear of our S1, as the old kept clear of its own loop
                 rep.Log($"city mass kept clear of {(s1 != null ? s1.Id : "the old loop")} ({massRoute.Length} points)");
                 SwapWest.Build(rep, plan, world, placer);  // before the colourways, so the west's old pieces take them too
+                Sphere(rep, world);  // 0.5.6: the old SphereStation at the plan's Sphere (landmark/sphere centre)
                 DecoKitColourways.Apply(DecoKitStage.Arg("dkColour", DecoKitStreetDemo.Colour));
                 demo.GetMethod("Ground", Any).Invoke(null, null);
                 SwapWest.Ground(rep);
@@ -216,9 +231,17 @@ namespace Suborned.OldTown.Editor.Swap
                 // ---- 6. the network in the old look on our routes
                 var net = new SwapNetwork(rep, world, placer, kit);
                 net.Beams(); net.Pylons(); net.Rails(); net.Trams();
+                net.ClearBed(plan);  // E12: the old road modules and paint on our tram bed give way
 
                 // ---- 7. the old gives way: the zone, our structures, the beam corridor, the pylons, the tram corridor
                 SwapCut.Run(rep, world, ours, net, hq, plan);
+                if (JoinedTram)
+                {
+                    SwapNetwork.ClearImportedGround(rep);
+                    SwapTramInlays.Apply(rep);
+                    SwapTramKerbCaps.Apply();
+                }
+                else rep.Log("joined tram rewrite off: -swapJoinedTram on is an explicit editor-only experiment; memory/build cost and kerb finish remain on hold");
 
                 // ---- 8. SpaceHQ switch: both stand, one is off (ours: our SpaceHQ_Portal in the old finish, SwapHq)
                 SwapHq.Place(rep, ours.Root, skyGain);
@@ -229,6 +252,7 @@ namespace Suborned.OldTown.Editor.Swap
                 // ---- 9. the old finish: tile merge, cutaway tags, probes, environment bake, the HQ's showpiece probe
                 SwapExport.Ground(rep);  // kerbs, pavement cells and roads as placed, before the merge folds them into tiles
                 DecoKitTileMerge.Merge(street);
+                SwapTramAudit.Run(rep, world, Path.Combine(outDir, "tram-audit.json"));  // E12 evidence: what lies on, or level with, our bed
                 DecoKitCutawayTags.Apply();
                 for (float z = L.Z.x + 20f; z < L.Z.y; z += 40f)
                     DecoKitAtmosphere.Probe($"Street probe {z:0}", new Vector3(0f, 5f, z), new Vector3(2f * L.FrontX, 22f, 44f));
@@ -254,10 +278,26 @@ namespace Suborned.OldTown.Editor.Swap
             }
             finally
             {
-                DecoKitFrontage.Lower = null; DecoKitHighrise.Stands = null; DecoKitCityMass.Rule = null;
+                DecoKitFrontage.Lower = null; DecoKitHighrise.Stands = null; DecoKitCityMass.Rule = null; SwapKeep.Clear();
                 L.Walk = .15f; L.BoulevardKerbX = L.KerbX; P.RingR = 26f; DecoKitPlacer.GroundScaleY = 1f; DecoKitSouthside.SatelliteHalf = 4f;
                 DecoKitSouthside.Blocks = oldBlocks; foreach (var n in reserved) DecoKitSouthside.Reserved.Remove(n);
             }
+        }
+
+        /// <summary>Plan 0.5.6 (form ours) stands the Sphere at the export's landmark/sphere centre (-172, 124), 42 m west of the old Put (-130, 0, 330):
+        /// the old SphereStation instance moves there, its yaw and height as the old builders placed it (Datum's landmark-outline note).</summary>
+        static void Sphere(Report rep, WorldDto world)
+        {
+            var lm = world.Landmarks?.FirstOrDefault(l => l.Id == "landmark/sphere");
+            if (lm == null) { rep.Log("sphere: no landmark/sphere in the export; the old SphereStation stays at its old Put"); return; }
+            int n = 0;
+            foreach (var go in Instances("SphereStation").ToArray())
+            {
+                var from = go.transform.position; var to = Old3(lm.Centre, from.y);
+                go.transform.position = to; n++;
+                rep.Log($"sphere: old SphereStation moved from old ({F(from.x)}, {F(from.z)}) to ({F(to.x)}, {F(to.z)}) = plan ({F(lm.Centre.x)}, {F(lm.Centre.y)}), the export's landmark/sphere");
+            }
+            if (n == 0) rep.Log("sphere: no old SphereStation instance found");
         }
 
         /// <summary>Glint's vintage pick (briefs/075/parity/vintage/variants.json, pick B = GlintVintage's "v2s": the old bloom whole, contrast 13, the

@@ -1,0 +1,12 @@
+{
+  "status": "HOLD; known implementation defects remain",
+  "protectedInputs": 5085,
+  "unexpectedPinDrift": [],
+  "singleSuccessfulRegeneration": true,
+  "abortedDomainPreflightRetained": true,
+  "afterRegenerationSourceChanges": "read-only ownership diagnostic only; captured render implementation unchanged",
+  "candidateScene": "unity/Assets/Scenes/probe-recovery075-tramsettled.unity",
+  "nextOwner": "Aster to Latch: winding/attributes/coverage/material/kerb follow-up; then new independent Redline review",
+  "G-3a": "59 > 58 HOLD",
+  "sight": "unapplied/HOLD"
+}

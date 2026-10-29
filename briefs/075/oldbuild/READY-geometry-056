@@ -1,0 +1,64 @@
+Splice recovery · 2026-10-29 · plan 0.5.6
+STATUS: OUTPUT PAIR RECOVERED AND VERIFIED; GEOMETRY GATE BLOCKED (G-3a).
+This marker is a handoff record, not an all-checks-pass approval.
+
+Recovered state
+- No old geometry/world/Blender writer was alive at inspection; no process killed.
+- Existing world, walk, geometry.json, report.html and held briefs/055 summary were already refreshed. Preserved all their bytes; no regeneration or restoration needed.
+- Working HEAD at inspection: 8196b35a (full SHA in recovery/splice/before.json).
+- World source: harbour-district v0.5.6 (2026-10-29).
+
+SHA-256
+contracts/world/harbour-district.plan.json
+  fb8709bf587c71b015532b87e452af78ca7b89217bdcceb397b1dcc8489514d2
+out/world/harbour-district.world.json
+  1c38f7e61dd69718aa8b489023a80e3cf126117a05a9129e2a7388f87d69f1f5
+out/world/harbour-district.walk.json
+  f3eafbccaac6309e35af89c447445573a03af72af3aa26d84fd52da27cf44cea
+briefs/055/geometry.summary.json
+  001c2622bb8a6be2561c1bc243fed7bd69e0aea9700d935f1a317976cb298c3f
+out/geometry/geometry.json
+  5075245cea273afbac8873df9130a3495a15cf67df83fb54e9bdae4aa735ce4f
+
+Exact commands and results
+1. bun run guard --wait-timeout 0 bun run geometry --check
+   EXIT 1: nine rules pass; G-3a = 59 objects against ratchet 58.
+   Log: briefs/075/recovery/splice/geometry-check.log
+   Other counts: G-1a 1, G-1b 6, G-1d 0, G-1c 729, G-2a 0,
+   G-2b 118, G-2c 2, G-3b 1, K-1 0. These are within caps, not all zero.
+2. bun run guard --wait-timeout 0 bun run test tools/geometry tools/game/walkfile.test.ts
+   EXIT 0: 14 pass, 0 fail, 38 assertions, 3 files, 4.89 s.
+   Log: briefs/075/recovery/splice/focused-tests.log
+3. bun run guard --wait-timeout 0 bun briefs/075/recovery/splice/check-walk.ts
+   EXIT 0: in-memory generation is byte-identical to the existing walk file;
+   walk.world equals current world SHA above. Grid 656 x 328, 0.25 m;
+   floor 430336 bytes, kind 215168 bytes; frame matches plan, counts total
+   215168 cells; no unmeasured kit IDs. No output file rewritten.
+   Log + structured result: briefs/075/recovery/splice/walk-check.log,
+   briefs/075/recovery/splice/walk-verification.json
+4. Python SHA-256 before/after + git show HEAD:<sim/data path>
+   PASS: all 8 sim/data files byte-identical throughout recovery and to HEAD.
+   PASS: all baseline input/output hashes unchanged, including held summary.
+   Manifests: briefs/075/recovery/splice/before.json and after.json.
+
+Open issue / escalation to Aster
+G-3a is 59 on the current export versus 58 in the committed summary and ratchet.
+The check's example is street:phone-booth: 9 objects, 61.75 m² (an example of
+all missing occluders, not proof that a phone booth is the additional object).
+Full current groups, prior summary counts and caps: recovery/splice/geometry-blocker.json.
+Source rule owner is Keel (drawn-solid occluders) / Splice (export). This recovery
+cannot change simulation data, plan, sources or ratchet. Aster must assign the
+source investigation and resolve the failed gate. No cap raised or site rebaked.
+
+Handoff: inputs · done-check · next owner
+- Latch: take the exact out/world/harbour-district.world.json + walk.json pair
+  above. PlayInstall.WalkFloor reads that walk path and checks the world hash.
+  Do not pair with another world export or silently rebake sim/data. Geometry
+  report: out/geometry/report.html; summary: briefs/055/geometry.summary.json.
+  Done-check: paired hashes and walk freshness pass; the overall geometry gate
+  remains blocked pending Aster's disposition. Unity compile/play checks belong
+  to Latch; none were run in this recovery.
+- Aster: resolve G-3a ownership and authorization before accepting this as a
+  fully passing geometry handoff.
+- Redline: independently review recovery/splice evidence; perf JSON/scripts
+  remain under Redline ownership and were not touched here.

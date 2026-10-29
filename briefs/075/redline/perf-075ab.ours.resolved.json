@@ -1,11 +1,11 @@
 {
-    "fingerprint": "ca933dbaf87aabd040ed6bc5c7f1c176fac51fd02d80d09ffd8f813f46c146f3",
-    "exportSha256": "d9262e4f74534a4497f9fa984896297df9bbfc0f818188b3d4a2ff4fc3d2b052",
-    "source": "harbour-district v0.5.2 (2026-10-28)",
+    "fingerprint": "056af6301f11c9252e4f75c5333be9073a259f8b2d8a4662135e39eb6109711b",
+    "exportSha256": "f469704e9df3b7a6ce091d6b05dbcb1edc4f4ad231847307cd4862079e3c5e18",
+    "source": "harbour-district v0.5.5 (2026-10-29)",
     "scene": "Assets/Scenes/HarbourDistrict.unity",
     "content": "world as built, people layer stripped (PerfStrip, both players). OldTown keeps its baked glTF crowd (District / Southside crowd and traffic roots, 2,590 static instances): it is world, not the people layer, and is switched by oldCrowd.; world as built, people layer stripped (PerfStrip, both players). OldTown keeps its baked glTF crowd (District / Southside crowd and traffic roots, 2,590 static instances): it is world, not the people layer, and is switched by oldCrowd.; roots built: HarbourDistrict, batches, cameras, contact, lighting, sea, source; people: none built (stripped root handover (0 people, no people picker))",
     "camera": "",
-    "sceneFingerprint": "bfbe5b5032280f84396fc0d87a95951cdf435da07d26caf8a407cecaf0432c5f",
+    "sceneFingerprint": "ff7369ce9bce28de72285f41d9e12374182b75204ae15c9ecb1b4c26a18bcb6e",
     "roots": [
         "HarbourDistrict",
         "batches",
@@ -22,7 +22,7 @@
     "pitch": 38.000003814697266,
     "yaw": 30.000001907348633,
     "aspect": 1.7777777910232544,
-    "farMargin": 1234.572509765625,
+    "farMargin": 1257.23095703125,
     "width": 1920,
     "height": 1080,
     "warmup": {
@@ -129,7 +129,7 @@
                 "z": -227.5
             },
             "zoom": 14.0,
-            "standOff": 79.78177642822266,
+            "standOff": 661.634033203125,
             "yaw": 210.0,
             "path": [],
             "speed": 0.0

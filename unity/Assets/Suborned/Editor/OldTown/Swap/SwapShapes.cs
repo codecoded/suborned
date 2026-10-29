@@ -33,9 +33,9 @@ namespace Suborned.OldTown.Editor.Swap
                 {
                     Vector2 a = Poly[i], b = Poly[(i + 1) % Poly.Length], ax = new(-(b.y - a.y), b.x - a.x);
                     float p0 = float.MaxValue, p1 = float.MinValue, q0 = float.MaxValue, q1 = float.MinValue;
-                    foreach (var v in Poly) { float d = Vector2.Dot(v, ax); p0 = Mathf.Min(p0, d); p1 = Mathf.Max(p1, d); }
-                    foreach (var v in rc) { float d = Vector2.Dot(v, ax); q0 = Mathf.Min(q0, d); q1 = Mathf.Max(q1, d); }
-                    if (p1 <= q0 + 1e-4f || q1 <= p0 + 1e-4f) return false;
+                    foreach (var v in Poly) { float d = Vector2.Dot(v - a, ax); p0 = Mathf.Min(p0, d); p1 = Mathf.Max(p1, d); }
+                    foreach (var v in rc) { float d = Vector2.Dot(v - a, ax); q0 = Mathf.Min(q0, d); q1 = Mathf.Max(q1, d); }
+                    if (p1 <= q0 || q1 <= p0) return false;
                 }
                 return true;
             }

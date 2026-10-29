@@ -38,7 +38,7 @@ namespace Suborned.Perf
         {
             this.shadows = shadows; this.fade = fade; this.proxies = proxies; this.everyFace = everyFace;
             data = cam.GetUniversalAdditionalCameraData();
-            old = new OldTargets();
+            old = new OldTargets(cam);
             // brief 075 Perf A/B: the old-built town's camera has no TacticalShadows or ArchitectureFade; the switches that need them refuse there
             if (shadows) builtCascades = shadows.cascades;
             if (fade) { builtFade = fade.fade; builtWhole = fade.wholeTiles; }
@@ -108,9 +108,17 @@ namespace Suborned.Perf
     }
 
     /// <summary>Brief 075 Perf A/B (Redline, perf-075ab.json): the switches for the old-built town, each echoed by the report (PerfVariant is
-    /// serialized whole) and each refused on a scene without its target, so a cut is never measured as the build against itself.</summary>
+    /// serialized whole) and each refused on a scene without its target, so a cut is never measured as the build against itself.
+    /// On the swap's play camera ("Play camera (our play look)", OldTownPlayLook: crowd culled, MSAA off, no soft focus or flare as built) each
+    /// switch acts on what that camera draws (Latch, 2026-10-29): oldCrowd = the crowd layer in its culling mask (and the crowd renderers),
+    /// msaa = its allowMSAA (on above 1) with the asset's sample count, oldLens = OldTownPlayLook.presentationLens (the old depth of field and the
+    /// sun flare in the play view). "off" is the play camera as built; "on" (or msaa 2-8) puts the old cost back, so a cut's saving is on - off.</summary>
     sealed class OldTargets
     {
+        /// <summary>OldTownPlayLook.CrowdLayer (the swap puts the old town's baked crowd and traffic on it; Suborned.OldTown is not referenced here).</summary>
+        const int CrowdLayer = 29;
+        readonly Camera cam; readonly Behaviour playLook; readonly FieldInfo lensField;
+        readonly int builtMask; readonly bool builtAllowMsaa, builtLens;
         public static readonly string[] CrowdRoots = { "District crowd and traffic", "Southside crowd and traffic" };
         readonly List<(Renderer r, bool on)> crowd = new();
         readonly List<(DepthOfField dof, bool active)> dofs = new();
@@ -119,8 +127,15 @@ namespace Suborned.Perf
         readonly Dictionary<UniversalRenderPipelineAsset, (int msaa, bool depth, bool opaque)> assets = new();
         readonly int crowdRoots;
 
-        public OldTargets()
+        public OldTargets(Camera cam)
         {
+            this.cam = cam;
+            playLook = cam ? cam.GetComponent("OldTownPlayLook") as Behaviour : null;
+            if (playLook)
+            {
+                lensField = playLook.GetType().GetField("presentationLens") ?? throw new InvalidOperationException("Perf: OldTownPlayLook has no presentationLens (a player older than the 075 play-camera switches)");
+                builtMask = cam.cullingMask; builtAllowMsaa = cam.allowMSAA; builtLens = (bool)lensField.GetValue(playLook);
+            }
             foreach (var name in CrowdRoots)
             {
                 var root = GameObject.Find(name); if (!root) continue;
@@ -142,6 +157,7 @@ namespace Suborned.Perf
         bool HasOldPipeline => builtPipeline && ours && builtPipeline != ours;
 
         public string Describe() =>
+            $"camera {(cam ? cam.name : "none")}{(playLook ? $" (OldTownPlayLook: crowd layer {CrowdLayer} {((builtMask & (1 << CrowdLayer)) != 0 ? "drawn" : "culled")}, allowMSAA {builtAllowMsaa}, presentation lens {(builtLens ? "on" : "off")} as built; the switches act on this camera)" : "")}; " +
             $"oldCrowd: {crowdRoots} roots, {crowd.Count} renderers ({crowd.FindAll(c => c.on).Count} on as built); pipeline: built {(builtPipeline ? builtPipeline.name : "none")}, ours {(ours ? ours.name : "none")}{(HasOldPipeline ? "" : " (no old pipeline in this player)")}; " +
             $"msaa as built {string.Join(", ", ListAssets())}; oldLens: {dofs.Count} DOF overrides, sun flare {(flare ? (flareOn ? "on" : "off") : "none")}";
 
@@ -163,17 +179,20 @@ namespace Suborned.Perf
             // msaa
             if (v.msaa != 0 && v.msaa != 1 && v.msaa != 2 && v.msaa != 4 && v.msaa != 8) throw new InvalidOperationException($"Perf: variant `{v.name}` msaa {v.msaa}: 1, 2, 4 or 8");
             urp.msaaSampleCount = v.msaa > 0 ? v.msaa : built.msaa;
+            if (playLook) cam.allowMSAA = v.msaa > 0 ? v.msaa > 1 : builtAllowMsaa;  // the play camera keeps MSAA off as built: msaa 2-8 turns it back on there
             // old crowd
             string c = string.IsNullOrEmpty(v.oldCrowd) ? "" : v.oldCrowd;
             if (c != "" && c != "on" && c != "off") throw new InvalidOperationException($"Perf: variant `{v.name}` oldCrowd `{c}`: on or off");
             if (c != "" && crowdRoots == 0) throw new InvalidOperationException($"Perf: variant `{v.name}` switches the old crowd, but this scene has no {string.Join(" / ", CrowdRoots)}");
             foreach (var (r, on) in crowd) if (r) r.enabled = c == "off" ? false : on;
+            if (playLook) cam.cullingMask = c == "on" ? builtMask | (1 << CrowdLayer) : c == "off" ? builtMask & ~(1 << CrowdLayer) : builtMask;  // the play camera culls the crowd layer as built
             // old lens
             string l = string.IsNullOrEmpty(v.oldLens) ? "" : v.oldLens;
             if (l != "" && l != "on" && l != "off") throw new InvalidOperationException($"Perf: variant `{v.name}` oldLens `{l}`: on or off");
             if (l != "" && dofs.Count == 0 && !flare) throw new InvalidOperationException($"Perf: variant `{v.name}` switches the old lens, but this scene has no depth-of-field override and no sun flare");
             foreach (var (d, a) in dofs) d.active = l == "off" ? false : a;
             if (flare) flare.enabled = l == "off" ? false : flareOn;
+            if (playLook) lensField.SetValue(playLook, l == "on" || (l == "" && builtLens));  // the play camera draws no soft focus or flare as built: "on" brings the old lens into the play view
             if (l == "off") { urp.supportsCameraDepthTexture = false; urp.supportsCameraOpaqueTexture = false; }
         }
     }

@@ -1,0 +1,132 @@
+{
+  "source": "read-only FBX mesh triangles; no Unity",
+  "rows": [
+    {
+      "sourceAlong": -1,
+      "lateral": -0.5,
+      "sourceTop": -0.0015014379026574971,
+      "expectedAfterBedLift": 0.003498562097342503
+    },
+    {
+      "sourceAlong": -1,
+      "lateral": 0,
+      "sourceTop": -0.00549999950453639,
+      "expectedAfterBedLift": -0.0004999995045363902
+    },
+    {
+      "sourceAlong": -1,
+      "lateral": 0.5,
+      "sourceTop": -0.001501438528712779,
+      "expectedAfterBedLift": 0.003498561471287221
+    },
+    {
+      "sourceAlong": -0.9,
+      "lateral": -0.5,
+      "sourceTop": 3.8211695906344904e-08,
+      "expectedAfterBedLift": 0.0050000382116959065
+    },
+    {
+      "sourceAlong": -0.9,
+      "lateral": 0,
+      "sourceTop": -0.004000000189989805,
+      "expectedAfterBedLift": 0.0009999998100101949
+    },
+    {
+      "sourceAlong": -0.9,
+      "lateral": 0.5,
+      "sourceTop": 3.68871555123965e-08,
+      "expectedAfterBedLift": 0.0050000368871555125
+    },
+    {
+      "sourceAlong": -0.5,
+      "lateral": -0.5,
+      "sourceTop": 2.1523064857138375e-08,
+      "expectedAfterBedLift": 0.005000021523064857
+    },
+    {
+      "sourceAlong": -0.5,
+      "lateral": 0,
+      "sourceTop": -0.004000000189989805,
+      "expectedAfterBedLift": 0.0009999998100101949
+    },
+    {
+      "sourceAlong": -0.5,
+      "lateral": 0.5,
+      "sourceTop": 2.019852066792852e-08,
+      "expectedAfterBedLift": 0.005000020198520668
+    },
+    {
+      "sourceAlong": 0,
+      "lateral": -0.5,
+      "sourceTop": -6.622729113140463e-10,
+      "expectedAfterBedLift": 0.004999999337727089
+    },
+    {
+      "sourceAlong": 0,
+      "lateral": 0,
+      "sourceTop": -0.004000000189989805,
+      "expectedAfterBedLift": 0.0009999998100101949
+    },
+    {
+      "sourceAlong": 0,
+      "lateral": 0.5,
+      "sourceTop": -6.622728876564491e-10,
+      "expectedAfterBedLift": 0.0049999993377271125
+    },
+    {
+      "sourceAlong": 0.5,
+      "lateral": -0.5,
+      "sourceTop": -2.3512869891365323e-08,
+      "expectedAfterBedLift": 0.0049999764871301085
+    },
+    {
+      "sourceAlong": 0.5,
+      "lateral": 0,
+      "sourceTop": -0.004000000189989805,
+      "expectedAfterBedLift": 0.0009999998100101949
+    },
+    {
+      "sourceAlong": 0.5,
+      "lateral": 0.5,
+      "sourceTop": -2.2188325654840332e-08,
+      "expectedAfterBedLift": 0.004999977811674345
+    },
+    {
+      "sourceAlong": 0.9,
+      "lateral": -0.5,
+      "sourceTop": -4.1793347475406344e-08,
+      "expectedAfterBedLift": 0.004999958206652525
+    },
+    {
+      "sourceAlong": 0.9,
+      "lateral": 0,
+      "sourceTop": -0.004000000189989805,
+      "expectedAfterBedLift": 0.0009999998100101949
+    },
+    {
+      "sourceAlong": 0.9,
+      "lateral": 0.5,
+      "sourceTop": -4.0468807034142937e-08,
+      "expectedAfterBedLift": 0.004999959531192966
+    },
+    {
+      "sourceAlong": 1,
+      "lateral": -0.5,
+      "sourceTop": -0.001501525956620032,
+      "expectedAfterBedLift": 0.003498474043379968
+    },
+    {
+      "sourceAlong": 1,
+      "lateral": 0,
+      "sourceTop": -0.00549999950453639,
+      "expectedAfterBedLift": -0.0004999995045363902
+    },
+    {
+      "sourceAlong": 1,
+      "lateral": 0.5,
+      "sourceTop": -0.0015015252141494285,
+      "expectedAfterBedLift": 0.003498474785850572
+    }
+  ],
+  "note": "Source endpoint height must be used rather than assuming rail-head top equals BedLift everywhere. This does not waive mesh continuity/gaps or other proof failures."
+}

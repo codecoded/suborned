@@ -1,0 +1,82 @@
+[
+  {
+    "name": "manifest-before",
+    "command": [
+      "bun",
+      "briefs/075/oldbuild/swap/tools/unityrun.ts",
+      "/Users/sky/Projects/suborned/out/scratch/latch/tram-fix/manifest-before.log",
+      "--",
+      "-executeMethod",
+      "Suborned.World.Review.Recovery075.Manifest",
+      "-recoveryScene",
+      "Assets/Scenes/probe-recovery075-swap.unity",
+      "-recoveryOut",
+      "/Users/sky/Projects/suborned/briefs/075/recovery/tram-fix",
+      "-recoveryTag",
+      "manifest-before"
+    ],
+    "exit": 0,
+    "seconds": 24.98
+  },
+  {
+    "name": "fix",
+    "command": [
+      "bun",
+      "briefs/075/oldbuild/swap/tools/unityrun.ts",
+      "/Users/sky/Projects/suborned/out/scratch/latch/tram-fix/fix.log",
+      "--",
+      "-executeMethod",
+      "Suborned.OldTown.Editor.Swap.OldTownSwap.TramFix",
+      "-swapScene",
+      "probe-recovery075-swap",
+      "-swapWorld",
+      "/Users/sky/Projects/suborned/out/scratch/latch/recovery/integration/world.json",
+      "-swapOut",
+      "/Users/sky/Projects/suborned/briefs/075/recovery/tram-fix"
+    ],
+    "exit": 0,
+    "seconds": 11.77
+  },
+  {
+    "name": "manifest-after",
+    "command": [
+      "bun",
+      "briefs/075/oldbuild/swap/tools/unityrun.ts",
+      "/Users/sky/Projects/suborned/out/scratch/latch/tram-fix/manifest-after.log",
+      "--",
+      "-executeMethod",
+      "Suborned.World.Review.Recovery075.Manifest",
+      "-recoveryScene",
+      "Assets/Scenes/probe-recovery075-tramfix.unity",
+      "-recoveryOut",
+      "/Users/sky/Projects/suborned/briefs/075/recovery/tram-fix",
+      "-recoveryTag",
+      "manifest-after"
+    ],
+    "exit": 0,
+    "seconds": 21.72
+  },
+  {
+    "name": "shots",
+    "command": [
+      "bun",
+      "briefs/075/oldbuild/swap/tools/unityrun.ts",
+      "/Users/sky/Projects/suborned/out/scratch/latch/tram-fix/shots.log",
+      "--",
+      "-executeMethod",
+      "Suborned.OldTown.Editor.Swap.OldTownSwap.Shoot",
+      "-swapScene",
+      "probe-recovery075-tramfix",
+      "-swapWorld",
+      "/Users/sky/Projects/suborned/out/scratch/latch/recovery/integration/world.json",
+      "-swapOut",
+      "/Users/sky/Projects/suborned/briefs/075/recovery/tram-fix/after",
+      "-swapShots",
+      "tram",
+      "-swapTag",
+      "tramfix"
+    ],
+    "exit": 0,
+    "seconds": 10.93
+  }
+]

@@ -16,3 +16,7 @@ The review helper still has limited fingerprint coverage and non-transactional w
 After Redline's review, Aster fixed the comparator's exit status and literal placement-ID check, and added `--output-dir` so verification can leave captured evidence intact. The original manifests pass all 14 checks. Negative probes for duplicate IDs, a wrong ID and changed navigation each return exit 1. Probe outputs are under `out/scratch/aster/recovery-gate/`; the original captured manifests were not rewritten.
 
 No production foliage enablement, site rebake, recording replacement, Air run or new player build occurred. Full recovered tram/HQ source changes remain outside this provisional civic checkpoint pending their own review.
+
+## Model routing · Sky, 2026-10-29
+
+Sky: "for 3D sol's not great - for coding ok". Use Opus 5.5 for 3D asset/material work and visual judgment; Sol remains suitable for code and tools. This supersedes the recovery's blanket use of the main Codex model for those 3D tasks. The active Sol tram code correction continues; its queued foliage appearance task was cancelled for reassignment. Keep mechanical code verification separate from final 3D appearance approval.

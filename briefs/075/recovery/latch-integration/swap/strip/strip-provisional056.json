@@ -1,0 +1,22 @@
+{
+ "tile":[100,50],
+ "px":[1200,600],
+ "frame":"old (plan y = z - 206)",
+ "tiles":[
+ {"file":"strip-00-provisional056.png","centrePlan":[-410.009,279.871],"yaw":0.297,"orthoHalf":25},
+ {"file":"strip-01-provisional056.png","centrePlan":[-345.009,236.815],"yaw":77.48,"orthoHalf":25},
+ {"file":"strip-02-provisional056.png","centrePlan":[-340,139.26],"yaw":90,"orthoHalf":25},
+ {"file":"strip-03-provisional056.png","centrePlan":[-340,39.26],"yaw":90,"orthoHalf":25},
+ {"file":"strip-04-provisional056.png","centrePlan":[-340,-60.74],"yaw":90,"orthoHalf":25},
+ {"file":"strip-05-provisional056.png","centrePlan":[-340,-160.74],"yaw":90,"orthoHalf":25},
+ {"file":"strip-06-provisional056.png","centrePlan":[-340,-260.74],"yaw":90,"orthoHalf":25},
+ {"file":"strip-07-provisional056.png","centrePlan":[-336.967,-359.661],"yaw":82.774,"orthoHalf":25},
+ {"file":"strip-08-provisional056.png","centrePlan":[-278.357,-409.106],"yaw":2.061,"orthoHalf":25},
+ {"file":"strip-09-provisional056.png","centrePlan":[-178.519,-410],"yaw":0,"orthoHalf":25},
+ {"file":"strip-10-provisional056.png","centrePlan":[-78.519,-410],"yaw":0,"orthoHalf":25},
+ {"file":"strip-11-provisional056.png","centrePlan":[-7.13,-373.334],"yaw":-70.87,"orthoHalf":25},
+ {"file":"strip-12-provisional056.png","centrePlan":[0,-277.78],"yaw":-90,"orthoHalf":25},
+ {"file":"strip-13-provisional056.png","centrePlan":[0,-177.781],"yaw":-90,"orthoHalf":25},
+ {"file":"strip-14-provisional056.png","centrePlan":[0,-83.836],"yaw":-90,"orthoHalf":25},
+ {"file":"strip-15-provisional056.png","centrePlan":[0,-9.428],"yaw":0,"orthoHalf":35}]
+}

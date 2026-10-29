@@ -1,0 +1,96 @@
+{
+ "tag": "before",
+ "root": "out/scratch/vela/palette/before",
+ "run": [
+  {
+   "piece": "StreamCorner_4",
+   "colourway": "butter",
+   "swap": {
+    "DK_Limestone_Tex": "DK_Limestone_Tex__butter",
+    "DK_Render_White": "DK_Render_White__butter",
+    "DK_Stone_Dark": "DK_Stone_Dark__butter"
+   }
+  },
+  {
+   "piece": "StreamBay_4",
+   "colourway": "butter",
+   "swap": {
+    "DK_Limestone_Tex": "DK_Limestone_Tex__butter",
+    "DK_Render_White": "DK_Render_White__butter",
+    "DK_Stone_Dark": "DK_Stone_Dark__butter"
+   }
+  },
+  {
+   "piece": "StreamBay_3W",
+   "colourway": "butter",
+   "swap": {
+    "DK_Limestone_Tex": "DK_Limestone_Tex__butter",
+    "DK_Render_White": "DK_Render_White__butter",
+    "DK_Stone_Dark": "DK_Stone_Dark__butter"
+   }
+  },
+  {
+   "piece": "StreamBay_4",
+   "colourway": "apricot",
+   "swap": {
+    "DK_Limestone_Tex": "DK_Limestone_Tex__apricot",
+    "DK_Render_White": "DK_Render_White__apricot",
+    "DK_Stone_Dark": "DK_Stone_Dark__apricot"
+   }
+  },
+  {
+   "piece": "StreamBay_3W",
+   "colourway": "apricot",
+   "swap": {
+    "DK_Limestone_Tex": "DK_Limestone_Tex__apricot",
+    "DK_Render_White": "DK_Render_White__apricot",
+    "DK_Stone_Dark": "DK_Stone_Dark__apricot"
+   }
+  },
+  {
+   "piece": "StreamBay_4",
+   "colourway": "lilac",
+   "swap": {
+    "DK_Limestone_Tex": "DK_Limestone_Tex__lilac",
+    "DK_Render_White": "DK_Render_White__lilac",
+    "DK_Stone_Dark": "DK_Stone_Dark__lilac"
+   }
+  },
+  {
+   "piece": "StreamEnd_4",
+   "colourway": "lilac",
+   "swap": {
+    "DK_Limestone_Tex": "DK_Limestone_Tex__lilac",
+    "DK_Render_White": "DK_Render_White__lilac",
+    "DK_Stone_Dark": "DK_Stone_Dark__lilac"
+   }
+  }
+ ],
+ "cars": [
+  {
+   "key": "tropical-turquoise",
+   "body": "DK_CarPaint_Turquoise",
+   "roof": "DK_CarPaint_Cream",
+   "bodyHex": "#3FA9A5",
+   "roofHex": "#F2E8CF"
+  },
+  {
+   "key": "matador-red",
+   "body": "DK_CarPaint_MatadorRed",
+   "roof": "DK_CarPaint_Cream",
+   "bodyHex": "#B3262C",
+   "roofHex": "#F2E8CF"
+  },
+  {
+   "key": "canary-yellow",
+   "body": "DK_CarPaint_Canary",
+   "roof": "DK_CarPaint_Cream",
+   "bodyHex": "#F0CF6A",
+   "roofHex": "#F2E8CF"
+  }
+ ],
+ "sphere": {
+  "DK_Steel_Ivory": "DK_Steel_Ivory__vermilion",
+  "DK_Hull_Ivory": "DK_Hull_Ivory__brick"
+ }
+}

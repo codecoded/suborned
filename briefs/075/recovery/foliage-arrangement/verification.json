@@ -1,0 +1,13 @@
+{
+  "priorReferenceHashesUnchanged": 40,
+  "sourceHashesMatch": true,
+  "twoNewFbxHashesMatch": true,
+  "textureBytesAndDimensionsUnchanged": true,
+  "leafMaterialFunctionUnchangedAST": true,
+  "placementPosesAndSourceWorldEnvelopesUnchanged": true,
+  "renderCount": 16,
+  "mechanicalResult": "PASS",
+  "appearanceResult": "REJECT adoption for BOTH selections",
+  "independentReview": "NEW Glyph review required; not performed by Vela",
+  "constraints": "same source envelopes; actual occupied extrema differ; not Unity import validation"
+}

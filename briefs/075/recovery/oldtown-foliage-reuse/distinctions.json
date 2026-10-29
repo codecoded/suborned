@@ -1,0 +1,1397 @@
+{
+  "ShrubMound": {
+    "geometry": {
+      "fbxBytesIdentical": false,
+      "polygonsMaterialsSmoothingExact": true,
+      "uvExact": true,
+      "cornerNormalsExact": false,
+      "sameVertexCount": true,
+      "changedVerticesAbove1Micrometre": 40,
+      "onlyBelowGroundZClamping": true,
+      "vertexMaxDeltaMetres": 0.06092737994084807
+    },
+    "importerDifferences": {},
+    "materials": [
+      {
+        "slot": "DK_Leaf_CoreShrub",
+        "oldPath": "unity/Assets/Suborned/OldTownArt/DecoKit/Materials/DK_Leaf_CoreShrub.mat",
+        "currentPath": "unity/Assets/Suborned/Kit/Materials/DK_Leaf_CoreShrub.mat",
+        "oldSha256": "d23454c4372c0b952ed6805133306fbf557a6d38efe0c795cfadeea79d196e50",
+        "currentSha256": "bfe439bfd2931da92fcc7493bb356e879ad8a40c450f269a3d9f05dd232a3ac9",
+        "changedPropertyLines": [
+          {
+            "key": "m_Shader",
+            "old": [
+              "  m_Shader: {fileID: 4800000, guid: 92902edf0ab892fb40f51a8701887fed, type: 3}"
+            ],
+            "current": [
+              "  m_Shader: {fileID: 4800000, guid: 2529b42165e1d45a8bcfb0013bb5aba3, type: 3}"
+            ]
+          }
+        ]
+      },
+      {
+        "slot": "DK_Leaf_Shrub",
+        "oldPath": "unity/Assets/Suborned/OldTownArt/DecoKit/Materials/DK_Leaf_Shrub.mat",
+        "currentPath": "unity/Assets/Suborned/Kit/Materials/DK_Leaf_Shrub.mat",
+        "oldSha256": "690137331e971d8d3fe268f796008f16e3dd500107ac27cab8afb2d958451afe",
+        "currentSha256": "017376fe489edd8a5ec445e344a34f1f9916662332b29a3da9c22e4a4dd3ff5a",
+        "changedPropertyLines": [
+          {
+            "key": "m_Shader",
+            "old": [
+              "  m_Shader: {fileID: 4800000, guid: 92902edf0ab892fb40f51a8701887fed, type: 3}"
+            ],
+            "current": [
+              "  m_Shader: {fileID: 4800000, guid: 2529b42165e1d45a8bcfb0013bb5aba3, type: 3}"
+            ]
+          }
+        ]
+      }
+    ],
+    "lodFiles": {
+      "old": [],
+      "current": []
+    },
+    "prefabs": {
+      "old": {
+        "path": "unity/Assets/Suborned/OldTownArt/DecoKit/Prefabs/Plants/DK_ShrubMound.prefab",
+        "sha256": "9700a0d16f81764eceba85410ff1b2ecb7ff2463b66e34fbe31d20f3d5d5b97b",
+        "hasSerializedLODGroup": false
+      },
+      "current": {
+        "path": "unity/Assets/Suborned/Kit/Prefabs/Plants/DK_ShrubMound.prefab",
+        "sha256": "97ff7a6735f1b6f463546ecad8a9c664b25a9b4f2eef9c7b60edbd1e9282aa78",
+        "hasSerializedLODGroup": false
+      }
+    },
+    "importers": {
+      "old": {
+        "globalScale": "1",
+        "meshCompression": "0",
+        "generateMeshLods": "0",
+        "normalImportMode": "0",
+        "tangentImportMode": "3",
+        "normalSmoothAngle": "60",
+        "normalSmoothingSource": "0",
+        "addColliders": "0",
+        "useFileUnits": "1",
+        "bakeAxisConversion": "0"
+      },
+      "current": {
+        "globalScale": "1",
+        "meshCompression": "0",
+        "generateMeshLods": "0",
+        "normalImportMode": "0",
+        "tangentImportMode": "3",
+        "normalSmoothAngle": "60",
+        "normalSmoothingSource": "0",
+        "addColliders": "0",
+        "useFileUnits": "1",
+        "bakeAxisConversion": "0"
+      }
+    }
+  },
+  "FlowerBed": {
+    "geometry": {
+      "fbxBytesIdentical": false,
+      "polygonsMaterialsSmoothingExact": true,
+      "uvExact": true,
+      "cornerNormalsExact": false,
+      "sameVertexCount": true,
+      "changedVerticesAbove1Micrometre": 200,
+      "onlyBelowGroundZClamping": true,
+      "vertexMaxDeltaMetres": 0.08697806320567683
+    },
+    "importerDifferences": {},
+    "materials": [
+      {
+        "slot": "DK_Leaf_CoreShrub",
+        "oldPath": "unity/Assets/Suborned/OldTownArt/DecoKit/Materials/DK_Leaf_CoreShrub.mat",
+        "currentPath": "unity/Assets/Suborned/Kit/Materials/DK_Leaf_CoreShrub.mat",
+        "oldSha256": "d23454c4372c0b952ed6805133306fbf557a6d38efe0c795cfadeea79d196e50",
+        "currentSha256": "bfe439bfd2931da92fcc7493bb356e879ad8a40c450f269a3d9f05dd232a3ac9",
+        "changedPropertyLines": [
+          {
+            "key": "m_Shader",
+            "old": [
+              "  m_Shader: {fileID: 4800000, guid: 92902edf0ab892fb40f51a8701887fed, type: 3}"
+            ],
+            "current": [
+              "  m_Shader: {fileID: 4800000, guid: 2529b42165e1d45a8bcfb0013bb5aba3, type: 3}"
+            ]
+          }
+        ]
+      },
+      {
+        "slot": "DK_Leaf_Shrub",
+        "oldPath": "unity/Assets/Suborned/OldTownArt/DecoKit/Materials/DK_Leaf_Shrub.mat",
+        "currentPath": "unity/Assets/Suborned/Kit/Materials/DK_Leaf_Shrub.mat",
+        "oldSha256": "690137331e971d8d3fe268f796008f16e3dd500107ac27cab8afb2d958451afe",
+        "currentSha256": "017376fe489edd8a5ec445e344a34f1f9916662332b29a3da9c22e4a4dd3ff5a",
+        "changedPropertyLines": [
+          {
+            "key": "m_Shader",
+            "old": [
+              "  m_Shader: {fileID: 4800000, guid: 92902edf0ab892fb40f51a8701887fed, type: 3}"
+            ],
+            "current": [
+              "  m_Shader: {fileID: 4800000, guid: 2529b42165e1d45a8bcfb0013bb5aba3, type: 3}"
+            ]
+          }
+        ]
+      },
+      {
+        "slot": "DK_Flower_Coral",
+        "oldPath": "unity/Assets/Suborned/OldTownArt/DecoKit/Materials/DK_Flower_Coral.mat",
+        "currentPath": "unity/Assets/Suborned/Kit/Materials/DK_Flower_Coral.mat",
+        "oldSha256": "2ae278c681543e4e66a26c132cfae213a8e735982a3ad8ec53821232614573fa",
+        "currentSha256": "e44408ab23e1594f6aa2b077ef0e6cf2fde3d7e8614032df0e855c2be40308ed",
+        "changedPropertyLines": [
+          {
+            "key": "m_Shader",
+            "old": [
+              "  m_Shader: {fileID: 4800000, guid: 92902edf0ab892fb40f51a8701887fed, type: 3}"
+            ],
+            "current": [
+              "  m_Shader: {fileID: 4800000, guid: 2529b42165e1d45a8bcfb0013bb5aba3, type: 3}"
+            ]
+          }
+        ]
+      }
+    ],
+    "lodFiles": {
+      "old": [],
+      "current": []
+    },
+    "prefabs": {
+      "old": {
+        "path": "unity/Assets/Suborned/OldTownArt/DecoKit/Prefabs/Plants/DK_FlowerBed.prefab",
+        "sha256": "62bbeebaea597b47dcc0180899ad3134cc59fcdac5d9a0aaa5a1e9a72212cb31",
+        "hasSerializedLODGroup": false
+      },
+      "current": {
+        "path": "unity/Assets/Suborned/Kit/Prefabs/Plants/DK_FlowerBed.prefab",
+        "sha256": "6925aef864f312a3c7da3c440b852f76b8a00e12bb3a60fbe0063755562c1bd7",
+        "hasSerializedLODGroup": false
+      }
+    },
+    "importers": {
+      "old": {
+        "globalScale": "1",
+        "meshCompression": "0",
+        "generateMeshLods": "0",
+        "normalImportMode": "0",
+        "tangentImportMode": "3",
+        "normalSmoothAngle": "60",
+        "normalSmoothingSource": "0",
+        "addColliders": "0",
+        "useFileUnits": "1",
+        "bakeAxisConversion": "0"
+      },
+      "current": {
+        "globalScale": "1",
+        "meshCompression": "0",
+        "generateMeshLods": "0",
+        "normalImportMode": "0",
+        "tangentImportMode": "3",
+        "normalSmoothAngle": "60",
+        "normalSmoothingSource": "0",
+        "addColliders": "0",
+        "useFileUnits": "1",
+        "bakeAxisConversion": "0"
+      }
+    }
+  },
+  "PottedFern": {
+    "geometry": {
+      "fbxBytesIdentical": false,
+      "polygonsMaterialsSmoothingExact": true,
+      "uvExact": true,
+      "cornerNormalsExact": true,
+      "sameVertexCount": true,
+      "changedVerticesAbove1Micrometre": 0,
+      "onlyBelowGroundZClamping": false,
+      "vertexMaxDeltaMetres": 0
+    },
+    "importerDifferences": {},
+    "materials": [
+      {
+        "slot": "DK_Enamel_Ivory",
+        "oldPath": "unity/Assets/Suborned/OldTownArt/DecoKit/Materials/DK_Enamel_Ivory.mat",
+        "currentPath": "unity/Assets/Suborned/Kit/Materials/DK_Enamel_Ivory.mat",
+        "oldSha256": "4d84efe57a9108f71d970d578e39fa62544c27fee8dd0e4291ae350979693cb8",
+        "currentSha256": "86fbae6bdcee94c8d92b60eabf67561c9e19ee7b2196606e5461a682aefa50f0",
+        "changedPropertyLines": [
+          {
+            "key": "m_Shader",
+            "old": [
+              "  m_Shader: {fileID: 4800000, guid: daa729f856d160b6847192c7304dec72, type: 3}"
+            ],
+            "current": [
+              "  m_Shader: {fileID: 4800000, guid: 206122040e60d470e92cddeccf1aacf6, type: 3}"
+            ]
+          }
+        ]
+      },
+      {
+        "slot": "DK_Enamel_Seafoam",
+        "oldPath": "unity/Assets/Suborned/OldTownArt/DecoKit/Materials/DK_Enamel_Seafoam.mat",
+        "currentPath": "unity/Assets/Suborned/Kit/Materials/DK_Enamel_Seafoam.mat",
+        "oldSha256": "0c337608d0306f8383a657f498af5612d4ca2fc3818d492923395a8279bb9f15",
+        "currentSha256": "431d3e1a26bf85a6fb1c16687e95c486dc6851f9b84849b854e78b694c45b736",
+        "changedPropertyLines": [
+          {
+            "key": "m_Shader",
+            "old": [
+              "  m_Shader: {fileID: 4800000, guid: daa729f856d160b6847192c7304dec72, type: 3}"
+            ],
+            "current": [
+              "  m_Shader: {fileID: 4800000, guid: 206122040e60d470e92cddeccf1aacf6, type: 3}"
+            ]
+          }
+        ]
+      },
+      {
+        "slot": "DK_Chrome",
+        "oldPath": "unity/Assets/Suborned/OldTownArt/DecoKit/Materials/DK_Chrome.mat",
+        "currentPath": "unity/Assets/Suborned/Kit/Materials/DK_Chrome.mat",
+        "oldSha256": "d360adec544f7d2974e190241d37299908d6ace244e52371b541135b2833f191",
+        "currentSha256": "5dc81d1880e4d910fc4c88d842a770af3852644101b32a32c2adc37b5326e7f9",
+        "changedPropertyLines": [
+          {
+            "key": "m_Shader",
+            "old": [
+              "  m_Shader: {fileID: 4800000, guid: 92902edf0ab892fb40f51a8701887fed, type: 3}"
+            ],
+            "current": [
+              "  m_Shader: {fileID: 4800000, guid: 2529b42165e1d45a8bcfb0013bb5aba3, type: 3}"
+            ]
+          }
+        ]
+      },
+      {
+        "slot": "DK_Gold",
+        "oldPath": "unity/Assets/Suborned/OldTownArt/DecoKit/Materials/DK_Gold.mat",
+        "currentPath": "unity/Assets/Suborned/Kit/Materials/DK_Gold.mat",
+        "oldSha256": "a48ba7fb26f95f4407f5c150c64157755369113e9ae53e2b939a9dc46d1b9cec",
+        "currentSha256": "700e14d5125b3d1cc3e941c92b1b15a477f18c16698616922fad1b017310c750",
+        "changedPropertyLines": [
+          {
+            "key": "_Smoothness",
+            "old": [
+              "    - _Smoothness: 0.7"
+            ],
+            "current": [
+              "    - _Smoothness: 0.6"
+            ]
+          },
+          {
+            "key": "_Metallic",
+            "old": [
+              "    - _Metallic: 1"
+            ],
+            "current": [
+              "    - _Metallic: 0.6"
+            ]
+          },
+          {
+            "key": "m_Shader",
+            "old": [
+              "  m_Shader: {fileID: 4800000, guid: 92902edf0ab892fb40f51a8701887fed, type: 3}"
+            ],
+            "current": [
+              "  m_Shader: {fileID: 4800000, guid: 2529b42165e1d45a8bcfb0013bb5aba3, type: 3}"
+            ]
+          }
+        ]
+      },
+      {
+        "slot": "DK_Soil",
+        "oldPath": "unity/Assets/Suborned/OldTownArt/DecoKit/Materials/DK_Soil.mat",
+        "currentPath": "unity/Assets/Suborned/Kit/Materials/DK_Soil.mat",
+        "oldSha256": "1463baf0ce6cc8eb6cc1c1614e2969fea83ac9e3da101a550cf7fefc12213854",
+        "currentSha256": "5538ee0fb2d56b7ed65c427ba82a0332700b32e611680a04c16c87250a3a3983",
+        "changedPropertyLines": [
+          {
+            "key": "m_Shader",
+            "old": [
+              "  m_Shader: {fileID: 4800000, guid: 92902edf0ab892fb40f51a8701887fed, type: 3}"
+            ],
+            "current": [
+              "  m_Shader: {fileID: 4800000, guid: 2529b42165e1d45a8bcfb0013bb5aba3, type: 3}"
+            ]
+          }
+        ]
+      },
+      {
+        "slot": "DK_Leaf_CoreShrub",
+        "oldPath": "unity/Assets/Suborned/OldTownArt/DecoKit/Materials/DK_Leaf_CoreShrub.mat",
+        "currentPath": "unity/Assets/Suborned/Kit/Materials/DK_Leaf_CoreShrub.mat",
+        "oldSha256": "d23454c4372c0b952ed6805133306fbf557a6d38efe0c795cfadeea79d196e50",
+        "currentSha256": "bfe439bfd2931da92fcc7493bb356e879ad8a40c450f269a3d9f05dd232a3ac9",
+        "changedPropertyLines": [
+          {
+            "key": "m_Shader",
+            "old": [
+              "  m_Shader: {fileID: 4800000, guid: 92902edf0ab892fb40f51a8701887fed, type: 3}"
+            ],
+            "current": [
+              "  m_Shader: {fileID: 4800000, guid: 2529b42165e1d45a8bcfb0013bb5aba3, type: 3}"
+            ]
+          }
+        ]
+      },
+      {
+        "slot": "DK_Leaf_PalmFeather",
+        "oldPath": "unity/Assets/Suborned/OldTownArt/DecoKit/Materials/DK_Leaf_PalmFeather.mat",
+        "currentPath": "unity/Assets/Suborned/Kit/Materials/DK_Leaf_PalmFeather.mat",
+        "oldSha256": "1c2d715d237530ddd3046c36a8aa7935b10546c6f34fe3d096151409609f64c9",
+        "currentSha256": "f7653aa36a6b9efcd487b546ab7c4cf138c7e47116813273780295882660edc8",
+        "changedPropertyLines": [
+          {
+            "key": "m_Shader",
+            "old": [
+              "  m_Shader: {fileID: 4800000, guid: 92902edf0ab892fb40f51a8701887fed, type: 3}"
+            ],
+            "current": [
+              "  m_Shader: {fileID: 4800000, guid: 2529b42165e1d45a8bcfb0013bb5aba3, type: 3}"
+            ]
+          }
+        ]
+      }
+    ],
+    "lodFiles": {
+      "old": [],
+      "current": [
+        {
+          "path": "unity/Assets/Suborned/Kit/Models/Furnish/DK_PottedFern_L1.fbx",
+          "sha256": "258712822593f123bc5fe566c42a61f4d0f03782f0ec36b5d18868a62b7eb3da"
+        },
+        {
+          "path": "unity/Assets/Suborned/Kit/Models/Furnish/DK_PottedFern_L2.fbx",
+          "sha256": "aa047ada34e1bf5daeb4d29f5a4486d53cf87b0e45ad946833500ff6b448a9f4"
+        }
+      ]
+    },
+    "prefabs": {
+      "old": {
+        "path": "unity/Assets/Suborned/OldTownArt/DecoKit/Prefabs/Furnish/DK_PottedFern.prefab",
+        "sha256": "a0aa6808d13f222e72f4d55e1cf8289768f03afef1db69f4993a7897b02b0bf6",
+        "hasSerializedLODGroup": false
+      },
+      "current": {
+        "path": "unity/Assets/Suborned/Kit/Prefabs/Built/DK_PottedFern.prefab",
+        "sha256": "17b9174664e9cfa5ad420424ef4b16b37dec1291714a3177d95080f4aa599903",
+        "hasSerializedLODGroup": true
+      }
+    },
+    "importers": {
+      "old": {
+        "globalScale": "1",
+        "meshCompression": "0",
+        "generateMeshLods": "0",
+        "normalImportMode": "0",
+        "tangentImportMode": "3",
+        "normalSmoothAngle": "60",
+        "normalSmoothingSource": "0",
+        "addColliders": "0",
+        "useFileUnits": "1",
+        "bakeAxisConversion": "0"
+      },
+      "current": {
+        "globalScale": "1",
+        "meshCompression": "0",
+        "generateMeshLods": "0",
+        "normalImportMode": "0",
+        "tangentImportMode": "3",
+        "normalSmoothAngle": "60",
+        "normalSmoothingSource": "0",
+        "addColliders": "0",
+        "useFileUnits": "1",
+        "bakeAxisConversion": "0"
+      }
+    }
+  },
+  "PottedPalm_Small": {
+    "geometry": {
+      "fbxBytesIdentical": false,
+      "polygonsMaterialsSmoothingExact": true,
+      "uvExact": true,
+      "cornerNormalsExact": true,
+      "sameVertexCount": true,
+      "changedVerticesAbove1Micrometre": 0,
+      "onlyBelowGroundZClamping": false,
+      "vertexMaxDeltaMetres": 0
+    },
+    "importerDifferences": {},
+    "materials": [
+      {
+        "slot": "DK_Chrome",
+        "oldPath": "unity/Assets/Suborned/OldTownArt/DecoKit/Materials/DK_Chrome.mat",
+        "currentPath": "unity/Assets/Suborned/Kit/Materials/DK_Chrome.mat",
+        "oldSha256": "d360adec544f7d2974e190241d37299908d6ace244e52371b541135b2833f191",
+        "currentSha256": "5dc81d1880e4d910fc4c88d842a770af3852644101b32a32c2adc37b5326e7f9",
+        "changedPropertyLines": [
+          {
+            "key": "m_Shader",
+            "old": [
+              "  m_Shader: {fileID: 4800000, guid: 92902edf0ab892fb40f51a8701887fed, type: 3}"
+            ],
+            "current": [
+              "  m_Shader: {fileID: 4800000, guid: 2529b42165e1d45a8bcfb0013bb5aba3, type: 3}"
+            ]
+          }
+        ]
+      },
+      {
+        "slot": "DK_Gold",
+        "oldPath": "unity/Assets/Suborned/OldTownArt/DecoKit/Materials/DK_Gold.mat",
+        "currentPath": "unity/Assets/Suborned/Kit/Materials/DK_Gold.mat",
+        "oldSha256": "a48ba7fb26f95f4407f5c150c64157755369113e9ae53e2b939a9dc46d1b9cec",
+        "currentSha256": "700e14d5125b3d1cc3e941c92b1b15a477f18c16698616922fad1b017310c750",
+        "changedPropertyLines": [
+          {
+            "key": "_Smoothness",
+            "old": [
+              "    - _Smoothness: 0.7"
+            ],
+            "current": [
+              "    - _Smoothness: 0.6"
+            ]
+          },
+          {
+            "key": "_Metallic",
+            "old": [
+              "    - _Metallic: 1"
+            ],
+            "current": [
+              "    - _Metallic: 0.6"
+            ]
+          },
+          {
+            "key": "m_Shader",
+            "old": [
+              "  m_Shader: {fileID: 4800000, guid: 92902edf0ab892fb40f51a8701887fed, type: 3}"
+            ],
+            "current": [
+              "  m_Shader: {fileID: 4800000, guid: 2529b42165e1d45a8bcfb0013bb5aba3, type: 3}"
+            ]
+          }
+        ]
+      },
+      {
+        "slot": "DK_Enamel_Mustard",
+        "oldPath": "unity/Assets/Suborned/OldTownArt/DecoKit/Materials/DK_Enamel_Mustard.mat",
+        "currentPath": "unity/Assets/Suborned/Kit/Materials/DK_Enamel_Mustard.mat",
+        "oldSha256": "24007331c1e5142e18ad61cba3efad456562e4df808ee98ad7ea082c8a4216c9",
+        "currentSha256": "28eb1166e8c65047f8e7de230a19adc549df0203437328ad5194b02429791827",
+        "changedPropertyLines": [
+          {
+            "key": "_BaseColor",
+            "old": [
+              "    - _BaseColor: {r: 0.93333334, g: 0.65882355, b: 0.1764706, a: 1}"
+            ],
+            "current": [
+              "    - _BaseColor: {r: 0.93333333, g: 0.65882353, b: 0.17647059, a: 1}"
+            ]
+          },
+          {
+            "key": "m_Shader",
+            "old": [
+              "  m_Shader: {fileID: 4800000, guid: daa729f856d160b6847192c7304dec72, type: 3}"
+            ],
+            "current": [
+              "  m_Shader: {fileID: 4800000, guid: 206122040e60d470e92cddeccf1aacf6, type: 3}"
+            ]
+          }
+        ]
+      },
+      {
+        "slot": "DK_Enamel_Coral",
+        "oldPath": "unity/Assets/Suborned/OldTownArt/DecoKit/Materials/DK_Enamel_Coral.mat",
+        "currentPath": "unity/Assets/Suborned/Kit/Materials/DK_Enamel_Coral.mat",
+        "oldSha256": "bb2318ad93d97fc766cba51f9f71ba930ef80e3ee472aaee1ecb2a6b025f1527",
+        "currentSha256": "73bfa1fb760fa4b7c1a617ec4400cd8c5143edc88904644dba643c9973a82b6f",
+        "changedPropertyLines": [
+          {
+            "key": "m_Shader",
+            "old": [
+              "  m_Shader: {fileID: 4800000, guid: daa729f856d160b6847192c7304dec72, type: 3}"
+            ],
+            "current": [
+              "  m_Shader: {fileID: 4800000, guid: 206122040e60d470e92cddeccf1aacf6, type: 3}"
+            ]
+          }
+        ]
+      },
+      {
+        "slot": "DK_Enamel_Ivory",
+        "oldPath": "unity/Assets/Suborned/OldTownArt/DecoKit/Materials/DK_Enamel_Ivory.mat",
+        "currentPath": "unity/Assets/Suborned/Kit/Materials/DK_Enamel_Ivory.mat",
+        "oldSha256": "4d84efe57a9108f71d970d578e39fa62544c27fee8dd0e4291ae350979693cb8",
+        "currentSha256": "86fbae6bdcee94c8d92b60eabf67561c9e19ee7b2196606e5461a682aefa50f0",
+        "changedPropertyLines": [
+          {
+            "key": "m_Shader",
+            "old": [
+              "  m_Shader: {fileID: 4800000, guid: daa729f856d160b6847192c7304dec72, type: 3}"
+            ],
+            "current": [
+              "  m_Shader: {fileID: 4800000, guid: 206122040e60d470e92cddeccf1aacf6, type: 3}"
+            ]
+          }
+        ]
+      },
+      {
+        "slot": "DK_Soil",
+        "oldPath": "unity/Assets/Suborned/OldTownArt/DecoKit/Materials/DK_Soil.mat",
+        "currentPath": "unity/Assets/Suborned/Kit/Materials/DK_Soil.mat",
+        "oldSha256": "1463baf0ce6cc8eb6cc1c1614e2969fea83ac9e3da101a550cf7fefc12213854",
+        "currentSha256": "5538ee0fb2d56b7ed65c427ba82a0332700b32e611680a04c16c87250a3a3983",
+        "changedPropertyLines": [
+          {
+            "key": "m_Shader",
+            "old": [
+              "  m_Shader: {fileID: 4800000, guid: 92902edf0ab892fb40f51a8701887fed, type: 3}"
+            ],
+            "current": [
+              "  m_Shader: {fileID: 4800000, guid: 2529b42165e1d45a8bcfb0013bb5aba3, type: 3}"
+            ]
+          }
+        ]
+      },
+      {
+        "slot": "DK_Bark_Fibre",
+        "oldPath": "unity/Assets/Suborned/OldTownArt/DecoKit/Materials/DK_Bark_Fibre.mat",
+        "currentPath": "unity/Assets/Suborned/Kit/Materials/DK_Bark_Fibre.mat",
+        "oldSha256": "047de3fadd34734fac63f49befc6d5890ce99c9e6ddff29ef74f55de3bb48b89",
+        "currentSha256": "21bd24ec218c5d5a7f27ed24f2b72373c6e7b36d07321d829cf7ecaeb85e9951",
+        "changedPropertyLines": [
+          {
+            "key": "m_Shader",
+            "old": [
+              "  m_Shader: {fileID: 4800000, guid: 92902edf0ab892fb40f51a8701887fed, type: 3}"
+            ],
+            "current": [
+              "  m_Shader: {fileID: 4800000, guid: 2529b42165e1d45a8bcfb0013bb5aba3, type: 3}"
+            ]
+          }
+        ]
+      },
+      {
+        "slot": "DK_Petiole",
+        "oldPath": "unity/Assets/Suborned/OldTownArt/DecoKit/Materials/DK_Petiole.mat",
+        "currentPath": "unity/Assets/Suborned/Kit/Materials/DK_Petiole.mat",
+        "oldSha256": "ebb8e6f29d17410046bdb8a750dfbd7b08deff8bfc4262c95a088160ab0ec7d3",
+        "currentSha256": "07daec3aa61a4386413136ca12dd6321a36008abadc220e96e045c4da53803e9",
+        "changedPropertyLines": [
+          {
+            "key": "m_Shader",
+            "old": [
+              "  m_Shader: {fileID: 4800000, guid: 92902edf0ab892fb40f51a8701887fed, type: 3}"
+            ],
+            "current": [
+              "  m_Shader: {fileID: 4800000, guid: 2529b42165e1d45a8bcfb0013bb5aba3, type: 3}"
+            ]
+          }
+        ]
+      },
+      {
+        "slot": "DK_Leaf_PalmFan",
+        "oldPath": "unity/Assets/Suborned/OldTownArt/DecoKit/Materials/DK_Leaf_PalmFan.mat",
+        "currentPath": "unity/Assets/Suborned/Kit/Materials/DK_Leaf_PalmFan.mat",
+        "oldSha256": "8b624a73f5b5d8d62c8e7d3f2e1d9dfafebe8c02eaf7484c1319cdbd9a8ccc26",
+        "currentSha256": "4ee9a1a469aa4516beba32da63e704962fec1dadd1a21a0af844abe9522c612c",
+        "changedPropertyLines": [
+          {
+            "key": "m_Shader",
+            "old": [
+              "  m_Shader: {fileID: 4800000, guid: 92902edf0ab892fb40f51a8701887fed, type: 3}"
+            ],
+            "current": [
+              "  m_Shader: {fileID: 4800000, guid: 2529b42165e1d45a8bcfb0013bb5aba3, type: 3}"
+            ]
+          }
+        ]
+      }
+    ],
+    "lodFiles": {
+      "old": [],
+      "current": [
+        {
+          "path": "unity/Assets/Suborned/Kit/Models/Furnish/DK_PottedPalm_Small_L1.fbx",
+          "sha256": "26bacd550b68296448fa04cd244dc0f164431ff00eb465c7fac06892879baafd"
+        },
+        {
+          "path": "unity/Assets/Suborned/Kit/Models/Furnish/DK_PottedPalm_Small_L2.fbx",
+          "sha256": "041bf3b48d19104fe4187153e49bbc75922330562a7ca259727f87fc389aad94"
+        }
+      ]
+    },
+    "prefabs": {
+      "old": {
+        "path": "unity/Assets/Suborned/OldTownArt/DecoKit/Prefabs/Furnish/DK_PottedPalm_Small.prefab",
+        "sha256": "e36df68987f898574afe7c25d2ad0115884e00f3ceb1e28bb5b4ab05724de9f9",
+        "hasSerializedLODGroup": false
+      },
+      "current": {
+        "path": "unity/Assets/Suborned/Kit/Prefabs/Built/DK_PottedPalm_Small.prefab",
+        "sha256": "b1dda57fb522aae344746394bb1d55b5ce3dca816df5de386e7d27dd48c9465c",
+        "hasSerializedLODGroup": true
+      }
+    },
+    "importers": {
+      "old": {
+        "globalScale": "1",
+        "meshCompression": "0",
+        "generateMeshLods": "0",
+        "normalImportMode": "0",
+        "tangentImportMode": "3",
+        "normalSmoothAngle": "60",
+        "normalSmoothingSource": "0",
+        "addColliders": "0",
+        "useFileUnits": "1",
+        "bakeAxisConversion": "0"
+      },
+      "current": {
+        "globalScale": "1",
+        "meshCompression": "0",
+        "generateMeshLods": "0",
+        "normalImportMode": "0",
+        "tangentImportMode": "3",
+        "normalSmoothAngle": "60",
+        "normalSmoothingSource": "0",
+        "addColliders": "0",
+        "useFileUnits": "1",
+        "bakeAxisConversion": "0"
+      }
+    }
+  },
+  "PottedTopiary": {
+    "geometry": {
+      "fbxBytesIdentical": true,
+      "polygonsMaterialsSmoothingExact": true,
+      "uvExact": true,
+      "cornerNormalsExact": true,
+      "sameVertexCount": true,
+      "changedVerticesAbove1Micrometre": 0,
+      "onlyBelowGroundZClamping": false,
+      "vertexMaxDeltaMetres": 0
+    },
+    "importerDifferences": {},
+    "materials": [
+      {
+        "slot": "DK_Chrome",
+        "oldPath": "unity/Assets/Suborned/OldTownArt/DecoKit/Materials/DK_Chrome.mat",
+        "currentPath": "unity/Assets/Suborned/Kit/Materials/DK_Chrome.mat",
+        "oldSha256": "d360adec544f7d2974e190241d37299908d6ace244e52371b541135b2833f191",
+        "currentSha256": "5dc81d1880e4d910fc4c88d842a770af3852644101b32a32c2adc37b5326e7f9",
+        "changedPropertyLines": [
+          {
+            "key": "m_Shader",
+            "old": [
+              "  m_Shader: {fileID: 4800000, guid: 92902edf0ab892fb40f51a8701887fed, type: 3}"
+            ],
+            "current": [
+              "  m_Shader: {fileID: 4800000, guid: 2529b42165e1d45a8bcfb0013bb5aba3, type: 3}"
+            ]
+          }
+        ]
+      },
+      {
+        "slot": "DK_Enamel_Ivory",
+        "oldPath": "unity/Assets/Suborned/OldTownArt/DecoKit/Materials/DK_Enamel_Ivory.mat",
+        "currentPath": "unity/Assets/Suborned/Kit/Materials/DK_Enamel_Ivory.mat",
+        "oldSha256": "4d84efe57a9108f71d970d578e39fa62544c27fee8dd0e4291ae350979693cb8",
+        "currentSha256": "86fbae6bdcee94c8d92b60eabf67561c9e19ee7b2196606e5461a682aefa50f0",
+        "changedPropertyLines": [
+          {
+            "key": "m_Shader",
+            "old": [
+              "  m_Shader: {fileID: 4800000, guid: daa729f856d160b6847192c7304dec72, type: 3}"
+            ],
+            "current": [
+              "  m_Shader: {fileID: 4800000, guid: 206122040e60d470e92cddeccf1aacf6, type: 3}"
+            ]
+          }
+        ]
+      },
+      {
+        "slot": "DK_Enamel_Teal",
+        "oldPath": "unity/Assets/Suborned/OldTownArt/DecoKit/Materials/DK_Enamel_Teal.mat",
+        "currentPath": "unity/Assets/Suborned/Kit/Materials/DK_Enamel_Teal.mat",
+        "oldSha256": "37b3d5b11c2384d756ebbbb23c1246850408078e3ba0b9df716bfa61a02be9e9",
+        "currentSha256": "58fa1a89f064b566b89323bf9a72e627a4ff6f23b6eeeb9520b3754b4ffa42d1",
+        "changedPropertyLines": [
+          {
+            "key": "m_Shader",
+            "old": [
+              "  m_Shader: {fileID: 4800000, guid: daa729f856d160b6847192c7304dec72, type: 3}"
+            ],
+            "current": [
+              "  m_Shader: {fileID: 4800000, guid: 206122040e60d470e92cddeccf1aacf6, type: 3}"
+            ]
+          }
+        ]
+      },
+      {
+        "slot": "DK_Soil",
+        "oldPath": "unity/Assets/Suborned/OldTownArt/DecoKit/Materials/DK_Soil.mat",
+        "currentPath": "unity/Assets/Suborned/Kit/Materials/DK_Soil.mat",
+        "oldSha256": "1463baf0ce6cc8eb6cc1c1614e2969fea83ac9e3da101a550cf7fefc12213854",
+        "currentSha256": "5538ee0fb2d56b7ed65c427ba82a0332700b32e611680a04c16c87250a3a3983",
+        "changedPropertyLines": [
+          {
+            "key": "m_Shader",
+            "old": [
+              "  m_Shader: {fileID: 4800000, guid: 92902edf0ab892fb40f51a8701887fed, type: 3}"
+            ],
+            "current": [
+              "  m_Shader: {fileID: 4800000, guid: 2529b42165e1d45a8bcfb0013bb5aba3, type: 3}"
+            ]
+          }
+        ]
+      },
+      {
+        "slot": "DK_Bark_Fibre",
+        "oldPath": "unity/Assets/Suborned/OldTownArt/DecoKit/Materials/DK_Bark_Fibre.mat",
+        "currentPath": "unity/Assets/Suborned/Kit/Materials/DK_Bark_Fibre.mat",
+        "oldSha256": "047de3fadd34734fac63f49befc6d5890ce99c9e6ddff29ef74f55de3bb48b89",
+        "currentSha256": "21bd24ec218c5d5a7f27ed24f2b72373c6e7b36d07321d829cf7ecaeb85e9951",
+        "changedPropertyLines": [
+          {
+            "key": "m_Shader",
+            "old": [
+              "  m_Shader: {fileID: 4800000, guid: 92902edf0ab892fb40f51a8701887fed, type: 3}"
+            ],
+            "current": [
+              "  m_Shader: {fileID: 4800000, guid: 2529b42165e1d45a8bcfb0013bb5aba3, type: 3}"
+            ]
+          }
+        ]
+      },
+      {
+        "slot": "DK_Leaf_CoreConifer",
+        "oldPath": "unity/Assets/Suborned/OldTownArt/DecoKit/Materials/DK_Leaf_CoreConifer.mat",
+        "currentPath": "unity/Assets/Suborned/Kit/Materials/DK_Leaf_CoreConifer.mat",
+        "oldSha256": "1c074fd72efa2f01ab06ddc4f4440fd4f19773038aec0d42d88977f91746a347",
+        "currentSha256": "26ae0737d45c5c999bff1cb94642a80fa2baaa1443f25138c2fc497fe1d8cba5",
+        "changedPropertyLines": [
+          {
+            "key": "m_Shader",
+            "old": [
+              "  m_Shader: {fileID: 4800000, guid: 92902edf0ab892fb40f51a8701887fed, type: 3}"
+            ],
+            "current": [
+              "  m_Shader: {fileID: 4800000, guid: 2529b42165e1d45a8bcfb0013bb5aba3, type: 3}"
+            ]
+          }
+        ]
+      },
+      {
+        "slot": "DK_Leaf_CypressOlive",
+        "oldPath": "unity/Assets/Suborned/OldTownArt/DecoKit/Materials/DK_Leaf_CypressOlive.mat",
+        "currentPath": "unity/Assets/Suborned/Kit/Materials/DK_Leaf_CypressOlive.mat",
+        "oldSha256": "e1c1370436ef55ae25383a4c1f4d7213b2afa084e0bc7abc1a2d05a191c589ac",
+        "currentSha256": "ae627a41daf8cadcd48efcdc699be18420491f5b46ecc42ccbd3792bb5052622",
+        "changedPropertyLines": [
+          {
+            "key": "m_Shader",
+            "old": [
+              "  m_Shader: {fileID: 4800000, guid: 92902edf0ab892fb40f51a8701887fed, type: 3}"
+            ],
+            "current": [
+              "  m_Shader: {fileID: 4800000, guid: 2529b42165e1d45a8bcfb0013bb5aba3, type: 3}"
+            ]
+          }
+        ]
+      },
+      {
+        "slot": "DK_Leaf_Cypress",
+        "oldPath": "unity/Assets/Suborned/OldTownArt/DecoKit/Materials/DK_Leaf_Cypress.mat",
+        "currentPath": "unity/Assets/Suborned/Kit/Materials/DK_Leaf_Cypress.mat",
+        "oldSha256": "34e433c925983828e2bc1c2810bc1d1b5c6ad1e0a13f56ee9fe95737db99ccd6",
+        "currentSha256": "ef78762bf8a327b0ce35cca07e339d965278fca2baad4d66a7eaea30f041d9ea",
+        "changedPropertyLines": [
+          {
+            "key": "m_Shader",
+            "old": [
+              "  m_Shader: {fileID: 4800000, guid: 92902edf0ab892fb40f51a8701887fed, type: 3}"
+            ],
+            "current": [
+              "  m_Shader: {fileID: 4800000, guid: 2529b42165e1d45a8bcfb0013bb5aba3, type: 3}"
+            ]
+          }
+        ]
+      }
+    ],
+    "lodFiles": {
+      "old": [],
+      "current": []
+    },
+    "prefabs": {
+      "old": {
+        "path": "unity/Assets/Suborned/OldTownArt/DecoKit/Prefabs/Plants/DK_PottedTopiary.prefab",
+        "sha256": "2a1ad21184393ab8aed97c811606f1aa0002678d879f35925ac670e75ad25360",
+        "hasSerializedLODGroup": false
+      },
+      "current": {
+        "path": "unity/Assets/Suborned/Kit/Prefabs/Plants/DK_PottedTopiary.prefab",
+        "sha256": "664d07ded95a2c2c13f7faa8fcde1f1a4380d72855d59d6478a4c4cf1d06a3a8",
+        "hasSerializedLODGroup": false
+      }
+    },
+    "importers": {
+      "old": {
+        "globalScale": "1",
+        "meshCompression": "0",
+        "generateMeshLods": "0",
+        "normalImportMode": "0",
+        "tangentImportMode": "3",
+        "normalSmoothAngle": "60",
+        "normalSmoothingSource": "0",
+        "addColliders": "0",
+        "useFileUnits": "1",
+        "bakeAxisConversion": "0"
+      },
+      "current": {
+        "globalScale": "1",
+        "meshCompression": "0",
+        "generateMeshLods": "0",
+        "normalImportMode": "0",
+        "tangentImportMode": "3",
+        "normalSmoothAngle": "60",
+        "normalSmoothingSource": "0",
+        "addColliders": "0",
+        "useFileUnits": "1",
+        "bakeAxisConversion": "0"
+      }
+    }
+  },
+  "TopiaryCone": {
+    "geometry": {
+      "fbxBytesIdentical": true,
+      "polygonsMaterialsSmoothingExact": true,
+      "uvExact": true,
+      "cornerNormalsExact": true,
+      "sameVertexCount": true,
+      "changedVerticesAbove1Micrometre": 0,
+      "onlyBelowGroundZClamping": false,
+      "vertexMaxDeltaMetres": 0
+    },
+    "importerDifferences": {},
+    "materials": [
+      {
+        "slot": "DK_Bark_Fibre",
+        "oldPath": "unity/Assets/Suborned/OldTownArt/DecoKit/Materials/DK_Bark_Fibre.mat",
+        "currentPath": "unity/Assets/Suborned/Kit/Materials/DK_Bark_Fibre.mat",
+        "oldSha256": "047de3fadd34734fac63f49befc6d5890ce99c9e6ddff29ef74f55de3bb48b89",
+        "currentSha256": "21bd24ec218c5d5a7f27ed24f2b72373c6e7b36d07321d829cf7ecaeb85e9951",
+        "changedPropertyLines": [
+          {
+            "key": "m_Shader",
+            "old": [
+              "  m_Shader: {fileID: 4800000, guid: 92902edf0ab892fb40f51a8701887fed, type: 3}"
+            ],
+            "current": [
+              "  m_Shader: {fileID: 4800000, guid: 2529b42165e1d45a8bcfb0013bb5aba3, type: 3}"
+            ]
+          }
+        ]
+      },
+      {
+        "slot": "DK_Leaf_CoreConifer",
+        "oldPath": "unity/Assets/Suborned/OldTownArt/DecoKit/Materials/DK_Leaf_CoreConifer.mat",
+        "currentPath": "unity/Assets/Suborned/Kit/Materials/DK_Leaf_CoreConifer.mat",
+        "oldSha256": "1c074fd72efa2f01ab06ddc4f4440fd4f19773038aec0d42d88977f91746a347",
+        "currentSha256": "26ae0737d45c5c999bff1cb94642a80fa2baaa1443f25138c2fc497fe1d8cba5",
+        "changedPropertyLines": [
+          {
+            "key": "m_Shader",
+            "old": [
+              "  m_Shader: {fileID: 4800000, guid: 92902edf0ab892fb40f51a8701887fed, type: 3}"
+            ],
+            "current": [
+              "  m_Shader: {fileID: 4800000, guid: 2529b42165e1d45a8bcfb0013bb5aba3, type: 3}"
+            ]
+          }
+        ]
+      },
+      {
+        "slot": "DK_Leaf_CypressOlive",
+        "oldPath": "unity/Assets/Suborned/OldTownArt/DecoKit/Materials/DK_Leaf_CypressOlive.mat",
+        "currentPath": "unity/Assets/Suborned/Kit/Materials/DK_Leaf_CypressOlive.mat",
+        "oldSha256": "e1c1370436ef55ae25383a4c1f4d7213b2afa084e0bc7abc1a2d05a191c589ac",
+        "currentSha256": "ae627a41daf8cadcd48efcdc699be18420491f5b46ecc42ccbd3792bb5052622",
+        "changedPropertyLines": [
+          {
+            "key": "m_Shader",
+            "old": [
+              "  m_Shader: {fileID: 4800000, guid: 92902edf0ab892fb40f51a8701887fed, type: 3}"
+            ],
+            "current": [
+              "  m_Shader: {fileID: 4800000, guid: 2529b42165e1d45a8bcfb0013bb5aba3, type: 3}"
+            ]
+          }
+        ]
+      },
+      {
+        "slot": "DK_Leaf_Cypress",
+        "oldPath": "unity/Assets/Suborned/OldTownArt/DecoKit/Materials/DK_Leaf_Cypress.mat",
+        "currentPath": "unity/Assets/Suborned/Kit/Materials/DK_Leaf_Cypress.mat",
+        "oldSha256": "34e433c925983828e2bc1c2810bc1d1b5c6ad1e0a13f56ee9fe95737db99ccd6",
+        "currentSha256": "ef78762bf8a327b0ce35cca07e339d965278fca2baad4d66a7eaea30f041d9ea",
+        "changedPropertyLines": [
+          {
+            "key": "m_Shader",
+            "old": [
+              "  m_Shader: {fileID: 4800000, guid: 92902edf0ab892fb40f51a8701887fed, type: 3}"
+            ],
+            "current": [
+              "  m_Shader: {fileID: 4800000, guid: 2529b42165e1d45a8bcfb0013bb5aba3, type: 3}"
+            ]
+          }
+        ]
+      }
+    ],
+    "lodFiles": {
+      "old": [],
+      "current": []
+    },
+    "prefabs": {
+      "old": {
+        "path": "unity/Assets/Suborned/OldTownArt/DecoKit/Prefabs/Plants/DK_TopiaryCone.prefab",
+        "sha256": "61fdbc023146909f2faff4d7fe8c6427735caac993186e8a4dea1751e1618bc9",
+        "hasSerializedLODGroup": false
+      },
+      "current": {
+        "path": "unity/Assets/Suborned/Kit/Prefabs/Plants/DK_TopiaryCone.prefab",
+        "sha256": "5fee30bd6b359fc4a2de6d5351ce4428ca5d687db127f77312b874fd706cb3ba",
+        "hasSerializedLODGroup": false
+      }
+    },
+    "importers": {
+      "old": {
+        "globalScale": "1",
+        "meshCompression": "0",
+        "generateMeshLods": "0",
+        "normalImportMode": "0",
+        "tangentImportMode": "3",
+        "normalSmoothAngle": "60",
+        "normalSmoothingSource": "0",
+        "addColliders": "0",
+        "useFileUnits": "1",
+        "bakeAxisConversion": "0"
+      },
+      "current": {
+        "globalScale": "1",
+        "meshCompression": "0",
+        "generateMeshLods": "0",
+        "normalImportMode": "0",
+        "tangentImportMode": "3",
+        "normalSmoothAngle": "60",
+        "normalSmoothingSource": "0",
+        "addColliders": "0",
+        "useFileUnits": "1",
+        "bakeAxisConversion": "0"
+      }
+    }
+  },
+  "Cypress": {
+    "geometry": {
+      "fbxBytesIdentical": true,
+      "polygonsMaterialsSmoothingExact": true,
+      "uvExact": true,
+      "cornerNormalsExact": true,
+      "sameVertexCount": true,
+      "changedVerticesAbove1Micrometre": 0,
+      "onlyBelowGroundZClamping": false,
+      "vertexMaxDeltaMetres": 0
+    },
+    "importerDifferences": {},
+    "materials": [
+      {
+        "slot": "DK_Bark_Fibre",
+        "oldPath": "unity/Assets/Suborned/OldTownArt/DecoKit/Materials/DK_Bark_Fibre.mat",
+        "currentPath": "unity/Assets/Suborned/Kit/Materials/DK_Bark_Fibre.mat",
+        "oldSha256": "047de3fadd34734fac63f49befc6d5890ce99c9e6ddff29ef74f55de3bb48b89",
+        "currentSha256": "21bd24ec218c5d5a7f27ed24f2b72373c6e7b36d07321d829cf7ecaeb85e9951",
+        "changedPropertyLines": [
+          {
+            "key": "m_Shader",
+            "old": [
+              "  m_Shader: {fileID: 4800000, guid: 92902edf0ab892fb40f51a8701887fed, type: 3}"
+            ],
+            "current": [
+              "  m_Shader: {fileID: 4800000, guid: 2529b42165e1d45a8bcfb0013bb5aba3, type: 3}"
+            ]
+          }
+        ]
+      },
+      {
+        "slot": "DK_Leaf_CoreConifer",
+        "oldPath": "unity/Assets/Suborned/OldTownArt/DecoKit/Materials/DK_Leaf_CoreConifer.mat",
+        "currentPath": "unity/Assets/Suborned/Kit/Materials/DK_Leaf_CoreConifer.mat",
+        "oldSha256": "1c074fd72efa2f01ab06ddc4f4440fd4f19773038aec0d42d88977f91746a347",
+        "currentSha256": "26ae0737d45c5c999bff1cb94642a80fa2baaa1443f25138c2fc497fe1d8cba5",
+        "changedPropertyLines": [
+          {
+            "key": "m_Shader",
+            "old": [
+              "  m_Shader: {fileID: 4800000, guid: 92902edf0ab892fb40f51a8701887fed, type: 3}"
+            ],
+            "current": [
+              "  m_Shader: {fileID: 4800000, guid: 2529b42165e1d45a8bcfb0013bb5aba3, type: 3}"
+            ]
+          }
+        ]
+      },
+      {
+        "slot": "DK_Leaf_CypressOlive",
+        "oldPath": "unity/Assets/Suborned/OldTownArt/DecoKit/Materials/DK_Leaf_CypressOlive.mat",
+        "currentPath": "unity/Assets/Suborned/Kit/Materials/DK_Leaf_CypressOlive.mat",
+        "oldSha256": "e1c1370436ef55ae25383a4c1f4d7213b2afa084e0bc7abc1a2d05a191c589ac",
+        "currentSha256": "ae627a41daf8cadcd48efcdc699be18420491f5b46ecc42ccbd3792bb5052622",
+        "changedPropertyLines": [
+          {
+            "key": "m_Shader",
+            "old": [
+              "  m_Shader: {fileID: 4800000, guid: 92902edf0ab892fb40f51a8701887fed, type: 3}"
+            ],
+            "current": [
+              "  m_Shader: {fileID: 4800000, guid: 2529b42165e1d45a8bcfb0013bb5aba3, type: 3}"
+            ]
+          }
+        ]
+      },
+      {
+        "slot": "DK_Leaf_Cypress",
+        "oldPath": "unity/Assets/Suborned/OldTownArt/DecoKit/Materials/DK_Leaf_Cypress.mat",
+        "currentPath": "unity/Assets/Suborned/Kit/Materials/DK_Leaf_Cypress.mat",
+        "oldSha256": "34e433c925983828e2bc1c2810bc1d1b5c6ad1e0a13f56ee9fe95737db99ccd6",
+        "currentSha256": "ef78762bf8a327b0ce35cca07e339d965278fca2baad4d66a7eaea30f041d9ea",
+        "changedPropertyLines": [
+          {
+            "key": "m_Shader",
+            "old": [
+              "  m_Shader: {fileID: 4800000, guid: 92902edf0ab892fb40f51a8701887fed, type: 3}"
+            ],
+            "current": [
+              "  m_Shader: {fileID: 4800000, guid: 2529b42165e1d45a8bcfb0013bb5aba3, type: 3}"
+            ]
+          }
+        ]
+      }
+    ],
+    "lodFiles": {
+      "old": [],
+      "current": [
+        {
+          "path": "unity/Assets/Suborned/Kit/Models/Plants/DK_Cypress_L1.fbx",
+          "sha256": "0a0099873e80e9c5b2a1c357b9d7cc4bf42e77f39e9c5c0f13ba7260853006bc"
+        },
+        {
+          "path": "unity/Assets/Suborned/Kit/Models/Plants/DK_Cypress_L2.fbx",
+          "sha256": "3d135ad2cd7fd906ed59eed15fcfb631617b84aa0793c64f2699a858859d7048"
+        }
+      ]
+    },
+    "prefabs": {
+      "old": {
+        "path": "unity/Assets/Suborned/OldTownArt/DecoKit/Prefabs/Plants/DK_Cypress.prefab",
+        "sha256": "519e2d731f474a5c102c797396096773fb1cee24a83d61434ad7389c4e449e62",
+        "hasSerializedLODGroup": false
+      },
+      "current": {
+        "path": "unity/Assets/Suborned/Kit/Prefabs/Plants/DK_Cypress.prefab",
+        "sha256": "8c4f32d77c259bef80beeeb4e0d28fae8ef4ced51cce89467879d74142bafad1",
+        "hasSerializedLODGroup": false
+      }
+    },
+    "importers": {
+      "old": {
+        "globalScale": "1",
+        "meshCompression": "0",
+        "generateMeshLods": "0",
+        "normalImportMode": "0",
+        "tangentImportMode": "3",
+        "normalSmoothAngle": "60",
+        "normalSmoothingSource": "0",
+        "addColliders": "0",
+        "useFileUnits": "1",
+        "bakeAxisConversion": "0"
+      },
+      "current": {
+        "globalScale": "1",
+        "meshCompression": "0",
+        "generateMeshLods": "0",
+        "normalImportMode": "0",
+        "tangentImportMode": "3",
+        "normalSmoothAngle": "60",
+        "normalSmoothingSource": "0",
+        "addColliders": "0",
+        "useFileUnits": "1",
+        "bakeAxisConversion": "0"
+      }
+    }
+  },
+  "FanPalm": {
+    "geometry": {
+      "fbxBytesIdentical": true,
+      "polygonsMaterialsSmoothingExact": true,
+      "uvExact": true,
+      "cornerNormalsExact": true,
+      "sameVertexCount": true,
+      "changedVerticesAbove1Micrometre": 0,
+      "onlyBelowGroundZClamping": false,
+      "vertexMaxDeltaMetres": 0
+    },
+    "importerDifferences": {},
+    "materials": [
+      {
+        "slot": "DK_Bark_Fibre",
+        "oldPath": "unity/Assets/Suborned/OldTownArt/DecoKit/Materials/DK_Bark_Fibre.mat",
+        "currentPath": "unity/Assets/Suborned/Kit/Materials/DK_Bark_Fibre.mat",
+        "oldSha256": "047de3fadd34734fac63f49befc6d5890ce99c9e6ddff29ef74f55de3bb48b89",
+        "currentSha256": "21bd24ec218c5d5a7f27ed24f2b72373c6e7b36d07321d829cf7ecaeb85e9951",
+        "changedPropertyLines": [
+          {
+            "key": "m_Shader",
+            "old": [
+              "  m_Shader: {fileID: 4800000, guid: 92902edf0ab892fb40f51a8701887fed, type: 3}"
+            ],
+            "current": [
+              "  m_Shader: {fileID: 4800000, guid: 2529b42165e1d45a8bcfb0013bb5aba3, type: 3}"
+            ]
+          }
+        ]
+      },
+      {
+        "slot": "DK_Petiole",
+        "oldPath": "unity/Assets/Suborned/OldTownArt/DecoKit/Materials/DK_Petiole.mat",
+        "currentPath": "unity/Assets/Suborned/Kit/Materials/DK_Petiole.mat",
+        "oldSha256": "ebb8e6f29d17410046bdb8a750dfbd7b08deff8bfc4262c95a088160ab0ec7d3",
+        "currentSha256": "07daec3aa61a4386413136ca12dd6321a36008abadc220e96e045c4da53803e9",
+        "changedPropertyLines": [
+          {
+            "key": "m_Shader",
+            "old": [
+              "  m_Shader: {fileID: 4800000, guid: 92902edf0ab892fb40f51a8701887fed, type: 3}"
+            ],
+            "current": [
+              "  m_Shader: {fileID: 4800000, guid: 2529b42165e1d45a8bcfb0013bb5aba3, type: 3}"
+            ]
+          }
+        ]
+      },
+      {
+        "slot": "DK_Leaf_PalmFan",
+        "oldPath": "unity/Assets/Suborned/OldTownArt/DecoKit/Materials/DK_Leaf_PalmFan.mat",
+        "currentPath": "unity/Assets/Suborned/Kit/Materials/DK_Leaf_PalmFan.mat",
+        "oldSha256": "8b624a73f5b5d8d62c8e7d3f2e1d9dfafebe8c02eaf7484c1319cdbd9a8ccc26",
+        "currentSha256": "4ee9a1a469aa4516beba32da63e704962fec1dadd1a21a0af844abe9522c612c",
+        "changedPropertyLines": [
+          {
+            "key": "m_Shader",
+            "old": [
+              "  m_Shader: {fileID: 4800000, guid: 92902edf0ab892fb40f51a8701887fed, type: 3}"
+            ],
+            "current": [
+              "  m_Shader: {fileID: 4800000, guid: 2529b42165e1d45a8bcfb0013bb5aba3, type: 3}"
+            ]
+          }
+        ]
+      }
+    ],
+    "lodFiles": {
+      "old": [],
+      "current": [
+        {
+          "path": "unity/Assets/Suborned/Kit/Models/Plants/DK_FanPalm_L2.fbx",
+          "sha256": "b881b007adc538fad7bbd1d3531e3135226af399779cae84fd1691769008c277"
+        },
+        {
+          "path": "unity/Assets/Suborned/Kit/Models/Plants/DK_FanPalm_L1.fbx",
+          "sha256": "a1da190dce14e120c8748e9c299e523a9f6d59aa01ee7525fe98efdb0a0f571c"
+        }
+      ]
+    },
+    "prefabs": {
+      "old": {
+        "path": "unity/Assets/Suborned/OldTownArt/DecoKit/Prefabs/Plants/DK_FanPalm.prefab",
+        "sha256": "edc4b2d154c84835947f5c380bcf4a48e8ac5a858b12b28449d8fe67acdb19c4",
+        "hasSerializedLODGroup": false
+      },
+      "current": {
+        "path": "unity/Assets/Suborned/Kit/Prefabs/Plants/DK_FanPalm.prefab",
+        "sha256": "3bf61c639613a362cfb7ba91e1cd5f5a77dbe5322b43b3d45f2895d22b53067e",
+        "hasSerializedLODGroup": false
+      }
+    },
+    "importers": {
+      "old": {
+        "globalScale": "1",
+        "meshCompression": "0",
+        "generateMeshLods": "0",
+        "normalImportMode": "0",
+        "tangentImportMode": "3",
+        "normalSmoothAngle": "60",
+        "normalSmoothingSource": "0",
+        "addColliders": "0",
+        "useFileUnits": "1",
+        "bakeAxisConversion": "0"
+      },
+      "current": {
+        "globalScale": "1",
+        "meshCompression": "0",
+        "generateMeshLods": "0",
+        "normalImportMode": "0",
+        "tangentImportMode": "3",
+        "normalSmoothAngle": "60",
+        "normalSmoothingSource": "0",
+        "addColliders": "0",
+        "useFileUnits": "1",
+        "bakeAxisConversion": "0"
+      }
+    }
+  },
+  "CoconutPalm": {
+    "geometry": {
+      "fbxBytesIdentical": true,
+      "polygonsMaterialsSmoothingExact": true,
+      "uvExact": true,
+      "cornerNormalsExact": true,
+      "sameVertexCount": true,
+      "changedVerticesAbove1Micrometre": 0,
+      "onlyBelowGroundZClamping": false,
+      "vertexMaxDeltaMetres": 0
+    },
+    "importerDifferences": {},
+    "materials": [
+      {
+        "slot": "DK_Bark_Palm",
+        "oldPath": "unity/Assets/Suborned/OldTownArt/DecoKit/Materials/DK_Bark_Palm.mat",
+        "currentPath": "unity/Assets/Suborned/Kit/Materials/DK_Bark_Palm.mat",
+        "oldSha256": "32c8e050a21f6f7ce46ca6f2c8c749159683caeada433abedb02ba20876a24e0",
+        "currentSha256": "4089b31c000fad1a5ea49cb31e3f851e7654bc92acd7cfae1894b472a4aeec4b",
+        "changedPropertyLines": [
+          {
+            "key": "m_Shader",
+            "old": [
+              "  m_Shader: {fileID: 4800000, guid: 92902edf0ab892fb40f51a8701887fed, type: 3}"
+            ],
+            "current": [
+              "  m_Shader: {fileID: 4800000, guid: 2529b42165e1d45a8bcfb0013bb5aba3, type: 3}"
+            ]
+          }
+        ]
+      },
+      {
+        "slot": "DK_Bark_Fibre",
+        "oldPath": "unity/Assets/Suborned/OldTownArt/DecoKit/Materials/DK_Bark_Fibre.mat",
+        "currentPath": "unity/Assets/Suborned/Kit/Materials/DK_Bark_Fibre.mat",
+        "oldSha256": "047de3fadd34734fac63f49befc6d5890ce99c9e6ddff29ef74f55de3bb48b89",
+        "currentSha256": "21bd24ec218c5d5a7f27ed24f2b72373c6e7b36d07321d829cf7ecaeb85e9951",
+        "changedPropertyLines": [
+          {
+            "key": "m_Shader",
+            "old": [
+              "  m_Shader: {fileID: 4800000, guid: 92902edf0ab892fb40f51a8701887fed, type: 3}"
+            ],
+            "current": [
+              "  m_Shader: {fileID: 4800000, guid: 2529b42165e1d45a8bcfb0013bb5aba3, type: 3}"
+            ]
+          }
+        ]
+      },
+      {
+        "slot": "DK_Coconut",
+        "oldPath": "unity/Assets/Suborned/OldTownArt/DecoKit/Materials/DK_Coconut.mat",
+        "currentPath": "unity/Assets/Suborned/Kit/Materials/DK_Coconut.mat",
+        "oldSha256": "e71895f662486ee6825391fc9ba7130ba1a416d7578068517422592bdb1cc881",
+        "currentSha256": "f6b070644772f6636466abfda0d392ef277b89174bfb349670d9fa1724f49247",
+        "changedPropertyLines": [
+          {
+            "key": "m_Shader",
+            "old": [
+              "  m_Shader: {fileID: 4800000, guid: 92902edf0ab892fb40f51a8701887fed, type: 3}"
+            ],
+            "current": [
+              "  m_Shader: {fileID: 4800000, guid: 2529b42165e1d45a8bcfb0013bb5aba3, type: 3}"
+            ]
+          }
+        ]
+      },
+      {
+        "slot": "DK_Leaf_PalmFeather",
+        "oldPath": "unity/Assets/Suborned/OldTownArt/DecoKit/Materials/DK_Leaf_PalmFeather.mat",
+        "currentPath": "unity/Assets/Suborned/Kit/Materials/DK_Leaf_PalmFeather.mat",
+        "oldSha256": "1c2d715d237530ddd3046c36a8aa7935b10546c6f34fe3d096151409609f64c9",
+        "currentSha256": "f7653aa36a6b9efcd487b546ab7c4cf138c7e47116813273780295882660edc8",
+        "changedPropertyLines": [
+          {
+            "key": "m_Shader",
+            "old": [
+              "  m_Shader: {fileID: 4800000, guid: 92902edf0ab892fb40f51a8701887fed, type: 3}"
+            ],
+            "current": [
+              "  m_Shader: {fileID: 4800000, guid: 2529b42165e1d45a8bcfb0013bb5aba3, type: 3}"
+            ]
+          }
+        ]
+      }
+    ],
+    "lodFiles": {
+      "old": [],
+      "current": [
+        {
+          "path": "unity/Assets/Suborned/Kit/Models/Plants/DK_CoconutPalm_L2.fbx",
+          "sha256": "446a6bca1f6835ebee241c49bd0f4c6ab27e2d3d8c8eaf0d6053caba739541c8"
+        },
+        {
+          "path": "unity/Assets/Suborned/Kit/Models/Plants/DK_CoconutPalm_L1.fbx",
+          "sha256": "6c1e02856ddf5e0304d683151b574a6860efb9b7a18ccfe40bda94710cd939d6"
+        }
+      ]
+    },
+    "prefabs": {
+      "old": {
+        "path": "unity/Assets/Suborned/OldTownArt/DecoKit/Prefabs/Plants/DK_CoconutPalm.prefab",
+        "sha256": "d684171d57e976e6f96f0cf6a865b0441edd17fce183fb15fd70b452af90f400",
+        "hasSerializedLODGroup": false
+      },
+      "current": {
+        "path": "unity/Assets/Suborned/Kit/Prefabs/Plants/DK_CoconutPalm.prefab",
+        "sha256": "0c86577ec9d31ff795756c5e9dcb5690ec6d385ba0f5bf752f1b61cadcb31483",
+        "hasSerializedLODGroup": false
+      }
+    },
+    "importers": {
+      "old": {
+        "globalScale": "1",
+        "meshCompression": "0",
+        "generateMeshLods": "0",
+        "normalImportMode": "0",
+        "tangentImportMode": "3",
+        "normalSmoothAngle": "60",
+        "normalSmoothingSource": "0",
+        "addColliders": "0",
+        "useFileUnits": "1",
+        "bakeAxisConversion": "0"
+      },
+      "current": {
+        "globalScale": "1",
+        "meshCompression": "0",
+        "generateMeshLods": "0",
+        "normalImportMode": "0",
+        "tangentImportMode": "3",
+        "normalSmoothAngle": "60",
+        "normalSmoothingSource": "0",
+        "addColliders": "0",
+        "useFileUnits": "1",
+        "bakeAxisConversion": "0"
+      }
+    }
+  }
+}

@@ -39,6 +39,9 @@ namespace Suborned.OldTown.Editor.Swap
         public static void Run(OldTownSwap.Report rep, WorldDto w, SwapOurs ours, SwapNetwork net, string hq, SwapPlan plan)
         {
             var zone = OldTownSwap.ZoneOld;
+            var keepOld = SwapKeep.OldRects().ToList();
+            openPlots = plan.Plots.Where(p => p.use is "open" or "square").Select(p => p.poly.Select(OldTownSwap.Old).ToArray()).ToList();
+            roadsNear = new SwapShapes(); foreach (var (id, q) in plan.Corridors(_ => true, 1.5f)) roadsNear.Add("road", id, q.Select(OldTownSwap.Old).ToArray());
             var holes = net.Holes;
             foreach (var s in ours.Solids) holes.Rect("ours", s.id, s.box, .2f, s.y0, s.y1);
             var planHoles = PlanHoles(plan, out var planFlat);
@@ -65,6 +68,8 @@ namespace Suborned.OldTown.Editor.Swap
                 bool flag = FlagPieces.Contains(piece) || cats.TryGetValue(piece, out var cat) && FlagCats.Contains(cat);
                 string why = null, by = null;
                 if (flat ? SwapMesh.Inside(zone, new Vector2(b.center.x, b.center.z)) : SwapMesh.Overlaps(box, zone)) { why = "Handover zone"; by = "zone"; }
+                else if (SwapKeep.AtOld(new Vector2(b.center.x, b.center.z)) is { } ka) { why = "kept plot or megastructure (Datum, 0.5.6)"; by = ka; }
+                else if (flat && OpenKerb(piece, b, plan)) { why = "old kerb in an open plot, off every plan road (Datum, 0.5.6)"; by = "kerb-lines"; }
                 else if (!flat)
                 {
                     var h = holes.Hit(box, b.min.y, b.max.y);
@@ -85,6 +90,7 @@ namespace Suborned.OldTown.Editor.Swap
                 inPrefab.Add(r);
                 string why = null, by = null; var box = SwapMesh.XZ(b);
                 if (SwapMesh.Overlaps(box, zone)) { why = "Handover zone"; by = "zone"; }
+                else if (SwapKeep.AtOld(new Vector2(b.center.x, b.center.z)) is { } ka) { why = "kept plot or megastructure (Datum, 0.5.6)"; by = ka; }
                 else if (b.size.y >= .45f) { var h = holes.Hit(box, b.min.y, b.max.y); if (h != null) { why = Reason(h.Kind); by = h.Id; } }
                 if (why == null) continue;
                 rep.Gave(why, "loose:" + (r.transform.parent ? r.transform.parent.name : r.name), b.center, by);
@@ -97,10 +103,12 @@ namespace Suborned.OldTown.Editor.Swap
             var gen = UnityEngine.Object.FindObjectsByType<MeshFilter>(FindObjectsInactive.Include, FindObjectsSortMode.None)
                 .Where(mf => mf && mf.sharedMesh && !Skipped(mf.transform) && mf.GetComponent<MeshRenderer>() is { } mr && mr.enabled && !inPrefab.Contains(mr)).ToList();
             var outside = SwapMesh.Outside(zone);
+            var keepAndZone = new List<Rect> { zone }; keepAndZone.AddRange(keepOld);
             foreach (var mf in gen)
             {
                 var r = mf.GetComponent<MeshRenderer>(); var b0 = r.bounds;
                 bool nearZone = SwapMesh.Overlaps(SwapMesh.XZ(b0), zone, 0f);
+                nearZone |= keepOld.Any(k => SwapMesh.Overlaps(SwapMesh.XZ(b0), k, 0f));
                 bool nearHole = holes.Near(SwapMesh.XZ(b0)).Any();
                 if (!nearZone && !nearHole) continue;
                 var mesh = mf.sharedMesh;
@@ -119,6 +127,9 @@ namespace Suborned.OldTown.Editor.Swap
                 for (int k = 0; k < count; k++)
                 {
                     var b = cb[k]; var box = SwapMesh.XZ(b); bool flat = b.size.y < .45f;
+                    var ka = SwapKeep.AtOld(new Vector2(b.center.x, b.center.z));
+                    if (!flat && ka != null) { act[k] = 1; any = true; rep.Gave("kept plot or megastructure (Datum, 0.5.6)", Part(mf), b.center, ka); continue; }
+                    if (flat && keepOld.Any(r => SwapMesh.Overlaps(box, r, 0f))) { act[k] = 2; any = true; continue; }  // clipped exactly to outside the zone and the keep areas
                     if (SwapMesh.Overlaps(box, zone, 0f))
                     {
                         bool inside = box.xMin >= zone.xMin && box.xMax <= zone.xMax && box.yMin >= zone.yMin && box.yMax <= zone.yMax;
@@ -141,7 +152,7 @@ namespace Suborned.OldTown.Editor.Swap
                     {
                         int a = rd.Subs[s][3 * t], b = rd.Subs[s][3 * t + 1], c = rd.Subs[s][3 * t + 2], k = ids[s][t];
                         if (act[k] == 0) wr.Keep(s, a, b, c);
-                        else if (act[k] == 2) SwapMesh.ClipInto(wr, s, rd.Verts[a], rd.Verts[b], rd.Verts[c], outside);
+                        else if (act[k] == 2) foreach (var poly in SwapKeep.OutsideAll(new List<SwapMesh.V> { rd.Verts[a], rd.Verts[b], rd.Verts[c] }, keepAndZone)) wr.Poly(s, poly);
                     }
                 partsGone += act.Count(x => x == 1); partsClipped += act.Count(x => x == 2);
                 if (wr.Triangles == 0) { UnityEngine.Object.DestroyImmediate(mf.gameObject); continue; }
@@ -153,6 +164,25 @@ namespace Suborned.OldTown.Editor.Swap
                     $"flagships that clash and stand: {flagClash}{(clashKept.Count > 0 ? " (" + string.Join("; ", clashKept.Take(20)) + ")" : "")}");
             foreach (var (reason, d) in rep.GaveWay.OrderBy(k => k.Key))
                 rep.Log($"  gave way, {reason}: {d.Values.Sum()} ({string.Join(", ", d.OrderByDescending(k => k.Value).Take(14).Select(k => $"{k.Key} {k.Value}"))})");
+        }
+
+        static List<Vector2[]> openPlots; static SwapShapes roadsNear;
+        /// <summary>Datum's kerb-lines decisions (M0346/M0347 up the forecourt, the Orbit Square cross kerbs): an old kerb stone (the Kerb_ family)
+        /// whose centre lies in an open plan plot (use open or square) and more than 1.5 m from every plan road gives way: the plan lays no road
+        /// there, so the old street edge has nothing to meet.</summary>
+        static bool OpenKerb(string piece, Bounds b, SwapPlan plan)
+        {
+            if (!piece.StartsWith("Kerb_") || openPlots == null) return false;
+            var c = new Vector2(b.center.x, b.center.z);
+            if (!openPlots.Any(p => InPoly(p, c))) return false;
+            return roadsNear.Hit(c) == null;
+        }
+        static bool InPoly(Vector2[] p, Vector2 c)
+        {
+            bool inside = false;
+            for (int i = 0, j = p.Length - 1; i < p.Length; j = i++)
+                if ((p[i].y > c.y) != (p[j].y > c.y) && c.x < (p[j].x - p[i].x) * (c.y - p[i].y) / (p[j].y - p[i].y) + p[i].x) inside = !inside;
+            return inside;
         }
 
         static string Part(MeshFilter mf) => "mesh:" + (mf.transform.parent ? mf.transform.parent.name + "/" : "") + mf.name;

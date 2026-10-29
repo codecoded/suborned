@@ -1,0 +1,58 @@
+{
+  "manifest-before.log": {
+    "compileErrors": [],
+    "exceptionLines": [],
+    "exitLines": [
+      "Exiting batchmode successfully now!",
+      "[ExitDontLaunchBugReporter] Exiting without the bug reporter. Application will exit with return code 0"
+    ],
+    "warningCount": 124
+  },
+  "fix.log": {
+    "compileErrors": [],
+    "exceptionLines": [],
+    "exitLines": [
+      "Exiting batchmode successfully now!",
+      "[ExitDontLaunchBugReporter] Exiting without the bug reporter. Application will exit with return code 0"
+    ],
+    "warningCount": 0
+  },
+  "motion.log": {
+    "compileErrors": [],
+    "exceptionLines": [
+      "Pipeline: unhandled error serving GET /api/commands: System.ObjectDisposedException: Cannot access a disposed object."
+    ],
+    "exitLines": [
+      "Exiting batchmode successfully now!",
+      "[ExitDontLaunchBugReporter] Exiting without the bug reporter. Application will exit with return code 0"
+    ],
+    "warningCount": 0
+  },
+  "shots.log": {
+    "compileErrors": [],
+    "exceptionLines": [],
+    "exitLines": [
+      "Exiting batchmode successfully now!",
+      "[ExitDontLaunchBugReporter] Exiting without the bug reporter. Application will exit with return code 0"
+    ],
+    "warningCount": 0
+  },
+  "manifest-after.log": {
+    "compileErrors": [],
+    "exceptionLines": [],
+    "exitLines": [
+      "Exiting batchmode successfully now!",
+      "[ExitDontLaunchBugReporter] Exiting without the bug reporter. Application will exit with return code 0"
+    ],
+    "warningCount": 0
+  },
+  "shots-before.log": {
+    "compileErrors": [],
+    "exceptionLines": [],
+    "exitLines": [
+      "Exiting batchmode successfully now!",
+      "[ExitDontLaunchBugReporter] Exiting without the bug reporter. Application will exit with return code 0"
+    ],
+    "warningCount": 0
+  }
+}

@@ -1,0 +1,22 @@
+<Project>
+<PropertyGroup><BaseIntermediateOutputPath>$(MSBuildThisFileDirectory)../../../../out/scratch/latch/tram-settled/compile-obj/</BaseIntermediateOutputPath></PropertyGroup>
+<Import Project="Sdk.props" Sdk="Microsoft.NET.Sdk"/>
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <AssemblyName>Suborned.OldTown.Swap.Editor</AssemblyName>
+    <OutputType>Library</OutputType><OutputPath>../../../../out/scratch/latch/tram-settled/compile-bin/</OutputPath>
+    <Nullable>disable</Nullable>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <DefineConstants>UNITY_EDITOR</DefineConstants>
+    <LangVersion>9.0</LangVersion>
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+    <NoWarn>CS0436;CS1701;CS1702</NoWarn>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="/Users/sky/Projects/suborned/unity/Assets/Suborned/Editor/World/Review/Recovery075.cs" />
+    <Compile Include="/Users/sky/Projects/suborned/unity/Assets/Suborned/Editor/OldTown/Swap/*.cs" />
+    <Reference Include="/Applications/Unity/Hub/Editor/6000.6.2f1/Unity.app/Contents/Resources/Scripting/Managed/UnityEngine/*.dll" />
+    <Reference Include="/Users/sky/Projects/suborned/unity/Library/ScriptAssemblies/*.dll" Exclude="/Users/sky/Projects/suborned/unity/Library/ScriptAssemblies/Suborned.OldTown.Swap.Editor.dll" />
+  </ItemGroup>
+<Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk"/></Project>

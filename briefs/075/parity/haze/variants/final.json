@@ -1,0 +1,4 @@
+[
+ {"name": "h0-before", "lens": "briefs/075/parity/haze/variants/before-lens.json", "haze": "briefs/075/parity/haze/variants/before-haze.json", "play": true},
+ {"name": "h3-final", "play": true}
+]

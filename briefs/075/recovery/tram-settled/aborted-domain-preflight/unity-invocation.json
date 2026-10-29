@@ -1,0 +1,20 @@
+{
+  "command": [
+    "bun",
+    "tools/game/playing.ts",
+    "unity",
+    "run",
+    "/Users/sky/Projects/suborned/unity",
+    "--timeout",
+    "600",
+    "--log-file",
+    "/Users/sky/Projects/suborned/out/scratch/latch/tram-settled/unity.log",
+    "--no-tail",
+    "--format",
+    "json",
+    "--",
+    "-executeMethod",
+    "Suborned.OldTown.Editor.Swap.SwapTramSettled.Run"
+  ],
+  "started": 1793282112.191421
+}

@@ -127,6 +127,33 @@ namespace Suborned.OldTown.Editor.Swap
                 next:;
             }
             rep.Log($"levels: {n} old asphalt decks lifted from -0.002 to 0 (plan 0.5.5's street level); old flags and kerbs scaled to the 0.18 walk (DecoKitPlacer.GroundScaleY {DecoKitPlacer.GroundScaleY:0.###})");
+            LiftRoadModules(rep);
+        }
+
+        /// <summary>Brief 075 tram-bed fix (edit E11): the old road-level modules (Tile_TramRail and its kin, decokit ground.py: "top z = 0, body
+        /// to -0.15") were modelled to top out at the road surface over a deck at -0.002. With the deck lifted to 0 their top faces were coplanar
+        /// with the asphalt and z-fought (the Boulevard's "shattered white fragments": the old track's ivory and grey slabs flickering through the
+        /// deck). Rule, by shape, never by id: every old prefab instance whose top lies at the deck (|top| under 1 mm) and whose body is sunk in
+        /// the road (bottom under -2 cm) rides 3 mm over the deck, the height our tram tiles are laid at (SwapNetwork.Rails).</summary>
+        internal const float RoadModuleLift = .003f;
+        static void LiftRoadModules(OldTownSwap.Report rep)
+        {
+            var count = new Dictionary<string, int>();
+            foreach (var t in Object.FindObjectsByType<Transform>(FindObjectsInactive.Include))
+            {
+                if (!UnityEditor.PrefabUtility.IsOutermostPrefabInstanceRoot(t.gameObject)) continue;
+                bool ours = false;
+                for (var x = t; x; x = x.parent) if (x.name.StartsWith("Ours (") || x.name.StartsWith("Network (")) { ours = true; break; }
+                if (ours) continue;
+                var rs = t.GetComponentsInChildren<MeshRenderer>(true);
+                if (rs.Length == 0) continue;
+                var b = rs[0].bounds; foreach (var r in rs) b.Encapsulate(r.bounds);
+                if (Mathf.Abs(b.max.y) >= .001f || b.min.y > -.02f) continue;
+                t.position += Vector3.up * RoadModuleLift;
+                var piece = OldTownSwap.PieceOf(t.name);
+                count[piece] = count.TryGetValue(piece, out var c) ? c + 1 : 1;
+            }
+            rep.Log($"levels: {count.Values.Sum()} old road-level modules (top at the road surface, body sunk) lifted {RoadModuleLift * 1000f:0} mm clear of the deck at 0 ({string.Join(", ", count.OrderByDescending(k => k.Value).Select(k => $"{k.Key} {k.Value}"))})");
         }
     }
 }

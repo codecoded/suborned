@@ -1,0 +1,625 @@
+{
+  "audit": {
+    "schema": [
+      "latch.tram-bed-audit/2",
+      "latch.tram-bed-audit/2"
+    ],
+    "export": [
+      "1c38f7e61dd69718aa8b489023a80e3cf126117a05a9129e2a7388f87d69f1f5",
+      "1c38f7e61dd69718aa8b489023a80e3cf126117a05a9129e2a7388f87d69f1f5"
+    ],
+    "ourTiles": [
+      1584,
+      1584
+    ],
+    "samples": [
+      9462,
+      9462
+    ],
+    "onBed": [
+      9456,
+      9456
+    ],
+    "offBed": [
+      6,
+      6
+    ],
+    "level": [
+      18,
+      18
+    ],
+    "over": [
+      748,
+      165
+    ],
+    "levelNoBed": [
+      0,
+      0
+    ],
+    "unreadable": [
+      0,
+      0
+    ],
+    "editorReadDespiteRuntimeFlag": [
+      105,
+      105
+    ]
+  },
+  "offBedCoordinatesEqual": true,
+  "levelSourcesEqual": true,
+  "removedOverSources": [
+    {
+      "source": "Ours (Handover zone + network, our pipeline) / DK_Granite_Rail@-6,-7 [DK_Granite_Kerb]",
+      "samples": 137,
+      "at": [
+        [
+          -342.4,
+          -385.8
+        ],
+        [
+          -341.2,
+          -385.8
+        ],
+        [
+          -338.8,
+          -385.7
+        ],
+        [
+          -337.6,
+          -385.6
+        ],
+        [
+          -342.3,
+          -386.8
+        ],
+        [
+          -341.1,
+          -386.8
+        ]
+      ]
+    },
+    {
+      "source": "Ours (Handover zone + network, our pipeline) / DK_Ground_Setts@-5,-7 (west ground, old materials) [DK_Gutter_Setts]",
+      "samples": 120,
+      "at": [
+        [
+          -314.5,
+          -411.8
+        ],
+        [
+          -314.5,
+          -408.2
+        ],
+        [
+          -313.5,
+          -411.8
+        ],
+        [
+          -313.5,
+          -408.2
+        ],
+        [
+          -312.5,
+          -411.8
+        ],
+        [
+          -312.5,
+          -408.2
+        ]
+      ]
+    },
+    {
+      "source": "Ours (Handover zone + network, our pipeline) / DK_Ground_Setts@-4,-7 (west ground, old materials) [DK_Gutter_Setts]",
+      "samples": 120,
+      "at": [
+        [
+          -254.5,
+          -411.8
+        ],
+        [
+          -254.5,
+          -408.2
+        ],
+        [
+          -253.5,
+          -411.8
+        ],
+        [
+          -253.5,
+          -408.2
+        ],
+        [
+          -252.5,
+          -411.8
+        ],
+        [
+          -252.5,
+          -408.2
+        ]
+      ]
+    },
+    {
+      "source": "Ours (Handover zone + network, our pipeline) / DK_Ground_Setts@-3,-7 (west ground, old materials) [DK_Gutter_Setts]",
+      "samples": 74,
+      "at": [
+        [
+          -194.5,
+          -411.8
+        ],
+        [
+          -194.5,
+          -408.2
+        ],
+        [
+          -193.5,
+          -411.8
+        ],
+        [
+          -193.5,
+          -408.2
+        ],
+        [
+          -192.5,
+          -411.8
+        ],
+        [
+          -192.5,
+          -408.2
+        ]
+      ]
+    },
+    {
+      "source": "Ours (Handover zone + network, our pipeline) / DK_Ground_Setts@-6,-7 [DK_Gutter_Setts]",
+      "samples": 67,
+      "at": [
+        [
+          -341.8,
+          -385.8
+        ],
+        [
+          -338.2,
+          -385.7
+        ],
+        [
+          -341.7,
+          -386.8
+        ],
+        [
+          -338.1,
+          -386.7
+        ],
+        [
+          -341.6,
+          -387.9
+        ],
+        [
+          -338,
+          -387.5
+        ]
+      ]
+    },
+    {
+      "source": "Ours (Handover zone + network, our pipeline) / DK_Granite_Rail@-8,4 [DK_Granite_Kerb]",
+      "samples": 44,
+      "at": [
+        [
+          -459,
+          277.6
+        ],
+        [
+          -459,
+          278.8
+        ],
+        [
+          -459,
+          281.2
+        ],
+        [
+          -459,
+          282.4
+        ],
+        [
+          -458,
+          277.6
+        ],
+        [
+          -458,
+          278.8
+        ]
+      ]
+    },
+    {
+      "source": "Ours (Handover zone + network, our pipeline) / DK_Ground_Setts@-8,4 [DK_Gutter_Setts]",
+      "samples": 22,
+      "at": [
+        [
+          -459,
+          278.2
+        ],
+        [
+          -459,
+          281.8
+        ],
+        [
+          -458,
+          278.2
+        ],
+        [
+          -458,
+          281.8
+        ],
+        [
+          -457,
+          278.2
+        ],
+        [
+          -457,
+          281.8
+        ]
+      ]
+    },
+    {
+      "source": "Ours (Handover zone + network, our pipeline) / DK_Ground_Setts@-6,-6 (west ground, old materials) [DK_Gutter_Setts]",
+      "samples": 16,
+      "at": [
+        [
+          -338.2,
+          -369.7
+        ],
+        [
+          -338.2,
+          -370.7
+        ],
+        [
+          -338.2,
+          -371.7
+        ],
+        [
+          -338.2,
+          -372.7
+        ],
+        [
+          -338.2,
+          -373.7
+        ],
+        [
+          -338.2,
+          -374.7
+        ]
+      ]
+    }
+  ],
+  "manifest": {
+    "colliders": true,
+    "nav": true,
+    "transforms": true
+  },
+  "colliderRecords": 9321,
+  "rendererRowsRemoved": [
+    {
+      "active": true,
+      "alphaMaterials": [],
+      "enabled": true,
+      "geometry": "47E2E7329CDF615F8E9B389D1FB52F66B28657FE9587D462D373B09B5C59419C",
+      "materials": [
+        "DK_Granite_Kerb"
+      ],
+      "mesh": "",
+      "nonFoliage": "47E2E7329CDF615F8E9B389D1FB52F66B28657FE9587D462D373B09B5C59419C",
+      "path": "Ours (Handover zone + network, our pipeline)/batches/ground-pieces/DK_Granite_Rail@-6,-7",
+      "shadow": "Off",
+      "triangles": 7616
+    },
+    {
+      "active": true,
+      "alphaMaterials": [],
+      "enabled": true,
+      "geometry": "A4D395892F967D44AFFAC2CB56639F98FBE3CE23CE709B31C03BDB1350BD6A9F",
+      "materials": [
+        "DK_Granite_Kerb"
+      ],
+      "mesh": "",
+      "nonFoliage": "A4D395892F967D44AFFAC2CB56639F98FBE3CE23CE709B31C03BDB1350BD6A9F",
+      "path": "Ours (Handover zone + network, our pipeline)/batches/ground-pieces/DK_Granite_Rail@-8,4",
+      "shadow": "Off",
+      "triangles": 2688
+    },
+    {
+      "active": true,
+      "alphaMaterials": [],
+      "enabled": true,
+      "geometry": "D8ABC14119212F112A7D48DD7C890166055FBD343D6274365697A074C8029E32",
+      "materials": [
+        "DK_Gutter_Setts"
+      ],
+      "mesh": "",
+      "nonFoliage": "D8ABC14119212F112A7D48DD7C890166055FBD343D6274365697A074C8029E32",
+      "path": "Ours (Handover zone + network, our pipeline)/batches/ground-pieces/DK_Ground_Setts@-3,-7/DK_Ground_Setts@-3,-7 (west ground, old materials)",
+      "shadow": "Off",
+      "triangles": 82
+    },
+    {
+      "active": true,
+      "alphaMaterials": [],
+      "enabled": true,
+      "geometry": "FE2E390034683B361D6A2D5B2DA12F3E498154BCFF6A8771F5B6B10E82820F09",
+      "materials": [
+        "DK_Gutter_Setts"
+      ],
+      "mesh": "",
+      "nonFoliage": "FE2E390034683B361D6A2D5B2DA12F3E498154BCFF6A8771F5B6B10E82820F09",
+      "path": "Ours (Handover zone + network, our pipeline)/batches/ground-pieces/DK_Ground_Setts@-4,-7/DK_Ground_Setts@-4,-7 (west ground, old materials)",
+      "shadow": "Off",
+      "triangles": 100
+    },
+    {
+      "active": true,
+      "alphaMaterials": [],
+      "enabled": true,
+      "geometry": "A449C0BA346528F77AFF8AD5113F4E4634F5534470EDAC7D1CE3527390F6175B",
+      "materials": [
+        "DK_Gutter_Setts"
+      ],
+      "mesh": "",
+      "nonFoliage": "A449C0BA346528F77AFF8AD5113F4E4634F5534470EDAC7D1CE3527390F6175B",
+      "path": "Ours (Handover zone + network, our pipeline)/batches/ground-pieces/DK_Ground_Setts@-5,-7/DK_Ground_Setts@-5,-7 (west ground, old materials)",
+      "shadow": "Off",
+      "triangles": 100
+    },
+    {
+      "active": true,
+      "alphaMaterials": [],
+      "enabled": true,
+      "geometry": "9E4E79A7436895AB08C30D6F872C7671D2945FDECC70EB30ACE699CDCE567108",
+      "materials": [
+        "DK_Gutter_Setts"
+      ],
+      "mesh": "",
+      "nonFoliage": "9E4E79A7436895AB08C30D6F872C7671D2945FDECC70EB30ACE699CDCE567108",
+      "path": "Ours (Handover zone + network, our pipeline)/batches/ground-pieces/DK_Ground_Setts@-6,-6/DK_Ground_Setts@-6,-6 (west ground, old materials)",
+      "shadow": "Off",
+      "triangles": 30
+    },
+    {
+      "active": true,
+      "alphaMaterials": [],
+      "enabled": true,
+      "geometry": "6364341B19F3EA077A21681296EDEDEA285F70097AB63C0D167A75C744F54E1C",
+      "materials": [
+        "DK_Gutter_Setts"
+      ],
+      "mesh": "",
+      "nonFoliage": "6364341B19F3EA077A21681296EDEDEA285F70097AB63C0D167A75C744F54E1C",
+      "path": "Ours (Handover zone + network, our pipeline)/batches/ground-pieces/DK_Ground_Setts@-6,-7",
+      "shadow": "Off",
+      "triangles": 340
+    },
+    {
+      "active": true,
+      "alphaMaterials": [],
+      "enabled": true,
+      "geometry": "5CC5E1DA7148C6A8D7D5A01DE220F2898F3C0AFA1DC5CD12C4159AC47B973306",
+      "materials": [
+        "DK_Gutter_Setts"
+      ],
+      "mesh": "",
+      "nonFoliage": "5CC5E1DA7148C6A8D7D5A01DE220F2898F3C0AFA1DC5CD12C4159AC47B973306",
+      "path": "Ours (Handover zone + network, our pipeline)/batches/ground-pieces/DK_Ground_Setts@-8,4",
+      "shadow": "Off",
+      "triangles": 20
+    }
+  ],
+  "rendererRowsAdded": [
+    {
+      "active": true,
+      "alphaMaterials": [],
+      "enabled": true,
+      "geometry": "94C3AD767569B55B9AA262B18E6E6251CA843496B524AAE6B7E46B4673630D6B",
+      "materials": [
+        "DK_Granite_Kerb"
+      ],
+      "mesh": "Assets/Suborned/OldTownArt/Swap/TramFix/surface-6.asset",
+      "nonFoliage": "94C3AD767569B55B9AA262B18E6E6251CA843496B524AAE6B7E46B4673630D6B",
+      "path": "Ours (Handover zone + network, our pipeline)/batches/ground-pieces/DK_Granite_Rail@-6,-7",
+      "shadow": "Off",
+      "triangles": 5096
+    },
+    {
+      "active": true,
+      "alphaMaterials": [],
+      "enabled": true,
+      "geometry": "D4C035A4450A5C68C4D80D9A645C69FED4FBEC08B072347AFD69D20B756E8365",
+      "materials": [
+        "DK_Granite_Kerb"
+      ],
+      "mesh": "Assets/Suborned/OldTownArt/Swap/TramFix/surface-7.asset",
+      "nonFoliage": "D4C035A4450A5C68C4D80D9A645C69FED4FBEC08B072347AFD69D20B756E8365",
+      "path": "Ours (Handover zone + network, our pipeline)/batches/ground-pieces/DK_Granite_Rail@-8,4",
+      "shadow": "Off",
+      "triangles": 344
+    },
+    {
+      "active": true,
+      "alphaMaterials": [],
+      "enabled": true,
+      "geometry": "063F9707269E2E0CAB0B441DD9062CF2115C642D7FC8EBBDD40515C02F9EED0B",
+      "materials": [
+        "DK_Gutter_Setts"
+      ],
+      "mesh": "Assets/Suborned/OldTownArt/Swap/TramFix/surface-5.asset",
+      "nonFoliage": "063F9707269E2E0CAB0B441DD9062CF2115C642D7FC8EBBDD40515C02F9EED0B",
+      "path": "Ours (Handover zone + network, our pipeline)/batches/ground-pieces/DK_Ground_Setts@-3,-7/DK_Ground_Setts@-3,-7 (west ground, old materials)",
+      "shadow": "Off",
+      "triangles": 520
+    },
+    {
+      "active": true,
+      "alphaMaterials": [],
+      "enabled": true,
+      "geometry": "98F630CF32BAC33E14AAE5C39D379D3A7A498146499BC0A82C02D5FF557E66D3",
+      "materials": [
+        "DK_Gutter_Setts"
+      ],
+      "mesh": "Assets/Suborned/OldTownArt/Swap/TramFix/surface-0.asset",
+      "nonFoliage": "98F630CF32BAC33E14AAE5C39D379D3A7A498146499BC0A82C02D5FF557E66D3",
+      "path": "Ours (Handover zone + network, our pipeline)/batches/ground-pieces/DK_Ground_Setts@-4,-7/DK_Ground_Setts@-4,-7 (west ground, old materials)",
+      "shadow": "Off",
+      "triangles": 820
+    },
+    {
+      "active": true,
+      "alphaMaterials": [],
+      "enabled": true,
+      "geometry": "5D9849B85AB7039C719900027FFAE1349A786331540C684030463CDE70925806",
+      "materials": [
+        "DK_Gutter_Setts"
+      ],
+      "mesh": "Assets/Suborned/OldTownArt/Swap/TramFix/surface-1.asset",
+      "nonFoliage": "5D9849B85AB7039C719900027FFAE1349A786331540C684030463CDE70925806",
+      "path": "Ours (Handover zone + network, our pipeline)/batches/ground-pieces/DK_Ground_Setts@-5,-7/DK_Ground_Setts@-5,-7 (west ground, old materials)",
+      "shadow": "Off",
+      "triangles": 818
+    },
+    {
+      "active": true,
+      "alphaMaterials": [],
+      "enabled": true,
+      "geometry": "E8C448D084C9C627F39FA281D129B57BA4F2EBE604DC0331ADADBB1FBF896B1C",
+      "materials": [
+        "DK_Gutter_Setts"
+      ],
+      "mesh": "Assets/Suborned/OldTownArt/Swap/TramFix/surface-4.asset",
+      "nonFoliage": "E8C448D084C9C627F39FA281D129B57BA4F2EBE604DC0331ADADBB1FBF896B1C",
+      "path": "Ours (Handover zone + network, our pipeline)/batches/ground-pieces/DK_Ground_Setts@-6,-6/DK_Ground_Setts@-6,-6 (west ground, old materials)",
+      "shadow": "Off",
+      "triangles": 126
+    },
+    {
+      "active": true,
+      "alphaMaterials": [],
+      "enabled": true,
+      "geometry": "DFB782444568A5362DE1D27C7ED30959749FA95D43BEBF4054DA486D35206699",
+      "materials": [
+        "DK_Gutter_Setts"
+      ],
+      "mesh": "Assets/Suborned/OldTownArt/Swap/TramFix/surface-3.asset",
+      "nonFoliage": "DFB782444568A5362DE1D27C7ED30959749FA95D43BEBF4054DA486D35206699",
+      "path": "Ours (Handover zone + network, our pipeline)/batches/ground-pieces/DK_Ground_Setts@-6,-7",
+      "shadow": "Off",
+      "triangles": 770
+    },
+    {
+      "active": true,
+      "alphaMaterials": [],
+      "enabled": true,
+      "geometry": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855",
+      "materials": [
+        "DK_Gutter_Setts"
+      ],
+      "mesh": "Assets/Suborned/OldTownArt/Swap/TramFix/surface-2.asset",
+      "nonFoliage": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855",
+      "path": "Ours (Handover zone + network, our pipeline)/batches/ground-pieces/DK_Ground_Setts@-8,4",
+      "shadow": "Off",
+      "triangles": 0
+    }
+  ],
+  "rendererRowCount": [
+    69336,
+    69336
+  ],
+  "duplicateRendererPaths": 60156,
+  "inputsBeforeAfterEqual": true,
+  "currentPins": {
+    "inputs-before.json": {
+      "count": 48,
+      "mismatches": []
+    },
+    "render-inputs-before.json": {
+      "count": 4471,
+      "mismatches": []
+    }
+  },
+  "sourceSnapshotComparison": {
+    "SwapNetwork.cs": false,
+    "SwapPlan.cs": true,
+    "SwapShots.cs": true,
+    "SwapPerf.cs": true,
+    "SwapWest.cs": true,
+    "SwapExport.cs": true,
+    "SwapOurs.cs": true,
+    "SwapTramAudit.cs": false,
+    "SwapKeep.cs": true,
+    "SwapMesh.cs": true,
+    "SwapSwitches.cs": true,
+    "SwapShapes.cs": true,
+    "SwapHq.cs": true,
+    "SwapTowers.cs": true,
+    "SwapVerify.cs": true,
+    "OldTownSwap.cs": false,
+    "GlintVintage.cs": true,
+    "SwapCut.cs": true,
+    "SwapPlayLook.cs": true
+  },
+  "generatedMeshTriangles": [
+    {
+      "asset": "surface-0.asset",
+      "vertices": 1700,
+      "triangles": 820,
+      "nonfinite": 0,
+      "zeroArea": 780,
+      "areaBelow1eMinus10": 780
+    },
+    {
+      "asset": "surface-1.asset",
+      "vertices": 1696,
+      "triangles": 818,
+      "nonfinite": 0,
+      "zeroArea": 777,
+      "areaBelow1eMinus10": 777
+    },
+    {
+      "asset": "surface-2.asset",
+      "triangles": 0
+    },
+    {
+      "asset": "surface-3.asset",
+      "vertices": 1678,
+      "triangles": 770,
+      "nonfinite": 0,
+      "zeroArea": 0,
+      "areaBelow1eMinus10": 0
+    },
+    {
+      "asset": "surface-4.asset",
+      "vertices": 270,
+      "triangles": 126,
+      "nonfinite": 0,
+      "zeroArea": 114,
+      "areaBelow1eMinus10": 114
+    },
+    {
+      "asset": "surface-5.asset",
+      "vertices": 1116,
+      "triangles": 520,
+      "nonfinite": 0,
+      "zeroArea": 490,
+      "areaBelow1eMinus10": 490
+    },
+    {
+      "asset": "surface-6.asset",
+      "vertices": 12088,
+      "triangles": 5096,
+      "nonfinite": 0,
+      "zeroArea": 2,
+      "areaBelow1eMinus10": 69
+    },
+    {
+      "asset": "surface-7.asset",
+      "vertices": 744,
+      "triangles": 344,
+      "nonfinite": 0,
+      "zeroArea": 0,
+      "areaBelow1eMinus10": 0
+    }
+  ]
+}

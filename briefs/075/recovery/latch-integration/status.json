@@ -1,0 +1,26 @@
+{
+  "status": "PROVISIONAL_RENDERED_REVIEW_ONLY",
+  "geometryGate": "BLOCKED G-3a59>58; not regraded here",
+  "defaultFoliage": "off",
+  "finalPlacements": 3,
+  "renderDelta": {
+    "triangles": 10791,
+    "renderers": 2,
+    "materialSlots": 10,
+    "shadowCastingRenderers": 2,
+    "alphaClippedRenderers": 2
+  },
+  "coreComparatorChecksPassed": 14,
+  "boundsCheck": "3/3, tolerance1mm",
+  "protectedInputChanges": [],
+  "productionKitChangesAtCaptureCheckpoint": [],
+  "tramaudit": {
+    "level": 38,
+    "over": 597,
+    "offBed": 6,
+    "unreadable": 105
+  },
+  "swapRegression": "pre-existing rounding/sky-traffic differences match swap2/civic; strict identity false",
+  "nextOwner": "Redline/Suture review; Aster coordinates remaining geometry/tram work",
+  "noAirNoReleaseNoCommit": true
+}

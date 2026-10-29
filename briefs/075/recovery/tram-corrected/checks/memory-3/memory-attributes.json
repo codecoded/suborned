@@ -1,0 +1,5 @@
+{
+ "sourceRailTemplate":{"vertices":3918,"frameErrors":21,"basisOrHandednessErrors":6776,"maxNormalTangentDot":0.028885869309306145,"maxTangentLengthError":1.1920928955078125E-07,"maxUvTangentVectorError":0.29503652453422546,"regularUvTriangles":3098,"degenerateUvTriangles":0,"negativeHandedVertices":2173,"positiveHandedVertices":1745},
+ "emitted":{"vertices":18562423,"frameErrors":29,"basisOrHandednessErrors":3833,"maxNormalTangentDot":8.0870449892245233E-06,"maxTangentLengthError":1.1920928955078125E-07,"maxUvTangentVectorError":0.00821826420724392,"regularUvTriangles":6264034,"degenerateUvTriangles":2486,"negativeHandedVertices":10456231,"positiveHandedVertices":8106192},
+ "note":"Independent derivatives from final triangle positions/UV0. Degenerate UV charts are explicitly counted and use an orthonormal source-frame fallback, not a fabricated UV derivative. Source smooth normals remain inverse-transpose mapped."
+}

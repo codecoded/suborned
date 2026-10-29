@@ -1,0 +1,23 @@
+{
+  "command": [
+    "bun",
+    "tools/game/playing.ts",
+    "unity",
+    "run",
+    "/Users/sky/Projects/suborned/unity",
+    "--timeout",
+    "590",
+    "--log-file",
+    "/Users/sky/Projects/suborned/out/scratch/latch/tram-corrected/final-audit-surfaces.log",
+    "--no-tail",
+    "--format",
+    "json",
+    "--",
+    "-executeMethod",
+    "Suborned.OldTown.Editor.Swap.SwapTramCoverage.VerifySavedAuditSamples",
+    "-nographics"
+  ],
+  "exit": 0,
+  "seconds": 27.134440898895264,
+  "restoredExactBytes": []
+}

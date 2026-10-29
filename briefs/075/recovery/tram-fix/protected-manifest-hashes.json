@@ -1,0 +1,12 @@
+{
+  "before": {
+    "colliderRecordsSha256": "68a84894423afb9d48f2b8b38a7586c4e39cd4537edd322ad8a0268e183d72aa",
+    "nav": "50e591f9c282c28c5516479b221381570ececedea863018259f452026c7bb741",
+    "colliderCount": 9321
+  },
+  "after": {
+    "colliderRecordsSha256": "68a84894423afb9d48f2b8b38a7586c4e39cd4537edd322ad8a0268e183d72aa",
+    "nav": "50e591f9c282c28c5516479b221381570ececedea863018259f452026c7bb741",
+    "colliderCount": 9321
+  }
+}

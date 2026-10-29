@@ -1,0 +1,1 @@
+failed foliage-apply; see /Users/sky/Projects/suborned/out/scratch/latch/recovery/integration/logs/foliage-apply.log

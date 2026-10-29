@@ -1,0 +1,1612 @@
+{
+  "status": "REJECTED: sparse leaf patches; end-of-run generator hash invalid because recipe edited after generation",
+  "assets": {
+    "BedTuft_A": {
+      "source": {
+        "bounds": [
+          [
+            -0.3100000023841858,
+            -0.29482752084732056,
+            0.0
+          ],
+          [
+            0.3100000023841858,
+            0.29482752084732056,
+            0.44661745429039
+          ]
+        ],
+        "triangles": 95,
+        "materials": [
+          "DK_Leaf_Civic",
+          "DK_Bloom_Coral",
+          "DK_Bloom_Cream"
+        ],
+        "trianglesByMaterial": {
+          "DK_Leaf_Civic": 50,
+          "DK_Bloom_Coral": 30,
+          "DK_Bloom_Cream": 15
+        }
+      },
+      "previous": {
+        "bounds": [
+          [
+            -0.3100000023841858,
+            -0.29482752084732056,
+            0.0
+          ],
+          [
+            0.3100000023841858,
+            0.29482752084732056,
+            0.4440544545650482
+          ]
+        ],
+        "triangles": 1946,
+        "materials": [
+          "DK_Leaf_CoreShrub",
+          "DK_Leaf_Shrub",
+          "DK_Bloom_Coral",
+          "DK_Bloom_Cream"
+        ],
+        "trianglesByMaterial": {
+          "DK_Leaf_CoreShrub": 50,
+          "DK_Leaf_Shrub": 384,
+          "DK_Bloom_Coral": 840,
+          "DK_Bloom_Cream": 672
+        }
+      },
+      "refined": {
+        "bounds": [
+          [
+            -0.2727999985218048,
+            -0.26476746797561646,
+            0.0
+          ],
+          [
+            0.2727999985218048,
+            0.2647891938686371,
+            0.37997981905937195
+          ]
+        ],
+        "triangles": 570,
+        "materials": [
+          "DK_Leaf_Civic",
+          "DK_Leaf_Refine075_Civic",
+          "DK_Bloom_Coral",
+          "DK_Bloom_Cream"
+        ],
+        "trianglesByMaterial": {
+          "DK_Leaf_Civic": 50,
+          "DK_Leaf_Refine075_Civic": 256,
+          "DK_Bloom_Coral": 120,
+          "DK_Bloom_Cream": 144
+        }
+      },
+      "fbx": "out/scratch/vela/foliage-refine/BedTuft_A_Refine075.fbx",
+      "sha256": "0bcb2aca1fc3f1b269ddca56f138bd8e73dfaa6cb5e5b89c4f1dd1ac7e61dd6a",
+      "nonPlantPolygonPositionsExact": true,
+      "seededCallsExact": true,
+      "sourceEnvelopeContained": true,
+      "seededCalls": [
+        [
+          "leaf",
+          [
+            0,
+            0,
+            0
+          ],
+          0.31,
+          0.414,
+          "DK_Leaf_Civic"
+        ],
+        [
+          "bloom",
+          [
+            -0.015485481976855418,
+            0.11398167696774845,
+            0.3473912308490068
+          ],
+          0.12875787133443228,
+          "DK_Bloom_Coral"
+        ],
+        [
+          "bloom",
+          [
+            -0.0329509037825915,
+            -0.10906612769275244,
+            0.33298800313081134
+          ],
+          0.11650270955897725,
+          "DK_Bloom_Cream"
+        ],
+        [
+          "bloom",
+          [
+            -0.16880561199339014,
+            -0.010578516193549279,
+            0.35691296020675506
+          ],
+          0.12814925647184697,
+          "DK_Bloom_Coral"
+        ]
+      ]
+    },
+    "BedTuft_B": {
+      "source": {
+        "bounds": [
+          [
+            -0.3100000023841858,
+            -0.29482752084732056,
+            0.0
+          ],
+          [
+            0.3100000023841858,
+            0.29482752084732056,
+            0.3776944577693939
+          ]
+        ],
+        "triangles": 95,
+        "materials": [
+          "DK_Leaf_CivicDark",
+          "DK_Bloom_Flamingo",
+          "DK_Bloom_Peach"
+        ],
+        "trianglesByMaterial": {
+          "DK_Leaf_CivicDark": 50,
+          "DK_Bloom_Flamingo": 30,
+          "DK_Bloom_Peach": 15
+        }
+      },
+      "previous": {
+        "bounds": [
+          [
+            -0.3100000023841858,
+            -0.29482752084732056,
+            0.0
+          ],
+          [
+            0.3100000023841858,
+            0.29482752084732056,
+            0.37541666626930237
+          ]
+        ],
+        "triangles": 1946,
+        "materials": [
+          "DK_Leaf_CoreShrub",
+          "DK_Leaf_Shrub",
+          "DK_Bloom_Flamingo",
+          "DK_Bloom_Cream",
+          "DK_Bloom_Peach"
+        ],
+        "trianglesByMaterial": {
+          "DK_Leaf_CoreShrub": 50,
+          "DK_Leaf_Shrub": 384,
+          "DK_Bloom_Flamingo": 840,
+          "DK_Bloom_Cream": 252,
+          "DK_Bloom_Peach": 420
+        }
+      },
+      "refined": {
+        "bounds": [
+          [
+            -0.2727999985218048,
+            -0.26561784744262695,
+            0.0
+          ],
+          [
+            0.2727999985218048,
+            0.26276978850364685,
+            0.3184717893600464
+          ]
+        ],
+        "triangles": 570,
+        "materials": [
+          "DK_Leaf_CivicDark",
+          "DK_Leaf_Refine075_CivicDark",
+          "DK_Bloom_Flamingo",
+          "DK_Bloom_Cream",
+          "DK_Bloom_Peach"
+        ],
+        "trianglesByMaterial": {
+          "DK_Leaf_CivicDark": 50,
+          "DK_Leaf_Refine075_CivicDark": 256,
+          "DK_Bloom_Flamingo": 120,
+          "DK_Bloom_Cream": 84,
+          "DK_Bloom_Peach": 60
+        }
+      },
+      "fbx": "out/scratch/vela/foliage-refine/BedTuft_B_Refine075.fbx",
+      "sha256": "15fb120e634640ed8f44afb9862523de54d94493e8649f0d6b298fdb0e538948",
+      "nonPlantPolygonPositionsExact": true,
+      "seededCallsExact": true,
+      "sourceEnvelopeContained": true,
+      "seededCalls": [
+        [
+          "leaf",
+          [
+            0,
+            0,
+            0
+          ],
+          0.31,
+          0.345,
+          "DK_Leaf_CivicDark"
+        ],
+        [
+          "bloom",
+          [
+            0.0711297758786307,
+            0.04855886151242448,
+            0.2979716363638265
+          ],
+          0.11388976093145708,
+          "DK_Bloom_Flamingo"
+        ],
+        [
+          "bloom",
+          [
+            0.05987401093453575,
+            -0.0240218142573393,
+            0.2789373141104562
+          ],
+          0.10011854063601143,
+          "DK_Bloom_Peach"
+        ],
+        [
+          "bloom",
+          [
+            -0.07119707458673621,
+            -0.014564801514533366,
+            0.2944276129531212
+          ],
+          0.10949199340680521,
+          "DK_Bloom_Flamingo"
+        ]
+      ]
+    },
+    "BedTuft_C": {
+      "source": {
+        "bounds": [
+          [
+            -0.3100000023841858,
+            -0.29482752084732056,
+            0.0
+          ],
+          [
+            0.3100000023841858,
+            0.29482752084732056,
+            0.5059999823570251
+          ]
+        ],
+        "triangles": 80,
+        "materials": [
+          "DK_Leaf_CivicDark",
+          "DK_Bloom_Cream",
+          "DK_Bloom_Peach"
+        ],
+        "trianglesByMaterial": {
+          "DK_Leaf_CivicDark": 50,
+          "DK_Bloom_Cream": 15,
+          "DK_Bloom_Peach": 15
+        }
+      },
+      "previous": {
+        "bounds": [
+          [
+            -0.3100000023841858,
+            -0.29482752084732056,
+            0.0
+          ],
+          [
+            0.3100000023841858,
+            0.29482752084732056,
+            0.4872461259365082
+          ]
+        ],
+        "triangles": 1442,
+        "materials": [
+          "DK_Leaf_CoreShrub",
+          "DK_Leaf_Shrub",
+          "DK_Bloom_Cream",
+          "DK_Bloom_Peach"
+        ],
+        "trianglesByMaterial": {
+          "DK_Leaf_CoreShrub": 50,
+          "DK_Leaf_Shrub": 384,
+          "DK_Bloom_Cream": 588,
+          "DK_Bloom_Peach": 420
+        }
+      },
+      "refined": {
+        "bounds": [
+          [
+            -0.2727999985218048,
+            -0.2665098309516907,
+            0.0
+          ],
+          [
+            0.2727999985218048,
+            0.26464250683784485,
+            0.4553999900817871
+          ]
+        ],
+        "triangles": 482,
+        "materials": [
+          "DK_Leaf_CivicDark",
+          "DK_Leaf_Refine075_CivicDark",
+          "DK_Bloom_Cream",
+          "DK_Bloom_Peach"
+        ],
+        "trianglesByMaterial": {
+          "DK_Leaf_CivicDark": 50,
+          "DK_Leaf_Refine075_CivicDark": 256,
+          "DK_Bloom_Cream": 116,
+          "DK_Bloom_Peach": 60
+        }
+      },
+      "fbx": "out/scratch/vela/foliage-refine/BedTuft_C_Refine075.fbx",
+      "sha256": "c74b3794fdd696802b41af9157acae3bdfe91d899bcf61d20a4251138f870890",
+      "nonPlantPolygonPositionsExact": true,
+      "seededCallsExact": true,
+      "sourceEnvelopeContained": true,
+      "seededCalls": [
+        [
+          "leaf",
+          [
+            0,
+            0,
+            0
+          ],
+          0.31,
+          0.506,
+          "DK_Leaf_CivicDark"
+        ],
+        [
+          "bloom",
+          [
+            -0.044132609488093125,
+            0.10524101260994585,
+            0.41185549275067385
+          ],
+          0.11086857039823052,
+          "DK_Bloom_Cream"
+        ],
+        [
+          "bloom",
+          [
+            -0.03805969850890869,
+            -0.06736399332919712,
+            0.38751442719745993
+          ],
+          0.11716635664986735,
+          "DK_Bloom_Peach"
+        ]
+      ]
+    },
+    "PlanterRun_4_A": {
+      "source": {
+        "bounds": [
+          [
+            -2.189413547515869,
+            -0.3400000035762787,
+            0.0
+          ],
+          [
+            2.179849863052368,
+            0.3400000035762787,
+            1.1201403141021729
+          ]
+        ],
+        "triangles": 732,
+        "materials": [
+          "DK_Limestone",
+          "DK_Leaf_CivicDark",
+          "DK_Bloom_Coral",
+          "DK_Bloom_Cream",
+          "DK_Leaf_Civic"
+        ],
+        "trianglesByMaterial": {
+          "DK_Limestone": 60,
+          "DK_Leaf_CivicDark": 232,
+          "DK_Bloom_Coral": 105,
+          "DK_Bloom_Cream": 135,
+          "DK_Leaf_Civic": 200
+        }
+      },
+      "previous": {
+        "bounds": [
+          [
+            -2.189413547515869,
+            -0.3400000035762787,
+            0.0
+          ],
+          [
+            2.179849863052368,
+            0.3400000035762787,
+            1.1118229627609253
+          ]
+        ],
+        "triangles": 11628,
+        "materials": [
+          "DK_Limestone",
+          "DK_Leaf_CivicDark",
+          "DK_Leaf_CoreShrub",
+          "DK_Leaf_Shrub",
+          "DK_Bloom_Coral",
+          "DK_Bloom_Cream"
+        ],
+        "trianglesByMaterial": {
+          "DK_Limestone": 60,
+          "DK_Leaf_CivicDark": 32,
+          "DK_Leaf_CoreShrub": 400,
+          "DK_Leaf_Shrub": 3072,
+          "DK_Bloom_Coral": 2940,
+          "DK_Bloom_Cream": 5124
+        }
+      },
+      "refined": {
+        "bounds": [
+          [
+            -2.1522839069366455,
+            -0.3400000035762787,
+            0.0
+          ],
+          [
+            2.1438679695129395,
+            0.3400000035762787,
+            1.0801262855529785
+          ]
+        ],
+        "triangles": 3948,
+        "materials": [
+          "DK_Limestone",
+          "DK_Leaf_CivicDark",
+          "DK_Leaf_Refine075_CivicDark",
+          "DK_Bloom_Coral",
+          "DK_Bloom_Cream",
+          "DK_Leaf_Civic",
+          "DK_Leaf_Refine075_Civic"
+        ],
+        "trianglesByMaterial": {
+          "DK_Limestone": 60,
+          "DK_Leaf_CivicDark": 232,
+          "DK_Leaf_Refine075_CivicDark": 1024,
+          "DK_Bloom_Coral": 420,
+          "DK_Bloom_Cream": 988,
+          "DK_Leaf_Civic": 200,
+          "DK_Leaf_Refine075_Civic": 1024
+        }
+      },
+      "fbx": "out/scratch/vela/foliage-refine/PlanterRun_4_A_Refine075.fbx",
+      "sha256": "2dfc26b780d1ec1092d8fe550e0d4f6309db9115e23232a452b47829addc03fd",
+      "nonPlantPolygonPositionsExact": true,
+      "seededCallsExact": true,
+      "sourceEnvelopeContained": true,
+      "seededCalls": [
+        [
+          "leaf",
+          [
+            -1.8799999952316284,
+            0.029597298804569475,
+            0.72
+          ],
+          0.30941350221118713,
+          0.28710161699504594,
+          "DK_Leaf_CivicDark"
+        ],
+        [
+          "bloom",
+          [
+            -1.7213278128776721,
+            -0.03632957927705642,
+            0.9823762201228204
+          ],
+          0.11495134067295619,
+          "DK_Bloom_Coral"
+        ],
+        [
+          "bloom",
+          [
+            -1.9029143662889245,
+            0.062207231270533195,
+            1.008973680252358
+          ],
+          0.11089377927379312,
+          "DK_Bloom_Cream"
+        ],
+        [
+          "leaf",
+          [
+            -1.3428571224212646,
+            -0.017398123737655015,
+            0.72
+          ],
+          0.2819809099379953,
+          0.30306961949138417,
+          "DK_Leaf_Civic"
+        ],
+        [
+          "bloom",
+          [
+            -1.335369968984829,
+            -0.07770785012952922,
+            0.974304330522889
+          ],
+          0.1075119356410573,
+          "DK_Bloom_Cream"
+        ],
+        [
+          "bloom",
+          [
+            -1.3380076718356029,
+            -0.01582875496266751,
+            1.0082776875203787
+          ],
+          0.10136927986059521,
+          "DK_Bloom_Coral"
+        ],
+        [
+          "leaf",
+          [
+            -0.8057142496109009,
+            0.01632236060553488,
+            0.72
+          ],
+          0.27513694201770994,
+          0.37057249783733737,
+          "DK_Leaf_CivicDark"
+        ],
+        [
+          "bloom",
+          [
+            -0.9510297580630028,
+            0.040209531511490426,
+            1.0219676807685825
+          ],
+          0.12316435282768538,
+          "DK_Bloom_Coral"
+        ],
+        [
+          "bloom",
+          [
+            -0.702596464451194,
+            0.07321950143572006,
+            0.975179448944477
+          ],
+          0.09972600044840961,
+          "DK_Bloom_Cream"
+        ],
+        [
+          "leaf",
+          [
+            -0.2685713768005371,
+            -0.026524318217040925,
+            0.72
+          ],
+          0.30940133537616576,
+          0.29190632083486634,
+          "DK_Leaf_Civic"
+        ],
+        [
+          "bloom",
+          [
+            -0.1215936467833513,
+            0.06832344085813402,
+            1.0112327173203866
+          ],
+          0.10784938980646987,
+          "DK_Bloom_Cream"
+        ],
+        [
+          "bloom",
+          [
+            -0.26568977542430244,
+            0.05201940707689793,
+            0.9376791308827793
+          ],
+          0.10731060388159662,
+          "DK_Bloom_Coral"
+        ],
+        [
+          "leaf",
+          [
+            0.2685713768005371,
+            0.004431515836311406,
+            0.72
+          ],
+          0.29426906647615525,
+          0.34101878407597924,
+          "DK_Leaf_CivicDark"
+        ],
+        [
+          "bloom",
+          [
+            0.18353963091858208,
+            0.0871329137105209,
+            0.9385024566278203
+          ],
+          0.13441133304155128,
+          "DK_Bloom_Coral"
+        ],
+        [
+          "bloom",
+          [
+            0.3081428110580351,
+            0.08211283100224853,
+            1.0207284886027232
+          ],
+          0.09248179494899547,
+          "DK_Bloom_Cream"
+        ],
+        [
+          "leaf",
+          [
+            0.8057143688201904,
+            0.003342454295198534,
+            0.72
+          ],
+          0.26877934909485857,
+          0.2743116126299204,
+          "DK_Leaf_Civic"
+        ],
+        [
+          "bloom",
+          [
+            0.8277791084330799,
+            -0.013833643309916287,
+            0.9540092311249735
+          ],
+          0.0953302129339272,
+          "DK_Bloom_Cream"
+        ],
+        [
+          "bloom",
+          [
+            0.703303409347967,
+            -0.00793889554732987,
+            1.0139086698668602
+          ],
+          0.11707950073909104,
+          "DK_Bloom_Coral"
+        ],
+        [
+          "leaf",
+          [
+            1.3428571224212646,
+            0.004437501989426648,
+            0.72
+          ],
+          0.29876690369766784,
+          0.4001402335102185,
+          "DK_Leaf_CivicDark"
+        ],
+        [
+          "bloom",
+          [
+            1.3713028578188757,
+            -0.08521617302728376,
+            0.9759580340643759
+          ],
+          0.1149474149663173,
+          "DK_Bloom_Cream"
+        ],
+        [
+          "bloom",
+          [
+            1.2073971516609114,
+            -0.06149839077122396,
+            0.9872767730559243
+          ],
+          0.11372897105456252,
+          "DK_Bloom_Coral"
+        ],
+        [
+          "leaf",
+          [
+            1.8799999952316284,
+            -0.004293903185182132,
+            0.72
+          ],
+          0.2998498973218619,
+          0.3898317590914572,
+          "DK_Leaf_Civic"
+        ],
+        [
+          "bloom",
+          [
+            1.9345195734050629,
+            0.022371849120044505,
+            1.0016515317441939
+          ],
+          0.11256778919206309,
+          "DK_Bloom_Cream"
+        ],
+        [
+          "bloom",
+          [
+            1.9965921927888821,
+            0.04363106456735605,
+            1.0253067440926609
+          ],
+          0.12722970749141818,
+          "DK_Bloom_Cream"
+        ]
+      ]
+    },
+    "PlanterRun_4_B": {
+      "source": {
+        "bounds": [
+          [
+            -2.1376352310180664,
+            -0.3400000035762787,
+            0.0
+          ],
+          [
+            2.1635351181030273,
+            0.3400000035762787,
+            1.0615774393081665
+          ]
+        ],
+        "triangles": 672,
+        "materials": [
+          "DK_Limestone",
+          "DK_Leaf_Civic",
+          "DK_Bloom_Peach",
+          "DK_Bloom_Flamingo",
+          "DK_Leaf_CivicDark"
+        ],
+        "trianglesByMaterial": {
+          "DK_Limestone": 60,
+          "DK_Leaf_Civic": 232,
+          "DK_Bloom_Peach": 90,
+          "DK_Bloom_Flamingo": 90,
+          "DK_Leaf_CivicDark": 200
+        }
+      },
+      "previous": {
+        "bounds": [
+          [
+            -2.137381076812744,
+            -0.3400000035762787,
+            0.0
+          ],
+          [
+            2.1469924449920654,
+            0.3400000035762787,
+            1.058955192565918
+          ]
+        ],
+        "triangles": 9612,
+        "materials": [
+          "DK_Limestone",
+          "DK_Leaf_Civic",
+          "DK_Leaf_CoreShrub",
+          "DK_Leaf_Shrub",
+          "DK_Bloom_Peach",
+          "DK_Bloom_Cream",
+          "DK_Bloom_Flamingo"
+        ],
+        "trianglesByMaterial": {
+          "DK_Limestone": 60,
+          "DK_Leaf_Civic": 32,
+          "DK_Leaf_CoreShrub": 400,
+          "DK_Leaf_Shrub": 3072,
+          "DK_Bloom_Peach": 2520,
+          "DK_Bloom_Cream": 1008,
+          "DK_Bloom_Flamingo": 2520
+        }
+      },
+      "refined": {
+        "bounds": [
+          [
+            -2.1067190170288086,
+            -0.3400000035762787,
+            0.0
+          ],
+          [
+            2.1295108795166016,
+            0.3400000035762787,
+            1.0260342359542847
+          ]
+        ],
+        "triangles": 3596,
+        "materials": [
+          "DK_Limestone",
+          "DK_Leaf_Civic",
+          "DK_Leaf_Refine075_Civic",
+          "DK_Bloom_Peach",
+          "DK_Bloom_Cream",
+          "DK_Bloom_Flamingo",
+          "DK_Leaf_CivicDark",
+          "DK_Leaf_Refine075_CivicDark"
+        ],
+        "trianglesByMaterial": {
+          "DK_Limestone": 60,
+          "DK_Leaf_Civic": 232,
+          "DK_Leaf_Refine075_Civic": 1024,
+          "DK_Bloom_Peach": 360,
+          "DK_Bloom_Cream": 336,
+          "DK_Bloom_Flamingo": 360,
+          "DK_Leaf_CivicDark": 200,
+          "DK_Leaf_Refine075_CivicDark": 1024
+        }
+      },
+      "fbx": "out/scratch/vela/foliage-refine/PlanterRun_4_B_Refine075.fbx",
+      "sha256": "e09296ec619a2872f2522f5fd7e965b5c952448ce39e22b1779d93df6c381276",
+      "nonPlantPolygonPositionsExact": true,
+      "seededCallsExact": true,
+      "sourceEnvelopeContained": true,
+      "seededCalls": [
+        [
+          "leaf",
+          [
+            -1.8799999952316284,
+            0.019728263387216907,
+            0.72
+          ],
+          0.257635130092863,
+          0.2445285366064257,
+          "DK_Leaf_Civic"
+        ],
+        [
+          "bloom",
+          [
+            -1.8833809527649465,
+            0.06529186133975019,
+            0.9449492299757274
+          ],
+          0.09190486329342805,
+          "DK_Bloom_Peach"
+        ],
+        [
+          "bloom",
+          [
+            -1.9644276551479223,
+            0.06666145854225643,
+            0.9110606168242168
+          ],
+          0.12743947480966408,
+          "DK_Bloom_Flamingo"
+        ],
+        [
+          "leaf",
+          [
+            -1.3428571224212646,
+            -0.028651377035628752,
+            0.72
+          ],
+          0.25149176433948134,
+          0.3400380129114276,
+          "DK_Leaf_CivicDark"
+        ],
+        [
+          "bloom",
+          [
+            -1.427879572610515,
+            0.07433636843050745,
+            0.920110816155378
+          ],
+          0.1271143360601937,
+          "DK_Bloom_Peach"
+        ],
+        [
+          "bloom",
+          [
+            -1.31681142794001,
+            0.0512237179589575,
+            0.9739727397520206
+          ],
+          0.09067946841678703,
+          "DK_Bloom_Peach"
+        ],
+        [
+          "leaf",
+          [
+            -0.8057142496109009,
+            0.01465264134783461,
+            0.72
+          ],
+          0.2605941600106268,
+          0.3214667031805036,
+          "DK_Leaf_Civic"
+        ],
+        [
+          "bloom",
+          [
+            -0.905588797016817,
+            0.054009370439070524,
+            0.9078438115253594
+          ],
+          0.12384109328860057,
+          "DK_Bloom_Flamingo"
+        ],
+        [
+          "bloom",
+          [
+            -0.9613312531979106,
+            0.025509154241756614,
+            0.9065653473832339
+          ],
+          0.0944955171359902,
+          "DK_Bloom_Peach"
+        ],
+        [
+          "leaf",
+          [
+            -0.2685713768005371,
+            -0.027031300131227783,
+            0.72
+          ],
+          0.26528095205916985,
+          0.3162398568360201,
+          "DK_Leaf_CivicDark"
+        ],
+        [
+          "leaf",
+          [
+            0.2685713768005371,
+            0.003644753040439992,
+            0.72
+          ],
+          0.2694471229609084,
+          0.25915349172850843,
+          "DK_Leaf_Civic"
+        ],
+        [
+          "bloom",
+          [
+            0.32680789432934737,
+            0.09132314207164194,
+            0.9698011044661317
+          ],
+          0.13110901481519183,
+          "DK_Bloom_Flamingo"
+        ],
+        [
+          "bloom",
+          [
+            0.3526640450285816,
+            -0.038174061375156686,
+            0.9348913450852567
+          ],
+          0.11372816311137876,
+          "DK_Bloom_Peach"
+        ],
+        [
+          "leaf",
+          [
+            0.8057143688201904,
+            0.010012902596940612,
+            0.72
+          ],
+          0.2593504087807447,
+          0.24823495458518782,
+          "DK_Leaf_CivicDark"
+        ],
+        [
+          "bloom",
+          [
+            0.7442314029005179,
+            0.06663342971912244,
+            0.900750158696479
+          ],
+          0.11372650796007522,
+          "DK_Bloom_Flamingo"
+        ],
+        [
+          "bloom",
+          [
+            0.8907639498737779,
+            -0.021447669617790058,
+            0.9347647377055526
+          ],
+          0.12487515659972198,
+          "DK_Bloom_Peach"
+        ],
+        [
+          "leaf",
+          [
+            1.3428571224212646,
+            -0.01413058790685488,
+            0.72
+          ],
+          0.2531514642521773,
+          0.31288432024046153,
+          "DK_Leaf_Civic"
+        ],
+        [
+          "leaf",
+          [
+            1.8799999952316284,
+            -0.003185897265021106,
+            0.72
+          ],
+          0.2835350711560954,
+          0.2501020881020406,
+          "DK_Leaf_CivicDark"
+        ],
+        [
+          "bloom",
+          [
+            1.7674875366081897,
+            0.015084220011335029,
+            0.9569741466404877
+          ],
+          0.1199037132748745,
+          "DK_Bloom_Flamingo"
+        ],
+        [
+          "bloom",
+          [
+            1.9942663349865108,
+            0.06431118333654809,
+            0.9188040506120443
+          ],
+          0.0905009721677336,
+          "DK_Bloom_Flamingo"
+        ]
+      ]
+    },
+    "PlanterRun_4_C": {
+      "source": {
+        "bounds": [
+          [
+            -2.1463093757629395,
+            -0.3400000035762787,
+            0.0
+          ],
+          [
+            2.147174596786499,
+            0.3400000035762787,
+            1.1829514503479004
+          ]
+        ],
+        "triangles": 642,
+        "materials": [
+          "DK_Limestone",
+          "DK_Leaf_Civic",
+          "DK_Bloom_Cream",
+          "DK_Bloom_Peach",
+          "DK_Leaf_CivicDark"
+        ],
+        "trianglesByMaterial": {
+          "DK_Limestone": 60,
+          "DK_Leaf_Civic": 232,
+          "DK_Bloom_Cream": 90,
+          "DK_Bloom_Peach": 60,
+          "DK_Leaf_CivicDark": 200
+        }
+      },
+      "previous": {
+        "bounds": [
+          [
+            -2.1463093757629395,
+            -0.3400000035762787,
+            0.0
+          ],
+          [
+            2.147174596786499,
+            0.3400000035762787,
+            1.17288076877594
+          ]
+        ],
+        "triangles": 8604,
+        "materials": [
+          "DK_Limestone",
+          "DK_Leaf_Civic",
+          "DK_Leaf_CoreShrub",
+          "DK_Leaf_Shrub",
+          "DK_Bloom_Cream",
+          "DK_Bloom_Peach"
+        ],
+        "trianglesByMaterial": {
+          "DK_Limestone": 60,
+          "DK_Leaf_Civic": 32,
+          "DK_Leaf_CoreShrub": 400,
+          "DK_Leaf_Shrub": 3072,
+          "DK_Bloom_Cream": 3360,
+          "DK_Bloom_Peach": 1680
+        }
+      },
+      "refined": {
+        "bounds": [
+          [
+            -2.114352226257324,
+            -0.3400000035762787,
+            0.0
+          ],
+          [
+            2.1151134967803955,
+            0.3400000035762787,
+            1.1366562843322754
+          ]
+        ],
+        "triangles": 3420,
+        "materials": [
+          "DK_Limestone",
+          "DK_Leaf_Civic",
+          "DK_Leaf_Refine075_Civic",
+          "DK_Bloom_Cream",
+          "DK_Bloom_Peach",
+          "DK_Leaf_CivicDark",
+          "DK_Leaf_Refine075_CivicDark"
+        ],
+        "trianglesByMaterial": {
+          "DK_Limestone": 60,
+          "DK_Leaf_Civic": 232,
+          "DK_Leaf_Refine075_Civic": 1024,
+          "DK_Bloom_Cream": 640,
+          "DK_Bloom_Peach": 240,
+          "DK_Leaf_CivicDark": 200,
+          "DK_Leaf_Refine075_CivicDark": 1024
+        }
+      },
+      "fbx": "out/scratch/vela/foliage-refine/PlanterRun_4_C_Refine075.fbx",
+      "sha256": "cee43350b4e3e48569f780e4325ba472894dc143e0e8e31f22443eb504c8830c",
+      "nonPlantPolygonPositionsExact": true,
+      "seededCallsExact": true,
+      "sourceEnvelopeContained": true,
+      "seededCalls": [
+        [
+          "leaf",
+          [
+            -1.8799999952316284,
+            -0.0038824082457416427,
+            0.72
+          ],
+          0.2663094551787351,
+          0.408723887379839,
+          "DK_Leaf_Civic"
+        ],
+        [
+          "bloom",
+          [
+            -1.8338153230436076,
+            -0.047475401643595525,
+            0.9920498080545732
+          ],
+          0.09946546244051327,
+          "DK_Bloom_Cream"
+        ],
+        [
+          "bloom",
+          [
+            -1.877590339267046,
+            -0.12384238472253686,
+            0.9961295448769262
+          ],
+          0.12981278364837698,
+          "DK_Bloom_Peach"
+        ],
+        [
+          "leaf",
+          [
+            -1.3428571224212646,
+            -0.0205407409617137,
+            0.72
+          ],
+          0.297428388203373,
+          0.3946330210392859,
+          "DK_Leaf_CivicDark"
+        ],
+        [
+          "bloom",
+          [
+            -1.2817410465476333,
+            -0.10412103070994863,
+            1.0314780561937937
+          ],
+          0.12083514358845066,
+          "DK_Bloom_Peach"
+        ],
+        [
+          "bloom",
+          [
+            -1.4950765226347653,
+            -0.10908947300422862,
+            0.9969564518605376
+          ],
+          0.10095993813483504,
+          "DK_Bloom_Cream"
+        ],
+        [
+          "leaf",
+          [
+            -0.8057142496109009,
+            0.0033398203848587424,
+            0.72
+          ],
+          0.28568197234193243,
+          0.3425241524107422,
+          "DK_Leaf_Civic"
+        ],
+        [
+          "leaf",
+          [
+            -0.2685713768005371,
+            -0.0019333484759952273,
+            0.72
+          ],
+          0.2910820433612692,
+          0.35845760179229097,
+          "DK_Leaf_CivicDark"
+        ],
+        [
+          "leaf",
+          [
+            0.2685713768005371,
+            -0.002310523072335459,
+            0.72
+          ],
+          0.2664709447209098,
+          0.4112514991010647,
+          "DK_Leaf_Civic"
+        ],
+        [
+          "bloom",
+          [
+            0.34382578778767914,
+            -0.012035551907825563,
+            1.0246707695167618
+          ],
+          0.11599441627934132,
+          "DK_Bloom_Peach"
+        ],
+        [
+          "bloom",
+          [
+            0.2313832100837459,
+            0.11464061138697712,
+            1.041181776194187
+          ],
+          0.1219016922252138,
+          "DK_Bloom_Peach"
+        ],
+        [
+          "leaf",
+          [
+            0.8057143688201904,
+            -0.015688930986247736,
+            0.72
+          ],
+          0.30149910826399523,
+          0.3920336066441282,
+          "DK_Leaf_CivicDark"
+        ],
+        [
+          "leaf",
+          [
+            1.3428571224212646,
+            0.020839677014206928,
+            0.72
+          ],
+          0.29471752827661696,
+          0.36769200070716457,
+          "DK_Leaf_Civic"
+        ],
+        [
+          "bloom",
+          [
+            1.4748399112730568,
+            -0.06378170303793937,
+            1.0726902692962768
+          ],
+          0.137442284817337,
+          "DK_Bloom_Cream"
+        ],
+        [
+          "bloom",
+          [
+            1.4423473530434998,
+            0.13830540815707243,
+            1.0874236956677936
+          ],
+          0.12567220424734912,
+          "DK_Bloom_Cream"
+        ],
+        [
+          "leaf",
+          [
+            1.8799999952316284,
+            -0.018451565188807237,
+            0.72
+          ],
+          0.2671745113718054,
+          0.4629514612374662,
+          "DK_Leaf_CivicDark"
+        ],
+        [
+          "bloom",
+          [
+            1.8792991305232603,
+            -0.13141807400867306,
+            1.0381828977566807
+          ],
+          0.10080651001318805,
+          "DK_Bloom_Cream"
+        ],
+        [
+          "bloom",
+          [
+            1.7344587077883085,
+            -0.10408609706822246,
+            0.9860183126019766
+          ],
+          0.10477809465930464,
+          "DK_Bloom_Cream"
+        ]
+      ]
+    }
+  },
+  "placements": [
+    {
+      "id": "civic/run-west-cafe/1",
+      "kit": {
+        "id": "PlanterRun_4_B",
+        "scale": [
+          1,
+          1,
+          1
+        ],
+        "yaw": -1.5708,
+        "at": [
+          -179.5,
+          -222.5
+        ],
+        "base": 0.18
+      },
+      "sourceWorldBounds": [
+        [
+          -179.84,
+          0.18000000000000005,
+          -224.63766999999999
+        ],
+        [
+          -179.16,
+          1.24158,
+          -220.33653
+        ]
+      ],
+      "candidatePlantWorldBounds": [
+        [
+          -179.75360382642472,
+          0.7800000238418578,
+          -224.62951086779978
+        ],
+        [
+          -179.24999265359148,
+          1.2060342359542846,
+          -220.39328105545135
+        ]
+      ],
+      "preflightContained1mm": true,
+      "proofLimit": "source-space axis/pose preflight, not actual Unity FBX import validation"
+    },
+    {
+      "id": "civic/civic-office-north/tuft-0",
+      "kit": {
+        "id": "BedTuft_A",
+        "scale": [
+          1,
+          1,
+          1
+        ],
+        "yaw": 3.1355,
+        "at": [
+          -151.573,
+          -304.751
+        ],
+        "base": 0.88
+      },
+      "sourceWorldBounds": [
+        [
+          -151.883,
+          0.88,
+          -305.04641
+        ],
+        [
+          -151.263,
+          1.3266200000000001,
+          -304.45559
+        ]
+      ],
+      "candidatePlantWorldBounds": [
+        [
+          -151.84579493531115,
+          0.88,
+          -305.0158943774327
+        ],
+        [
+          -151.30020506468887,
+          1.2599798190593718,
+          -304.4860958753184
+        ]
+      ],
+      "preflightContained1mm": true,
+      "proofLimit": "source-space axis/pose preflight, not actual Unity FBX import validation"
+    },
+    {
+      "id": "civic/cyp-office-e",
+      "status": "unchanged; no new cypress supplied",
+      "baselineTriangles": 5004,
+      "deltaTriangles": 0
+    }
+  ],
+  "renders": [
+    {
+      "file": "BedTuft_A-refined-close.png",
+      "horizontalOrthoScale": 1.2000000476837158,
+      "pitch": 38,
+      "yaw": 30,
+      "engine": "Cycles isolated; no Unity grade/occluders"
+    },
+    {
+      "file": "BedTuft_B-refined-close.png",
+      "horizontalOrthoScale": 1.2000000476837158,
+      "pitch": 38,
+      "yaw": 30,
+      "engine": "Cycles isolated; no Unity grade/occluders"
+    },
+    {
+      "file": "BedTuft_C-refined-close.png",
+      "horizontalOrthoScale": 1.2000000476837158,
+      "pitch": 38,
+      "yaw": 30,
+      "engine": "Cycles isolated; no Unity grade/occluders"
+    },
+    {
+      "file": "PlanterRun_4_A-refined-close.png",
+      "horizontalOrthoScale": 5.0,
+      "pitch": 38,
+      "yaw": 30,
+      "engine": "Cycles isolated; no Unity grade/occluders"
+    },
+    {
+      "file": "PlanterRun_4_B-refined-close.png",
+      "horizontalOrthoScale": 5.0,
+      "pitch": 38,
+      "yaw": 30,
+      "engine": "Cycles isolated; no Unity grade/occluders"
+    },
+    {
+      "file": "PlanterRun_4_C-refined-close.png",
+      "horizontalOrthoScale": 5.0,
+      "pitch": 38,
+      "yaw": 30,
+      "engine": "Cycles isolated; no Unity grade/occluders"
+    },
+    {
+      "file": "BedTuft_A-source-close.png",
+      "horizontalOrthoScale": 1.2000000476837158,
+      "pitch": 38,
+      "yaw": 30,
+      "engine": "Cycles isolated; no Unity grade/occluders"
+    },
+    {
+      "file": "BedTuft_A-previous-close.png",
+      "horizontalOrthoScale": 1.2000000476837158,
+      "pitch": 38,
+      "yaw": 30,
+      "engine": "Cycles isolated; no Unity grade/occluders"
+    },
+    {
+      "file": "BedTuft_A-source-play-y30.png",
+      "horizontalOrthoScale": 49.77777862548828,
+      "pitch": 38,
+      "yaw": 30,
+      "engine": "Cycles isolated; no Unity grade/occluders"
+    },
+    {
+      "file": "BedTuft_A-previous-play-y30.png",
+      "horizontalOrthoScale": 49.77777862548828,
+      "pitch": 38,
+      "yaw": 30,
+      "engine": "Cycles isolated; no Unity grade/occluders"
+    },
+    {
+      "file": "BedTuft_A-refined-play-y30.png",
+      "horizontalOrthoScale": 49.77777862548828,
+      "pitch": 38,
+      "yaw": 30,
+      "engine": "Cycles isolated; no Unity grade/occluders"
+    },
+    {
+      "file": "BedTuft_A-source-play-y210.png",
+      "horizontalOrthoScale": 49.77777862548828,
+      "pitch": 38,
+      "yaw": 210,
+      "engine": "Cycles isolated; no Unity grade/occluders"
+    },
+    {
+      "file": "BedTuft_A-previous-play-y210.png",
+      "horizontalOrthoScale": 49.77777862548828,
+      "pitch": 38,
+      "yaw": 210,
+      "engine": "Cycles isolated; no Unity grade/occluders"
+    },
+    {
+      "file": "BedTuft_A-refined-play-y210.png",
+      "horizontalOrthoScale": 49.77777862548828,
+      "pitch": 38,
+      "yaw": 210,
+      "engine": "Cycles isolated; no Unity grade/occluders"
+    },
+    {
+      "file": "PlanterRun_4_B-source-close.png",
+      "horizontalOrthoScale": 5.0,
+      "pitch": 38,
+      "yaw": 30,
+      "engine": "Cycles isolated; no Unity grade/occluders"
+    },
+    {
+      "file": "PlanterRun_4_B-previous-close.png",
+      "horizontalOrthoScale": 5.0,
+      "pitch": 38,
+      "yaw": 30,
+      "engine": "Cycles isolated; no Unity grade/occluders"
+    },
+    {
+      "file": "PlanterRun_4_B-source-play-y30.png",
+      "horizontalOrthoScale": 49.77777862548828,
+      "pitch": 38,
+      "yaw": 30,
+      "engine": "Cycles isolated; no Unity grade/occluders"
+    },
+    {
+      "file": "PlanterRun_4_B-previous-play-y30.png",
+      "horizontalOrthoScale": 49.77777862548828,
+      "pitch": 38,
+      "yaw": 30,
+      "engine": "Cycles isolated; no Unity grade/occluders"
+    },
+    {
+      "file": "PlanterRun_4_B-refined-play-y30.png",
+      "horizontalOrthoScale": 49.77777862548828,
+      "pitch": 38,
+      "yaw": 30,
+      "engine": "Cycles isolated; no Unity grade/occluders"
+    },
+    {
+      "file": "PlanterRun_4_B-source-play-y210.png",
+      "horizontalOrthoScale": 49.77777862548828,
+      "pitch": 38,
+      "yaw": 210,
+      "engine": "Cycles isolated; no Unity grade/occluders"
+    },
+    {
+      "file": "PlanterRun_4_B-previous-play-y210.png",
+      "horizontalOrthoScale": 49.77777862548828,
+      "pitch": 38,
+      "yaw": 210,
+      "engine": "Cycles isolated; no Unity grade/occluders"
+    },
+    {
+      "file": "PlanterRun_4_B-refined-play-y210.png",
+      "horizontalOrthoScale": 49.77777862548828,
+      "pitch": 38,
+      "yaw": 210,
+      "engine": "Cycles isolated; no Unity grade/occluders"
+    }
+  ],
+  "sources": {
+    "briefs/075/recovery/foliage-refine/previous_recipe.py": "142398d176bbb65aba4dfcd5f9fb98b7c49c4bdf5f550d6f6c9022f1849207fb",
+    "briefs/075/recovery/foliage-refine/check_render.py": "3d8ffe593664161d637d2179735f453645e57a8df58fc40cebaefad0ba21e2a0"
+  },
+  "texture": {
+    "path": "/Users/sky/Projects/the-suborned-store/source-art/DecoKit/Textures/derived/shrub_leaves_v1_alpha.png",
+    "dimensions": [
+      1024,
+      1024
+    ],
+    "sha256": "22b8fc29d29f4902bb07879db3443dd01d79aeddb86b226b91ea0cfd3dcc3c9f"
+  },
+  "materialRecipe": {
+    "namePrefix": "DK_Leaf_Refine075_",
+    "baseColorLinear": "0.75 * original DK_Leaf_Civic or DK_Leaf_CivicDark + 0.25 * shrub source RGB",
+    "alpha": "source alpha > 0.5",
+    "roughness": 0.85,
+    "specularIORLevelBlender": 0.1,
+    "core": "original seeded civic material instead of DK_Leaf_CoreShrub",
+    "normal": "lobe normal, z lift .35, jitter .025",
+    "unity": "requires explicit review-only material creation; do not map refined slots to unchanged DK_Leaf_Shrub"
+  }
+}

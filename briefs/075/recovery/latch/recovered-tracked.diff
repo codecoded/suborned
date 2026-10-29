@@ -1,0 +1,707 @@
+diff --git a/unity/Assets/Suborned/Editor/OldTown/Swap/OldTownSwap.cs b/unity/Assets/Suborned/Editor/OldTown/Swap/OldTownSwap.cs
+index e07f863c..c111680d 100644
+--- a/unity/Assets/Suborned/Editor/OldTown/Swap/OldTownSwap.cs
++++ b/unity/Assets/Suborned/Editor/OldTown/Swap/OldTownSwap.cs
+@@ -57,6 +57,14 @@ namespace Suborned.OldTown.Editor.Swap
+         public static void Shoot() => Batch(() => WithOldSettings(SwapShots.Run));
+         public static void Flyby() => Batch(() => WithOldSettings(SwapShots.Flyby));
+         public static void Verify() => Batch(SwapVerify.Run);
++        /// <summary>The tram bed audit (SwapTramAudit) on a built scene, read only: -swapScene, -swapWorld, -swapOut (tram-audit-&lt;tag&gt;.json, -swapTag).</summary>
++        public static void TramAudit() => Batch(() =>
++        {
++            UnityEditor.SceneManagement.EditorSceneManager.OpenScene($"Assets/Scenes/{Arg("swapScene", "OldTown")}.unity", UnityEditor.SceneManagement.OpenSceneMode.Single);
++            var world = WorldReader.Load(Abs(Arg("swapWorld", "out/scratch/latch/075swap2/harbour.world.json")));
++            var outDir = Abs(Arg("swapOut", "briefs/075/oldbuild/tram")); Directory.CreateDirectory(outDir);
++            SwapTramAudit.Run(new Report(), world, Path.Combine(outDir, $"tram-audit-{Arg("swapTag", "scene")}.json"));
++        });
+         /// <summary>Brief 075 Perf A/B item A (SwapPerf): -abScene OldTown|HarbourDistrict, -abPipeline old|ours (OldTown; old = inside WithOldSettings).</summary>
+         public static void PerfAB() => Batch(() => { if (Arg("abScene", "OldTown") == "OldTown" && Arg("abPipeline", "old") == "old") WithOldSettings(SwapPerf.Run); else SwapPerf.Run(); });
+ 
+@@ -152,6 +160,7 @@ namespace Suborned.OldTown.Editor.Swap
+             DecoKitSouthside.Blocks = SwapPlan.Southside(oldBlocks, rep);
+             var reserved = new[] { "SS5", "W1" }.Where(n => DecoKitSouthside.Reserved.Add(n)).ToArray();
+             DecoKitCityMass.Rule = plan.MassRule(rep);
++            SwapKeep.Set(plan, rep);  // 0.5.6: Datum's handover-street and megastructure classes (old gives way, ours kept)
+             rep.Log($"plan 0.5.5 parameters (E10): walk {L.Walk}, boulevard kerbs +-{L.BoulevardKerbX} (Crown Avenue +-{L.KerbX}), circus ring outer kerb r {P.RingR}, ground modules x{DecoKitPlacer.GroundScaleY:0.###} in height, Southside on its plan blocks (SS5, W1 stand down), city mass by the plan");
+             try
+             {
+@@ -183,6 +192,7 @@ namespace Suborned.OldTown.Editor.Swap
+                 DecoKitCityMass.Build(massRoute);  // the mid-ground city keeps clear of our S1, as the old kept clear of its own loop
+                 rep.Log($"city mass kept clear of {(s1 != null ? s1.Id : "the old loop")} ({massRoute.Length} points)");
+                 SwapWest.Build(rep, plan, world, placer);  // before the colourways, so the west's old pieces take them too
++                Sphere(rep, world);  // 0.5.6: the old SphereStation at the plan's Sphere (landmark/sphere centre)
+                 DecoKitColourways.Apply(DecoKitStage.Arg("dkColour", DecoKitStreetDemo.Colour));
+                 demo.GetMethod("Ground", Any).Invoke(null, null);
+                 SwapWest.Ground(rep);
+@@ -216,6 +226,7 @@ namespace Suborned.OldTown.Editor.Swap
+                 // ---- 6. the network in the old look on our routes
+                 var net = new SwapNetwork(rep, world, placer, kit);
+                 net.Beams(); net.Pylons(); net.Rails(); net.Trams();
++                net.ClearBed(plan);  // E12: the old road modules and paint on our tram bed give way
+ 
+                 // ---- 7. the old gives way: the zone, our structures, the beam corridor, the pylons, the tram corridor
+                 SwapCut.Run(rep, world, ours, net, hq, plan);
+@@ -229,6 +240,7 @@ namespace Suborned.OldTown.Editor.Swap
+                 // ---- 9. the old finish: tile merge, cutaway tags, probes, environment bake, the HQ's showpiece probe
+                 SwapExport.Ground(rep);  // kerbs, pavement cells and roads as placed, before the merge folds them into tiles
+                 DecoKitTileMerge.Merge(street);
++                SwapTramAudit.Run(rep, world, Path.Combine(outDir, "tram-audit.json"));  // E12 evidence: what lies on, or level with, our bed
+                 DecoKitCutawayTags.Apply();
+                 for (float z = L.Z.x + 20f; z < L.Z.y; z += 40f)
+                     DecoKitAtmosphere.Probe($"Street probe {z:0}", new Vector3(0f, 5f, z), new Vector3(2f * L.FrontX, 22f, 44f));
+@@ -254,12 +266,28 @@ namespace Suborned.OldTown.Editor.Swap
+             }
+             finally
+             {
+-                DecoKitFrontage.Lower = null; DecoKitHighrise.Stands = null; DecoKitCityMass.Rule = null;
++                DecoKitFrontage.Lower = null; DecoKitHighrise.Stands = null; DecoKitCityMass.Rule = null; SwapKeep.Clear();
+                 L.Walk = .15f; L.BoulevardKerbX = L.KerbX; P.RingR = 26f; DecoKitPlacer.GroundScaleY = 1f; DecoKitSouthside.SatelliteHalf = 4f;
+                 DecoKitSouthside.Blocks = oldBlocks; foreach (var n in reserved) DecoKitSouthside.Reserved.Remove(n);
+             }
+         }
+ 
++        /// <summary>Plan 0.5.6 (form ours) stands the Sphere at the export's landmark/sphere centre (-172, 124), 42 m west of the old Put (-130, 0, 330):
++        /// the old SphereStation instance moves there, its yaw and height as the old builders placed it (Datum's landmark-outline note).</summary>
++        static void Sphere(Report rep, WorldDto world)
++        {
++            var lm = world.Landmarks?.FirstOrDefault(l => l.Id == "landmark/sphere");
++            if (lm == null) { rep.Log("sphere: no landmark/sphere in the export; the old SphereStation stays at its old Put"); return; }
++            int n = 0;
++            foreach (var go in Instances("SphereStation").ToArray())
++            {
++                var from = go.transform.position; var to = Old3(lm.Centre, from.y);
++                go.transform.position = to; n++;
++                rep.Log($"sphere: old SphereStation moved from old ({F(from.x)}, {F(from.z)}) to ({F(to.x)}, {F(to.z)}) = plan ({F(lm.Centre.x)}, {F(lm.Centre.y)}), the export's landmark/sphere");
++            }
++            if (n == 0) rep.Log("sphere: no old SphereStation instance found");
++        }
++
+         /// <summary>Glint's vintage pick (briefs/075/parity/vintage/variants.json, pick B = GlintVintage's "v2s": the old bloom whole, contrast 13, the
+         /// accent lift with the sky and sea hues spared) applied to the old stage's grade profile, by GlintVintage's own Apply (read by reflection,
+         /// so Glint's file stays his). "off" keeps the old grade as built.</summary>
+diff --git a/unity/Assets/Suborned/Editor/OldTown/Swap/SwapCut.cs b/unity/Assets/Suborned/Editor/OldTown/Swap/SwapCut.cs
+index 086291c8..1b08dad7 100644
+--- a/unity/Assets/Suborned/Editor/OldTown/Swap/SwapCut.cs
++++ b/unity/Assets/Suborned/Editor/OldTown/Swap/SwapCut.cs
+@@ -39,6 +39,9 @@ namespace Suborned.OldTown.Editor.Swap
+         public static void Run(OldTownSwap.Report rep, WorldDto w, SwapOurs ours, SwapNetwork net, string hq, SwapPlan plan)
+         {
+             var zone = OldTownSwap.ZoneOld;
++            var keepOld = SwapKeep.OldRects().ToList();
++            openPlots = plan.Plots.Where(p => p.use is "open" or "square").Select(p => p.poly.Select(OldTownSwap.Old).ToArray()).ToList();
++            roadsNear = new SwapShapes(); foreach (var (id, q) in plan.Corridors(_ => true, 1.5f)) roadsNear.Add("road", id, q.Select(OldTownSwap.Old).ToArray());
+             var holes = net.Holes;
+             foreach (var s in ours.Solids) holes.Rect("ours", s.id, s.box, .2f, s.y0, s.y1);
+             var planHoles = PlanHoles(plan, out var planFlat);
+@@ -65,6 +68,8 @@ namespace Suborned.OldTown.Editor.Swap
+                 bool flag = FlagPieces.Contains(piece) || cats.TryGetValue(piece, out var cat) && FlagCats.Contains(cat);
+                 string why = null, by = null;
+                 if (flat ? SwapMesh.Inside(zone, new Vector2(b.center.x, b.center.z)) : SwapMesh.Overlaps(box, zone)) { why = "Handover zone"; by = "zone"; }
++                else if (SwapKeep.AtOld(new Vector2(b.center.x, b.center.z)) is { } ka) { why = "kept plot or megastructure (Datum, 0.5.6)"; by = ka; }
++                else if (flat && OpenKerb(piece, b, plan)) { why = "old kerb in an open plot, off every plan road (Datum, 0.5.6)"; by = "kerb-lines"; }
+                 else if (!flat)
+                 {
+                     var h = holes.Hit(box, b.min.y, b.max.y);
+@@ -85,6 +90,7 @@ namespace Suborned.OldTown.Editor.Swap
+                 inPrefab.Add(r);
+                 string why = null, by = null; var box = SwapMesh.XZ(b);
+                 if (SwapMesh.Overlaps(box, zone)) { why = "Handover zone"; by = "zone"; }
++                else if (SwapKeep.AtOld(new Vector2(b.center.x, b.center.z)) is { } ka) { why = "kept plot or megastructure (Datum, 0.5.6)"; by = ka; }
+                 else if (b.size.y >= .45f) { var h = holes.Hit(box, b.min.y, b.max.y); if (h != null) { why = Reason(h.Kind); by = h.Id; } }
+                 if (why == null) continue;
+                 rep.Gave(why, "loose:" + (r.transform.parent ? r.transform.parent.name : r.name), b.center, by);
+@@ -97,10 +103,12 @@ namespace Suborned.OldTown.Editor.Swap
+             var gen = UnityEngine.Object.FindObjectsByType<MeshFilter>(FindObjectsInactive.Include, FindObjectsSortMode.None)
+                 .Where(mf => mf && mf.sharedMesh && !Skipped(mf.transform) && mf.GetComponent<MeshRenderer>() is { } mr && mr.enabled && !inPrefab.Contains(mr)).ToList();
+             var outside = SwapMesh.Outside(zone);
++            var keepAndZone = new List<Rect> { zone }; keepAndZone.AddRange(keepOld);
+             foreach (var mf in gen)
+             {
+                 var r = mf.GetComponent<MeshRenderer>(); var b0 = r.bounds;
+                 bool nearZone = SwapMesh.Overlaps(SwapMesh.XZ(b0), zone, 0f);
++                nearZone |= keepOld.Any(k => SwapMesh.Overlaps(SwapMesh.XZ(b0), k, 0f));
+                 bool nearHole = holes.Near(SwapMesh.XZ(b0)).Any();
+                 if (!nearZone && !nearHole) continue;
+                 var mesh = mf.sharedMesh;
+@@ -119,6 +127,9 @@ namespace Suborned.OldTown.Editor.Swap
+                 for (int k = 0; k < count; k++)
+                 {
+                     var b = cb[k]; var box = SwapMesh.XZ(b); bool flat = b.size.y < .45f;
++                    var ka = SwapKeep.AtOld(new Vector2(b.center.x, b.center.z));
++                    if (!flat && ka != null) { act[k] = 1; any = true; rep.Gave("kept plot or megastructure (Datum, 0.5.6)", Part(mf), b.center, ka); continue; }
++                    if (flat && keepOld.Any(r => SwapMesh.Overlaps(box, r, 0f))) { act[k] = 2; any = true; continue; }  // clipped exactly to outside the zone and the keep areas
+                     if (SwapMesh.Overlaps(box, zone, 0f))
+                     {
+                         bool inside = box.xMin >= zone.xMin && box.xMax <= zone.xMax && box.yMin >= zone.yMin && box.yMax <= zone.yMax;
+@@ -141,7 +152,7 @@ namespace Suborned.OldTown.Editor.Swap
+                     {
+                         int a = rd.Subs[s][3 * t], b = rd.Subs[s][3 * t + 1], c = rd.Subs[s][3 * t + 2], k = ids[s][t];
+                         if (act[k] == 0) wr.Keep(s, a, b, c);
+-                        else if (act[k] == 2) SwapMesh.ClipInto(wr, s, rd.Verts[a], rd.Verts[b], rd.Verts[c], outside);
++                        else if (act[k] == 2) foreach (var poly in SwapKeep.OutsideAll(new List<SwapMesh.V> { rd.Verts[a], rd.Verts[b], rd.Verts[c] }, keepAndZone)) wr.Poly(s, poly);
+                     }
+                 partsGone += act.Count(x => x == 1); partsClipped += act.Count(x => x == 2);
+                 if (wr.Triangles == 0) { UnityEngine.Object.DestroyImmediate(mf.gameObject); continue; }
+@@ -155,6 +166,25 @@ namespace Suborned.OldTown.Editor.Swap
+                 rep.Log($"  gave way, {reason}: {d.Values.Sum()} ({string.Join(", ", d.OrderByDescending(k => k.Value).Take(14).Select(k => $"{k.Key} {k.Value}"))})");
+         }
+ 
++        static List<Vector2[]> openPlots; static SwapShapes roadsNear;
++        /// <summary>Datum's kerb-lines decisions (M0346/M0347 up the forecourt, the Orbit Square cross kerbs): an old kerb stone (the Kerb_ family)
++        /// whose centre lies in an open plan plot (use open or square) and more than 1.5 m from every plan road gives way: the plan lays no road
++        /// there, so the old street edge has nothing to meet.</summary>
++        static bool OpenKerb(string piece, Bounds b, SwapPlan plan)
++        {
++            if (!piece.StartsWith("Kerb_") || openPlots == null) return false;
++            var c = new Vector2(b.center.x, b.center.z);
++            if (!openPlots.Any(p => InPoly(p, c))) return false;
++            return roadsNear.Hit(c) == null;
++        }
++        static bool InPoly(Vector2[] p, Vector2 c)
++        {
++            bool inside = false;
++            for (int i = 0, j = p.Length - 1; i < p.Length; j = i++)
++                if ((p[i].y > c.y) != (p[j].y > c.y) && c.x < (p[j].x - p[i].x) * (c.y - p[i].y) / (p[j].y - p[i].y) + p[i].x) inside = !inside;
++            return inside;
++        }
++
+         static string Part(MeshFilter mf) => "mesh:" + (mf.transform.parent ? mf.transform.parent.name + "/" : "") + mf.name;
+ 
+         static string Reason(string kind) => kind switch
+diff --git a/unity/Assets/Suborned/Editor/OldTown/Swap/SwapNetwork.cs b/unity/Assets/Suborned/Editor/OldTown/Swap/SwapNetwork.cs
+index 0f2924c0..871d431f 100644
+--- a/unity/Assets/Suborned/Editor/OldTown/Swap/SwapNetwork.cs
++++ b/unity/Assets/Suborned/Editor/OldTown/Swap/SwapNetwork.cs
+@@ -7,7 +7,6 @@ using Suborned.OldTown.Sky;
+ using Suborned.World;
+ using UnityEngine;
+ using L = Suborned.OldTown.Editor.DecoKit.DecoKitStreetLayout;
+-using P = Suborned.OldTown.Editor.DecoKit.DecoKitCityPlan;
+ 
+ namespace Suborned.OldTown.Editor.Swap
+ {
+@@ -17,8 +16,9 @@ namespace Suborned.OldTown.Editor.Swap
+     /// - pylons: at our pylon points (the plan's 30 m spacing, the old spacing), the old pieces: SkyRail_Pylon_Tall foot, the stretched
+     ///   SkyRail_Pylon_Shaft, the old single SkyRail_Pylon_Head, and our SkyRail_Pylon_HeadTwin where the line is double (the old had none);
+     /// - tram: the old Tile_TramRail (2 m) along every rail piece of ours (our 12 m straights as six old tiles, our 2 m curve chords as one),
+-    ///   except where our line runs on the old boulevard track (the old track stands); the old Tram at our stops and parked tram; the old
+-    ///   TramCanopy at our stop shelters (our TramCanopy_Play only in the zone).
++    ///   the Boulevard's double track too (edit E12: our bed is what reads on the route; the old single track at x -2.5 and any old road
++    ///   module or paint on our bed give way, ClearBed); the old Tram at our stops and parked tram; the old TramCanopy at our stop shelters
++    ///   (our TramCanopy_Play only in the zone).
+     /// Everything it places goes under one root the cut leaves alone, and adds the holes the old gives way to.</summary>
+     internal sealed class SwapNetwork
+     {
+@@ -26,6 +26,12 @@ namespace Suborned.OldTown.Editor.Swap
+         public readonly Transform Root;
+         /// <summary>Old frame holes: beam corridors, pylon plinths, tram corridors.</summary>
+         public readonly SwapShapes Holes = new();
++        /// <summary>Our tram bed, old frame: each laid tile's footprint (2 m along by 2 m across, the old tile's), for ClearBed and the audit.</summary>
++        public readonly SwapShapes Bed = new();
++        internal const string RailsRoot = "Tram rails (old Tile_TramRail on our route)";
++        /// <summary>Our tiles' top over the deck (E12): 5 mm, over the old road modules (E11, 3 mm), the old paint (4 mm) and our crossings' road
++        /// plates (3 mm, kept from our pipeline), so the rails run through a crossing as they do in ours, and nothing lies level with the bed.</summary>
++        internal const float BedLift = .005f;
+         readonly List<(Vector2 at, Vector2 dir)> rails = new();
+         const float BeamH = 1.6f;
+ 
+@@ -87,30 +93,229 @@ namespace Suborned.OldTown.Editor.Swap
+             rep.Log($"pylons: {w.Transit.SkyTrack.Pylons.Count} at our points: {tall} on the old SkyRail_Pylon_Tall, {bare} bare shafts (export: the plan's point stands in a walk zone), heads {twin} our HeadTwin, {single} old single");
+         }
+ 
+-        /// <summary>On the old boulevard track (x -2.5 between the kerbs, z -40 to the tram's end short of the circus): the old track stands.</summary>
+-        static bool OnOldTrack(Vector3 o) => Mathf.Abs(o.x - L.TrackX) < 4.6f && o.z > L.Z.x - 2f && o.z < P.CircusSouth - 4f;
+-
+         public void Rails()
+         {
+-            var root = new GameObject("Tram rails (old Tile_TramRail on our route)").transform; root.SetParent(Root, false);
+-            int pieces = 0, tiles = 0, onOld = 0;
++            var root = new GameObject(RailsRoot).transform; root.SetParent(Root, false);
++            int pieces = 0, tiles = 0;
+             foreach (var g in w.Ground.Pieces.Where(x => x.Kind == "tram-rail"))
+             {
+                 var d = new Vector2(Mathf.Cos(g.Yaw), Mathf.Sin(g.Yaw));
+-                if (OnOldTrack(OldTownSwap.Old3(g.At, 0f))) { onOld++; continue; }
+                 float len = g.Size.x; int n = Mathf.Max(1, Mathf.RoundToInt(len / 2f));
+                 float yaw = -g.Yaw * Mathf.Rad2Deg, step = len / n;
++                var nb = new Vector2(-d.y, d.x);
+                 for (int i = 0; i < n; i++)
+                 {
+                     var c = g.At + d * (-len * .5f + step * (i + .5f));
+-                    Put("Tile_TramRail", OldTownSwap.Old3(c, .003f), yaw, root); tiles++;
++                    Put("Tile_TramRail", OldTownSwap.Old3(c, BedLift), yaw, root); tiles++;
++                    Vector2 a = OldTownSwap.Old(c - d * step * .5f), b = OldTownSwap.Old(c + d * step * .5f);
++                    Bed.Add("bed", $"{g.Id}#{i}", new[] { a + nb, b + nb, b - nb, a - nb }, -.5f, .5f);
+                 }
+                 pieces++;
+                 rails.Add((g.At, d));
+-                var a = OldTownSwap.Old(g.At - d * (len * .5f + .5f)); var b = OldTownSwap.Old(g.At + d * (len * .5f + .5f)); var nn = new Vector2(-d.y, d.x) * 2.1f;
+-                Holes.Add("tram", g.Id, new[] { a + nn, b + nn, b - nn, a - nn }, -.5f, 4.5f);
++                var a0 = OldTownSwap.Old(g.At - d * (len * .5f + .5f)); var b0 = OldTownSwap.Old(g.At + d * (len * .5f + .5f)); var nn = nb * 2.1f;
++                Holes.Add("tram", g.Id, new[] { a0 + nn, b0 + nn, b0 - nn, a0 - nn }, -.5f, 4.5f);
++            }
++            rep.Log($"tram rails: all {pieces} of our rail pieces laid as {tiles} old Tile_TramRail tiles {BedLift * 1000f:0} mm over the deck, the Boulevard's double track included (E12: the old single track gives way to our bed)");
++        }
++
++        /// <summary>Edit E12: our tram bed is what reads on the route. Where they clash, the old gives way, by shape, never by id:
++        /// - old road-level modules (top at the deck after E11, body sunk in the road: the old Tile_TramRail, manholes, drains) whose footprint
++        ///   overlaps a tile of ours (5 cm in from its edge);
++        /// - old road paint (generated flat meshes under 1 cm thick, their top 0.5-12 mm over the deck: DecoKitRoadMarkings' dashes and anything
++        ///   painted like them), by connected part, where the part overlaps our bed.
++        /// The flat pieces never meet the tram corridor in SwapCut (flat old ground stays), so this is the only place they give way to it.</summary>
++        public void ClearBed(SwapPlan plan)
++        {
++            int modules = 0, paint = 0;
++            bool Ours(Transform t) { for (var x = t; x; x = x.parent) if (x.name.StartsWith("Ours (") || x.name.StartsWith("Network (")) return true; return false; }
++            foreach (var t in Object.FindObjectsByType<Transform>(FindObjectsInactive.Include))
++            {
++                if (!t || !UnityEditor.PrefabUtility.IsOutermostPrefabInstanceRoot(t.gameObject) || Ours(t)) continue;
++                var rs = t.GetComponentsInChildren<MeshRenderer>(true);
++                if (rs.Length == 0) continue;
++                var b = rs[0].bounds; foreach (var r in rs) b.Encapsulate(r.bounds);
++                if (b.max.y < -.001f || b.max.y > BedLift + .001f || b.min.y > -.02f) continue;
++                var box = SwapMesh.XZ(b); box = Rect.MinMaxRect(box.xMin + .05f, box.yMin + .05f, box.xMax - .05f, box.yMax - .05f);
++                var hit = Bed.Hit(box, b.min.y, b.max.y);
++                if (hit == null) continue;
++                rep.Gave("tram bed (our route, E12)", OldTownSwap.PieceOf(t.name), b.center, hit.Id);
++                Object.DestroyImmediate(t.gameObject); modules++;
++            }
++            foreach (var mf in Object.FindObjectsByType<MeshFilter>(FindObjectsInactive.Include).ToArray())
++            {
++                if (!mf || !mf.sharedMesh || Ours(mf.transform) || UnityEditor.PrefabUtility.IsPartOfPrefabInstance(mf.gameObject)) continue;
++                var mr = mf.GetComponent<MeshRenderer>(); if (!mr || !mr.enabled) continue;
++                var b0 = mr.bounds;
++                if (b0.size.y > .01f || b0.max.y < .0005f || b0.max.y > .012f || !Bed.Near(SwapMesh.XZ(b0)).Any()) continue;
++                if (!mf.sharedMesh.isReadable) { rep.Log($"tram bed: paint mesh {mf.name} not readable; left whole"); continue; }
++                var rd = new SwapMesh.Read(mf.sharedMesh, mf.transform.localToWorldMatrix);
++                var ids = rd.Components(out int count);
++                var cb = new Bounds[count]; var has = new bool[count];
++                for (int s = 0; s < rd.Subs.Count; s++)
++                    for (int k = 0; k < ids[s].Length; k++)
++                        for (int j = 0; j < 3; j++) { var p = rd.Verts[rd.Subs[s][3 * k + j]].W; int c = ids[s][k]; if (!has[c]) { cb[c] = new Bounds(p, Vector3.zero); has[c] = true; } else cb[c].Encapsulate(p); }
++                var drop = new bool[count]; int dropped = 0;
++                for (int c = 0; c < count; c++)
++                {
++                    var hit = has[c] ? Bed.Hit(SwapMesh.XZ(cb[c]), cb[c].min.y - .01f, cb[c].max.y + .01f) : null;
++                    if (hit == null) continue;
++                    drop[c] = true; dropped++; rep.Gave("tram bed (our route, E12)", "paint:" + mf.name, cb[c].center, hit.Id);
++                }
++                if (dropped == 0) continue;
++                var wr = new SwapMesh.Write(rd);
++                for (int s = 0; s < rd.Subs.Count; s++)
++                    for (int k = 0; k < ids[s].Length; k++)
++                        if (!drop[ids[s][k]]) wr.Keep(s, rd.Subs[s][3 * k], rd.Subs[s][3 * k + 1], rd.Subs[s][3 * k + 2]);
++                paint += dropped;
++                if (wr.Triangles == 0) { Object.DestroyImmediate(mf.gameObject); continue; }
++                mf.sharedMesh = wr.Mesh(mf.sharedMesh.name + " (tram bed)");
++            }
++            rep.Log($"tram bed (E12): {modules} old road-level modules and {paint} parts of old road paint on our bed gave way");
++            CrossGround(plan, Ours);
++        }
++
++        /// <summary>E12, the old walk-level ground across the plan's tram streets (Orbit Square: the old Southside's pedestrian square spans the
++        /// boulevard axis at the walk, plan 0.5.5 runs the Boulevard and T1 through it). In each corridor quad of a tram road (kerb to kerb)
++        /// that carries our bed: old flat modules standing over the bed (top 1 cm to 1 m, under 45 cm tall) whose centre is more than 0.8 m in
++        /// from the kerb line give way whole (the kerbs laid across the road where it met the square; the kerbs along it stay); old generated
++        /// flat ground over the bed (parts 1 cm to 1 m high) is cut exactly at the kerb lines, and old granite kerbs (the old KerbLine's pieces,
++        /// pivot on the walk edge, facing the road) close each cut edge where walk-level ground was cut.</summary>
++        void CrossGround(SwapPlan plan, System.Func<Transform, bool> ours)
++        {
++            if (plan == null) return;
++            var quads = new List<(string id, Vector2[] q, Vector2 a, Vector2 b, float hw)>();
++            foreach (var (id, w0, pts) in plan.Roads)
++            {
++                if (!plan.TramRoads.Contains(id)) continue;
++                float hw = w0 * .5f;
++                for (int i = 1; i < pts.Length; i++)
++                {
++                    Vector2 a = OldTownSwap.Old(pts[i - 1]), b = OldTownSwap.Old(pts[i]); if ((b - a).sqrMagnitude < 1e-4f) continue;
++                    var d = (b - a).normalized; var n = new Vector2(-d.y, d.x) * hw;
++                    var q = new[] { a - d * hw + n, b + d * hw + n, b + d * hw - n, a - d * hw - n };
++                    var box = SwapPlan.Box(q);
++                    if (!Bed.Near(box).Any(x => SwapMesh.Inside(box, x.Box.center) && Inside(q, x.Box.center))) continue;
++                    quads.Add(($"{id}#{i}", q, a, b, hw));
++                }
++            }
++            int gone = 0, cutParts = 0, kerbs = 0;
++            var cutTops = new List<(Rect box, float top)>();
++            foreach (var t in Object.FindObjectsByType<Transform>(FindObjectsInactive.Include))
++            {
++                if (!t || !UnityEditor.PrefabUtility.IsOutermostPrefabInstanceRoot(t.gameObject) || ours(t)) continue;
++                var rs = t.GetComponentsInChildren<MeshRenderer>(true); if (rs.Length == 0) continue;
++                var b = rs[0].bounds; foreach (var r in rs) b.Encapsulate(r.bounds);
++                if (b.size.y >= .45f || b.max.y < BedLift + .01f || b.max.y > 1f) continue;
++                var c = new Vector2(b.center.x, b.center.z);
++                foreach (var (id, q, a, bb, hw) in quads)
++                {
++                    if (!Inside(q, c)) continue;
++                    var d = (bb - a).normalized; float lat = Mathf.Abs(Vector2.Dot(c - a, new Vector2(-d.y, d.x)));
++                    if (lat > hw - .8f) continue;
++                    rep.Gave("old ground across our tram street (E12)", OldTownSwap.PieceOf(t.name), b.center, id);
++                    Object.DestroyImmediate(t.gameObject); gone++; break;
++                }
++            }
++            foreach (var mf in Object.FindObjectsByType<MeshFilter>(FindObjectsInactive.Include).ToArray())
++            {
++                if (!mf || !mf.sharedMesh || ours(mf.transform) || UnityEditor.PrefabUtility.IsPartOfPrefabInstance(mf.gameObject)) continue;
++                var mr = mf.GetComponent<MeshRenderer>(); if (!mr || !mr.enabled) continue;
++                var b0 = mr.bounds; if (b0.min.y > 1f || b0.max.y < BedLift + .01f) continue;
++                var hitQ = quads.Where(x => SwapMesh.Overlaps(SwapPlan.Box(x.q), SwapMesh.XZ(b0))).ToList(); if (hitQ.Count == 0) continue;
++                if (!mf.sharedMesh.isReadable) { rep.Log($"tram street: {mf.name} not readable; left whole"); continue; }
++                var rd = new SwapMesh.Read(mf.sharedMesh, mf.transform.localToWorldMatrix);
++                var ids = rd.Components(out int count);
++                var cb = new Bounds[count]; var has = new bool[count];
++                for (int s = 0; s < rd.Subs.Count; s++)
++                    for (int k = 0; k < ids[s].Length; k++)
++                        for (int j = 0; j < 3; j++) { var p = rd.Verts[rd.Subs[s][3 * k + j]].W; int cc = ids[s][k]; if (!has[cc]) { cb[cc] = new Bounds(p, Vector3.zero); has[cc] = true; } else cb[cc].Encapsulate(p); }
++                var cut = new List<Vector2[]>[count]; int any = 0;
++                for (int cc = 0; cc < count; cc++)
++                {
++                    if (!has[cc] || cb[cc].max.y < BedLift + .01f || cb[cc].max.y > 1f || cb[cc].size.y > .6f) continue;
++                    var box = SwapMesh.XZ(cb[cc]);
++                    foreach (var x in hitQ)
++                        if (SwapMesh.Overlaps(SwapPlan.Box(x.q), box) && Bed.Near(box).Any(z => z.Overlaps(box) && Inside(x.q, z.Box.center)))
++                        { (cut[cc] ??= new List<Vector2[]>()).Add(x.q); }
++                    if (cut[cc] == null) continue;
++                    any++; cutTops.Add((box, cb[cc].max.y));
++                    rep.Gave("old ground across our tram street (E12, cut at the kerb lines)", "mesh:" + mf.name, cb[cc].center, string.Join("+", hitQ.Where(x => cut[cc].Contains(x.q)).Select(x => x.id)));
++                }
++                if (any == 0) continue;
++                var wr = new SwapMesh.Write(rd);
++                for (int s = 0; s < rd.Subs.Count; s++)
++                    for (int k = 0; k < ids[s].Length; k++)
++                    {
++                        int ia = rd.Subs[s][3 * k], ib = rd.Subs[s][3 * k + 1], ic = rd.Subs[s][3 * k + 2], cc = ids[s][k];
++                        if (cut[cc] == null) { wr.Keep(s, ia, ib, ic); continue; }
++                        var polys = new List<List<SwapMesh.V>> { new() { rd.Verts[ia], rd.Verts[ib], rd.Verts[ic] } };
++                        foreach (var q in cut[cc])
++                        {
++                            var next = new List<List<SwapMesh.V>>();
++                            foreach (var poly in polys)
++                                foreach (var reg in OutsideConvex(q))
++                                {
++                                    var o = poly; foreach (var h in reg) { o = SwapMesh.Clip(o, h); if (o.Count < 3) break; }
++                                    if (o.Count >= 3) next.Add(o);
++                                }
++                            polys = next;
++                        }
++                        foreach (var poly in polys) wr.Poly(s, poly);
++                    }
++                cutParts += any;
++                if (wr.Triangles == 0) { Object.DestroyImmediate(mf.gameObject); continue; }
++                mf.sharedMesh = wr.Mesh(mf.sharedMesh.name + " (tram street)");
++                var col = mf.GetComponent<MeshCollider>(); if (col) col.sharedMesh = mf.sharedMesh;
++            }
++            // kerbs on the cut edges: every 2 m along each long side of a quad, where walk-level ground was cut just outside it
++            var root = new GameObject("Tram street kerbs (old Kerb_Granite on E12's cut edges)").transform; root.SetParent(Root, false);
++            var placed = new HashSet<Vector2Int>();
++            foreach (var (id, q, a, b, hw) in quads)
++            {
++                var d = (b - a); float len = d.magnitude; d /= len; var n = new Vector2(-d.y, d.x);
++                foreach (var side in new[] { 1f, -1f })
++                {
++                    int i = 0;
++                    for (float s = 1f; s < len; s += 2f, i++)
++                    {
++                        var e = a + d * s + n * (side * hw); var outP = e + n * (side * .5f);
++                        if (!cutTops.Any(x => x.top > .1f && SwapMesh.Inside(x.box, outP))) continue;
++                        var key = Vector2Int.RoundToInt(e * 2f); if (!placed.Add(key)) continue;
++                        var inward = -n * side;
++                        Put($"Kerb_Granite_{i & 1}", new Vector3(e.x, 0f, e.y), Mathf.Atan2(inward.x, inward.y) * Mathf.Rad2Deg, root); kerbs++;
++                    }
++                }
++            }
++            rep.Log($"tram streets (E12): {quads.Count} corridor quads of {string.Join(", ", plan.TramRoads.OrderBy(x => x))} carry our bed; {gone} old flat pieces across the road and {cutParts} parts of old walk-level ground over the bed gave way (cut at the kerb lines), {kerbs} old granite kerbs close the cut edges");
++        }
++
++        static bool Inside(Vector2[] q, Vector2 p)
++        {
++            bool? sign = null;
++            for (int i = 0; i < q.Length; i++)
++            {
++                Vector2 a = q[i], b = q[(i + 1) % q.Length];
++                float c = (b.x - a.x) * (p.y - a.y) - (b.y - a.y) * (p.x - a.x);
++                if (Mathf.Abs(c) < 1e-6f) continue;
++                if (sign == null) sign = c > 0; else if ((c > 0) != sign) return false;
++            }
++            return true;
++        }
++
++        /// <summary>The plane outside a convex polygon as disjoint convex regions: outside edge i and inside edges 0..i-1.</summary>
++        static SwapMesh.Half[][] OutsideConvex(Vector2[] q)
++        {
++            float area = 0f; for (int i = 0; i < q.Length; i++) { var a = q[i]; var b = q[(i + 1) % q.Length]; area += a.x * b.y - b.x * a.y; }
++            float k = area > 0f ? 1f : -1f;  // inside = left of each edge for a counter-clockwise ring
++            SwapMesh.Half In(int i) { Vector2 a = q[i], b = q[(i + 1) % q.Length]; float A = -(b.y - a.y) * k, B = (b.x - a.x) * k; return new SwapMesh.Half(A, B, -(A * a.x + B * a.y)); }
++            var o = new SwapMesh.Half[q.Length][];
++            for (int i = 0; i < q.Length; i++)
++            {
++                var h = In(i); var reg = new List<SwapMesh.Half> { new SwapMesh.Half(-h.A, -h.B, -h.C) };
++                for (int j = 0; j < i; j++) reg.Add(In(j));
++                o[i] = reg.ToArray();
+             }
+-            rep.Log($"tram rails: {pieces} of our rail pieces laid as {tiles} old Tile_TramRail tiles; {onOld} pieces on the old boulevard track left to the old rails (old primary there)");
++            return o;
+         }
+ 
+         public void Trams()
+diff --git a/unity/Assets/Suborned/Editor/OldTown/Swap/SwapOurs.cs b/unity/Assets/Suborned/Editor/OldTown/Swap/SwapOurs.cs
+index 459328d5..0863c20d 100644
+--- a/unity/Assets/Suborned/Editor/OldTown/Swap/SwapOurs.cs
++++ b/unity/Assets/Suborned/Editor/OldTown/Swap/SwapOurs.cs
+@@ -36,6 +36,11 @@ namespace Suborned.OldTown.Editor.Swap
+         /// <summary>Kept solids, old frame: XZ box, height band, id (each a hole the old gives way to).</summary>
+         public readonly List<(Rect box, float y0, float y1, string id)> Solids = new();
+         readonly SwapShapes net = new(), exclude = new();
++        /// <summary>E12: our flush rail tiles' footprints (ground.pieces tram-rail, plan frame): in the west our ground stays, but our flush rails
++        /// give way to the old Tile_TramRail SwapNetwork lays on the same route (keep/drop row "Tram rails"; they were batched by material
++        /// into the west ground and stood 2 cm over the old tiles).</summary>
++        readonly SwapShapes railFoot = new();
++        int railParts;
+         readonly Dictionary<SwapShapes.Shape, float> maxExtent = new(), minTop = new();
+         Rect hqRect;
+         int keptUnits, droppedUnits, keptComps, droppedComps, clippedComps;
+@@ -48,6 +53,7 @@ namespace Suborned.OldTown.Editor.Swap
+             var o = new SwapOurs();
+             o.Shapes(w);
+             o.KeepFlat = KeepRegions();
++            o.KeepInside = SwapMesh.Inside(OldTownSwap.ZonePlan).Concat(SwapKeep.Regions()).ToArray();  // zone + kept plots and megastructures (less zone and west): disjoint
+             var target = SceneManager.GetActiveScene();
+             // second build: the palette edits are committed (dfda73fa) and the kit on disk is HEAD's, so HEAD's older copies are no longer swapped in
+             var heads = Suborned.OldTown.Editor.DecoKit.DecoKitStage.Arg("swapHeadMats", "off") == "on" ? HeadMats(rep) : new Dictionary<string, Material>();
+@@ -90,7 +96,7 @@ namespace Suborned.OldTown.Editor.Swap
+                 if (ch) r.sharedMaterials = mats;
+             }
+             rep.Log($"ours kept: {o.keptUnits} objects ({string.Join(", ", o.keptBy.OrderBy(k => k.Key).Select(k => $"{k.Key} {k.Value}"))}), dropped {o.droppedUnits}; batched meshes: {o.keptComps} parts kept, {o.clippedComps} clipped at the zone edge, {o.droppedComps} dropped; {o.Solids.Count} solids the old gives way to; HEAD material slots {swapped} ({heads.Count} materials)");
+-            rep.Log($"ours in the west (our ground under the old builders' west blocks): {o.westUnits} flat objects, {o.westParts} batched parts kept whole, {o.westClipped} clipped to the west; old materials by name on {o.remapped} slots");
++            rep.Log($"ours in the west (our ground under the old builders' west blocks): {o.westUnits} flat objects, {o.westParts} batched parts kept whole, {o.westClipped} clipped to the west; old materials by name on {o.remapped} slots; {o.railParts} parts of our flush rails dropped (E12: the old Tile_TramRail on our route instead)");
+             return o;
+         }
+ 
+@@ -155,6 +161,12 @@ namespace Suborned.OldTown.Editor.Swap
+                 if (sig.Id == "signature/space-hq") hqRect = r;  // dropped: the old builders place the old HQ, SwapHq ours
+             }
+             foreach (var p in w.Transit.SkyTrack.Pylons) exclude.Circle("pylon (old pieces instead)", p.Id, p.At, 3f);
++            foreach (var g in w.Ground.Pieces.Where(x => x.Kind == "tram-rail"))
++            {
++                Vector2 d = new(Mathf.Cos(g.Yaw), Mathf.Sin(g.Yaw)), n = new(-d.y, d.x);
++                float hl = g.Size.x * .5f + .1f, hw = g.Size.y * .5f + .1f;
++                railFoot.Add("rail", g.Id, new[] { g.At - d * hl + n * hw, g.At + d * hl + n * hw, g.At + d * hl - n * hw, g.At - d * hl - n * hw });
++            }
+         }
+ 
+         static Vector2[] Grow(Vector2[] ring, float g)
+@@ -216,12 +228,15 @@ namespace Suborned.OldTown.Editor.Swap
+             var c = new Vector2(b.center.x, b.center.z);
+             float ext = Mathf.Max(b.size.x, b.size.z);
+             if (SwapMesh.Inside(hqRect, c) && b.max.y > 60f) { droppedUnits++; UnityEngine.Object.DestroyImmediate(go); return; }  // our scene's (old) SpaceHQ piece
++            for (var t = go.transform; t; t = t.parent) if (t.name.StartsWith("DK_SpaceHQ")) { droppedUnits++; UnityEngine.Object.DestroyImmediate(go); return; }  // 0.5.6: our scene's portal, all of it (SwapHq places ours; the station in the drum stays)
+             // the zone keeps what reaches into it whole (zoneWhy: "every plot that reaches into it keeps the massing it has"); flat pieces by their centre
+             bool inZone = b.size.y < .6f ? SwapMesh.Inside(OldTownSwap.ZonePlan, c) : SwapMesh.Overlaps(SwapMesh.XZ(b), OldTownSwap.ZonePlan, .05f);
+             if (inZone) { keptUnits++; Keep("zone"); Solid(b, "zone:" + go.name); return; }
++            if (!(FlatGround(b) && (OurRail(b) || SwapPlan.InWest(c))) && SwapKeep.At(c) is { } ka) { keptUnits++; Keep("keep " + ka); Solid(b, ka + ":" + go.name); return; }  // 0.5.6: kept plots, megastructures
+             var n = Network(c, ext, go.name, b.max.y);
+             if (n != null) { keptUnits++; Keep(n.Kind); Solid(b, $"{n.Kind}:{n.Id}"); return; }
+-            if (FlatGround(b) && SwapPlan.InWest(c)) { keptUnits++; westUnits++; Keep("west-ground"); foreach (var r in go.GetComponentsInChildren<Renderer>(true)) Remap(r); return; }
++            bool rail = FlatGround(b) && OurRail(b); if (rail) railParts++;  // E12: our flush rail drops (below) like the rest of ours outside the zone
++            if (!rail && FlatGround(b) && SwapPlan.InWest(c)) { keptUnits++; westUnits++; Keep("west-ground"); foreach (var r in go.GetComponentsInChildren<Renderer>(true)) Remap(r); return; }
+             droppedUnits++;
+             if (lod || go.transform.childCount == 0) UnityEngine.Object.DestroyImmediate(go);
+             else { var mr = go.GetComponent<Renderer>(); var mf = go.GetComponent<MeshFilter>(); if (mr) UnityEngine.Object.DestroyImmediate(mr); if (mf) UnityEngine.Object.DestroyImmediate(mf); }
+@@ -247,18 +262,21 @@ namespace Suborned.OldTown.Editor.Swap
+                 var b = cb[k]; var box = SwapMesh.XZ(b); var c = new Vector2(b.center.x, b.center.z);
+                 bool flat = b.size.y < .6f;
+                 if (box.xMin >= zone.xMin && box.xMax <= zone.xMax && box.yMin >= zone.yMin && box.yMax <= zone.yMax) { act[k] = 1; Solid(b, "zone:" + mesh.name); continue; }
++                if (FlatGround(b) && OurRail(b)) { railParts++; continue; }  // E12: our flush rail outside the zone, dropped (act 0)
+                 if (FlatGround(b) && SwapPlan.West.Any(r => SwapMesh.Overlaps(box, r)))
+                 {
+                     bool whole = !SwapMesh.Overlaps(box, zone) && SwapPlan.West.Any(r => box.xMin >= r.xMin && box.xMax <= r.xMax && box.yMin >= r.yMin && box.yMax <= r.yMax);
+                     act[k] = whole ? 3 : 2; continue;
+                 }
+                 if (flat && SwapMesh.Overlaps(box, zone)) { act[k] = 2; continue; }
++                if (flat && SwapKeep.Near(box)) { act[k] = 2; continue; }  // 0.5.6: clipped exactly to the kept plots and megastructures (KeepInside)
++                if (!flat && SwapKeep.At(c) is { } ka) { act[k] = 1; Keep("keep " + ka); Solid(b, ka + ":" + mesh.name); continue; }
+                 if (!flat && SwapMesh.Overlaps(box, zone, .05f)) { act[k] = 1; Solid(b, "zone:" + mesh.name); continue; }
+                 var n = Network(c, Mathf.Max(b.size.x, b.size.z), r.name, b.max.y);
+                 if (n != null) { act[k] = 1; Keep(n.Kind); Solid(b, $"{n.Kind}:{n.Id}"); }
+             }
+             var w = new SwapMesh.Write(rd); var ww = new SwapMesh.Write(rd);
+-            var inside = SwapMesh.Inside(zone);
++            var inside = KeepInside;
+             for (int s = 0; s < rd.Subs.Count; s++)
+                 for (int t = 0; t < ids[s].Length; t++)
+                 {
+@@ -286,8 +304,11 @@ namespace Suborned.OldTown.Editor.Swap
+ 
+         static bool FlatGround(Bounds b) => b.size.y < .6f && b.max.y < 1f;
+ 
++        /// <summary>A part of one of our flush rail tiles: at road level (top under 10 cm), no longer than a 12 m tile, its centre in a tile's footprint.</summary>
++        bool OurRail(Bounds b) => b.max.y < .1f && Mathf.Max(b.size.x, b.size.z) < 12.6f && railFoot.Hit(new Vector2(b.center.x, b.center.z)) != null;
++
+         /// <summary>The west outside the zone, as disjoint convex regions (each west rect cut by the four regions outside the zone).</summary>
+-        SwapMesh.Half[][] KeepFlat;
++        SwapMesh.Half[][] KeepFlat, KeepInside;
+         static SwapMesh.Half[][] KeepRegions()
+         {
+             var o = new List<SwapMesh.Half[]>();
+diff --git a/unity/Assets/Suborned/Editor/OldTown/Swap/SwapPlan.cs b/unity/Assets/Suborned/Editor/OldTown/Swap/SwapPlan.cs
+index ea1c4f29..8f128c6c 100644
+--- a/unity/Assets/Suborned/Editor/OldTown/Swap/SwapPlan.cs
++++ b/unity/Assets/Suborned/Editor/OldTown/Swap/SwapPlan.cs
+@@ -24,6 +24,10 @@ namespace Suborned.OldTown.Editor.Swap
+         public readonly List<(string id, float w, Vector2[] pts)> Roads = new();
+         public readonly List<(string id, string use, Vector2[] poly, Rect box)> Plots = new();
+         public readonly List<(string id, Rect r)> Blocks = new();
++        /// <summary>Roads that carry a tram line (the plan's road `tram` field): E12's tram streets.</summary>
++        public readonly HashSet<string> TramRoads = new();
++        /// <summary>Megastructure footprints (plan `megastructures[].footprint`, [x0, x1, y0, y1] rects).</summary>
++        public readonly List<(string id, Rect r)> Megas = new();
+ 
+         /// <summary>The plan sheet (plan frame), CAD sheet extent (tools/plan).</summary>
+         internal static readonly Rect Sheet = Rect.MinMaxRect(-460f, -560f, 380f, 300f);
+@@ -52,6 +56,7 @@ namespace Suborned.OldTown.Editor.Swap
+             {
+                 var path0 = J.A(r, "path").Select(n => p.Nodes[(string)n]).ToArray();
+                 p.Roads.Add((J.S(r, "id"), J.F(r, "w"), path0));
++                if (J.Get(r, "tram") != null) p.TramRoads.Add(J.S(r, "id"));
+             }
+             foreach (var pl in J.A(root, "plots"))
+             {
+@@ -61,6 +66,10 @@ namespace Suborned.OldTown.Editor.Swap
+                 if (poly == null) continue;
+                 p.Plots.Add((J.S(pl, "id"), J.S(pl, "use") ?? J.S(pl, "kind"), poly, Box(poly)));
+             }
++            if (J.Get(root, "megastructures") is List<object> megas)
++                foreach (var m in megas)
++                    if (J.Get(m, "footprint") is List<object> fps)
++                        foreach (var fp in fps) if (fp is List<object> rc && rc.Count == 4) { var a = rc.Select(x => (float)(double)x).ToArray(); p.Megas.Add((J.S(m, "id"), Rect.MinMaxRect(a[0], a[2], a[1], a[3]))); }
+             foreach (var b in J.A(root, "blocks"))
+                 if (J.Get(b, "rect") is List<object> rc && rc.Count == 4) { var a = rc.Select(x => (float)(double)x).ToArray(); p.Blocks.Add((J.S(b, "id"), Rect.MinMaxRect(a[0], a[2], a[1], a[3]))); }
+             return p;
+diff --git a/unity/Assets/Suborned/Editor/OldTown/Swap/SwapShots.cs b/unity/Assets/Suborned/Editor/OldTown/Swap/SwapShots.cs
+index 8e5f3a00..9d4804ef 100644
+--- a/unity/Assets/Suborned/Editor/OldTown/Swap/SwapShots.cs
++++ b/unity/Assets/Suborned/Editor/OldTown/Swap/SwapShots.cs
+@@ -8,6 +8,7 @@ using System.Linq;
+ using System.Reflection;
+ using Suborned.OldTown.Editor.DecoKit;
+ using Suborned.OldTown.Sky;
++using Suborned.World;
+ using Suborned.World.Review;
+ using UnityEditor;
+ using UnityEditor.SceneManagement;
+@@ -107,6 +108,7 @@ namespace Suborned.OldTown.Editor.Swap
+                     ("plan_full", new(0f, 1000f, 180f), new(0f, 0f, 181f), 60f, true),
+                 })
+                 { Perspective(cam, eye, look, fov); Cap($"district-{id}-{tag}.png", wide ? 1200f : 120f); }
++            if (shots.Contains("tram")) Tram(cam, outDir, tag, sw, Cap, done);
+             if (shots.Contains("play"))
+                 foreach (var (id, f, yaw) in PlayViews)
+                 { var pc = playCam ? playCam : cam; Play(pc, f, yaw); Cap($"play-{id}-y{yaw:000}-{tag}.png", 200f, pc); }
+@@ -117,6 +119,68 @@ namespace Suborned.OldTown.Editor.Swap
+             Debug.Log($"[Swap] shots ({tag}): {string.Join(", ", done)}");
+         }
+ 
++        /// <summary>Brief 075 tram bed (E12): street-level frames with the study camera (the old stage's look, as pair-vista): the Boulevard at the
++        /// vista camera (SpaceHQ ours, pair-vista's left) and down at the bed, Market Street east and west, the west leg, the circus loop, Crown
++        /// Avenue looking back at the circus; and the whole route top down (orthographic, 100 x 50 m a tile at 12 px/m, the route along each
++        /// tile's width, trunk from the west end to the Boulevard, then the circus loop north up) as strip/strip-NN.png for the index to stack.</summary>
++        static void Tram(Camera cam, string outDir, string tag, SwapSwitches sw, Action<string, float, Camera> cap, List<string> done)
++        {
++            string hq0 = sw != null ? sw.spaceHq : "old";
++            if (sw != null) sw.SetSpaceHq("ours");
++            float DZ = OldTownSwap.DZ;
++            foreach (var (id, eye, look, fov) in new (string, Vector3, Vector3, float)[]
++            {
++                ("boulevard-vista", new(-3.5f, 1.7f, -30f), new(0f, 70f, 450f), 60f),           // = vista (pair-vista)
++                ("boulevard-bed", new(-3.5f, 1.7f, -30f), new(0f, 0f, 30f), 60f),
++                ("boulevard-stop", new(8f, 1.7f, 100f), new(-2f, 0f, 150f), 60f),             // the circus stop (plan y -83..-53)
++                ("market-east", new(-110f, 1.7f, -410f + DZ - 3f), new(-20f, .3f, -410f + DZ), 60f),
++                ("market-west", new(-150f, 1.7f, -410f + DZ + 3f), new(-260f, .3f, -410f + DZ), 60f),
++                ("west-leg", new(-337f, 1.7f, -60f + DZ), new(-340f, .3f, 30f + DZ), 60f),
++                ("circus", new(-14f, 1.7f, -45f + DZ), new(10f, 0f, -6f + DZ), 60f),
++                ("crown-avenue", new(3f, 1.7f, 120f + DZ), new(0f, .3f, 20f + DZ), 60f),
++                ("hq-station-street", new(-6f, 1.7f, 175f + DZ), new(0f, 20f, 244f + DZ), 62f),   // 0.5.6: S1 into our SpaceHQ drum, the Crown Circus station inside
++                ("hq-station-deck", new(46f, 30f, 196f + DZ), new(0f, 23f, 244f + DZ), 55f),
++            })
++            { Perspective(cam, eye, look, fov); cap($"tram-{id}-{tag}.png", 120f, null); }
++            if (sw != null) sw.SetSpaceHq(hq0);
++
++            var w = WorldReader.Load(Path.GetFullPath(Path.Combine(Repo, Arg("swapWorld", "out/scratch/latch/075swap2/harbour.world.json"))));
++            var trunk = w.Transit.Tram.FirstOrDefault(t => t.Id.EndsWith("/trunk")); var loop = w.Transit.Tram.FirstOrDefault(t => t.Id.EndsWith("/loop"));
++            var strip = Path.Combine(outDir, "strip"); Directory.CreateDirectory(strip);
++            const float TileL = 100f, TileW = 50f; const int PxW = 1200, PxH = 600;
++            var poses = new List<(Vector3 c, float yaw, float size, int w, int h)>();
++            if (trunk != null)
++            {
++                var line = trunk.Line.Select(OldTownSwap.Old).ToList();
++                var acc = new List<float> { 0f }; for (int i = 1; i < line.Count; i++) acc.Add(acc[^1] + Vector2.Distance(line[i - 1], line[i]));
++                Vector2 At(float s) { int i = 1; while (i < line.Count - 1 && acc[i] < s) i++; float t = Mathf.InverseLerp(acc[i - 1], acc[i], s); return Vector2.Lerp(line[i - 1], line[i], t); }
++                for (float s = 0f; s < acc[^1]; s += TileL)
++                {
++                    Vector2 a = At(s), b = At(Mathf.Min(s + TileL, acc[^1])), c = At(Mathf.Min(s + TileL * .5f, acc[^1]));
++                    var d = (b - a); if (d.sqrMagnitude < 1e-4f) continue; d.Normalize();
++                    var mid = (a + b) * .5f; var ctr = Vector2.Lerp(mid, c, .5f);
++                    poses.Add((new Vector3(ctr.x, 0f, ctr.y), Mathf.Atan2(-d.y, d.x) * Mathf.Rad2Deg, TileW * .5f, PxW, PxH));
++                }
++            }
++            if (loop != null) { var c = OldTownSwap.Old(loop.Line.Aggregate(Vector2.zero, (q, v) => q + v) / loop.Line.Length); poses.Add((new Vector3(c.x, 0f, c.y), 0f, 35f, PxH * 2, PxH * 2)); }
++            int k = 0;
++            foreach (var (c, yaw, size, pw, ph) in poses)
++            {
++                cam.orthographic = true; cam.orthographicSize = size;
++                cam.transform.rotation = Quaternion.Euler(90f, yaw, 0f);
++                cam.transform.position = c + Vector3.up * 250f; cam.nearClipPlane = 1f; cam.farClipPlane = 500f;  // under the grade's soft focus (from 300 m)
++                var file = Path.Combine(strip, $"strip-{k++:00}-{tag}.png");
++                DecoKitStage.WithShadows(300f, () => DecoKitStage.Capture(cam, pw, ph, file, 2));
++                done.Add("strip/" + Path.GetFileName(file));
++            }
++            cam.orthographic = false; cam.nearClipPlane = .05f; cam.farClipPlane = 2500f;
++            File.WriteAllText(Path.Combine(strip, $"strip-{tag}.json"), SwapExport.Json(new Dictionary<string, object>
++            {
++                ["tile"] = new[] { TileL, TileW }, ["px"] = new[] { PxW, PxH }, ["frame"] = "old (plan y = z - 206)",
++                ["tiles"] = poses.Select((p, i) => (object)new Dictionary<string, object> { ["file"] = $"strip-{i:00}-{tag}.png", ["centrePlan"] = new[] { p.c.x, p.c.z - DZ }, ["yaw"] = p.yaw, ["orthoHalf"] = p.size }).ToList(),
++            }));
++        }
++
+         /// <summary>The old reel's flight (DecoKitFlyby's keys and spline, posed by its own Pose) over the swapped scene, rendered 2x and piped
+         /// raw into ffmpeg with ReviewVideo's settings (lanczos down to 1920x1080 in 16-bit, BT.709 tagged, CRF 14 share copy); stills at the old
+         /// reel's still times (briefs/074/flyby/old-stills).</summary>
+diff --git a/unity/Assets/Suborned/Editor/OldTown/Swap/SwapWest.cs b/unity/Assets/Suborned/Editor/OldTown/Swap/SwapWest.cs
+index 30845f07..eeb3895e 100644
+--- a/unity/Assets/Suborned/Editor/OldTown/Swap/SwapWest.cs
++++ b/unity/Assets/Suborned/Editor/OldTown/Swap/SwapWest.cs
+@@ -127,6 +127,33 @@ namespace Suborned.OldTown.Editor.Swap
+                 next:;
+             }
+             rep.Log($"levels: {n} old asphalt decks lifted from -0.002 to 0 (plan 0.5.5's street level); old flags and kerbs scaled to the 0.18 walk (DecoKitPlacer.GroundScaleY {DecoKitPlacer.GroundScaleY:0.###})");
++            LiftRoadModules(rep);
++        }
++
++        /// <summary>Brief 075 tram-bed fix (edit E11): the old road-level modules (Tile_TramRail and its kin, decokit ground.py: "top z = 0, body
++        /// to -0.15") were modelled to top out at the road surface over a deck at -0.002. With the deck lifted to 0 their top faces were coplanar
++        /// with the asphalt and z-fought (the Boulevard's "shattered white fragments": the old track's ivory and grey slabs flickering through the
++        /// deck). Rule, by shape, never by id: every old prefab instance whose top lies at the deck (|top| under 1 mm) and whose body is sunk in
++        /// the road (bottom under -2 cm) rides 3 mm over the deck, the height our tram tiles are laid at (SwapNetwork.Rails).</summary>
++        internal const float RoadModuleLift = .003f;
++        static void LiftRoadModules(OldTownSwap.Report rep)
++        {
++            var count = new Dictionary<string, int>();
++            foreach (var t in Object.FindObjectsByType<Transform>(FindObjectsInactive.Include))
++            {
++                if (!UnityEditor.PrefabUtility.IsOutermostPrefabInstanceRoot(t.gameObject)) continue;
++                bool ours = false;
++                for (var x = t; x; x = x.parent) if (x.name.StartsWith("Ours (") || x.name.StartsWith("Network (")) { ours = true; break; }
++                if (ours) continue;
++                var rs = t.GetComponentsInChildren<MeshRenderer>(true);
++                if (rs.Length == 0) continue;
++                var b = rs[0].bounds; foreach (var r in rs) b.Encapsulate(r.bounds);
++                if (Mathf.Abs(b.max.y) >= .001f || b.min.y > -.02f) continue;
++                t.position += Vector3.up * RoadModuleLift;
++                var piece = OldTownSwap.PieceOf(t.name);
++                count[piece] = count.TryGetValue(piece, out var c) ? c + 1 : 1;
++            }
++            rep.Log($"levels: {count.Values.Sum()} old road-level modules (top at the road surface, body sunk) lifted {RoadModuleLift * 1000f:0} mm clear of the deck at 0 ({string.Join(", ", count.OrderByDescending(k => k.Value).Select(k => $"{k.Key} {k.Value}"))})");
+         }
+     }
+ }

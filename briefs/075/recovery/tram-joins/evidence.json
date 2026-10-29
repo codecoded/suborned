@@ -1,0 +1,22 @@
+{
+  "status": "HOLD; helper only; production hookup pending",
+  "compiled_actual_helper": true,
+  "dense_exact_arc_probes": 12012,
+  "dense_exact_arc_misses": 0,
+  "width_m": 2,
+  "export_tiles": 1584,
+  "rejected_export_boundaries": 188,
+  "rejection_kinds": {
+    "parallel displaced tangents": 178,
+    "nonadjacent/missing interval": 10
+  },
+  "pinned_existing_inputs": 802,
+  "unchanged_during_run": true,
+  "external_owner_drift_since_pin": {
+    "unity/Assets/Suborned/Editor/OldTown/Swap/SwapMesh.cs": {
+      "pinned": "923085c83e0b7d10d22a40630bc87cd90e8ab78e28d3f811c9057c6430dccb45",
+      "current": "797f6aec626f46e0b032589522b61eacab6272adfe70a29ddab2fd3d4a2f7dc1"
+    }
+  },
+  "note": "Supported runs are split only at explicit rejected joins. Their open caps do NOT certify rejected boundaries. No surface, rail mesh, route-clearance or rendering acceptance."
+}

@@ -65,8 +65,14 @@ function inCarriageway(ctx: Ctx, p: V): boolean {
 }
 const onSheet = (ctx: Ctx, p: V) => { const sh = ctx.plan.sheet; return p[0] >= sh.x[0] && p[0] <= sh.x[1] && p[1] >= sh.y[0] && p[1] <= sh.y[1]; };
 
+/** Opt-in source diagnostics. No export fields or default generation decisions depend on this sink.
+ * Segment intervals are offset-curve arclength metres, NOT tangent footprint endpoints. */
+export type TramSourceSegment = { track: string; edge: string; offset: number; segment: number; geometry: Seg; length: number; start: V; end: V; startTangent: V; endTangent: V };
+export type TramSourceItem = TramSourceSegment & { interval: [number, number]; center: V; tangent: V; lengthExact: number; scaleExact: number; yawExact: number; zExact: number; exported?: StreetItem; omitted?: 'off-sheet' };
+export type TramSourceSink = { segment?: (s: TramSourceSegment) => void; item?: (s: TramSourceItem) => void };
+
 /** The setts, the flat crossing's square and the rails (ground.flats and ground.pieces). */
-export function tramGround(ctx: Ctx, log: TramStreetLog, level: number): { flats: Flat[]; rails: StreetItem[] } | undefined {
+export function tramGround(ctx: Ctx, log: TramStreetLog, level: number, diagnostic?: TramSourceSink): { flats: Flat[]; rails: StreetItem[] } | undefined {
   const T = tramStreetStd(ctx); if (!T) return undefined;
   const flats: Flat[] = [], rails: StreetItem[] = [];
   // ---- setts: per segment of each path, the stretches whose samples lie in a carriageway, as a ring (the left offsets, then the right ones back)
@@ -113,23 +119,31 @@ export function tramGround(ctx: Ctx, log: TramStreetLog, level: number): { flats
   if (!t2) { log.gaps.push({ rule: 'TS-rail', where: 'kit', why: 'Tile_TramRail is not adopted: no rails laid' }); return { flats, rails }; }
   const half = ctx.plan.standards.tram.trackCentres / 2;
   const mintRail = zoneMint(ctx); // brief 075 (stable zone): rails numbered apart inside the Handover zone
-  const put = (a: { id: string; size: number[] }, p: V, t: V, k: number, edge: string) => {
-    if (!onSheet(ctx, p)) return;
+  let provenance: TramSourceSegment;
+  const put = (a: { id: string; size: number[] }, p: V, t: V, k: number, edge: string, interval: [number, number]) => {
+    const emit = (exported?: StreetItem) => diagnostic?.item?.({ ...provenance, interval, center: p, tangent: t, lengthExact: a.size[0]! * k, scaleExact: k, yawExact: Math.atan2(t[1], t[0]), zExact: levelOf(ctx, p, level), ...(exported ? { exported } : { omitted: 'off-sheet' as const }) });
+    if (!onSheet(ctx, p)) { emit(); return; }
     rails.push({ id: mintRail('ground/tram/rail', rv(p)), kind: 'tram-rail', at: rv(p), yaw: r4(Math.atan2(t[1], t[0])), z: r3(levelOf(ctx, p, level)), size: [r3(a.size[0]! * k), r3(a.size[2]!), r3(a.size[1]!)], surface: 'track', edge, sight: 'open', source: 'kit', kit: { id: a.id, scale: [r4(k), 1, 1] } });
+    emit(rails[rails.length - 1]!);
     if (a.size[0] === 12) log.rails.tiles12++; else log.rails.tiles2++;
     log.rails.m = r3(log.rails.m + a.size[0]! * k);
   };
   for (const path of ctx.d.tram) for (const d of path.double ? [half, -half] : [0]) path.segs.forEach((sg, si) => {
     const L = offLen(sg, d), edge = `tram/${path.line}/${path.id}`, ptAt = (s: number) => { const q = at(sg, (s / L) * sg.len); return { p: off(q, d), t: q.t }; };
+    if (diagnostic) {
+      const a = ptAt(0), b = ptAt(L);
+      provenance = { track: `${edge}/offset/${d}`, edge, offset: d, segment: si, geometry: sg, length: L, start: a.p, end: b.p, startTangent: a.t, endTangent: b.t };
+      diagnostic.segment?.(provenance);
+    }
     if (sg.kind === 'line' && t12) {
       // the run in whole 2 m periods (N, all stretched by k = L / 2N: under 1 % on a long straight), six at a time as a 12 m tile, the rest as 2 m tiles
       const N = Math.max(1, Math.round(L / 2)), k = L / (2 * N), n12 = Math.floor(N / 6), n2 = N - 6 * n12;
-      for (let i = 0; i < n12; i++) { const q = ptAt((i * 12 + 6) * k); put(t12, q.p, q.t, k, edge); }
-      for (let i = 0; i < n2; i++) { const q = ptAt((n12 * 12 + (i + 0.5) * 2) * k); put(t2, q.p, q.t, k, edge); }
+      for (let i = 0; i < n12; i++) { const q = ptAt((i * 12 + 6) * k); put(t12, q.p, q.t, k, edge, [i * 12 * k, (i + 1) * 12 * k]); }
+      for (let i = 0; i < n2; i++) { const q = ptAt((n12 * 12 + (i + 0.5) * 2) * k); put(t2, q.p, q.t, k, edge, [(n12 * 12 + i * 2) * k, (n12 * 12 + (i + 1) * 2) * k]); }
       return;
     }
     const n = Math.max(1, Math.round(L / 2)), k = L / (2 * n);
-    for (let i = 0; i < n; i++) { const q = ptAt((i + 0.5) * 2 * k); put(t2, q.p, q.t, k, edge); }
+    for (let i = 0; i < n; i++) { const q = ptAt((i + 0.5) * 2 * k); put(t2, q.p, q.t, k, edge, [i * 2 * k, (i + 1) * 2 * k]); }
     void si;
   });
   return { flats, rails };

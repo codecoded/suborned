@@ -1,0 +1,202 @@
+diff --git a/briefs/075/civic/restyle.json b/briefs/075/civic/restyle.json
+index 3ee038e9..9ad9c9cb 100644
+--- a/briefs/075/civic/restyle.json
++++ b/briefs/075/civic/restyle.json
+@@ -1,6 +1,6 @@
+ {
+  "schema": "vela.civic-restyle/1",
+- "brief": "075 civic restyle (Vela, 2026-10-29). Sky: \"could we bring the civic block into looking more aligned without ruining the game logic?\" Visual only: the testbed's Records Office, café and square kept as built, dressed in the old town's materials. Table and reasons: briefs/075/civic/restyle.md.",
++ "brief": "075 civic restyle (Vela, 2026-10-29). Sky: \"could we bring the civic block into looking more aligned without ruining the game logic?\" Visual only: the testbed's Records Office, caf\u00e9 and square kept as built, dressed in the old town's materials. Table and reasons: briefs/075/civic/restyle.md.",
+  "frame": "plan metres (Unity x, z = plan x, y); yaw = the export's kit yaw (KitPlacer: Unity euler y = -yaw in degrees); z = height of the piece's pivot",
+  "locked": "No mesh, footprint, height, door, mission point, bay, cover, collider, walkable surface or furniture position changes. No FBX is regenerated, so contracts/world/kit.collide.json, the world export and sim/data are untouched. Every change below is a material slot on a renderer the builder already makes, a ground material, or a scene-only overlay with no collider.",
+  "materialsRoot": "unity/Assets/Suborned",
+@@ -31,7 +31,7 @@
+    ],
+    "from": "DK_Limestone",
+    "to": "Kit/Materials/DK_Render_White__circus.mat",
+-   "why": "the café is a streamline building: the old town paints those in smooth render (DK_Render_White), here the old Circus ensemble's Naples cream #EBDCB5 (old DecoKitColourways.Circus). It differs from the office's panel stone, so the two neighbours never match"
++   "why": "the caf\u00e9 is a streamline building: the old town paints those in smooth render (DK_Render_White), here the old Circus ensemble's Naples cream #EBDCB5 (old DecoKitColourways.Circus). It differs from the office's panel stone, so the two neighbours never match"
+   },
+   {
+    "pieces": [
+@@ -62,7 +62,7 @@
+   }
+  ],
+  "variants": {
+-  "note": "a studied alternative, not the proposal: the café as a stone building (old panel stone in the Circus cream), its seafoam bands kept. Renders: *-alt-*.png",
++  "note": "a studied alternative, not the proposal: the caf\u00e9 as a stone building (old panel stone in the Circus cream), its seafoam bands kept. Renders: *-alt-*.png",
+   "cafe-stone": [
+    {
+     "pieces": [
+@@ -93,17 +93,17 @@
+    "plot": "plot/records-square",
+    "surface": "square",
+    "from": "DK_Pave_Civic",
+-   "to": "Kit/Materials/DK_Terrazzo_Ivory.mat",
+-   "tile": 1,
+-   "why": "the old plaza field (DecoKitPlazaLayout.Floor: an ivory terrazzo field with seafoam rings, the hall's plaza): our square already has the rings, so it takes the old floor under them. Pale and polished, as the Records Office painting's forecourt"
++   "to": "Kit/Materials/DK_Pave_Flags.mat",
++   "tile": 4,
++   "why": "Sky approved recovery: existing old-town flag bond at tile4 on this civic plot only; preserve inlays and ground geometry."
+   },
+   {
+    "plot": "plot/records-office",
+    "surface": "civic",
+    "from": "DK_Pave_Civic",
+-   "to": "Kit/Materials/DK_Terrazzo_Ivory.mat",
+-   "tile": 1,
+-   "why": "the office forecourt on the same civic floor, so square and office read as one precinct. Tried in the old pavement flags (OldTownArt DK_Pave_Flags at 4 m, render 1): at play zoom the small cool-grey flags were busy against the office and broke the precinct in two"
++   "to": "Kit/Materials/DK_Pave_Flags.mat",
++   "tile": 4,
++   "why": "Sky approved recovery: existing old-town flag bond at tile4 on this civic plot only; preserve inlays and ground geometry."
+   }
+  ],
+  "overlays": [
+@@ -117,7 +117,7 @@
+    "z": 0.18,
+    "yaw": 3.1416,
+    "scale": 1,
+-   "mount": "the café front's outer piers (probe: pier faces at x -164.75 and -153.35, y -219.7), under the canopy: basket 2.57-3.34 m above the walk, 0.79 m out. The two door piers stay bare (Inez's door)",
++   "mount": "the caf\u00e9 front's outer piers (probe: pier faces at x -164.75 and -153.35, y -219.7), under the canopy: basket 2.57-3.34 m above the walk, 0.79 m out. The two door piers stay bare (Inez's door)",
+    "collider": false
+   },
+   {
+@@ -130,11 +130,11 @@
+    "z": 0.18,
+    "yaw": 3.1416,
+    "scale": 1,
+-   "mount": "the café front's outer piers (probe: pier faces at x -164.75 and -153.35, y -219.7), under the canopy: basket 2.57-3.34 m above the walk, 0.79 m out. The two door piers stay bare (Inez's door)",
++   "mount": "the caf\u00e9 front's outer piers (probe: pier faces at x -164.75 and -153.35, y -219.7), under the canopy: basket 2.57-3.34 m above the walk, 0.79 m out. The two door piers stay bare (Inez's door)",
+    "collider": false
+   }
+  ],
+- "overlayRules": "Old DecoKitDistrictDressing.Terrace: baskets on the piers under the canopy (HangingBasket every pier run), one BladeSign_Cafe per café above the canopy. The café already carries its own blade sign (CafeUpper_3's CAFE fin over the door), so the old rule is met and no second sign is added (tried on the side walls: the upper's side walls only start at 10 m, probe in after-probe.json, and two more CAFE fins read as clutter). Only wall pieces above 2.4 m: nothing stands on the walk, so no cover, bay, sightline or walk changes. Scene-only (not in the world export, so not in sim/data); colliders stripped; parented under civic/cafe so they take its fade. Left out on purpose: TerraceScreen, PottedFern and SandwichBoard (they stand on the terrace and the walk), rooftop billboards (they sit between the camera and the terrace at yaw 210, and the office is civic).",
++ "overlayRules": "Old DecoKitDistrictDressing.Terrace: baskets on the piers under the canopy (HangingBasket every pier run), one BladeSign_Cafe per caf\u00e9 above the canopy. The caf\u00e9 already carries its own blade sign (CafeUpper_3's CAFE fin over the door), so the old rule is met and no second sign is added (tried on the side walls: the upper's side walls only start at 10 m, probe in after-probe.json, and two more CAFE fins read as clutter). Only wall pieces above 2.4 m: nothing stands on the walk, so no cover, bay, sightline or walk changes. Scene-only (not in the world export, so not in sim/data); colliders stripped; parented under civic/cafe so they take its fade. Left out on purpose: TerraceScreen, PottedFern and SandwichBoard (they stand on the terrace and the walk), rooftop billboards (they sit between the camera and the terrace at yaw 210, and the office is civic).",
+  "kept": [
+   {
+    "pieces": [
+@@ -145,10 +145,10 @@
+     "InlayArc_R9_W12"
+    ],
+    "material": "DK_Inlay_Seafoam",
+-   "why": "tried as the old plaza's seafoam terrazzo (DK_Terrazzo_Seafoam): on the ivory terrazzo field the rings and the spine lost their contrast at play zoom (render 1, out/scratch/vela/civic075). They mark the café door line and the square's walk, so readable > rich: the enamel stays"
++   "why": "tried as the old plaza's seafoam terrazzo (DK_Terrazzo_Seafoam): on the ivory terrazzo field the rings and the spine lost their contrast at play zoom (render 1, out/scratch/vela/civic075). They mark the caf\u00e9 door line and the square's walk, so readable > rich: the enamel stays"
+   }
+  ],
+- "ground_note": "tile 1 = UV in world metres, as look.json's other ground keys; the terrazzo .mat repeats every 1.5 m itself (m_Scale 0.667), exactly the old kit tile. Only these two plots: the pavements beyond the kerbs stay as they are",
++ "ground_note": "Recovery075: existing DK_Pave_Flags at tile4 (world-metre UV / 4, material scale1) on the two civic plots only. Baseline restyle saved in out/scratch/latch/recovery/integration/baseline-restyle.json.",
+  "surfaces": [
+   {
+    "civicSurface": "bed-kerb",
+@@ -164,5 +164,15 @@
+    "uv": "world metres (as the kit meshes)",
+    "why": "the bed kerbs in the same panel stone as the planter runs and the office"
+   }
+- ]
++ ],
++ "foliageReview": {
++  "enabledByDefault": false,
++  "switch": "-recoveryFoliage selective",
++  "placements": [
++   "civic/run-west-cafe/1",
++   "civic/civic-office-north/tuft-0",
++   "civic/cyp-office-e"
++  ],
++  "note": "Review075 helper only; default-off; final three placements pass imported production-envelope containment at 1mm tolerance. Other tested tufts excluded; see recovery/latch-integration/rejected-six and excluded-four. No reduction or scaling; original non-foliage, transforms, colliders and nav retained."
++ }
+ }
+diff --git a/unity/Assets/Suborned/Editor/OldTown/Swap/SwapShots.cs b/unity/Assets/Suborned/Editor/OldTown/Swap/SwapShots.cs
+index 8e5f3a00..d66d260e 100644
+--- a/unity/Assets/Suborned/Editor/OldTown/Swap/SwapShots.cs
++++ b/unity/Assets/Suborned/Editor/OldTown/Swap/SwapShots.cs
+@@ -8,6 +8,7 @@ using System.Linq;
+ using System.Reflection;
+ using Suborned.OldTown.Editor.DecoKit;
+ using Suborned.OldTown.Sky;
++using Suborned.World;
+ using Suborned.World.Review;
+ using UnityEditor;
+ using UnityEditor.SceneManagement;
+@@ -107,6 +108,7 @@ namespace Suborned.OldTown.Editor.Swap
+                     ("plan_full", new(0f, 1000f, 180f), new(0f, 0f, 181f), 60f, true),
+                 })
+                 { Perspective(cam, eye, look, fov); Cap($"district-{id}-{tag}.png", wide ? 1200f : 120f); }
++            if (shots.Contains("tram")) Tram(cam, outDir, tag, sw, Cap, done);
+             if (shots.Contains("play"))
+                 foreach (var (id, f, yaw) in PlayViews)
+                 { var pc = playCam ? playCam : cam; Play(pc, f, yaw); Cap($"play-{id}-y{yaw:000}-{tag}.png", 200f, pc); }
+@@ -117,6 +119,74 @@ namespace Suborned.OldTown.Editor.Swap
+             Debug.Log($"[Swap] shots ({tag}): {string.Join(", ", done)}");
+         }
+ 
++        /// <summary>Brief 075 tram bed (E12): street-level frames with the study camera (the old stage's look, as pair-vista): the Boulevard at the
++        /// vista camera (SpaceHQ ours, pair-vista's left) and down at the bed, Market Street east and west, the west leg, the circus loop, Crown
++        /// Avenue looking back at the circus; and the whole route top down (orthographic, 100 x 50 m a tile at 12 px/m, the route along each
++        /// tile's width, trunk from the west end to the Boulevard, then the circus loop north up) as strip/strip-NN.png for the index to stack.</summary>
++        static void Tram(Camera cam, string outDir, string tag, SwapSwitches sw, Action<string, float, Camera> cap, List<string> done)
++        {
++            string hq0 = sw != null ? sw.spaceHq : "old";
++            if (sw != null) sw.SetSpaceHq("ours");
++            float DZ = OldTownSwap.DZ;
++            foreach (var (id, eye, look, fov) in new (string, Vector3, Vector3, float)[]
++            {
++                ("boulevard-vista", new(-3.5f, 1.7f, -30f), new(0f, 70f, 450f), 60f),           // = vista (pair-vista)
++                ("boulevard-bed", new(-3.5f, 1.7f, -30f), new(0f, 0f, 30f), 60f),
++                ("boulevard-stop", new(8f, 1.7f, 100f), new(-2f, 0f, 150f), 60f),             // the circus stop (plan y -83..-53)
++                ("market-east", new(-110f, 1.7f, -410f + DZ - 3f), new(-20f, .3f, -410f + DZ), 60f),
++                ("market-west", new(-150f, 1.7f, -410f + DZ + 3f), new(-260f, .3f, -410f + DZ), 60f),
++                ("west-leg", new(-337f, 1.7f, -60f + DZ), new(-340f, .3f, 30f + DZ), 60f),
++                ("circus", new(-14f, 1.7f, -45f + DZ), new(10f, 0f, -6f + DZ), 60f),
++                ("crown-avenue", new(3f, 1.7f, 120f + DZ), new(0f, .3f, 20f + DZ), 60f),
++                ("hq-station-street", new(-6f, 1.7f, 175f + DZ), new(0f, 20f, 244f + DZ), 62f),   // 0.5.6: S1 into our SpaceHQ drum, the Crown Circus station inside
++                ("hq-station-deck", new(46f, 30f, 196f + DZ), new(0f, 23f, 244f + DZ), 55f),
++                ("hq-station-inside", new(-28f, 25.5f, 244f + DZ), new(26f, 24f, 244f + DZ), 76f),
++                ("hq-station-portal", new(58f, 25.5f, 244f + DZ), new(0f, 24f, 244f + DZ), 70f),
++            })
++            {
++                var pick = Arg("swapTramViews", ""); if (pick.Length > 0 && !pick.Split(',').Contains(id)) continue;
++                Perspective(cam, eye, look, fov); cap($"tram-{id}-{tag}.png", 120f, null);
++            }
++            if (sw != null) sw.SetSpaceHq(hq0);
++
++            if (Arg("swapTramViews", "").Length > 0) return; // targeted supplemental proof: preserve the settled route strip
++            var w = WorldReader.Load(Path.GetFullPath(Path.Combine(Repo, Arg("swapWorld", "out/scratch/latch/075swap2/harbour.world.json"))));
++            var trunk = w.Transit.Tram.FirstOrDefault(t => t.Id.EndsWith("/trunk")); var loop = w.Transit.Tram.FirstOrDefault(t => t.Id.EndsWith("/loop"));
++            var strip = Path.Combine(outDir, "strip"); Directory.CreateDirectory(strip);
++            const float TileL = 100f, TileW = 50f; const int PxW = 1200, PxH = 600;
++            var poses = new List<(Vector3 c, float yaw, float size, int w, int h)>();
++            if (trunk != null)
++            {
++                var line = trunk.Line.Select(OldTownSwap.Old).ToList();
++                var acc = new List<float> { 0f }; for (int i = 1; i < line.Count; i++) acc.Add(acc[^1] + Vector2.Distance(line[i - 1], line[i]));
++                Vector2 At(float s) { int i = 1; while (i < line.Count - 1 && acc[i] < s) i++; float t = Mathf.InverseLerp(acc[i - 1], acc[i], s); return Vector2.Lerp(line[i - 1], line[i], t); }
++                for (float s = 0f; s < acc[^1]; s += TileL)
++                {
++                    Vector2 a = At(s), b = At(Mathf.Min(s + TileL, acc[^1])), c = At(Mathf.Min(s + TileL * .5f, acc[^1]));
++                    var d = (b - a); if (d.sqrMagnitude < 1e-4f) continue; d.Normalize();
++                    var mid = (a + b) * .5f; var ctr = Vector2.Lerp(mid, c, .5f);
++                    poses.Add((new Vector3(ctr.x, 0f, ctr.y), Mathf.Atan2(-d.y, d.x) * Mathf.Rad2Deg, TileW * .5f, PxW, PxH));
++                }
++            }
++            if (loop != null) { var c = OldTownSwap.Old(loop.Line.Aggregate(Vector2.zero, (q, v) => q + v) / loop.Line.Length); poses.Add((new Vector3(c.x, 0f, c.y), 0f, 35f, PxH * 2, PxH * 2)); }
++            int k = 0;
++            foreach (var (c, yaw, size, pw, ph) in poses)
++            {
++                cam.orthographic = true; cam.orthographicSize = size;
++                cam.transform.rotation = Quaternion.Euler(90f, yaw, 0f);
++                cam.transform.position = c + Vector3.up * 250f; cam.nearClipPlane = 1f; cam.farClipPlane = 500f;  // under the grade's soft focus (from 300 m)
++                var file = Path.Combine(strip, $"strip-{k++:00}-{tag}.png");
++                DecoKitStage.WithShadows(300f, () => DecoKitStage.Capture(cam, pw, ph, file, 2));
++                done.Add("strip/" + Path.GetFileName(file));
++            }
++            cam.orthographic = false; cam.nearClipPlane = .05f; cam.farClipPlane = 2500f;
++            File.WriteAllText(Path.Combine(strip, $"strip-{tag}.json"), SwapExport.Json(new Dictionary<string, object>
++            {
++                ["tile"] = new[] { TileL, TileW }, ["px"] = new[] { PxW, PxH }, ["frame"] = "old (plan y = z - 206)",
++                ["tiles"] = poses.Select((p, i) => (object)new Dictionary<string, object> { ["file"] = $"strip-{i:00}-{tag}.png", ["centrePlan"] = new[] { p.c.x, p.c.z - DZ }, ["yaw"] = p.yaw, ["orthoHalf"] = p.size }).ToList(),
++            }));
++        }
++
+         /// <summary>The old reel's flight (DecoKitFlyby's keys and spline, posed by its own Pose) over the swapped scene, rendered 2x and piped
+         /// raw into ffmpeg with ReviewVideo's settings (lanczos down to 1920x1080 in 16-bit, BT.709 tagged, CRF 14 share copy); stills at the old
+         /// reel's still times (briefs/074/flyby/old-stills).</summary>

@@ -1,0 +1,5 @@
+{
+  "start": 1793285888.2484639,
+  "method": "Suborned.OldTown.Editor.Swap.SwapTramCorrected.FinalizeCandidate",
+  "gate": "memory-6 zero intersections, frame/basis errors, source-relative coverage failures and preservation changes; exact predicate is an additional pre-save gate"
+}

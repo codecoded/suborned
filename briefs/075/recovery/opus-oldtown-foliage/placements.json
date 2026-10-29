@@ -1,0 +1,70 @@
+{
+  "status": "direction for one Unity trial; review-only, no production adoption, protected-sight patch stays HOLD",
+  "author": "Vela (Opus 5.5), 2026-10-29",
+  "coordinates": "Same local frame as ../oldtown-foliage-reuse/manifest.json: Blender metres, +x along the run, +z up, origin = trough pivot (bottom centre). Export: Unity (-x,z,y), then Unity yaw = -world.kit.yaw. For both troughs (kit yaw -1.5708) local x maps to world z = at.z + x and local y to world x = at.x + y.",
+  "envelope": "Every instance must sit inside the current renderer envelope of its trough: |y| <= 0.34 (coping), |x| <= 2.0 (container), top z <= current planting top. Pivots, proportions, UVs, normals and all submeshes of the source FBX kept; uniform scale only; yaw in quarter turns only (keeps the axis-aligned footprint inside the coping).",
+  "troughs": [
+    {
+      "id": "civic/run-west-cafe/1",
+      "kit": "PlanterRun_4_B",
+      "at": [-179.5, -222.5], "base": 0.18,
+      "verdict": "ADJUST: the old PlazaLayout cafe-terrace-edge recipe exactly (two FlowerBeds at +-1 m, scale 1)",
+      "container": "retain current DK_PlanterRun_4_B slot 0 only (60 tris, DK_Limestone -> DK_Limestone_Tex restyle binding unchanged); slots 1-4 (current dome planting) not drawn",
+      "currentTop": 1.0616,
+      "source": {
+        "fbx": "unity/Assets/Suborned/OldTownArt/DecoKit/Models/Plants/DK_FlowerBed.fbx",
+        "sha256": "77dfd48e9ef1a857ffb008e509a7235e8d7ba2949b661f655f05968e059617c4",
+        "nativeBounds": [[-0.9933, -0.3076, -0.0870], [0.9873, 0.3098, 0.3743]],
+        "slots": {
+          "0": "unity/Assets/Suborned/OldTownArt/DecoKit/Materials/DK_Leaf_CoreShrub.mat",
+          "1": "unity/Assets/Suborned/OldTownArt/DecoKit/Materials/DK_Leaf_Shrub.mat",
+          "2": "unity/Assets/Suborned/OldTownArt/DecoKit/Materials/DK_Flower_Coral.mat"
+        }
+      },
+      "instances": [
+        {"name": "FlowerBed_0", "local": [-1.0, 0.0, 0.655], "yawDeg": 0, "scale": 1.0, "worldCentre": [-179.5, -223.5]},
+        {"name": "FlowerBed_1", "local": [1.0, 0.0, 0.655], "yawDeg": 0, "scale": 1.0, "worldCentre": [-179.5, -221.5]}
+      ],
+      "expectedLocalBounds": [[-1.9933, -0.3076, 0.568], [1.9873, 0.3098, 1.0293]],
+      "fallbackZ": "0.687 if any droop card shows through the trough body below the coping lip (puts the whole droop inside the 0.600-0.655 coping band; top 1.0613 <= 1.0616)",
+      "triangles": {"current": 672, "trial": 5496, "delta": 4824}
+    },
+    {
+      "id": "civic/run-west-cafe/0",
+      "kit": "PlanterRun_4_A",
+      "at": [-179.5, -218.5], "base": 0.18,
+      "verdict": "ADJUST: ShrubMound hedge as in the old PlazaLayout facade hedge, at the largest uniform scale the current envelope allows, packed to a continuous run",
+      "container": "retain current DK_PlanterRun_4_A slot 0 only (60 tris, restyle binding unchanged); slots 1-4 not drawn",
+      "currentTop": 1.1201,
+      "source": {
+        "fbx": "unity/Assets/Suborned/OldTownArt/DecoKit/Models/Plants/DK_ShrubMound.fbx",
+        "sha256": "857103fb43ccaf9710bf590f5bde28187e2b0239ef3f8bfb0fd887051b32aec1",
+        "nativeBounds": [[-0.4586, -0.4908, -0.0609], [0.4938, 0.4965, 0.7281]],
+        "slots": {
+          "0": "unity/Assets/Suborned/OldTownArt/DecoKit/Materials/DK_Leaf_CoreShrub.mat",
+          "1": "unity/Assets/Suborned/OldTownArt/DecoKit/Materials/DK_Leaf_Shrub.mat"
+        }
+      },
+      "scaleDerivation": "height-bound: (1.1201 - 0.645) / 0.7281 = 0.6525; width-bound 0.68 / 0.993 = 0.685; 0.64 leaves ~9 mm of headroom",
+      "instances": [
+        {"name": "ShrubMound_0", "local": [-1.55, 0.0, 0.645], "yawDeg": 0,   "scale": 0.64, "worldCentre": [-179.5, -220.05]},
+        {"name": "ShrubMound_1", "local": [-0.93, 0.0, 0.645], "yawDeg": 180, "scale": 0.64, "worldCentre": [-179.5, -219.43]},
+        {"name": "ShrubMound_2", "local": [-0.31, 0.0, 0.645], "yawDeg": 90,  "scale": 0.64, "worldCentre": [-179.5, -218.81]},
+        {"name": "ShrubMound_3", "local": [0.31, 0.0, 0.645],  "yawDeg": 270, "scale": 0.64, "worldCentre": [-179.5, -218.19]},
+        {"name": "ShrubMound_4", "local": [0.93, 0.0, 0.645],  "yawDeg": 180, "scale": 0.64, "worldCentre": [-179.5, -217.57]},
+        {"name": "ShrubMound_5", "local": [1.55, 0.0, 0.645],  "yawDeg": 0,   "scale": 0.64, "worldCentre": [-179.5, -216.95]}
+      ],
+      "expectedLocalBounds": [[-1.868, -0.318, 0.606], [1.868, 0.318, 1.111]],
+      "fallback": "if frame cost fails on the Air: 5 instances at x = (i-2) * 0.75, same scale and yaws [0,180,90,270,0] (gappier, nearer the old hedge's 2 m spacing ratio); never a smaller scale",
+      "triangles": {"current": 732, "trial": 15216, "delta": 14484}
+    }
+  ],
+  "palms": {
+    "ids": ["civic/cafe-palm-0", "civic/cafe-palm-2", "civic/cafe-palm-4"],
+    "verdict": "NO CHANGE: geometry, slots, UVs and normals already identical to the original; materials differ only by shader GUID. Not part of the trial."
+  },
+  "materialAlternate": {
+    "note": "Kit/Materials/DK_Leaf_CoreShrub.mat, DK_Leaf_Shrub.mat, DK_Flower_Coral.mat differ from the OldTown originals only in m_Shader (current DecoKit/Lit Cutaway 2529b421... vs OldTown/DecoKit/Lit Cutaway 92902edf...). Use only as a recorded fallback if the OldTown shader misbehaves in the play scene; say so in the evidence."
+  },
+  "totals": {"currentTriangles": 1404, "trialTriangles": 20712, "delta": 19308, "renderers": {"current": 2, "trial": 10}, "submeshDraws": {"current": 10, "trial": 20}}
+}

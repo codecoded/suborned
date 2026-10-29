@@ -1,0 +1,86 @@
+[
+  {
+    "commit": "71bf4032",
+    "subject": "WIP checkpoint: Sky's 0.2.122 notes (brief 067) round 1, not green",
+    "planter13NearbyFacade": true,
+    "planter17NearbyFacade": true
+  },
+  {
+    "commit": "e17d8ca7f2477bf8d820b7ec3e33815ce284b097",
+    "subject": "WIP checkpoint: engine 0.34.0 in progress (brief 067), rival looks, host round 3",
+    "planter13NearbyFacade": true,
+    "planter17NearbyFacade": true
+  },
+  {
+    "commit": "cb1604f667986fc5230f3197cb1515c3b760c79f",
+    "subject": "GDD v0.26.0 (2026-10-26, brief 067); engine 0.34.1; 0.34 words; crew cards",
+    "planter13NearbyFacade": true,
+    "planter17NearbyFacade": true
+  },
+  {
+    "commit": "467850e84ba7d23d9655a2ed432a6cc76f77ccea",
+    "subject": "Engine 0.35.1: the special moves off (weapons.moves.on), the cell not pinned, DP1 re-recorded; cover and sim:site rebuilt on the capped world",
+    "planter13NearbyFacade": true,
+    "planter17NearbyFacade": true
+  },
+  {
+    "commit": "e3670a0763b99658bdf3b84cf2a02e7efcdf1e79",
+    "subject": "Site and cover rebuilt on the capped facades, the 3-storey cafe and the lifted cars; DP1 re-recorded (Keel)",
+    "planter13NearbyFacade": true,
+    "planter17NearbyFacade": false
+  },
+  {
+    "commit": "96176fedb8ef0250450615ad34ff030160838369",
+    "subject": "072: brief and Sky's 2026-10-27 decisions; the old DecoKit planet and moon (Horizon_PlanetRinged, Horizon_Moon) with their sky maps, kit hashes refreshed",
+    "planter13NearbyFacade": true,
+    "planter17NearbyFacade": false
+  },
+  {
+    "commit": "e8614ede5c5c39f3283ffc9ba5d90fb8b89905a9",
+    "subject": "072: DecoKit on every face: 25 adopted pieces (SideBay, stacks, pilasters, rounded and inside corner piers, AlleyWall_3/4/3D/4D at 11 materials, RecordsTower), the every-face pass (faces.ts, 0 undressed faces, bun run world:faces), shopfront boxes clamped under the fascia, decokit --only never shrinks the shared tables",
+    "planter13NearbyFacade": true,
+    "planter17NearbyFacade": false
+  },
+  {
+    "commit": "dd2d6cfe27987172d370299d1c30f1b1833c7032",
+    "subject": "072: the Office's sim footprint is the civic block's polygon and towers (kit volumes only where proud), occluders de-duplicated past #k, the site hashes only the kit pieces placed in the window; Handover ships, 893 plays",
+    "planter13NearbyFacade": true,
+    "planter17NearbyFacade": false
+  },
+  {
+    "commit": "be0f16577916eab1c8319981f2fd0afbf11a185e",
+    "subject": "072: shop fillers placed on street-facing shop runs (149 runs, 0 shopfront boxes against side pieces), face ids unique per run, skyline drift declared (Aster); site regenerated, Handover ships",
+    "planter13NearbyFacade": true,
+    "planter17NearbyFacade": false
+  },
+  {
+    "commit": "a75057ae34b39e0ec50c4b173da3968e0141ce94",
+    "subject": "072: K-6, no facade piece stands outside its building (1,648 \u2192 0): runs stop short of acute corners, a pilaster takes the corner, street bays fit within 2 cm; export v4, site regenerated, Handover ships, skyline drift declared (B-6)",
+    "planter13NearbyFacade": true,
+    "planter17NearbyFacade": false
+  },
+  {
+    "commit": "1d02b09d6b1e1fcd6cc650c6cdd86d3b122a2ec7",
+    "subject": "075-E step 1: streamline as the default grammar: the old street's recipe (76% streamline), StreamBay and its stacks on public walls, rounded corners and ends, CornerTower_12 and DecoCorner_10 at junctions; streamline 34.5% \u2192 67% of public face metres, L0 facade tris 14.5 \u2192 12.7 M; Handover ships on the moved site (Splice)",
+    "planter13NearbyFacade": true,
+    "planter17NearbyFacade": false
+  },
+  {
+    "commit": "7bb3621cb8b71263c89348ea5622863daa638a54",
+    "subject": "075 golden: the 1950s tram street section (boulevard 20 m with the tram in setts, no lawn reservation; T2 streets without medians, centre-lane trams, boarding islands) (Datum); the old boulevard's palms (10 m staggered), streamline-only frontage at the old storey codes and the old HighStreet colours (Splice); the old tram, track tiles, ticket kiosk and timetable column adopted (Vela); Sky's protection scope. Handover ships; plan and overlay pass",
+    "planter13NearbyFacade": true,
+    "planter17NearbyFacade": false
+  },
+  {
+    "commit": "b283a5eb9ecb7c571be74d84693113f2e80c125b",
+    "subject": "075 golden: the tram street in the generator (setts, flush rails, boarding islands, kerbside bays and palm islands, span wires on Vela's pieces, two parked trams as dressing only) (Splice); the Crown Avenue arch and the gold banded vista tower, span wire pieces (Vela); the vista tower in the plan (Datum). Handover ships on the moved site",
+    "planter13NearbyFacade": true,
+    "planter17NearbyFacade": false
+  },
+  {
+    "commit": "5e0abf867c0089fc36a5764da47522044b8e41bf",
+    "subject": "075: the old buildings: the plan carries the old block grammar outside the Handover (44 blocks, 92 corner cells, four circus crescents, BG-1..5) (Datum); the old frontage system builds them at true size (1,675 pieces, 0 scaled; rounded corners, ends with mirrored twins, crescents; 3 storeys, 4 on corners) (Splice); flush rails in a continuous road, old palms district-wide, the old sky track on real pylons (SK-T1..3) (Splice). Handover ships",
+    "planter13NearbyFacade": true,
+    "planter17NearbyFacade": false
+  }
+]

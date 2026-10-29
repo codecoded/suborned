@@ -1,0 +1,332 @@
+{
+ "schema": "latch.restyle075-regression/1",
+ "pairs": {
+  "ours-before -> ours-after": {
+   "before": "Assets/Scenes/probe-civic-before.unity",
+   "after": "Assets/Scenes/probe-oldtown-ours.unity",
+   "playNav": {
+    "before": "656x328 at 0.25 m, origin (-130.00, -230.00), sha256 8a7fe94b4b7aae345b786bc6bdf32f55d6e0821c2c3e584617693512fa6f60f2",
+    "after": "656x328 at 0.25 m, origin (-130.00, -230.00), sha256 8a7fe94b4b7aae345b786bc6bdf32f55d6e0821c2c3e584617693512fa6f60f2",
+    "equal": true
+   },
+   "outsideZone": {
+    "batchTriangles": true,
+    "batchGeometryHash": true,
+    "batchGeometryWithMaterialHash": true,
+    "kitRenderers": true,
+    "kitHash": true,
+    "kitWithMaterialHash": true,
+    "transforms": true,
+    "transformHash": true,
+    "colliders": true,
+    "colliderHash": true
+   },
+   "outsideZoneUnchanged": true,
+   "inZone": {
+    "batchTriangles": [
+     887987,
+     887987
+    ],
+    "batchAreaM2": [
+     133774.78,
+     133774.78
+    ],
+    "batchGeometryEqualIgnoringMaterial": true,
+    "batchGeometryEqualWithMaterial": false,
+    "batchRenderers": [
+     742,
+     742
+    ],
+    "batchMaterialMoves": {
+     "DK_Enamel_Charcoal": [
+      1272,
+      856
+     ],
+     "DK_GlassDark": [
+      896,
+      1312
+     ],
+     "DK_Limestone": [
+      11532,
+      4576
+     ],
+     "DK_Limestone_Tex": [
+      448,
+      7404
+     ],
+     "DK_Pave_Civic": [
+      992,
+      0
+     ],
+     "DK_Terrazzo_Ivory": [
+      16016,
+      17008
+     ]
+    },
+    "kitRenderers": [
+     1763,
+     1763
+    ],
+    "kitEqualIgnoringMaterial": true,
+    "kitOnlyBefore": [],
+    "kitOnlyAfter": [],
+    "kitSlotSwaps": {
+     "DK_Limestone->DK_Limestone_Tex": {
+      "DK_RecordsEntrance": 1,
+      "DK_RecordsEntrance_Official": 1,
+      "DK_RecordsEntrance_L1": 1
+     },
+     "DK_Enamel_Seafoam->DK_Enamel_Teal__circus": {
+      "DK_CafeBay_v2": 1,
+      "DK_CafeBay_v2_L1": 1
+     },
+     "DK_Limestone->DK_Render_White__circus": {
+      "DK_CafeBay_v2": 1,
+      "DK_CafeUpper_3": 1,
+      "DK_CafeUpper_3_L1": 1,
+      "DK_CafeBay_v2_L1": 1
+     },
+     "DK_Enamel_Seafoam->DK_Enamel_Seafoam__circus": {
+      "DK_CafeUpper_3": 1,
+      "DK_CafeUpper_3_L1": 1
+     }
+    },
+    "kitRenderersWithASwap": 11,
+    "transformsEqual": true,
+    "transforms": [
+     4629,
+     4629
+    ],
+    "collidersEqual": true,
+    "colliders": [
+     0,
+     0
+    ],
+    "overlayBefore": [],
+    "overlayAfter": [
+     "renderer HarbourDistrict/civic/civic/cafe/civic-restyle/basket-cafe-0|Assets/Suborned/Kit/Models/Furnish/DK_HangingBasket.fbx:DK_HangingBasket|-164750,180,-219700|0,18000,0|10000,10000,10000|True/True/On/1048577|DK_Gold+DK_Enamel_Teal+DK_Chrome+DK_Enamel_Coral+DK_Enamel_Mustard+DK_Leaf_CoreShrub+DK_Leaf_Shrub+DK_Flower_Coral+DK_Enamel_Ivory",
+     "renderer HarbourDistrict/civic/civic/cafe/civic-restyle/basket-cafe-1|Assets/Suborned/Kit/Models/Furnish/DK_HangingBasket.fbx:DK_HangingBasket|-153350,180,-219700|0,18000,0|10000,10000,10000|True/True/On/1048577|DK_Gold+DK_Enamel_Teal+DK_Chrome+DK_Enamel_Coral+DK_Enamel_Mustard+DK_Leaf_CoreShrub+DK_Leaf_Shrub+DK_Flower_Coral+DK_Enamel_Ivory",
+     "transform HarbourDistrict/civic/civic/cafe/civic-restyle/basket-cafe-0|-164750,180,-219700|0,18000,0",
+     "transform HarbourDistrict/civic/civic/cafe/civic-restyle/basket-cafe-1|-153350,180,-219700|0,18000,0"
+    ],
+    "overlayColliders": []
+   },
+   "identical": false,
+   "materialsOnly": true
+  },
+  "swap-before -> swap-after": {
+   "before": "Assets/Scenes/probe-oldtown-civic-before.unity",
+   "after": "Assets/Scenes/OldTown.unity",
+   "playNav": {
+    "before": "656x328 at 0.25 m, origin (-130.00, -230.00), sha256 8a7fe94b4b7aae345b786bc6bdf32f55d6e0821c2c3e584617693512fa6f60f2",
+    "after": "656x328 at 0.25 m, origin (-130.00, -230.00), sha256 8a7fe94b4b7aae345b786bc6bdf32f55d6e0821c2c3e584617693512fa6f60f2",
+    "equal": true
+   },
+   "outsideZone": {
+    "batchTriangles": true,
+    "batchGeometryHash": true,
+    "batchGeometryWithMaterialHash": true,
+    "kitRenderers": true,
+    "kitHash": true,
+    "kitWithMaterialHash": true,
+    "transforms": true,
+    "transformHash": true,
+    "colliders": true,
+    "colliderHash": true
+   },
+   "outsideZoneUnchanged": true,
+   "inZone": {
+    "batchTriangles": [
+     888745,
+     888745
+    ],
+    "batchAreaM2": [
+     169723.27,
+     169723.27
+    ],
+    "batchGeometryEqualIgnoringMaterial": false,
+    "batchGeometryEqualWithMaterial": false,
+    "batchRenderers": [
+     736,
+     736
+    ],
+    "batchMaterialMoves": {
+     "DK_Enamel_Charcoal": [
+      1272,
+      856
+     ],
+     "DK_GlassDark": [
+      896,
+      1312
+     ],
+     "DK_Limestone": [
+      11532,
+      4576
+     ],
+     "DK_Limestone_Tex": [
+      448,
+      7404
+     ],
+     "DK_Pave_Civic": [
+      992,
+      0
+     ],
+     "DK_Terrazzo_Ivory": [
+      16016,
+      17008
+     ]
+    },
+    "kitRenderers": [
+     1765,
+     1765
+    ],
+    "kitEqualIgnoringMaterial": true,
+    "kitOnlyBefore": [],
+    "kitOnlyAfter": [],
+    "kitSlotSwaps": {
+     "DK_Limestone->DK_Limestone_Tex": {
+      "DK_RecordsEntrance_L1": 1,
+      "DK_RecordsEntrance_Official": 1,
+      "DK_RecordsEntrance": 1
+     },
+     "DK_Limestone->DK_Render_White__circus": {
+      "DK_CafeUpper_3": 1,
+      "DK_CafeUpper_3_L1": 1,
+      "DK_CafeBay_v2_L1": 1,
+      "DK_CafeBay_v2": 1
+     },
+     "DK_Enamel_Seafoam->DK_Enamel_Seafoam__circus": {
+      "DK_CafeUpper_3": 1,
+      "DK_CafeUpper_3_L1": 1
+     },
+     "DK_Enamel_Seafoam->DK_Enamel_Teal__circus": {
+      "DK_CafeBay_v2_L1": 1,
+      "DK_CafeBay_v2": 1
+     }
+    },
+    "kitRenderersWithASwap": 11,
+    "transformsEqual": true,
+    "transforms": [
+     4579,
+     4579
+    ],
+    "collidersEqual": true,
+    "colliders": [
+     0,
+     0
+    ],
+    "overlayBefore": [],
+    "overlayAfter": [
+     "renderer Ours (Handover zone + network, our pipeline)/HarbourDistrict/civic/civic/cafe/civic-restyle/basket-cafe-0|Assets/Suborned/Kit/Models/Furnish/DK_HangingBasket.fbx:DK_HangingBasket|-164750,180,-13700|0,18000,0|10000,10000,10000|True/True/On/1048577|DK_Gold+DK_Enamel_Teal+DK_Chrome+DK_Enamel_Coral+DK_Enamel_Mustard+DK_Leaf_CoreShrub+DK_Leaf_Shrub+DK_Flower_Coral+DK_Enamel_Ivory",
+     "renderer Ours (Handover zone + network, our pipeline)/HarbourDistrict/civic/civic/cafe/civic-restyle/basket-cafe-1|Assets/Suborned/Kit/Models/Furnish/DK_HangingBasket.fbx:DK_HangingBasket|-153350,180,-13700|0,18000,0|10000,10000,10000|True/True/On/1048577|DK_Gold+DK_Enamel_Teal+DK_Chrome+DK_Enamel_Coral+DK_Enamel_Mustard+DK_Leaf_CoreShrub+DK_Leaf_Shrub+DK_Flower_Coral+DK_Enamel_Ivory",
+     "transform Ours (Handover zone + network, our pipeline)/HarbourDistrict/civic/civic/cafe/civic-restyle/basket-cafe-0|-164750,180,-13700|0,18000,0",
+     "transform Ours (Handover zone + network, our pipeline)/HarbourDistrict/civic/civic/cafe/civic-restyle/basket-cafe-1|-153350,180,-13700|0,18000,0"
+    ],
+    "overlayColliders": [],
+    "oldCutawayTag": {
+     "zoneTrianglesOfRestyleMaterials": [
+      31156,
+      31156
+     ],
+     "differingWithTheCutawayTagIgnored": 0,
+     "byTag": {
+      "before": {
+       "untagged DK_Terrazzo_Ivory": 16016,
+       "untagged DK_Pave_Civic": 992,
+       "untagged DK_Limestone": 5796,
+       "cutaway-tagged DK_Limestone": 5736,
+       "untagged DK_GlassDark": 896,
+       "cutaway-tagged DK_Enamel_Charcoal": 416,
+       "untagged DK_Limestone_Tex": 448,
+       "untagged DK_Enamel_Charcoal": 856
+      },
+      "after": {
+       "untagged DK_Terrazzo_Ivory": 17008,
+       "untagged DK_Limestone_Tex": 1908,
+       "cutaway-tagged DK_Limestone_Tex": 5496,
+       "untagged DK_GlassDark": 1312,
+       "untagged DK_Limestone": 4576,
+       "untagged DK_Enamel_Charcoal": 856
+      }
+     }
+    }
+   },
+   "identical": false,
+   "materialsOnly": false,
+   "materialsOnlyBesidesTheOldCutawayTag": true
+  },
+  "ours-after -> harbour-after": {
+   "before": "Assets/Scenes/probe-oldtown-ours.unity",
+   "after": "Assets/Scenes/HarbourDistrict.unity",
+   "playNav": {
+    "before": "656x328 at 0.25 m, origin (-130.00, -230.00), sha256 8a7fe94b4b7aae345b786bc6bdf32f55d6e0821c2c3e584617693512fa6f60f2",
+    "after": "656x328 at 0.25 m, origin (-130.00, -230.00), sha256 8a7fe94b4b7aae345b786bc6bdf32f55d6e0821c2c3e584617693512fa6f60f2",
+    "equal": true
+   },
+   "outsideZone": {
+    "batchTriangles": true,
+    "batchGeometryHash": true,
+    "batchGeometryWithMaterialHash": true,
+    "kitRenderers": true,
+    "kitHash": true,
+    "kitWithMaterialHash": true,
+    "transforms": true,
+    "transformHash": true,
+    "colliders": true,
+    "colliderHash": true
+   },
+   "outsideZoneUnchanged": true,
+   "inZone": {
+    "batchTriangles": [
+     887987,
+     887987
+    ],
+    "batchAreaM2": [
+     133774.78,
+     133774.78
+    ],
+    "batchGeometryEqualIgnoringMaterial": true,
+    "batchGeometryEqualWithMaterial": true,
+    "batchRenderers": [
+     742,
+     742
+    ],
+    "batchMaterialMoves": {},
+    "kitRenderers": [
+     1763,
+     1763
+    ],
+    "kitEqualIgnoringMaterial": true,
+    "kitOnlyBefore": [],
+    "kitOnlyAfter": [],
+    "kitSlotSwaps": {},
+    "kitRenderersWithASwap": 0,
+    "transformsEqual": true,
+    "transforms": [
+     4629,
+     4629
+    ],
+    "collidersEqual": true,
+    "colliders": [
+     0,
+     0
+    ],
+    "overlayBefore": [
+     "renderer HarbourDistrict/civic/civic/cafe/civic-restyle/basket-cafe-0|Assets/Suborned/Kit/Models/Furnish/DK_HangingBasket.fbx:DK_HangingBasket|-164750,180,-219700|0,18000,0|10000,10000,10000|True/True/On/1048577|DK_Gold+DK_Enamel_Teal+DK_Chrome+DK_Enamel_Coral+DK_Enamel_Mustard+DK_Leaf_CoreShrub+DK_Leaf_Shrub+DK_Flower_Coral+DK_Enamel_Ivory",
+     "renderer HarbourDistrict/civic/civic/cafe/civic-restyle/basket-cafe-1|Assets/Suborned/Kit/Models/Furnish/DK_HangingBasket.fbx:DK_HangingBasket|-153350,180,-219700|0,18000,0|10000,10000,10000|True/True/On/1048577|DK_Gold+DK_Enamel_Teal+DK_Chrome+DK_Enamel_Coral+DK_Enamel_Mustard+DK_Leaf_CoreShrub+DK_Leaf_Shrub+DK_Flower_Coral+DK_Enamel_Ivory",
+     "transform HarbourDistrict/civic/civic/cafe/civic-restyle/basket-cafe-0|-164750,180,-219700|0,18000,0",
+     "transform HarbourDistrict/civic/civic/cafe/civic-restyle/basket-cafe-1|-153350,180,-219700|0,18000,0"
+    ],
+    "overlayAfter": [
+     "renderer HarbourDistrict/civic/civic/cafe/civic-restyle/basket-cafe-0|Assets/Suborned/Kit/Models/Furnish/DK_HangingBasket.fbx:DK_HangingBasket|-164750,180,-219700|0,18000,0|10000,10000,10000|True/True/On/1048577|DK_Gold+DK_Enamel_Teal+DK_Chrome+DK_Enamel_Coral+DK_Enamel_Mustard+DK_Leaf_CoreShrub+DK_Leaf_Shrub+DK_Flower_Coral+DK_Enamel_Ivory",
+     "renderer HarbourDistrict/civic/civic/cafe/civic-restyle/basket-cafe-1|Assets/Suborned/Kit/Models/Furnish/DK_HangingBasket.fbx:DK_HangingBasket|-153350,180,-219700|0,18000,0|10000,10000,10000|True/True/On/1048577|DK_Gold+DK_Enamel_Teal+DK_Chrome+DK_Enamel_Coral+DK_Enamel_Mustard+DK_Leaf_CoreShrub+DK_Leaf_Shrub+DK_Flower_Coral+DK_Enamel_Ivory",
+     "transform HarbourDistrict/civic/civic/cafe/civic-restyle/basket-cafe-0|-164750,180,-219700|0,18000,0",
+     "transform HarbourDistrict/civic/civic/cafe/civic-restyle/basket-cafe-1|-153350,180,-219700|0,18000,0"
+    ],
+    "overlayColliders": []
+   },
+   "identical": true,
+   "materialsOnly": true
+  }
+ }
+}

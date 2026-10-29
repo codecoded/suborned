@@ -38,6 +38,9 @@ namespace Suborned.OldTown
         public float ambientIntensity = 1f;
         [Tooltip("Our scene's ambient probe (SphericalHarmonicsL2 as 27 floats, [rgb][coefficient]); empty = Unity's own from the trilight colours.")]
         public float[] ambientProbe = new float[0];
+        [Header("Perf A/B (brief 075, PerfSwitches oldLens)")]
+        [Tooltip("Off as built: the play view has no soft focus or sun flare. On: the old lens comes back in the play view (the presentation volumes' depth of field, copied into a volume of its own at weight 1 while this camera renders, and the sun flares left on), so the Air A/B measures what the cut saves.")]
+        public bool presentationLens;
 
         Camera cam;
         Quaternion sunRot0; Color sunCol0; float sunInt0, sunShadow0;
@@ -45,6 +48,7 @@ namespace Suborned.OldTown
         bool fog; float playWeight; readonly List<float> weights = new(); readonly List<bool> enabledWas = new();
         readonly List<(ScriptableRendererFeature f, bool was)> features = new();
         bool applied;
+        Volume lensVolume; float lensWeight;
 
         void OnEnable()
         {
@@ -60,6 +64,7 @@ namespace Suborned.OldTown
             RenderPipelineManager.beginCameraRendering -= Begin;
             RenderPipelineManager.endCameraRendering -= End;
             Restore();
+            if (lensVolume) { var p = lensVolume.sharedProfile; if (Application.isPlaying) { Destroy(lensVolume.gameObject); Destroy(p); } else { DestroyImmediate(lensVolume.gameObject); DestroyImmediate(p); } lensVolume = null; }
         }
 
         void Begin(ScriptableRenderContext _, Camera c)
@@ -69,7 +74,8 @@ namespace Suborned.OldTown
             fog = RenderSettings.fog; if (fogOff) RenderSettings.fog = false;
             weights.Clear(); foreach (var v in presentationVolumes) { weights.Add(v ? v.weight : 0f); if (v) v.weight = 0f; }
             if (playVolume) { playWeight = playVolume.weight; playVolume.weight = 1f; }
-            enabledWas.Clear(); foreach (var b in presentationOnly) { enabledWas.Add(b && b.enabled); if (b) b.enabled = false; }
+            enabledWas.Clear(); foreach (var b in presentationOnly) { enabledWas.Add(b && b.enabled); if (b && !presentationLens) b.enabled = false; }
+            if (presentationLens && Lens() is { } lv) { lensWeight = lv.weight; lv.weight = 1f; }
             if (lightSwap)
             {
                 if (sun) { sunRot0 = sun.transform.rotation; sunCol0 = sun.color; sunInt0 = sun.intensity; sunShadow0 = sun.shadowStrength; sun.transform.rotation = sunRotation; sun.color = sunColour; sun.intensity = sunIntensity; sun.shadowStrength = sunShadowStrength; }
@@ -92,6 +98,7 @@ namespace Suborned.OldTown
             RenderSettings.fog = fog;
             for (int i = 0; i < presentationVolumes.Length && i < weights.Count; i++) if (presentationVolumes[i]) presentationVolumes[i].weight = weights[i];
             if (playVolume) playVolume.weight = playWeight;
+            if (lensVolume) lensVolume.weight = lensWeight;
             for (int i = 0; i < presentationOnly.Length && i < enabledWas.Count; i++) if (presentationOnly[i]) presentationOnly[i].enabled = enabledWas[i];
             foreach (var (f, was) in features) if (f) f.SetActive(was);
             features.Clear();
@@ -101,6 +108,25 @@ namespace Suborned.OldTown
                 RenderSettings.ambientMode = amb0; RenderSettings.ambientSkyColor = sky0; RenderSettings.ambientEquatorColor = eq0; RenderSettings.ambientGroundColor = gr0; RenderSettings.ambientIntensity = ambInt0;
                 RenderSettings.ambientProbe = probe0;
             }
+        }
+
+        /// <summary>presentationLens: the presentation volumes' depth of field copied once into a global volume of its own (priority above the play
+        /// grade, weight 0 except while this camera renders with presentationLens on; never saved). Null when no presentation volume has one.</summary>
+        Volume Lens()
+        {
+            if (lensVolume) return lensVolume;
+            DepthOfField src = null;
+            foreach (var v in presentationVolumes)
+                if (v && v.sharedProfile && v.sharedProfile.TryGet<DepthOfField>(out var d) && d.active && d.mode.value != DepthOfFieldMode.Off) { src = d; break; }
+            if (src == null) return null;
+            var go = new GameObject("Play lens (perf A/B: the old depth of field in the play view)") { hideFlags = HideFlags.DontSave };
+            lensVolume = go.AddComponent<Volume>(); lensVolume.isGlobal = true; lensVolume.priority = (playVolume ? playVolume.priority : 100f) + 1f; lensVolume.weight = 0f;
+            var profile = ScriptableObject.CreateInstance<VolumeProfile>(); profile.hideFlags = HideFlags.DontSave;
+            var dof = profile.Add<DepthOfField>(true);
+            for (int i = 0; i < dof.parameters.Count && i < src.parameters.Count; i++) dof.parameters[i].SetValue(src.parameters[i]);
+            dof.active = true;
+            lensVolume.sharedProfile = profile;
+            return lensVolume;
         }
 
         /// <summary>A SphericalHarmonicsL2 as 27 floats ([rgb][coefficient]).</summary>

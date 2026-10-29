@@ -129,8 +129,10 @@ namespace Suborned.World.Perf
         /// <summary>Brief 075 Perf A/B (Redline, briefs/075/redline/perf-075ab.json): a spec whose stops are in PLAN coordinates (x, level, y),
         /// resolved against the open scene. HarbourDistrict: focus (x, level, y), stand-offs by Rig.StandOff on the real rig, as Plan; the
         /// variants that switch the old town (oldCrowd, oldLens, pipeline old) are dropped from this plan (they refuse to run here). OldTown
-        /// (OldTownSwap's scene): focus (x, level, y + 206) (OldTownSwap.DZ), the "DK street study camera" posed as SwapShots' play views
-        /// (orthographic, pitch 38, the stop's yaw, stand-off 160, far + 1500); no WorldStamp (PerfPlan.NoStamp).</summary>
+        /// (OldTownSwap's scene): focus (x, level, y + 206) (OldTownSwap.DZ), the swap's play camera "Play camera (our play look)" (Latch,
+        /// 2026-10-29: so the Air measures the play view, with OldTownPlayLook and TacticalShadows; the oldCrowd, msaa and oldLens switches act on
+        /// it, PerfSwitches) posed as SwapShots' play views (orthographic, pitch 38, the stop's yaw, stand-off 160, far + 1500); no WorldStamp
+        /// (PerfPlan.NoStamp). A scene without the play camera (a first-swap build) is rejected.</summary>
         public static PerfPlan Resolve075(string specPath)
         {
             var spec = JsonUtility.FromJson<SpecDto>(File.ReadAllText(specPath));
@@ -154,7 +156,8 @@ namespace Suborned.World.Perf
                 return plan;
             }
             var (kept, stripped, people) = Roots();
-            var cam = GameObject.Find(OldCamera) is { } go && go.TryGetComponent<Camera>(out var c) ? c : throw new InvalidOperationException($"Perf: {OldTownScene} has no `{OldCamera}`");
+            var cam = GameObject.Find(OldCamera) is { } go && go.TryGetComponent<Camera>(out var c) ? c : throw new InvalidOperationException($"Perf: {OldTownScene} has no `{OldCamera}` (rebuild the swap: OldTownSwap.Build makes it)");
+            if (!cam.GetComponent("OldTownPlayLook") || !cam.GetComponent<TacticalShadows>()) throw new InvalidOperationException($"Perf: `{OldCamera}` in {OldTownScene} lacks OldTownPlayLook or TacticalShadows: not the play view");
             var stamp = UnityEngine.Object.FindAnyObjectByType<WorldStamp>();
             var res = new PerfPlan
             {
@@ -172,7 +175,7 @@ namespace Suborned.World.Perf
             return res;
         }
 
-        public const string OldTownScene = "Assets/Scenes/OldTown.unity", OldCamera = "DK street study camera";
+        public const string OldTownScene = "Assets/Scenes/OldTown.unity", OldCamera = "Play camera (our play look)";  // SwapPlayLook.Name (was the study camera, "DK street study camera")
         const float OldDZ = 206f, OldStandOff = 160f;
 
         /// <summary>A polyline (flattened [x, y, z] triples) sampled every PathStep metres, its corners kept.</summary>

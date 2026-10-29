@@ -1,0 +1,522 @@
+[
+  {
+    "step": "import",
+    "command": [
+      "bun",
+      "briefs/075/oldbuild/swap/tools/unityrun.ts",
+      "/Users/sky/Projects/suborned/out/scratch/latch/recovery/integration/logs/import.log",
+      "--",
+      "-executeMethod",
+      "Suborned.World.Review.Recovery075.Import"
+    ],
+    "exit": 0,
+    "seconds": 9.57
+  },
+  {
+    "step": "before-build",
+    "command": [
+      "bun",
+      "briefs/075/oldbuild/swap/tools/unityrun.ts",
+      "/Users/sky/Projects/suborned/out/scratch/latch/recovery/integration/logs/before-build.log",
+      "--",
+      "-executeMethod",
+      "Suborned.World.HarbourWorldBuilder.Build",
+      "-world",
+      "/Users/sky/Projects/suborned/out/scratch/latch/recovery/integration/world.json",
+      "-scene",
+      "Assets/Scenes/probe-recovery075-before.unity",
+      "-civicRestyle",
+      "/Users/sky/Projects/suborned/out/scratch/latch/recovery/integration/baseline-restyle.json"
+    ],
+    "exit": 0,
+    "seconds": 20.92
+  },
+  {
+    "step": "before-manifest",
+    "command": [
+      "bun",
+      "briefs/075/oldbuild/swap/tools/unityrun.ts",
+      "/Users/sky/Projects/suborned/out/scratch/latch/recovery/integration/logs/before-manifest.log",
+      "--",
+      "-executeMethod",
+      "Suborned.World.Review.Recovery075.Manifest",
+      "-recoveryScene",
+      "Assets/Scenes/probe-recovery075-before.unity",
+      "-recoveryTag",
+      "before"
+    ],
+    "exit": 1,
+    "seconds": 4.87
+  },
+  {
+    "step": "before-manifest",
+    "command": [
+      "bun",
+      "briefs/075/oldbuild/swap/tools/unityrun.ts",
+      "/Users/sky/Projects/suborned/out/scratch/latch/recovery/integration/logs/before-manifest.log",
+      "--",
+      "-executeMethod",
+      "Suborned.World.Review.Recovery075.Manifest",
+      "-recoveryScene",
+      "Assets/Scenes/probe-recovery075-before.unity",
+      "-recoveryTag",
+      "before"
+    ],
+    "exit": 0,
+    "seconds": 18.6
+  },
+  {
+    "step": "before-restyle-manifest",
+    "command": [
+      "bun",
+      "briefs/075/oldbuild/swap/tools/unityrun.ts",
+      "/Users/sky/Projects/suborned/out/scratch/latch/recovery/integration/logs/before-restyle-manifest.log",
+      "--",
+      "-executeMethod",
+      "Suborned.World.Review.Restyle075.Manifest",
+      "-restyleManifest",
+      "Assets/Scenes/probe-recovery075-before.unity=0=/Users/sky/Projects/suborned/briefs/075/recovery/latch-integration/before-restyle.json"
+    ],
+    "exit": 0,
+    "seconds": 9.18
+  },
+  {
+    "step": "before-shots",
+    "command": [
+      "bun",
+      "briefs/075/oldbuild/swap/tools/unityrun.ts",
+      "/Users/sky/Projects/suborned/out/scratch/latch/recovery/integration/logs/before-shots.log",
+      "--",
+      "-executeMethod",
+      "Suborned.World.Review.Glint075.Cli",
+      "-scene",
+      "Assets/Scenes/probe-recovery075-before.unity",
+      "-variant",
+      "today",
+      "-mode",
+      "play",
+      "-nonight",
+      "-out",
+      "/Users/sky/Projects/suborned/briefs/075/recovery/latch-integration/before",
+      "-spots",
+      "trough-detail:-179.5,-222.5,210,3;office-plant-detail:-171.7,-287,30,4"
+    ],
+    "exit": 0,
+    "seconds": 7.66
+  },
+  {
+    "step": "paving-build",
+    "command": [
+      "bun",
+      "briefs/075/oldbuild/swap/tools/unityrun.ts",
+      "/Users/sky/Projects/suborned/out/scratch/latch/recovery/integration/logs/paving-build.log",
+      "--",
+      "-executeMethod",
+      "Suborned.World.HarbourWorldBuilder.Build",
+      "-world",
+      "/Users/sky/Projects/suborned/out/scratch/latch/recovery/integration/world.json",
+      "-scene",
+      "Assets/Scenes/probe-oldtown-ours.unity"
+    ],
+    "exit": 0,
+    "seconds": 20.53
+  },
+  {
+    "step": "paving-manifest",
+    "command": [
+      "bun",
+      "briefs/075/oldbuild/swap/tools/unityrun.ts",
+      "/Users/sky/Projects/suborned/out/scratch/latch/recovery/integration/logs/paving-manifest.log",
+      "--",
+      "-executeMethod",
+      "Suborned.World.Review.Recovery075.Manifest",
+      "-recoveryScene",
+      "Assets/Scenes/probe-oldtown-ours.unity",
+      "-recoveryTag",
+      "paving"
+    ],
+    "exit": 0,
+    "seconds": 16.55
+  },
+  {
+    "step": "paving-restyle-manifest",
+    "command": [
+      "bun",
+      "briefs/075/oldbuild/swap/tools/unityrun.ts",
+      "/Users/sky/Projects/suborned/out/scratch/latch/recovery/integration/logs/paving-restyle-manifest.log",
+      "--",
+      "-executeMethod",
+      "Suborned.World.Review.Restyle075.Manifest",
+      "-restyleManifest",
+      "Assets/Scenes/probe-oldtown-ours.unity=0=/Users/sky/Projects/suborned/briefs/075/recovery/latch-integration/paving-restyle.json"
+    ],
+    "exit": 0,
+    "seconds": 9.83
+  },
+  {
+    "step": "paving-shots",
+    "command": [
+      "bun",
+      "briefs/075/oldbuild/swap/tools/unityrun.ts",
+      "/Users/sky/Projects/suborned/out/scratch/latch/recovery/integration/logs/paving-shots.log",
+      "--",
+      "-executeMethod",
+      "Suborned.World.Review.Glint075.Cli",
+      "-scene",
+      "Assets/Scenes/probe-oldtown-ours.unity",
+      "-variant",
+      "today",
+      "-mode",
+      "play",
+      "-nonight",
+      "-out",
+      "/Users/sky/Projects/suborned/briefs/075/recovery/latch-integration/paving",
+      "-spots",
+      "trough-detail:-179.5,-222.5,210,3;office-plant-detail:-171.7,-287,30,4"
+    ],
+    "exit": 0,
+    "seconds": 7.16
+  },
+  {
+    "step": "foliage-apply",
+    "command": [
+      "bun",
+      "briefs/075/oldbuild/swap/tools/unityrun.ts",
+      "/Users/sky/Projects/suborned/out/scratch/latch/recovery/integration/logs/foliage-apply.log",
+      "--",
+      "-executeMethod",
+      "Suborned.World.Review.Recovery075.Apply",
+      "-world",
+      "/Users/sky/Projects/suborned/out/scratch/latch/recovery/integration/world.json",
+      "-recoveryFoliage",
+      "selective",
+      "-recoveryScene",
+      "Assets/Scenes/probe-oldtown-ours.unity",
+      "-recoverySave",
+      "Assets/Scenes/probe-recovery075-foliage.unity"
+    ],
+    "exit": 1,
+    "seconds": 6.31
+  },
+  {
+    "step": "foliage-apply",
+    "command": [
+      "bun",
+      "briefs/075/oldbuild/swap/tools/unityrun.ts",
+      "/Users/sky/Projects/suborned/out/scratch/latch/recovery/integration/logs/foliage-apply.log",
+      "--",
+      "-executeMethod",
+      "Suborned.World.Review.Recovery075.Apply",
+      "-world",
+      "/Users/sky/Projects/suborned/out/scratch/latch/recovery/integration/world.json",
+      "-recoveryFoliage",
+      "selective",
+      "-recoveryScene",
+      "Assets/Scenes/probe-oldtown-ours.unity",
+      "-recoverySave",
+      "Assets/Scenes/probe-recovery075-foliage.unity"
+    ],
+    "exit": 1,
+    "seconds": 10.15
+  },
+  {
+    "step": "foliage-apply",
+    "command": [
+      "bun",
+      "briefs/075/oldbuild/swap/tools/unityrun.ts",
+      "/Users/sky/Projects/suborned/out/scratch/latch/recovery/integration/logs/foliage-apply.log",
+      "--",
+      "-executeMethod",
+      "Suborned.World.Review.Recovery075.Apply",
+      "-world",
+      "/Users/sky/Projects/suborned/out/scratch/latch/recovery/integration/world.json",
+      "-recoveryFoliage",
+      "selective",
+      "-recoveryScene",
+      "Assets/Scenes/probe-oldtown-ours.unity",
+      "-recoverySave",
+      "Assets/Scenes/probe-recovery075-foliage.unity"
+    ],
+    "exit": 0,
+    "seconds": 13.18
+  },
+  {
+    "step": "foliage-manifest",
+    "command": [
+      "bun",
+      "briefs/075/oldbuild/swap/tools/unityrun.ts",
+      "/Users/sky/Projects/suborned/out/scratch/latch/recovery/integration/logs/foliage-manifest.log",
+      "--",
+      "-executeMethod",
+      "Suborned.World.Review.Recovery075.Manifest",
+      "-recoveryScene",
+      "Assets/Scenes/probe-recovery075-foliage.unity",
+      "-recoveryTag",
+      "foliage"
+    ],
+    "exit": 0,
+    "seconds": 17.44
+  },
+  {
+    "step": "foliage-restyle-manifest",
+    "command": [
+      "bun",
+      "briefs/075/oldbuild/swap/tools/unityrun.ts",
+      "/Users/sky/Projects/suborned/out/scratch/latch/recovery/integration/logs/foliage-restyle-manifest.log",
+      "--",
+      "-executeMethod",
+      "Suborned.World.Review.Restyle075.Manifest",
+      "-restyleManifest",
+      "Assets/Scenes/probe-recovery075-foliage.unity=0=/Users/sky/Projects/suborned/briefs/075/recovery/latch-integration/foliage-restyle.json"
+    ],
+    "exit": 0,
+    "seconds": 9.68
+  },
+  {
+    "step": "foliage-shots",
+    "command": [
+      "bun",
+      "briefs/075/oldbuild/swap/tools/unityrun.ts",
+      "/Users/sky/Projects/suborned/out/scratch/latch/recovery/integration/logs/foliage-shots.log",
+      "--",
+      "-executeMethod",
+      "Suborned.World.Review.Glint075.Cli",
+      "-scene",
+      "Assets/Scenes/probe-recovery075-foliage.unity",
+      "-variant",
+      "today",
+      "-mode",
+      "play",
+      "-nonight",
+      "-out",
+      "/Users/sky/Projects/suborned/briefs/075/recovery/latch-integration/foliage",
+      "-spots",
+      "trough-detail:-179.5,-222.5,210,3;office-plant-detail:-171.7,-287,30,4"
+    ],
+    "exit": 0,
+    "seconds": 10.46
+  },
+  {
+    "step": "swap-build",
+    "command": [
+      "bun",
+      "briefs/075/oldbuild/swap/tools/unityrun.ts",
+      "/Users/sky/Projects/suborned/out/scratch/latch/recovery/integration/logs/swap-build.log",
+      "--",
+      "-executeMethod",
+      "Suborned.OldTown.Editor.Swap.OldTownSwap.Build",
+      "-swapHeights",
+      "rule",
+      "-swapHq",
+      "ours",
+      "-swapScene",
+      "probe-recovery075-swap",
+      "-swapOurs",
+      "Assets/Scenes/probe-oldtown-ours.unity",
+      "-swapWorld",
+      "/Users/sky/Projects/suborned/out/scratch/latch/recovery/integration/world.json",
+      "-swapPlan",
+      "/Users/sky/Projects/suborned/out/scratch/latch/recovery/integration/plan.json",
+      "-swapOut",
+      "/Users/sky/Projects/suborned/briefs/075/recovery/latch-integration/swap"
+    ],
+    "exit": 0,
+    "seconds": 196.02
+  },
+  {
+    "step": "swap-verify",
+    "command": [
+      "bun",
+      "briefs/075/oldbuild/swap/tools/unityrun.ts",
+      "/Users/sky/Projects/suborned/out/scratch/latch/recovery/integration/logs/swap-verify.log",
+      "--",
+      "-executeMethod",
+      "Suborned.OldTown.Editor.Swap.OldTownSwap.Verify",
+      "-swapScene",
+      "probe-recovery075-swap",
+      "-swapOurs",
+      "Assets/Scenes/probe-oldtown-ours.unity",
+      "-swapOut",
+      "/Users/sky/Projects/suborned/briefs/075/recovery/latch-integration/swap"
+    ],
+    "exit": 0,
+    "seconds": 18.35
+  },
+  {
+    "step": "swap-shots",
+    "command": [
+      "bun",
+      "briefs/075/oldbuild/swap/tools/unityrun.ts",
+      "/Users/sky/Projects/suborned/out/scratch/latch/recovery/integration/logs/swap-shots.log",
+      "--",
+      "-executeMethod",
+      "Suborned.OldTown.Editor.Swap.OldTownSwap.Shoot",
+      "-swapScene",
+      "probe-recovery075-swap",
+      "-swapWorld",
+      "/Users/sky/Projects/suborned/out/scratch/latch/recovery/integration/world.json",
+      "-swapOut",
+      "/Users/sky/Projects/suborned/briefs/075/recovery/latch-integration/swap",
+      "-swapShots",
+      "tram,vista,circus,district",
+      "-swapTag",
+      "provisional056"
+    ],
+    "exit": 0,
+    "seconds": 20.55
+  },
+  {
+    "step": "foliage4-apply",
+    "command": [
+      "bun",
+      "briefs/075/oldbuild/swap/tools/unityrun.ts",
+      "/Users/sky/Projects/suborned/out/scratch/latch/recovery/integration/logs/foliage4-apply.log",
+      "--",
+      "-executeMethod",
+      "Suborned.World.Review.Recovery075.Apply",
+      "-world",
+      "/Users/sky/Projects/suborned/out/scratch/latch/recovery/integration/world.json",
+      "-recoveryFoliage",
+      "selective",
+      "-recoveryScene",
+      "Assets/Scenes/probe-oldtown-ours.unity",
+      "-recoverySave",
+      "Assets/Scenes/probe-recovery075-foliage4.unity"
+    ],
+    "exit": 0,
+    "seconds": 12.25
+  },
+  {
+    "step": "foliage-manifest",
+    "command": [
+      "bun",
+      "briefs/075/oldbuild/swap/tools/unityrun.ts",
+      "/Users/sky/Projects/suborned/out/scratch/latch/recovery/integration/logs/foliage-manifest.log",
+      "--",
+      "-executeMethod",
+      "Suborned.World.Review.Recovery075.Manifest",
+      "-recoveryScene",
+      "Assets/Scenes/probe-recovery075-foliage4.unity",
+      "-recoveryTag",
+      "foliage"
+    ],
+    "exit": 0,
+    "seconds": 16.82
+  },
+  {
+    "step": "foliage-restyle-manifest",
+    "command": [
+      "bun",
+      "briefs/075/oldbuild/swap/tools/unityrun.ts",
+      "/Users/sky/Projects/suborned/out/scratch/latch/recovery/integration/logs/foliage-restyle-manifest.log",
+      "--",
+      "-executeMethod",
+      "Suborned.World.Review.Restyle075.Manifest",
+      "-restyleManifest",
+      "Assets/Scenes/probe-recovery075-foliage4.unity=0=/Users/sky/Projects/suborned/briefs/075/recovery/latch-integration/foliage-restyle.json"
+    ],
+    "exit": 0,
+    "seconds": 9.44
+  },
+  {
+    "step": "foliage-shots",
+    "command": [
+      "bun",
+      "briefs/075/oldbuild/swap/tools/unityrun.ts",
+      "/Users/sky/Projects/suborned/out/scratch/latch/recovery/integration/logs/foliage-shots.log",
+      "--",
+      "-executeMethod",
+      "Suborned.World.Review.Glint075.Cli",
+      "-scene",
+      "Assets/Scenes/probe-recovery075-foliage4.unity",
+      "-variant",
+      "today",
+      "-mode",
+      "play",
+      "-nonight",
+      "-out",
+      "/Users/sky/Projects/suborned/briefs/075/recovery/latch-integration/foliage",
+      "-spots",
+      "trough-detail:-179.5,-222.5,210,3;office-plant-detail:-171.7,-287,30,4"
+    ],
+    "exit": 0,
+    "seconds": 7.64
+  },
+  {
+    "step": "foliage3-apply",
+    "command": [
+      "bun",
+      "briefs/075/oldbuild/swap/tools/unityrun.ts",
+      "/Users/sky/Projects/suborned/out/scratch/latch/recovery/integration/logs/foliage3-apply.log",
+      "--",
+      "-executeMethod",
+      "Suborned.World.Review.Recovery075.Apply",
+      "-world",
+      "/Users/sky/Projects/suborned/out/scratch/latch/recovery/integration/world.json",
+      "-recoveryFoliage",
+      "selective",
+      "-recoveryScene",
+      "Assets/Scenes/probe-oldtown-ours.unity",
+      "-recoverySave",
+      "Assets/Scenes/probe-recovery075-foliage3.unity"
+    ],
+    "exit": 0,
+    "seconds": 12.53
+  },
+  {
+    "step": "foliage-manifest",
+    "command": [
+      "bun",
+      "briefs/075/oldbuild/swap/tools/unityrun.ts",
+      "/Users/sky/Projects/suborned/out/scratch/latch/recovery/integration/logs/foliage-manifest.log",
+      "--",
+      "-executeMethod",
+      "Suborned.World.Review.Recovery075.Manifest",
+      "-recoveryScene",
+      "Assets/Scenes/probe-recovery075-foliage3.unity",
+      "-recoveryTag",
+      "foliage"
+    ],
+    "exit": 0,
+    "seconds": 17.1
+  },
+  {
+    "step": "foliage-restyle-manifest",
+    "command": [
+      "bun",
+      "briefs/075/oldbuild/swap/tools/unityrun.ts",
+      "/Users/sky/Projects/suborned/out/scratch/latch/recovery/integration/logs/foliage-restyle-manifest.log",
+      "--",
+      "-executeMethod",
+      "Suborned.World.Review.Restyle075.Manifest",
+      "-restyleManifest",
+      "Assets/Scenes/probe-recovery075-foliage3.unity=0=/Users/sky/Projects/suborned/briefs/075/recovery/latch-integration/foliage-restyle.json"
+    ],
+    "exit": 0,
+    "seconds": 9.17
+  },
+  {
+    "step": "foliage-shots",
+    "command": [
+      "bun",
+      "briefs/075/oldbuild/swap/tools/unityrun.ts",
+      "/Users/sky/Projects/suborned/out/scratch/latch/recovery/integration/logs/foliage-shots.log",
+      "--",
+      "-executeMethod",
+      "Suborned.World.Review.Glint075.Cli",
+      "-scene",
+      "Assets/Scenes/probe-recovery075-foliage3.unity",
+      "-variant",
+      "today",
+      "-mode",
+      "play",
+      "-nonight",
+      "-out",
+      "/Users/sky/Projects/suborned/briefs/075/recovery/latch-integration/foliage",
+      "-spots",
+      "trough-detail:-179.5,-222.5,210,3;office-plant-detail:-171.7,-287,30,4"
+    ],
+    "exit": 0,
+    "seconds": 7.08
+  }
+]

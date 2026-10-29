@@ -1,0 +1,9 @@
+{
+ "triangleUvChannels":12425072,
+ "failuresAgainstDerivedFloatBound":0,
+ "maximumPhysicalGradientError":0.00021787030349500731,
+ "maximumCalculatedRoundingBound":32.011786902402278,
+ "minimumDensityRatio":0.99986585578886888,
+ "maximumDensityRatio":1.000132370464712,
+ "scope":"Actual emitted tram positions/UV0 against source physical chart derivatives; UV rounding + double-operation bound per triangle, no global tolerance inflation"
+}

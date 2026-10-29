@@ -1,0 +1,62 @@
+{
+ "swap-golden": {
+  "before": "out/scratch/latch/075civic/shots-before/golden-before.png",
+  "after": "out/scratch/latch/075civic/shots-after/golden-after.png",
+  "mad_frame": 0.0,
+  "changed_px_pct": 0.0
+ },
+ "swap-cafe-square-y030": {
+  "before": "out/scratch/latch/075civic/shots-before/play-cafe-square-y030-before.png",
+  "after": "out/scratch/latch/075civic/shots-after/play-cafe-square-y030-after.png",
+  "mad_frame": 4.02,
+  "changed_px_pct": 6.12
+ },
+ "swap-cafe-square-y210": {
+  "before": "out/scratch/latch/075civic/shots-before/play-cafe-square-y210-before.png",
+  "after": "out/scratch/latch/075civic/shots-after/play-cafe-square-y210-after.png",
+  "mad_frame": 3.27,
+  "changed_px_pct": 4.83
+ },
+ "swap-office-front-y030": {
+  "before": "out/scratch/latch/075civic/shots-before/play-office-front-y030-before.png",
+  "after": "out/scratch/latch/075civic/shots-after/play-office-front-y030-after.png",
+  "mad_frame": 4.63,
+  "changed_px_pct": 9.81
+ },
+ "swap-office-front-y210": {
+  "before": "out/scratch/latch/075civic/shots-before/play-office-front-y210-before.png",
+  "after": "out/scratch/latch/075civic/shots-after/play-office-front-y210-after.png",
+  "mad_frame": 4.09,
+  "changed_px_pct": 8.09
+ },
+ "ours-golden": {
+  "before": "out/scratch/latch/075civic/ours-before/today-golden.png",
+  "after": "out/scratch/latch/075civic/ours-after/today-golden.png",
+  "mad_frame": 0.0,
+  "changed_px_pct": 0.0
+ },
+ "ours-cafe-square-y030": {
+  "before": "out/scratch/latch/075civic/ours-before/today-day-cafe-square-y030.png",
+  "after": "out/scratch/latch/075civic/ours-after/today-day-cafe-square-y030.png",
+  "mad_frame": 5.03,
+  "changed_px_pct": 10.71
+ },
+ "ours-cafe-square-y210": {
+  "before": "out/scratch/latch/075civic/ours-before/today-day-cafe-square-y210.png",
+  "after": "out/scratch/latch/075civic/ours-after/today-day-cafe-square-y210.png",
+  "mad_frame": 3.77,
+  "changed_px_pct": 8.05
+ },
+ "ours-office-front-y030": {
+  "before": "out/scratch/latch/075civic/ours-before/today-day-office-front-y030.png",
+  "after": "out/scratch/latch/075civic/ours-after/today-day-office-front-y030.png",
+  "mad_frame": 4.15,
+  "changed_px_pct": 8.59
+ },
+ "ours-office-front-y210": {
+  "before": "out/scratch/latch/075civic/ours-before/today-day-office-front-y210.png",
+  "after": "out/scratch/latch/075civic/ours-after/today-day-office-front-y210.png",
+  "mad_frame": 3.89,
+  "changed_px_pct": 7.11
+ }
+}

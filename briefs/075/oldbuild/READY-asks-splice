@@ -1,0 +1,7 @@
+Splice, brief 075, 2026-10-29: Datum's four asks and the S2 pier pylons are done in code, all opt-in (the committed plan derives byte for byte as before: world sha256 f469704e…, the same as HEAD). Plan fields for Datum:
+1. roads[].pavement {w, kerb, walk, frontage, why}, e.g. sunset-east / harbour-market {3.5, 1.5, 2, 0}. R-PV1 (tools/plan/sections.ts) needs walk >= the class's (2) and kerb >= 0.75, so the narrowest pavement is 2.75. The old 2 m flags cannot pass.
+2. BG-1 exempt "massing: ..." + standards.blocks.massing {composed: [[-112,380,-508,194],[-158,46,-506,-246]], source: DecoKitCityPlan.InDistrict / DecoKitSouthside.Bounds}.
+3. R-F1 square clause: standards.roads.frontageSquare {reach: 45} (Approved Document B B5). Old E1 still fails: Orbit Square East fronts only the Boulevard, and E1's east end is 64 m from the Boulevard's kerb.
+4. plan-match reads standards.levels.grounds (no action).
+Pylons: standards.skyrail.pylonClear.walk {post: 1.6} moves S2 (117,-140) to -145.5 and (114,1.5) to 5.5; SK-T2 gaps 2 -> 0, plan PASS.
+READY-swap2 not yet written: the plan-match re-run is pending.

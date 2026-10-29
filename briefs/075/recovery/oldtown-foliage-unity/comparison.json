@@ -1,0 +1,424 @@
+{
+ "renderersBaseline": 15591,
+ "renderersTrial": 15599,
+ "addedRenderers": [
+  {
+   "path": "HarbourDistrict/civic/civic/run-west-cafe/0/oldtown-foliage075/ShrubMound_0",
+   "triangles": 2526,
+   "materials": [
+    "DK_Leaf_CoreShrub",
+    "DK_Leaf_Shrub"
+   ],
+   "shadow": "On",
+   "alpha": [
+    "DK_Leaf_Shrub"
+   ]
+  },
+  {
+   "path": "HarbourDistrict/civic/civic/run-west-cafe/0/oldtown-foliage075/ShrubMound_1",
+   "triangles": 2526,
+   "materials": [
+    "DK_Leaf_CoreShrub",
+    "DK_Leaf_Shrub"
+   ],
+   "shadow": "On",
+   "alpha": [
+    "DK_Leaf_Shrub"
+   ]
+  },
+  {
+   "path": "HarbourDistrict/civic/civic/run-west-cafe/0/oldtown-foliage075/ShrubMound_2",
+   "triangles": 2526,
+   "materials": [
+    "DK_Leaf_CoreShrub",
+    "DK_Leaf_Shrub"
+   ],
+   "shadow": "On",
+   "alpha": [
+    "DK_Leaf_Shrub"
+   ]
+  },
+  {
+   "path": "HarbourDistrict/civic/civic/run-west-cafe/0/oldtown-foliage075/ShrubMound_3",
+   "triangles": 2526,
+   "materials": [
+    "DK_Leaf_CoreShrub",
+    "DK_Leaf_Shrub"
+   ],
+   "shadow": "On",
+   "alpha": [
+    "DK_Leaf_Shrub"
+   ]
+  },
+  {
+   "path": "HarbourDistrict/civic/civic/run-west-cafe/0/oldtown-foliage075/ShrubMound_4",
+   "triangles": 2526,
+   "materials": [
+    "DK_Leaf_CoreShrub",
+    "DK_Leaf_Shrub"
+   ],
+   "shadow": "On",
+   "alpha": [
+    "DK_Leaf_Shrub"
+   ]
+  },
+  {
+   "path": "HarbourDistrict/civic/civic/run-west-cafe/0/oldtown-foliage075/ShrubMound_5",
+   "triangles": 2526,
+   "materials": [
+    "DK_Leaf_CoreShrub",
+    "DK_Leaf_Shrub"
+   ],
+   "shadow": "On",
+   "alpha": [
+    "DK_Leaf_Shrub"
+   ]
+  },
+  {
+   "path": "HarbourDistrict/civic/civic/run-west-cafe/1/oldtown-foliage075/FlowerBed_0",
+   "triangles": 2718,
+   "materials": [
+    "DK_Leaf_CoreShrub",
+    "DK_Leaf_Shrub",
+    "DK_Flower_Coral"
+   ],
+   "shadow": "On",
+   "alpha": [
+    "DK_Leaf_Shrub",
+    "DK_Flower_Coral"
+   ]
+  },
+  {
+   "path": "HarbourDistrict/civic/civic/run-west-cafe/1/oldtown-foliage075/FlowerBed_1",
+   "triangles": 2718,
+   "materials": [
+    "DK_Leaf_CoreShrub",
+    "DK_Leaf_Shrub",
+    "DK_Flower_Coral"
+   ],
+   "shadow": "On",
+   "alpha": [
+    "DK_Leaf_Shrub",
+    "DK_Flower_Coral"
+   ]
+  }
+ ],
+ "removedRenderers": [],
+ "changedRenderers": [
+  {
+   "path": "batches/civic/DK_Bloom_Coral@-3,-4#-12,-14",
+   "fields": [
+    "mesh",
+    "triangles",
+    "geometry"
+   ],
+   "triangles": [
+    105,
+    0
+   ],
+   "nonFoliageSame": true,
+   "materialsSame": true,
+   "expected": true
+  },
+  {
+   "path": "batches/civic/DK_Bloom_Cream@-3,-4#-12,-14",
+   "fields": [
+    "mesh",
+    "triangles",
+    "geometry"
+   ],
+   "triangles": [
+    135,
+    0
+   ],
+   "nonFoliageSame": true,
+   "materialsSame": true,
+   "expected": true
+  },
+  {
+   "path": "batches/civic/DK_Bloom_Flamingo@-3,-4#-12,-14",
+   "fields": [
+    "mesh",
+    "triangles",
+    "geometry"
+   ],
+   "triangles": [
+    90,
+    0
+   ],
+   "nonFoliageSame": true,
+   "materialsSame": true,
+   "expected": true
+  },
+  {
+   "path": "batches/civic/DK_Bloom_Peach@-3,-4#-12,-14",
+   "fields": [
+    "mesh",
+    "triangles",
+    "geometry"
+   ],
+   "triangles": [
+    90,
+    0
+   ],
+   "nonFoliageSame": true,
+   "materialsSame": true,
+   "expected": true
+  },
+  {
+   "path": "batches/civic/DK_Leaf_Civic@-3,-4#-12,-14",
+   "fields": [
+    "mesh",
+    "triangles",
+    "geometry"
+   ],
+   "triangles": [
+    432,
+    0
+   ],
+   "nonFoliageSame": true,
+   "materialsSame": true,
+   "expected": true
+  },
+  {
+   "path": "batches/civic/DK_Leaf_CivicDark@-3,-4#-12,-14",
+   "fields": [
+    "mesh",
+    "triangles",
+    "geometry"
+   ],
+   "triangles": [
+    432,
+    0
+   ],
+   "nonFoliageSame": true,
+   "materialsSame": true,
+   "expected": true
+  }
+ ],
+ "unexpectedRendererChanges": [],
+ "addedRenderersAllUnderTrialGroup": true,
+ "trianglesBaseline": 26623507,
+ "trianglesTrial": 26642815,
+ "trianglesDelta": 19308,
+ "materialSlotsDelta": 18,
+ "shadowCastersDelta": 8,
+ "alphaRenderersDelta": 8,
+ "transformsAdded": 10,
+ "transformsAddedAllUnderTrialGroup": true,
+ "transformsRemovedOrChanged": [],
+ "collidersIdentical": true,
+ "colliderCount": 0,
+ "navIdentical": true,
+ "nav": "50e591f9c282c28c5516479b221381570ececedea863018259f452026c7bb741",
+ "restyleIdentical": false,
+ "baselineMatchesPriorPavingManifest": {
+  "renderers": true,
+  "transforms": true,
+  "colliders": true,
+  "nav": true
+ },
+ "restyleDiffs": [
+  "/inZone/batchAreaM2",
+  "/inZone/batchByMaterial/DK_Bloom_Coral/areaM2",
+  "/inZone/batchByMaterial/DK_Bloom_Coral/hash",
+  "/inZone/batchByMaterial/DK_Bloom_Coral/triangles",
+  "/inZone/batchByMaterial/DK_Bloom_Cream/areaM2",
+  "/inZone/batchByMaterial/DK_Bloom_Cream/hash",
+  "/inZone/batchByMaterial/DK_Bloom_Cream/triangles",
+  "/inZone/batchByMaterial/DK_Bloom_Flamingo/areaM2",
+  "/inZone/batchByMaterial/DK_Bloom_Flamingo/hash",
+  "/inZone/batchByMaterial/DK_Bloom_Flamingo/triangles",
+  "/inZone/batchByMaterial/DK_Bloom_Peach/areaM2",
+  "/inZone/batchByMaterial/DK_Bloom_Peach/hash",
+  "/inZone/batchByMaterial/DK_Bloom_Peach/triangles",
+  "/inZone/batchByMaterial/DK_Leaf_Civic/areaM2",
+  "/inZone/batchByMaterial/DK_Leaf_Civic/hash",
+  "/inZone/batchByMaterial/DK_Leaf_Civic/triangles",
+  "/inZone/batchByMaterial/DK_Leaf_CivicDark/areaM2",
+  "/inZone/batchByMaterial/DK_Leaf_CivicDark/hash",
+  "/inZone/batchByMaterial/DK_Leaf_CivicDark/triangles",
+  "/inZone/batchGeometryHash",
+  "/inZone/batchGeometryWithMaterialHash",
+  "/inZone/batchRenderers",
+  "/inZone/batchTriangles",
+  "/inZone/kitHash",
+  "/inZone/kitRenderers",
+  "/inZone/kitWithMaterialHash",
+  "/inZone/kit[1000]",
+  "/inZone/kit[1001]",
+  "/inZone/kit[1002]",
+  "/inZone/kit[1003]",
+  "/inZone/kit[1004]",
+  "/inZone/kit[1005]",
+  "/inZone/kit[1006]",
+  "/inZone/kit[1007]",
+  "/inZone/kit[1008]",
+  "/inZone/kit[1009]",
+  "/inZone/kit[100]",
+  "/inZone/kit[1010]",
+  "/inZone/kit[1011]",
+  "/inZone/kit[1012]",
+  "/inZone/kit[1013]",
+  "/inZone/kit[1014]",
+  "/inZone/kit[1015]",
+  "/inZone/kit[1016]",
+  "/inZone/kit[1017]",
+  "/inZone/kit[1018]",
+  "/inZone/kit[1019]",
+  "/inZone/kit[101]",
+  "/inZone/kit[1020]",
+  "/inZone/kit[1021]",
+  "/inZone/kit[1022]",
+  "/inZone/kit[1023]",
+  "/inZone/kit[1024]",
+  "/inZone/kit[1025]",
+  "/inZone/kit[1026]",
+  "/inZone/kit[1027]",
+  "/inZone/kit[1028]",
+  "/inZone/kit[1029]",
+  "/inZone/kit[102]",
+  "/inZone/kit[1030]",
+  "/inZone/kit[1031]",
+  "/inZone/kit[1032]",
+  "/inZone/kit[1033]",
+  "/inZone/kit[1034]",
+  "/inZone/kit[1035]",
+  "/inZone/kit[1036]",
+  "/inZone/kit[1037]",
+  "/inZone/kit[1038]",
+  "/inZone/kit[1039]",
+  "/inZone/kit[103]",
+  "/inZone/kit[1040]",
+  "/inZone/kit[1041]",
+  "/inZone/kit[1042]",
+  "/inZone/kit[1043]",
+  "/inZone/kit[1044]",
+  "/inZone/kit[1045]",
+  "/inZone/kit[1046]",
+  "/inZone/kit[1047]",
+  "/inZone/kit[1048]",
+  "/inZone/kit[1049]",
+  "/inZone/kit[104]",
+  "/inZone/kit[1050]",
+  "/inZone/kit[1051]",
+  "/inZone/kit[1052]",
+  "/inZone/kit[1053]",
+  "/inZone/kit[1054]",
+  "/inZone/kit[1055]",
+  "/inZone/kit[1056]",
+  "/inZone/kit[1057]",
+  "/inZone/kit[1058]",
+  "/inZone/kit[1059]",
+  "/inZone/kit[105]",
+  "/inZone/kit[1060]",
+  "/inZone/kit[1061]",
+  "/inZone/kit[1062]",
+  "/inZone/kit[1063]",
+  "/inZone/kit[1064]",
+  "/inZone/kit[1065]",
+  "/inZone/kit[1066]",
+  "/inZone/kit[1067]",
+  "/inZone/kit[1068]",
+  "/inZone/kit[1069]",
+  "/inZone/kit[106]",
+  "/inZone/kit[1070]",
+  "/inZone/kit[1071]",
+  "/inZone/kit[1072]",
+  "/inZone/kit[1073]",
+  "/inZone/kit[1074]",
+  "/inZone/kit[1075]",
+  "/inZone/kit[1076]",
+  "/inZone/kit[1077]",
+  "/inZone/kit[1078]",
+  "/inZone/kit[1079]",
+  "/inZone/kit[107]",
+  "/inZone/kit[1080]",
+  "/inZone/kit[1081]",
+  "/inZone/kit[1082]",
+  "/inZone/kit[1083]",
+  "/inZone/kit[1084]",
+  "/inZone/kit[1085]",
+  "/inZone/kit[1086]",
+  "/inZone/kit[1087]",
+  "/inZone/kit[1088]",
+  "/inZone/kit[1089]",
+  "/inZone/kit[108]",
+  "/inZone/kit[1090]",
+  "/inZone/kit[1091]",
+  "/inZone/kit[1092]",
+  "/inZone/kit[1093]",
+  "/inZone/kit[1094]",
+  "/inZone/kit[1095]",
+  "/inZone/kit[1096]",
+  "/inZone/kit[1097]",
+  "/inZone/kit[1098]",
+  "/inZone/kit[1099]",
+  "/inZone/kit[109]",
+  "/inZone/kit[1100]",
+  "/inZone/kit[1101]",
+  "/inZone/kit[1102]",
+  "/inZone/kit[1103]",
+  "/inZone/kit[1104]",
+  "/inZone/kit[1105]",
+  "/inZone/kit[1106]",
+  "/inZone/kit[1107]",
+  "/inZone/kit[1108]",
+  "/inZone/kit[1109]",
+  "/inZone/kit[110]",
+  "/inZone/kit[1110]",
+  "/inZone/kit[1111]",
+  "/inZone/kit[1112]",
+  "/inZone/kit[1113]",
+  "/inZone/kit[1114]",
+  "/inZone/kit[1115]",
+  "/inZone/kit[1116]",
+  "/inZone/kit[1117]",
+  "/inZone/kit[1118]",
+  "/inZone/kit[1119]",
+  "/inZone/kit[111]",
+  "/inZone/kit[1120]",
+  "/inZone/kit[1121]",
+  "/inZone/kit[1122]",
+  "/inZone/kit[1123]",
+  "/inZone/kit[1124]",
+  "/inZone/kit[1125]",
+  "/inZone/kit[1126]",
+  "/inZone/kit[1127]",
+  "/inZone/kit[1128]",
+  "/inZone/kit[1129]",
+  "/inZone/kit[112]",
+  "/inZone/kit[1130]",
+  "/inZone/kit[1131]",
+  "/inZone/kit[1132]",
+  "/inZone/kit[1133]",
+  "/inZone/kit[1134]",
+  "/inZone/kit[1135]",
+  "/inZone/kit[1136]",
+  "/inZone/kit[1137]",
+  "/inZone/kit[1138]",
+  "/inZone/kit[1139]",
+  "/inZone/kit[113]",
+  "/inZone/kit[1140]",
+  "/inZone/kit[1141]",
+  "/inZone/kit[1142]",
+  "/inZone/kit[1143]",
+  "/inZone/kit[1144]",
+  "/inZone/kit[1145]",
+  "/inZone/kit[1146]",
+  "/inZone/kit[1147]",
+  "/inZone/kit[1148]",
+  "/inZone/kit[1149]",
+  "/inZone/kit[114]",
+  "/inZone/kit[1150]",
+  "/inZone/kit[1151]",
+  "/inZone/kit[1152]",
+  "/inZone/kit[1153]",
+  "/inZone/kit[1154]",
+  "/inZone/kit[1155]",
+  "/inZone/kit[1156]",
+  "/inZone/kit[1157]",
+  "/inZone/kit[1158]"
+ ],
+ "pass": true
+}

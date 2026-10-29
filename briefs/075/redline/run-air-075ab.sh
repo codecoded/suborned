@@ -21,6 +21,8 @@ for f in perf-075ab.ours.resolved.json perf-075ab.old.resolved.json; do [[ -f $K
 # JsonUtility drops unknown keys: an old-town player without the 075ab switches would run every cut as a build against itself.
 for k in oldCrowd msaa oldLens pipeline; do grep -q "\"$k\" *:" $KIT/perf-075ab.old.resolved.json || { echo "old plan lacks $k: re-resolve it from a player that has the switch"; exit 1; }; done
 grep -q '"scene" *: *"Assets/Scenes/OldTown.unity"' $KIT/perf-075ab.old.resolved.json || { echo "old plan was not resolved on OldTown.unity"; exit 1; }
+# the old town is measured through its play camera (OldTownPlayLook; Latch 2026-10-29), never the study camera: a plan resolved before the switch is refused
+grep -q '"camera" *: *"Play camera (our play look)"' $KIT/perf-075ab.old.resolved.json || { echo "old plan does not use the play camera: re-resolve it (PerfBuild -perfScene Assets/Scenes/OldTown.unity -perfSpec briefs/075/redline/perf-075ab.json -perfResolveOnly)"; exit 1; }
 grep -q '"scene" *: *"Assets/Scenes/HarbourDistrict.unity"' $KIT/perf-075ab.ours.resolved.json || { echo "ours plan was not resolved on HarbourDistrict.unity"; exit 1; }
 OUT=$HOME/Downloads/air-075ab-$(date +%Y%m%d-%H%M); mkdir -p $OUT/ours1 $OUT/old $OUT/ours2
 LOG=$OUT/machine.log

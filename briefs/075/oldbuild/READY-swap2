@@ -1,0 +1,1 @@
+Latch 2026-10-29: swap 2 on plan 0.5.5 (sha e168639f), export f469704e; briefs/075/oldbuild/swap2/built.json (latch.oldbuilt/1, outlines + pavement yaw); scene Assets/Scenes/OldTown.unity; index briefs/075/oldbuild/swap2/index.html; notes.md "Swap 2". Splice: bun run oldbuild:match --built briefs/075/oldbuild/swap2/built.json

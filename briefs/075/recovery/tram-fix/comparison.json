@@ -1,0 +1,267 @@
+{
+  "collidersIdentical": true,
+  "navIdentical": true,
+  "transformsIdentical": true,
+  "rendererPathsIdentical": true,
+  "changedRenderers": [
+    "Ours (Handover zone + network, our pipeline)/batches/ground-pieces/DK_Granite_Rail@-6,-7",
+    "Ours (Handover zone + network, our pipeline)/batches/ground-pieces/DK_Granite_Rail@-8,4",
+    "Ours (Handover zone + network, our pipeline)/batches/ground-pieces/DK_Ground_Setts@-3,-7/DK_Ground_Setts@-3,-7 (west ground, old materials)",
+    "Ours (Handover zone + network, our pipeline)/batches/ground-pieces/DK_Ground_Setts@-4,-7/DK_Ground_Setts@-4,-7 (west ground, old materials)",
+    "Ours (Handover zone + network, our pipeline)/batches/ground-pieces/DK_Ground_Setts@-5,-7/DK_Ground_Setts@-5,-7 (west ground, old materials)",
+    "Ours (Handover zone + network, our pipeline)/batches/ground-pieces/DK_Ground_Setts@-6,-6/DK_Ground_Setts@-6,-6 (west ground, old materials)",
+    "Ours (Handover zone + network, our pipeline)/batches/ground-pieces/DK_Ground_Setts@-6,-7",
+    "Ours (Handover zone + network, our pipeline)/batches/ground-pieces/DK_Ground_Setts@-8,4"
+  ],
+  "changedDetails": [
+    {
+      "path": "Ours (Handover zone + network, our pipeline)/batches/ground-pieces/DK_Granite_Rail@-6,-7",
+      "before": {
+        "path": "Ours (Handover zone + network, our pipeline)/batches/ground-pieces/DK_Granite_Rail@-6,-7",
+        "mesh": "",
+        "triangles": 7616,
+        "geometry": "47E2E7329CDF615F8E9B389D1FB52F66B28657FE9587D462D373B09B5C59419C",
+        "nonFoliage": "47E2E7329CDF615F8E9B389D1FB52F66B28657FE9587D462D373B09B5C59419C",
+        "materials": [
+          "DK_Granite_Kerb"
+        ],
+        "shadow": "Off",
+        "enabled": true,
+        "active": true,
+        "alphaMaterials": []
+      },
+      "after": {
+        "path": "Ours (Handover zone + network, our pipeline)/batches/ground-pieces/DK_Granite_Rail@-6,-7",
+        "mesh": "Assets/Suborned/OldTownArt/Swap/TramFix/surface-6.asset",
+        "triangles": 5096,
+        "geometry": "94C3AD767569B55B9AA262B18E6E6251CA843496B524AAE6B7E46B4673630D6B",
+        "nonFoliage": "94C3AD767569B55B9AA262B18E6E6251CA843496B524AAE6B7E46B4673630D6B",
+        "materials": [
+          "DK_Granite_Kerb"
+        ],
+        "shadow": "Off",
+        "enabled": true,
+        "active": true,
+        "alphaMaterials": []
+      }
+    },
+    {
+      "path": "Ours (Handover zone + network, our pipeline)/batches/ground-pieces/DK_Granite_Rail@-8,4",
+      "before": {
+        "path": "Ours (Handover zone + network, our pipeline)/batches/ground-pieces/DK_Granite_Rail@-8,4",
+        "mesh": "",
+        "triangles": 2688,
+        "geometry": "A4D395892F967D44AFFAC2CB56639F98FBE3CE23CE709B31C03BDB1350BD6A9F",
+        "nonFoliage": "A4D395892F967D44AFFAC2CB56639F98FBE3CE23CE709B31C03BDB1350BD6A9F",
+        "materials": [
+          "DK_Granite_Kerb"
+        ],
+        "shadow": "Off",
+        "enabled": true,
+        "active": true,
+        "alphaMaterials": []
+      },
+      "after": {
+        "path": "Ours (Handover zone + network, our pipeline)/batches/ground-pieces/DK_Granite_Rail@-8,4",
+        "mesh": "Assets/Suborned/OldTownArt/Swap/TramFix/surface-7.asset",
+        "triangles": 344,
+        "geometry": "D4C035A4450A5C68C4D80D9A645C69FED4FBEC08B072347AFD69D20B756E8365",
+        "nonFoliage": "D4C035A4450A5C68C4D80D9A645C69FED4FBEC08B072347AFD69D20B756E8365",
+        "materials": [
+          "DK_Granite_Kerb"
+        ],
+        "shadow": "Off",
+        "enabled": true,
+        "active": true,
+        "alphaMaterials": []
+      }
+    },
+    {
+      "path": "Ours (Handover zone + network, our pipeline)/batches/ground-pieces/DK_Ground_Setts@-3,-7/DK_Ground_Setts@-3,-7 (west ground, old materials)",
+      "before": {
+        "path": "Ours (Handover zone + network, our pipeline)/batches/ground-pieces/DK_Ground_Setts@-3,-7/DK_Ground_Setts@-3,-7 (west ground, old materials)",
+        "mesh": "",
+        "triangles": 82,
+        "geometry": "D8ABC14119212F112A7D48DD7C890166055FBD343D6274365697A074C8029E32",
+        "nonFoliage": "D8ABC14119212F112A7D48DD7C890166055FBD343D6274365697A074C8029E32",
+        "materials": [
+          "DK_Gutter_Setts"
+        ],
+        "shadow": "Off",
+        "enabled": true,
+        "active": true,
+        "alphaMaterials": []
+      },
+      "after": {
+        "path": "Ours (Handover zone + network, our pipeline)/batches/ground-pieces/DK_Ground_Setts@-3,-7/DK_Ground_Setts@-3,-7 (west ground, old materials)",
+        "mesh": "Assets/Suborned/OldTownArt/Swap/TramFix/surface-5.asset",
+        "triangles": 520,
+        "geometry": "063F9707269E2E0CAB0B441DD9062CF2115C642D7FC8EBBDD40515C02F9EED0B",
+        "nonFoliage": "063F9707269E2E0CAB0B441DD9062CF2115C642D7FC8EBBDD40515C02F9EED0B",
+        "materials": [
+          "DK_Gutter_Setts"
+        ],
+        "shadow": "Off",
+        "enabled": true,
+        "active": true,
+        "alphaMaterials": []
+      }
+    },
+    {
+      "path": "Ours (Handover zone + network, our pipeline)/batches/ground-pieces/DK_Ground_Setts@-4,-7/DK_Ground_Setts@-4,-7 (west ground, old materials)",
+      "before": {
+        "path": "Ours (Handover zone + network, our pipeline)/batches/ground-pieces/DK_Ground_Setts@-4,-7/DK_Ground_Setts@-4,-7 (west ground, old materials)",
+        "mesh": "",
+        "triangles": 100,
+        "geometry": "FE2E390034683B361D6A2D5B2DA12F3E498154BCFF6A8771F5B6B10E82820F09",
+        "nonFoliage": "FE2E390034683B361D6A2D5B2DA12F3E498154BCFF6A8771F5B6B10E82820F09",
+        "materials": [
+          "DK_Gutter_Setts"
+        ],
+        "shadow": "Off",
+        "enabled": true,
+        "active": true,
+        "alphaMaterials": []
+      },
+      "after": {
+        "path": "Ours (Handover zone + network, our pipeline)/batches/ground-pieces/DK_Ground_Setts@-4,-7/DK_Ground_Setts@-4,-7 (west ground, old materials)",
+        "mesh": "Assets/Suborned/OldTownArt/Swap/TramFix/surface-0.asset",
+        "triangles": 820,
+        "geometry": "98F630CF32BAC33E14AAE5C39D379D3A7A498146499BC0A82C02D5FF557E66D3",
+        "nonFoliage": "98F630CF32BAC33E14AAE5C39D379D3A7A498146499BC0A82C02D5FF557E66D3",
+        "materials": [
+          "DK_Gutter_Setts"
+        ],
+        "shadow": "Off",
+        "enabled": true,
+        "active": true,
+        "alphaMaterials": []
+      }
+    },
+    {
+      "path": "Ours (Handover zone + network, our pipeline)/batches/ground-pieces/DK_Ground_Setts@-5,-7/DK_Ground_Setts@-5,-7 (west ground, old materials)",
+      "before": {
+        "path": "Ours (Handover zone + network, our pipeline)/batches/ground-pieces/DK_Ground_Setts@-5,-7/DK_Ground_Setts@-5,-7 (west ground, old materials)",
+        "mesh": "",
+        "triangles": 100,
+        "geometry": "A449C0BA346528F77AFF8AD5113F4E4634F5534470EDAC7D1CE3527390F6175B",
+        "nonFoliage": "A449C0BA346528F77AFF8AD5113F4E4634F5534470EDAC7D1CE3527390F6175B",
+        "materials": [
+          "DK_Gutter_Setts"
+        ],
+        "shadow": "Off",
+        "enabled": true,
+        "active": true,
+        "alphaMaterials": []
+      },
+      "after": {
+        "path": "Ours (Handover zone + network, our pipeline)/batches/ground-pieces/DK_Ground_Setts@-5,-7/DK_Ground_Setts@-5,-7 (west ground, old materials)",
+        "mesh": "Assets/Suborned/OldTownArt/Swap/TramFix/surface-1.asset",
+        "triangles": 818,
+        "geometry": "5D9849B85AB7039C719900027FFAE1349A786331540C684030463CDE70925806",
+        "nonFoliage": "5D9849B85AB7039C719900027FFAE1349A786331540C684030463CDE70925806",
+        "materials": [
+          "DK_Gutter_Setts"
+        ],
+        "shadow": "Off",
+        "enabled": true,
+        "active": true,
+        "alphaMaterials": []
+      }
+    },
+    {
+      "path": "Ours (Handover zone + network, our pipeline)/batches/ground-pieces/DK_Ground_Setts@-6,-6/DK_Ground_Setts@-6,-6 (west ground, old materials)",
+      "before": {
+        "path": "Ours (Handover zone + network, our pipeline)/batches/ground-pieces/DK_Ground_Setts@-6,-6/DK_Ground_Setts@-6,-6 (west ground, old materials)",
+        "mesh": "",
+        "triangles": 30,
+        "geometry": "9E4E79A7436895AB08C30D6F872C7671D2945FDECC70EB30ACE699CDCE567108",
+        "nonFoliage": "9E4E79A7436895AB08C30D6F872C7671D2945FDECC70EB30ACE699CDCE567108",
+        "materials": [
+          "DK_Gutter_Setts"
+        ],
+        "shadow": "Off",
+        "enabled": true,
+        "active": true,
+        "alphaMaterials": []
+      },
+      "after": {
+        "path": "Ours (Handover zone + network, our pipeline)/batches/ground-pieces/DK_Ground_Setts@-6,-6/DK_Ground_Setts@-6,-6 (west ground, old materials)",
+        "mesh": "Assets/Suborned/OldTownArt/Swap/TramFix/surface-4.asset",
+        "triangles": 126,
+        "geometry": "E8C448D084C9C627F39FA281D129B57BA4F2EBE604DC0331ADADBB1FBF896B1C",
+        "nonFoliage": "E8C448D084C9C627F39FA281D129B57BA4F2EBE604DC0331ADADBB1FBF896B1C",
+        "materials": [
+          "DK_Gutter_Setts"
+        ],
+        "shadow": "Off",
+        "enabled": true,
+        "active": true,
+        "alphaMaterials": []
+      }
+    },
+    {
+      "path": "Ours (Handover zone + network, our pipeline)/batches/ground-pieces/DK_Ground_Setts@-6,-7",
+      "before": {
+        "path": "Ours (Handover zone + network, our pipeline)/batches/ground-pieces/DK_Ground_Setts@-6,-7",
+        "mesh": "",
+        "triangles": 340,
+        "geometry": "6364341B19F3EA077A21681296EDEDEA285F70097AB63C0D167A75C744F54E1C",
+        "nonFoliage": "6364341B19F3EA077A21681296EDEDEA285F70097AB63C0D167A75C744F54E1C",
+        "materials": [
+          "DK_Gutter_Setts"
+        ],
+        "shadow": "Off",
+        "enabled": true,
+        "active": true,
+        "alphaMaterials": []
+      },
+      "after": {
+        "path": "Ours (Handover zone + network, our pipeline)/batches/ground-pieces/DK_Ground_Setts@-6,-7",
+        "mesh": "Assets/Suborned/OldTownArt/Swap/TramFix/surface-3.asset",
+        "triangles": 770,
+        "geometry": "DFB782444568A5362DE1D27C7ED30959749FA95D43BEBF4054DA486D35206699",
+        "nonFoliage": "DFB782444568A5362DE1D27C7ED30959749FA95D43BEBF4054DA486D35206699",
+        "materials": [
+          "DK_Gutter_Setts"
+        ],
+        "shadow": "Off",
+        "enabled": true,
+        "active": true,
+        "alphaMaterials": []
+      }
+    },
+    {
+      "path": "Ours (Handover zone + network, our pipeline)/batches/ground-pieces/DK_Ground_Setts@-8,4",
+      "before": {
+        "path": "Ours (Handover zone + network, our pipeline)/batches/ground-pieces/DK_Ground_Setts@-8,4",
+        "mesh": "",
+        "triangles": 20,
+        "geometry": "5CC5E1DA7148C6A8D7D5A01DE220F2898F3C0AFA1DC5CD12C4159AC47B973306",
+        "nonFoliage": "5CC5E1DA7148C6A8D7D5A01DE220F2898F3C0AFA1DC5CD12C4159AC47B973306",
+        "materials": [
+          "DK_Gutter_Setts"
+        ],
+        "shadow": "Off",
+        "enabled": true,
+        "active": true,
+        "alphaMaterials": []
+      },
+      "after": {
+        "path": "Ours (Handover zone + network, our pipeline)/batches/ground-pieces/DK_Ground_Setts@-8,4",
+        "mesh": "Assets/Suborned/OldTownArt/Swap/TramFix/surface-2.asset",
+        "triangles": 0,
+        "geometry": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855",
+        "nonFoliage": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855",
+        "materials": [
+          "DK_Gutter_Setts"
+        ],
+        "shadow": "Off",
+        "enabled": true,
+        "active": true,
+        "alphaMaterials": []
+      }
+    }
+  ],
+  "inputsIdentical": true
+}

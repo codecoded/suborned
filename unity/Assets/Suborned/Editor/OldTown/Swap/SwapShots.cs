@@ -8,6 +8,7 @@ using System.Linq;
 using System.Reflection;
 using Suborned.OldTown.Editor.DecoKit;
 using Suborned.OldTown.Sky;
+using Suborned.World;
 using Suborned.World.Review;
 using UnityEditor;
 using UnityEditor.SceneManagement;
@@ -107,6 +108,7 @@ namespace Suborned.OldTown.Editor.Swap
                     ("plan_full", new(0f, 1000f, 180f), new(0f, 0f, 181f), 60f, true),
                 })
                 { Perspective(cam, eye, look, fov); Cap($"district-{id}-{tag}.png", wide ? 1200f : 120f); }
+            if (shots.Contains("tram")) Tram(cam, outDir, tag, sw, Cap, done);
             if (shots.Contains("play"))
                 foreach (var (id, f, yaw) in PlayViews)
                 { var pc = playCam ? playCam : cam; Play(pc, f, yaw); Cap($"play-{id}-y{yaw:000}-{tag}.png", 200f, pc); }
@@ -115,6 +117,74 @@ namespace Suborned.OldTown.Editor.Swap
                 { Play(cam, f, yaw); Cap($"play-{id}-y{yaw:000}-{tag}-oldlook.png", 200f); }
             cam.orthographic = false;
             Debug.Log($"[Swap] shots ({tag}): {string.Join(", ", done)}");
+        }
+
+        /// <summary>Brief 075 tram bed (E12): street-level frames with the study camera (the old stage's look, as pair-vista): the Boulevard at the
+        /// vista camera (SpaceHQ ours, pair-vista's left) and down at the bed, Market Street east and west, the west leg, the circus loop, Crown
+        /// Avenue looking back at the circus; and the whole route top down (orthographic, 100 x 50 m a tile at 12 px/m, the route along each
+        /// tile's width, trunk from the west end to the Boulevard, then the circus loop north up) as strip/strip-NN.png for the index to stack.</summary>
+        static void Tram(Camera cam, string outDir, string tag, SwapSwitches sw, Action<string, float, Camera> cap, List<string> done)
+        {
+            string hq0 = sw != null ? sw.spaceHq : "old";
+            if (sw != null) sw.SetSpaceHq("ours");
+            float DZ = OldTownSwap.DZ;
+            foreach (var (id, eye, look, fov) in new (string, Vector3, Vector3, float)[]
+            {
+                ("boulevard-vista", new(-3.5f, 1.7f, -30f), new(0f, 70f, 450f), 60f),           // = vista (pair-vista)
+                ("boulevard-bed", new(-3.5f, 1.7f, -30f), new(0f, 0f, 30f), 60f),
+                ("boulevard-stop", new(8f, 1.7f, 100f), new(-2f, 0f, 150f), 60f),             // the circus stop (plan y -83..-53)
+                ("market-east", new(-110f, 1.7f, -410f + DZ - 3f), new(-20f, .3f, -410f + DZ), 60f),
+                ("market-west", new(-150f, 1.7f, -410f + DZ + 3f), new(-260f, .3f, -410f + DZ), 60f),
+                ("west-leg", new(-337f, 1.7f, -60f + DZ), new(-340f, .3f, 30f + DZ), 60f),
+                ("circus", new(-14f, 1.7f, -45f + DZ), new(10f, 0f, -6f + DZ), 60f),
+                ("crown-avenue", new(3f, 1.7f, 120f + DZ), new(0f, .3f, 20f + DZ), 60f),
+                ("hq-station-street", new(-6f, 1.7f, 175f + DZ), new(0f, 20f, 244f + DZ), 62f),   // 0.5.6: S1 into our SpaceHQ drum, the Crown Circus station inside
+                ("hq-station-deck", new(46f, 30f, 196f + DZ), new(0f, 23f, 244f + DZ), 55f),
+                ("hq-station-inside", new(-28f, 25.5f, 244f + DZ), new(26f, 24f, 244f + DZ), 76f),
+                ("hq-station-portal", new(58f, 25.5f, 244f + DZ), new(0f, 24f, 244f + DZ), 70f),
+            })
+            {
+                var pick = Arg("swapTramViews", ""); if (pick.Length > 0 && !pick.Split(',').Contains(id)) continue;
+                Perspective(cam, eye, look, fov); cap($"tram-{id}-{tag}.png", 120f, null);
+            }
+            if (sw != null) sw.SetSpaceHq(hq0);
+
+            if (Arg("swapTramViews", "").Length > 0) return; // targeted supplemental proof: preserve the settled route strip
+            var w = WorldReader.Load(Path.GetFullPath(Path.Combine(Repo, Arg("swapWorld", "out/scratch/latch/075swap2/harbour.world.json"))));
+            var trunk = w.Transit.Tram.FirstOrDefault(t => t.Id.EndsWith("/trunk")); var loop = w.Transit.Tram.FirstOrDefault(t => t.Id.EndsWith("/loop"));
+            var strip = Path.Combine(outDir, "strip"); Directory.CreateDirectory(strip);
+            const float TileL = 100f, TileW = 50f; const int PxW = 1200, PxH = 600;
+            var poses = new List<(Vector3 c, float yaw, float size, int w, int h)>();
+            if (trunk != null)
+            {
+                var line = trunk.Line.Select(OldTownSwap.Old).ToList();
+                var acc = new List<float> { 0f }; for (int i = 1; i < line.Count; i++) acc.Add(acc[^1] + Vector2.Distance(line[i - 1], line[i]));
+                Vector2 At(float s) { int i = 1; while (i < line.Count - 1 && acc[i] < s) i++; float t = Mathf.InverseLerp(acc[i - 1], acc[i], s); return Vector2.Lerp(line[i - 1], line[i], t); }
+                for (float s = 0f; s < acc[^1]; s += TileL)
+                {
+                    Vector2 a = At(s), b = At(Mathf.Min(s + TileL, acc[^1])), c = At(Mathf.Min(s + TileL * .5f, acc[^1]));
+                    var d = (b - a); if (d.sqrMagnitude < 1e-4f) continue; d.Normalize();
+                    var mid = (a + b) * .5f; var ctr = Vector2.Lerp(mid, c, .5f);
+                    poses.Add((new Vector3(ctr.x, 0f, ctr.y), Mathf.Atan2(-d.y, d.x) * Mathf.Rad2Deg, TileW * .5f, PxW, PxH));
+                }
+            }
+            if (loop != null) { var c = OldTownSwap.Old(loop.Line.Aggregate(Vector2.zero, (q, v) => q + v) / loop.Line.Length); poses.Add((new Vector3(c.x, 0f, c.y), 0f, 35f, PxH * 2, PxH * 2)); }
+            int k = 0;
+            foreach (var (c, yaw, size, pw, ph) in poses)
+            {
+                cam.orthographic = true; cam.orthographicSize = size;
+                cam.transform.rotation = Quaternion.Euler(90f, yaw, 0f);
+                cam.transform.position = c + Vector3.up * 250f; cam.nearClipPlane = 1f; cam.farClipPlane = 500f;  // under the grade's soft focus (from 300 m)
+                var file = Path.Combine(strip, $"strip-{k++:00}-{tag}.png");
+                DecoKitStage.WithShadows(300f, () => DecoKitStage.Capture(cam, pw, ph, file, 2));
+                done.Add("strip/" + Path.GetFileName(file));
+            }
+            cam.orthographic = false; cam.nearClipPlane = .05f; cam.farClipPlane = 2500f;
+            File.WriteAllText(Path.Combine(strip, $"strip-{tag}.json"), SwapExport.Json(new Dictionary<string, object>
+            {
+                ["tile"] = new[] { TileL, TileW }, ["px"] = new[] { PxW, PxH }, ["frame"] = "old (plan y = z - 206)",
+                ["tiles"] = poses.Select((p, i) => (object)new Dictionary<string, object> { ["file"] = $"strip-{i:00}-{tag}.png", ["centrePlan"] = new[] { p.c.x, p.c.z - DZ }, ["yaw"] = p.yaw, ["orthoHalf"] = p.size }).ToList(),
+            }));
         }
 
         /// <summary>The old reel's flight (DecoKitFlyby's keys and spline, posed by its own Pose) over the swapped scene, rendered 2x and piped
