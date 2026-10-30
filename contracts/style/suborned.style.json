@@ -2,7 +2,7 @@
   "$schema": "../hml-style.v2.schema.json",
   "contract": "hml.style/2",
   "id": "suborned",
-  "version": "0.25.0",
+  "version": "0.26.0",
   "date": "2026-10-30",
   "status": "simple style: look and framing in the prompt; brief guidance in guide, read by Enhance and Explore",
   "notes": [
@@ -46,12 +46,13 @@
     "v0.22.0 (2026-10-27): Sky (brief 072-G, on Vela's 072-B proposal briefs/072/style/proposal.html and rules.json): 'yep, more, more reds / blues allowed as well'; the Records Office's deep teal storey band 'yep'; the road 'keep powdblue - feels more modern'. palette_world re-recorded from looks/harbour.json (sha256 refreshed): limestone #f8eed9 -> #f0e3ca, residential #f8eedb -> #f3e3c6, mixed #fdf5e4 -> #f7ead2, commercial #f9e2cc -> #f5d3b5, frontage #f6ecd8 -> #f0e0c3, civic #fbe8b8 -> #f7dfa8, roof #fff6e6 -> #f6ebd6 (off near-white toward warm limestone); trim and accent_gold #99784d -> brass-gold #c29a55 (surface_overrides.gold_trim the same); accent_coral #fc9c84 -> #f28a70, accent_peach #fcc4ac -> #f8b898; new world accents accent_red #c42a1f (DecoKit's enamel red), accent_royal #2c56a6 (DecoKit's royal), accent_cobalt #2f84e8 (tools/world/gen/colour.ts weights). The rule widens the accent set to DecoKit's and the push (royal, sky blue, enamel red, red-orange, oxblood, mustard, teal), allows brass-gold bands up to ~15 cm (never a large panel) and blue-teal glass (still no curtain walls). materials and concept_prompt city/avoid follow. Kit (tools/decokit mats.py): the four gate-era colours back to DecoKit's (DK_Enamel_Mustard #EEA82D, DK_Gold #D6AE62 as satin brass, DK_Enamel_Red #C42A1F, DK_Signal_Red #FF3B26), brass rows #C29A55 / light #D6B676 at (rough 0.4, metal 0.6), the window film glaze #3F7A8E a0.65. Facade (facade.json): warmer walls, blush and powder families, red and blue plinths, DecoKit enamels and the push's reds and blues in every area, civic seafoam + deep teal; the Records Office's storey band (5.0 to 5.9 m) is DecoKit's deep teal DK_Enamel_Teal (tools/decokit/records_tower.py); civic-look.json through tools/decokit/lookcolours072.py. The road stays powder-blue enamel. Final values: briefs/072/style/rules.json `applied`. GDD §15 to follow (Aster).",
     "v0.23.0 (2026-10-28): Sky (brief 072, on the applied 072-G palette): 'yeah, I more colors needed'. Everything 072-G added stays; the range widens (Vela, briefs/072/style/rules.json `applied2`): world accent roles accent_tangerine #f07a28, accent_plum #7a3b78, accent_cerulean #1f8fc4, accent_jade #1e9c78 (teal-green), accent_lime #b5d334 join (looks/harbour.json and look.json, sha256 refreshed; tools/world/gen/colour.ts weights: teal 13, coral 12, red 9, royal 9, tangerine 9, turquoise 7, cerulean 7, cobalt 6, flamingo 6, plum 6, mint 5, jade 5, peach 3, lime 3; fins and flags take the new roles too). facade.json: four new wall families (butter #f7e38c, lilac #d8c8ec, apricot #f9b977, seagreen #9ad2c6) with cerulean, plum, jade and tangerine plinths; sand_w #ddbe8a, blush_w #f4c3c8, sky_w #9ccdee, mint_w #c8e8c6 (rose plinth #d9548a) pulled apart; family roofs one tint deeper; cream's area weight 4 -> 2; five new enamels in every area's set except civic (seafoam + deep teal kept). The rule names the renders and the wider accents; materials and concept_prompt.city follow. Road unchanged (powder-blue enamel). GDD §15 to follow (Aster).",
     "v0.24.0 (2026-10-29): Sky (brief 075): 'our red is too red - we changed it when not much in the game, but now it needs to go back to old town.' The 072-B loosening (v0.22.0) and its push (v0.23.0) are withdrawn: palette_world roles back to their v0.21.0 values (the brass-gold #c29a55 of trim, accent_gold and gold_trim kept: the old DecoKit trim was its gold #d6ae62), 072's eight accent roles retired, the city and materials prompt lines back to v0.21.0. Buildings, glass, livery and car paints are the old DecoKit city's exactly (tools/decokit colourways.py, mats.py, livery.py, carpaint.py; facade.json families and areas; table in briefs/075/notes.md 'Old palette'). GDD §15 to follow in Aster's next version.",
-    "v0.25.0 (2026-10-30): Sky, on the old reel's gold tower: 'we drop that gold as accent only rule - looking at old, that old tower really stands out well - so think gold works'. Gold may be a large surface on landmarks (the old gold HQ tower is the reference); brass at street level and on ordinary facades stays a thin line (SF-21, the 12 % / 15 cm line). palette_world.rule, materials and concept_prompt.avoid follow. GDD v0.32.0 §15 carries it and v0.24.0's palette."
+    "v0.25.0 (2026-10-30): Sky, on the old reel's gold tower: 'we drop that gold as accent only rule - looking at old, that old tower really stands out well - so think gold works'. Gold may be a large surface on landmarks (the old gold HQ tower is the reference); brass at street level and on ordinary facades stays a thin line (SF-21, the 12 % / 15 cm line). palette_world.rule, materials and concept_prompt.avoid follow. GDD v0.32.0 §15 carries it and v0.24.0's palette.",
+    "v0.26.0 (2026-10-30): GDD v0.33.0's audit against the build and Sky's words, no new look decision. materials and concept_prompt.city: the old town's dark grey asphalt (Sky 2026-10-28), replacing the pale and lilac-grey road; the glitter fix (Sky 2026-10-30, 'that glinting much better now'). palette_world: as-built overrides for haze, sun, road and the sky rail, which close the haze and guideway questions (GDD §15). The roles stay the hash-checked copy of looks/harbour.json until that file follows (Glint, Vela)."
   ],
   "era": "Bright retro-future: a space age imagined as the present, built as high art, optimistic and immaculate.",
   "concept_prompt": {
     "era": "Optimistic atompunk city in an alternate history: a 1950s world that discovered atomic power centuries ago, so its culture and style are 1950s but its technology is centuries ahead: 1950s-styled robots, trams and street furniture doing super-advanced things. Atomic power made energy, travel and building cheap: sky rail, skyports, towers and liners, everything physical abundant. Thinking machines and networks never came: robots are clockwork-smart on fixed routines, and records are physical (microfilm, punch cards, pneumatic tubes, stamped forms). An abundant, orderly city that runs on routine and paperwork.",
-    "city": "Streamline Moderne, Art Deco and Googie. Cream limestone and ivory enamel buildings with seafoam-teal faience bands, chrome sphere finials, banners on lamp posts, planted terraces, cypress and palms, parasol café terraces, pale cream stone paving with seafoam inlay bands, soft lilac-grey asphalt, thin brushed-brass hairline trim, coral and peach accents. Warm afternoon sun, soft shadows, soft blue sky. Clean, prosperous, graceful; people in the city's space-age couture. Cinematic painted concept art with photographic material realism.",
+    "city": "Streamline Moderne, Art Deco and Googie. Cream limestone and ivory enamel buildings with seafoam-teal faience bands, chrome sphere finials, banners on lamp posts, planted terraces, cypress and palms, parasol café terraces, pale cream stone paving with seafoam inlay bands, the old town's dark grey asphalt with a few clean white lines, thin brushed-brass hairline trim, coral and peach accents. Warm afternoon sun, soft shadows, soft blue sky. Clean, prosperous, graceful; people in the city's space-age couture. Cinematic painted concept art with photographic material realism.",
     "avoid": [
       "large gold panels on ordinary buildings",
       "glass curtain walls",
@@ -62,7 +63,7 @@
     ],
     "people": "People in the city's space-age couture as everyday clothing: tailored, chic and wearable, the imagined future pushed one step further; never period costume.",
     "rule": "Every concept generation of a place, object or machine starts from this block (era, city, people, avoid) and an open brief: the art designs, and look decisions come from it. Checker rules gate what the art proposes; they are not the source of options. A decision taken from art cites the image and its prompt (PROVENANCE.json beside the images). Tools: Codex CLI image tool (ChatGPT plan), Runware (Qwen Image 2.1). People, character, lineup, model and versions prompts never take concept_prompt.era or any date: they start from the top-level era and the people's couture line (v0.6.1; Sky, 2026-10-14: 'too strong a 1950s ruined character concept'). People in a place frame are not costume reference.",
-    "source": "era: GDD §01 world (Sky, 2026-10-14; brief 008 Era) and the era sentence of the accepted prompts; city and avoid: the prompts Sky accepted, briefs/009/concepts/PROVENANCE.json (2026-10-14), minus each frame's view and subject; grime and present-day street furniture added (Sky, 2026-10-14); 'red-orange' dropped from the accepted prompts' negatives because it only kept clear of the cones colour (Sky, 2026-10-16)."
+    "source": "era: GDD §01 world (Sky, 2026-10-14; brief 008 Era) and the era sentence of the accepted prompts; city and avoid: the prompts Sky accepted, briefs/009/concepts/PROVENANCE.json (2026-10-14), minus each frame's view and subject; grime and present-day street furniture added (Sky, 2026-10-14); 'red-orange' dropped from the accepted prompts' negatives because it only kept clear of the cones colour (Sky, 2026-10-16). Road: Sky 2026-10-28 (brief 075), the old asphalt road back; was 'soft lilac-grey asphalt' in the accepted prompts."
   },
   "rules": {
     "all": [
@@ -126,7 +127,7 @@
   },
   "palette_world": {
     "status": "current: back to the old town (Sky 2026-10-29, brief 075: \"our red is too red - we changed it when not much in the game, but now it needs to go back to old town\"); the 072-B loosening and its two pushes are withdrawn",
-    "rule": "Pastel cream and peach base for ground, stone and bodies; saturated enamel accents (cobalt, flamingo, sunshine, mint, turquoise) on panels, awnings, signs, roofs and trim, never whole buildings; lagoon water; coral transit. Brass, not gold, at street level and on ordinary facades, only as hairline, frame, bead and small metal, never a large surface; gold may be a large surface on landmarks (Sky 2026-10-30), and skyline crowns keep gold. Brief 075 (v0.24.0): buildings take the old town's colourways (the old DecoKitColourways scheme): mostly cream stone, colour by ensemble along the horizontal lines (boulevard: one coral fascia #c8553d; circus: Naples cream #ebdcb5, teal fascia, coral sills; harbour: sea-glass cream #e2e8e0, teal #1f7f7a; gardens: sand-rose #e8d6c4, terracotta #b9653f, sage #8fa88a; southside: warm white #eee3c9, marigold #d9962b, petrol teal #2f7e86), and on the high street every other rendered building painted apricot #e8b793, celadon #b7cdb4, terracotta-rose #dda596 or ochre #e2c07a, never two side by side; dark glass (#35585a); landmark livery: vermilion lattices #b8432e, the brick sphere #9c2e2b, SpaceHQ gold #f2c14e.",
+    "rule": "Pastel cream and peach base for ground, stone and bodies; saturated enamel accents (cobalt, flamingo, sunshine, mint, turquoise) on panels, awnings, signs, roofs and trim, never whole buildings; lagoon water; coral transit. Brass, not gold, at street level and on ordinary facades, only as hairline, frame, bead and small metal, never a large surface; gold may be a large surface on landmarks (Sky 2026-10-30), and skyline crowns keep gold. Brief 075 (v0.24.0): buildings take the old town's colourways (the old DecoKitColourways scheme): mostly cream stone, colour by ensemble along the horizontal lines (boulevard: one coral fascia #c8553d; circus: Naples cream #ebdcb5, teal fascia, coral sills; harbour: sea-glass cream #e2e8e0, teal #1f7f7a; gardens: sand-rose #e8d6c4, terracotta #b9653f, sage #8fa88a; southside: warm white #eee3c9, marigold #d9962b, petrol teal #2f7e86), and on the high street every other rendered building painted apricot #e8b793, celadon #b7cdb4, terracotta-rose #dda596 or ochre #e2c07a, never two side by side; dark glass (#35585a); landmark livery: vermilion lattices #b8432e, the brick sphere #9c2e2b, SpaceHQ gold #f2c14e. As built, these override the roles below (surface_overrides): haze #f4e3c3 (fog and sky horizon; the long tier #ebdbba; no haze on the play camera), sun #ffedcc, the road DK_Asphalt_Road #817b75, the sky rail the old town's swept beam (ivory hull, teal stripe each flank, not the track role). No grass medians on tram streets. Planting is the testbed's; the dome family is retired.",
     "source": {
       "path": "unity/Assets/Suborned/Editor/World/looks/harbour.json",
       "sha256": "7637faffdf1039ce8a425809bd53686a81d1882e85803fdb851a924af9484d01",
@@ -137,6 +138,22 @@
       "gold_trim": {
         "hex": "#c29a55",
         "why": "Since v0.22.0 (brief 072-G) world surfaces use brass-gold #c29a55, the same as roles.trim, roles.accent_gold and facade.json paletteOverride.gold_trim (the sign boards). Kit: DK_Accent_Gold and DK_Brass_Civic #C29A55, DK_Gold #D6AE62 (DecoKit's), DK_Gold17 #D6B676 (tools/decokit mats.py); the crowns keep DK_Crown_Gold #E3D681 and DK_Crown_Gold17 #C9C08E."
+      },
+      "haze": {
+        "hex": "#f4e3c3",
+        "why": "As built: unity/Assets/Suborned/Resources/Atmosphere/haze.json colour and light.json light.haze, the one value for fog and the sky horizon by day (Glint, brief 048; was #ecd9b4, which rendered dun). The long tier is #ebdbba, the old reel's fog (Sky 2026-10-29, 'where's the haze effect?'); the play camera has no fog. looks/harbour.json and tools/world/gen/horizon.ts still hold #f3e8d4."
+      },
+      "sun": {
+        "hex": "#ffedcc",
+        "why": "As built: light.json light.sun, the old rig (Glint, brief 075-A). looks/harbour.json still holds #ffe9bc, look.json #ffd9a0."
+      },
+      "road": {
+        "hex": "#817b75",
+        "why": "As built: DK_Asphalt_Road, the old road (Sky 2026-10-28, brief 075, overriding powder blue); plan finish set asphalt, look.json harbour.road-asphalt. The asphalt role #a5a2a8 is the builder's old base."
+      },
+      "sky_rail": {
+        "hex": null,
+        "why": "As built: the old town's swept beam (Sky 2026-10-28, 'much better sky track'; tools/world/gen/street/skytrack.ts, kit SkyRail_Beam_4m: DK_Hull_Ivory, DK_Enamel_Teal). It settles the guideway question: neither track role, #96979c (looks/harbour.json) nor #b3c7cf (look.json), is what shows on the sky rail."
       }
     },
     "roles": {
@@ -385,10 +402,11 @@
     "saturated vitreous enamel panels (cobalt, flamingo, sunshine, mint, turquoise)",
     "teal and mint vitreous enamel",
     "chrome and brushed silver",
+    "chrome, steel and the fountain's gold and silver take no sun specular and keep their mirror reflections; leaf and petal gloss halved",
     "white vinyl and lame",
     "clear acrylic",
     "warm brass trim at street level and on ordinary facades, gold on landmarks and skyline crowns",
-    "pale asphalt"
+    "the old town's dark grey asphalt"
   ],
   "types": {
     "character": {
