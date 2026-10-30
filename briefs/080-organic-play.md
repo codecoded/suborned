@@ -26,6 +26,9 @@ On briefs/080/design.html: "1. ok 2. ok 3. ok". The seed sets timings as well as
 ## Sky, 2026-10-30: preparation > improvisation holds
 "Preparation > improvisation I think still holds, you need to know what your objective is, and play it cleverly, can't just firefight your way through it like syndicate which is the only way. e.g. you don't just roam the streets shooting at everything. You take care, watch, listen, and work out when you can go guns blazing if you want e.g. turn off camera, take out guards / bots etc to reduce being watched". So going loud is a choice you prepare for. Bands split loud in two: prepared loud (cameras off, guards and bots out first) well above unprepared loud, which should mostly fail. The adaptive plans include both.
 
+## Sky, 2026-10-30: fight length and the price of loud
+"1. try the shorter 2. yes". Quiet fights: median band 15-40 s (rivals stay at 3 HP), judged in play. Firing on police with city people within 30 m costs -2 Standing: a hidden yard stays cheap, a street fight turns the city. §05's "fighting out is a last resort, not a route" gets reworded: loud is a route you prepare for.
+
 ## Checks
 Stay rigid: no crash or stall, unknown = reject, a saved run replays exactly, every order shows its price, every fail names its cause.
 Become bands across many seeds: win rates by playing style, fight length, down rate, cost of loud against quiet. Route scripts become smoke tests that play an adaptive plan, not fixed ticks.

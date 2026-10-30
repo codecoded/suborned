@@ -38,6 +38,7 @@ The GDD keeps a default for each (the draft's, or the build's) until Sky rules. 
 Q13 of brief 035 ("Vale exits north") is settled by brief 059: "Vale comes out of the official door".
 
 ## After v0.31.0 (2026-10-28; Sky's answers, relayed by main)
+- Sky, 2026-10-30 (brief 080): quiet fights: "try the shorter" (median band 15-40 s, rivals stay 3 HP); firing on police with city people within 30 m costs -2 Standing: "yes". §05 reworded at the next version.
 - Sky, 2026-10-30: "Preparation > improvisation I think still holds, you need to know what your objective is, and play it cleverly, can't just firefight your way through it ... You take care, watch, listen, and work out when you can go guns blazing if you want e.g. turn off camera, take out guards / bots etc to reduce being watched". The tiebreaker stays. Going loud is a prepared choice; roaming and shooting mostly fails.
 - Sky, 2026-10-30 (brief 080, pacing): "no, skipping isn't the game mechanic I want - this is syndicate with strategy not the other way round. so 1 and 2 make sense, 3 also, but dangerous to add at this stage". No skip offer. Vale out 4:50, close 7:30; talking about 30% shorter. "World offers more" parked for after the Handover is solid. Whether "preparation > improvisation" stays as a tiebreaker: asked.
 - Sky, 2026-10-30 (brief 080, Motive's briefs/080/design.html): "1. ok 2. ok 3. ok". The seed sets timings as well as positions; streak caps lean the player's way, openly; the aim ladder stands as the start. Next GDD version carries §01, the fights section and the fixed limit.
