@@ -4,7 +4,7 @@ import { describe, expect, test } from 'bun:test';
 import { existsSync, mkdirSync, mkdtempSync, readFileSync, writeFileSync, utimesSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-import { appCurrent, frameLines, installRunner, judgeProofSets, judgeShots, logProblems, matchResult, onlyRows, pick, playerCommand, playerHasTpLong, rotateShots, runSteps, screen, STEPS, type Ctx, type Report, type Step } from './batch';
+import { appCurrent, frameLines, gateWords, nextCommand, resumeFrom, sessionWords, type LastRun, type ProofGate, installRunner, judgeProofSets, judgeShots, logProblems, matchResult, onlyRows, pick, playerCommand, playerHasTpLong, rotateShots, runSteps, screen, STEPS, type Ctx, type Report, type Step } from './batch';
 import { resolveShots, type Resolver } from './shots';
 
 const ctx = (over: Partial<Ctx> = {}): Ctx => ({ dry: false, mode: 'batchmode', shotsFile: '', shotsOut: '', facts: {}, say: () => {}, ...over });
@@ -280,5 +280,47 @@ describe('one player launch per step (brief 042, Splice 2026-10-26)', () => {
     expect(onlyRows(f).rows.length).toBe(3);
     expect(onlyRows(f, ['c', 'a']).rows.map(r => r.name)).toEqual(['a', 'c']);
     expect(() => onlyRows(f, ['z'])).toThrow('no row z');
+  });
+});
+
+describe('delta proofs in the batch (brief 078)', () => {
+  const delta: ProofGate = { mode: 'delta', why: '6 of 20', ran: ['r29'], skips: { r118: 'not run, unchanged since build 0.2.146 (b00cace3)', leash: 'not run, unchanged since build 0.2.146 (b00cace3)' }, failed: [], notReached: [], owed: [] };
+  test('the game-check row reads what the check prints, not "driven session ?" (0.2.146\'s row)', () => {
+    const log = 'game: driveSession replays headless on every checkpoint (12 checkpoints; x)\ngame: fireSession replays headless on every checkpoint (9 checkpoints; y)\n';
+    expect(sessionWords(log)).toBe('driven session replays, fire session replays');
+    expect(sessionWords('game: driveSession DOES NOT replay (0 checkpoints; x)\ngame: fireSession: not run, unchanged since build 0.2.146 (b00cace3)')).toBe('driven session DOES NOT replay, fire session not run');
+    expect(sessionWords('')).toBe('driven session ?, fire session ?');
+  });
+  test('the screen names what a delta did not run, and never as passed', () => {
+    const text = screen([{ id: 'game-check', title: 't', status: 'ok', seconds: 1, detail: gateWords(delta) }], { when: 'now', mode: 'batchmode', shotsOut: '/o', gate: delta });
+    expect(text).toContain('proof   delta proof: 1 section ran, 2 not run, unchanged since build 0.2.146 (b00cace3)');
+    expect(text).toContain('proof   not run, unchanged since build 0.2.146 (b00cace3): r118, leash');
+    expect(text).not.toMatch(/r118.*(passed|\bok\b)/);
+  });
+  test('a failed batch prints the command that goes on from it, naming the proof sections it re-runs first', () => {
+    const rows = [{ id: 'game-check', title: 'player proof', status: 'FAILED' as const, seconds: 1, detail: 'game:check failed' }];
+    const text = screen(rows, { when: 'now', mode: 'batchmode', shotsOut: '/o', gate: { ...delta, failed: ['r29'] } });
+    expect(text).toContain('next    bun run batch --from game-check');
+    expect(text).toContain('re-runs r29 alone first');
+    expect(nextCommand('budget')).not.toContain('alone first');
+    expect(screen([{ id: 'a', title: 't', status: 'ok', seconds: 1, detail: '' }], { when: 'now', mode: 'batchmode', shotsOut: '/o' })).not.toContain('next ');
+  });
+  test('a bare batch goes on from the failed step only on the same tree and the same player', () => {
+    const last: LastRun = { failedStep: 'game-check', failedSections: ['r29'], build: '0.2.146', snapshot: 's1', at: 'now' };
+    expect(resumeFrom(last, 's1', '0.2.146')).toBe('game-check');
+    expect(resumeFrom(last, 's2', '0.2.146')).toBeUndefined();
+    expect(resumeFrom(last, 's1', '0.2.147')).toBeUndefined();
+    expect(resumeFrom(undefined, 's1', '0.2.146')).toBeUndefined();
+  });
+  test('the budget step does not judge the old pictures of a proof set the delta did not run', () => {
+    let ran = false;
+    const rows = judgeProofSets({ frames: { r059: null, r067: null, r123: null } }, '/p/proof', '/o/stage', (_d, name) => { ran = true; return { ok: false, detail: name, problems: ['stale'], judged: 1, pass: 0 }; }, { r059: 'not run, unchanged since build 0.2.146 (b00cace3)', r067: 'not run, unchanged since build 0.2.146 (b00cace3)', r123: 'not run, unchanged since build 0.2.146 (b00cace3)' });
+    expect(ran).toBe(false); expect(rows.every(r => r.ok && r.judged === 0)).toBe(true);
+    expect(rows[0]!.detail).toBe('proof set r059: not run, unchanged since build 0.2.146 (b00cace3)');
+  });
+  test('failing example: a proof set whose section is null with no skip is judged', () => {
+    let ran = 0;
+    judgeProofSets({ frames: { r059: null } }, '/p/proof', '/o/stage', (_d, name) => { ran++; return { ok: true, detail: name, problems: [], judged: 1, pass: 1 }; });
+    expect(ran).toBe(1);
   });
 });

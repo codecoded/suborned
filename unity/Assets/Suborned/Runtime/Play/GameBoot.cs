@@ -90,8 +90,8 @@ namespace Suborned.Play
             Destroy(t); return seen.Count > 16;
         }
 
-        /// <summary>`-proofOnly a,b,…` (scratch runs only, never the batch's): run just these sections (GATED names, plus `frames` for the follow, drive
-        /// and people spots); every other section stays null, so such a proof never passes the gate.</summary>
+        /// <summary>`-proofOnly a,b,…`: run just these sections (GATED names, plus `frames` for the follow, drive and people spots); every other section stays null.
+        /// The batch uses it for a delta proof (tools/game/proofdelta.ts). A null section fails the gate unless the ledger holds an earlier pass with nothing it reads changed since.</summary>
         static readonly HashSet<string> only = GameBoot.ArgValue("-proofOnly") is string po ? new HashSet<string>(po.Split(',', StringSplitOptions.RemoveEmptyEntries)) : null;
         static bool Only(string section) => only == null || only.Contains(section);
 
@@ -181,7 +181,7 @@ namespace Suborned.Play
                 ProofInput.Focusless(false);
             }
             frames = frames.Replace("__LEASH__", leash[0]).Replace("__HOLDRANGE__", holdRange[0]);
-            frames = frames.Replace("__HUDCLICK__", $"{{\"ok\": {(hudClick[0].StartsWith("{\"ok\": true") && rangeClick[0].StartsWith("{\"ok\": true") ? "true" : "false")}, \"handover\": {hudClick[0]}, \"range\": {rangeClick[0]}}}");
+            frames = frames.Replace("__HUDCLICK__", !Only("hudClick") ? "null" : $"{{\"ok\": {(hudClick[0].StartsWith("{\"ok\": true") && rangeClick[0].StartsWith("{\"ok\": true") ? "true" : "false")}, \"handover\": {hudClick[0]}, \"range\": {rangeClick[0]}}}");
             Write(frames, rendered ? "ok" : "blank");
             yield return new WaitForSecondsRealtime(0.5f);
             Application.Quit(rendered ? 0 : 3); // the Handover's run was saved by the switch (QuitFromMenu's save)

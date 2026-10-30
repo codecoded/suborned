@@ -218,6 +218,16 @@ export function components(shot: Image, mask: Uint8Array, s: number): Comp[] {
   return comps;
 }
 
+/** A row of pips: three or more small filled marks of one size at one pitch (a fighter's health, HudToolkit.Less). Lettering is never this even: its strokes differ in width or spacing by more than a pixel. */
+export function isPipRow(cs: Comp[], s: number): boolean {
+  if (cs.length < 3) return false;
+  const wd = (c: Comp) => c.x1 - c.x0 + 1, ht = (c: Comp) => c.y1 - c.y0 + 1, spread = (v: number[]) => Math.max(...v) - Math.min(...v);
+  if (ht(cs[0]!) > 9 * s || wd(cs[0]!) > 9 * s) return false;
+  if (spread(cs.map(wd)) > 1 || spread(cs.map(ht)) > 1 || spread(cs.map(c => c.y0)) > 1) return false;
+  if (cs.some(c => c.area / (wd(c) * ht(c)) < 0.5)) return false;
+  return spread(cs.slice(1).map((c, i) => c.x0 - cs[i]!.x0)) <= 1;
+}
+
 /** Text-height strokes chained into runs. At 1080p letters touch, so a stroke blob is a letter or a whole word; a run is cut into words at the gaps wider than a
  *  letter-space, and its letters are estimated from the blobs' widths. Icons (taller, squarer) and bars (solid fill) are not text. */
 export function textRuns(shot: Image, mask: Uint8Array): Run[] {
@@ -242,6 +252,7 @@ export function textRuns(shot: Image, mask: Uint8Array): Run[] {
   }
   const out: Run[] = [];
   for (const r of runs) {
+    if (isPipRow(r.cs, s)) continue; // a health row (brief 078): 8 dots over a fighter read as three words at (929,468) of fight-loud-checkpoint
     const cs = r.cs, x0 = Math.min(...cs.map(c => c.x0)), x1 = Math.max(...cs.map(c => c.x1)), y0 = Math.min(...cs.map(c => c.y0)), y1 = Math.max(...cs.map(c => c.y1)), h = y1 - y0 + 1, w = x1 - x0 + 1;
     let words = 1; for (let i = 1; i < cs.length; i++) if (cs[i]!.x0 - cs[i - 1]!.x1 - 1 >= wordGap) words++;
     const comps = cs.reduce((a, c) => a + letters(c), 0);

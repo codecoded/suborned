@@ -3,7 +3,7 @@
 import { describe, expect, test } from 'bun:test';
 import { existsSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { ALTLINE_MAX, analyse, BAR_MAX, bands, barFromParts, BRIEFING_READING, CHIP_MAX, chipsFromParts, footprint, fromParts, glyphWords, isClock, LIMIT, LOCK_MAX, MARKER_MAX, maskOf, PILL_MAX, POP_MAX, popsFromParts, recognise, rectMask, stack, type Element, type Manifest, type Rect, type Run, type State } from './budget';
+import { isPipRow, ALTLINE_MAX, analyse, BAR_MAX, bands, barFromParts, BRIEFING_READING, CHIP_MAX, chipsFromParts, footprint, fromParts, glyphWords, isClock, LIMIT, LOCK_MAX, MARKER_MAX, maskOf, PILL_MAX, POP_MAX, popsFromParts, recognise, rectMask, stack, type Element, type Manifest, type Rect, type Run, type State } from './budget';
 import { decodePng, encodePng, type Image } from './png';
 
 const fx = (f: string) => join(import.meta.dir, 'fixtures', f);
@@ -300,5 +300,35 @@ describe('the kinds of GDD v0.26.0 §10 (Glyph\'s limits, briefs/067/glyph-budge
   test('the bar the parts name joins once, and the batch shots of 0.2.125 stay within budget with it', () => {
     const f = fix('lock-067'); expect(barFromParts(f.parts, f.man, f.shot).length).toBe(1); expect(barFromParts(f.parts, { ...f.man, elements: [...f.man.elements, el('bar', undefined)] }, f.shot)).toEqual([]);
     expect(judge('lock-067').bars.length).toBeGreaterThan(0);
+  });
+});
+
+// Brief 078: 0.2.146's fight-loud-checkpoint flagged one line of running text at (929,468), 62x5 px: the row of 8 health pips over a fighter (seen in the frame; 8 marks of 6x5 px at an 8 px pitch).
+describe('a row of health pips is not running text', () => {
+  const dots = (marks: { x: number; w: number; h: number }[]) => {
+    const shot = flat(1920, 1080, 120), hud: Image = { w: 1920, h: 1080, data: new Uint8Array(1920 * 1080 * 4) }; // the reader's sizes are defined at 1080
+    for (const m of marks) { const r = { x: m.x, y: 468, w: m.w, h: m.h }; fill(shot, r, [245, 240, 225]); fill(hud, r, [245, 240, 225]); }
+    return { shot, hud };
+  };
+  const eight = Array.from({ length: 8 }, (_, i) => ({ x: 929 + i * 8, w: 6, h: 5 }));
+  test('8 even dots: no sentence, and the shot passes', () => {
+    const { shot, hud } = dots(eight), r = analyse(shot, { state: 'rest', hud });
+    expect(r.sentences).toEqual([]); expect(r.pass).toBe(true);
+  });
+  test('failing example: marks of one height at uneven widths, as lettering is, still read as a line of running text', () => {
+    const letters: { x: number; w: number; h: number }[] = []; let x = 100;
+    for (let i = 0; i < 18; i++) { const w = [3, 2, 4, 2, 5, 3][i % 6]!; letters.push({ x, w, h: 8 }); x += w + 2; }
+    const { shot, hud } = dots(letters), r = analyse(shot, { state: 'rest', hud });
+    expect(r.sentences.length).toBe(1); expect(r.pass).toBe(false);
+  });
+  test('failing example: the reader\'s rule: too big, too few, uneven in width or pitch, or hollow is not a pip row', () => {
+    const c = (x0: number, w = 6, h = 5, area = w * h) => ({ x0, y0: 10, x1: x0 + w - 1, y1: 10 + h - 1, area });
+    const row = [0, 8, 16, 24].map(x => c(x));
+    expect(isPipRow(row, 1)).toBe(true);
+    expect(isPipRow(row.slice(0, 2), 1)).toBe(false);
+    expect(isPipRow([0, 14, 28, 42].map(x => c(x, 11, 11)), 1)).toBe(false);
+    expect(isPipRow([c(0), c(8, 9), c(19), c(27)], 1)).toBe(false);
+    expect(isPipRow([c(0), c(8), c(19), c(27)], 1)).toBe(false);
+    expect(isPipRow([0, 8, 16, 24].map(x => c(x, 6, 5, 8)), 1)).toBe(false);
   });
 });

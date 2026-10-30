@@ -10,7 +10,7 @@
 /** The proof sections that gate the check, in the order GameBoot writes them. */
 export const GATED = ['driveClick', 'fireStop', 'ringCheck', 'inputMap', 'act', 'fire', 'cars', 'hudClick', 'dblClick', 'holdActs', 'holdRange', 'leash', 'done', 'rings', 'levels', 'r29', 'r118', 'r059', 'r067'] as const;
 
-export type Gates = { ok: boolean; lines: string[]; failed: string[]; notReached: string[]; missing: string[] };
+export type Gates = { ok: boolean; lines: string[]; failed: string[]; notReached: string[]; missing: string[]; /** a delta proof's sections it did not run: never a pass; the gate takes only what planProof derives from the ledger (tools/game/proofdelta.ts) */ skipped: string[] };
 
 /** A section's fields after `ok`, as the gate line shows them: a section made of parts that each carry their own `ok` (r059's arrive, watch and pickup; r067's nine) shows the parts that
  *  failed first and names them, so the cut at 600 characters never hides the one that failed. */
@@ -22,11 +22,12 @@ function partsLine(rest: Record<string, unknown>, failed: boolean): string {
 }
 
 /** One line per section (the section's own fields after `ok`, cut at 600 characters, a failed part first) and whether every present section passes. `frames` is proof.json's `frames`. */
-export function judgeGates(frames: Record<string, unknown> | undefined | null, gated: readonly string[] = GATED): Gates {
-  const out: Gates = { ok: true, lines: [], failed: [], notReached: [], missing: [] };
+export function judgeGates(frames: Record<string, unknown> | undefined | null, gated: readonly string[] = GATED, skips: Record<string, string> = {}): Gates {
+  const out: Gates = { ok: true, lines: [], failed: [], notReached: [], missing: [], skipped: [] };
   for (const k of gated) {
     const r = frames?.[k];
     if (r === undefined) { out.lines.push(`game: ${k}: not in this proof (an older build)`); out.missing.push(k); continue; }
+    if (r === null && skips[k]) { out.lines.push(`game: ${k}: ${skips[k]}`); out.skipped.push(k); continue; } // null: the delta proof did not run it; a skip with no earlier pass is not in `skips`, so it falls through and fails
     if (r === null) { out.lines.push(`game: ${k} FAILED: the section is null (its code threw or never ran)`); out.ok = false; out.failed.push(k); continue; }
     const { ok, ...rest } = r as { ok?: unknown } & Record<string, unknown>;
     out.lines.push(`game: ${k} ${ok === true ? 'ok' : ok === false ? 'FAILED' : 'not reached'}: ${partsLine(rest, ok === false)}`);

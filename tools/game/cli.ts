@@ -17,13 +17,15 @@
 // Build numbers: tools/game/version.json (committed) counts them; every successful build takes the next (GameBuild.Version), so the app's
 // Finder Version, the pause menu, the briefing's corner and the zip all say 0.2.<build>.
 // `bun run game:signing-check` says whether the Developer ID identity and the notary profile exist, and how to make each.
+// A delta proof (brief 078, tools/game/proofdelta.ts): `--proof-plan <file>` (the batch's) runs only the plan's sections through the player's -proofOnly, takes a skip only from what the ledger proves, and records each section's answer on the ledger; `--pack` and `--send` say when the app's last proof was a delta.
 // Flags: --build (force), --check (pictures 1920x1080, frame times at the Air's 2880x1864, one proof run: the window switches to 1080p around each picture (CaptureSize -frames-size); --native: everything at the display's own size; --capture-size WxH: everything at that size; --no-air: frame times at 1920x1080; --reuse-proof: use the proof the build just took, if it is complete and newer than the build), --pack, --send [device], --dry-run, --signing-check, --no-open, --windowed (open in a window).
 import { appendFileSync, existsSync, readdirSync, readFileSync, statSync } from 'node:fs';
 import { basename, join, relative, resolve } from 'node:path';
 import { spawnSync as realSpawnSync, type SpawnSyncOptions, type SpawnSyncReturns } from 'node:child_process';
 import { usageGate } from '../gen/flags';
 import { INPUTS, fingerprint, ignoredFiles } from './fingerprint';
-import { judgeGates } from './proofgates';
+import { GATED, judgeGates } from './proofgates';
+import { companyLine, gateFile, ledgerFile, loadMap, owedCompany, planLines, planProof, ranIn, readLedger, readPlan, recordProof, writeLedger, type Plan, type Replays, type Snapshot } from './proofdelta';
 import { appShips } from './ships';
 
 const ROOT = join(import.meta.dir, '..', '..');
@@ -41,6 +43,8 @@ function notaryAuth(): string[] {
   return ['--keychain-profile', PROFILE];
 }
 const ENTITLEMENTS = join(ROOT, 'tools', 'game', 'entitlements.plist');
+/** The batch's plan for this proof (--proof-plan), if any. Without it every proof is the full one, and nothing goes on the ledger. */
+function proofPlan(): { plan: Plan; snap: Snapshot } | null { const i = process.argv.indexOf('--proof-plan'); return i >= 0 ? readPlan(process.argv[i + 1]!) : null; }
 const SIGNING = join(DIR, 'signing.json');
 const FIX = {
   identity: 'Xcode → Settings → Accounts → (your team) → Manage Certificates → + → Developer ID Application (needs the Account Holder role), or create it at developer.apple.com → Certificates and install it; then `bun run game:signing-check`',
@@ -54,11 +58,11 @@ const USAGE = `usage: bun tools/game/cli.ts [flags]   (or bun run game, game:bui
   --pack             zip the app for another Mac   --send [device]  pack and send by Taildrop (default skys-macbook-air-1)
   --dry-run          with any of the above: print what would be built, checked, packed, sent or opened, and stop (exit 0); builds, starts and writes nothing
   --signing-check    say whether the signing identity and notary profile exist
-  --no-open  --windowed  --native  --capture-size WxH  --no-air  --reuse-proof   (modifiers of the above)
+  --no-open  --windowed  --native  --capture-size WxH  --no-air  --reuse-proof  --proof-plan FILE   (modifiers of the above)
   --help, -h         print this and exit; any unknown option does the same and does nothing (no build, no Unity)`;
 usageGate(args, {
   flags: ['--build', '--check', '--pack', '--dry-run', '--signing-check', '--no-open', '--windowed', '--native', '--no-air', '--reuse-proof'],
-  valued: [{ flag: '--send' }, { flag: '--capture-size', required: true }],
+  valued: [{ flag: '--send' }, { flag: '--capture-size', required: true }, { flag: '--proof-plan', required: true }],
 }, USAGE, 'game');
 
 /** Every process this CLI starts goes through here. SUBORNED_GAME_SPAWN_LOG: each command is appended to that file as a JSON line. SUBORNED_GAME_SPAWN_STUB=1: nothing but the
@@ -193,8 +197,13 @@ function check(): boolean {
   if (reuse) console.log(`game: proof reused, taken right after the build (${reuse.screen} ${reuse.mode}, ${reuse.frames?.fps} fps mean, p99 ${reuse.frames?.p99Ms} ms)`);
   const first = reuse ? { pj: reuse, status: 0 } : proof();
   const pj = airFrames(first.pj), status = first.status; // the pictures are 1920x1080; the frame times are the Air's size
-  const drive = driveReplay(pj) && driveReplay(pj, 'fireSession', 'fire-session.script.json'); // brief 024: the trigger session (press, hold, release, tap, a lock) replays too
-  const inputs = inputChecks(pj);
+  // a skip comes from the ledger, re-derived here from the snapshot the player was built from: the plan file's own word is not taken
+  const given = proofPlan(), map = given ? loadMap() : null, ledger = given ? readLedger(ledgerFile(DIR)) : null;
+  const judged = given ? planProof(map!, given.snap, ledger!, { force: given.plan.force }) : null, skips = judged?.skips ?? {};
+  const replays: Replays = { driveSession: sessionReplay(pj, 'driveSession', 'drive-session.script.json', 'frames', skips), fireSession: sessionReplay(pj, 'fireSession', 'fire-session.script.json', 'fire', skips) }; // brief 024: the trigger session (press, hold, release, tap, a lock) replays too
+  const drive = replays.driveSession !== false && replays.fireSession !== false;
+  const inputs = inputChecks(pj, skips);
+  if (given) settleProof(given, judged!, map!, ledger!, pj, replays);
   // the app carries the audio cue file the sim step staged (briefs/067/splice.md item 2): only a build that has the cues code (the r059 proof section) is asked for it
   const ships = pj?.frames?.r059 === undefined ? { ok: true, lines: ['game: audio cues: not asked of this build (no r059 section: an older build)'] } : appShips(APP, ROOT);
   for (const l of ships.lines) console.log(l);
@@ -203,10 +212,26 @@ function check(): boolean {
 
 /** Latch 2026-10-21 (ProofInput.cs): the input checks the proof ran through the Input System's devices. ok false fails the check; ok null
  *  (the fight gave no hostile in range) is reported, not failed. */
-function inputChecks(pj: any): boolean {
-  const g = judgeGates(pj?.frames); // tools/game/proofgates.ts: the sections that gate, r059 (brief 059) and r067 (brief 067) among them since 2026-10-26
+function inputChecks(pj: any, skips: Record<string, string> = {}): boolean {
+  const g = judgeGates(pj?.frames, GATED, skips); // tools/game/proofgates.ts: the sections that gate, r059 (brief 059) and r067 (brief 067) among them since 2026-10-26
   for (const l of g.lines) console.log(l);
   return g.ok;
+}
+
+/** A session the delta proof did not take: said, when its section's skip stands; undefined. Otherwise it replays (driveReplay). */
+function sessionReplay(pj: any, key: string, name: string, section: string, skips: Record<string, string>): boolean | undefined {
+  if (!pj?.frames?.[key] && skips[section]) { console.log(`game: ${key}: ${skips[section]}`); return undefined; }
+  return driveReplay(pj, key, name);
+}
+
+/** The proof's answer on the ledger, against the snapshot the player was built from, and what the batch reads back (proofgate.json). */
+function settleProof(given: { plan: Plan; snap: Snapshot }, judged: Plan, map: ReturnType<typeof loadMap>, ledger: ReturnType<typeof readLedger>, pj: any, replays: Replays): void {
+  for (const l of planLines(judged)) console.log(`game: ${l}`);
+  const st = stamp(), next = recordProof(map, ledger, given.snap, judged, pj?.frames, replays, { version: st.version ?? '?', commit: `${st.sha ?? '?'}${st.dirty ? '+' : ''}`, at: new Date().toISOString() });
+  writeLedger(ledgerFile(DIR), next);
+  const g = judgeGates(pj?.frames, GATED, judged.skips);
+  for (const s of Object.keys(next.retry)) if (next.retry[s]!.aloneOk && g.failed.includes(s)) console.error(companyLine(map, s, next.retry[s]!));
+  Bun.write(gateFile(DIR), JSON.stringify({ schema: 'suborned.proofgate/1', mode: judged.mode, why: judged.why, build: st.version, ran: map.sections.map(s => s.id).filter(s => ranIn(pj?.frames, s)), skips: Object.fromEntries(Object.entries(judged.skips).filter(([s]) => !ranIn(pj?.frames, s))), failed: g.failed, notReached: g.notReached, owed: owedCompany(next), at: new Date().toISOString() }, null, 1) + '\n');
 }
 
 /** Brief 025: the driven session the proof saved in the built player (take control of the Scout, E on Inez, let go) replays headless on
@@ -225,6 +250,9 @@ function driveReplay(pj: any, key = 'driveSession', name = 'drive-session.script
   return ok;
 }
 
+/** The plan's sections as the player's -proofOnly; nothing for a full proof. A delta with no section still runs the base (`base` names no section). */
+function onlyArgs(): string[] { const p = proofPlan()?.plan; return p?.mode === 'delta' ? ['-proofOnly', p.only.length ? p.only.join(',') : 'base'] : []; }
+
 /** -gameProof: the briefing, play, the menu, frame times; `blank` when the frame was one flat colour (the build's URP failed to start). */
 function proof(sub = 'proof', extra: string[] = []): { pj: any; status: number | null } {
   const exe = join(APP, 'Contents', 'MacOS', 'The Suborned');
@@ -232,7 +260,7 @@ function proof(sub = 'proof', extra: string[] = []): { pj: any; status: number |
   const out = join(DIR, sub);
   run('mkdir', ['-p', out]);
   if (existsSync(join(out, 'proof.json'))) run('rm', ['-f', join(out, 'proof.json')]);
-  const p = spawnSync(bin, ['-gameProof', out, '-novsync', ...(has('--windowed') ? ['-windowed'] : []), ...(has('--native') ? ['-capture-native'] : []), ...(has('--capture-size') ? ['-capture-size', args[args.indexOf('--capture-size') + 1]] : []), ...(onePass() && !extra.includes('-capture-size') ? ['-frames-size', AIR] : []), ...extra, '-logFile', join(out, 'player.log')], { encoding: 'utf8', timeout: 900000 }); // brief 024's act, fire and car checks add about 3 min; uncapped: the headroom over 60 fps; 420 s: the follow spots, the people cost, brief 022's café call and brief 025's drive run about 4 min (180 s cut it off, 2026-10-18)
+  const p = spawnSync(bin, ['-gameProof', out, '-novsync', ...(has('--windowed') ? ['-windowed'] : []), ...(has('--native') ? ['-capture-native'] : []), ...(has('--capture-size') ? ['-capture-size', args[args.indexOf('--capture-size') + 1]] : []), ...(onePass() && !extra.includes('-capture-size') ? ['-frames-size', AIR] : []), ...onlyArgs(), ...extra, '-logFile', join(out, 'player.log')], { encoding: 'utf8', timeout: 900000 }); // brief 024's act, fire and car checks add about 3 min; uncapped: the headroom over 60 fps; 420 s: the follow spots, the people cost, brief 022's café call and brief 025's drive run about 4 min (180 s cut it off, 2026-10-18)
   const pj = existsSync(join(out, 'proof.json')) ? JSON.parse(readFileSync(join(out, 'proof.json'), 'utf8')) : null;
   console.log(`game: proof ${pj ? `${pj.status}, ${pj.screen} ${pj.mode}, HUD x${pj.hudScale}, ${pj.frames ? `${pj.frames.fps} fps mean (p99 ${pj.frames.p99Ms} ms)${pj.frames.byYaw ? `; by yaw ${pj.frames.byYaw.map((y: { yaw: number; fps: number; p99Ms: number }) => `${y.yaw}° ${y.fps} fps (p99 ${y.p99Ms} ms)`).join(', ')}` : ''}${pj.frames.follow?.length ? `; spots ${pj.frames.follow.map((f: { spot: string; fps: number; p99Ms: number; gpuMs?: number }) => `${f.spot} ${f.fps} fps (p99 ${f.p99Ms} ms${f.gpuMs !== undefined && f.gpuMs >= 0 ? `, gpu ${f.gpuMs} ms` : ''})`).join(', ')}` : ''}${pj.frames.people?.length ? `; people ${pj.frames.people.map((f: { spot: string; fps: number; p99Ms: number; gpuMs?: number }) => `${f.spot} ${f.fps} fps (p99 ${f.p99Ms} ms${f.gpuMs !== undefined && f.gpuMs >= 0 ? `, gpu ${f.gpuMs} ms` : ''})`).join(', ')}` : ''}` : 'no frames'}` : 'no proof.json'}; exit ${p.status}`);
   return { pj, status: p.status };
@@ -472,6 +500,7 @@ function zipApp(zip: string): boolean {
  *  notary profile exist, else the ad hoc build as it is (and what is missing, with its fix); then zipped with ditto (it keeps the bundle's
  *  links, modes and signature) to out/build/play/TheSuborned-<sha>[-dirty].zip, -dirty when the tree has changes the commit does not. */
 function pack(): string | null {
+  if (existsSync(gateFile(DIR))) { const g = JSON.parse(readFileSync(gateFile(DIR), 'utf8')); if (g.mode === 'delta' && g.build === stamp().version) console.log(`game: this build's proof was a delta (${Object.keys(g.skips ?? {}).length} sections not run: ${Object.values(g.skips ?? {})[0] ?? ''}); a submission build runs bun run batch --submission`); }
   const zip = zipOf(), id = identity(), prof = id ? profileOk() : false;
   let state = 'ad hoc';
   if (id) {

@@ -118,9 +118,27 @@ describe('the player writes what the gates read', () => {
 describe('game:check uses them', () => {
   test('tools/game/cli.ts judges the proof with judgeGates and asks the app for its cue file (a section a later build adds is gated by adding it to GATED, nowhere else)', () => {
     const cli = read('tools/game/cli.ts');
-    expect(cli).toMatch(/import \{ judgeGates \} from '\.\/proofgates'/);
-    expect(cli).toMatch(/judgeGates\(pj\?\.frames\)/);
+    expect(cli).toMatch(/import \{[^}]*\bjudgeGates\b[^}]*\} from '\.\/proofgates'/);
+    expect(cli).toMatch(/judgeGates\(pj\?\.frames/);
     expect(cli).toMatch(/appShips\(APP, ROOT\)/);
     expect(cli).not.toMatch(/'r118'\]\)/); // the list lives in proofgates.ts now
+  });
+});
+
+// Brief 078: a delta proof's skipped sections. A skip is never a pass; a null section with no skip still fails.
+describe('a delta proof', () => {
+  test('a null section the ledger allows is said as not run, counts as neither passed nor failed', () => {
+    const g = judgeGates({ ...allOk(), r118: null }, GATED, { r118: 'not run, unchanged since build 0.2.146 (b00cace3)' });
+    expect(g).toMatchObject({ ok: true, failed: [], skipped: ['r118'] });
+    expect(g.lines).toContain('game: r118: not run, unchanged since build 0.2.146 (b00cace3)');
+    expect(g.lines.filter(l => l.includes('r118') && /\bok\b/.test(l))).toEqual([]);
+  });
+  test('failing example: a null section with no skip fails as it always did', () => {
+    const g = judgeGates({ ...allOk(), r118: null, r29: null }, GATED, { r118: 'not run, unchanged since build 0.2.146 (b00cace3)' });
+    expect(g.ok).toBe(false); expect(g.failed).toEqual(['r29']); expect(g.skipped).toEqual(['r118']);
+  });
+  test('failing example: a skip does not excuse a section that ran and failed', () => {
+    const g = judgeGates({ ...allOk(), r118: { ok: false } }, GATED, { r118: 'not run, unchanged since build 0.2.146 (b00cace3)' });
+    expect(g.ok).toBe(false); expect(g.failed).toEqual(['r118']); expect(g.skipped).toEqual([]);
   });
 });
