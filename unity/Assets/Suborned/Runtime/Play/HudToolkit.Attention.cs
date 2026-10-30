@@ -207,6 +207,7 @@ namespace Suborned.Play
                     else { md.Spot = -1; for (int s = 0; s < 8; s++) if (Fits(s, out var at)) { md.Spot = s; want = at; break; } }
                     if (md.Spot < 0) dock = true;
                 }
+                if (dock && !seen && FightCues.Edge) { Show(md.Root, false); md.Placed = false; continue; } /* brief 084: off screen, the one edge list has it */
                 md.Docked = dock;
                 if (dock)
                 {   // the edge nearest the watcher: from the screen's centre toward it, inset 12 px, clear of the roster column

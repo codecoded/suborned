@@ -96,7 +96,8 @@ namespace Suborned.Play
             if (!fireBuilt) BuildFire();
             firePaints.Clear(); fireDiscs.Clear(); var g = host.Game; float now = Time.unscaledTime; bool live = !m.Ended && !m.BriefingOpen && host.Modal == ModalGate.Modal.None;
             var cam = host.View;
-            if (live && cam) { ShotFx(now); if (!host.OneInput) FireMarks(now); Reticle(now); CarFx(now); } // engine 0.35 (Glyph b-final, cut): no firing discs over the shooters: they face him and fire // Sky 2026-10-26: no tracers (the facing says who shoots whom)
+            if (live && cam) { if (FightCues.Hot) CueShotFx(now); else ShotFx(now); if (!host.OneInput) FireMarks(now); Reticle(now); CarFx(now); } // engine 0.35 (Glyph b-final, cut): no firing discs over the shooters: they face him and fire // Sky 2026-10-26: no tracers (the facing says who shoots whom)
+            CuesFrame(live && cam, now, W, H); /* brief 084 */
             fireLayer.MarkDirtyRepaint(); // its place in the marks (above every mark but the speech and the pops): StepAside
             RivalsForCarMarks(live && cam && !host.Following); // Glyph r123 §3: the car disc over each rival walking for the held car
             FireLineFrame(W, H, live);

@@ -77,6 +77,7 @@ namespace Suborned.Play
             if (on)
                 foreach (var w in h.WindowMarks)
                 {
+                    if (CueNoPlate(w.Kind)) continue; /* brief 084: no plate over anything that moves */
                     var at = h.AnchorWorld(w.Key); if (!at.HasValue) continue;
                     bool person = w.Key is "guard" or "patrol"; if (!Proj(at.Value + Vector3.up * (person ? 2.45f : w.Key.StartsWith("camera/") ? 0.75f : 1.7f), out var q)) continue;
                     while (winEls.Count <= wu)

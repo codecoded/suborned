@@ -84,12 +84,12 @@ namespace Suborned.Play
             foreach (var r in reticles.Values)
             {
                 float age = r.Gone >= 0f ? now - r.Gone : -1f; if (age > 0.25f) { reticleGone.Add(r.Id); continue; }
-                float up = r.Id.StartsWith("car:") ? 1.9f : ReticleUp;
+                float up = r.Id.StartsWith("car:") ? 1.9f : ReticleUp + (FightCues.Target ? 0.4f : 0f); /* brief 084: clear of the target's corners */
                 var w = h.DrawnAt(r.Id); Vector2 q = default; bool proj = w.HasValue && Proj(w.Value + Vector3.up * up, out q) && InView(q);
                 if (proj) { r.At = q; r.OnScreen = true; }
                 else if (w.HasValue && h.View) r.OnScreen = false;
                 // the disc over the head
-                Show(r.Root, r.OnScreen); Show(r.Edge, !r.OnScreen && w.HasValue && r.Gone < 0f);
+                Show(r.Root, r.OnScreen); Show(r.Edge, !r.OnScreen && w.HasValue && r.Gone < 0f && !FightCues.Edge);
                 if (r.OnScreen)
                 {
                     float set = Mathf.Clamp01((now - r.Born) / 0.18f), ease = 1f - (1f - set) * (1f - set), scale = Mathf.Lerp(1.8f, 1f, ease);

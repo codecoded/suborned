@@ -216,6 +216,7 @@ namespace Suborned.Play
                 Layers(f, key, state, pz, shotNew, nowU);
                 if (AnimLog != null && opIdx >= 0) LogFigure(key, f, state, shotNew, speed, opIdx);
             }
+            Jolts();
         }
 
         /// <summary>Engine 0.35 (brief 039 B, Forma's pin-poses.md §D; Glyph b-final): the base clip a fighter's posture asks for. In cover he
@@ -418,7 +419,7 @@ namespace Suborned.Play
             for (int k = 0; k < 4; k++)
             {
                 var (t, _, _, shown) = things[OpKeys[k]]; bool on = shown && figs.ContainsKey(OpKeys[k]) && t.gameObject.activeInHierarchy;
-                if (on && FightQuiet && !host.Selected[k]) on = false; // engine 0.35 (Glyph b-final): in a fight only the selected agent's own ring
+                if (on && FightQuiet && !host.Selected[k] && !FightCues.Mine) on = false; // engine 0.35 (Glyph b-final): in a fight only the selected agent's own ring
                 if (cellRings[k] == null)
                 {
                     var go = new GameObject("cellring/" + k); go.transform.SetParent(root, false); var lr = go.AddComponent<LineRenderer>();
@@ -430,12 +431,12 @@ namespace Suborned.Play
                 var r = cellRings[k]; if (r.gameObject.activeSelf != on) r.gameObject.SetActive(on);
                 // brief 083 note 5: the selected agent's ring is unmistakable: wider and thicker, on an ink underlay that carries it over pale paving and in shade; the rest stay the thin ring
                 if (cellUnder[k] == null) { var ug = new GameObject("cellringunder/" + k); ug.transform.SetParent(root, false); var ul = ug.AddComponent<LineRenderer>(); ul.sharedMaterial = Unlit(new Color(0.043f, 0.086f, 0.082f)); ul.loop = true; ul.positionCount = 32; ul.useWorldSpace = false; ul.alignment = LineAlignment.TransformZ; ug.transform.localRotation = Quaternion.Euler(90f, 0f, 0f); ul.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off; for (int i = 0; i < 32; i++) { float a = i * Mathf.PI * 2f / 32f; ul.SetPosition(i, new Vector3(Mathf.Cos(a) * 0.52f, Mathf.Sin(a) * 0.52f, 0f)); } ul.widthMultiplier = 0.2f; cellUnder[k] = ul; }
-                { bool uo = on && host.Selected[k]; if (cellUnder[k].gameObject.activeSelf != uo) cellUnder[k].gameObject.SetActive(uo); if (uo) cellUnder[k].transform.position = t.position + Vector3.up * 0.03f; }
+                { bool uo = on && (host.Selected[k] || FightCues.Mine); if (cellUnder[k].gameObject.activeSelf != uo) cellUnder[k].gameObject.SetActive(uo); if (uo) { cellUnder[k].transform.position = t.position + Vector3.up * 0.03f; cellUnder[k].transform.localScale = Vector3.one * (host.Selected[k] ? 1f : 0.885f); cellUnder[k].widthMultiplier = host.Selected[k] ? 0.2f : 0.11f; } }
                 if (!on) continue;
-                bool sel = host.Selected[k]; r.transform.position = t.position + Vector3.up * 0.05f; r.widthMultiplier = sel ? 0.13f : 0.045f;
+                bool sel = host.Selected[k]; r.transform.position = t.position + Vector3.up * 0.05f; r.widthMultiplier = sel ? 0.13f : FightCues.Mine ? 0.067f : 0.045f;
                 float pt = Time.unscaledTime - host.RingPulseAt[k], pu = pt >= 0f && pt < 0.4f ? Mathf.Sin(pt / 0.4f * Mathf.PI) : 0f; // brief 067 G1 (Glyph): a portrait click's cue: 1.0 → 1.3 → 1.0, alpha 1 → 0.6 → 1, 0.4 s
-                r.transform.localScale = Vector3.one * ((sel ? 1.24f : 1f) + 0.3f * pu);
-                var c = new Color(0.376f, 0.878f, 0.918f, (sel ? 1f : 0.7f) * (1f - 0.4f * pu)); r.startColor = r.endColor = c;
+                r.transform.localScale = Vector3.one * ((sel ? 1.24f : FightCues.Mine ? 1.095f : 1f) + 0.3f * pu);
+                var c = new Color(0.376f, 0.878f, 0.918f, (sel || FightCues.Mine ? 1f : 0.7f) * (1f - 0.4f * pu)); r.startColor = r.endColor = c;
                 var disc = things[SelKeys[k]].t; if (disc.gameObject.activeSelf) disc.gameObject.SetActive(false); // the ring is the selection
             }
         }

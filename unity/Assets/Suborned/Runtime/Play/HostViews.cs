@@ -614,7 +614,7 @@ namespace Suborned.Play
             for (int i = 0; i < n; i++)
             {
                 var f = list[i]; string key = f.Watcher.Length > 0 ? f.Watcher : "fan/" + i;
-                if (CameraDead(f.Watcher)) continue; // Glyph 058 §2: a camera cut or shot out has no cone (its dead disc stays)
+                if (CameraDead(f.Watcher) || FightCues.Blind && !f.Live) continue; // brief 084: the hollow cone's instead (HudToolkit.CuesBlind) // Glyph 058 §2: a camera cut or shot out has no cone (its dead disc stays)
                 if (!seen.Add(key)) continue;
                 if (!fanBy.TryGetValue(key, out var d)) fanBy[key] = d = NewFan(key);
                 d.Want = strong == null ? 1f : i < strong.Count && strong[i] ? 1f : 0f;

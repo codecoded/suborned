@@ -58,7 +58,7 @@ namespace Suborned.Play
                 rrEdgeArrow.style.position = Position.Relative; rrEdgeArrow.style.marginLeft = 4; rrEdgeArrow.style.flexShrink = 0;
                 Show(rrEdge, false); manifest.Add((rrEdge, "image", () => "reroute edge chip")); /* the 2x check and the layout audit find it */
             }
-            bool on = rr.On && !m.Ended && host.View != null;
+            bool on = rr.On && !m.Ended && host.View != null && (!FightCues.Blind || rr.Hover && !host.Game.FightOn); /* brief 084: route lines on hover only, never in a fight */
             Show(rrWaitCameo, false); Show(rrPatrolCameo, false); Show(rrEdge, false);
             RerouteShown = on ? (rr.Hover ? "hover" : "live") + ":" + rr.Route.Count + (rr.FromEngine ? ":engine" : ":grid") : "";
             if (!on) return;
@@ -87,7 +87,7 @@ namespace Suborned.Play
             if (rr.Hover) GroundRing(rr.Patrol, 0.68f, Cream, 2f, false, 0.55f); // where it is now (the hover ring's size)
             bool waitSeen = Proj(rr.Wait + Vector3.up * 0.9f, out var wq) && InView(wq);
             if (waitSeen) { Show(rrWaitCameo, true); rrWaitCameo.style.left = wq.x - 9f; rrWaitCameo.style.top = wq.y - 9f; }
-            else
+            else if (!FightCues.Edge)
             {   // an edge chip toward it
                 var W = root.layout.width > 0 ? root.layout.width : 1920f; var H = root.layout.height > 0 ? root.layout.height : 1080f; var c = new Vector2(W / 2f, H / 2f);
                 Proj(rr.Wait, out var raw); var dir = raw - c; if (dir.sqrMagnitude < 1f) dir = Vector2.right; dir.Normalize();

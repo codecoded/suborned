@@ -79,7 +79,7 @@ namespace Suborned.Play
         public Game Game { get; private set; }
         public SimBundle.Loaded Bundle { get; private set; }
         /// <summary>Brief 029: the menu's "Fight range" (from the Handover) or "The Handover" (from the range): the other scene.</summary>
-        public void SwitchRangeScene() { if (Game != null && Fault == null) Save(); if (rangeMode) FrontEnd.LoadClock.Begin(false); UnityEngine.SceneManagement.SceneManager.LoadScene(rangeMode ? "HarbourDistrict" : "FightRange"); }
+        public void SwitchRangeScene() { if (Game != null && Fault == null) Save(); if (rangeMode) FrontEnd.LoadClock.Begin(false); UnityEngine.SceneManagement.SceneManager.LoadScene(rangeMode ? FrontEnd.GameScene : "FightRange"); }
         [Header("Brief 029: the fight range")]
         [Tooltip("This scene is the fight range: the range's own site (open or dense), no briefing, no Handover cast; spawns from the range panel.")]
         public bool rangeMode; public string rangeLayout = "open";

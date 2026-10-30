@@ -120,7 +120,8 @@ namespace Suborned.Play
                 foreach (var (p, f) in Every(rv.Approach, 2.4f)) DiamondAt(p, f, 3.4f, RivalViolet);
                 if (Proj(rv.Stop, out var sq) && InView(sq)) { Show(rvStop, true); rvStop.style.left = sq.x - 11; rvStop.style.top = sq.y - 11; Icon(rvStop.Q("g"), "arrive", Cream); }
                 bits.Add($"approach:{rv.Approach.Count}");
-                if (rv.Edge)
+                if (rv.Edge) cueRivalCar = rv.Car; /* brief 084: the one edge list takes it */
+                if (rv.Edge && !FightCues.Edge)
                 {
                     var W = root.layout.width > 0 ? root.layout.width : 1920f; var H = root.layout.height > 0 ? root.layout.height : 1080f; var c = new Vector2(W / 2f, H / 2f);
                     var cam = h.View; var sp = cam.WorldToScreenPoint(rv.Car); var raw = RuntimePanelUtils.ScreenToPanel(root.panel, new Vector2(sp.x, Screen.height - sp.y)); if (sp.z < 0) raw = c - (raw - c);
