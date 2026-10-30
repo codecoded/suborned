@@ -18,6 +18,7 @@
     "game:check": "bun tools/game/cli.ts --check",
     "batch": "bun tools/game/batch.ts",
     "guard": "bun tools/game/playing.ts",
+    "simview": "bun tools/game/playing.ts bun tools/simview/build.ts",
     "shots:shrink": "bun tools/game/shrink.ts",
     "storage": "bun tools/storage/cli.ts",
     "qa": "bun tools/qa/cli.ts",
