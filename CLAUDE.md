@@ -19,7 +19,7 @@ Lean game repo: GDD → crew → plan → visible world. It grows only when a ta
   - rules come only from Keel's rulebook: unknown = reject
 - **Look:**
   - Bright retro-future. References: the 26 Sep paintings (`briefs/008/concepts/`) for street level, the AtomicAge and Blocks sheets for the skyline.
-  - Materials: cream stone, seafoam bands, chrome. Brass is a thin line at street level and on ordinary facades (SF-21); gold may be a large surface on landmarks (Sky, 2026-10-30, after the old gold tower: "gold works"; §15 changes at the next GDD version).
+  - Materials: cream stone, seafoam bands, chrome. Brass is a thin line at street level and on ordinary facades (SF-21); gold may be a large surface on landmarks (Sky, 2026-10-30, after the old gold tower: "gold works"; GDD v0.32.0 §15).
   - Signals (cones red, guard amber, rivals violet) stay readable by drawing unlit and emissive, each with its own shape or motion cue. They don't own their colours: red, amber and violet are free for the world and props (Sky, 2026-10-16, which dropped the crew's ΔE ≥ 20 colour reservation).
   - **Concept art first:** look decisions come from concept art made from an open brief (style contract `concept_prompt`), not from palette tables. Show Sky pictures.
   - People prompts carry no date (a strong 1950s ruined the character concepts). The cell are visitors from a nearby timeline: sharper, no deco or 1950s tailoring.

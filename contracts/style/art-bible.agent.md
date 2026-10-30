@@ -8,7 +8,7 @@ Bright retro-future: a 1950s world that discovered atomic power centuries ago. 1
 ## World
 - **City:** cream and peach limestone under a warm hazy sun; saturated enamel accents (cobalt, flamingo, sunshine, mint, turquoise) on panels, awnings, signs and trim, never whole buildings; chrome fixtures; palms and cypress; long soft shadows.
 - **Civic block:** cream stone, seafoam and deep teal enamel bands, chrome spheres, banners, planted terraces, pale paving with teal bands.
-- **Brass is a thin line only** (frames, beads, hairlines, SF-21), never a large surface. Gold only on skyline crowns.
+- **Brass is a thin line** at street level and on ordinary facades (frames, beads, hairlines, SF-21), never a large surface there. Gold may be a large surface on landmarks (Sky, 2026-10-30: "gold works"; the old gold HQ tower), and skyline crowns keep gold.
 - **Materials:** honed limestone, granite kerbs, vitreous enamel panels, chrome and brushed silver, white vinyl, clear acrylic, pale asphalt.
 - **Curvy and smooth, never harsh** (Sky, 2026-10-24: "modern retro future world is curvy and smooth, not harsh lines and strong angles"): pavement and kerb corners are rounded returns, building corners arc, props have radiused edges; no sharp mitres or boxy corners where a curve can go.
 - **Character over triangles:** keep silhouette and chrome on props; never slim a prop until it loses its character.
@@ -16,7 +16,7 @@ Bright retro-future: a 1950s world that discovered atomic power centuries ago. 1
 ## People and robots
 - **The city's people** wear space-age couture as street clothing, never 1950s period dress. They're a mixed cast, with job readable at a distance by silhouette plus one colour block. No long coats or flowing hems (they're hard to animate).
 - **Security and institutions:** sleeker; ivory, ink black, gold trim, chrome couture, armour accents.
-- **The cell** are visitors from a nearby timeline: sharper and cleaner, matte technical fabrics, fitted layers. No deco, gold trim or 1950s tailoring. They pass in the street and stand out at 50 px.
+- **The cell** are visitors from a nearby timeline: sharper and cleaner, matte technical fabrics, fitted layers. No deco, gold trim or 1950s tailoring. They pass in the street and stand out at play zoom.
 - **Robots** are 1950s style and clockwork-smart, with dot-matrix display faces, one personality prop each, and no cartoon eyes.
 
 ## Signals

@@ -188,7 +188,7 @@
    "what": "the Scout has watched and listened to Inez: her routine, need and temperament known",
    "at": "0:50",
    "from": ["watch-s", "listen-s"],
-   "gdd": "listens to Inez (1:02)",
+   "gdd": "listens to Inez (0:50)",
    "src": "GDD §07 route A; rulebook values watch-s 20 (Sky 2026-10-15) and listen-s 30 (Sky 2026-10-30, brief 080 pacing)",
    "note": "Retimed with Sky's Watch ruling (20 s, was 52): Watch then Listen is 1:02 of the Scout's time, not 1:34; the walk to her is the route's own. GDD §07 text owed. The guard's entry window opens when the Fixer's Help can first land after it (roles.guard)."
   },

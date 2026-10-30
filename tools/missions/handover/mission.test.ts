@@ -136,11 +136,12 @@ describe('handover mission file', () => {
     let i = stops.findIndex(([, from, to]) => from <= 0 && to > 0), j = i;
     while (i > 0 && stops[i - 1]![0] === stops[i]![0] && stops[i - 1]![2] === stops[i]![1]) i--;
     while (j + 1 < stops.length && stops[j + 1]![0] === stops[j]![0] && stops[j + 1]![1] === stops[j]![2]) j++;
-    const from = stops[i]![1], end = stops[j]![2], engine: number[] = [];
+    // his marks keep their anchor, site.schedule.guardMark, when the shift comes forward (sim GameResponse.PostOf; brief 080 pacing)
+    const post = stops[i]![1], end = stops[j]![2], from = post - (((post - site.schedule.guardMark) % period) + period) % period, engine: number[] = [];
     for (let k = Math.ceil(-from / period); from + k * period <= end; k++) engine.push(from + k * period);
     if (engine.at(-1) !== end) engine.push(end);
     expect(stops[i]![0]).toBe('office-entrance'); // his door
-    expect(marks).toEqual(engine); // 1:00, 2:30, 4:00, then 5:30 past the shift
+    expect(marks).toEqual(engine); // 1:00, 2:30, 4:00, then 4:30, the shift's end
     expect(end).toBe(offsetS(mission.timeline.find(e => e.what === 'handover chime')!.at)); // (shift end) is the chime
     expect(mission.events.map(e => [e.id, e.at, e.windowS, e.surge])).toEqual([['records-handover', '4:30', 300, 1.8]]); // the chime's crowd
   });
