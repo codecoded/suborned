@@ -152,12 +152,15 @@ namespace Suborned.OldTown.Editor.Swap
 
         /// <summary>The testbed's cafe-planting.js materials: leaf #afbea1 / petal white, normal 0.16, roughness 0.49 / 0.64 x ORM.g (the mask), cull off,
         /// the two leaf keywords; soil: its maps, normal 0.4, roughness 1 x ORM.g, cull back, no shadow caster, on today's shader.</summary>
+        /// <summary>Glint, brief 079: x the mask's gloss on leaves and petals. At 1 the leaves were the largest single source of white points in the café square views (a third to a half). 0.5 cuts them as far as 0.4 or 0 would for points that read, and keeps the leaf's dark sheen.</summary>
+        const float LeafGloss = .5f;
+
         static Material Plant(string name, Texture2D albedo, Color colour, Texture2D nrm, float bump, Texture2D mask, bool leaf)
         {
             var m = NewMat(name, leaf ? LeafShader : LitShader);
             m.SetFloat("_WorkflowMode", 1f); m.SetTexture("_BaseMap", albedo); m.SetColor("_BaseColor", colour);
             m.SetTexture("_BumpMap", nrm); m.SetFloat("_BumpScale", bump); m.EnableKeyword("_NORMALMAP");
-            m.SetTexture("_MetallicGlossMap", mask); m.EnableKeyword("_METALLICSPECGLOSSMAP"); m.SetFloat("_Metallic", 0f); m.SetFloat("_Smoothness", 1f); m.SetFloat("_SmoothnessTextureChannel", 0f);
+            m.SetTexture("_MetallicGlossMap", mask); m.EnableKeyword("_METALLICSPECGLOSSMAP"); m.SetFloat("_Metallic", 0f); m.SetFloat("_Smoothness", leaf ? LeafGloss : 1f); m.SetFloat("_SmoothnessTextureChannel", 0f);
             m.SetFloat("_Cull", leaf ? 0f : 2f); m.doubleSidedGI = leaf; m.SetFloat("_ReceiveShadows", 1f);
             foreach (var k in LeafKeywords) if (leaf) m.EnableKeyword(k); else m.DisableKeyword(k);
             m.SetShaderPassEnabled("ShadowCaster", leaf);

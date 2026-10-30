@@ -11,7 +11,7 @@ Lean game repo: GDD → crew → plan → visible world. It grows only when a ta
 - **World:** an alternate history, "a 1950s world that discovered atomic power centuries ago": 1950s style, technology centuries ahead. No thinking machines or networks: robots are clockwork-smart on fixed routines, records are paper and microfilm, cameras are closed-circuit and watched by people, calls are by voice. Information moves through people, so people are the weak point. An abundant city that fears disorder: optimistic surface, coercive underneath. Design test for every object: 1950s style, centuries-ahead tech (crossings have floating signal eyes and light set in the road, never a zebra).
 - **The Handover** (GDD §07) is the capstone and the reference every generated mission must match: take Councillor Vale alive at shift handover outside the Civic Records Office, by the front door (Inez the waitress) or at the pickup (the driver). Keep it; its timings and placements may move with the world.
 - **Fixed limits:**
-  - camera above the street, never first person: play zoom 14 at 38°, opening yaw 30, turned in quarter steps with Q/E (the Records Office front is played at 210); characters 40–60 px at 1080p
+  - camera above the street, never first person: play zoom 10 at 38° (Sky, 2026-10-30), the wheel zooms out to 14 or further for planning, opening yaw 30, turned in quarter steps with Q/E (the Records Office front is played at 210); characters about 80 px at 1080p at play zoom
   - exteriors only: interiors are timed off-screen actions
   - levels: street 0, deck 9.43 m, sky concourse 24 m
   - 60 fps at play zoom on the 15-inch MacBook Air M4

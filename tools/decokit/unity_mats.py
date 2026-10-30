@@ -54,6 +54,22 @@ def _guid(name, legacy):
     return hashlib.md5(f"suborned.decokit.mat/{name}".encode()).hexdigest()
 
 
+# Glint, brief 079 (Sky: "why is everything glistening?"): these metals keep their reflections and lose the sun's specular, the standard URP Lit "Specular Highlights" off. Their
+# smoothness (0.95 to 1 x mask) drew the sun at up to 7072 in linear on a few pixels: the white fire on the sedans' trim, poles and the fountain's rings. Lowering the smoothness instead
+# only widens the white and takes the mirror away (measured, briefs/079/glisten/index.html).
+SUN_OFF = ("DK_Chrome", "DK_Steel", "DK_Fountain_Gold", "DK_Fountain_Silver", "DK_Cross_Housing")  # DK_Cross_Housing: Vela, brief 079 note 2, the crossing's metal rings (no .mat of that name unless the candidate is built)
+
+
+def sun_off(text):
+    """A .mat's text with the sun's specular off: the float and the keyword together, keywords sorted as Unity writes them. No shader edit: the keyword is already declared."""
+    if "- _SpecularHighlights: 1\n" not in text:
+        return text
+    text = text.replace("- _SpecularHighlights: 1\n", "- _SpecularHighlights: 0\n")
+    m = re.search(r"  m_ValidKeywords:(?: \[\]\n|\n((?:  - \S+\n)*))", text)
+    keys = sorted({*re.findall(r"- (\S+)", m.group(1) or ""), "_SPECULARHIGHLIGHTS_OFF"})
+    return text[: m.start()] + "  m_ValidKeywords:\n" + "".join(f"  - {k}\n" for k in keys) + text[m.end() :]
+
+
 def _fid(name):
     return -int.from_bytes(hashlib.sha256(f"suborned.decokit.matversion/{name}".encode()).digest()[:8], "big") >> 1 or -1
 
@@ -351,6 +367,10 @@ def write(table_path, dst, retuned):
     out += posters.write_mats(dst, legacy, meta_text, tex_guid)
     import carpaint  # brief 075 roll-out: the 1950s car paints for presentation traffic (body / roof variants of DK_CarEnamel_Ivory), the same recolour
     out += carpaint.write_mats(dst, legacy, meta_text, colourways._recolour)
+    for n in SUN_OFF:  # brief 079: after the colourways, which keep the base text as it was (only these four changed; the measured set)
+        f = Path(dst) / "Materials" / f"{n}.mat"
+        if f.exists():
+            f.write_text(sun_off(f.read_text()))
     (Path(dst) / "surface-detail-mats.json").write_text(json.dumps(dict(schema="suborned.surfacedetail/1", brief="072-F", source="tools/decokit/unity_mats.py surface_detail",
                                                                        materials=dict(sorted(detailed.items()))), indent=1) + "\n")
     return out

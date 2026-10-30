@@ -58,7 +58,7 @@ namespace Suborned
         public const string ResourcePath = "Atmosphere/lens";
 
         // ---- data (suborned.lens/1) ----
-        [Serializable] public sealed class Bloomp { public float threshold, intensity, scatter; public string tint; }
+        [Serializable] public sealed class Bloomp { public float threshold, intensity, scatter, clamp; public string tint; }
         [Serializable] public sealed class Dofp { public bool enabled; public float start, end, maxRadius; public bool highQuality; }
         [Serializable] public sealed class Skyp { public float hazeHeight, hazeHeightLong, aureole, aureolePower, hazeLift, broad, broadPower, peach; } // peach (Glint 2026-10-24, optional, 0 = none): a warm peach cast on the blue-to-haze blend, so the band between sky and horizon does not pass through grey
         [Serializable] public sealed class Palp { public string zenith, mid; public float hazeHeight; } // hazeHeight: the teal sky's own band (Glint 2026-10-23); 0 = sky.hazeHeight
@@ -291,6 +291,7 @@ namespace Suborned
         {
             var bl = p.Add<Bloom>(false);
             bl.threshold.Override(b.threshold); bl.intensity.Override(b.intensity); bl.scatter.Override(b.scatter); bl.tint.Override(Hex(b.tint));
+            if (b.clamp > 0f) bl.clamp.Override(b.clamp); // brief 079: the most one pixel can give the bloom (0 or absent: the scene grade's, unclamped)
         }
 
         /// <summary>The play grade: saturation = the scene grade's own x (1 + saturationPercent / 100), and a warm shadow lift (linear, before the
