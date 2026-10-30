@@ -57,6 +57,7 @@ Q13 of brief 035 ("Vale exits north") is settled by brief 059: "Vale comes out o
 - Aster, 2026-10-30: mission.json's prep A `gdd` quote follows §07 (0:50, "GDD §07 text owed" in its note); the root README's art bible link follows the new version.
 
 ## After v0.31.0 (2026-10-28; Sky's answers, relayed by main)
+- Sky, 2026-10-30: "remove the people for now outside of the handover and vehicles - that's for demo flybys later on". The old-town play build carries no baked crowd or traffic outside the Handover zone; a switch keeps them for demo flybys.
 - Sky, 2026-10-30: "I want to be playing the old town! Whole weeks work has been getting that sorted - which has the harbour district within it. Shouldn't need any new checks as outside of that area is unplayable at moment". The player build plays OldTown.unity (the old builders with the Handover zone in it), replacing HarbourDistrict. No new checks for the area outside the zone. Corrects v0.33.0's [D] line on which world the submission plays.
 - Sky, 2026-10-30 (brief 082): "they block vales car if you take it since it shouldn't be at the service entrance". So the rivals box in Vale's car too once you take it there; corrects v0.33.0's reading that the block on your own car replaced it.
 - Sky, 2026-10-30 (brief 080): quiet fights: "try the shorter" (median band 15-40 s, rivals stay 3 HP); firing on police with city people within 30 m costs -2 Standing: "yes". §05 reworded at the next version.
