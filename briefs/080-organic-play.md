@@ -11,6 +11,9 @@ Owner: Aster. Opened 2026-10-30. Sky: "let the game play organically - player sh
 ## Sky, 2026-10-30: only the start is seeded
 "only things that should matter is starting positions, which can be seeded, and then every thing plays out from there". So the seed sets the starting state, and no dice are rolled during play: everything after the start is the systems playing out. Keel measures how far runs diverge from different starts.
 
+## Sky, 2026-10-30: where this goes (not this brief's work)
+"a real living world needs organic play - we add 1000 characters, they don't run on scripts, they run on genetic algos kinda thing, based on their own seed. Some characters will always be the same, others will have fuzziness". For now: per-character seed from game seed + id, class stats with a per-character offset, a fuzziness value per character (0 = always the same), so the Handover's slice doesn't close that door.
+
 ## Checks
 Stay rigid: no crash or stall, unknown = reject, a saved run replays exactly, every order shows its price, every fail names its cause.
 Become bands across many seeds: win rates by playing style, fight length, down rate, cost of loud against quiet. Route scripts become smoke tests that play an adaptive plan, not fixed ticks.
