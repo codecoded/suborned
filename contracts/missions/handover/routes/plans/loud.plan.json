@@ -122,83 +122,80 @@
   {
    "op": "scout",
    "do": "draw",
-   "when": "fight.loud",
    "after": [
     "enter"
    ],
-   "why": "draws when the final fight opens, not before: holstered, he is passed by the response unit on its way to the door (a drawn weapon seen on the street is a witnessed incident); drawn, he fights on his own once his locks are spent (weapons free, always on: brief 039 retires the stance order; its shots are untraced)"
-  },
-  {
-   "op": "scout",
-   "do": "fire",
-   "target": "security-2",
-   "label": "scout-lock1",
-   "why": "brief 027 (tuning.md §11.3, focus): as the doors open all three lock the same officer, the response unit's nearest (security-2, 2-4 m from the car as it passes): three fresh guns put three hits on its 3 health in one volley. Given late (1.0 s after the doors open), the Scout and the Fixer are downed"
-  },
-  {
-   "op": "fixer",
-   "do": "draw",
-   "when": "fight.loud",
-   "after": [
-    "enter"
-   ],
-   "why": "draws when the final fight opens, not before: holstered, he is passed by the response unit on its way to the door (a drawn weapon seen on the street is a witnessed incident); drawn, he fights on his own once his locks are spent (weapons free, always on: brief 039 retires the stance order; its shots are untraced)"
-  },
-  {
-   "op": "fixer",
-   "do": "fire",
-   "target": "security-2",
-   "label": "fixer-lock1",
-   "why": "brief 027 (tuning.md §11.3, focus): as the doors open all three lock the same officer, the response unit's nearest (security-2, 2-4 m from the car as it passes): three fresh guns put three hits on its 3 health in one volley. Given late (1.0 s after the doors open), the Scout and the Fixer are downed"
-  },
-  {
-   "op": "tech",
-   "do": "draw",
-   "when": "fight.loud",
-   "after": [
-    "enter"
-   ],
-   "why": "draws when the final fight opens, not before: holstered, he is passed by the response unit on its way to the door (a drawn weapon seen on the street is a witnessed incident); drawn, he fights on his own once his locks are spent (weapons free, always on: brief 039 retires the stance order; its shots are untraced)"
-  },
-  {
-   "op": "tech",
-   "do": "fire",
-   "target": "security-2",
-   "label": "tech-lock1",
-   "why": "brief 027 (tuning.md §11.3, focus): as the doors open all three lock the same officer, the response unit's nearest (security-2, 2-4 m from the car as it passes): three fresh guns put three hits on its 3 health in one volley. Given late (1.0 s after the doors open), the Scout and the Fixer are downed"
+   "why": "brief 079 (Keel's re-fit, engine 0.36.0; Waymark): drawn 1 s before the fight opens (Enter + 67 s, 3:44.1): the fight.spacing stands moved the officers' first shots",
+   "gap": 67
   },
   {
    "op": "scout",
    "do": "fire",
    "target": "security-1",
+   "label": "scout-lock1",
+   "why": "brief 079 (Keel's re-fit): security-1, the blocker, first"
+  },
+  {
+   "op": "fixer",
+   "do": "draw",
+   "after": [
+    "enter"
+   ],
+   "why": "brief 079 (Keel's re-fit, engine 0.36.0; Waymark): drawn 1 s before the fight opens (Enter + 67 s, 3:44.1): the fight.spacing stands moved the officers' first shots",
+   "gap": 67
+  },
+  {
+   "op": "fixer",
+   "do": "fire",
+   "target": "security-1",
+   "label": "fixer-lock1",
+   "why": "brief 079 (Keel's re-fit): security-1, the blocker, first"
+  },
+  {
+   "op": "tech",
+   "do": "draw",
+   "after": [
+    "enter"
+   ],
+   "why": "brief 079 (Keel's re-fit, engine 0.36.0; Waymark): drawn 1 s before the fight opens (Enter + 67 s, 3:44.1): the fight.spacing stands moved the officers' first shots",
+   "gap": 67
+  },
+  {
+   "op": "tech",
+   "do": "fire",
+   "target": "security-1",
+   "label": "tech-lock1",
+   "why": "brief 079 (Keel's re-fit): security-1, the blocker, first"
+  },
+  {
+   "op": "scout",
+   "do": "fire",
+   "target": "security-2",
    "after": [
     "scout-lock1"
    ],
-   "when": "security.officer-down",
-   "every": 0.5,
-   "why": "the first officer down: lock the blocker (security-1, going for the road at the planter run 11 m east of the car), the one that would shoot the Enforcer as he walks Vale in (a window of about 1.5 s before the at-will fire downs it: every 0.5 s)"
+   "why": "brief 079 (Keel's re-fit): security-2 1.5 s after the first lock, not on security-1's fall",
+   "gap": 1.5
   },
   {
    "op": "fixer",
    "do": "fire",
-   "target": "security-1",
+   "target": "security-2",
    "after": [
     "fixer-lock1"
    ],
-   "when": "security.officer-down",
-   "every": 0.5,
-   "why": "the first officer down: lock the blocker (security-1, going for the road at the planter run 11 m east of the car), the one that would shoot the Enforcer as he walks Vale in (a window of about 1.5 s before the at-will fire downs it: every 0.5 s)"
+   "why": "brief 079 (Keel's re-fit): security-2 1.5 s after the first lock, not on security-1's fall",
+   "gap": 1.5
   },
   {
    "op": "tech",
    "do": "fire",
-   "target": "security-1",
+   "target": "security-2",
    "after": [
     "tech-lock1"
    ],
-   "when": "security.officer-down",
-   "every": 0.5,
-   "why": "the first officer down: lock the blocker (security-1, going for the road at the planter run 11 m east of the car), the one that would shoot the Enforcer as he walks Vale in (a window of about 1.5 s before the at-will fire downs it: every 0.5 s)"
+   "why": "brief 079 (Keel's re-fit): security-2 1.5 s after the first lock, not on security-1's fall",
+   "gap": 1.5
   },
   {
    "op": "scout",

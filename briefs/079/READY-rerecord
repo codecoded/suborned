@@ -1,0 +1,43 @@
+079 re-record · Waymark (Opus 5.5) · 2026-10-30
+Status: done. The Handover SHIPS on engine 0.36.0, recorded as c046. DP1, cp-loud and cp-safe are re-stamped. No play changed outcome or fail (893 of 893). Nothing committed.
+Step 2 (the sturdier loud re-fit) was stopped on Aster's word (brief 080): nothing from it was adopted. Logs and probes: out/scratch/waymark/079/. Files before re-stamping: out/scratch/waymark/079/prev/.
+
+Evidence
+- `bun run sim check`: 360/360, before and after.
+- `bun run missions:rerecord "brief 079: ..."`: exit 0. SHIPS, 893 plays, MC-0 42/42, MC-14 836/836. `missions:check replay handover c046`: REPLAY OK.
+- `dotnet test sim/Suborned.Sim.Tests`: 2620/2620. `bun run test tools/missions tools/sim`: 142 pass. Typecheck clean. All load through `bun run guard`.
+
+Plans edited, because rerecord composes first
+- Keel's re-fit was in the scripts only. The loud-fight plan as it stood no longer composed on 0.36.0 (the Enforcer goes down before Vale is aboard).
+- loud, loud-fight, loud-left-downed, loud-left-standing: plans now say drawn at Enter + 67 s, security-1 first, security-2 1.5 s on. Opening is Keel's (2241, 2256). Later orders are composed: about 1 tick later, loud-fight Go 3068 -> 3122 (5.4 s).
+- route-g-board: Go searched at every 0.5 s. The 5 s search stepped over its window.
+- Compose also rewrote careless-g-disable, careless-reporter-not-stopped, route-a, route-a-disable, route-g, route-g-kill and route-g-board. These scripts were stale against 0.36.0.
+
+What moved, c045 -> c046
+- Clock over 1 s, reference scripts: route-g-kill 3472 -> 3522, loud-fight 3068 -> 3122. Trail: only fail-district-seals, 8 -> 21 T (still fails).
+- cp-loud, cp-safe: orders identical; engine, inputs, start, mvid and checkpoint hashes moved.
+- DP1: orders identical; only mvid moved.
+- fight-lab.json (uncommitted, Sky has not ruled). "today": success 5 -> 6, enforcer-down 24 -> 22, sealed 11 -> 10, entry-seen-camera 2 -> 4. "lab": enforcer-down 27 -> 24, sealed 8 -> 11. lab-kite-off: counts unchanged. Files before: prev/fight-lab.json.
+
+Route-g-board fairness (step 3): not fair as it stands
+- Blocker out to Go: 2.6 s when composed. Keel's 0.9 s came from the stale script.
+- The Go window is the real margin. With the plan's order (the three board, then the Enforcer): Go wins only at 2388-2400, 1.3 s. Earlier withdraws with him outside; at 2401+ it is refused car-held (rival-4), and rivals-reach-vale follows if nothing changes.
+- c045 on its own engine: wins from 2396 to the end of the probe at 2430, at least 3.5 s.
+- Untested: keeping one operative drawn outside until the Enforcer is aboard should avoid it (fight.unguarded). No MC rule reads this window.
+
+Loud win sturdiness (evidence for brief 080; one route, a few dozen nudges, not a seed measure)
+- Keel's fixed-tick script, 78 timing nudges: clean wins loud 47/78, loud-fight 42/78; 13 are enforcer-down in each; the rest win with someone captured, because fixed boards miss.
+- Fire order bands (loud-fight): enforcer-down at draw and all later orders -8..-5 and +16..+17 ticks; draw only -10..-5 ticks.
+- Shifting the whole run from the guard shot on: 11/11 win. Timing relative to the fight decides it; the clock doesn't re-roll it.
+- Reactive (composed, 10 nudges of the draw), loud-fight: drawn at the fight's announcement 0/10 either target order; drawn 8 s ahead 0/10; Keel's opening 5/10, 7/10 with orders on downed targets dropped; Tech goes with the flank 9/10; Scout and Fixer fire on officer-1 on their way back 10/10.
+- So a player who draws when the fight is announced loses this script every time.
+- Failure: Tech alone by the car takes both officers at 7 m; the Enforcer walks out at a fixed tick into rival-1 and rival-4 still up.
+
+Open
+- Keel's "2 of 6" nudge definition is not in briefs/079/keel/probe, so my numbers are not directly comparable to it.
+- `sim batch` on checkpoints and fixtures: 2 of 9 not ok. cp-loud "record: 11 checkpoints, the record has 10", cp-safe "29, the record has 28". Same closing-checkpoint mismatch 077 handed to Keel (sim/cli/FightLab.cs Script.Write or the batch record check), not new. DP1 passes.
+
+Next owners
+- Aster: commit c046, the re-stamps, the plans and scripts. Sky: fight-lab.json matrix.
+- Latch: rebuild on 0.36.0.
+- Motive with Sky: the route-g-board Go window, and brief 080's fairness check.

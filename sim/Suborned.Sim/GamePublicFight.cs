@@ -66,7 +66,7 @@ namespace Suborned.Sim
             {
                 if (!f.Rivals.Contains(by)) f.Rivals.Add(by);
                 if (f.RivalsFirst.Length == 0) f.RivalsFirst = "rivals";
-                if (by == "rivals" || (IsCrewId(by) && !IsFightHostile(by))) f.CrewBroken = -1; // back and firing: not broken
+                if ((by == "rivals" || (IsCrewId(by) && !IsFightHostile(by))) && f.CrewBroken != Tick) f.CrewBroken = -1; // back and firing: not broken (engine 0.36.0: a shot in the tick he broke is no coming back; "since" starts after it)
             }
         }
 

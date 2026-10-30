@@ -1,0 +1,4 @@
+Keel, brief 079 notes 3 and 4. Engine 0.36.0 is ready in worktree out/scratch/keel/wt079 (not landed, no commits).
+Patch: briefs/079/keel/engine-0.36.0.patch (engine, rulebook, tests, DP1 fixture, loud-family re-fit). Probe and before/after tables: briefs/079/keel/probe/.
+Evidence on the worktree: suborned-sim check 360/360; dotnet test 2620/2620; missions:check SHIPS (893 plays), no variation outcome flips.
+Without the loud re-fit in the patch the check HOLDS (MC-0, MC-6). Next: Aster lands it; Waymark owns the loud scripts and re-records; Latch rebuilds the engine in Unity.

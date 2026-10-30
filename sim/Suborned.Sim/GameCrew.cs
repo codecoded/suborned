@@ -585,6 +585,7 @@ namespace Suborned.Sim
         void MoveToFight(Hostile h, Pt to)
         {
             var from = h.Pos(Tick); var a = Walk.NearestFree(from) ?? from; var b = Walk.NearestFree(to) ?? to;
+            var free = ClearStop(h.Id, b); if (free != b) { if (h.Home == to) h.Home = free; b = free; } // engine 0.36.0 (fight.spacing): his stand or spot is taken: the free place beside it is his stand now
             var route = RouteRoundHold(a, b) ?? Walk.Route(a, b); if (route == null || route.Length < 2) { h.At = from; h.Run = null; return; } // engine 0.34.0 (Motive M067-SQ1): to his spot round the car's hold
             h.Run = new Path(route); h.RunStart = Tick; h.At = h.Run.End; h.Why = "post"; h.Closing = false; if (h.Run.Length == 0) h.Run = null;
         }

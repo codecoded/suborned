@@ -270,7 +270,8 @@
     "captured",
     "withdraw.car"
    ],
-   "why": "once the last board lands (1 s), the whole cell in the car and the car free: it leaves with nobody behind; and not before Vale is in (withdraw.car: with the crew broken sooner from the new posts, the three's boards land before the Enforcer's 4 s)"
+   "why": "brief 079 (Waymark, engine 0.36.0): the cell is aboard and the car free for about a second before the rivals see nobody guarding it, and the 5 s search stepped over that",
+   "every": 0.5
   }
  ]
 }

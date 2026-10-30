@@ -337,6 +337,7 @@ namespace Suborned.Sim
         /// <summary>Each memory act's facts as rulebook memory.acts lists them (empty for a told entry, whose facts it carries).</summary>
         public readonly Dictionary<string, List<string>> ActFacts = new Dictionary<string, List<string>>(StringComparer.Ordinal);
         // the final fight
+        public readonly int BodyClearCm, BodyFileTicks; // engine 0.36.0 (fight.spacing)
         public readonly int SafeHostiles, SafeWarnS, SafeAmbushCm, LoudOfficers, LoudAlert, LoudCivilian, HoldCm; public readonly bool FightTraced;
         /// <summary>Brief 059, Sky's open questions as values. S1 (engine 0.33.0; Sky 2026-10-25: no): fight.safe.always (the value fight-always:
         /// true, the final fight always comes: the gate, the late spring, the floor, crew-wiped; false, 0.32.0's leave-unfought) and fight.safe.floor
@@ -843,7 +844,10 @@ namespace Suborned.Sim
             foreach (var v in rd["ends"].Strs()) { if (Array.IndexOf(new[] { "alert-2", "gunfire", "body-found", "final-fight" }, v) < 0) throw new FormatException($"rounds.ends: '{v}' is unknown"); RoundEnds.Add(v); }
             if (PartnersCloseCm < 1) throw new FormatException("rounds.close is a distance of 1 cm or more (the summoned lover stops this short of her post)");
             if (PartnersClearCm < 1) throw new FormatException("rounds.clear is a distance of 1 cm or more (the summoned partner's room round his stop)");
-            var fg = b["fight"]; fg.Only("safe", "loud", "hold", "block", "blockNear", "blockFar", "blockers", "traced", "rivalsPublic", "rivalsPublicReason", "tracedReason", "over", "overReason", "lab", "kite", "openRule", "alwaysRule", "unguarded", "holdRule", "rule", "tag", "src");
+            var fg = b["fight"]; fg.Only("safe", "loud", "hold", "block", "blockNear", "blockFar", "blockers", "traced", "rivalsPublic", "rivalsPublicReason", "tracedReason", "over", "overReason", "lab", "kite", "openRule", "alwaysRule", "unguarded", "holdRule", "spacing", "rule", "tag", "src");
+            var fsp = fg.Opt("spacing") ?? throw new FormatException("rulebook fight.spacing is missing: engine 0.36.0 keeps a fight's bodies out of one another (brief 079)");
+            fsp.Only("clear", "file", "rule"); BodyClearCm = RI(fsp["clear"]); BodyFileTicks = RI(fsp["file"]);
+            if (BodyClearCm < 0 || BodyFileTicks < 0 || fsp["rule"].Str().Length == 0) throw new FormatException("fight.spacing: clear and file are not negative, and it carries its rule");
             if (fg.Opt("holdRule") is not JNode hr || hr.Str().Length == 0) throw new FormatException("fight.holdRule is missing: engine 0.34.0 plays Motive's M067-SQ1 (the hold is entered only on purpose)");
             if (fg.Opt("unguarded") is not JNode ung || ung.Str().Length == 0) throw new FormatException("fight.unguarded is missing: engine 0.34.0 plays Motive's M067-K3 (hiding in a held car loses, the cell down fails, Go needs a driver)");
             { // Sky 2026-10-20 (tuning.md §7.9): the kite response, today's (the lab reads its own fight.lab.kite)

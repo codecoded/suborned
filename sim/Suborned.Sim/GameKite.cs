@@ -171,7 +171,7 @@ namespace Suborned.Sim
                     Note("ai.kite", $"{g.Id} has walked its {Kr.KiteChaseCm / 100} m: it holds against {g.KiteBy}.");
                     return;
                 }
-                var path = KitePath(pos, StopPoint(pos, sp, eff), rem + free);
+                var path = KitePath(g.Id, pos, StopPoint(pos, sp, eff), rem + free);
                 if (path == null) return; // no route: it holds, uncapped
                 if (g.KiteLast < 0) Note("ai.kite", $"{g.Id} answers {g.KiteBy}: first shot at {Sim.Report.Clock(g.KiteAt)}, moves at {Sim.Report.Clock(Tick)} ({Tick - g.KiteAt} ticks), {G.Dist(pos, sp) / 100} m out.");
                 g.KiteLast = Tick;
@@ -189,7 +189,7 @@ namespace Suborned.Sim
             if (g.KiteLast < 0) Note("ai.kite", $"{g.Id} answers {g.KiteBy}: first shot at {Sim.Report.Clock(g.KiteAt)}, moves at {Sim.Report.Clock(Tick)} ({Tick - g.KiteAt} ticks), {(c != null ? $"out of the line to {c.Id}" : "out of the line")}.");
             g.KiteLast = Tick;
             if (c != null) TakeCover(g, c);
-            MoveTo(h, dest.Value); h.Why = "answer";
+            MoveTo(h, dest.Value, true); h.Why = "answer";
         }
 
         /// <summary>Motive tuning.md §7.2 rule 3: a final-fight police body (an officer, the joined response unit, a police unit) shot by an operative
@@ -235,8 +235,8 @@ namespace Suborned.Sim
             var best = FightCover(pos, sp, h != null ? h.Home : pos); if (best == null) { KiteFightClose(g, pos, sp, h, u); return; }
             if (g.KiteLast < 0) Note("ai.kite", $"{g.Id} is fired on by {g.KiteBy} out of its reach: first shot at {Sim.Report.Clock(g.KiteAt)}, it takes cover at {best.Id} ({Tick - g.KiteAt} ticks).");
             g.KiteLast = Tick;
-            if (h != null) { TakeCover(g, best); h.Home = best.At; MoveTo(h, best.At); h.Why = "answer"; g.St = "advance"; return; }
-            var path = KitePath(pos, best.At, int.MaxValue / 20); if (path == null) return;
+            if (h != null) { TakeCover(g, best); h.Home = best.At; MoveTo(h, best.At, true); h.Why = "answer"; g.St = "advance"; return; }
+            var path = KitePath(g.Id, pos, best.At, int.MaxValue / 20); if (path == null) return;
             unitDisp[u!.Id] = new KiteDisp { P = path, Start = Tick, Face = Facing(path.End, sp) };
         }
 
@@ -258,8 +258,8 @@ namespace Suborned.Sim
             var to = best?.At ?? stop; if (to == pos || HoldsCar(to)) return; // SQ1: with no spot outside the hold it stays where it stands
             Note("ai.kite", $"{g.Id} is still fired on by {g.KiteBy} beyond its reach: it closes {(best != null ? $"to cover at {best.Id}" : "to its ring")} ({G.Dist(pos, sp) / 100} m out).");
             g.KiteLast = Tick; g.StepAt = Tick;
-            if (h != null) { if (best != null) { ReleaseCover(g); TakeCover(g, best); } MoveTo(h, to); h.Why = "answer"; h.Home = h.Run?.End ?? h.At; g.St = "advance"; return; } // engine 0.34.0: its stand is where the walk ends (the free cell nearest the point), so it holds there
-            var path = KitePath(pos, to, int.MaxValue / 20); if (path == null) return;
+            if (h != null) { if (best != null) { ReleaseCover(g); TakeCover(g, best); } MoveTo(h, to, true); h.Why = "answer"; h.Home = h.Run?.End ?? h.At; g.St = "advance"; return; } // engine 0.34.0: its stand is where the walk ends (the free cell nearest the point), so it holds there
+            var path = KitePath(g.Id, pos, to, int.MaxValue / 20); if (path == null) return;
             unitDisp[u!.Id] = new KiteDisp { P = path, Start = Tick, Face = Facing(path.End, sp) };
         }
 
@@ -274,9 +274,9 @@ namespace Suborned.Sim
             if (h != null)
             {
                 if (g.KiteLast < 0) Note("ai.kite", $"{g.Id} is fired on by {g.KiteBy} out of its reach and has no cover: first shot at {Sim.Report.Clock(g.KiteAt)}, it closes to its ring ({Tick - g.KiteAt} ticks).");
-                g.KiteLast = Tick; MoveTo(h, to); h.Why = "answer"; h.Home = h.Run?.End ?? h.At; g.St = "advance"; return; // engine 0.34.0: its stand is where the walk ends (the free cell nearest its stop point)
+                g.KiteLast = Tick; MoveTo(h, to, true); h.Why = "answer"; h.Home = h.Run?.End ?? h.At; g.St = "advance"; return; // engine 0.34.0: its stand is where the walk ends (the free cell nearest its stop point)
             }
-            var path = KitePath(pos, to, int.MaxValue / 20); if (path == null) return;
+            var path = KitePath(g.Id, pos, to, int.MaxValue / 20); if (path == null) return;
             if (g.KiteLast < 0) Note("ai.kite", $"{g.Id} is fired on by {g.KiteBy} out of its reach and has no cover: first shot at {Sim.Report.Clock(g.KiteAt)}, it closes to its ring ({Tick - g.KiteAt} ticks).");
             g.KiteLast = Tick;
             unitDisp[u!.Id] = new KiteDisp { P = path, Start = Tick, Face = Facing(path.End, sp) };
@@ -292,14 +292,14 @@ namespace Suborned.Sim
         }
 
         /// <summary>The walk from `pos` to `dest` on the grid, cut at `remCm` of walk (the chase budget left); null if there is none.</summary>
-        Path? KitePath(Pt pos, Pt dest, int remCm)
+        Path? KitePath(string who, Pt pos, Pt dest, int remCm)
         {
-            var a = Walk.NearestFree(pos) ?? pos; var b = Walk.NearestFree(dest) ?? dest;
+            var a = Walk.NearestFree(pos) ?? pos; var b = ClearStop(who, Walk.NearestFree(dest) ?? dest); // engine 0.36.0 (fight.spacing)
             var route = Walk.Route(a, b); if (route == null || route.Length < 2) return null;
             var path = new Path(route); long remMm = (long)remCm * 10;
             if (path.Length > remMm)
             {
-                var cut = path.At(remMm); route = Walk.Route(a, Walk.NearestFree(cut) ?? cut);
+                var cut = path.At(remMm); route = Walk.Route(a, ClearStop(who, Walk.NearestFree(cut) ?? cut));
                 if (route == null || route.Length < 2) return null;
                 path = new Path(route);
             }
@@ -350,12 +350,12 @@ namespace Suborned.Sim
             if (KiteCanAnswer(pos, g.W.EffCm, p => MemberWatching(m, p))) return;
             var dest = KiteHide(g, pos, sp, pos, out var c);
             Path? path;
-            if (dest.HasValue) path = KitePath(pos, dest.Value, int.MaxValue / 20);
+            if (dest.HasValue) path = KitePath(g.Id, pos, dest.Value, int.MaxValue / 20);
             else // retest R4 (Pulse §5): no hide, it advances to its ring of the shooter, on its chase budget
             {
                 int rem = Kr.KiteChaseCm - g.KiteWalked, free = (int)Math.Max(0, G.Dist(pos, sp) - Kr.KiteContactCm);
                 if (rem < S.Grid.Cell && free == 0) return;
-                path = KitePath(pos, StopPoint(pos, sp, g.W.EffCm), rem + free);
+                path = KitePath(g.Id, pos, StopPoint(pos, sp, g.W.EffCm), rem + free);
                 if (path != null) g.KiteWalked += (int)Math.Max(0, path.Length / 10 - free);
             }
             if (path == null) return;
@@ -373,7 +373,7 @@ namespace Suborned.Sim
             int rem = Kr.KiteChaseCm - g.KiteWalked, free = (int)Math.Max(0, G.Dist(pos, sp) - Kr.KiteContactCm);
             g.KiteLast = Tick;
             if (rem < S.Grid.Cell && free == 0) return; // its budget is spent: it holds
-            var add = KitePath(pos, StopPoint(pos, sp, g.W!.EffCm), rem + free); if (add == null) return;
+            var add = KitePath(g.Id, pos, StopPoint(pos, sp, g.W!.EffCm), rem + free); if (add == null) return;
             var pts = new List<Pt>(d.P.Points); foreach (var q in add.Points) if (pts[pts.Count - 1] != q) pts.Add(q);
             if (pts.Count == d.P.Points.Length) return;
             var np = new Path(pts.ToArray()); long done = d.P.Length;
@@ -426,20 +426,20 @@ namespace Suborned.Sim
                     if (cv == null) // retest2 N1/N4: no cover, it closes to its ring of the shooter (KiteFightClose)
                     {
                         var to = StopPoint(pos, sp, eff); if (to == pos) return null;
-                        var tw = KitePath(pos, to, int.MaxValue / 20); if (tw == null) return null;
+                        var tw = KitePath(g.Id, pos, to, int.MaxValue / 20); if (tw == null) return null;
                         return new KiteAnswer { Side = "police", Point = h != null ? to : tw.End, Ticks = react + (int)((tw.Length + speed - 1) / speed) };
                     }
-                    var cw = KitePath(pos, cv.At, int.MaxValue / 20);
+                    var cw = KitePath(g.Id, pos, cv.At, int.MaxValue / 20);
                     return new KiteAnswer { Side = "police", Point = cv.At, Cover = true, Ticks = react + (cw == null ? 0 : (int)((cw.Length + speed - 1) / speed)) };
                 }
                 if (g.KiteCapped) return null;
                 int free = (int)Math.Max(0, G.Dist(pos, sp) - Kr.KiteContactCm);
-                var path = KitePath(pos, StopPoint(pos, sp, eff), Kr.KiteChaseCm - g.KiteWalked + free); if (path == null) return null;
+                var path = KitePath(g.Id, pos, StopPoint(pos, sp, eff), Kr.KiteChaseCm - g.KiteWalked + free); if (path == null) return null;
                 return new KiteAnswer { Side = "police", Point = path.End, Ticks = react + (int)((path.Length + speed - 1) / speed) };
             }
             var dest = KiteHide(g, pos, sp, h != null ? Car : pos, out var c);
             if (!dest.HasValue) { var sp2 = StopPoint(pos, sp, eff); if (sp2 == pos) return null; dest = sp2; } // retest R4: no hide, it advances
-            var walk = KitePath(pos, dest.Value, int.MaxValue / 20); int rs = h?.Speed ?? rivSpeed;
+            var walk = KitePath(g.Id, pos, dest.Value, int.MaxValue / 20); int rs = h?.Speed ?? rivSpeed;
             return new KiteAnswer { Side = "rivals", Point = dest.Value, Cover = c != null, Ticks = react + (walk == null ? 0 : (int)((walk.Length + rs - 1) / rs)) };
         }
 

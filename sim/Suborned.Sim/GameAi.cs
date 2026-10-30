@@ -32,17 +32,25 @@ namespace Suborned.Sim
 
         // ---------------------------------------------------------------- moving a body
 
-        void MoveTo(Hostile h, Pt to)
+        void MoveTo(Hostile h, Pt to, bool roundHold = false)
         {
             h.Closing = false; // engine 0.34.1: AdvanceOnOp sets it again for its own walk
             var from = h.Pos(Tick);
             var a = Walk.NearestFree(from) ?? from; var b = Walk.NearestFree(to) ?? to;
-            var route = Walk.Route(a, b);
+            if (!h.Blocker) b = ClearStop(h.Id, b); // engine 0.36.0 (fight.spacing); a blocker's lane point is the road's
+            var route = (roundHold ? RouteRoundHold(a, b) : null) ?? Walk.Route(a, b); // engine 0.36.0 (M067-SQ1, brief 079): an answer to fire goes round the car's hold, as a walk to a post does
             if (route == null || route.Length < 2) { h.At = from; h.Run = null; return; }
             h.Run = new Path(route); h.RunStart = Tick; h.At = h.Run.End;
             if (h.Run.Length == 0) { h.Run = null; }
         }
-        void Stop(Hostile h) { h.At = h.Pos(Tick); h.Run = null; h.Closing = false; }
+        /// <summary>The body stops where it is; on another's claim (fight.spacing), it takes the step clear of it.</summary>
+        void Stop(Hostile h)
+        {
+            h.At = h.Pos(Tick); h.Run = null; h.Closing = false;
+            var q = ClearStop(h.Id, h.At); if (q == h.At) return;
+            var route = Walk.Route(Walk.NearestFree(h.At) ?? h.At, q); if (route == null || route.Length < 2) return;
+            h.Run = new Path(route); h.RunStart = Tick; h.At = h.Run.End; if (h.Run.Length == 0) h.Run = null;
+        }
 
         void TakeCover(Gun g, CoverPoint c) { ReleaseCover(g); coverTaken[c.Id] = g.Id; g.Cover = c.Id; g.UnprotSince = -1; Note("ai.cover", $"{g.Id} takes cover at {c.Id} ({c.Kind} {c.Of}, q {c.Q})."); }
         void ReleaseCover(Gun g) { if (g.Cover.Length > 0 && coverTaken.TryGetValue(g.Cover, out var who) && who == g.Id) coverTaken.Remove(g.Cover); g.Cover = ""; }
@@ -236,7 +244,7 @@ namespace Suborned.Sim
             if (!prot && IsRival(h.Id) && !h.Blocker && Tick - g.StepAt >= T(R.CoverStepGapS))
             {
                 var c = SelectCoverOut(pos, Car, at, R.SeekRivalCm); // engine 0.34.0 (Motive M067-SQ1): never a cover point in the hold or the lane
-                if (c != null) { g.StepAt = Tick; TakeCover(g, c); MoveTo(h, c.At); h.Why = "answer"; if (h.Moving(Tick) && ((Lab && !LabFireMoving) || !R.CoverStepFires)) return; }
+                if (c != null) { g.StepAt = Tick; TakeCover(g, c); MoveTo(h, c.At, true); h.Why = "answer"; if (h.Moving(Tick) && ((Lab && !LabFireMoving) || !R.CoverStepFires)) return; }
             }
             AimAt(g, t, false);
             if (Tick >= g.NextShot) Shoot(h.Id, g, pos, t, at, Dist(pos, at), h.Moving(Tick) ? Gait.Walk : Gait.Stand, false);
