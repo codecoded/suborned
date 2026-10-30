@@ -1,0 +1,117 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><title>080 · Organic play: design for Sky</title>
+<style>
+body{font:15px/1.45 -apple-system,Helvetica,Arial,sans-serif;color:#222;background:#fbf8f2;max-width:1000px;margin:0 auto;padding:22px}
+h1{font-size:23px;margin:0 0 2px}h2{font-size:16.5px;margin:22px 0 5px;color:#7a3b12;border-bottom:1px solid #e3d7c4;padding-bottom:2px}
+p{margin:6px 0}ul{margin:5px 0;padding-left:20px}li{margin:2px 0}.by{color:#777;font-size:13px}
+table{border-collapse:collapse;width:100%;font-size:13.5px;margin:6px 0;background:#fff}th,td{border:1px solid #e3d7c4;padding:3px 7px;text-align:left;vertical-align:top}th{background:#f3ead9;font-weight:600}
+.box{background:#fff4e2;border-left:4px solid #d98a2b;padding:8px 12px;margin:10px 0}.f{font:600 15px ui-monospace,Menlo,monospace;background:#fff;border:1px solid #e3d7c4;padding:6px 10px;display:block;margin:6px 0}
+.dim{color:#777}.n{white-space:nowrap}
+</style></head><body>
+<h1>Organic play: how the Handover varies game to game</h1>
+<div class="by">Motive, brief 080, for Sky, 2026-10-30. A design only: no game file changed. Numbers marked "measured" come from a throwaway probe on the current sim, not a built feature.</div>
+
+<div class="box"><b>The design in five lines.</b> Each new game gets a seed, saved with the run. The seed sets the start: where everyone is and how far through their routine. After that, routines, crowds and rivals play out with no dice. Only one thing rolls during play: <b>each shot, to hit</b>, on an RPG stat sheet (your call: "hit rolls"). A saved run still replays exactly, because the seed and the orders are both saved. A plan built from watching this game stays true for this game.</div>
+
+<h2>1. What the seed sets at the start</h2>
+<table><tr><th>Varies per game</th><th>Range, in the Handover</th><th>What the player notices</th></tr>
+<tr><td>Crowd figures: where they begin, how far through their round, walking pace</td><td>±20 s along the round · pace +0–12 % (today from the id alone)</td><td>A different street. Who blocks a line, who stands near the café</td></tr>
+<tr><td>Patrol robot: where on its 100 s sweep it begins</td><td>Anywhere on the sweep</td><td>The yard is clear at a different moment; a Watch shows when</td></tr>
+<tr><td>Rival car: when it turns in from Orbit Walk, all its beats moving together</td><td>2:35 ±15 s (<i>a timing, not a position: decision 1</i>)</td><td>You see them coming early or late, and which agents are in the way</td></tr>
+<tr><td>Which rival takes which post round the car; the cell's loose stance at the car</td><td>Same posts · within 2 m</td><td>The fight opens differently</td></tr>
+<tr><td>Camera desk scan phase; container round</td><td>0–19 s · within its 15:00 (today from the id alone)</td><td>When a passing agent gets noticed</td></tr>
+</table>
+<p><b>Never varies:</b> the Handover's own clock (5:30 chime, 5:40 last chance on the driver, 5:50 Vale out, 6:10 at his car, 6:13 gone, 8:30 the driver gives up), the door guard's marks (1:00, 2:30, 4:00, 5:30), places, cast, needs, secrets, prices, the $100,000 purse, the 2:00 loop. Vale and Inez are the same every game.</p>
+<p><b>Rolls during play: shots to hit, nothing else.</b> No roll on a Turn, a takedown, a witness, a route or an arrival. Damage is fixed too.</p>
+<p><b>Limits, so every start is fair.</b></p>
+<ul><li>Nobody starts where a watcher already sees the cell's opening: no noticing, no report, in the first 15 s.</li>
+<li>Same mission facts every seed: the routes A, B and G exist in all of them.</li>
+<li>Nothing changes after the start, so whatever a Watch shows holds for the whole game.</li>
+<li>The ranges are proven before shipping, across hundreds of seeds (section 7). A range that makes a route unwinnable gets narrowed; the game never re-rolls while you play.</li></ul>
+<p class="dim"><b>The 1000-character door.</b> Each value above comes from game seed + character id, never from a shared list. Class stats take a per-character offset (0 for now) and each character has a fuzziness value (0 = always the same: Vale, Inez). This slice adds nobody, but your later cast of 1000 with their own traits fits in without a rewrite.</p>
+
+<h2>2. Does a different start feel alive? Honestly: not by itself</h2>
+<p>Measured on seven Handover routes, 40 starts each, with the same fixed orders:</p>
+<ul>
+<li><b>Crowd moved ±20 s:</b> the outcome was identical in all 280 runs. No agent, cast member or rival ended up anywhere else; typically 1 crowd figure was out of place at 3:00, and 24 at 7:00 on the longest route. Today's routines don't react to each other, so a small difference <b>doesn't spread</b>. The log typically stays the same until the fight.</li>
+<li><b>Rivals moved ±15 s:</b> 2–5 people out of place at 3:00, back to 0 by 4:00 or 5:00 because the car parks and waits. But the fixed-tick route B then won only 18 of 40 and route G 11 of 40. The script can't see the car coming. A player can.</li>
+<li><b>Shots rolled:</b> this is where real difference comes from (section 3's table).</li></ul>
+<p><b>What this means.</b> You can't memorise a start you haven't seen, and the street looks different each game. But the seed alone makes a new-looking street, not a new story. The story changes when the start touches something the plan depends on (the rivals, the patrol) and in the fight. Chain reactions between ordinary people would need people who react to each other: that's your 1000-character work, later.</p>
+
+<h2>3. The stat sheet</h2>
+<p>Today, accuracy sits on the weapon with an "untrained" flag, and hits are counted, not rolled: a 75 % shooter always goes hit, hit, miss, hit, so <b>his first shot always lands</b>. That counter goes. So does the 100 % at point blank.</p>
+<table><tr><th>Class</th><th>Aim % <span class="dim">(today)</span></th><th>HP <span class="dim">(today)</span></th><th>Weapon: damage, every</th><th>Speed m/s <span class="dim">(today)</span></th><th>Nerve</th></tr>
+<tr><td>Civilian (armed joiner)</td><td>35 <span class="dim">(none)</span></td><td>3 <span class="dim">(2)</span></td><td>pistol: 1, 1.5 s</td><td>1.4</td><td>flees</td></tr>
+<tr><td>Guard</td><td>50 <span class="dim">(75)</span></td><td>3 <span class="dim">(3)</span></td><td>pistol</td><td>1.4, slow <span class="dim">(2.2)</span></td><td>holds</td></tr>
+<tr><td>Patrol robot</td><td>45 <span class="dim">(75)</span></td><td>4 <span class="dim">(4)</span></td><td>pistol</td><td>0.85</td><td>holds</td></tr>
+<tr><td>Police officer</td><td>60 <span class="dim">(75)</span></td><td>3 <span class="dim">(3)</span></td><td>pistol</td><td>2.2</td><td>holds</td></tr>
+<tr><td><b>Rival</b>: most dangerous</td><td>65 <span class="dim">(56)</span></td><td>3 <span class="dim">(3)</span></td><td>pistol</td><td>1.6, runs 2.8</td><td>breaks past half down</td></tr>
+<tr><td>Scout</td><td>60 <span class="dim">(56)</span></td><td>5</td><td>pistol</td><td>1.8, runs 3.6</td><td rowspan="4">the cell is never pinned</td></tr>
+<tr><td>Fixer</td><td>55 <span class="dim">(56)</span></td><td>5</td><td>pistol</td><td>same</td></tr>
+<tr><td>Tech</td><td>50 <span class="dim">(56)</span></td><td>5</td><td>pistol</td><td>same</td></tr>
+<tr><td>Enforcer</td><td>75 <span class="dim">(75)</span></td><td>8</td><td>carbine: 2, 2.0 s</td><td>same, walks with Vale</td></tr>
+<tr><td>Vale</td><td>unarmed</td><td>3 <span class="dim">(2)</span></td><td>none</td><td>can't run</td><td>never a target of hostiles</td></tr></table>
+<p>The cell sits inside your ladder, not above it. Only the Enforcer out-aims a rival, which is why he's worth protecting. Your three others are about police level and outnumbered: they win by position, cover and preparation, not by stats (commander > avatar).</p>
+<span class="f">hit % = aim + range + cover + movement, kept between 5 and 95</span>
+<table><tr><th>Range</th><th>Target in cover, still, inside its arc</th><th>Shooter moving</th><th>Others</th></tr>
+<tr><td>≤ 5 m +30 · effective 0 · long −25<br><span class="dim">pistol effective 15 m, max 16; carbine 20, 30</span></td><td>partial −25 · full −45<br><span class="dim">none inside 5 m; a flank beats it</span></td><td>walking −25 · running −40 · running away −55</td><td>target running −10 · pinned −25</td></tr></table>
+<p class="dim">These land within a few points of today's multipliers, so today's tuning carries over, but they read as simple sums on a card.</p>
+<table><tr><th>Worked example</th><th>Sum</th><th>Today</th><th>Means</th></tr>
+<tr><td>Guard at 15 m, Enforcer running</td><td>50 − 10 = <b>40 %</b></td><td>64 %</td><td>Alone, about 30 s to drop him</td></tr>
+<tr><td>Rival at 10 m, agent still in full cover</td><td>65 − 45 = <b>20 %</b> (partial 40 %)</td><td>14 % (28 %)</td><td>Alone, about 37 s to drop a Scout; stepping out doubles or triples it</td></tr>
+<tr><td>Officer walking at 12 m, agent in the open</td><td>60 − 25 = <b>35 %</b></td><td>38 %</td><td>Firing on the move is poor for everyone</td></tr>
+<tr><td>Enforcer at 18 m, rival in the open</td><td>75 = <b>75 %</b>, 2 hits to drop</td><td>75 %, always 2 shots</td><td>Usually 3–5 s, sometimes longer</td></tr>
+<tr><td>Rival at 4 m, Scout in the open</td><td>65 + 30 = <b>95 %</b>, 1 damage</td><td>75 % (an officer: 100 %)</td><td>Close is deadly, but 5 HP still means 5 hits</td></tr></table>
+<p><b>Reading the odds.</b> The fire chip shows the % and a rough time: "40 % · down in about 30 s". Alt shows the sum in words. A miss is visible: the tracer passes the target, and against cover it chips the cover. A miss still never hits a bystander. The fail card names who and why: "Rival 2 hit the Enforcer 5 times in 12 s: no cover, walking".</p>
+<p><b>Measured:</b> 60 seeds per route, rolled, with the fixed scripts except that Go retries each second until the car is free. Sheet is emulated, roughly.</p>
+<table><tr><th>Route</th><th>Today (fixed hits): fight, HP lost</th><th>Rolls, today's numbers: wins, fight, median HP lost</th><th>Rolls, this sheet: wins, fight, HP lost, agents down</th></tr>
+<tr><td>A</td><td>23 s, 1</td><td>60/60, 18–37 s (median 22), 2</td><td>56/60, 36–267 s (median 68), 7 of 23, 0.5</td></tr>
+<tr><td>B</td><td>9 s, 6</td><td>60/60, 6–16 s (9), 7</td><td>script ran out with the fight still on at 51–67 s: no verdict</td></tr>
+<tr><td>G</td><td>9 s, 3</td><td>59/60, 7–20 s (13), 5</td><td>42/60, 64–285 s (179), 10, 0.7 (18 unfinished)</td></tr></table>
+<p>So rolling alone keeps the plans winnable and gives real spread. The sheet gets the fights past today's 8–21 s, but this first guess overshoots the 30–60 s goal, partly because scripted agents stand still. Rival HP 4 was clearly too much (A 35/60, 106 s), so rivals stay at 3. <b>Expect one tuning round; these numbers aren't final.</b> Not measured: the loud route on the sheet (its fixed opening failed 60/60 and I haven't found why).</p>
+<p class="dim">How others do it, from memory and unchecked: XCOM shows a to-hit % (rookie aim about 65, half cover −20, full −40), keeps the seed in the save so reloading doesn't re-roll, and quietly helps on easier settings. Fire Emblem shows one number and bends the odds. Commandos, Shadow Tactics and Desperados III fix guards' routines and mostly don't roll. I'm unsure of Syndicate's actual maths: as I recall, weapons and agents' drug levels set accuracy.</p>
+
+<h2>4. How one roll can't lose the mission</h2>
+<ul><li><b>No big hits.</b> Fixed damage, no criticals. Hostile pistols do 1, so the Enforcer takes 8 hits and the others 5. No mission ends on one shot, unless you shoot Vale yourself, and that order always asks first.</li>
+<li><b>Bounded streaks.</b> After 3 hits in a row from one hostile on one target, the next misses. After 3 misses in a row from one of the cell on one target, the next hits, if the chance is 20 % or more. It leans your way, on purpose (decision 2).</li>
+<li><b>Warnings first.</b> The Enforcer at 3 HP gets a roster flash and a line; a refused Go names the blocker. Check: nobody full-to-down under 5 s, the Enforcer under 7 s (today's measured 5.5 and 7.0).</li>
+<li><b>Bad luck has an answer.</b> Cover, breaking the line, moving out of range and Board all change the odds at once. Hostile rolls can hurt, but a player who answers should still get out.</li></ul>
+
+<h2>5. How playing style earns the result</h2>
+<table><tr><th>Style</th><th>Odds and fight</th><th>Time</th><th>Trail · Alert · Standing</th></tr>
+<tr><td><b>Prepared, quiet</b></td><td>Fewer rivals (driver −1, false tip −1), the guard on your side, Inez's 10 s warning, your pick of cover before the first shot</td><td>Slowest to set up; 3:00–7:30 wins</td><td>4–7 T · Alert ≤ 1 · Standing ≥ 2 (measured)</td></tr>
+<tr><td><b>Quiet, thin</b></td><td>Smaller fight bonuses; you fight the full three to five</td><td>Faster</td><td>A little more</td></tr>
+<tr><td><b>Loud</b></td><td>Police, more each step; no ally; a seal clock; firing while moving is poor. Winnable, not reliable</td><td>Fast to start, 5:00-ish end</td><td>29–30 T · Alert ≥ 2 · Standing ≤ −1, car hunted (measured)</td></tr>
+<tr><td><b>Improvised</b></td><td>Reading the street pays: flank (cover gone), stand to fire, a good position can rescue a thin plan</td><td>Whatever's left</td><td>Whatever you were seen doing</td></tr></table>
+<p>The seed never changes these prices. Quiet must beat loud on Trail, Alert and Standing on <i>every</i> seed.</p>
+
+<h2>6. Windows</h2>
+<p>The "4–7 s" isn't quite what a player faces. It's measured by a fixed script, moving one step while the rest keep their ticks. On route B the script's Go comes 0.1 s after the blocker drops; let Go wait for a free car and it goes from 27/60 to 60/60. On route A the 7 s looks like a fixed Enter firing before the guard has left (my reading of the script); once the call is made, there are 52 s of slack.</p>
+<ul><li><b>The rule:</b> a window opens and closes on something you can see (guard gone, car free, loop running), never on a tick. Every window a reference route needs is at least <b>30 s at a person's pace</b>, after the seed's worst case: anything seeded ±15 s needs its window to survive that.</li>
+<li><b>Route A:</b> the guard's 2:54 away and the 2:00 loop stay. The human bot's failure was the loop running out at 5:37, so show the tape's time left, warn at 0:30, and let re-looping (already allowed) save it.</li>
+<li><b>Route B:</b> driver by 5:40 keeps its 104 s. The false tip has minutes either way. Go becomes state-based, so the 4 s goes away.</li>
+<li><b>Route G fast</b> (13 s, and 7/60 once rolled) stays a daring line, not a reference route. Waymark re-measures all of these at human pace.</li></ul>
+
+<h2>7. The new checks (Waymark and Suture build them)</h2>
+<p><b>Stay rigid, pass or fail:</b> no crash or stall · a saved run replays exactly · unknown = reject · every order shows its price · every fail names its cause · a read of the game never moves the dice · quiet beats loud on every seed.</p>
+<table><tr><th>Band, over 200 seeds of an adaptive plan</th><th>Proposed</th></tr>
+<tr><td>Wins: prepared quiet · thin quiet · loud · careless</td><td>≥ 90 % · 60–85 % · 30–60 % · ≤ 30 %</td></tr>
+<tr><td>Worst single seed, prepared quiet across routes A, B, G</td><td>at least one wins on every seed</td></tr>
+<tr><td>Final fight length: quiet · loud</td><td>median 30–60 s, 95 % under 90 s · median 30–90 s</td></tr>
+<tr><td>Agents down per win: prepared · loud</td><td>≤ 0.5 · ≤ 1.5</td></tr>
+<tr><td>Loud's Trail against quiet's</td><td>at least 3× in 95 % of seeds</td></tr>
+<tr><td>Variety: spread in fight length (middle half of runs)</td><td>at least 10 s, or it's a script again</td></tr></table>
+<p><b>The recorded scripts.</b> The 42 route scripts split in two. Reference routes become plans that wait on what they see ("Enter when the guard is away and the loop has 30 s left", "Go when the car is free"): they're the smoke tests and band players. The saved seed-and-orders files are the replay tests. Careless and fail twins stay as cause checks. At about 30 plays a second, seven plans × 200 seeds runs in about a minute.</p>
+
+<h2>8. Risks, first slice, your calls</h2>
+<ul><li><b>Long fights, stalemates:</b> the 267 s tail could be a real stall. The band catches it; tuning fixes it.</li>
+<li><b>Loud gets easier:</b> police aim drops from 75 to 60. T2 (loud mustn't dominate) has to be re-run.</li>
+<li><b>Rolls feel unfair:</b> a 95 % miss happens. Bounded streaks and visible misses help, but only a person's hands can tell.</li>
+<li><b>The biggest job is the checks,</b> not the engine. Until adaptive plans exist, MC-5 and the route checks can't judge a seeded build.</li></ul>
+<p><b>First slice</b> (rough effort): Keel, in its own worktree, adds seed + rolls + stat sheet + the start table: <b>small to medium</b> · Waymark and Suture build adaptive plans for A, B, G and loud plus the bands: <b>medium to large</b> · Motive tunes against the bands: <b>small</b> · Latch and Glyph do the chips and misses: <b>small</b> · Aster writes the GDD version: §01 "same orders → same result" becomes "same seed + orders", §06 "No dice" for hits goes.</p>
+<p><b>Keel, please confirm:</b> (a) shots draw from a stream keyed on seed + shooter + shot number, using the rulebook's existing streams, so one order doesn't reshuffle everyone's later luck; (b) hit previews read the odds and never draw; (c) as far as I can see the patrol's sweep has no phase today and the crowd's arrays are shared: what would these cost; (d) please re-measure section 2 in the engine: mine is a rough outside probe.</p>
+<table><tr><th>Your calls</th><th>Why it matters</th><th>Recommendation</th></tr>
+<tr><td><b>1. Does "the start" include timings?</b> You said starting positions. Literal positions alone just change who stands where: measured, no outcome moved. Adding each routine's phase and the rivals' arrival ±15 s reaches the plan.</td><td>Decides whether the seed changes play or only looks.</td><td><b>Yes, include them.</b> Cost: the rivals aren't quite on time, but they're always seen coming.</td></tr>
+<tr><td><b>2. Should streaks lean the player's way?</b> The hostile's 3-hit cap and the cell's 3-miss cap are a quiet thumb on the scale.</td><td>Fairer feel, against purer maths.</td><td><b>Yes, and say so</b> in the how-to-play, not hidden.</td></tr>
+<tr><td><b>3. Is the ladder right?</b> Guard 50, police 60, rival 65, Enforcer 75. Civilians go up to 3 HP so that guards match them, as you asked (the other way, guards at 2, makes fights shorter still).</td><td>The first thing a player feels.</td><td><b>Yes as a start,</b> then tune in play. Rivals are "most dangerous" by aim and in numbers; the Enforcer stays above them.</td></tr></table>
+<p class="dim">Evidence: briefs/080/motive/probe/ (probe source, 3 result files), briefs/078/handover-health.html, missions:check on the working tree. Emulation limits: sheet aim is scaled from today's multipliers, not the sum; the 95 % cap and streak bounds weren't modelled.</p>
+</body></html>
