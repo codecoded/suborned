@@ -8,6 +8,9 @@ Owner: Aster. Opened 2026-10-30. Sky: "let the game play organically - player sh
 - Playing style is what earns the result: preparation, quiet play and good positioning shift the odds. They don't guarantee a script.
 - Vibrant: people's timings, crowds, reactions and rivals vary within fair bounds.
 
+## Sky, 2026-10-30: only the start is seeded
+"only things that should matter is starting positions, which can be seeded, and then every thing plays out from there". So the seed sets the starting state, and no dice are rolled during play: everything after the start is the systems playing out. Keel measures how far runs diverge from different starts.
+
 ## Checks
 Stay rigid: no crash or stall, unknown = reject, a saved run replays exactly, every order shows its price, every fail names its cause.
 Become bands across many seeds: win rates by playing style, fight length, down rate, cost of loud against quiet. Route scripts become smoke tests that play an adaptive plan, not fixed ticks.
