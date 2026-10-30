@@ -1561,7 +1561,7 @@ describe('briefs 058, 059, 062: cameras, the pickup and rivals, the briefing', (
   });
   test('a camera shot is priced once, never per hit (brief 058 section 3)', () => {
     expect(L.price.examples['fire-camera']).toBe('Fire · +2 · ▲≥2'); expect(L.price.examples['fire-camera']).not.toContain('/hit');
-    for (const c of ['camera-entrance', 'camera-pickup', 'camera-mast-314']) expect(t.actions.fire!.onTarget![c], c).toMatch(/Gunfire raises Alert at once/);
+    for (const c of ['camera-entrance', 'camera-pickup', 'camera-mast-z0']) expect(t.actions.fire!.onTarget![c], c).toMatch(/Gunfire raises Alert at once/);
   });
   test('route B: the turned driver brings Vale round the back, and the feed rows have no service branch (brief 059)', () => {
     expect(t.actions.pay!.onTarget!.driver).toContain('round the back'); expect(t.actions.help!.onTarget!.driver).toContain('round the back');

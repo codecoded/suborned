@@ -272,7 +272,8 @@ namespace Suborned.Play
         }
 
         /// <summary>The cars as targets (engine 0.16, Game.CarOf): smoke rising while disabled, flame while burning, the blast ring expanding to the
-        /// rulebook's blast radius when one explodes, then a smudge of smoke. Shapes only.</summary>
+        /// rulebook's blast radius when one explodes, then a smudge of smoke. Shapes only. Brief 078: a car the world's rig draws (HostCarFx) keeps
+        /// only the blast ring here; the smoke, flame and flash are the rig's.</summary>
         void CarFx(float now)
         {
             var g = host.Game;
@@ -281,21 +282,24 @@ namespace Suborned.Play
                 Game.CarTarget c = null; try { c = g.CarOf(id); } catch { }
                 if (c == null || c.DisabledAt < 0 && c.BurningAt < 0 && !c.Blown) continue;
                 var vt = host.Views?.Find("car/" + id.Substring(4)); Vector3 at = vt && vt.gameObject.activeInHierarchy ? vt.position : host.frame.World(g.CarAt(id) ?? c.At);
-                bool burning = c.BurningAt >= 0 && !c.Blown;
-                if (c.Blown && host.CarBlownAt.TryGetValue(id, out var bt))
+                bool burning = c.BurningAt >= 0 && !c.Blown, inWorld = host.CarFxDrawn(id); // brief 078: the world's rig draws smoke, flame and flash
+                if (c.Blown && (inWorld || host.CarBlownAt.ContainsKey(id)))
                 {
-                    float age = now - bt, rad = g.R.CarBlastCm / 100f;
-                    if (age < 0.9f)
+                    // the blast ring stays (readable > rich: it is the rulebook's blast reach, who the blast hits), on the mission clock, so a
+                    // pause holds it and a replay draws it at the same time as the world's fireball
+                    float age = host.CarFxClock >= 0f ? host.CarFxClock - c.BlastAt / (float)Game.Hz : now - host.CarBlownAt[id], rad = g.R.CarBlastCm / 100f;
+                    if (age >= 0f && age < 0.9f)
                     {   // the blast ring: from the car out to the blast radius in 0.6 s, then fading
                         float t = Mathf.Clamp01(age / 0.6f), rr = Mathf.Lerp(0.8f, rad, 1f - (1f - t) * (1f - t)), al = age < 0.6f ? 1f : 1f - (age - 0.6f) / 0.3f;
                         var ring = new List<Vector2>(); bool ok = true;
                         for (int i = 0; i <= 48 && ok; i++) { float a = i * Mathf.PI * 2f / 48f; if (Proj(at + new Vector3(Mathf.Cos(a) * rr, 0.1f, Mathf.Sin(a) * rr), out var q)) ring.Add(q); else ok = false; }
                         if (ok) firePaints.Add(pp => { for (int pass = 0; pass < 2; pass++) { pp.strokeColor = pass == 0 ? new Color(Ink.r, Ink.g, Ink.b, 0.5f * al) : new Color(FlameB.r, FlameB.g, FlameB.b, al); pp.lineWidth = pass == 0 ? 7f : 4f; pp.BeginPath(); pp.MoveTo(ring[0]); for (int i = 1; i < ring.Count; i++) pp.LineTo(ring[i]); pp.Stroke(); } });
-                        if (age < 0.35f && Proj(at + Vector3.up * 1f, out var fc)) { float ft = age / 0.35f; firePaints.Add(pp => { pp.fillColor = new Color(1f, 0.95f, 0.8f, 1f - ft); pp.BeginPath(); pp.Arc(fc, 18f + 40f * ft, Deg(0), Deg(360)); pp.Fill(); }); } // the flash
+                        if (!inWorld && age >= 0f && age < 0.35f && Proj(at + Vector3.up * 1f, out var fc)) { float ft = age / 0.35f; firePaints.Add(pp => { pp.fillColor = new Color(1f, 0.95f, 0.8f, 1f - ft); pp.BeginPath(); pp.Arc(fc, 18f + 40f * ft, Deg(0), Deg(360)); pp.Fill(); }); } // the flash
                     }
-                    Puffs(at, now, 3, 0.7f); // the wreck smokes
+                    if (!inWorld) Puffs(at, now, 3, 0.7f); // the wreck smokes
                     continue;
                 }
+                if (inWorld) continue; // brief 078: the rig's smoke and flames; the flat shapes only stand in for a car with no rig (the pool's cap)
                 if (burning) { Flames(at, now); Puffs(at, now, 4, 1f); }
                 else Puffs(at, now, 3, 0.75f); // disabled: smoke from the bonnet
             }

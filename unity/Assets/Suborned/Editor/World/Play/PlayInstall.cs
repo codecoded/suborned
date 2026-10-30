@@ -120,6 +120,7 @@ namespace Suborned.World.Play
             host.robotPorter = Kit("Robots/DK_RobotPorter_Play.fbx"); host.patrolRobot = Kit("Robots/DK_PatrolRobot.fbx") ?? throw new FileNotFoundException("Play: Kit/Models/Robots/DK_PatrolRobot.fbx missing (run `bun run kit`)"); // brief 031: the patrol robot is Vela's PatrolRobot (adopted), its head the attention face (M_RobotFace); was the lighter butler
             host.cctvPole = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Suborned/Kit/Prefabs/Signals/DK_CCTVPole.prefab") ?? throw new FileNotFoundException("Play: Kit/Prefabs/Signals/DK_CCTVPole.prefab missing (run `bun run kit`)"); // brief 055: the mission poles at the plan's 5.5 m mount
             host.robotRigs = RobotKit.Table; host.robotGlyphs = RobotKit.Glyphs; // brief 026: the patrol and response robots' live faces (view only)
+            host.carFx = CarFxBuild.Ensure(); // brief 078: the cars' smoke, fire and blast (Generated/Fx/CarFx.prefab)
             host.litTemplate = Template("PlayLit", "Universal Render Pipeline/Lit"); host.unlitTemplate = Template("PlayUnlit", "Universal Render Pipeline/Unlit"); host.fanTemplate = FanTemplate();
         }
 

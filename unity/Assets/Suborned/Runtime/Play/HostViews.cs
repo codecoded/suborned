@@ -323,15 +323,14 @@ namespace Suborned.Play
         // ---------------------------------------------------------------- engine 0.18: the fight range's cars and bystanders
 
         readonly HashSet<string> rangeCarKeys = new(), carsSeen = new();
-        readonly Dictionary<string, string> rangeCarLook = new();
         public readonly HashSet<string> BystanderStartled = new();
         int bystanderViews;
         const int MaxBystanders = 40;
         static MaterialPropertyBlock carMpb;
 
         /// <summary>Each car the range spawned (Game.RangeCars): Vela's sedan on its slot, long side across the firing line (the engine's nose
-        /// +y); scorched while it burns, charred once it blows (the wreck stays until a car is spawned on its slot). Smoke, flame and the blast
-        /// ring are the HUD's (HudToolkit.CarFx), as for the Handover's cars.</summary>
+        /// +y); scorched while it burns, charred once it blows (the wreck stays until a car is spawned on its slot). Smoke, flame, the blast and
+        /// the char are the car effects' (brief 078, HostCarFx / CarFxPool), as for the Handover's cars; the blast ring stays the HUD's.</summary>
         void RangeCars(Game g)
         {
             carsSeen.Clear();
@@ -345,10 +344,18 @@ namespace Suborned.Play
                     rangeCarKeys.Add(key);
                 }
                 Set(key, c.At);
-                string look = c.State is "wrecked" ? "wrecked" : c.State == "burning" ? "burning" : "ok";
-                if (!rangeCarLook.TryGetValue(key, out var was) || was != look) { rangeCarLook[key] = look; Scorch(key, look == "wrecked" ? 0.16f : look == "burning" ? 0.5f : 1f); }
+                // brief 078: the paint's char is the car effects' (HostCarFx: CarTint, on the mission clock), as for the Handover's cars
             }
             foreach (var key in rangeCarKeys) if (!carsSeen.Contains(key)) Set(key, null);
+        }
+
+        readonly Dictionary<string, float> carTint = new();
+        /// <summary>Brief 078: a car view's paint darkened to `k` (1 = as built), written only when it changes (HostCarFx, each frame).</summary>
+        public void CarTint(string key, float k)
+        {
+            if (!things.ContainsKey(key)) return; k = Mathf.Clamp01(k);
+            float was = carTint.TryGetValue(key, out var w) ? w : 1f; if (Mathf.Abs(was - k) < 0.01f && (k < 1f || was >= 1f)) return;
+            carTint[key] = k; Scorch(key, k);
         }
 
         /// <summary>A car's paint darkened by `k` (1 = as built): every renderer under its view, by a property block (shared materials untouched).</summary>

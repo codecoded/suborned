@@ -454,8 +454,8 @@ namespace Suborned.Play
                 }
                 // an old robot: the first report brought the patrol robot; a second, from the square's mast (within robot reach of the square's
                 // dock), brings a porter from the dock: the Enforcer idles in the mast's sight until one of the response's robots has him
-                var mast = g.S.Cameras.Find(x => x.Id == "mast-314");
-                var ms = mast == null ? null : Spot(g, mast.At, mast.Facings.Length > 0 ? mast.Facings[0] : mast.Facing, 600, "enforcer", p => g.InSight("camera:mast-314", p, false));
+                var mast = g.S.Cameras.Find(x => x.Id == "mast-z0");
+                var ms = mast == null ? null : Spot(g, mast.At, mast.Facings.Length > 0 ? mast.Facings[0] : mast.Facing, 600, "enforcer", p => g.InSight("camera:mast-z0", p, false));
                 log.Add($"mast spot {ms}");
                 if (ms.HasValue) { h.Issue(new Suborned.Sim.Order { Op = "enforcer", Do = "move", Point = ms.Value }); Arrive(h, 3, 1500); }
                 string robot = null; int cap2 = 0;

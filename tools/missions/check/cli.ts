@@ -10,6 +10,7 @@ import { join } from 'node:path';
 import { ROOT, engineAt, hasDotnet } from './engine';
 import { check, html, load, record, replay, runsDir } from './run';
 import { compose, loadPlan, writeScript } from './compose';
+import { missionIdProblems } from './ids';
 
 const args = process.argv.slice(2), flag = (k: string) => { const i = args.indexOf(k); return i >= 0 ? args.splice(i, 2)[1] : undefined; };
 // `--record` takes the note that goes in the run's record (what changed and why): a bare one used to record nothing and say nothing (Keel, 2026-10-24: `bun run missions:rerecord` with no note). It is refused now, before any play.
@@ -52,6 +53,9 @@ if (cmd === 'compose') {
   process.exit(bad.length ? 1 : 0);
 }
 
+// brief 078 B1: the mission's words and points must name ids the site has (ids.ts); a remap rename fails here, before any play
+const idBad = missionIdProblems(args[0] ?? 'handover');
+if (idBad.length) { for (const b of idBad) console.error(`ID ${b}`); console.error(`HOLDS ${args[0] ?? 'handover'}: ${idBad.length} id(s) the site does not have; nothing was played`); process.exit(1); }
 const mission = args[0] ?? 'handover', L = load(join(ROOT, 'contracts/missions', mission, 'routes'));
 const t0 = performance.now(), c = await check(L, engineAt(rev, inputs), log);
 const out = join(ROOT, 'out/missions', mission);

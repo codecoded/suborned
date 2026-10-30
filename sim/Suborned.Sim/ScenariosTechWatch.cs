@@ -87,16 +87,16 @@ namespace Suborned.Sim
             {
                 var g = r.G;
                 r.To(r.Send(Tech, "cabinet"));
-                r.Do(Tech, "loop", "mast-314"); r.Done(Tech);
-                r.Is(g.LoopOn && g.LoopCam == "mast-314", "the mast camera's loop holds");
+                r.Do(Tech, "loop", "mast-z0"); r.Done(Tech);
+                r.Is(g.LoopOn && g.LoopCam == "mast-z0", "the mast camera's loop holds");
                 var cams = g.WatcherIds().Where(w => w.StartsWith("camera:", StringComparison.Ordinal)).ToList();
                 foreach (var c in cams) r.Is(g.LearnQuery(Tech, "watch", c).code != "run-tethered", $"Loop v2 (engine 0.31.0): no tether, so the Tech's Watch on {c} is not refused run-tethered");
                 r.Is(g.LoopOn, "the loop still holds");
-                var spot = WatchSpot(r, "camera:mast-314", unseen: false, who: Tech);
+                var spot = WatchSpot(r, "camera:mast-z0", unseen: false, who: Tech);
                 r.To(r.SendTo(Tech, spot));
-                r.Is(r.Until(() => Watchable(r, "camera:mast-314", Tech), T(30)), "a clear line to the mast camera (brief 031: people on the street block it)");
-                r.Do(Tech, "watch", "camera:mast-314"); r.Done(Tech);
-                r.Is(g.Known("camera:mast-314")!.Sight, "the mast camera's sight is learned by the Tech");
+                r.Is(r.Until(() => Watchable(r, "camera:mast-z0", Tech), T(30)), "a clear line to the mast camera (brief 031: people on the street block it)");
+                r.Do(Tech, "watch", "camera:mast-z0"); r.Done(Tech);
+                r.Is(g.Known("camera:mast-z0")!.Sight, "the mast camera's sight is learned by the Tech");
                 r.Is(g.LoopOn, "with the mast's loop still running: he walked off and watched (no tether)");
             });
         }

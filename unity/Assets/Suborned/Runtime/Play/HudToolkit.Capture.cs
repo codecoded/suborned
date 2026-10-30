@@ -20,6 +20,14 @@ namespace Suborned.Play
         public static string ManifestNow(string state = "rest") => live != null && live.on ? live.Manifest(state, Screen.height) : null;
         public static string LastShot { get; private set; } = "";
 
+        /// <summary>Brief 078 (the car effects' captures): the HUD layer drawn into `rt`, cleared to transparent, instead of the screen; null puts
+        /// it back. False when the kit view is not drawing.</summary>
+        public static bool HudInto(RenderTexture rt)
+        {
+            if (live == null || !live.on || live.doc == null) return false;
+            var ps = live.doc.panelSettings; ps.targetTexture = rt; ps.clearColor = rt != null; ps.colorClearValue = new Color(0, 0, 0, 0); return true;
+        }
+
         /// <summary>Queue a capture to `basePath` (absolute, no extension); `state` is rest, active or alt (rest becomes briefing while the briefing card is up, log while the history panel is open). Poll ShotBusy.</summary>
         public static string Shoot(string basePath, string state)
         {

@@ -1,0 +1,34 @@
+078 B1 mast camera id · Keel (simulation-engineer) · 2026-10-30 · HEAD 1c8bf221, c045, engine 0.35.2
+Status: done, not committed. Fixes B1 from READY-health. Sky: "Fix it then". Aster's decision: the id stays `mast-z0`.
+
+What changed
+- Every live reference now uses the camera's current id, mast-z0 (the sim's camera:mast-z0; text key camera-mast-z0):
+  - sim/Suborned.Sim/ScenariosTakedown.cs (N67), sim/Suborned.Sim/ScenariosTechWatch.cs (N110), sim/Suborned.Sim.Tests/Sight.cs:60
+  - sim/Suborned.Sim/Site.cs:226 (comment only)
+  - contracts/missions/handover/text.json: the 9 camera-mast-314 keys are renamed. The words are unchanged.
+  - contracts/missions/handover/text.schema.ts (WATCHED), contracts/missions/handover/text.test.ts
+  - unity/Assets/Suborned/Runtime/Play/GameBoot.cs:457-458 (the proof finds the mast again)
+  - tools/qa/grade.test.ts (2 fixtures), tools/qa/grade.ts (comment only)
+- New guard: tools/missions/check/ids.ts + ids.test.ts, run by missions:check from tools/missions/check/cli.ts. It reads the site the way Site.cs does: site cameras plus takedown mast-camera watchers (last segment, "-camera" dropped), getaway stands, cars, places. It fails when:
+  - a camera-/stand-/car- text key (targets, names.targets, onTarget, onTargetBy, dialogue about, who maps, WATCHED) names an id the site lacks;
+  - a target key used anywhere is not one of the text's own targets;
+  - a site camera or stand has no words (targets, names.targets, WATCHED), so a rename on the site side also fails;
+  - a mission.json camera, point or destination is not in the site.
+  missions:check stops before any play ("HOLDS …: n id(s) the site does not have; nothing was played").
+
+Evidence
+- Guard on a copy of HEAD's site, text, schema and mission (out/scratch/keel/head-ids): 14 problems, every one camera-mast-314 or a missing camera-mast-z0. On the tree: 0.
+- bun run guard dotnet test sim/Suborned.Sim.Tests: Passed 2607, Failed 0.
+- bun run guard bun run sim check: 360/360 ok.
+- bun test text.test.ts, grade.test.ts, ids.test.ts, check.test.ts: 213 pass, 0 fail.
+- bun run typecheck: clean.
+- bun run missions:check: SHIPS, 893 plays on engine 1c8bf221.
+- missions:check replay handover c045: REPLAY OK.
+- missions:check --engine tree --inputs tree: SHIPS. All 893 plays match c045's outcome and finalHash exactly. No re-record.
+
+Open
+- GameBoot.cs only had a string changed. Unity was not compiled here (Latch: compile and check the console on the next build).
+- contracts/world/harbour-district.world.example.json still says street/records-square/mast-camera-314. It is the export contract's example, read by tools/world/gen/gen.test.ts, not by the mission. Left alone (Splice or Datum can refresh it).
+- The guard checks against the sim's site data (sim/data), not out/world. out/ is generated and may be missing in a test run.
+
+Next owner: Aster (checkpoint commit) -> Latch (Unity compile, then bun run batch, which B1 had stopped at step 1).

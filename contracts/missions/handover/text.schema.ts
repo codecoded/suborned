@@ -43,7 +43,7 @@ export const AGENTS = ['scout', 'fixer', 'tech', 'enforcer'] as const;
 export const PEOPLE = ['waitress', 'driver', 'guard', 'councillor'] as const;
 export const OTHERS = ['rivals', 'patrol', 'security', 'watcher', 'crowd'] as const;
 /** Things a Scout can Watch besides a person (rulebook sight.kinds learn: watch): `targets` keys. The guard is watched as a person. `rivals` (brief 059, engine 0.32.0): the parked rival car teaches the crew's timetable. */
-export const WATCHED = ['camera-entrance', 'camera-pickup', 'camera-mast-314', 'patrol', 'rivals'] as const;
+export const WATCHED = ['camera-entrance', 'camera-pickup', 'camera-mast-z0', 'patrol', 'rivals'] as const;
 export const SPEAKERS = [...AGENTS, ...PEOPLE, ...OTHERS] as const;
 /** The action panel's verbs: one id each (the host's Slots ids; `ask`…`pressure` are the Fixer's `turn` with an approach). */
 export const VERBS = ['watch', 'listen', 'mislead', 'ask', 'pay', 'help', 'pressure', 'call', 'loop', 'disable', 'reroute', 'enter', 'take',

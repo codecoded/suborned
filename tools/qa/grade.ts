@@ -175,7 +175,7 @@ export function feetShare(feet: FeetRow[]): { n: number; within: number; share: 
 
 /** The doer and code of a Q-OFFER anomaly's observed text (`<op> <verb> <target>: <code> <why>`). */
 export function offerOf(observed: string): { op: string; verb: string; code: string } | undefined {
-  const m = /^(\w+) (\w+) (.*?): ([a-z-]+)(?: |$)/.exec(observed); return m ? { op: m[1]!, verb: m[2]!, code: m[4]! } : undefined; // the target may hold colons (camera:mast-314)
+  const m = /^(\w+) (\w+) (.*?): ([a-z-]+)(?: |$)/.exec(observed); return m ? { op: m[1]!, verb: m[2]!, code: m[4]! } : undefined; // the target may hold colons (camera:mast-z0)
 }
 /** A race: the doer went down in the order's tick or the `raceTicks` before it (log `<op>.down`). */
 export function isRace(log: { tick: number; code: string }[], op: string, orderTick: number): boolean {

@@ -280,7 +280,7 @@ namespace Suborned.Play
             if (MenuKeys(kb)) return; // the pause menu is up: Esc resumes, its buttons act; nothing else this frame
             if (FailCamFrame()) { FollowFrame(); return; }
             if (ConvoFrame()) return; // brief 032: a conversation scene plays (HostConvo): the clock held, its keys only, the cutaway camera // the fail camera plays (HostFailCam): nothing else this frame but the follow view, if on (Sky 2026-10-20: it plays in the view the player is in)
-            if (Ending.Length > 0) { ClearHover(); if (kb != null && kb.escapeKey.wasPressedThisFrame) { OpenMenu(); return; } if (controls.Down(kb, PlayAction.Restart)) Begin(); CameraOnly(kb, UnityEngine.InputSystem.Mouse.current); views?.Frame(1f); FollowFrame(); FadePoints(); return; } // the end card is modal (ModalGate)
+            if (Ending.Length > 0) { ClearHover(); if (kb != null && kb.escapeKey.wasPressedThisFrame) { OpenMenu(); return; } if (controls.Down(kb, PlayAction.Restart)) Begin(); CameraOnly(kb, UnityEngine.InputSystem.Mouse.current); views?.Frame(1f); Guard("car fx", CarFxFrame); FollowFrame(); FadePoints(); return; } // the end card is modal (ModalGate)
             if (!CameraLab.Typing) Controls(); // brief 025: no keys reach the street while a preset name is typed
             if (Fault == null) Guard("plan", PlanFrame); // brief 041: the pause lifted gives the queued orders on this tick, before the clock steps
             if (Fault != null) return;
@@ -302,6 +302,7 @@ namespace Suborned.Play
             Guard("faces", FacesFrame); Guard("done", DoneFrame); // brief 043: the done moment (landings, windows, cancels) from the same log // brief 033: the roster's live portraits (HostPortraits) // brief 031: the watchers' displayed stages and the callouts (HostAttention), before the views draw them
             if (PerfTiming) { double v0 = Now(); views.Frame(Paused || Game.Over ? 1f : Mathf.Clamp01(acc / 0.1f)); PerfViewsMs += Now() - v0; }
             else views.Frame(Paused || Game.Over ? 1f : Mathf.Clamp01(acc / 0.1f));
+            Guard("car fx", CarFxFrame); // brief 078: the cars' smoke, fire and blast in the world, on the mission clock (HostCarFx)
             Guard("target rings", TargetRingsFrame); // brief 049 round 2: after the views moved
             Guard("rival marks", RivalMarksFrame); Guard("drive marks", DriveMarksFrame); RivalAudioFrame(); // brief 059: the rivals' approach, walks, posts and Watch reads; the stands and Vale's car round the back; the rivals' sounds
             FollowFrame(); // the test follow view (HostFollow): after the views moved

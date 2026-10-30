@@ -66,7 +66,7 @@ test('Q-MEM: a rise that holds is a leak; one step (the response spawning in), a
 
 test('Q-OFFER: the doer and code read through a target with colons; a doer down in the order tick or the one before is a race', () => {
   expect(offerOf('scout carry tech: agent-down the scout is down')).toEqual({ op: 'scout', verb: 'carry', code: 'agent-down' });
-  expect(offerOf('tech fire camera:mast-314: no-target no camera:mast-314 to fire at')).toEqual({ op: 'tech', verb: 'fire', code: 'no-target' });
+  expect(offerOf('tech fire camera:mast-z0: no-target no camera:mast-z0 to fire at')).toEqual({ op: 'tech', verb: 'fire', code: 'no-target' });
   expect(isRace([{ tick: 2049, code: 'scout.down' }], 'scout', 2049)).toBe(true);
   expect(isRace([{ tick: 2048, code: 'scout.down' }], 'scout', 2049)).toBe(true);
   expect(isRace([{ tick: 2030, code: 'scout.down' }], 'scout', 2049)).toBe(false);
@@ -91,7 +91,7 @@ test('gradeRows: the row\'s anomalies regraded in place, the findings keyed by c
     input: { decisions: 0, clicks: 0, rings: 0, ringMisses: 0, taken: 0, moves: 0, runs: 0, pans: 0, turns: 0 }, orders: { given: 0, refused: 0, codes: {} }, frames: { count: 0, meanMs: 0, p99Ms: 0, maxMs: 0, over50: 0 },
     memory: { startMB: 0, endMB: 0, slopeMBPerMin: 12 }, consoleErrors: 0, feetSamples: 2, figures: 2, shots: 0, counts: {},
     anomalies: [A('Q-SOLID', 'security/1', 'security/1 at'), A('Q-SOLID', 'crowd/3', 'crowd/3 at'), A('Q-OFFER', 'carry:agent-down', 'scout carry tech: agent-down the scout is down', 'random-a/anomalies/1.script.json'),
-      A('Q-OFFER', 'fire:no-target', 'tech fire camera:mast-314: no-target no camera'), A('Q-MEM', 'slope', 'managed 1 MB/min, total 12 MB/min')] } as BotReportRow;
+      A('Q-OFFER', 'fire:no-target', 'tech fire camera:mast-z0: no-target no camera'), A('Q-MEM', 'slope', 'managed 1 MB/min, total 12 MB/min')] } as BotReportRow;
   let asked: string[] = [];
   await gradeRows([row], dir, { walkFile: walk, seatsFile: seats, replay: async s => { asked = s; return [[{ tick: 100, code: 'scout.down' }]]; } });
   expect(asked).toEqual([join(dir, 'random-a/anomalies/1.script.json')]);

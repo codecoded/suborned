@@ -57,7 +57,7 @@ public class SightTests
     public void TheFanIsTheEnginesSightAtTheStart()
     {
         var g = Engine.New(Repo.Inputs); AllAgree(g);
-        Assert.Equal(new[] { "camera:entrance", "camera:pickup", "camera:mast-314", "guard", "patrol" }, g.WatcherIds().Where(w => g.ConeFan(w) != null)); // brief 013: the world's Records Square mast
+        Assert.Equal(new[] { "camera:entrance", "camera:pickup", "camera:mast-z0", "guard", "patrol" }, g.WatcherIds().Where(w => g.ConeFan(w) != null)); // brief 013: the world's Records Square mast
     }
 
     [Theory]

@@ -223,7 +223,7 @@ namespace Suborned.Sim
             {
                 x.Only("id", "kind", "at", "facings", "range", "coneDeg", "inSim", "src");
                 if (x["kind"].Str() != "mast-camera") continue; // the robot dock is an origin (above), not a watcher
-                var wid = x["id"].Str(); var seg = wid.Substring(wid.LastIndexOf('/') + 1).Replace("-camera", ""); // street/records-square/mast-camera-314 → mast-314
+                var wid = x["id"].Str(); var seg = wid.Substring(wid.LastIndexOf('/') + 1).Replace("-camera", ""); // street/records-square/mast-camera-z0 → mast-z0
                 var fs = new List<Pt>(); foreach (var f in x["facings"].Items) { var v = Pt.Of(f); if (v == new Pt(0, 0)) throw new FormatException($"{f.Path}: a facing can't be zero"); fs.Add(v); }
                 int range = x["range"].Int(), deg = x["coneDeg"].Int();
                 if (fs.Count == 0 || range <= 0 || range > 100_000 || deg < 2 || deg > 178) throw new FormatException($"{x.Path}: a camera needs facings, a range and a cone 2..178°");
