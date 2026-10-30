@@ -345,7 +345,7 @@ namespace Suborned.Play
                 case "guard.back": return "Watching the door again.";
                 case "vale.exits": return "Walking to the official car."; // brief 059 K1: always the front (the service-lane walk is gone)
                 case "vale.at-car": return "Under the pickup camera.";
-                case "car.leaves": return g.Driver.Turned && !g.Driver.Down ? "Driving him on." : "Driving him away."; // brief 059 K1, K4: unturned at 6:13, turned at the 8:30 close
+                case "car.leaves": return g.Driver.Turned && !g.Driver.Down ? "Driving him on." : "Driving him away."; // brief 059 K1, K4: unturned at Vale's pickup, turned at the close
                 case "loop.ends": return "The camera sees again.";
                 case "security.called": return "From the north street.";
                 case "patrol.breaks": return t.Contains("gunfire") ? "Toward the gunfire." : "Toward the drawn weapon.";

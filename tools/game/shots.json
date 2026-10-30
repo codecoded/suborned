@@ -14,7 +14,7 @@
     { "name": "getaway-car-yaw210", "script": "route-a-board", "tick": 2600, "focus": "car/getaway", "yaw": 2 },
     { "name": "fight-loud-checkpoint", "checkpoint": "cp-loud", "preset": "today", "tick": 0, "select": "enforcer", "focus": "op/enforcer", "note": "the loud fight checkpoint as it loads" },
     {"name": "fight-safe-body", "script": "route-g-board", "tick": 2300, "focus": "car/getaway", "select": "enforcer", "note": "brief 039 B (engine 0.35.1): the safe fight 4.5 s after the spring, at play zoom: the body carries it (kneel, duck, flash, spark); no lines, no rings but the selected agent's and the focus's"},
-    {"name": "fight-loud-body", "script": "loud", "tick": 2275, "focus": "car/getaway", "select": "scout", "note": "brief 039 B (engine 0.35.1): the loud fight 2.4 s in, at play zoom: police in cover, the cell firing; the body reads, no lines"},
+    {"name": "fight-loud-body", "script": "tools/game/pins/loud.seed3.json", "tick": 2275, "focus": "car/getaway", "select": "scout", "note": "brief 039 B (engine 0.35.1): the loud fight 2.4 s in, at play zoom: police in cover, the cell firing; the body reads, no lines"},
     { "name": "walk-clip-follow", "script": "route-a-board", "tick": 200, "view": "follow", "agent": "scout", "face": "waitress", "clip": { "seconds": 3, "fps": 15 }, "hud": false, "note": "3 s at real time" },
     { "name": "scout-side-pose", "skip": true, "hud": false, "script": "route-a-board", "tick": 400, "pose": { "view": "op/scout", "offset": [4.2, 1.1, 0], "lookOffset": [0, 0.9, 0], "fov": 39.6 }, "size": [960, 1080], "note": "a free side camera on the Scout (what out/latch/gamecap2.cs did); remove skip to take it" }
   ]

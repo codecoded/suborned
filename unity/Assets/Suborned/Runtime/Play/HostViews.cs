@@ -152,7 +152,7 @@ namespace Suborned.Play
                 return;
             }
             var dpos = g.DriverPos(); bool driverIn = dpos.HasValue && !g.Driver.Down && dpos.Value == g.CarPos() && !(g.Vale == ValeAt.Office || g.Vale == ValeAt.Leaving); // brief 059 K1, K2: at the wheel (Vale in the back), never a figure standing in the car
-            Set("waitress", g.PersonPos(g.Inez), g.Inez.Down); Set("driver", driverIn ? null : dpos, g.Driver.Down);
+            Set("waitress", g.PersonPos(g.Inez), g.Inez.Down); Set("driver", driverIn || g.DriverAboard ? null : dpos, g.Driver.Down); // brief 081: DriverAboard, never a figure at the car's centre
             Set("guard", g.GuardPose()?.pos, g.GuardDown); Set("councillor", g.Vale == ValeAt.Car || g.Vale == ValeAt.InCar || g.Vale == ValeAt.Taking && g.TakeInCar ? null : g.ValePos(), g.ValeP.Down); // brief 059 K1: in the back of his car (and taken from it) he is in the car, not on the street
             // brief 022: Inez's round gives her facing (to her table, to the guard when they stand together), the guard's pose his
             faces.Clear();

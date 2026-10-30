@@ -7,7 +7,7 @@ import { FREEZE_MS, LIMITS, findLate, judgeLate, noisy, resolveLate, runLate, sc
 import { ROOT } from './shots';
 
 const FILE = join(ROOT, 'tools/game/late.json'), raw = JSON.parse(readFileSync(FILE, 'utf8'));
-const ends: Record<string, End> = { 'loud-fight.json': { tick: 3124, outcome: 'success', fail: '' }, 'loud-left-downed.json': { tick: 3131, outcome: 'success', fail: '' } };
+const ends: Record<string, End> = { 'loud-fight.json': { tick: 3124, outcome: 'success', fail: '' }, 'loud-left-downed.json': { tick: 3131, outcome: 'success', fail: '' }, 'loud-fight.seed3.json': { tick: 3124, outcome: 'success', fail: '' }, 'loud-left-downed.seed14.json': { tick: 3131, outcome: 'success', fail: '' } }; // brief 080: the rows read a route pinned to a seed that fights (tools/game/pins)
 const endOf = (p: string) => ends[p.split('/').pop()!] ?? (() => { throw new Error(`no end for ${p}`); })();
 
 describe('tools/game/late.json', () => {
@@ -16,14 +16,14 @@ describe('tools/game/late.json', () => {
     for (const r of raw.rows) expect(readFileSync(scriptPath(r.script), 'utf8')).toContain('suborned.sim.script/1');
   });
   test('loud-left-downed is a route the engine ends (Success at 5:13.1 on engine 0.30.0; it replaced Sky\'s 0.2.58 session, which no longer ends)', () => {
-    expect(raw.rows[1].script).toBe('loud-left-downed');
+    expect(raw.rows[1].script).toBe('tools/game/pins/loud-left-downed.seed14.json');
   });
   test('resolves to the last 60 s at 1080p, warmed 3 s before', () => {
     const r = resolveLate(raw, '/o', endOf);
     expect(r.schema).toBe('suborned.late.resolved/1');
     expect(r.rows[0]).toMatchObject({ name: 'loud-fight', endTick: 3124, startTick: 2524, warmTick: 2494, outcome: 'success', tailSeconds: 2, w: 1920, h: 1080 });
     expect(r.rows[1]).toMatchObject({ name: 'loud-left-downed', endTick: 3131, startTick: 2531, warmTick: 2501, outcome: 'success', failCode: '' });
-    expect(r.rows[0]!.scriptPath).toMatch(/^\/.*routes\/loud-fight\.json$/);
+    expect(r.rows[0]!.scriptPath).toMatch(/^\/.*pins\/loud-fight\.seed3\.json$/);
   });
   test('a bad file, a repeated name, a mission shorter than the window: refused with the row\'s name', () => {
     expect(() => resolveLate({ schema: 'suborned.late/1', rows: [{ name: 'A b', script: 'loud-fight' }] }, '/o', endOf)).toThrow(/kebab-case/);

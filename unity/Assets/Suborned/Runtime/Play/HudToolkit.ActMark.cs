@@ -48,14 +48,20 @@ namespace Suborned.Play
         public static string PillLine(HandoverHost h, HandoverHost.Intent i)
         {
             var parts = new List<string> { i.Label.Length > 0 ? i.Label : i.Order?.Do ?? "" };
+            bool odds = i.Order?.Do == "fire" && i.OddsPct >= 0, oddsSaid = false; // brief 080: the fire chip reads the odds first (Fable's less.odds)
             foreach (var f in HudModel.PriceLine(h, i))
                 switch (f.Kind)
                 {
-                    case "time": case "walk": if (f.Text.Length > 0) parts.Add(i.Order?.Do == "fire" ? "down in " + f.Text : f.Text); break;
+                    case "time": case "walk":
+                        if (f.Text.Length == 0) break;
+                        if (odds && !oddsSaid && i.OddsDown) { parts.Add(h.OddsChipLine(i.OddsPct, f.Text.Replace(" s", ""))); oddsSaid = true; }
+                        else parts.Add(i.Order?.Do == "fire" ? "down in " + f.Text : f.Text);
+                        break;
                     case "usd": if (f.Text.Length > 0) parts.Add("$" + f.Text); break;
                     case "trail": if (f.Text.Length > 0) parts.Add(f.Text + " Trail" + (f.Found ? " if found" : "")); break;
                     case "alert": if (f.Text.Length > 0) parts.Add("Alert " + f.Text); break;
                 }
+            if (odds && !oddsSaid) parts.Insert(1, h.OddsBareLine(i.OddsPct));
             return string.Join(" · ", parts);
         }
 

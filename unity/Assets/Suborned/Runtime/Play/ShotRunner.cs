@@ -91,10 +91,12 @@ namespace Suborned.Play
                     {
                         h.Fights.checkpoint = s.checkpoint;
                         if (s.checkpoint.Length > 0 && h.Fights.preset != s.preset) h.Fights.Load(s.preset);
+                        Suborned.Sim.Script sc = s.scriptPath.Length > 0 ? Suborned.Sim.Script.Parse(File.ReadAllText(s.scriptPath)) : null;
+                        HandoverHost.SeedPin = sc?.Start.Seed ?? 0; // brief 080: a script's own seed (tools/game/pins), else the neutral start
                         h.Begin();
                         h.IntelOpen = false;
                         orders = null; oi = 0;
-                        if (s.scriptPath.Length > 0) { var sc = Suborned.Sim.Script.Parse(File.ReadAllText(s.scriptPath)); orders = sc.Orders.Select((o, i) => (o, i)).OrderBy(p => p.o.Tick).ThenBy(p => p.i).Select(p => p.o).ToList(); }
+                        if (sc != null) { orders = sc.Orders.Select((o, i) => (o, i)).OrderBy(p => p.o.Tick).ThenBy(p => p.i).Select(p => p.o).ToList(); }
                         runKey = key; runStart = h.Game.Tick;
                     });
                     yield return null;

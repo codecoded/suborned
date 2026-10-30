@@ -148,7 +148,7 @@ namespace Suborned.Play
         }
 
         /// <summary>Worst-case values for the layout audit (Sky's wrapped "Pa / y"): every price line shows $100k, 88 s, +12, ≥2; chips 88 s; the
-        /// pill 8:30 and Trail 12. Display only: the run is never touched.</summary>
+        /// pill 7:30 and Trail 12. Display only: the run is never touched.</summary>
         public static bool Stress;
 
         /// <summary>The layout audit: every visible label whose text is wider than its box, or that runs onto a second line while it is meant to

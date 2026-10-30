@@ -1,0 +1,48 @@
+<!doctype html><meta charset="utf-8"><title>Handover bands</title><style>body{font:14px system-ui;margin:2em;max-width:1200px}table{border-collapse:collapse;margin:1em 0}td,th{border:1px solid #ccc;padding:3px 7px;text-align:left}.ok{color:#176}.no{color:#b22;font-weight:600}</style>
+<h1>Handover bands: 7 plans × 200 seeds</h1><p>Engine tree, 33 s. T, A, Standing and Heat are medians of the wins. A band miss is a report for Motive, not a tuning instruction.</p>
+<h2>Plans</h2><table><tr><th>plan</th><th>style</th><th>wins</th><th>fails</th><th>went loud</th><th>fight med</th><th>p25-p75</th><th>p95</th><th>end</th><th>HP</th><th>down/win</th><th>T</th><th>A</th><th>Standing</th><th>Heat</th><th>idle med</th><th>idle p95</th><th>reported</th></tr>
+<tr><td>careless</td><td>careless</td><td>0 %</td><td>entry-seen-camera 200</td><td>0 %, 0 won</td><td>0 s</td><td>0-0</td><td>0</td><td>0:00</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>14</td><td>46</td><td>199</td></tr>
+<tr><td>prepared-loud</td><td>prepared-loud</td><td>17.5 %</td><td>rivals-reach-vale 4, enforcer-down 157, none 2, sealed 2</td><td>82 %, 4 won</td><td>33 s</td><td>26-46</td><td>72</td><td>5:39</td><td>14</td><td>0.34</td><td>6</td><td>0</td><td>3</td><td>6</td><td>26</td><td>47</td><td>4</td></tr>
+<tr><td>quiet-a</td><td>prepared-quiet</td><td>99 %</td><td>none 1, rivals-reach-vale 1</td><td>0 %, 0 won</td><td>16 s</td><td>13-24</td><td>38</td><td>4:42</td><td>2</td><td>0.17</td><td>4</td><td>0</td><td>3</td><td>4</td><td>15</td><td>42</td><td>0</td></tr>
+<tr><td>quiet-b</td><td>prepared-quiet</td><td>80.5 %</td><td>none 16, rivals-reach-vale 23</td><td>3 %, 3 won</td><td>15 s</td><td>10-22</td><td>78</td><td>6:32</td><td>7</td><td>0.25</td><td>11</td><td>2</td><td>1</td><td>11</td><td>63</td><td>83</td><td>0</td></tr>
+<tr><td>quiet-g</td><td>prepared-quiet</td><td>70.5 %</td><td>none 15, vale-leaves 16, rivals-reach-vale 26, sealed 2</td><td>0 %, 0 won</td><td>34 s</td><td>24-52</td><td>76</td><td>5:19</td><td>7</td><td>0.34</td><td>10</td><td>1</td><td>3</td><td>10</td><td>49</td><td>95</td><td>16</td></tr>
+<tr><td>thin-quiet</td><td>thin-quiet</td><td>48.5 %</td><td>rivals-reach-vale 101, vale-leaves 1, entry-seen-camera 1</td><td>0 %, 0 won</td><td>9 s</td><td>6-17</td><td>25</td><td>4:10</td><td>8</td><td>0.07</td><td>17</td><td>0</td><td>2</td><td>17</td><td>15</td><td>51</td><td>10</td></tr>
+<tr><td>unprepared-loud</td><td>unprepared-loud</td><td>0 %</td><td>entry-seen-camera 191, sealed 8, enforcer-down 1</td><td>0 %, 0 won</td><td>4 s</td><td>2-8</td><td>46</td><td>0:00</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>5</td><td>29</td><td>10</td></tr></table>
+<h2>Rigid (pass or fail)</h2><table><tr><td class="ok">ok</td><td>R-1</td><td>no crash: every play gave its line</td><td>1400 plays, 0 errors</td><td></td></tr>
+<tr><td class="no">MISS</td><td>R-2</td><td>no stall: every play reaches a verdict by the close</td><td>34 plays reach the close with no verdict</td><td>first: prepared-loud#24, prepared-loud#137, quiet-a#69, quiet-b#8, quiet-b#19, quiet-b#37</td></tr>
+<tr><td class="ok">ok</td><td>R-3</td><td>every fail names its cause (fail code and culprit)</td><td>734/734</td><td></td></tr>
+<tr><td class="ok">ok</td><td>R-4</td><td>every order shows its price: each verb given has its line on the card (text.json less.price), each Listen and Turn had its quote when given</td><td>18/18 verbs, 0 unquoted acts</td><td></td></tr>
+<tr><td class="ok">ok</td><td>R-5</td><td>a saved run replays exactly from seed + orders (a win and a fail of each plan; the bands' own run gives the same hash)</td><td>12/12</td><td></td></tr>
+<tr><td class="ok">ok</td><td>R-6</td><td>unknown = reject: an unknown condition, a log line a player does not see, a missing rule, an unknown key, an unknown pace</td><td>5/5</td><td></td></tr>
+<tr><td class="no">MISS</td><td>R-7</td><td>no reference window under 30 s at a person's pace: each step 30 s late loses at most 10 points of wins</td><td>9/11</td><td>quiet-b take: 85 % → 68 %; quiet-g knockout: 68 % → 17 %</td></tr></table><h2>Bands (a report)</h2><table><tr><td class="ok">ok</td><td>B-1 quiet-a</td><td>prepared quiet wins ≥ 90 %</td><td>99%</td><td></td></tr>
+<tr><td class="no">MISS</td><td>B-1 quiet-b</td><td>prepared quiet wins ≥ 90 %</td><td>80.5%</td><td></td></tr>
+<tr><td class="no">MISS</td><td>B-1 quiet-g</td><td>prepared quiet wins ≥ 90 %</td><td>70.5%</td><td></td></tr>
+<tr><td class="no">MISS</td><td>B-2 thin-quiet</td><td>thin quiet wins 60-85 %</td><td>48.5%</td><td></td></tr>
+<tr><td class="ok">ok</td><td>B-3 careless</td><td>careless wins ≤ 30 %</td><td>0%</td><td></td></tr>
+<tr><td class="no">MISS</td><td>B-4 prepared-loud</td><td>prepared loud wins 60-80 % (Waymark proposes; Motive confirms); only wins whose final fight was loud</td><td>2%</td><td></td></tr>
+<tr><td class="ok">ok</td><td>B-5 unprepared-loud</td><td>unprepared loud wins ≤ 20 % (Waymark proposes; Motive confirms)</td><td>0%</td><td></td></tr>
+<tr><td class="no">MISS</td><td>B-6</td><td>prepared loud clearly above unprepared (≥ 40 points)</td><td>2 % against 0 %</td><td></td></tr>
+<tr><td class="no">MISS</td><td>B-7 quiet-a</td><td>quiet final fight: median 30-60 s, 95 % under 90 s</td><td>median 16 s, p95 38 s</td><td></td></tr>
+<tr><td class="no">MISS</td><td>B-7 quiet-b</td><td>quiet final fight: median 30-60 s, 95 % under 90 s</td><td>median 15 s, p95 78 s</td><td></td></tr>
+<tr><td class="ok">ok</td><td>B-7 quiet-g</td><td>quiet final fight: median 30-60 s, 95 % under 90 s</td><td>median 34 s, p95 76 s</td><td></td></tr>
+<tr><td class="no">MISS</td><td>B-7 thin-quiet</td><td>quiet final fight: median 30-60 s, 95 % under 90 s</td><td>median 9 s, p95 25 s</td><td></td></tr>
+<tr><td class="no">MISS</td><td>B-8 prepared-loud</td><td>no reference plan waits over 45 s with the whole cell idle (p95 of seeds)</td><td>median 26 s, p95 47 s, worst 105 s</td><td></td></tr>
+<tr><td class="ok">ok</td><td>B-8 quiet-a</td><td>no reference plan waits over 45 s with the whole cell idle (p95 of seeds)</td><td>median 15 s, p95 42 s, worst 178 s</td><td></td></tr>
+<tr><td class="no">MISS</td><td>B-8 quiet-b</td><td>no reference plan waits over 45 s with the whole cell idle (p95 of seeds)</td><td>median 63 s, p95 83 s, worst 94 s</td><td></td></tr>
+<tr><td class="no">MISS</td><td>B-8 quiet-g</td><td>no reference plan waits over 45 s with the whole cell idle (p95 of seeds)</td><td>median 49 s, p95 95 s, worst 134 s</td><td></td></tr>
+<tr><td class="ok">ok</td><td>B-9 quiet-a</td><td>agents down per win ≤ 0.5, prepared</td><td>0.17</td><td></td></tr>
+<tr><td class="ok">ok</td><td>B-9 quiet-b</td><td>agents down per win ≤ 0.5, prepared</td><td>0.25</td><td></td></tr>
+<tr><td class="ok">ok</td><td>B-9 quiet-g</td><td>agents down per win ≤ 0.5, prepared</td><td>0.34</td><td></td></tr>
+<tr><td class="ok">ok</td><td>B-10 prepared-loud</td><td>agents down per win ≤ 1.5, loud</td><td>0.34</td><td></td></tr>
+<tr><td class="ok">ok</td><td>B-10 unprepared-loud</td><td>agents down per win ≤ 1.5, loud</td><td>no win</td><td></td></tr>
+<tr><td class="no">MISS</td><td>B-11 careless</td><td>variety: middle half of fight lengths spans ≥ 10 s</td><td>0-0 s</td><td></td></tr>
+<tr><td class="ok">ok</td><td>B-11 prepared-loud</td><td>variety: middle half of fight lengths spans ≥ 10 s</td><td>26-46 s</td><td></td></tr>
+<tr><td class="ok">ok</td><td>B-11 quiet-a</td><td>variety: middle half of fight lengths spans ≥ 10 s</td><td>13-24 s</td><td></td></tr>
+<tr><td class="ok">ok</td><td>B-11 quiet-b</td><td>variety: middle half of fight lengths spans ≥ 10 s</td><td>10-22 s</td><td></td></tr>
+<tr><td class="ok">ok</td><td>B-11 quiet-g</td><td>variety: middle half of fight lengths spans ≥ 10 s</td><td>24-52 s</td><td></td></tr>
+<tr><td class="ok">ok</td><td>B-11 thin-quiet</td><td>variety: middle half of fight lengths spans ≥ 10 s</td><td>6-17 s</td><td></td></tr>
+<tr><td class="no">MISS</td><td>B-11 unprepared-loud</td><td>variety: middle half of fight lengths spans ≥ 10 s</td><td>2-8 s</td><td></td></tr>
+<tr><td class="ok">ok</td><td>B-12</td><td>at least one prepared quiet route wins on every seed</td><td>200/200</td><td></td></tr>
+<tr><td class="no">MISS</td><td>B-13</td><td>loud's Trail at least 3× quiet's</td><td>lowest loud win 17 T against quiet median up to 11 T</td><td></td></tr>
+<tr><td class="no">MISS</td><td>B-14</td><td>nobody goes full to down under 5 s, the Enforcer under 7 s (first hit to falling)</td><td>Enforcer: 88 of 305 falls under 7 s, fastest 1.5 s; others: 65 of 397 under 5 s, fastest 1.5 s</td><td></td></tr></table>
+<h2>Windows (each step 30 s late)</h2><table><tr><th>plan</th><th>step</th><th>wins as planned</th><th>30 s late</th></tr><tr><td>quiet-a</td><td>call</td><td>100 %</td><td class="ok">98 %</td></tr><tr><td>quiet-a</td><td>enter</td><td>100 %</td><td class="ok">98 %</td></tr><tr><td>quiet-a</td><td>go</td><td>100 %</td><td class="ok">100 %</td></tr><tr><td>quiet-b</td><td>pay</td><td>85 %</td><td class="ok">85 %</td></tr><tr><td>quiet-b</td><td>tip</td><td>85 %</td><td class="ok">85 %</td></tr><tr><td>quiet-b</td><td>reroute</td><td>85 %</td><td class="ok">88 %</td></tr><tr><td>quiet-b</td><td>take</td><td>85 %</td><td class="no">68 %</td></tr><tr><td>quiet-b</td><td>go</td><td>85 %</td><td class="ok">83 %</td></tr><tr><td>quiet-g</td><td>knockout</td><td>68 %</td><td class="no">17 %</td></tr><tr><td>quiet-g</td><td>enter</td><td>68 %</td><td class="ok">83 %</td></tr><tr><td>quiet-g</td><td>go</td><td>68 %</td><td class="ok">62 %</td></tr></table>

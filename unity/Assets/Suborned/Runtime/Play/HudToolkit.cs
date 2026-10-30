@@ -182,6 +182,14 @@ namespace Suborned.Play
         // ---------------------------------------------------------------- the pieces (rects from layout.json, px at 1920 x 1080)
 
         VisualElement pill, objective, column, ticker, feed, verbPlate, tooltip;
+        VisualElement closeBar;
+        /// <summary>Brief 080: Vale has been missed (Game.CloseWarnedAt): the kit's amber draining underline (the window marker's) under the clock, down to the close.</summary>
+        void CloseUnderline()
+        {
+            var g = host.Game; bool on = g != null && g.CloseWarnedAt >= 0 && !m.Ended && g.ClockOver * Suborned.Sim.Game.Hz > g.CloseWarnedAt; Show(closeBar, on); if (!on) return;
+            float total = g.ClockOver * Suborned.Sim.Game.Hz - g.CloseWarnedAt, left = g.ClockOver * Suborned.Sim.Game.Hz - g.Tick;
+            closeBar.style.width = Length.Percent(Mathf.Clamp01(left / total) * 100f);
+        }
         Label clock, nextLabel, nextTime, cash, trail, state, objText, objTail, tickerText, barCount, barKeys, tipTitle, tipBody, tipKey;
         readonly VisualElement[] lamps = new VisualElement[3];
         VisualElement tickerChip, barChevron, barPill;
@@ -250,7 +258,7 @@ namespace Suborned.Play
             // the status pill (status_pill): top right 14, 12; height 44; padding from the content rect
             pill = E(root, "s-pill_status", pick: true); pill.style.position = Position.Absolute; pill.style.right = 14; pill.style.top = 14; pill.style.height = 44;
             pill.style.flexDirection = FlexDirection.Row; pill.style.alignItems = Align.Center; pill.style.paddingLeft = 24; pill.style.paddingRight = 24; // clear of the pill's end caps, the same each side
-            clock = L(pill, "clock"); Sep(pill);
+            clock = L(pill, "clock"); closeBar = new VisualElement { pickingMode = PickingMode.Ignore }; closeBar.style.position = Position.Absolute; closeBar.style.left = 0; closeBar.style.bottom = -3; closeBar.style.height = 2.5f; closeBar.style.backgroundColor = Amber; closeBar.style.display = DisplayStyle.None; clock.Add(closeBar); Sep(pill);
             Icon(E(pill, null, w: 17, h: 17), "nextevent", TurqLight); nextLabel = L(pill, "pill-label"); nextTime = L(pill, "pill-value"); Sep(pill);
             Icon(E(pill, null, w: 17, h: 17), "p_cash", Cream); cash = L(pill, "pill-value"); Sep(pill);
             Icon(E(pill, null, w: 17, h: 17), "p_trail", Cream); trail = L(pill, "pill-value"); Sep(pill);
@@ -598,7 +606,7 @@ namespace Suborned.Play
             VisualElement Btn(string text, System.Action act) { var b = E(eb, "s-btn_text_normal btn_text", w: 150, h: 40, pick: true); b.style.marginLeft = 10; b.style.marginRight = 10; b.style.flexDirection = FlexDirection.Row; b.style.alignItems = Align.Center; b.style.justifyContent = Justify.Center; b.RegisterCallback<PointerDownEvent>(e => { if (e.button == 0) { act(); e.StopPropagation(); } }); var l = L(b, "button-label"); l.text = text; return b; }
             Btn("Debrief", () => endDetailOpen = !endDetailOpen);
             showAgain = Btn("Show me", () => host.FailCamStart()); // the fail camera again (Sky on the Air: "Show me again" ran past its pill) // the fail camera again (HostFailCam)
-            var rp = Btn("Replay", () => host.Begin()); endButtons = eb; endReplayKey = L(null, "keycap"); /* Sky: label only, no keycap; Return still replays */
+            var rp = Btn("Replay", () => host.BeginSameSeed()); endButtons = eb; endReplayKey = L(null, "keycap"); /* Sky: label only, no keycap; Return still replays */
             // the history (history_panel): above the feed bar; filters, Read all, the rows (the wheel scrolls them)
             history = E(root, "s-panel_dark", pick: true); history.style.position = Position.Absolute; history.style.right = 14; history.style.bottom = 14 + 32 + 6; history.style.width = 384;
             history.style.paddingLeft = 28; history.style.paddingRight = 28; history.style.paddingTop = 14; history.style.paddingBottom = 12; // clear of the frame's corner screws
@@ -811,7 +819,7 @@ namespace Suborned.Play
                 brief.style.left = (W - 700) / 2 + 40;
                 Text(briefTitle, m.BriefTitle); Text(briefSub, m.BriefSub); Text(briefObjective, m.BriefObjective); Text(briefTarget, m.BriefSituation);
                 Text(briefWin, m.BriefWin); Text(briefLose, string.Join(" · ", m.BriefFails));
-                Text(briefClose, m.BriefClock.Contains("8:30") ? "Closes 8:30" : m.BriefClock); Text(briefPurse, m.Cash.Length > 0 ? "Purse " + m.Cash : m.BriefPurse); Text(briefAlert, $"Alert {m.Alert} of 3"); Text(briefArms, "Cell armed");
+                Text(briefClose, host.Text != null ? "Closes " + host.Text.Close : m.BriefClock); Text(briefPurse, m.Cash.Length > 0 ? "Purse " + m.Cash : m.BriefPurse); Text(briefAlert, $"Alert {m.Alert} of 3"); Text(briefArms, "Cell armed");
                 for (int i = 0; i < 2; i++) { bool has = i < m.BriefWays.Count; Show(briefWays[i].title.parent, has); if (has) { Text(briefWays[i].title, $"Approach {(char)('A' + i)}: {m.BriefWays[i].title}"); Text(briefWays[i].body, m.BriefWays[i].body); } }
                 Text(briefBeginKey, m.BeginKey);
                 for (int i = 0; i < 2; i++) if (briefPhaseW[i] is { } pw) { bool on = (i == 1) == host.NightLook; if (pw.Focused != on) { pw.Focused = on; FrontEnd.PaintWord(pw); } } // the chosen one: full cream and the line (the tab grammar)
@@ -1046,7 +1054,7 @@ namespace Suborned.Play
             // a folded hint rings nothing (Glyph #8: the ring only while the plate is open)
             if (m.Hint != null && !(Time.unscaledTime - hintAt < HintOpenS || hintHover || HintPinned) && m.Hint == hintSeen) { m.HintRing = null; for (int i = 0; i < 4; i++) m.Slots[i].HintRing = false; }
             // the pill
-            Text(clock, Stress ? "8:30" : m.Clock); Text(nextLabel, m.NextLabel + " · "); Text(nextTime, Stress ? "8:30" : m.NextTime); Text(cash, m.Cash); Text(trail, Stress ? "12" : m.Trail.Replace("T ", ""));
+            Text(clock, Stress ? "7:30" : m.Clock); CloseUnderline(); Text(nextLabel, m.NextLabel + " · "); Text(nextTime, Stress ? "7:30" : m.NextTime); Text(cash, m.Cash); Text(trail, Stress ? "12" : m.Trail.Replace("T ", ""));
             for (int i = 0; i < 3; i++) lamps[i].style.backgroundColor = i < m.Alert ? new Color(1f, 0.988f, 0.94f) : new Color(0.039f, 0.11f, 0.118f);
             Text(state, m.State.Contains("PAUSE") ? "PAUSED" : m.State);
             Text(objText, m.Objective); Text(objTail, m.ObjectiveTail.Replace(' ', '\u00A0')); // UI Toolkit trims a label's leading spaces: "car· closes"

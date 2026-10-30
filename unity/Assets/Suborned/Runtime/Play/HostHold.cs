@@ -443,11 +443,13 @@ namespace Suborned.Play
             return any ? (id, force) : ("", false);
         }
 
+        /// <summary>Brief 080: the preview FireExtra read last: the offer's odds, and the sum under Alt (HostOdds).</summary>
+        public FirePreview OfferPreview { get; private set; }
         string FireExtra(string id, bool force)
         {
             int k = -1; for (int i = 0; i < 4; i++) if (Selected[i] && Armed(i)) { k = i; break; }
             if (Driving) k = dAgent; if (k < 0) return "";
-            FirePreview fp = null; Guard("aim", () => fp = Game.PreviewFire((OpId)k, id, force)); int s = PreviewDownS(fp, k, id);
+            FirePreview fp = null; Guard("aim", () => fp = Game.PreviewFire((OpId)k, id, force)); int s = PreviewDownS(fp, k, id); OfferPreview = fp;
             return s >= 0 ? $"{(fp?.DownIs == "disabled" ? "disabled" : "down")} in {s} s" : "";
         }
 

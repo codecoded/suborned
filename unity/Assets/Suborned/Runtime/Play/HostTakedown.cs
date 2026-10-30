@@ -261,9 +261,18 @@ namespace Suborned.Play
                 pn.Before.Add(("listen", $"{q.People.Count} {(q.People.Count == 1 ? "person" : "people")} within 13 m. {string.Join("; ", ws)}"));
             }
             else pn.Before.Add(("listen", "Nobody within 13 m."));
+            if (q.Coming.Count > 0) // brief 080 (Fable's less.takedown): who arrives before the act ends and would see it
+            {
+                var cs = q.Coming.ConvertAll(x => Text == null ? "" : Text.TdComingItem.Replace("{who}", ComingName(x.id, x.name)).Replace("{s}", x.inS.ToString()).Replace("{verb}", x.verb));
+                pn.Before.Add(("nextevent", (Text?.TdComing ?? "{list}").Replace("{list}", string.Join("; ", cs))));
+            }
             if (q.NextMark >= 0) pn.Before.Add(("nextevent", $"Next check-in: {MissionClock(q.NextMark)}. A missed one sends a robot."));
             pn.Before.Add(("p_alert", $"If seen: Alert {q.AlertIfSeen} · police in ~{q.PoliceInS} s"));
         }
+
+        string ComingName(string id, string name) { var wp = Game.PersonById(id); return wp != null ? PersonName(wp) : name; }
+        /// <summary>Brief 080: the first person the takedown's card says is coming, short (the Alt line): "" when nobody.</summary>
+        public string ComingShort(TakedownQuote q) => q.Coming.Count == 0 || Text == null ? "" : Text.TdComingShort.Replace("{who}", Cap(ComingName(q.Coming[0].id, q.Coming[0].name))).Replace("{s}", q.Coming[0].inS.ToString());
 
         /// <summary>A takedown a known watcher sees puts up the going-loud card (Glyph §1): the 0.5 s hold commits it, release backs off.</summary>
         bool SeenGate(Intent i, Target t, Vector2? screen, string source)

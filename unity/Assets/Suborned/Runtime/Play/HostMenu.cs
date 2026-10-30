@@ -22,7 +22,7 @@ namespace Suborned.Play
 
         public void ResumeFromMenu() { if (!MenuOpen) return; MenuOpen = false; Paused = pausedBeforeMenu; }
 
-        public void RestartFromMenu() { MenuOpen = false; Begin(); }
+        public void RestartFromMenu() { MenuOpen = false; BeginSameSeed(); } // brief 080: the same street; New game rolls a new one (HostSeed)
 
         /// <summary>Brief 051: the pause menu's Quit to menu: the run is saved at its last tick (as Quit does), the clock stays stopped, and the main menu
         /// comes up over it (Continue returns to it).</summary>

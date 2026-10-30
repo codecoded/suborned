@@ -347,6 +347,7 @@ namespace Suborned.Play
             string failLine = h.Text?.Fails.Find(f => f.code == g.FailCode).line ?? "";
             string head = h.Text != null && h.Text.EndFail.TryGetValue(g.FailCode ?? "", out var ft) && ft.Length > 0 ? ft.TrimEnd('.') : failLine.Length > 0 ? failLine.Split(new[] { ". " }, System.StringSplitOptions.None)[0].TrimEnd('.') : ""; // Glyph's 0.2.104 review: the title is less.end.fail's ("District sealed"), so the line under it is the only one about the car
             string sealStory = null;
+            if (g.FailCode == "closed-in" && g.Cause is Suborned.Sim.FailCause cin && h.ClosedInWords(cin) is { Length: > 0 } cl) failLine = cl; // brief 080: less.closedIn by Cause.Why
             if (g.FailCode == "sealed" && g.Cause is Suborned.Sim.FailCause sc) { var (sl, _, ss) = h.SealedWords(sc); if (!string.IsNullOrEmpty(sl)) failLine = sl; sealStory = ss; } // brief 057 §4: the line says which of held, ready, empty it was (FailCause.Car), so the card and the story agree
             EndLines.Add(g.Result == Outcome.Success ? "Vale is in the car" : g.Result == Outcome.Withdrawn ? "You withdrew" : head.Length > 0 ? head : "The attempt failed");
             EndLines.Add(g.Result == Outcome.Success ? "The crew escapes with Vale alive." : failLine.Length > 0 ? failLine : g.FailText);
@@ -365,6 +366,7 @@ namespace Suborned.Play
                 var kept = d.Assets.ConvertAll(AssetWords).FindAll(x => x != null); if (kept.Count > 0) EndLines.Add("Kept: " + string.Join(" ", kept));
                 Getaway(h, d);
             }
+            if (d != null) EndLines.Add($"Seed {g.Seed}"); // brief 080: the run's seed, small, last line of the debrief
             if (h.ShowDebug) EndLines.Add(h.Ending);
         }
 

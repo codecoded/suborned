@@ -362,7 +362,7 @@ namespace Suborned.Play
         public MoveParts MoveNow { get; private set; }
 
         /// <summary>The crosshair chip: the target's badge, down in n s, hits as a fraction, Trail per hit; never: the refusal.</summary>
-        public sealed class AimParts { public string Badge = "", Down = "", Ratio = "", Trail = "", Refused = ""; public bool Civilian, Cover, Lab; public int WalkS = -1, Charge, Exposed; public string Band = ""; /** brief 027: Down is pips · −damage · ×hits (no seconds) */ /** Keel 0.15 §8.8: the gait the chance is read at (walk, run, run-away; "" standing) and the seconds to down on arrival (-1 none) */ public string Gait = ""; public int ArriveS = -1; }
+        public sealed class AimParts { /** brief 080: the sheet's chance, -1 none */ public int Pct = -1; public string Badge = "", Down = "", Ratio = "", Trail = "", Refused = ""; public bool Civilian, Cover, Lab; public int WalkS = -1, Charge, Exposed; public string Band = ""; /** brief 027: Down is pips · −damage · ×hits (no seconds) */ /** Keel 0.15 §8.8: the gait the chance is read at (walk, run, run-away; "" standing) and the seconds to down on arrival (-1 none) */ public string Gait = ""; public int ArriveS = -1; }
         public AimParts AimNow { get; private set; }
 
         /// <summary>A watcher-or-not eye for a SeenQuote: "shut" nobody, "open" a known watcher sees it, "unk" an unknown one could.</summary>

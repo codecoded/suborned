@@ -107,7 +107,7 @@ namespace Suborned.Play
         public double StepMsMean => steps == 0 ? 0 : stepMs / steps;
         public double StepMsMax { get; private set; }
         public double FrameMsMean => frames == 0 ? 0 : frameEngineMs / frames;
-        public string MissionStartsAt { get; private set; } = "17:24:30";
+        public string MissionStartsAt { get; private set; } = "17:25:30"; // the site's cast.startsAt replaces it on Begin
         public HostViews Views => views;
         /// <summary>The kit view's compact strips show only the busy, hurt, down, selected or queued agents; this shows all four (a key).</summary>
         public bool ShowAllStrips { get => allStrips ??= PlayerPrefs.GetInt(StripsPref, 0) == 1; set { allStrips = value; PlayerPrefs.SetInt(StripsPref, value ? 1 : 0); PlayerPrefs.Save(); } }
@@ -147,7 +147,7 @@ namespace Suborned.Play
         /// <summary>What a right click on the hovered thing would do now, and its price (the chip).</summary>
         public sealed class Intent
         {
-            public Order Order; public int Slot = -1; public string Label = "", Usd = "$0", Time = "", Trail = "T 0", Alert = "A 0", Outcome = "", Hint = "", Walk = "", Name = "", Does = ""; public bool Move;
+            /** brief 080: a fire offer's chance, -1 none */ public int OddsPct = -1; public bool OddsDown = true; public Order Order; public int Slot = -1; public string Label = "", Usd = "$0", Time = "", Trail = "T 0", Alert = "A 0", Outcome = "", Hint = "", Walk = "", Name = "", Does = ""; public bool Move;
             /// <summary>For the kit's card: orders a turn takes (more than one = "one step worse"), a Pressure on a known secret, the walk first (s).</summary>
             public long Orders = 1; public bool Leverage; public int WalkS;
             /// <summary>"seen by" where the act is done (the engine's SeenQuote in words): "" no one, "?" an unknown watcher could, else who.</summary>
@@ -280,7 +280,7 @@ namespace Suborned.Play
             if (MenuKeys(kb)) return; // the pause menu is up: Esc resumes, its buttons act; nothing else this frame
             if (FailCamFrame()) { FollowFrame(); return; }
             if (ConvoFrame()) return; // brief 032: a conversation scene plays (HostConvo): the clock held, its keys only, the cutaway camera // the fail camera plays (HostFailCam): nothing else this frame but the follow view, if on (Sky 2026-10-20: it plays in the view the player is in)
-            if (Ending.Length > 0) { ClearHover(); if (kb != null && kb.escapeKey.wasPressedThisFrame) { OpenMenu(); return; } if (controls.Down(kb, PlayAction.Restart)) Begin(); CameraOnly(kb, UnityEngine.InputSystem.Mouse.current); views?.Frame(1f); Guard("car fx", CarFxFrame); FollowFrame(); FadePoints(); return; } // the end card is modal (ModalGate)
+            if (Ending.Length > 0) { ClearHover(); if (kb != null && kb.escapeKey.wasPressedThisFrame) { OpenMenu(); return; } if (controls.Down(kb, PlayAction.Restart)) BeginSameSeed(); CameraOnly(kb, UnityEngine.InputSystem.Mouse.current); views?.Frame(1f); Guard("car fx", CarFxFrame); FollowFrame(); FadePoints(); return; } // the end card is modal (ModalGate)
             if (!CameraLab.Typing) Controls(); // brief 025: no keys reach the street while a preset name is typed
             if (Fault == null) Guard("plan", PlanFrame); // brief 041: the pause lifted gives the queued orders on this tick, before the clock steps
             if (Fault != null) return;
@@ -1624,8 +1624,8 @@ namespace Suborned.Play
             if (endFor == null || Ending.Length == 0 || (endFor != Game && endFor != endGame)) { endFor = null; return; }
             var g = endFor; endFor = null;
             Ending = $"{endHead} · replay {verdict}";
-            try { File.WriteAllText(Path.ChangeExtension(SessionPath, null) + ".end.txt", $"{Ending}\n{g.FailText}\nengine {Bundle.Source} dll {Bundle.DllSha}\nstep mean {StepMsMean:F4} ms, max {StepMsMax:F3} ms over {steps} steps; engine per frame {FrameMsMean:F4} ms over {frames} frames\n"); } catch { }
-            Debug.Log($"Play: {Ending}; session {SessionPath}");
+            try { File.WriteAllText(Path.ChangeExtension(SessionPath, null) + ".end.txt", $"{Ending}\n{g.FailText}\nseed {g.Seed}\nengine {Bundle.Source} dll {Bundle.DllSha}\nstep mean {StepMsMean:F4} ms, max {StepMsMax:F3} ms over {steps} steps; engine per frame {FrameMsMean:F4} ms over {frames} frames\n"); } catch { }
+            Debug.Log($"Play: {Ending}; seed {g.Seed}; session {SessionPath}");
         }
 
         int savedTick = -1;

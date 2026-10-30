@@ -4,12 +4,12 @@
   "rows": [
     {
       "name": "loud-fight",
-      "script": "loud-fight",
+      "script": "tools/game/pins/loud-fight.seed3.json",
       "note": "the engine's own loud twin: the public fight at the getaway, ends Success at 5:06.8 (tick 3068) on engine 0.34.1 / c038 (was tick 3124 on 0.30). The window's end is read from the engine at each batch (`sim play`), not from this note"
     },
     {
       "name": "loud-left-downed",
-      "script": "loud-left-downed",
+      "script": "tools/game/pins/loud-left-downed.seed14.json",
       "note": "the late loud fight at the getaway with the Scout downed and left behind, ends Success at 5:04.7 (tick 3047) on engine 0.34.1 / c038 (was 5:13.1 on 0.30.0). Replaced sky-session1 (Sky's 0.2.58 session, briefs/045/runs/sky-0.2.58-session1.script.json), which on engine 0.30.0 and the re-drawn site ran on with no ending (Latch 2026-10-24). The window's end is read from the engine at each batch"
     }
   ]

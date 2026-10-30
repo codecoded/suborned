@@ -48,7 +48,7 @@ namespace Suborned.Play
         public struct Query { public string Event, Verb, Speaker, Outcome, Temperament, About; }
 
         public string Source { get; private set; } = "placeholder (Fable's text.json is not in StreamingAssets/sim yet)";
-        public string Title = "", Objective = "", Win = "", ClockLine = "", Close = "8:30", PurseLine = "", Tracker = "", Seed = "handover-1";
+        public string Title = "", Objective = "", Win = "", ClockLine = "", Close = "7:30", PurseLine = "", Tracker = "", Seed = "handover-1";
         public readonly List<string> Card = new(), Hints = new();
         public readonly List<(string code, string line)> Fails = new();
         /// <summary>The status pill's marks (briefing.timeline): m:ss, label, and whether the cell knows it before it happens.</summary>
@@ -110,6 +110,9 @@ namespace Suborned.Play
         public string GetawayHoldsOut = "{who}: held at {held-at}. Holding out. Rescue within {rescue-until}.", GetawayPost = "the post";
         /// <summary>The fail camera's words (Fable, less.failcam): caption and tip by "fail|why"; {by} by the culprit's kind.</summary>
         public readonly Dictionary<string, string> FailCaption = new(), FailTip = new(), FailBy = new();
+        /// <summary>Brief 080 (Fable, less.closedIn, less.odds, less.takedown): the closed-in fail's line by Game.Cause.Why; the fire chip and its Alt; the takedown card's Coming row.</summary>
+        public readonly Dictionary<string, string> ClosedInLine = new();
+        public string OddsChip = "{pct} % · down in about {s} s", OddsChipBare = "{pct} %", OddsSum = "", OddsLimits = "", OddsStreakHead = "", OddsStreakHits = "", OddsStreakMisses = "", TdComing = "Coming: {list}.", TdComingItem = "{who} in {s} s: {verb}", TdComingShort = "{who} · {s} s";
         public string ObjGo = "Leave in the [car].", GoNone = "Go", GoLeaves = "Go · leaves {list}", GoSeen = "+{trail} T if seen", GoFlag = "Left behind"; // Fable 067: "Drive" is the Drive order's word now; Go leaves
         /// <summary>Fable's less.go.noVale (brief 067, Glyph C5b): the Alt line of the Go wedge while Vale is not aboard (Go then withdraws the cell).</summary>
         public string GoNoVale = "Calls off the attempt; try again"; // Fable (Glyph N5): text.json less.go.noVale, one fragment of at most 6 words
@@ -323,6 +326,13 @@ namespace Suborned.Play
             if (l.Opt("alt")?.Opt("mood") is JNode am) foreach (var kv in am.Entries) if (kv.Value.Kind == JKind.Str) AltMood[kv.Key] = kv.Value.Str();
             if (l.Opt("sealed") is JNode sd) // brief 057 §4 (Fable): the sealed fail by the car's state
                 foreach (var (k, into) in new[] { ("line", SealedLine), ("tip", SealedTip), ("story", SealedStory) }) if (sd.Opt(k) is JNode m) foreach (var kv in m.Entries) if (kv.Value.Kind == JKind.Str) into[kv.Key] = kv.Value.Str();
+            if (l.Opt("closedIn")?.Opt("line") is JNode cil) foreach (var kv in cil.Entries) if (kv.Value.Kind == JKind.Str) ClosedInLine[kv.Key] = kv.Value.Str(); // brief 080 (Fable)
+            if (l.Opt("odds") is JNode od)
+            {
+                OddsChip = S(od, "chip") ?? OddsChip; OddsChipBare = S(od, "chipBare") ?? OddsChipBare; OddsSum = S(od, "sum") ?? OddsSum; OddsLimits = S(od, "limits") ?? OddsLimits;
+                if (od.Opt("streak") is JNode ost) { OddsStreakHead = S(ost, "head") ?? OddsStreakHead; OddsStreakHits = S(ost, "hits") ?? OddsStreakHits; OddsStreakMisses = S(ost, "misses") ?? OddsStreakMisses; }
+            }
+            if (l.Opt("takedown") is JNode ltd) { TdComing = S(ltd, "coming") ?? TdComing; TdComingItem = S(ltd, "item") ?? TdComingItem; TdComingShort = S(ltd, "short") ?? TdComingShort; }
             if (l.Opt("price") is JNode pr)
             {
                 if (pr.Opt("order") is JNode po) PriceOrder.AddRange(po.Strs());
@@ -521,7 +531,7 @@ namespace Suborned.Play
                 Title = "The Handover",
                 Objective = "Take Councillor Vale alive and get him into your getaway car.",
                 Win = "Vale, alive, in your getaway car.",
-                ClockLine = "Handover chime at 5:30. Vale's driver takes him away at 6:10, or 8:30 if turned.", // brief 070: Fable's briefing.clock.line, true whether or not the driver is turned
+                ClockLine = "Handover chime at 4:30. Vale's driver takes him away at 5:10, or 7:30 if turned.", // brief 070: Fable's briefing.clock.line, true whether or not the driver is turned
                 PurseLine = "$100,000 for the whole job. Every payment can be traced.",
                 Tracker = "Take Vale alive to the getaway car · closes {close}",
             };
@@ -571,8 +581,8 @@ namespace Suborned.Play
             Lk("busy", "busy until", "Wait until the current act lands, or cancel it (C).");
             Lk("cash", "not enough cash", "You can't afford the worst case; try a cheaper approach.");
             Lk("refused", "refused this already", "They said no to this; try another approach.");
-            Lk("vale-inside", "Vale is not inside", "Only while Vale is in the Office (before 5:50).");
-            Lk("vale-car", "not at his car", "Wait for Vale to reach his car (after 5:50).");
+            Lk("vale-inside", "Vale is not inside", "Only while Vale is in the Office (before 4:50).");
+            Lk("vale-car", "not at his car", "Wait for Vale to reach his car (after 4:50).");
             Lk("no-vale", "don't have Vale", "Take Vale first (Enforcer).");
             Lk("no-rivals", "no rivals", "The rival crew arrives later.");
             void E(string id, string kind, string[] log, params string[] speakers) { var e = new EventText { Id = id, Kind = kind }; if (log != null) e.Log.AddRange(log); e.Speakers.AddRange(speakers); t.Events[id] = e; }

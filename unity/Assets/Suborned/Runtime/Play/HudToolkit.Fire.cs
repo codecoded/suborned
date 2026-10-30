@@ -152,11 +152,12 @@ namespace Suborned.Play
         public static int ShotFlashes { get; private set; }
         /// <summary>The frames a hostile's (anyone not the cell's) muzzle flash was drawn in so far (Glyph r123 G1: the proof reads it).</summary>
         public static int ShotFlashesHostile { get; private set; }
+        const float MissShowS = 0.45f; // brief 080: a miss stays longer than a hit's spark, so a roll reads at play zoom
         void ShotFx(float now)
         {
             foreach (var s in host.ShotFx)
             {
-                float age = now - s.born; if (age > 0.25f) continue;
+                float age = now - s.born; if (age > MissShowS) continue;
                 bool cell = s.side == "cell";
                 // Glyph r123 G1 (the follow view's 0 flashes): the flash needs only the shooter on screen; its way is the shot's own, taken 0.5 m
                 // along it when the target is off the view (behind the third-person camera); the spark needs the target
@@ -169,9 +170,16 @@ namespace Suborned.Play
                     void Star(Color c, float rr) { pp.fillColor = c; pp.BeginPath(); pp.MoveTo(a + u * rr * 1.8f); pp.LineTo(a + n * rr * 0.4f); pp.LineTo(a + n * rr); pp.LineTo(a - u * rr * 0.4f); pp.LineTo(a - n * rr); pp.LineTo(a - n * rr * 0.4f); pp.ClosePath(); pp.Fill(); }
                     Star(new Color(Ink.r, Ink.g, Ink.b, 0.6f), r + 2f); Star(new Color(1f, 0.97f, 0.86f), r);
                 }); }
-                if (age < 0.2f && toOn) firePaints.Add(pp =>
+                if (age < MissShowS && toOn && !s.hit && !s.covered) { var wideFrom = a; var wideTo = b; float wideT = age / MissShowS; firePaints.Add(pp =>
+                {   // brief 080 (hit rolls: a miss must read): the tracer that goes wide, on its way past the target to the puff, fading from the gun
+                    pp.lineCap = LineCap.Round;
+                    var tail = Vector2.Lerp(wideFrom, wideTo, wideT * 0.8f);
+                    pp.strokeColor = new Color(Ink.r, Ink.g, Ink.b, 0.5f * (1 - wideT)); pp.lineWidth = 3.6f; pp.BeginPath(); pp.MoveTo(tail); pp.LineTo(wideTo); pp.Stroke();
+                    pp.strokeColor = new Color(1f, 0.97f, 0.86f, 0.95f * (1 - wideT)); pp.lineWidth = 1.6f; pp.BeginPath(); pp.MoveTo(tail); pp.LineTo(wideTo); pp.Stroke();
+                }); }
+                if (age < (s.hit || s.covered ? 0.2f : MissShowS) && toOn) firePaints.Add(pp =>
                 {
-                    float t = age / 0.2f;
+                    float t = age / (s.hit || s.covered ? 0.2f : MissShowS);
                     if (s.hit)
                     {   // the hit spark: six rays bursting out and fading
                         pp.lineCap = LineCap.Round;
@@ -194,7 +202,7 @@ namespace Suborned.Play
                     }
                     else
                     {   // a miss (Glyph b-final, cut: the miss ring): a dust puff on the paving past him, three soft filled blobs spreading and fading
-                        for (int i = 0; i < 3; i++) { var q = b + new Vector2((i - 1) * (3f + 5f * t), -2f * t - (i == 1 ? 2f : 0f)); pp.fillColor = new Color(Smoke.r, Smoke.g, Smoke.b, 0.55f * (1 - t)); pp.BeginPath(); pp.Arc(q, 2.5f + 4.5f * t, Deg(0), Deg(360)); pp.Fill(); }
+                        for (int i = 0; i < 3; i++) { var q = b + new Vector2((i - 1) * (3f + 5f * t), -2f * t - (i == 1 ? 2f : 0f)); pp.fillColor = new Color(Smoke.r, Smoke.g, Smoke.b, 0.55f * (1 - t)); pp.BeginPath(); pp.Arc(q, 3.5f + 8f * t, Deg(0), Deg(360)); pp.Fill(); }
                     }
                 });
             }
@@ -352,6 +360,7 @@ namespace Suborned.Play
                     // brief 049 row 4 (Glyph's 0.2.94 review #3): the gun disc and the number, never a sentence: [gun] [downed] 45 s; "Stopped"
                     int secs = aimChip ? host.AimDownS : stopped ? -1 : host.FireLineDownS(k);
                     string word = stopped ? "Stopped" : secs >= 0 ? $"{secs} s" : aimChip && host.AimPreview?.Line == false ? "no line" : "";
+                    if (aimChip && secs >= 0 && HandoverHost.OddsOf(host.AimPreview, host.Game) is int aimPct && aimPct >= 0) word = $"{host.OddsBareLine(aimPct)} · {word}"; // brief 080: the odds on the reticle's chip
                     Text(fireHead, word); Show(fireHead, word.Length > 0);
                     Show(fireIcon, !stopped); Show(fireDownIcon, secs >= 0);
                     // where: above the target (the reticle while aiming), else above the agent

@@ -116,9 +116,9 @@ namespace Suborned.Play
             {
                 h.Begin(); h.IntelOpen = false; h.StartClock(); h.SetPaused(true); yield return null;
                 var g = h.Game; int t0 = g.Tick; var izp = g.PersonByRole("waitress"); var start = g.PersonPos(izp);
-                // engine 0.34 (c038, brief 059): with the driver unturned his car drives Vale off at 6:13 and the run ends before her 7:37 round; route B's
-                // opening (the Scout listens to the driver, the Fixer pays him, the false tip, all away from the café) keeps the run going to 8:10
-                Play(h, Route("route-b").Where(o => o.Op is "scout" or "fixer" && o.Tick <= 1900).ToList(), 1901, 4590); var before = g.PersonPos(izp);
+                // engine 0.34 (c038, brief 059): with the driver unturned his car drives Vale off at 5:13 and the run ends before her 6:37 round (brief 080: the shift a minute earlier); route B's
+                // opening (the Scout listens to the driver, the Fixer pays him, the false tip, all away from the café) keeps the run going to the close
+                Play(h, Route("route-b").Where(o => o.Op is "scout" or "fixer" && o.Tick <= 1900).ToList(), 1901, 3990); var before = g.PersonPos(izp);
                 var iz = h.Views.Find("waitress"); var door = h.frame.World(new Pt(-1030, -2900)); var table = h.frame.World(new Pt(-2017, -4173));
                 var mid = (door + table) * 0.5f; var along = table - door; along.y = 0f; var side = Vector3.Cross(Vector3.up, along.normalized);
                 // the camera stands on the open side (the square, away from the café's walls): the side whose point is farther from the café's centre
@@ -227,7 +227,8 @@ namespace Suborned.Play
 
             // ---- an agent down (items 29, 31)
             {
-                h.Begin(); h.IntelOpen = false; h.StartClock(); h.SetPaused(true); yield return null;
+                var pinKeep = HandoverHost.SeedPin; HandoverHost.SeedPin = 14; // brief 080: shots roll: seed 14 of this route is one where the Scout goes down (4:37, suborned-sim batch routes/loud-left-downed.json --seeds n); this section reads her body, not the roll
+                h.Begin(); h.IntelOpen = false; h.StartClock(); h.SetPaused(true); yield return null; HandoverHost.SeedPin = pinKeep;
                 var g = h.Game; PlayUntil(h, Route("loud-left-downed"), () => g.Ops[0].Down, 5100); // engine 0.35.1 (one input, Waymark's re-record): the Scout goes down at her own tick, not 0.34's 4:47.6
                 for (int i = 0; i < 60 && !g.Ops[0].Down && !g.Over; i++) h.RunTo(g.Tick + 1);
                 bool down = g.Ops[0].Down; string carRing = "", bodyRing = "", beside = "", carried = "", putDown = ""; bool scoutGives = true, carryTaken = false, carryingNow = false, laid = false, knob1 = false;
@@ -338,7 +339,8 @@ namespace Suborned.Play
 
             // ---- the seal clock and the sealed fail (brief 057 §4)
             {
-                h.Begin(); h.IntelOpen = false; h.StartClock(); h.SetPaused(true); yield return null;
+                var pinKeep = HandoverHost.SeedPin; HandoverHost.SeedPin = 1; // brief 080: on seed 0 Vale's car leaves first (5:13, before the 5:05-5:16 seal); seed 1 of this route seals (headless: sealed at 5:05); this section reads the seal's clock and end
+                h.Begin(); h.IntelOpen = false; h.StartClock(); h.SetPaused(true); yield return null; HandoverHost.SeedPin = pinKeep;
                 var g = h.Game; var orders = Route("fail-district-seals"); Play(h, orders, 1700, 1700);
                 for (int i = 0; i < 600 && !h.SealOn && !g.Over; i++) h.RunTo(g.Tick + 1);
                 bool on = h.SealOn; int left = h.SealLeftS; string words = "", cause = "", endLines = "", car = "";

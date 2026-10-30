@@ -157,8 +157,8 @@ namespace Suborned.Play
                     foreach (var o in rb) { if (o.Tick > 1900 || g.Over) break; if (o.Tick > g.Tick) To(h, o.Tick); Give(h, o); } // up to the false tip (3:10)
                     To(h, 2400); h.GiveScripted(new Order { Op = "tech", Do = "board", Target = "car" }); // the Tech aboard the getaway car (for the Drive): as a click gives it (engine 0.33.1: Board is within 1 m of the car's body, so he walks beside it first)
                     for (int i = 0; i < 40 * Suborned.Sim.Game.Hz && !g.Ops[(int)OpId.Tech].InCar && !g.Over; i++) h.RunTo(g.Tick + 1);
-                    To(h, 3400); turned = g.Driver.Turned;
-                    // the yard "after Vale's car": the Tech selected aboard (5:40)
+                    To(h, Math.Max(g.Tick, 2800)); turned = g.Driver.Turned;
+                    // the yard "after Vale's car": the Tech selected aboard (4:40, before Vale's car parks: brief 080, the shift a minute earlier)
                     h.Select(OpId.Tech, false); yield return Settle(h); h.LookAt(h.frame.World(g.S.StandById("service-drive")?.CarAt ?? g.CarPos())); h.TurnSnap(2); yield return Frames(4);
                     stands = HudToolkit.StandsShown; yardShut = stands.Contains("service-drive:after-vale"); yield return Shoot(h, dir, "r059-yard-after-vale", log);
                     int leave = Suborned.Sim.Game.T(g.S.ValeAtCar) + Suborned.Sim.Game.T(g.R.ValeInS);
@@ -205,7 +205,7 @@ namespace Suborned.Play
                         fightAt = g.FightStart; var after = h.Views.RivalsDrawn().ToDictionary(x => x.id, x => x.at);
                         foreach (var kv in before) if (!after.TryGetValue(kv.Key, out var a2)) jumps.Add(kv.Key + ":vanished"); else if ((a2 - kv.Value).magnitude > 1.5f) jumps.Add($"{kv.Key}:{(a2 - kv.Value).magnitude:0.0}m");
                         foreach (var kv in after) if (!before.ContainsKey(kv.Key)) jumps.Add(kv.Key + ":appeared");
-                        yield return Settle(h); h.LookAt(h.GetawayWorld); yield return Frames(3); yield return Shoot(h, dir, "r059-fight-start", log);
+                        yield return Settle(h); h.LookAt(h.GetawayWorld); yield return Frames(3); yield return Shoot(h, dir, "r059-fight-start", log, "active"); // brief 080: Vale just taken: the goal line changes here, so this is no resting frame
                     }
                 }
                 bool pOk = rb != null && turned && driving && parked && takeOk && yardShut && hoverRoute && pill.Contains("Drive") && driveTaken && arrived && herePop;

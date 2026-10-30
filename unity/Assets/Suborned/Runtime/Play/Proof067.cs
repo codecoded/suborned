@@ -100,10 +100,10 @@ namespace Suborned.Play
                     yield return Shoot(h, dir, "r067-patrol-post", log);
                 }
                 h.TurnSnap(0); h.View.orthographicSize = 14f; h.LookAt(h.GetawayWorld); yield return Frames(4); yield return Shoot(h, dir, "r067-square-cleared", log);
-                // the official car from 5:50 to 6:20 (Vale walks to its kerb-side door and waits there): nobody drawn inside a standing car's body
-                var inCars = new List<string>(); To(h, 5 * 600 + 50 * Suborned.Sim.Game.Hz);
+                // the official car from 4:50 to 5:20 (Vale walks to its kerb-side door and waits there): nobody drawn inside a standing car's body
+                var inCars = new List<string>(); To(h, 4 * 600 + 50 * Suborned.Sim.Game.Hz);
                 for (int t = 0; t < 30 * Suborned.Sim.Game.Hz && !g.Over; t += 5) { h.RunTo(g.Tick + 5); h.Views.Frame(1f); foreach (var x in h.FiguresInCars()) if (!inCars.Contains(x)) inCars.Add(x); }
-                To(h, 6 * 600 + 10 * Suborned.Sim.Game.Hz); yield return Settle(h); var oc = ViewAt(h, "car/official"); if (oc.HasValue) { h.TurnSnap(0); h.LookAt(oc.Value); } yield return Frames(3);
+                To(h, 5 * 600 + 10 * Suborned.Sim.Game.Hz); yield return Settle(h); var oc = ViewAt(h, "car/official"); if (oc.HasValue) { h.TurnSnap(0); h.LookAt(oc.Value); } yield return Frames(3);
                 var vp = g.ValePos(); var vale = ViewAt(h, "councillor"); float valeFromCar = vp.HasValue ? Suborned.Sim.G.Dist(vp.Value, g.CarPos()) / 100f : -1f;
                 yield return Shoot(h, dir, "r067-official-car", log);
                 bool carsClear = inCars.Count == 0;
@@ -112,11 +112,11 @@ namespace Suborned.Play
                 log.Add($"r067 square: {(carsClear ? "ok" : "FAILED")}: {patrolWhere}; inside a car 5:50-6:20 [{string.Join(" ", inCars)}]; Vale {g.Vale} {F(valeFromCar)} m from the car's point");
             }
 
-            // ---- cones (F): every learned cone (Alt) against the ones that matter now, at the Office front at 6:00
+            // ---- cones (F): every learned cone (Alt) against the ones that matter now, at the Office front at 5:00 (brief 080: the shift a minute earlier)
             {
                 yield return Fresh(h); var g = h.Game;
                 h.GiveWatchScripted(OpId.Scout, "guard"); h.GiveWatchScripted(OpId.Tech, "camera:entrance"); h.GiveWatchScripted(OpId.Fixer, "patrol");
-                To(h, 6 * 600); yield return Settle(h); h.Select(OpId.Enforcer, false);
+                To(h, 5 * 600); yield return Settle(h); h.Select(OpId.Enforcer, false);
                 var door = h.frame.World(g.S.At(g.S.GuardPost)); h.TurnSnap(0); h.View.orthographicSize = 14f; h.LookAt(door); HandoverHost.PointerOverride = new Vector2(40f, 40f); yield return Frames(6);
                 h.PeekLatch = true; yield return new WaitForSecondsRealtime(0.4f); yield return Frames(8);
                 string before = h.Views.FanStrengths; yield return Shoot(h, dir, "r067-cones-before", log, "alt");
@@ -335,7 +335,7 @@ namespace Suborned.Play
             //      0.25 m a tick); bodies keep their walker's figure (logged); the rival car is Vela's Sedan_Rival
             {
                 yield return Fresh(h); var g = h.Game; int hz = Suborned.Sim.Game.Hz;
-                h.GiveWatchScripted(OpId.Scout, "guard"); To(h, 5 * 600 + 28 * hz);
+                h.GiveWatchScripted(OpId.Scout, "guard"); To(h, 4 * 600 + 28 * hz);
                 int eased0 = h.Views.StepEases; h.Views.StepEased.Clear(); var last = new Dictionary<string, Vector3>(); float worst = 0f; string worstKey = "";
                 for (int t = 0; t < 6 * hz && !g.Over; t++)
                 {
@@ -348,8 +348,8 @@ namespace Suborned.Play
                     }
                 }
                 int eased = h.Views.StepEases - eased0; bool stepOk = eased == 0 || worst <= 0.25f;
-                // a shift guard on the street now (they leave the official door from 5:30), on screen at play zoom
-                To(h, 5 * 600 + 45 * hz); yield return Settle(h); h.Select(OpId.Scout, false);
+                // a shift guard on the street now (they leave the official door from 4:30), on screen at play zoom
+                To(h, 4 * 600 + 45 * hz); yield return Settle(h); h.Select(OpId.Scout, false);
                 string gkey = ""; for (int i = 0; i < g.Walkers.Count && gkey.Length == 0; i++) if (!g.Walkers[i].P.Civilian && ViewAt(h, "crowd/" + i).HasValue) gkey = "crowd/" + i;
                 string label = "", name = "", kind = "", cones = ""; bool picked = false, ring = false, sec = false;
                 if (gkey.Length > 0 && ViewAt(h, gkey) is Vector3 gp)

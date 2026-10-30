@@ -72,6 +72,7 @@ namespace Suborned.Play
         {
             if (host.Game == null) return; float now = Time.unscaledTime; var face = host.FaceOf(i);
             float ht = now - host.HitAt(i); int lost = host.LostPip(i); bool flash = ht >= 0f && ht < HandoverHost.HitFlashS && Mathf.Repeat(ht, 0.2f) < 0.12f;
+            if (i == (int)OpId.Enforcer && host.EnforcerWarnFlash && Mathf.Repeat(now, 0.4f) < 0.24f) { foreach (var d0 in w.PipDots) d0.style.unityBackgroundImageTintColor = Alarm; w.Portrait.style.unityBackgroundImageTintColor = Alarm; w.Next.style.unityBackgroundImageTintColor = Alarm; return; } // brief 080: the Enforcer's warning: his portrait and pips flash, as a lost pip does
             float pulse = face == Face.BadlyHurt ? 0.55f + 0.45f * (0.5f + 0.5f * Mathf.Cos(now * Mathf.PI * 2f)) : 1f;
             for (int k = 0; k < w.PipDots.Count; k++)
             {

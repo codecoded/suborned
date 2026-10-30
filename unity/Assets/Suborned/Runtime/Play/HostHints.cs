@@ -186,7 +186,7 @@ namespace Suborned.Play
                     ring = At("car/rivals"); return true;
                 case "H9":
                     {
-                        if (g.Tick < 240 * Game.Hz) return false;
+                        if (g.Tick < 180 * Game.Hz) return false; // brief 080: 3:00, a minute earlier with the shift (Vale out 4:50, last turn 4:40)
                         foreach (var r in Roles) if (g.PersonByRole(r).Turned) return false;
                         if (Given(o => o.Do == "enter")) return false;
                         var d = g.PersonByRole("driver"); if (d.KRoutine || d.KNeed || d.KTemperament) return false;

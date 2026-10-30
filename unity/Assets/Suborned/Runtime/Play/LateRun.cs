@@ -78,8 +78,9 @@ namespace Suborned.Play
                 List<Order> orders = null; string err = null;
                 try
                 {
-                    h.Begin(); h.IntelOpen = false;
                     var sc = Suborned.Sim.Script.Parse(File.ReadAllText(row.scriptPath));
+                    HandoverHost.SeedPin = sc.Start.Seed; // brief 080: the script's own seed (tools/game/pins): the row's end is the engine's on it
+                    h.Begin(); h.IntelOpen = false;
                     orders = sc.Orders.Select((o, i) => (o, i)).OrderBy(p => p.o.Tick).ThenBy(p => p.i).Select(p => p.o).ToList();
                 }
                 catch (Exception e) { err = "the script would not read: " + e.Message; }

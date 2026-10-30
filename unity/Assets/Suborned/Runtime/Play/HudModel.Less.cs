@@ -157,6 +157,7 @@ namespace Suborned.Play
                 if (q.HoldsDoors.Count > 0) F("door_held", $"{q.HoldS / 60}:{q.HoldS % 60:00}");
                 if (o.How == "knockout" && q.WakesAt >= 0) F("body_out", HandoverHost.MissionClock(q.WakesAt));
                 if (o.How == "kill" && q.Ties > 0) F("talker", q.Ties.ToString());
+                if (h.ComingShort(q) is { Length: > 0 } cs) F("nextevent", cs); // brief 080: who arrives before it ends
                 foreach (var (icon, text) in i.Rows) if (icon == "call" && Num.Match(text) is var rm && rm.Success) F("call", rm.Groups[1].Value + " s");
                 return l;
             }

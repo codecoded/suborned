@@ -60,7 +60,7 @@ export function check(raw: unknown, r: Resolver): { shots: Shot[]; problems: str
     const starts = [s.script, s.checkpoint, s.scenario].filter(x => x !== undefined);
     if (starts.length > 1) p('give one start: script, checkpoint or scenario');
     let until = 36000;
-    if (s.script !== undefined) { const f = r.script(s.script); if (!f) p(`no route script ${s.script} (contracts/missions/handover/routes, or a path)`); else { until = f.info.until || until; if (Object.keys(f.info.start).length) p(`${s.script} starts from a fixture (${Object.keys(f.info.start).join(', ')}); the game can start only from the mission's own start or a fight-lab checkpoint`); } }
+    if (s.script !== undefined) { const f = r.script(s.script); if (!f) p(`no route script ${s.script} (contracts/missions/handover/routes, or a path)`); else { until = f.info.until || until; if (Object.keys(f.info.start).filter(k => k !== 'seed').length) p(`${s.script} starts from a fixture (${Object.keys(f.info.start).join(', ')}); the game can start only from the mission's own start or a fight-lab checkpoint`); } }
     if (s.scenario !== undefined) { const f = r.scenario(s.scenario); if (!f) p(`no engine scenario ${s.scenario}`); else { until = f.info.until || until; if (Object.keys(f.info.start).length) p(`scenario ${s.scenario} starts from a fixture (${Object.keys(f.info.start).join(', ')}); use a fight-lab checkpoint, or a route script`); } }
     if (s.checkpoint !== undefined && !r.checkpoint(s.checkpoint)) p(`no checkpoint ${s.checkpoint} in ${CHECKPOINTS}`);
     if (s.preset !== undefined && s.checkpoint === undefined) p('preset goes with a checkpoint');

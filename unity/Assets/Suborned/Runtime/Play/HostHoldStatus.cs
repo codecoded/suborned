@@ -496,7 +496,7 @@ namespace Suborned.Play
             var (id, force) = HoldFireId(t); if (id.Length == 0) return null;
             int fk = Driving ? dAgent : Array.FindIndex(Selected, s => s); var R = Game.R;
             var ex = FireExtra(id, force); var m = System.Text.RegularExpressions.Regex.Match(ex, @"(\d+) s");
-            return new Intent { Label = force ? $"Fire at {t.Label}" : "Fire", Order = new Order { Op = Op.Name((OpId)Math.Max(0, fk)), Do = "fire", Target = id, Force = force }, Time = m.Success ? m.Groups[1].Value + " s" : "", Trail = $"T +{R.HitTrail}", Alert = $"A ≥{R.GunfireAlert}" }; // brief 049 row 3: a combatant wears its ring and the tail points at it: no noun; a civilian keeps it (the warning)
+            return new Intent { Label = force ? $"Fire at {t.Label}" : "Fire", Order = new Order { Op = Op.Name((OpId)Math.Max(0, fk)), Do = "fire", Target = id, Force = force }, Time = m.Success ? m.Groups[1].Value + " s" : "", Trail = $"T +{R.HitTrail}", Alert = $"A ≥{R.GunfireAlert}", OddsPct = OddsOf(OfferPreview), OddsDown = OfferPreview?.DownIs is null or "down" }; // brief 080: the sheet's chance; brief 049 row 3: a combatant wears its ring and the tail points at it: no noun; a civilian keeps it (the warning)
         }
 
         Intent HoldIntent(Target t)

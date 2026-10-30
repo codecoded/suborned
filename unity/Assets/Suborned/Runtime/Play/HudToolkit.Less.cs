@@ -390,8 +390,8 @@ namespace Suborned.Play
             if (t == null || m.Ended || m.BriefingOpen) { Show(goal, false); goalText = ""; return; }
             string obj = host.ObjectiveKey switch { "go" => t.ObjGo, "carry" => t.ObjCarry, "bring" => t.ObjBring, _ => t.ObjTake }; // brief 018: then go // Fable's steps: take, bring, carry
             if (obj != objWas) { objWas = obj; objChanged = now; }
-            // the marks where a window opens: the chime (5:30) and Vale out (5:50)
-            foreach (var mk in new[] { 330 * Game.Hz, 350 * Game.Hz }) if (lastTickSeen >= 0 && lastTickSeen < mk && g.Tick >= mk) markAt = now;
+            // the marks where a window opens: the chime and Vale out (the site's schedule)
+            foreach (var mk in new[] { g.S.Chime * Game.Hz, g.ClockValeExits * Game.Hz }) if (lastTickSeen >= 0 && lastTickSeen < mk && g.Tick >= mk) markAt = now;
             lastTickSeen = g.Tick;
             float showS = t.ObjShowS;
             bool objOn = now - host.ClockStarted < showS || now - objChanged < showS && host.ClockStarted > 0 || now - markAt < showS || pillHover;
@@ -874,12 +874,13 @@ namespace Suborned.Play
                     if (a.Refused.Length > 0) refused = a.Refused;
                     else
                     {
+                        if (a.Pct >= 0) fs.Add(new HudModel.PField { Kind = "hits", Icon = "", Text = host.OddsBareLine(a.Pct) }); // brief 080: the odds first (Fable's less.odds.chipBare)
                         if (a.Lab && a.WalkS >= 0) fs.Add(new HudModel.PField { Kind = "walk", Icon = "s_moving", Text = $"{a.WalkS} s" }); // Keel's walk-in: the walk first, the pips from the stop point
                         if (a.Gait.Length > 0) fs.Add(new HudModel.PField { Kind = "walk", Icon = a.Gait == "walk" ? "s_moving" : "run", Text = "" }); // Keel 0.15 §8.8: the gait the odds are read at
                         fs.Add(new HudModel.PField { Kind = "time", Icon = a.Lab ? "" : "p_time", Text = a.Down }); // brief 027: the lab chip has no seconds
                         if (a.ArriveS >= 0) fs.Add(new HudModel.PField { Kind = "time", Icon = "", Text = $"→ {a.ArriveS} s" }); // on arrival (the move's end, standing)
                         if (a.Lab && a.Charge > 0) fs.Add(new HudModel.PField { Kind = "charge", Icon = "", Text = $"▮{a.Charge}" });
-                        if (alt) fs.Add(new HudModel.PField { Kind = "hits", Icon = "", Text = "hits " + a.Ratio }); // Glyph fight r1 #2: "3/10" read as shots, odds or a magazine; the odds in words, with Alt
+                        if (alt && a.Pct < 0) fs.Add(new HudModel.PField { Kind = "hits", Icon = "", Text = "hits " + a.Ratio }); // Glyph fight r1 #2: "3/10" read as shots, odds or a magazine; the odds in words, with Alt
                         if (a.Trail.Length > 0 && (!a.Lab || alt || !host.Fights.Hud.trailAltOnly)) fs.Add(new HudModel.PField { Kind = "trail", Icon = "p_trail", Text = a.Trail });
                         if (a.Civilian) fs.Add(new HudModel.PField { Kind = "mark", Mark = "no" });
                     }
@@ -1806,7 +1807,7 @@ namespace Suborned.Play
             if (briefFootLine != null) Show(briefFootLine, alt);
             Show(briefArms.parent, alt); Show(briefSub, alt); if (brief.childCount > 0) Show(brief[0], alt); // at rest: the title alone (the tab and the place and time are Alt)
             Text(briefGoal, (host.Text?.BriefGoal ?? "").Replace("[", "").Replace("]", "")); Show(briefGoal, !alt); Show(briefPeople, !alt);
-            Text(briefClose, host.Text?.Close ?? "8:30"); Text(briefPurse, m.Cash); Text(briefAlert, $"{m.Alert}/3");
+            Text(briefClose, host.Text?.Close ?? ""); Text(briefPurse, m.Cash); Text(briefAlert, $"{m.Alert}/3");
             if (briefHeat != null && host.Game is { } hg) // brief 031: the Heat band's word (Fable's), read once at the start; the eye's turns count the band
             {
                 string band = ""; try { band = hg.HeatBand; } catch (Exception) { }

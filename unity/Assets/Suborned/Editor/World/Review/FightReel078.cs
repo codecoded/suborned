@@ -25,7 +25,7 @@ namespace Suborned.World.Review
     public static class FightReel078
     {
         const string Key = "fightreel078";
-        static string Arg(string n) { var a = Environment.GetCommandLineArgs(); int i = Array.IndexOf(a, n); return i >= 0 && i + 1 < a.Length ? a[i + 1] : null; }
+        internal static string Arg(string n) { var a = Environment.GetCommandLineArgs(); int i = Array.IndexOf(a, n); return i >= 0 && i + 1 < a.Length ? a[i + 1] : null; }
 
         static FightReel078() { if (SessionState.GetBool(Key, false)) EditorApplication.update += Step; }
 
@@ -99,8 +99,9 @@ namespace Suborned.World.Review
             tex = new Texture2D(W, H, TextureFormat.RGB24, false); hudTex = new Texture2D(W, H, TextureFormat.RGBA32, false); buf = new byte[W * H * 3];
             if (h.View) h.View.targetTexture = hdr;
             bool hud = HudToolkit.HudInto(hudRt); Debug.Log($"fightreel: hud layer {hud}, screen {Screen.width}x{Screen.height}, build {BuildStamp.Line}");
-            h.Begin(); h.IntelOpen = false; h.SetSpeed(1);
             var sc = Suborned.Sim.Script.Parse(File.ReadAllText(Script));
+            HandoverHost.SeedPin = sc.Start.Seed; Debug.Log($"fightreel: seed {sc.Start.Seed}"); // brief 080: the script's own seed: its orders replay on it
+            h.Begin(); h.IntelOpen = false; h.SetSpeed(1);
             orders = sc.Orders.Select((o, i) => (o, i)).OrderBy(p => p.o.Tick).ThenBy(p => p.i).Select(p => p.o).ToList();
             yield return null;
             h.StartClock(); h.SetPaused(true);
@@ -131,6 +132,13 @@ namespace Suborned.World.Review
         Vector3 Target()
         {
             int t = h.Game.Tick;
+            if (FightReel078.Arg("-live") != null || Array.IndexOf(Environment.GetCommandLineArgs(), "-live") >= 0) // brief 080: an adaptive plan's fight falls at no fixed tick: whoever has a fire order, else the Enforcer's walk, else the cell
+            {
+                var liveSum = Vector3.zero; int ln = 0;
+                foreach (var w in new[] { OpId.Scout, OpId.Fixer, OpId.Tech, OpId.Enforcer }) { var op = h.Game.Ops[(int)w]; if (!op.Down && !op.InCar && (op.Gun.Order.Length > 0 || op.Gun.Drawn) && h.Views.Find("op/" + Op.Name(w)) is Transform lx && lx) { liveSum += lx.position; ln++; } }
+                if (ln == 0 && h.Views.Find("op/enforcer") is Transform ex && ex) { liveSum = ex.position; ln = 1; }
+                return ln > 0 ? liveSum / ln : at;
+            }
             string[] who = t < 2286 ? new[] { "scout", "fixer", "tech" } : t < 2614 ? new[] { "scout", "fixer" } : t < 2966 ? new[] { "enforcer" } : new[] { "scout", "fixer", "tech", "enforcer" };
             var sum = Vector3.zero; int n = 0; foreach (var w in who) if (h.Views.Find("op/" + w) is Transform x && x) { sum += x.position; n++; }
             return n > 0 ? sum / n : at;

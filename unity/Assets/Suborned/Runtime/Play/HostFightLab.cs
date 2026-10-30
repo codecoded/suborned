@@ -102,7 +102,7 @@ namespace Suborned.Play
             FightRunPreset = Fights.preset; FightRunCheckpoint = Fights.checkpoint;
             if (Fights.checkpoint.Length == 0 || rangeMode) // brief 029: the range has no checkpoints
             {
-                var s = Lab.ToStart(); CopyLab(lab, s); if (ArmsOverride is int ar) s.Arms = ar;
+                var s = Lab.ToStart(); CopyLab(lab, s); if (ArmsOverride is int ar) s.Arms = ar; s.Seed = SeedForBegin(); // brief 080: rolled, or the one Replay keeps (HostSeed); a checkpoint below keeps the seed it was played on
                 return Engine.New(PlayInputs, s);
             }
             var sc = Script.Parse(File.ReadAllText(Path.Combine(FightLab.Dir("checkpoints"), Fights.checkpoint + ".script.json")));

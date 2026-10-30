@@ -376,6 +376,7 @@ namespace Suborned.Play
             // Keel 0.15.0 (tuning.md §8.8) host notes: the chip at the shooter's gait and heading, now → on arrival (PreviewFire, both presets)
             FirePreview fp = null; Guard("aim preview", () => fp = g.PreviewFire((OpId)k, id, force));
             if (fp != null && fp.Line && fp.ShotsToDown > 0) { int ps = PreviewDownS(fp, k); if (ps >= 0) secs = ps; acc = fp.Acc; }
+            parts.Pct = OddsOf(fp); OfferPreview = fp; // brief 080: the sheet's chance on the chip, the sum under Alt
             if (fp != null) { parts.Gait = fp.Gait is "walk" or "run" or "run-away" ? fp.Gait : ""; if (fp.HasEnd && fp.ShotsToDownEnd > 0 && w != null) parts.ArriveS = (R.AimNewTicks + (fp.ShotsToDownEnd - 1) * w.Every + Game.Hz - 1) / Game.Hz; }
             parts.Down = $"{secs} s"; parts.Ratio = Ratio(acc); /* Glyph fight r1 #2: whole seconds, as the rest of the HUD */ parts.Cover = cover < 1000;
             parts.Trail = g.FightBranch.Length > 0 && !R.FightTraced && g.Hostiles.Exists(h => h.Id == id) ? "" : FireTrail((OpId)k, id, force); // brief 058 §3: one price, from PreviewFire
