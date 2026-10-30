@@ -1,0 +1,17 @@
+# 080 · Organic play
+
+Owner: Aster. Opened 2026-10-30. Sky: "let the game play organically - player should be merited for their playing style, but same time feel it's vibrant. As long as the core mechanics are fair, like in any RPG / strategy i.e. guards don't hit 100% with high damage etc - then it should just all flow. Re turning the tests to check this shouldn't be so rigid". Before that: "this whole everything must replay exact feels boring. How would syndicate feel if it did that?"
+
+## Direction
+- Each new game rolls a seed, saved with the run. Saved runs replay exactly; new games differ.
+- Fair core mechanics: real hit chance and damage that a player can read and play around; nobody hits 100% with high damage; every fail has a cause a player can see.
+- Playing style is what earns the result: preparation, quiet play and good positioning shift the odds. They don't guarantee a script.
+- Vibrant: people's timings, crowds, reactions and rivals vary within fair bounds.
+
+## Checks
+Stay rigid: no crash or stall, unknown = reject, a saved run replays exactly, every order shows its price, every fail names its cause.
+Become bands across many seeds: win rates by playing style, fight length, down rate, cost of loud against quiet. Route scripts become smoke tests that play an adaptive plan, not fixed ticks.
+
+## Order
+1. Motive + Keel: one-page design for Sky (briefs/080/design.html). No code.
+2. After Sky's yes: Keel the seed and first slice (in a worktree), Waymark and Suture the checks; a GDD version (Aster).

@@ -15,7 +15,7 @@ Lean game repo: GDD → crew → plan → visible world. It grows only when a ta
   - exteriors only: interiors are timed off-screen actions
   - levels: street 0, deck 9.43 m, sky concourse 24 m
   - 60 fps at play zoom on the 15-inch MacBook Air M4
-  - no AI at runtime: content is made at build time, the same orders give the same result, and every run replays exactly
+  - no AI at runtime: content is made at build time. Each new game rolls its own seed and plays organically (Sky, 2026-10-30, brief 080); a saved run (seed + orders) replays exactly
   - rules come only from Keel's rulebook: unknown = reject
 - **Look:**
   - Bright retro-future. References: the 26 Sep paintings (`briefs/008/concepts/`) for street level, the AtomicAge and Blocks sheets for the skyline.
@@ -57,6 +57,7 @@ For Codex, ask the main session to act as Aster and read `.codex/agents/lead-pro
 - bun · rg / ast-grep · reports as self-contained `.html` · scratch output under `out/`.
 - Kill processes by PID only, never `pkill -f <pattern>`: a loose pattern kills other agents' work (Keel's `pkill -f cat` took down Unity, 2026-10-22).
 - Code first, test once (Sky, 2026-10-22): when a change that affects UX or play arrives while a build is being tested, stop the testing and roll the change in; run the full batch, shots and review only once the build's content is settled.
+- Checks test fairness, not one script (Sky, 2026-10-30: "shouldn't be so rigid"): rules are fair and outcomes fall in bands across many seeds; a saved run still replays exactly. Don't tune or pin a script to win one replay (brief 080).
 - Delta only (Sky, 2026-10-30: "taking hours to make small changes. Can't continue that way"): a small change reaches Sky in about 5 minutes. `bun run batch` runs only what the change can affect; a full batch only for engine, world or kit changes and the submission build. A fix loop runs just the failing section (`-proofOnly`, `--from`), never a whole batch per attempt. Bot rows and frame-time steps are not per-change.
 - Checks stay under 10 minutes (Sky, 2026-10-22): run the suite with `bun run test` (parallel), not plain `bun test`; play many scripts with `suborned-sim batch` (one process, every core), never one process per script. Anything over 10 minutes: say why and get it sped up (brief 042).
 - No load tests, player batches or heavy sweeps while Sky is playing (Sky, 2026-10-22; brief 048): `bun run batch` waits ("Sky is playing; waiting", `--wait-timeout`, `--force`); start any other load through `bun run guard <command>` (tools/game/playing.ts).
