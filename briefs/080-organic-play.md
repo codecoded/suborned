@@ -20,6 +20,9 @@ Owner: Aster. Opened 2026-10-30. Sky: "let the game play organically - player sh
 ## Sky, 2026-10-30: design approved
 On briefs/080/design.html: "1. ok 2. ok 3. ok". The seed sets timings as well as positions; streak caps lean the player's way, and the game says so; the aim ladder stands as the start (civilian 35, patrol robot 45, guard 50, Tech 50, Fixer 55, police 60, Scout 60, rival 65, Enforcer 75; hit % = aim + range + cover + movement, clamped 5-95; civilians 3 HP; no crits; hostile pistols 1 damage; streaks cap at 3).
 
+## Sky, 2026-10-30: pacing (briefs/080/pacing.html)
+"no, skipping isn't the game mechanic I want - this is syndicate with strategy not the other way round. so 1 and 2 make sense, 3 also, but dangerous to add at this stage". No skip offer. The shift moves forward a minute (Vale out 4:50, close 7:30, rivals unchanged) and talking shortens about 30% (Help 50 to 35, Listen 42 to 30; Enter and Take stay at 38), both in the 0.37.0 round. "The world offers more" is agreed in principle and parked: not before the submission's build is solid.
+
 ## Checks
 Stay rigid: no crash or stall, unknown = reject, a saved run replays exactly, every order shows its price, every fail names its cause.
 Become bands across many seeds: win rates by playing style, fight length, down rate, cost of loud against quiet. Route scripts become smoke tests that play an adaptive plan, not fixed ticks.

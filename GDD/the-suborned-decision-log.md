@@ -38,6 +38,7 @@ The GDD keeps a default for each (the draft's, or the build's) until Sky rules. 
 Q13 of brief 035 ("Vale exits north") is settled by brief 059: "Vale comes out of the official door".
 
 ## After v0.31.0 (2026-10-28; Sky's answers, relayed by main)
+- Sky, 2026-10-30 (brief 080, pacing): "no, skipping isn't the game mechanic I want - this is syndicate with strategy not the other way round. so 1 and 2 make sense, 3 also, but dangerous to add at this stage". No skip offer. Vale out 4:50, close 7:30; talking about 30% shorter. "World offers more" parked for after the Handover is solid. Whether "preparation > improvisation" stays as a tiebreaker: asked.
 - Sky, 2026-10-30 (brief 080, Motive's briefs/080/design.html): "1. ok 2. ok 3. ok". The seed sets timings as well as positions; streak caps lean the player's way, openly; the aim ladder stands as the start. Next GDD version carries §01, the fights section and the fixed limit.
 - Sky, 2026-10-30 (brief 080): "hit rolls". Each shot rolls to hit from the game's seed, RPG style, on class stats: "guards have better aim than civilians, but same HP/DMG, but move slow. Rivals are most dangerous. Police higher than guards etc." Everything else flows from the seeded start. The counted accumulator goes.
 - Sky, 2026-10-30 (brief 080): "only things that should matter is starting positions, which can be seeded, and then every thing plays out from there". The seed sets the start; no dice during play.
