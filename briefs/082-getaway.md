@@ -12,5 +12,10 @@ Owner: Aster. Opened 2026-10-30, from the prepared-loud video (seed 108): the En
 - Sky 2026-10-25 (brief 059): 1a the cell's car brought round by Drive (3.5 m carry); 2a rivals post round the cell's car in plain sight.
 - Sky 2026-10-26 (brief 071): the split getaway, option A: on the pickup way the Enforcer drives Vale off in Vale's car from the service bay and the other three escape in the cell's car; two Go's; the three left behind are captured while the rivals stand. Rules drafted (briefs/071/motive/rules.md); not built.
 
+## Sky's calls on briefs/082/getaway.html, 2026-10-30
+1. "Your three get taken down - just have police coming until done for now I think - if they're not in the car".
+2. "Rivals block you in when they see vale's car leave and go wrong way - they block your own car as soon as enforcer leaves with Vale".
+3. "yeah.. I'm not even sure about this rival tip concept - not one of mine". So: the tip is in question; don't build new rules on it.
+
 ## Next
 Motive: one page, briefs/082/getaway.html, no code. Then Sky.
