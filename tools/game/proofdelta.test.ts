@@ -62,7 +62,7 @@ describe('the plan', () => {
   test('a HUD-only change runs the budgeted pictures, the click-through and what reads it, in the proof\'s order', () => {
     const p = planProof(m, snap({ ...BASE, [HOLD]: 'b' }), passedAll(BASE));
     expect(p.mode).toBe('delta');
-    expect(p.only).toEqual(['holdActs', 'r059', 'r067', 'r123', 'rings', 'hudClick', 'holdRange']);
+    expect(p.only).toEqual(['holdActs', 'r059', 'r067', 'r123', 'r083', 'rings', 'hudClick', 'holdRange']);
     expect(p.reasons.holdActs).toBe(`${HOLD} changed`);
     expect(p.skips.r118).toContain('not run'); expect(p.skips.holdActs).toBeUndefined();
     expect(p.seconds).toBeLessThan(m.sections.reduce((a, s) => a + s.seconds, m.baseSeconds) / 2);

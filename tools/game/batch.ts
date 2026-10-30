@@ -41,6 +41,16 @@ import { gateFile, ledgerFile, loadMap, planLines, planProof, readLedger, record
 
 const UNITY = join(ROOT, 'unity'), OUT = process.env.SUBORNED_BATCH_OUT ? resolve(process.env.SUBORNED_BATCH_OUT) : join(ROOT, 'out/batch'), /* SUBORNED_BATCH_OUT: the tests' scratch folder */ APP = join(ROOT, 'out/build/play/The Suborned.app'), PROOF = join(ROOT, 'out/build/play/proof/proof.json');
 const BUILD_DIR = dirname(dirname(PROOF));
+/** Sky 2026-10-30: the game plays the old town: the swap of the old builders round our Handover zone, from the scene just built, then the host installed. Null when it worked, else why. */
+async function oldTown(t0: number): Promise<string | null> {
+  const run = async (log: string, ...args: string[]) => { const f = join(OUT, 'logs', log); const r = await sh(log, ['bun', join(ROOT, 'briefs/075/oldbuild/swap/tools/unityrun.ts'), f, '--', ...args], { timeoutMs: 3600000 }); return r.code === 0 ? null : `${log} exit ${r.code}; log ${f}`; };
+  const S = 'Suborned.OldTown.Editor.Swap.OldTownSwap', swapOut = join(OUT, 'swap');
+  return await run('unity-swap.log', '-executeMethod', `${S}.Build`, '-swapHeights', 'rule', '-swapHq', 'ours', '-swapOurs', 'Assets/Scenes/HarbourDistrict.unity', '-swapWorld', 'out/world/harbour-district.world.json', '-swapScene', 'OldTown', '-swapPlan', 'contracts/world/harbour-district.plan.json', '-swapOut', swapOut)
+    ?? await run('unity-swap-verify.log', '-executeMethod', `${S}.Verify`, '-swapOurs', 'Assets/Scenes/HarbourDistrict.unity', '-swapScene', 'OldTown', '-swapOut', swapOut)
+    ?? await run('unity-town-host.log', '-executeMethod', 'Suborned.World.Play.OldTownPlay.Install')
+    ?? (existsSync(TOWN) && statSync(TOWN).mtimeMs > t0 ? null : `${TOWN} was not written`);
+}
+const TOWN = join(UNITY, 'Assets/Scenes/OldTown.unity');
 const SCENE = join(UNITY, 'Assets/Scenes/HarbourDistrict.unity'), MATCH = join(ROOT, 'out/sim-unity/unity-editor.json');
 const FILES = ['ShotRunner.cs', 'CaptureSize.cs'].map(f => [join(ROOT, 'tools/game/unity', f), join(UNITY, 'Assets/Suborned/Runtime/Play', f)] as const);
 const env = { ...process.env, DOTNET_CLI_TELEMETRY_OPTOUT: '1', DOTNET_NOLOGO: '1', ...(process.env.DOTNET_ROOT || !existsSync('/opt/homebrew/opt/dotnet/libexec') ? {} : { DOTNET_ROOT: '/opt/homebrew/opt/dotnet/libexec' }) };
@@ -209,7 +219,7 @@ export const STEPS: Step[] = [
     id: 'unity-world', when: c => gated(c, 'unity-world'), title: 'Unity reimport + world rebuild',
     plan: c => c.mode === 'editor'
       ? ['unity cmd editor status  (must be stopped, not compiling)', 'unity cmd editor invoke_menu --path "Assets/Refresh"', 'unity cmd editor invoke_menu --path "Suborned/World/Build Harbour District (Export)"  (waits for unity/Assets/Scenes/HarbourDistrict.unity to be written)']
-      : [`${unityExe()} -batchmode -quit -projectPath unity -executeMethod Suborned.World.HarbourWorldBuilder.Build -world out/world/harbour-district.world.json -logFile out/batch/logs/unity-world.unity.log`],
+      : [`${unityExe()} -batchmode -quit -projectPath unity -executeMethod Suborned.World.HarbourWorldBuilder.Build -world out/world/harbour-district.world.json -logFile out/batch/logs/unity-world.unity.log`, 'then the old town: OldTownSwap.Build, OldTownSwap.Verify, OldTownPlay.Install (OldTown.unity, the played scene)'],
     async run(c) {
       const t0 = Date.now();
       if (c.mode === 'editor') {
@@ -222,12 +232,13 @@ export const STEPS: Step[] = [
         if (!(await menu('Suborned/World/Build Harbour District (Export)'))) return fail('the Unity CLI could not run the menu Suborned/World/Build Harbour District (Export)');
         if (!(await waitFile(SCENE, t0, 1800000))) return fail('the scene was not written within 30 min');
         const bad = logProblems(logSince(from));
-        return bad.length ? fail(`the Editor logged problems during the rebuild:\n${bad.join('\n')}`) : { ok: true, detail: `scene rebuilt from the export in ${Math.round((Date.now() - t0) / 1000)} s (Editor)` };
+        return bad.length ? fail(`the Editor logged problems during the rebuild:\n${bad.join('\n')}`) : fail('HarbourDistrict is rebuilt, but the old town (the played scene) is built in batchmode only: close the Editor and run again');
       }
       const r = await sh('unity-world', [unityExe(), '-batchmode', '-quit', '-projectPath', UNITY, '-executeMethod', 'Suborned.World.HarbourWorldBuilder.Build', '-world', 'out/world/harbour-district.world.json', '-logFile', join(OUT, 'logs/unity-world.unity.log')], { timeoutMs: 3600000 });
       const log = existsSync(join(OUT, 'logs/unity-world.unity.log')) ? readFileSync(join(OUT, 'logs/unity-world.unity.log'), 'utf8') : '';
       const fp = log.match(/fingerprint (\w+)/)?.[1];
-      return r.code === 0 && existsSync(SCENE) && statSync(SCENE).mtimeMs > t0 ? { ok: true, detail: `scene rebuilt from the export in ${Math.round((Date.now() - t0) / 1000)} s (batchmode)${fp ? `, fingerprint ${fp}` : ''}` } : fail(`Unity batchmode exit ${r.code}${logProblems(log).length ? '\n' + logProblems(log).join('\n') : ''}\n(log out/batch/logs/unity-world.unity.log)`);
+      if (r.code === 0 && existsSync(SCENE) && statSync(SCENE).mtimeMs > t0) { const town = await oldTown(t0); if (town) return fail(town); }
+      return r.code === 0 && existsSync(SCENE) && statSync(SCENE).mtimeMs > t0 ? { ok: true, detail: `HarbourDistrict rebuilt from the export, then the old town (OldTown.unity, the played scene) in ${Math.round((Date.now() - t0) / 1000)} s (batchmode)${fp ? `, fingerprint ${fp}` : ''}` } : fail(`Unity batchmode exit ${r.code}${logProblems(log).length ? '\n' + logProblems(log).join('\n') : ''}\n(log out/batch/logs/unity-world.unity.log)`);
     },
   },
   {

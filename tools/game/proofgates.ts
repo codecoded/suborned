@@ -8,7 +8,7 @@
 // tools/game/proofset.json (budget and 2x crops) from 2026-10-26, and its section joins GATED when Glyph agrees its density (Aster).
 
 /** The proof sections that gate the check, in the order GameBoot writes them. */
-export const GATED = ['driveClick', 'fireStop', 'ringCheck', 'inputMap', 'act', 'fire', 'cars', 'hudClick', 'dblClick', 'holdActs', 'holdRange', 'leash', 'done', 'rings', 'levels', 'r29', 'r118', 'r059', 'r067'] as const;
+export const GATED = ['driveClick', 'fireStop', 'ringCheck', 'inputMap', 'act', 'fire', 'cars', 'hudClick', 'dblClick', 'holdActs', 'holdRange', 'leash', 'done', 'rings', 'levels', 'r29', 'r118', 'r059', 'r067', 'r083'] as const;
 
 export type Gates = { ok: boolean; lines: string[]; failed: string[]; notReached: string[]; missing: string[]; /** a delta proof's sections it did not run: never a pass; the gate takes only what planProof derives from the ledger (tools/game/proofdelta.ts) */ skipped: string[] };
 

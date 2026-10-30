@@ -50,7 +50,7 @@ namespace Suborned.Play
         Vector3 fLast, fHeadVel; bool fHasLast; float fChaseVel, fLookUntil = -1f;
 
         /// <summary>Toggle the follow view (T, or a script).</summary>
-        public void FollowToggle() { if (Following) FollowExit(); else FollowEnter(); }
+        public void FollowToggle() { if (Following) FollowExit(); else { FollowEnter(); followOnly = Following; } }
 
         void FollowEnter()
         {
@@ -110,7 +110,7 @@ namespace Suborned.Play
         {
             if (!Following) return;
             fExitStart = -1f;
-            Following = false; fAgent = -1; fDragging = false; FollowUnhide(); dResume = false;
+            Following = false; fAgent = -1; fDragging = false; FollowUnhide(); dResume = false; followOnly = false;
             cam.orthographic = left.ortho; cam.orthographicSize = left.size; cam.fieldOfView = left.fov; cam.nearClipPlane = left.near; cam.farClipPlane = left.far;
             cam.transform.SetPositionAndRotation(left.pos, left.rot);
             focus = left.focus; if (fade) fade.focus = focus;

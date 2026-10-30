@@ -368,7 +368,7 @@ export const Less = z.strictObject({
     gain: z.record(code, Short(16)).describe('brief 043: the gain chip\'s new words, one icon-plus-label fact each; a Watch or Listen\'s facts are less.intel; {s} is seconds'),
     close: z.record(code, Short(16)).describe('brief 043: the pop when a window ends, by the marker\'s kind (guard, camera, patrol, rivals, and disable: the desk\'s report landing)'),
     cancel: z.strictObject({
-      tag: Short(24), tagCost: Short(36), pop: Short(24), popCost: Short(36),
+      tag: Short(24), tagCost: Short(36), pop: Short(24), popCost: Short(36), again: Short(24), againKey: Short(24), cantStop: Short(24), already: Short(24),
       cost: z.record(code, Short(16)).describe('the cost word by the engine\'s cancel cost; a cancel cost with no entry is free'),
     }).describe('brief 043: the warning before a cancelling order and the pop after it; {verb} the ring label, {cost} one of cost, {s} seconds spent'),
     fire: z.record(code, Short(12)).describe('engine 0.26.0 (Game.FireQuery): the portrait plate\'s two words when a squad fire order skips this agent, by the refusal code; no punctuation, a name may keep its capital (has Vale)'),

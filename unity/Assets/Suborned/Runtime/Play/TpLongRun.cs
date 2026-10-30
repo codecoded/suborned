@@ -167,7 +167,7 @@ namespace Suborned.Play
                     .Where(r => r.enabled && r.bounds.max.y > 0.6f && r.bounds.size.x < 20f && r.bounds.size.z < 20f).Select(r => r.bounds).ToArray();
                 foreach (var (name, dir, side) in new[] { ("palms-east", Vector3.right, -5.5f), ("palms-west", Vector3.left, 5.5f) })
                 {
-                    var at = new Vector3(-20f, 3f, -410f + side);
+                    var at = new Vector3(-20f, 3f, -410f + side + h.worldZ);
                     for (int k = 0; k < 15 && Blocked(at, dir, blockers); k++) at += dir * 4f;
                     go.transform.SetPositionAndRotation(at, Quaternion.LookRotation(dir + Vector3.down * 0.06f));
                     rows.Add(Levels(pc, name));
@@ -215,13 +215,13 @@ namespace Suborned.Play
                 if (name.StartsWith("office-"))
                 {
                     pc.orthographic = true; pc.orthographicSize = 14f; pc.nearClipPlane = 0.3f; pc.farClipPlane = 1500f;
-                    rot = Quaternion.Euler(38f, name == "office-30" ? 30f : 210f, 0f); var focus = new Vector3(-160f, 0f, -281f); at = focus - rot * Vector3.forward * 400f;
+                    rot = Quaternion.Euler(38f, name == "office-30" ? 30f : 210f, 0f); var focus = new Vector3(-160f, 0f, -281f + h.worldZ); at = focus - rot * Vector3.forward * 400f;
                     if (tsn) tsn.focusDepth = 400f; // the street 400 m along the view (TacticalShadows fits its cascades there)
                 }
                 else
                 {
                     pc.orthographic = false; pc.fieldOfView = 55f; pc.nearClipPlane = 0.2f; pc.farClipPlane = Mathf.Min(h.followFar, DistanceHaze.FarClip > 0f ? DistanceHaze.FarClip : h.followFar);
-                    rot = Quaternion.Euler(0f, 180f, 0f); at = new Vector3(-9.5f, 3.24f, -104f);
+                    rot = Quaternion.Euler(0f, 180f, 0f); at = new Vector3(-9.5f, 3.24f, -104f + h.worldZ);
                 }
                 go.transform.SetPositionAndRotation(at, rot);
                 yield return new WaitForEndOfFrame();
@@ -258,7 +258,7 @@ namespace Suborned.Play
             // Market Street runs along x at z -410 (18 m road): the north side's ground-floor shops (the hotel's, as palms-east shows them) stand about
             // 9 m past the north kerb; 0.2.80's first try looked south from x -30 and went down a side street
             var north = Vector3.forward;
-            foreach (var (name, at, pitch) in new[] { ("tp-shopfront-glass", new Vector3(5f, 2f, -404f), 0f), ("tp-tower-windows", new Vector3(5f, 3f, -414f), 32f) })
+            foreach (var (name, at, pitch) in new[] { ("tp-shopfront-glass", new Vector3(5f, 2f, -404f + h.worldZ), 0f), ("tp-tower-windows", new Vector3(5f, 3f, -414f + h.worldZ), 32f) })
             {
                 var p = at; var look = Quaternion.AngleAxis(-pitch, Vector3.Cross(Vector3.up, north)) * north; // tilted up by `pitch`
                 for (int k = 0; k < 15 && Blocked(p, north, blockers); k++) p += Vector3.right * 4f;

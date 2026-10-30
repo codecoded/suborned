@@ -143,7 +143,9 @@ namespace Suborned.Play
         // ---------------------------------------------------------------- the street marks
 
         const float GhostH = 38f, ClockH = 28f;
-        VisualElement squadBtn; readonly List<(VisualElement root, VisualElement face, Label text)> ghostEls = new(); readonly List<(VisualElement root, Label text)> clockEls = new(); readonly List<Vector2[]> clockArcAt = new();
+        /// <summary>The proof reads it: where the Squad / Back to map button is on screen (pixels, origin bottom left), null when hidden.</summary>
+        public static Vector2? SquadBtnScreen { get { var b = live?.squadBtn; if (b == null || b.resolvedStyle.display == DisplayStyle.None) return null; var c = b.worldBound.center; var sz = b.panel.visualTree.layout.size; return new Vector2(c.x / sz.x * Screen.width, Screen.height - c.y / sz.y * Screen.height); } }
+        Label squadWord; VisualElement squadBtn; readonly List<(VisualElement root, VisualElement face, Label text)> ghostEls = new(); readonly List<(VisualElement root, Label text)> clockEls = new(); readonly List<Vector2[]> clockArcAt = new();
         VisualElement dragGhost; readonly List<VisualElement> dragFaces = new();
 
         /// <summary>A ring on the ground (brief 046: drawn in the world, depth-tested, so legs and props in front hide it; HudToolkit.Ground).</summary>
@@ -161,10 +163,12 @@ namespace Suborned.Play
             {
                 squadBtn = E(root, "s-plate_dark", ColX, ColY + ColH * RosterScale + 8, 86, 30, pick: true); squadBtn.style.alignItems = Align.Center; squadBtn.style.justifyContent = Justify.Center;
                 var sl = L(squadBtn, "verb-name"); sl.text = "Squad"; sl.style.fontSize = 12; sl.style.unityTextAlign = TextAnchor.MiddleCenter;
-                squadBtn.RegisterCallback<PointerDownEvent>(e => { if (e.button == 0) { host.SelectAll(); e.StopPropagation(); } });
+                squadWord = sl;
+                squadBtn.RegisterCallback<PointerDownEvent>(e => { if (e.button == 0) { if (host.Following) host.BackToMap(); else host.SelectAll(); e.StopPropagation(); } }); // brief 083: in third person this slot is the way back
                 manifest.Add((squadBtn, "image", () => "squad button"));
             }
-            Show(squadBtn, on && m.Dock == RosterDock.Left && !h.Following);
+            Show(squadBtn, on && m.Dock == RosterDock.Left && !h.FollowExiting);
+            { string sw = h.Following ? $"{h.BackToMapWord} · {h.controls.Label(PlayAction.FollowView)}" : "Squad"; if (squadWord.text != sw) { squadWord.text = sw; squadBtn.style.width = h.Following ? 132 : 86; } } // brief 083
             int gu = 0, cu = 0;
             if (on && !h.Following && h.View)
             {

@@ -409,7 +409,7 @@ namespace Suborned.Play
         /// <summary>The sedans' nose (Vela: -Y in Blender) as the model is imported; a moving car turns so its nose leads.</summary>
         static readonly Quaternion carNose = Quaternion.identity;
 
-        readonly LineRenderer[] cellRings = new LineRenderer[4];
+        readonly LineRenderer[] cellRings = new LineRenderer[4], cellUnder = new LineRenderer[4];
         /// <summary>Glyph (people r1): every cell member a thin cyan ring at the feet, thicker and brighter when selected, so a black-and-white
         /// passer-by can't pass for one of the cell; with figures it replaces the cream selection disc.</summary>
         void CellRings()
@@ -427,10 +427,14 @@ namespace Suborned.Play
                     for (int i = 0; i < 32; i++) { float a = i * Mathf.PI * 2f / 32f; lr.SetPosition(i, new Vector3(Mathf.Cos(a) * 0.42f, Mathf.Sin(a) * 0.42f, 0f)); }
                     cellRings[k] = lr;
                 }
-                var r = cellRings[k]; if (r.gameObject.activeSelf != on) r.gameObject.SetActive(on); if (!on) continue;
-                bool sel = host.Selected[k]; r.transform.position = t.position + Vector3.up * 0.04f; r.widthMultiplier = sel ? 0.11f : 0.045f;
+                var r = cellRings[k]; if (r.gameObject.activeSelf != on) r.gameObject.SetActive(on);
+                // brief 083 note 5: the selected agent's ring is unmistakable: wider and thicker, on an ink underlay that carries it over pale paving and in shade; the rest stay the thin ring
+                if (cellUnder[k] == null) { var ug = new GameObject("cellringunder/" + k); ug.transform.SetParent(root, false); var ul = ug.AddComponent<LineRenderer>(); ul.sharedMaterial = Unlit(new Color(0.043f, 0.086f, 0.082f)); ul.loop = true; ul.positionCount = 32; ul.useWorldSpace = false; ul.alignment = LineAlignment.TransformZ; ug.transform.localRotation = Quaternion.Euler(90f, 0f, 0f); ul.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off; for (int i = 0; i < 32; i++) { float a = i * Mathf.PI * 2f / 32f; ul.SetPosition(i, new Vector3(Mathf.Cos(a) * 0.52f, Mathf.Sin(a) * 0.52f, 0f)); } ul.widthMultiplier = 0.2f; cellUnder[k] = ul; }
+                { bool uo = on && host.Selected[k]; if (cellUnder[k].gameObject.activeSelf != uo) cellUnder[k].gameObject.SetActive(uo); if (uo) cellUnder[k].transform.position = t.position + Vector3.up * 0.03f; }
+                if (!on) continue;
+                bool sel = host.Selected[k]; r.transform.position = t.position + Vector3.up * 0.05f; r.widthMultiplier = sel ? 0.13f : 0.045f;
                 float pt = Time.unscaledTime - host.RingPulseAt[k], pu = pt >= 0f && pt < 0.4f ? Mathf.Sin(pt / 0.4f * Mathf.PI) : 0f; // brief 067 G1 (Glyph): a portrait click's cue: 1.0 → 1.3 → 1.0, alpha 1 → 0.6 → 1, 0.4 s
-                r.transform.localScale = Vector3.one * (1f + 0.3f * pu);
+                r.transform.localScale = Vector3.one * ((sel ? 1.24f : 1f) + 0.3f * pu);
                 var c = new Color(0.376f, 0.878f, 0.918f, (sel ? 1f : 0.7f) * (1f - 0.4f * pu)); r.startColor = r.endColor = c;
                 var disc = things[SelKeys[k]].t; if (disc.gameObject.activeSelf) disc.gameObject.SetActive(false); // the ring is the selection
             }

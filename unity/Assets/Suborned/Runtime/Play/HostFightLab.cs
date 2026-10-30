@@ -146,7 +146,7 @@ namespace Suborned.Play
             if (Game == null || Game.Over || Fault != null) return;
             if (Frozen) { if (target && !TargetFreeze) { TargetFreeze = true; FrozenWhy = why; } return; }
             if (manual && Fights.freezesPerFight >= 0 && manualFreezes >= Fights.freezesPerFight) { Pop($"No freezes left this fight ({Fights.freezesPerFight})", null, SelectedWorld(), Feedback.Refused, 2f, "", ""); return; }
-            if (Driving) DriveToggle(); // §1.4: the drive is let go (DriveRelease, this tick) before any freeze; no freeze while driven
+            if (Driving) { DriveToggle(); followOnly = false; } // §1.4: the drive is let go (DriveRelease, this tick) before any freeze; no freeze while driven
             Frozen = true; TargetFreeze = target; FrozenWhy = why; FreezeCount++; if (manual) manualFreezes++; acc = 0f;
             QueuedCell = null; Array.Clear(Queued, 0, 4); Array.Clear(VolleyTarget, 0, 4); Array.Clear(VolleyShots, 0, 4);
             Status = target ? $"Target mode ({why}): click a combatant to add a shot · right click removes one · {controls.Label(PlayAction.TargetMode)} or Return fires · Esc leaves"

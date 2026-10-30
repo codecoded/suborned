@@ -68,6 +68,8 @@ namespace Suborned.Play
         [Tooltip("Tactical pause at the start (Sky, brief 011: on by default; T1 tests six players without it).")]
         public bool startPaused = true;
         public string playCamera = "cameras/play";
+        [Tooltip("Metres the scene stands the plan up Unity z: 0 in HarbourDistrict, 206 in the old town (OldTownSwap.DZ; PlayInstall sets it).")]
+        public float worldZ;
         [Tooltip("The camera stands this far back along its view (m): far enough that no roof in the block crosses the near plane.")]
         public float standOff = 160f;
         public float panSpeed = 18f;
@@ -465,7 +467,7 @@ namespace Suborned.Play
             if (!Driving && !OneInput && Game.FightOn && Ring == null && !(HoldOn && Charge != null) && ((mouse.leftButton.wasPressedThisFrame && mouse.rightButton.isPressed) || (mouse.rightButton.wasPressedThisFrame && mouse.leftButton.isPressed))) // third person: the right button aims and the left fires (HostAim)
             { dragging = false; BoxScreen = null; if (Loud == null) Panic(p); return; }
             if (!HoldOn) Sweep(p, mouse.rightButton.isPressed); // brief 041 (hold): a hold keeps its target
-            if (!turnDragging && !Following) Grab(p, mouse.middleButton.wasPressedThisFrame, mouse.middleButton.isPressed);
+            if (!turnDragging && !Following) Grab(p, mouse.middleButton.wasPressedThisFrame, mouse.middleButton.isPressed || HoldOn && lp.On && lp.Drag); // brief 083: a left drag is the same grab (HoldFrame starts it)
             if (c.edgeScroll && Application.isFocused && !Following)
             {
                 float band = c.edgePixels * Screen.height / 1080f; var e = Vector2.zero;
@@ -475,7 +477,8 @@ namespace Suborned.Play
             float wheel = mouse.scroll.ReadValue().y; // over the HUD the wheel scrolls the HUD (the action panel's cards), not the zoom
             if (wheel != 0f && HoverStackCount > 1 && !OverHud(p) && (!HoldOn || Time.unscaledTime - pointerRestSince >= 0.3f)) { StepStack(); wheel = 0f; } // over overlapping things the wheel steps through them; brief 067 F9 (Glyph): in the hold preset only once the cursor has rested 0.3 s (else the wheel zooms)
             if (wheel != 0f && !Following && !OverHud(p)) OverheadWheel(wheel); // the follow view's wheel is its distance (FollowInput); stepped or proportional (brief 025)
-            if (Driving && DriveFocus != null) lastMouse = p;             // driven: the chip is on what E acts on (HostDrive), not under the cursor
+            if (HoldOn && lp.On && lp.Drag) lastMouse = p;                // brief 083: panning: no pill, chip or hover under a moving map
+            else if (Driving && DriveFocus != null) lastMouse = p;             // driven: the chip is on what E acts on (HostDrive), not under the cursor
             else if (p != lastMouse) { if ((p - lastMouse).sqrMagnitude > 4f) pointerRestSince = Time.unscaledTime; lastMouse = p; PointerHover(p); }      // the price is redone only on change (Preview is ~500 KB a call)
             else if (intentKey.Length == 0 || HoldOn && Time.unscaledTime - hoverAt > 0.1f) { hoverAt = Time.unscaledTime; PointerHover(lastHover); } // the agent, the verb or the world changed under a still mouse (the hold preset: ten times a second, for the hover's 150 ms hold)
             bool onHud = OverHud(p);
@@ -483,6 +486,7 @@ namespace Suborned.Play
             if (mouse.leftButton.wasReleasedThisFrame || mouse.rightButton.wasReleasedThisFrame) HudToolkit.BlurFocus(); // brief 024 rule 6: no click keeps keyboard focus (WASD after any click)
             if (!HoldOn) CommanderHoldFireFrame(mouse); // controls.commanderHoldFire: the right button up ceases (HostAim)
             if (HoldOn && PortraitDragFrame(mouse, p)) { BoxScreen = null; return; } // brief 041: a portrait dragged onto the street
+            if (HoldOn && FollowExiting) return; // brief 083: nothing on the street hears a click through the 0.5 s glide back to the map
             if (TpPointer(mouse, p, onHud)) { BoxScreen = null; return; } // brief 024 revision: third person's aim, trigger, right tap and the left click on the prompt (HostAim)
             if (!onHud && VolleyClick(p, mouse.leftButton.wasPressedThisFrame, mouse.rightButton.wasPressedThisFrame)) { dragging = false; return; } // brief 027: target mode builds volleys
             if (HoldOn && !Driving && HoldFrame(mouse, p, onHud)) { dragging = false; return; } // brief 041: click walks, hold acts; right tap ring, right hold fires

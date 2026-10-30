@@ -186,6 +186,7 @@ namespace Suborned.Play
         {
             if (Game == null || Game.Over) return;
             var op = Game.Ops[k];
+            if (SameActRunning(k, r.I.Order, run)) return; // brief 083: the act already under way is never restarted (Sky's 0.2.159 run: a hold on Inez while Watching her: "Watch cancelled · 3 s lost", then the same Watch again)
             if (op.Busy != null || op.Act != null || pending[k] != null) CancelAgent(k, null); // a new order replaces the old one (engine 0.23: a walk in too; brief 043: the cancel pops) (CancelAgent's card says what was lost)
             EndLasting(k); // and a lasting fire order (brief 041: a fire order lasts until down, X or a new order)
             Unfresh(t, r.I.Order); // brief 043: the pip goes once the opened act is given
@@ -211,6 +212,7 @@ namespace Suborned.Play
         public void GroupWalk(Pt centre, bool run, Vector2? screen, List<int> agents = null)
         {
             agents ??= SelectedList(); agents = agents.FindAll(k => !Game.Ops[k].Inside && !Game.Ops[k].Down && !(Driving && k == dAgent));
+            lastGroupWalk.Clear();
             if (agents.Count == 0) return;
             int n = agents.Count; long cx = 0, cy = 0; foreach (var k in agents) { cx += Game.Ops[k].Pos.X; cy += Game.Ops[k].Pos.Y; }
             var mid = new Pt((int)(cx / n), (int)(cy / n)); var offs = new List<Pt>();
@@ -260,6 +262,12 @@ namespace Suborned.Play
         /// and the charge follow it as it moves), fills over 0.4 s, then says "Let go · …"; letting go then commits on it wherever the cursor is.
         /// Cursor travel of more than CancelPx from the press, an early release, a right click or Esc cancels; the pill dims from DimFrom of it.</summary>
         public const float CancelPx = 80f, DimFrom = 0.55f;
+        /// <summary>Brief 083 (Sky on 0.2.159: "change the drag LMB to select squads, to move map"): a left press that travels this far (kit px) before the hold's pill
+        /// shows (ChargeShowS, 0.2 s) is a pan, on any thing or on the ground: the charge is dropped unseen and the release is no click. Under it, a click or a hold (a shaky
+        /// hand on a click stays a click); once the pill shows the hold has the pointer and only CancelPx of travel ends it. RingMovePx (6) was tight for a mouse click.</summary>
+        public const float DragPanPx = 8f;
+        /// <summary>The proof reads it: left drags that panned the map, and the agents a click skipped or asked about because they are busy.</summary>
+        public int PanDrags { get; private set; }
         /// <summary>How far the pointer has gone from the held press (kit px), for the pill's dim; 0 with no hold.</summary>
         public float HoldTravel { get; private set; }
         public int HoldTravelCancels { get; private set; }
@@ -297,7 +305,7 @@ namespace Suborned.Play
                 {
                     var was = lp; lp = default;
                     if (was.Cancelled) return true;
-                    if (was.Drag) { if (c != null) Charge = null; if (BoxScreen.HasValue) BoxSelect(BoxScreen.Value, shift || ctrl); BoxScreen = null; return true; }
+                    if (was.Drag) { if (c != null) Charge = null; BoxScreen = null; PanDrags++; return true; } // brief 083: a drag pans; its release is nothing else
                     if (was.Used || c != null && c.Done) { if (c != null) Charge = null; return true; }
                     if (c != null)
                     {
@@ -308,8 +316,8 @@ namespace Suborned.Play
                     HoldClick(p, shift);
                     return true;
                 }
-                if (c == null && !lp.Drag && !lp.Cancelled && (p - lp.At).magnitude > RingMovePx * KitScale) lp.Drag = true; // no hold under way: a drag is the box (Glyph's 0.2.94 review #12: never after a right click cancelled this hold; the left button still down drew a flat box, the stray cream line)
-                if (lp.Drag) BoxScreen = GuiRect(lp.At, p);
+                // brief 083: a drag is the map's (Controls goes on grabbing while lp.Drag). Never after a right click cancelled this hold (Glyph's 0.2.94 review #12), nor once the hold's pill shows
+                if (!lp.Drag && !lp.Cancelled && !lp.Used && (c == null || !c.Done && !c.Shown) && (p - lp.At).magnitude > DragPanPx * KitScale) { lp.Drag = true; Charge = c != null ? null : Charge; ClearHover(); Grab(lp.At, true, true); }
                 return true;
             }
             // ---- the right button
@@ -345,6 +353,7 @@ namespace Suborned.Play
         {
             var c = Charge; HoldTravel = 0f; if (c == null || c.Done) return;
             var press = c.Button == 0 ? lp : rp; if (!press.On) return;
+            if (c.Button == 0 && !c.Shown && !Driving) return; // brief 083: before the pill shows, travel is a pan (HoldFrame), not a hold pulled away
             HoldTravel = (p - press.At).magnitude / KitScale;
             // brief 067 D (Sky on 0.2.122: "when the rivals move I kept losing the target on them"): a fire hold is latched to its target, so the
             // cursor following a moving target is not travel away: the travel is from the press or from the target's drawn point, whichever is nearer
@@ -422,12 +431,14 @@ namespace Suborned.Play
                     if (dbl && UpgradeRun()) { SideLog("click", "run", t); return; }
                     var spot = StandSpot(plan, way);
                     if (!spot.HasValue) { Status = $"already in reach of {t.Label}"; return; }
-                    ThingWalks++; GroupWalk(spot.Value, dbl || shift, p); SideLog("click", "walk-thing", t); return;
+                    if (BusyClick(p, out var whoT)) { SideLog("click", "busy", t); return; } // brief 083
+                    ThingWalks++; GroupWalk(spot.Value, dbl || shift, p, whoT); SideLog("click", "walk-thing", t); return;
                 }
             }
             if (!cam || !frame.Ground(cam.ScreenPointToRay(p), out var w)) return;
             if (dbl && UpgradeRun()) { SideLog("click", "run", t); return; }
-            GroupWalk(frame.Engine(w), dbl || shift, p); SideLog("click", t != null ? "walk-ground-from-thing" : "walk-ground", t); // brief 067 E: a click on a thing that walks is recorded as such (Suture: "click:walk-from-thing")
+            if (BusyClick(p, out var whoG)) { SideLog("click", "busy", t); return; } // brief 083: a click never stops an act by itself
+            GroupWalk(frame.Engine(w), dbl || shift, p, whoG); SideLog("click", t != null ? "walk-ground-from-thing" : "walk-ground", t); // brief 067 E: a click on a thing that walks is recorded as such (Suture: "click:walk-from-thing")
         }
 
         // ---------------------------------------------------------------- the right hold: fire

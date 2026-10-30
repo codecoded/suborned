@@ -12,7 +12,7 @@ using Object = UnityEngine.Object;
 
 namespace Suborned.World.Play
 {
-    /// <summary>The game build (Aster, 2026-10-17): the HarbourDistrict scene with the Handover host installed (PlayInstall, as the Editor's
+    /// <summary>The game build (Aster, 2026-10-17; the old town from Sky, 2026-10-30): OldTown.unity with the Handover host installed (PlayInstall, as the Editor's
     /// Play uses it) and the engine bundle in StreamingAssets (the Suborned.Sim DLL is a plugin; StreamingAssets/sim carries engine.json,
     /// headless.json, the rulebook, people rules, text, site, people, provisional and takedown), a release macOS (Apple silicon) player in
     /// out/build/play/The Suborned.app. Only BuildPlayerOptions carry the build (EditorBuildSettings and the scene list are untouched); after
@@ -86,15 +86,16 @@ namespace Suborned.World.Play
             // brief 029: the fight range is rebuilt from Keel's range sites every build (seconds), so a new layout or piece never ships stale
             if (EditorSceneManager.GetActiveScene().isDirty) throw new InvalidOperationException($"Game: save or close {EditorSceneManager.GetActiveScene().path} first (the build rebuilds {RangeScene.ScenePath})");
             RangeScene.Build();
+            // Sky 2026-10-30: the game plays the old town (OldTown.unity: the swap, whose Handover zone is our builder's output). OldTownPlay.Rebuild's chain makes it; the host is installed there.
             var active = EditorSceneManager.GetActiveScene();
-            if (active.path != HarbourWorldBuilder.ScenePath)
+            if (active.path != OldTownPlay.ScenePath)
             {
-                if (active.isDirty) throw new InvalidOperationException($"Game: save or close {active.path} first (the build opens {HarbourWorldBuilder.ScenePath})");
-                if (!File.Exists(Path.Combine(Application.dataPath, "..", HarbourWorldBuilder.ScenePath))) throw new FileNotFoundException($"Game: {HarbourWorldBuilder.ScenePath} is missing; build the world first");
-                EditorSceneManager.OpenScene(HarbourWorldBuilder.ScenePath, OpenSceneMode.Single);
+                if (active.isDirty) throw new InvalidOperationException($"Game: save or close {active.path} first (the build opens {OldTownPlay.ScenePath})");
+                if (!File.Exists(Path.Combine(Application.dataPath, "..", OldTownPlay.ScenePath))) throw new FileNotFoundException($"Game: {OldTownPlay.ScenePath} is missing; run the swap first (the batch's unity-world step)");
+                EditorSceneManager.OpenScene(OldTownPlay.ScenePath, OpenSceneMode.Single);
             }
             var scene = EditorSceneManager.GetActiveScene();
-            if (GameObject.Find(PlayInstall.RootName) is null || Object.FindAnyObjectByType<HandoverHost>() is null) { PlayInstall.InstallOpen(true); EditorSceneManager.SaveScene(scene); }
+            if (GameObject.Find(PlayInstall.RootName) is null || Object.FindAnyObjectByType<HandoverHost>() is null) OldTownPlay.InstallOpen();
             else if (scene.isDirty) EditorSceneManager.SaveScene(scene);
 
             Directory.CreateDirectory(Dir); builtThisDomain = true;
@@ -112,7 +113,7 @@ namespace Suborned.World.Play
                 PlayerSettings.productName = AppName; // the binary, the menu bar and the player's data folder; the project's own name comes back after
                 report = BuildPipeline.BuildPlayer(new BuildPlayerOptions
                 {
-                    scenes = new[] { FrontEndBuild.ScenePath, HarbourWorldBuilder.ScenePath }.Concat(File.Exists(Path.Combine(Application.dataPath, "..", RangeScene.ScenePath)) ? new[] { RangeScene.ScenePath } : new string[0]).ToArray(), // brief 051: the front end's boot scene first (a proof skips straight to the Handover); brief 029: the fight range, from the menu
+                    scenes = new[] { FrontEndBuild.ScenePath, OldTownPlay.ScenePath }.Concat(File.Exists(Path.Combine(Application.dataPath, "..", RangeScene.ScenePath)) ? new[] { RangeScene.ScenePath } : new string[0]).ToArray(), // brief 051: the front end's boot scene first (a proof skips straight to the Handover); brief 029: the fight range, from the menu
                     target = BuildTarget.StandaloneOSX,
                     targetGroup = BuildTargetGroup.Standalone,
                     locationPathName = AppPath,
@@ -124,6 +125,7 @@ namespace Suborned.World.Play
             EditorUtility.SetDirty(Unsupported.GetSerializedAssetInterfaceSingleton("PlayerSettings"));
             AssetDatabase.SaveAssets();
             var s = report.summary; bool ok = s.result == BuildResult.Succeeded;
+            OldTownPlay.WriteContents(report, Dir);
             string post = ok ? Finish(ver) : "";
             if (ok && scratchDir == null) ver.Commit(); // only a build that succeeded takes the number (a scratch build never does)
             var line = $"Game: build {ver.Full} ({ver.Recording}, sim {BuildStamp.Sim}, {ver.Sha}{(ver.Dirty ? "+" : "")}) {s.result} in {s.totalTime.TotalSeconds:F0}s, {s.totalSize / 1048576} MB, {s.totalErrors} errors, {s.totalWarnings} warnings -> {AppPath}; engine {b.Source}, DLL {b.DllSha[..12]}; {post}";

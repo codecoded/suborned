@@ -398,7 +398,7 @@
   "ring-drop": {"label":"Drop","by":["scout","fixer","tech","enforcer"],"engine":{"do":"drop"},"does":"The ring's word for this verb."},
   "ring-more": {"label":"More","by":["scout","fixer","tech","enforcer"],"engine":{"do":"cancel"},"does":"The ring's last wedge: the full panel."},
   "withdraw": {"label":"Withdraw","by":["fixer"],"engine":{"do":"withdraw"},"does":"Call off the attempt. The cell gets away to try again."},
-  "drive": {"label":"Take control","by":["scout","fixer","tech","enforcer"],"engine":{"do":"drive"},"does":"Walk this agent yourself, at their pace. Anyone nearby still sees them.","ways":{"release":{"label":"Let go","does":"Hand this agent back. They stop, or carry on their walk."}}},
+  "drive": {"label":"Take control","by":["scout","fixer","tech","enforcer"],"engine":{"do":"drive"},"does":"Walk this agent yourself, at their pace. Anyone nearby still sees them.","ways":{"release":{"label":"Back to map","does":"Back to the map. Whatever they are doing carries on."}}},
   "trigger": {"label":"Trigger","by":["scout","fixer","tech","enforcer"],"engine":{"do":"trigger"},"does":"Fire by hand from the agent you drive: hold to keep firing, let go to stop."},
   "follow": {"label":"Follow fire","by":["scout","fixer","tech","enforcer"],"engine":{"do":"follow"},"does":"Agents near you fire at your target. On: they keep firing till it is down."},
   "free": {"label":"Weapons free","by":["scout","fixer","tech","enforcer"],"engine":{"do":"free"},"does":"In a fight, drawn agents pick their own targets. Off: they only return fire."}
@@ -1761,7 +1761,7 @@
    "no-line": "No clear line",
    "car-held": "Fight blocks car",
    "take-control": "Take control: T",
-   "let-go": "Let go: T",
+   "let-go": "Map view: T",
    "camera-looped": "Camera looped",
    "camera-dark": "Camera shot out",
    "camera-hit": "Camera hit",
@@ -2064,6 +2064,10 @@
     "tagCost": "Cancels {verb} · {cost}",
     "pop": "{verb} cancelled",
     "popCost": "{verb} cancelled · {cost}",
+    "again": "Click again to stop",
+    "againKey": "Press again to stop",
+    "cantStop": "Can't stop now",
+    "already": "Already doing it",
     "cost": {"lost": "{s} s lost", "aborted": "They remember", "released": "They report", "staff-report": "Staff report", "vale-reports": "Vale reports", "ends": "Loop ends"}
    },
    "fire": {

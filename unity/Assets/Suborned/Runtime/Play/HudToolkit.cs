@@ -1172,8 +1172,8 @@ namespace Suborned.Play
                 var fl = Words(followChip, 13.5f); followLabel = fl; fl.text = "Follow view"; fl.style.unityTextAlign = TextAnchor.MiddleCenter; fl.style.marginTop = 0; fl.style.marginBottom = 0; fl.style.paddingTop = 0; fl.style.paddingBottom = 0; if (KeyLegends) KeyCap(followChip, host.controls.Label(PlayAction.FollowView)); // no key legends (Sky): the word only
                 manifest.Add((followChip, "image", () => "follow view chip")); Show(followChip, false);
             }
-            Show(followChip, f && !m.Ended && (host.Exploring || host.Driving)); // brief 049 row 25: no "Follow view" word (a test mode); Exploring and Let go stay
-            if (f) Text(followLabel, host.Exploring ? "Exploring" : host.Driving ? "Let go" : "Follow view"); // brief 025 (Fable: "Let go: T")
+            Show(followChip, f && !m.Ended && host.Exploring); // brief 049 row 25: no "Follow view" word (a test mode). Brief 083 (Sky on 0.2.159: "I saw a Let Go label where squad is - no idea what that means - did nothing when I clicked on it"): this plate was that label, a word with no click. Driving, the slot is the real Back to map button (HudToolkit.Hold); only the lab's Exploring keeps a word here
+            if (f) Text(followLabel, host.Exploring ? "Exploring" : "Follow view");
             // a plain ground ring under the followed agent, drawn in the view's own perspective (the one world mark the follow view keeps)
             followRing.Clear();
             if (f && host.FollowAgent >= 0 && host.Views?.Find("op/" + Suborned.Sim.Op.Name((Suborned.Sim.OpId)host.FollowAgent)) is Transform ft && ft.gameObject.activeSelf)
@@ -1183,10 +1183,12 @@ namespace Suborned.Play
             if (!f && !followHid) return; followHid = f;
             foreach (var c in marks.Children())
             {
-                bool keep = c == world || c == actBadge || c == fireLayer || c == vpill || c == vpillTail; /* brief 041: the pill in both views */ foreach (var b in bubbleEls) if (b.root == c) keep = true; foreach (var pe in popEls) if (pe.root == c) keep = true;
+                bool keep = c == world || c == actBadge || c == actMarkRoot || c == fireLayer || c == vpill || c == vpillTail; /* brief 041: the pill in both views */ foreach (var b in bubbleEls) if (b.root == c) keep = true; foreach (var pe in popEls) if (pe.root == c) keep = true;
                 c.style.visibility = f && !keep ? Visibility.Hidden : StyleKeyword.Null;
             }
         }
+        /// <summary>The proof reads it: the old word plate in the Squad slot is up.</summary>
+        public static bool FollowChipShown => live?.followChip != null && live.followChip.resolvedStyle.display != DisplayStyle.None;
         bool followHid; VisualElement followChip; Label followLabel; readonly List<Vector2> followRing = new();
 
         /// <summary>Where the roster, the strips, the verb plate and the ticker sit for the dock (Glyph's dock rules, layout.json `docks`).

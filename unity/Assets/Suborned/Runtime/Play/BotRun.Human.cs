@@ -534,6 +534,7 @@ namespace Suborned.Play
             var q = h.View.WorldToScreenPoint(h.frame.World(h.Game.Ops[k].Pos)); if (q.z <= 0f) { yield return Keys(new[] { Key.X }, 2); yield break; }
             var sp = OffThings(new Vector2(q.x, q.y) + off * Kpx); sp.x = Mathf.Clamp(sp.x, 90f, Screen.width - 90f); sp.y = Mathf.Clamp(sp.y, 90f, Screen.height - 90f);
             cur.Moves++; yield return Click(sp);
+            var op = h.Game.Ops[k]; if (op.Busy != null || op.Act != null || h.PendingOf(k).verb.Length > 0) { yield return Wait(0.5f); yield return Click(sp); } // brief 083: on an act the first click only asks; the second stops it
         }
 
         /// <summary>X: the selected agent's order stops (the hold preset's stop).</summary>

@@ -189,7 +189,7 @@ namespace Suborned.Play
             if (take >= 0) h.RingTakeScripted(take); yield return Frames(3);
             bool walking = h.DriveWalking && g.Ops[1].Walk != null; float stillS = 0f;
             for (int f = 0; f < 40 && walking; f++) { var a = h.Views.Find("op/fixer").position; yield return null; if ((h.Views.Find("op/fixer").position - a).sqrMagnitude < 1e-8f) stillS += Time.unscaledDeltaTime; }
-            Keys(Key.W); yield return new WaitForSecondsRealtime(0.3f); Keys(); yield return Frames(2); // the stick goes back at once; the engine drops its walk at the next tick's drive sample
+            Keys(Key.W); yield return new WaitForSecondsRealtime(0.1f); Keys(); yield return new WaitForSecondsRealtime(0.1f); /* brief 083: on a walk-in to an act the first press asks */ Keys(Key.W); yield return new WaitForSecondsRealtime(0.3f); Keys(); yield return Frames(2); // the second press takes the stick; the engine drops its walk at the next tick's drive sample
             bool back = h.Driving && !h.DriveWalking && g.Ops[1].Walk == null && h.PendingOf(1).verb.Length == 0;
             parts.Add($"\"clickRing\": {B(rRing)}, \"walkWay\": \"{way}\", \"walksIn\": {B(walking)}, \"stillS\": {F(stillS)}, \"wCancels\": {B(back)}"); ok &= rRing && take >= 0 && walking && stillS <= 0.12f && back; // no pause: at most one tick's hand-over
             h.controls.clickActs = keepClick; MouseAt(new Vector2(Screen.width * 0.5f, Screen.height * 0.5f));

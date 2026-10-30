@@ -923,6 +923,31 @@ namespace Suborned.Play
         /// <summary>Dead camera discs drawn since start (the proof reads it).</summary>
         public static int DeadDiscsShown { get; private set; }
 
+        // brief 083: the act mark over a head and the selected chevron
+        const float ActMarkBox = 36f; // the sprite's 12.5 % margin leaves a 27 px disc; the ring just outside it
+        readonly List<Action<Painter2D>> actPaints = new(); void ActPaint(Action<Painter2D> f) => actPaints.Add(f);
+        readonly Rect[] actPlaced = new Rect[4]; readonly List<(VisualElement root, Label text)> actLefts = new();
+        /// <summary>The proof reads them: the act marks drawn this frame ("scout:watch:13 "), and the selected chevrons.</summary>
+        public static string ActMarksShown { get; private set; } = ""; public static int SelectedCarets { get; private set; }
+        /// <summary>The act marks' own layer: the follow view hides every other mark over the street (FollowMarks) and keeps this one. The proof reads how many discs a frame draws, in that layer's visibility.</summary>
+        VisualElement actMarkRoot; readonly List<VisualElement> actDiscs = new(); public static int ActMarkDiscsSeen { get; private set; }
+        void ActMarkRootEnsure() { if (actMarkRoot != null) return; actMarkRoot = E(marks, null, 0, 0, 0, 0); actMarkRoot.style.overflow = Overflow.Visible; actMarkRoot.pickingMode = PickingMode.Ignore; }
+        VisualElement ActDiscEl083(int n)
+        {
+            ActMarkRootEnsure();
+            while (actDiscs.Count <= n) { var d = E(actMarkRoot, "s-disc_dark_24", 0, 0, ActMarkBox, ActMarkBox); d.pickingMode = PickingMode.Ignore; var g = E(d, null, ActMarkBox * 0.2f, ActMarkBox * 0.2f, ActMarkBox * 0.6f, ActMarkBox * 0.6f); g.name = "g"; g.pickingMode = PickingMode.Ignore; actDiscs.Add(d); manifest.Add((d, "image", () => "act mark")); }
+            Show(actDiscs[n], true); return actDiscs[n];
+        }
+        (VisualElement root, Label text) ActLeft(int n)
+        {
+            while (actLefts.Count <= n)
+            {
+                ActMarkRootEnsure(); var r = PlateDark(actMarkRoot, 22f, 0.3f); r.style.position = Position.Absolute; r.style.paddingLeft = 8; r.style.paddingRight = 8; r.style.alignItems = Align.Center; r.style.justifyContent = Justify.Center; r.pickingMode = PickingMode.Ignore;
+                var t = Words(r, 13.5f); int li = actLefts.Count; actLefts.Add((r, t)); manifest.Add((r, "image", () => "act seconds"));
+            }
+            Show(actLefts[n].root, true); return actLefts[n];
+        }
+
         VisualElement WorldEl(string cls, float w, float h)
         {
             while (worldEls.Count <= worldUsed) { var e = E(marks, null, 0, 0, w, h); var g = E(e, null, 0, 0, w, h); g.name = "g"; worldEls.Add(e); manifest.Add((e, "image", () => "street mark")); } // Glyph G2 (0.2.135): every street mark in the manifest
@@ -977,13 +1002,14 @@ namespace Suborned.Play
 
         void DrawWorld(Painter2D p, Rect r)
         {
+            foreach (var f in actPaints) f(p); // brief 083: the act and selection marks, in both views
             if (host.Following) return; // the follow view's rings (its agent's, the hover target's) are on the ground now (brief 046, HudToolkit.Ground); the rest are sized for the orthographic camera
             foreach (var f in paints) f(p);
         }
 
         void StreetLess(bool alt, Camera cam)
         {
-            paints.Clear(); eyesAt.Clear(); var g = host.Game; if (g == null || !cam) return;
+            paints.Clear(); actPaints.Clear(); eyesAt.Clear(); var g = host.Game; if (g == null || !cam) return;
             float px = 14f / cam.orthographicSize; float now = Time.unscaledTime;
             // the hover ring and the hint's ring at the feet; pulses where an order lands
             void Ground(Vector3 w, float d, Color c, float width, bool dashed = false) { if (!host.Following) GroundRing(w, d * px / 2f * GroundPxM, c, width, dashed); } // the follow view keeps its own two rings only // brief 046: on the ground, depth-tested (HudToolkit.Ground)
@@ -997,20 +1023,44 @@ namespace Suborned.Play
             }
             foreach (var (w, kind, born) in m.Pulses) { float a = (now - born) / 0.7f; if (a < 0 || a > 1) continue; { bool refused = kind == HandoverHost.Feedback.Refused; var pc = refused ? Cream : TurqLight; pc.a = 1 - a; Ground(w, 50 + 90 * a, pc, 2f, refused); } } // sourced colours (the old coral and mint were the lab colours): refused = a dashed cream pulse, taken = turquoise-light (Glyph 0.2.79: the faint pink circle)
             if (m.Box is Rect box) { var bp = RuntimePanelUtils.ScreenToPanel(root.panel, box.min); var bq = RuntimePanelUtils.ScreenToPanel(root.panel, box.max); paints.Add(pp => { pp.strokeColor = Cream; pp.lineWidth = 1.5f; pp.BeginPath(); pp.MoveTo(bp); pp.LineTo(new Vector2(bq.x, bp.y)); pp.LineTo(bq); pp.LineTo(new Vector2(bp.x, bq.y)); pp.ClosePath(); pp.Stroke(); }); }
-            // activity rings over busy agents: the act's glyph in a disc, a ring that fills (Glyph's 05: the ring fills round the Enforcer)
+            // brief 083 (Sky on 0.2.159: "very unclear when a player is performing an action - need an icon above their head"; Glyph owns the look): over an agent at an act, in both views, the act's
+            // icon on a kit disc the cameo's size (art bible: kind reads by its icon, as large as the face), a ring that fills, and the seconds left on a small plate. Walking to an act: that act's icon, the ring dashed.
+            // A plain walk has no mark: its destination ring and the portrait say it (four walking agents read as furniture otherwise).
+            ActMarksShown = ""; Rect[] placed = actPlaced; int nPlaced = 0; int leftUsed = 0, nDisc = 0; bool tpv = host.Following;
             for (int i = 0; i < 4; i++)
             {
-                var rg = m.Rings[i]; if (!rg.Show || !Proj(rg.World + Vector3.up * 2.6f, out var q)) continue; // review 12: 2.6 m (at 2.35 a running pip sat on a neighbour's elbow in a formation)
-                { var pr = PillRect(); if (pr.width > 0 && q.x + 16 > pr.xMin && q.x - 16 < pr.xMax && q.y + 16 > pr.yMin && q.y - 16 < pr.yMax + 10) q = new Vector2(q.x, pr.yMin - 20f); }
+                var rg = m.Rings[i]; if (!rg.Show) continue;
+                var dg = host.DoingOf(i); bool walkingTo = dg.Phase is "walking" or "running" && dg.QueuedGlyph.Length > 0, plainWalk = dg.Phase is "walking" or "running" && !walkingTo;
+                if (plainWalk && !rg.Done || !Proj(rg.World + Vector3.up * (tpv ? 2.35f : 2.6f), out var q)) continue; // review 12: 2.6 m (at 2.35 a running pip sat on a neighbour's elbow in a formation)
+                { var pr = PillRect(); if (pr.width > 0 && q.x + 21 > pr.xMin && q.x - 21 < pr.xMax && q.y + 21 > pr.yMin && q.y - 21 < pr.yMax + 10) q = new Vector2(q.x, pr.yMin - 25f); }
                 foreach (var role in Cast) // Glyph's 0.2.104 review #7: over a cast person's head the stack is theirs (pip, mood): an agent's act disc beside one goes to the agent's feet
-                    if (KnownOf(role) && host.Views?.Find(role) is Transform ct && ct.gameObject.activeSelf && Proj(ct.position + Vector3.up * 2.3f, out var ch) && (ch - q).sqrMagnitude < 44f * 44f && Proj(rg.World + Vector3.up * 0.2f, out var feet)) { q = feet + new Vector2(0f, 14f); break; } // review 12: above the pill (beside it, it sat on the figure's body line over an elbow) // brief 043: the agent's ring never sits over the pill's words (the playground shot: the tick over "Hold")
-                var e = WorldEl("s-disc_dark_24", 24, 24); e.style.left = q.x - 12; e.style.top = q.y - 12;
+                    if (!tpv && KnownOf(role) && host.Views?.Find(role) is Transform ct && ct.gameObject.activeSelf && Proj(ct.position + Vector3.up * 2.3f, out var ch) && (ch - q).sqrMagnitude < 44f * 44f && Proj(rg.World + Vector3.up * 0.2f, out var feet)) { q = feet + new Vector2(0f, 20f); break; } // review 12: above the pill (beside it, it sat on the figure's body line over an elbow) // brief 043: the agent's ring never sits over the pill's words (the playground shot: the tick over "Hold")
+                for (int pi = 0; pi < nPlaced; pi++) { var o = placed[pi]; if (Mathf.Abs(q.y - o.center.y) < 40f && q.x + 21f > o.xMin && q.x - 21f < o.xMax) q.x = o.xMax + 24f; } // two agents side by side: the later steps right, never over the first's disc or seconds
+                var e = ActDiscEl083(nDisc++); e.style.left = q.x - ActMarkBox / 2f; e.style.top = q.y - ActMarkBox / 2f;
                 string tone = host.DoneTickAge(i) < HandoverHost.DoneTickS + 0.3f ? host.DoneTone(i) : "";
-                if (rg.Done || tone is "soft" or "bad") { Icon(e.Q("g"), tone == "soft" ? "asked" : tone == "bad" ? "refused" : "check", TurqLight); var dq = q; paints.Add(pp => RingArc(pp, dq, 15, 1f, TurqLight, 2.6f)); continue; } // techwatch fix 3: the act ran out: the ring stays a beat, full, with a tick
-                Icon(e.Q("g"), HudModel.AtlasIcon(host.Game.Ops[i].Busy?.Do ?? (host.DoingOf(i).Phase is "walking" or "running" ? "move" : host.DoingOf(i).Verb), host.Game.Ops[i].Busy?.Approach ?? "", host.DoingOf(i).Phase), Cream);
-                float frac = rg.Progress < 0 ? 1f : rg.Progress / 1000f; bool open = rg.Progress < 0;
-                paints.Add(pp => { if (open) Dashed(pp, q, 15, new Color(1, 1, 1, 0.5f), 2.4f, 10); else { RingArc(pp, q, 15, 1f, new Color(1, 1, 1, 0.22f), 2.6f); RingArc(pp, q, 15, frac, TurqLight, 2.6f); } });
-                if (rg.ActAt.HasValue && Proj(rg.ActAt.Value + Vector3.up * 0.3f, out var aq)) { var ae = WorldEl("s-disc_light_24", 20, 20); ae.style.left = aq.x - 10; ae.style.top = aq.y - 10; var (qd, qa) = host.PendingOf(i); Icon(ae.Q("g"), HudModel.AtlasIcon(qd, qa, ""), Ink); }
+                float rgR = ActMarkBox / 2f - 1f;
+                if (rg.Done || tone is "soft" or "bad") { Icon(e.Q("g"), tone == "soft" ? "asked" : tone == "bad" ? "refused" : "check", TurqLight); var dq = q; ActPaint(pp => RingArc(pp, dq, rgR, 1f, TurqLight, 3f)); placed[nPlaced++] = new Rect(q.x - 21f, q.y - 21f, 42f, 42f); continue; } // techwatch fix 3: the act ran out: the ring stays a beat, full, with a tick
+                var opB = host.Game.Ops[i]; string iconDo = opB.Busy?.Do ?? (walkingTo ? host.PendingOf(i).verb : dg.Verb), iconAp = opB.Busy?.Approach ?? (walkingTo ? host.PendingOf(i).approach : "");
+                Icon(e.Q("g"), HudModel.AtlasIcon(iconDo, iconAp, walkingTo ? "" : dg.Phase), Cream);
+                float frac = rg.Progress < 0 ? 1f : rg.Progress / 1000f; bool open = rg.Progress < 0 || walkingTo; var aq = q;
+                ActPaint(pp => { if (open) Dashed(pp, aq, rgR, new Color(1, 1, 1, 0.6f), 3f, 10); else { RingArc(pp, aq, rgR, 1f, new Color(1, 1, 1, 0.22f), 3f); RingArc(pp, aq, rgR, frac, TurqLight, 3f); } });
+                float rectR = q.x + 21f; int leftS = walkingTo || dg.TicksLeft < 0 ? -1 : (dg.TicksLeft + Game.Hz - 1) / Game.Hz;
+                if (leftS >= 0) { var lp = ActLeft(leftUsed++); Text(lp.text, leftS + " s"); lp.root.style.left = q.x + 19f; lp.root.style.top = q.y - 11f; rectR += 44f; lp.root.BringToFront(); }
+                placed[nPlaced++] = Rect.MinMaxRect(q.x - 21f, q.y - 21f, rectR, q.y + 21f);
+                ActMarksShown += $"{Op.Name((OpId)i)}:{iconDo}:{leftS} ";
+                if (rg.ActAt.HasValue && !tpv && Proj(rg.ActAt.Value + Vector3.up * 0.3f, out var atq)) { var ae = WorldEl("s-disc_light_24", 20, 20); ae.style.left = atq.x - 10; ae.style.top = atq.y - 10; var (qd, qa) = host.PendingOf(i); Icon(ae.Q("g"), HudModel.AtlasIcon(qd, qa, ""), Ink); }
+            }
+            for (int i = leftUsed; i < actLefts.Count; i++) Show(actLefts[i].root, false);
+            for (int i = nDisc; i < actDiscs.Count; i++) Show(actDiscs[i], false);
+            ActMarkDiscsSeen = 0; if (actMarkRoot != null && actMarkRoot.resolvedStyle.visibility == Visibility.Visible) for (int i = 0; i < nDisc; i++) if (actDiscs[i].resolvedStyle.display != DisplayStyle.None) ActMarkDiscsSeen++;
+            // brief 083 note 5 ("Needs to be more clear which character you're controlling"): a turquoise-light chevron (the HUD's live accent, not a fire, cone or guard signal; an ink-deep edge carries it over pale paving and in shade)
+            // over each selected agent's head, in both views, with the thick ground ring (HostViews.CellRings) and the portrait's ring and bright face
+            SelectedCarets = 0;
+            for (int i = 0; i < 4; i++)
+            {
+                if (!host.Selected[i] || !m.Marks[i].World.HasValue || !Proj(m.Marks[i].World.Value + Vector3.up * 2.02f, out var caretAt)) continue;
+                SelectedCarets++; var cc = caretAt;
+                ActPaint(pp => { void Tri(float g, Color c) { pp.fillColor = c; pp.BeginPath(); pp.MoveTo(cc + new Vector2(-11f - g, -8f - g * 0.6f)); pp.LineTo(cc + new Vector2(11f + g, -8f - g * 0.6f)); pp.LineTo(cc + new Vector2(0f, 7f + g)); pp.ClosePath(); pp.Fill(); } Tri(2f, InkDeep); Tri(0f, TurqLight); });
             }
             // Glyph techwatch r2 C: a camera being watched (the Scout's or the Tech's Watch under way) carries a small apex mark where its cone will
             // start: a red diamond with a cream rim, unlit like the cone

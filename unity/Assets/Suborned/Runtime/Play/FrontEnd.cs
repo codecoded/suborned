@@ -19,7 +19,7 @@ namespace Suborned.Play
     /// Sizes are ref px at 1080p (the panel scales with the screen height); all type is Jost (Medium for titles and buttons, Regular-Tab for the rest).</summary>
     public sealed partial class FrontEnd : MonoBehaviour
     {
-        public const string BootScene = "FrontEnd", GameScene = "HarbourDistrict";
+        public const string BootScene = "FrontEnd", GameScene = "OldTown"; // Sky 2026-10-30: "I want to be playing the old town"
         public static FrontEnd Live { get; private set; }
         /// <summary>A front-end screen has the keys and the clicks (the host's Update stops after its housekeeping).</summary>
         public static bool Covers => Live != null && Live.screen != Screen.None;

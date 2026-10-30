@@ -46,7 +46,7 @@ namespace Suborned.OldTown.Editor.Swap
         int keptUnits, droppedUnits, keptComps, droppedComps, clippedComps;
         readonly Dictionary<string, int> keptBy = new();
 
-        static readonly string[] SkipRoots = { "cameras", "lighting", "sea", "source" };
+        static readonly string[] SkipRoots = { "cameras", "lighting", "sea", "source", "handover" };
 
         public static SwapOurs Import(OldTownSwap.Report rep, WorldDto w, string scenePath, string hq)
         {

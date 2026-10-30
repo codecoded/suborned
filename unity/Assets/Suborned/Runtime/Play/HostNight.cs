@@ -14,7 +14,7 @@ namespace Suborned.Play
         {
             NightLook = night; if (!GameBoot.Automation) PlayerPrefs.SetInt(NightPref, night ? 1 : 0); // 0.2.115: a proof, shot or bot run never stores Sky's choice (the night shots left his game at night, and every later run with it)
             var lp = LightPhase.Instance ? LightPhase.Instance : FindAnyObjectByType<LightPhase>();
-            if (!lp) return;
+            if (!lp) { NightLook = false; return; } // the old town has no night phase yet: it stays day
             lp.Focus = () => cam ? focus : (Vector3?)null;
             lp.Set(night);
         }

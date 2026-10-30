@@ -70,14 +70,14 @@ namespace Suborned.Play
             // 4 · an act out of reach: the engine walks her in (DriveWalking); W takes the stick back at once
             h.GiveScripted(new Order { Op = "scout", Do = "watch", Target = "guard" }); yield return new WaitForSecondsRealtime(0.6f);
             bool walking = h.DriveWalking && g.Ops[0].Walk != null;
-            Keys(Key.W); yield return new WaitForSecondsRealtime(0.5f); Keys(); yield return new WaitForSecondsRealtime(0.3f);
+            Keys(Key.W); yield return new WaitForSecondsRealtime(0.2f); Keys(); yield return new WaitForSecondsRealtime(0.2f); /* brief 083: on an act the first press asks */ Keys(Key.W); yield return new WaitForSecondsRealtime(0.5f); Keys(); yield return new WaitForSecondsRealtime(0.3f);
             bool back = h.Driving && !h.DriveWalking && g.DrivePoseOf(OpId.Scout).Driven && g.Ops[0].Walk == null && h.PendingOf(0).verb.Length == 0;
             parts.Add($"\"engineWalk\": {B(walking)}, \"wTookBack\": {B(back)}"); ok &= back; // walking may be false when the Watch needs no walk; the take back is the check
             // 5 · the engine ends the drive (a move order as the engine takes it): the ground view stays; W takes control again
             var p0 = g.Ops[0].Pos; Pt? mv = null; foreach (var (dx, dy) in new[] { (300, 0), (-300, 0), (0, 300), (0, -300), (500, 500), (-500, -500) }) { var q = new Pt(p0.X + dx, p0.Y + dy); if (g.S.Grid.Free(q) && g.S.Grid.Route(p0, q) != null) { mv = q; break; } }
             bool moveOk = mv.HasValue && h.Issue(new Order { Op = "scout", Do = "move", Point = mv.Value }); parts.Add($"\"engineMove\": {B(moveOk)}");
             yield return new WaitForSecondsRealtime(0.4f);
-            bool lost = !h.Driving && h.Following && h.DriveResumable;
+            bool lost = h.Following; // brief 083: the ground view stays and takes the agent back by itself (no follow view with WASD dead)
             yield return HoldW(h, 1f, m, seen); float w3 = m[0];
             bool again = h.Driving && g.DrivePoseOf(OpId.Scout).Driven;
             parts.Add($"\"engineEnded\": {B(lost)}, \"wRetook\": {B(again)}, \"w3m\": {F(w3)}"); ok &= again;

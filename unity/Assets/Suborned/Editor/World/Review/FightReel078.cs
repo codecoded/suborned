@@ -31,7 +31,7 @@ namespace Suborned.World.Review
 
         public static void Run()
         {
-            EditorSceneManager.OpenScene("Assets/Scenes/HarbourDistrict.unity", OpenSceneMode.Single);
+            EditorSceneManager.OpenScene(OldTownPlay.ScenePath, OpenSceneMode.Single);
             var host = Object.FindFirstObjectByType<HandoverHost>(); if (!host) { Debug.LogError("fightreel: no host in the scene"); EditorApplication.Exit(2); return; }
             if (!host.carFx) host.carFx = CarFxBuild.Ensure();
             host.startPaused = true;

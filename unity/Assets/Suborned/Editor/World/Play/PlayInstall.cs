@@ -51,7 +51,7 @@ namespace Suborned.World.Play
         }
 
         /// <summary>Replaces the `play` root of the open scene. Throws on anything unknown.</summary>
-        public static HandoverHost Install(WorldDto world)
+        public static HandoverHost Install(WorldDto world, float worldZ = 0f)
         {
             if (Root() is { } old) Object.DestroyImmediate(old);
             var go = new GameObject(RootName);
@@ -66,6 +66,7 @@ namespace Suborned.World.Play
             // geometry`: 0.25 m cells, the ground layers plus every kit piece's walkable top) in place of the 1 m slab bake; the bake stays only
             // as the fallback when the file is missing (and says so)
             if (!WalkFloor(f)) f.heights = Heights(world, f);
+            f.origin.y += worldZ; host.worldZ = worldZ; // the old town stands the plan 206 m up Unity z (OldTownSwap.DZ); after the walk file, whose frame is the plan's
             Dress(host);
             MeasureDoor(host);
             EditorSceneManager.MarkSceneDirty(go.scene);

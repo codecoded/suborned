@@ -266,6 +266,8 @@ namespace Suborned.OldTown.Editor.Swap
                 DecoKitAtmosphere.Probe("Handover zone probe", new Vector3(zc.x, 8f, zc.y), new Vector3(ZoneOld.width, 30f, ZoneOld.height));  // ours had its own probes (light.json); the old look's probe here
                 DecoKitStage.BakeEnvironment(scene);
                 if (oldHq) { bool was = oldHq.activeSelf; oldHq.SetActive(true); DecoKitShowpiece.Apply("SpaceHQ", skyGain); var pr = GameObject.Find("SpaceHQ showpiece probe"); if (pr) pr.transform.SetParent(oldHq.transform, true); oldHq.SetActive(was); }
+                // Sky 2026-10-30: "remove the people for now outside of the handover and vehicles - that's for demo flybys later on". The baked crowd and traffic are left out of the scene (so of the player); the sim's own people and cars are not touched. -swapCrowd on builds them for a flyby.
+                if (Arg("swapCrowd", "off") != "on") { int gone = 0; foreach (var r in SwapPerf.CrowdRoots) foreach (var t in UnityEngine.Object.FindObjectsByType<Transform>(FindObjectsInactive.Include, FindObjectsSortMode.None).Where(t => t && t.name == r).ToArray()) { UnityEngine.Object.DestroyImmediate(t.gameObject); gone++; } rep.Log($"baked crowd and traffic: left out ({gone} roots: {string.Join(", ", SwapPerf.CrowdRoots)}); -swapCrowd on keeps them"); }
                 var cam = DecoKitStage.Camera("DK street study camera", 60f);
                 cam.nearClipPlane = .05f; cam.farClipPlane = 2500f; cam.enabled = false;
                 SwapPlayLook.Make(rep, ours, cam, sun, scene);
