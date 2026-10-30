@@ -17,6 +17,7 @@
     "game:build": "bun tools/game/cli.ts --build",
     "game:check": "bun tools/game/cli.ts --check",
     "batch": "bun tools/game/batch.ts",
+    "hostlogic": "bun tools/game/hostlogic.ts",
     "guard": "bun tools/game/playing.ts",
     "simview": "bun tools/game/playing.ts bun tools/simview/build.ts",
     "shots:shrink": "bun tools/game/shrink.ts",

@@ -25,7 +25,7 @@ import { spawnSync as realSpawnSync, type SpawnSyncOptions, type SpawnSyncReturn
 import { usageGate } from '../gen/flags';
 import { INPUTS, fingerprint, ignoredFiles } from './fingerprint';
 import { GATED, judgeGates } from './proofgates';
-import { aloneLine, gateFile, ledgerFile, loadMap, planLines, planProof, ranIn, readLedger, readPlan, recordProof, writeLedger, type Plan, type Replays, type Snapshot } from './proofdelta';
+import { stillsKeyOf, aloneLine, gateFile, ledgerFile, loadMap, planLines, planProof, ranIn, readLedger, readPlan, recordProof, writeLedger, type Plan, type Replays, type Snapshot } from './proofdelta';
 import { appShips } from './ships';
 
 const ROOT = join(import.meta.dir, '..', '..');
@@ -172,12 +172,15 @@ async function build(): Promise<boolean> {
   return true;
 }
 
+/** A delta's stills stand when nothing they are drawn from changed (tools/game/proofdelta.ts stillsKey); a full proof takes them again. */
+function stillsKey(): string[] { const g = proofPlan(); return g?.plan.mode === 'delta' ? ['--key', stillsKeyOf(g.snap)] : []; }
+
 /** Brief 070: the briefing page's stills, captured by the new player from a replay of the mission's reference routes (tools/game/briefstills.ts), put
  *  into the app's StreamingAssets/missions/<mission>/stills before any proof runs; the app is signed ad hoc again. A failure is reported, not fatal:
  *  the page then shows its pins on blank prints, and the proof's briefing state says how many stills it read. */
 function briefStills(): boolean {
   console.log('game: the briefing\'s stills (tools/game/briefstills.ts; log out/build/play/stills/handover/player.log)…');
-  const r = spawnSync(process.execPath, [join(ROOT, 'tools/game/briefstills.ts'), '--app', APP, '--out', join(DIR, 'stills', 'handover')], { cwd: ROOT, encoding: 'utf8', timeout: 900000 });
+  const r = spawnSync(process.execPath, [join(ROOT, 'tools/game/briefstills.ts'), '--app', APP, '--out', join(DIR, 'stills', 'handover'), ...stillsKey()], { cwd: ROOT, encoding: 'utf8', timeout: 900000 });
   for (const l of (r.stdout ?? '').trim().split('\n').filter(Boolean)) console.log(`game: ${l}`);
   if (r.status !== 0) console.error(`game: the briefing's stills FAILED (exit ${r.status}): ${(r.stderr ?? '').trim().split('\n').slice(-4).join(' | ')}`);
   return r.status === 0;
@@ -252,6 +255,8 @@ function driveReplay(pj: any, key = 'driveSession', name = 'drive-session.script
 }
 
 /** The plan's sections as the player's -proofOnly; nothing for a full proof. A delta with no section still runs the base (`base` names no section). */
+/** The batch's delta proof: no frame-time measure (one 1 s sample), so the window stays at the picture size (no resize round each picture, about 1 s each) and no second pass at the Air's size. */
+function isDelta(): boolean { return proofPlan()?.plan.mode === 'delta'; }
 function onlyArgs(): string[] { const p = proofPlan()?.plan; return p?.mode === 'delta' ? ['-proofOnly', p.only.length ? p.only.join(',') : 'base'] : []; }
 
 /** -gameProof: the briefing, play, the menu, frame times; `blank` when the frame was one flat colour (the build's URP failed to start). */
@@ -262,11 +267,18 @@ function proof(sub = 'proof', extra: string[] = []): { pj: any; status: number |
   run('mkdir', ['-p', out]);
   if (existsSync(join(out, 'proof.json'))) run('rm', ['-f', join(out, 'proof.json')]);
   const proofT0 = Date.now();
-  const p = spawnSync(bin, ['-gameProof', out, '-novsync', ...(has('--spots') ? ['-proofSpots'] : []), ...(has('--windowed') ? ['-windowed'] : []), ...(has('--native') ? ['-capture-native'] : []), ...(has('--capture-size') ? ['-capture-size', args[args.indexOf('--capture-size') + 1]] : []), ...(onePass() && !extra.includes('-capture-size') ? ['-frames-size', AIR] : []), ...onlyArgs(), ...extra, '-logFile', join(out, 'player.log')], { encoding: 'utf8', timeout: 900000 }); // brief 024's act, fire and car checks add about 3 min; uncapped: the headroom over 60 fps; 420 s: the follow spots, the people cost, brief 022's café call and brief 025's drive run about 4 min (180 s cut it off, 2026-10-18)
+  const p = spawnSync(bin, ['-gameProof', out, '-novsync', ...(has('--spots') ? ['-proofSpots'] : []), ...(has('--windowed') ? ['-windowed'] : []), ...(has('--native') ? ['-capture-native'] : []), ...(has('--capture-size') ? ['-capture-size', args[args.indexOf('--capture-size') + 1]] : []), ...(onePass() && !extra.includes('-capture-size') && !isDelta() ? ['-frames-size', AIR] : []), ...onlyArgs(), ...(isDelta() ? ['-fastExit'] : []), ...extra, '-logFile', join(out, 'player.log')], { encoding: 'utf8', timeout: 900000 }); // brief 024's act, fire and car checks add about 3 min; uncapped: the headroom over 60 fps; 420 s: the follow spots, the people cost, brief 022's café call and brief 025's drive run about 4 min (180 s cut it off, 2026-10-18)
   const pj = existsSync(join(out, 'proof.json')) ? JSON.parse(readFileSync(join(out, 'proof.json'), 'utf8')) : null;
   console.log(`game: proof took ${Math.round((Date.now() - proofT0) / 1000)} s`);
+  if (pj?.frames?.sectionAt) console.log(`game: seconds by section: ${sectionSeconds(pj.frames.sectionAt, (Date.now() - proofT0) / 1000)}`);
   console.log(`game: proof ${pj ? `${pj.status}, ${pj.screen} ${pj.mode}, HUD x${pj.hudScale}, ${pj.frames ? `${pj.frames.fps} fps mean (p99 ${pj.frames.p99Ms} ms)${pj.frames.byYaw ? `; by yaw ${pj.frames.byYaw.map((y: { yaw: number; fps: number; p99Ms: number }) => `${y.yaw}° ${y.fps} fps (p99 ${y.p99Ms} ms)`).join(', ')}` : ''}${pj.frames.follow?.length ? `; spots ${pj.frames.follow.map((f: { spot: string; fps: number; p99Ms: number; gpuMs?: number }) => `${f.spot} ${f.fps} fps (p99 ${f.p99Ms} ms${f.gpuMs !== undefined && f.gpuMs >= 0 ? `, gpu ${f.gpuMs} ms` : ''})`).join(', ')}` : ''}${pj.frames.people?.length ? `; people ${pj.frames.people.map((f: { spot: string; fps: number; p99Ms: number; gpuMs?: number }) => `${f.spot} ${f.fps} fps (p99 ${f.p99Ms} ms${f.gpuMs !== undefined && f.gpuMs >= 0 ? `, gpu ${f.gpuMs} ms` : ''})`).join(', ')}` : ''}` : 'no frames'}` : 'no proof.json'}; exit ${p.status}`);
   return { pj, status: p.status };
+}
+
+/** proof.json's frames.sectionAt (each section's start, seconds since the player began) as what each took; the last figure is the exit, from the wall clock. */
+export function sectionSeconds(at: Record<string, number>, total: number): string {
+  const e = Object.entries(at), parts = e.map(([k, t], i) => (i + 1 < e.length ? `${k} ${(e[i + 1]![1] - t).toFixed(0)}` : null)).filter(Boolean), last = e[e.length - 1]?.[1] ?? 0;
+  return `${e.length ? `start ${e[0]![1].toFixed(0)} · ` : ''}${parts.join(' · ')} · exit ${(total - last).toFixed(0)}`;
 }
 
 /** The 15-inch MacBook Air M4's screen (Mac16,13), the machine the 60 fps limit is set on (GDD §01, §11). */
@@ -277,7 +289,7 @@ const AIR = '2880x1864';
  *  --capture-size (one run at that size), --no-air, or when proof.json already carries Air-sized frames. */
 function airFrames(pj: any): any {
   if (pj?.status === 'ok' && pj.frames && pj.framesAt && !pj.framesNote) return noteFrames(pj); // one pass: the proof took them at the Air's size itself
-  if (!pj || pj.status !== 'ok' || !pj.frames || pj.framesAt || has('--native') || has('--capture-size') || has('--no-air')) return pj;
+  if (isDelta() || !pj || pj.status !== 'ok' || !pj.frames || pj.framesAt || has('--native') || has('--capture-size') || has('--no-air')) return pj;
   console.log(`game: frame times again at ${AIR} (the Air's screen); the pictures stay ${pj.screen}`);
   const a = proof('proof-air', ['-capture-size', AIR]);
   if (a.pj?.status !== 'ok' || !a.pj.frames) { console.error(`game: the ${AIR} run gave no frame times (${a.pj?.status ?? 'no proof.json'}); the proof's frames stay at ${pj.screen}`); return pj; }

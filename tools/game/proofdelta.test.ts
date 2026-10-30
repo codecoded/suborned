@@ -4,7 +4,9 @@ import { existsSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync, 
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { GATED } from './proofgates';
-import { aloneLine, recordSteps, shotsGate, stepGate, changedPaths, classify, coverageGaps, emptyLedger, gateFile, ledgerFile, loadMap, mapHash, planFile, planLines, planProof, recordProof, readLedger, sectionIds, skipText, snapshot, snapshotOf, whatIf, writeLedger, writePlan, ROOT, type Ledger, type ProofMap } from './proofdelta';
+import { comparedWords, proofSources, wordGaps, wordsOf } from './words';
+import { zoneProblem } from './batch';
+import { stillsKeyOf, hostGaps, hostReads, sectionReads, aloneLine, recordSteps, shotsGate, stepGate, changedPaths, classify, coverageGaps, emptyLedger, gateFile, ledgerFile, loadMap, mapHash, planFile, planLines, planProof, recordProof, readLedger, sectionIds, skipText, snapshot, snapshotOf, whatIf, writeLedger, writePlan, ROOT, type Ledger, type ProofMap } from './proofdelta';
 
 const m = loadMap(), ids = sectionIds(m), PLAY = 'unity/Assets/Suborned/Runtime/Play/';
 const snap = (o: Record<string, string>) => snapshotOf(new Map(Object.entries(o)));
@@ -28,7 +30,11 @@ describe('the table', () => {
     for (const p of ['sim/data/rulebook.json', 'sim/Suborned.Sim/Game.cs', 'out/world/harbour-district.world.json', 'contracts/world/kit.json', 'tools/kit/cli.ts', 'unity/Assets/Suborned/Kit/a/b.fbx', 'unity/Assets/Suborned/Sim/Plugins/Suborned.Sim.dll', 'unity/Assets/StreamingAssets/sim/x.json', PLAY + 'GameBoot.cs']) expect(classify(m, p)?.run).toBe('full');
   });
   test('a path it cannot place has no row: the game\'s other code, assets and settings among them', () => {
-    for (const p of ['tools/mystery/x.ts', PLAY + 'HandoverHost.cs', PLAY + 'HostHold.cs', 'unity/ProjectSettings/QualitySettings.asset', 'unity/Packages/manifest.json', 'unity/Assets/Settings/PC_RPAsset.asset', 'unity/Assets/Suborned/Shaders/DecoKit/DK_Leaf.hlsl', 'contracts/missions/handover/mission.json', 'sim/cli/Program.cs']) expect(classify(m, p)).toBeUndefined();
+    for (const p of ['tools/mystery/x.ts', PLAY + 'HostNew.cs', PLAY + 'SimBundle.cs', 'unity/ProjectSettings/QualitySettings.asset', 'unity/Packages/manifest.json', 'unity/Assets/Settings/PC_RPAsset.asset', 'unity/Assets/Suborned/Shaders/DecoKit/DK_Leaf.hlsl', 'contracts/missions/handover/mission.json', 'sim/cli/Program.cs']) expect(classify(m, p)).toBeUndefined();
+  });
+  test('tools no batch step imports are none; the late rows\' pins are that step\'s alone', () => {
+    for (const p of ['tools/figures/build.py', 'tools/life/cli.ts', 'tools/dialogue/cli.ts', 'tools/missions/check/cli.ts', 'tools/game/hostlogic/HostLogic.cs', 'tools/game/hostlogic.ts']) expect(classify(m, p)?.run).toBe('none');
+    const pin = classify(m, 'tools/game/pins/loud.seed3.json'); expect(pin?.run).toEqual([]); expect(pin?.steps).toEqual(['late-fight']);
   });
   test('holds to the sources: every HudToolkit member a proof reads and every helper of another proof it calls has that proof\'s sections on its row', () => {
     const dir = join(ROOT, PLAY), sources = Object.fromEntries(readdirSync(dir).filter(f => f.endsWith('.cs')).map(f => [f, readFileSync(join(dir, f), 'utf8')]));
@@ -44,6 +50,80 @@ describe('the table', () => {
     expect(coverageGaps(narrow, sources)).toEqual(['ProofHold.cs (holdActs) reads HudToolkit.SealWords, held in HudToolkit.Seal.cs: its row lacks holdActs', 'ProofHold.cs (holdActs) calls ProofRings: the row of ProofRings.cs lacks holdActs']);
     expect(coverageGaps(narrow, { ...sources, 'ProofHold.cs': '// HudToolkit.SealWords() in a comment is no read\nclass P {}' })).toEqual([]);
     expect(coverageGaps(narrow, { 'GameBoot.cs': 'if (Only("r118")) yield return ProofHold.Run(h);' })).toEqual(['GameBoot runs r118 through ProofHold: the row of ProofHold.cs lacks r118']);
+  });
+});
+
+describe('the host rows', () => {
+  const dir = join(ROOT, PLAY), sources = Object.fromEntries(readdirSync(dir).filter(f => f.endsWith('.cs')).map(f => [f, readFileSync(join(dir, f), 'utf8')]));
+  test('holds to the sources: every host member a section reads is on the row of its file, and every Host*.cs has a row', () => {
+    expect(hostGaps(m, sources)).toEqual([]);
+  });
+  test('reads are by section, through the proof\'s own helpers: leash reads the leash log, driveClick does not', () => {
+    const r = sectionReads(sources);
+    expect(r.get('leash')).toContain('LeashLog'); expect(r.get('driveClick')).not.toContain('LeashLog');
+    expect(hostReads(sources, m.setup?.members).get('HostHold.cs')!.get('holdActs')).toContain('HoldCancels');
+  });
+  test('failing example: a section reading a host member its file\'s row lacks is a hole, and so is a host file with no row; a setup call is not counted, with its reason', () => {
+    const src = {
+      'GameBoot.cs': 'if (Only("holdActs")) yield return ProofHold.Handover(h, Dir, log, holdActs);\nif (Only("rings")) yield return ProofRings.Handover(h, Dir, log, rings);',
+      'ProofHold.cs': '    class P\n    {\n        public static IEnumerator Handover(HandoverHost h) { var a = h.HoldCancels; Help(h); }\n        static void Help(HandoverHost h) { h.SetSpeed(1); }\n    }',
+      'ProofRings.cs': '    class R\n    {\n        public static IEnumerator Handover(HandoverHost h) { h.SetPaused(true); }\n    }',
+      'HostHold.cs': '    partial class HandoverHost\n    {\n        public int HoldCancels { get; private set; }\n    }',
+      'HandoverHost.cs': '    partial class HandoverHost\n    {\n        public void SetSpeed(int x) {}\n        public void SetPaused(bool x) {}\n    }',
+      'HostNew.cs': '    partial class HandoverHost\n    {\n    }',
+    };
+    const narrow: ProofMap = { ...m, setup: { why: 'for this test', members: ['SetPaused'] }, rows: [{ match: [PLAY + 'HostHold.cs'], run: ['r29'], why: 'for this test' }, { match: [PLAY + 'HandoverHost.cs'], run: ['holdActs'], why: 'for this test' }] };
+    expect(hostGaps(narrow, src).sort()).toEqual(['HostNew.cs has no row', 'holdActs reads HoldCancels, held in HostHold.cs: its row lacks holdActs'].sort());
+    expect(hostGaps({ ...narrow, setup: undefined }, src)).toContain('rings reads SetPaused, held in HandoverHost.cs: its row lacks rings');
+  });
+  test('the typical changes stay deltas: a host file, the words, a capture tool; a scene builder does not', () => {
+    expect(whatIf(m, [PLAY + 'HostHold.cs']).only).toEqual(['dblClick', 'holdActs', 'r083', 'holdRange']);
+    expect(whatIf(m, ['contracts/missions/handover/text.json']).only).toEqual(['done', 'r083']);
+    expect(classify(m, 'unity/Assets/Suborned/Editor/World/Review/Flyby.cs')?.run).toBe('none');
+    expect(classify(m, 'unity/Assets/Suborned/Editor/World/Play/OldTownPlay.cs')?.run).toBe('full');
+    expect(classify(m, 'unity/Assets/Suborned/Editor/OldTown/Swap/OldTownSwap.cs')?.run).toBe('full');
+    expect(classify(m, 'unity/Assets/Suborned/Editor/World/HarbourWorldBuilder.cs')?.run).toBe('full');
+    expect(classify(m, 'unity/Assets/Suborned/Editor/World/Review/After072.cs')?.run).toBe('full');
+  });
+  test('a scene builder rebuilds the scene and never the engine; the words copy the words and rebuild nothing; a host file runs no gated step', () => {
+    const SB = 'unity/Assets/Suborned/Editor/World/HarbourWorldBuilder.cs', T = 'contracts/missions/handover/text.json', H = PLAY + 'HostHold.cs', files = { [SB]: 'a', [T]: 'a', [H]: 'a' };
+    const l = recordSteps(emptyLedger(), snap(files), ['sim', 'kit', 'world', 'unity-world', 'unity-match', 'scenarios', 'late-fight', 'tp-long', 'words'], BUILD), go = (f: string, step: string) => stepGate(m, snap({ ...files, [f]: 'b' }), l, step).run;
+    expect(['sim', 'kit', 'world', 'unity-world', 'unity-match', 'scenarios', 'late-fight', 'tp-long', 'words'].filter(s => go(SB, s))).toEqual(['unity-world', 'late-fight', 'tp-long']);
+    expect(['sim', 'kit', 'world', 'unity-world', 'unity-match', 'scenarios', 'late-fight', 'tp-long', 'words'].filter(s => go(T, s))).toEqual(['words']);
+    expect(['sim', 'kit', 'world', 'unity-world', 'unity-match', 'scenarios', 'late-fight', 'tp-long', 'words'].filter(s => go(H, s))).toEqual([]);
+    expect(stepGate(m, snap({ ...files, 'sim/data/x.json': 'b' }), l, 'sim').run).toBe(true); // the engine still forces every step
+    expect(stepGate(m, snap({ ...files, 'sim/data/x.json': 'b' }), l, 'unity-world').run).toBe(true);
+  });
+  test('the stills stand through a host, HUD or words change; a figure, the light or the world takes them again', () => {
+    const base = { [HOLD]: 'a', [PLAY + 'HostViews.Figures.cs']: 'a', [PLAY + 'HostHold.cs']: 'a', 'contracts/missions/handover/text.json': 'a', 'out/world/harbour-district.world.json': 'a' }, k = stillsKeyOf(snap(base));
+    for (const f of [HOLD, PLAY + 'HostHold.cs', 'contracts/missions/handover/text.json']) expect(stillsKeyOf(snap({ ...base, [f]: 'b' }))).toBe(k);
+    for (const f of [PLAY + 'HostViews.Figures.cs', 'out/world/harbour-district.world.json']) expect(stillsKeyOf(snap({ ...base, [f]: 'b' }))).not.toBe(k);
+  });
+});
+
+describe('the words', () => {
+  const text = JSON.parse(readFileSync(join(ROOT, 'contracts/missions/handover/text.json'), 'utf8')), pins = JSON.parse(readFileSync(join(ROOT, 'tools/game/proofwords.json'), 'utf8')).words;
+  test('every word a proof compares is in text.json and on the list', () => {
+    expect(wordGaps(pins, proofSources(), wordsOf(text))).toEqual([]);
+  });
+  test('failing example: a word that leaves text.json, and a new comparison not on the list', () => {
+    const src = { 'ProofX.cs': 'if (a.Contains("Guard back")) b(); // a.Contains("Comment word")' };
+    expect(comparedWords(src, 'Guard back\nComment word')).toEqual({ 'ProofX.cs': ['Guard back'] });
+    expect(wordGaps({ 'ProofX.cs': ['Guard back'] }, src, 'other words')[0]).toContain('no longer in text.json');
+    expect(wordGaps({}, src, 'Guard back')[0]).toContain('add it to tools/game/proofwords.json');
+  });
+});
+
+describe('the old town\'s zone gate', () => {
+  const ok = { ours: { kitRenderers: 906 }, swapped: { kitRenderers: 906 }, kitOnlyInOurs: ['R:DK_A,-20917,1860,-30170,M+N'], kitOnlyInSwapped: ['R:DK_A,-20917,1860,-30171,M+N'], materialCountsThatDiffer: [], oldRenderersInZoneByPath: { 'Deco Sky Traffic/Lane rooftop 70 m <- Deco Sky Traffic': 2 } };
+  test('the zone as the last batch left it holds: 1 cm of rounding, sky traffic over it', () => { expect(zoneProblem(ok)).toBeNull(); });
+  test('failing examples: a missing report, a renderer moved 3 cm or gone, another count, a differing material, an old building in the zone', () => {
+    expect(zoneProblem(undefined)).toContain('no zone-regression');
+    expect(zoneProblem({ ...ok, kitOnlyInSwapped: ['R:DK_A,-20917,1860,-30173,M+N'] })).toContain('moved or missing');
+    expect(zoneProblem({ ...ok, kitOnlyInSwapped: [] })).toContain('moved or missing');
+    expect(zoneProblem({ ...ok, swapped: { kitRenderers: 905 } })).toContain('kit renderers 906');
+    expect(zoneProblem({ ...ok, materialCountsThatDiffer: ['DK_A 3->4'] })).toContain('materials differ');
+    expect(zoneProblem({ ...ok, oldRenderersInZoneByPath: { 'Deco City/Tower <- Deco City': 1 } })).toContain('old renderers');
   });
 });
 
@@ -65,7 +145,7 @@ describe('the plan', () => {
     expect(p.only).toEqual(['holdActs', 'r059', 'r067', 'r123', 'r083', 'rings', 'hudClick', 'holdRange']);
     expect(p.reasons.holdActs).toBe(`${HOLD} changed`);
     expect(p.skips.r118).toContain('not run'); expect(p.skips.holdActs).toBeUndefined();
-    expect(p.seconds).toBeLessThan(m.sections.reduce((a, s) => a + s.seconds, m.baseSeconds) / 2);
+    expect(p.seconds).toBeLessThan(m.sections.reduce((a, s) => a + s.seconds, m.baseSeconds) * 0.6); // on the seconds measured on 0.2.168: this row is one of the dearer deltas, about half the proof
   });
   test('fails safe: a changed path the map cannot place runs the whole proof, and says which', () => {
     const p = planProof(m, snap({ ...BASE, 'tools/mystery/x.ts': 'b', [HOLD]: 'b' }), passedAll(BASE));
@@ -153,6 +233,12 @@ describe('the ledger', () => {
     expect(after.sections.fire).toBeUndefined(); expect(after.retry).toEqual({});
     expect(planProof(m, now, after).reasons.fire).toBe('no recorded pass');
   });
+  test('a section the gate does not judge passes by having run, so it does not run again on every delta; a gated one that says false does not', () => {
+    const now = snap(BASE), full = planProof(m, now, emptyLedger());
+    const after = recordProof(m, emptyLedger(), now, full, framesOf(ids, { r123: { ok: false }, r29: { ok: false } }), { driveSession: true, fireSession: true }, BUILD);
+    expect(after.sections.r123).toBeDefined(); expect(after.sections.r29).toBeUndefined();
+    expect(planProof(m, now, after).only).toEqual(['r29']);
+  });
   test('the driven section passes only with its session replaying, the fire section only with its session', () => {
     const now = snap(BASE), bad = recordProof(m, emptyLedger(), now, planProof(m, now, emptyLedger()), framesOf(ids), { driveSession: false, fireSession: false }, BUILD);
     expect(bad.sections.drive).toBeUndefined(); expect(bad.sections.fire).toBeUndefined(); expect(bad.sections.cars).toBeDefined();
@@ -182,12 +268,20 @@ describe('the snapshot', () => {
 describe('the batch\'s steps (delta only)', () => {
   const seed = (files: Record<string, string>, steps = ['sim', 'unity-match', 'scenarios', 'late-fight', 'shots']) => recordSteps(emptyLedger(), snap(files), steps, BUILD);
   test('a HUD change skips the engine steps and the frame-time steps; they say why', () => {
-    for (const step of ['sim', 'unity-match', 'scenarios', 'late-fight']) expect(stepGate(m, snap({ ...BASE, [HOLD]: 'b' }), seed(BASE), step)).toEqual({ run: false, why: 'engine, world and kit unchanged since build 0.2.146' });
+    for (const step of ['sim', 'unity-match', 'scenarios', 'late-fight']) expect(stepGate(m, snap({ ...BASE, [HOLD]: 'b' }), seed(BASE), step)).toEqual({ run: false, why: 'nothing it reads changed since build 0.2.146' });
   });
   test('failing example: an engine change or a path the map cannot place runs them, and a step with no pass runs', () => {
     expect(stepGate(m, snap({ ...BASE, 'sim/data/rules.json': 'b' }), seed(BASE), 'sim')).toEqual({ run: true, why: 'sim/data/rules.json changed' });
     expect(stepGate(m, snap({ ...BASE, 'tools/mystery/x.ts': 'b' }), seed(BASE), 'late-fight').run).toBe(true);
     expect(stepGate(m, snap(BASE), seed(BASE, []), 'sim')).toEqual({ run: true, why: 'no recorded pass' });
+  });
+  test('a whole-game step that failed stays open and does not run again until something it reads changes; --full runs it; a pass closes it', () => {
+    const open = recordSteps(seed(BASE, ['tp-long']), snap(BASE), [], BUILD, { step: 'tp-long', problem: 'tp-worst: triangles 6.9 M' });
+    const host = stepGate(m, snap({ ...BASE, [HOLD]: 'b' }), open, 'tp-long');
+    expect(host.run).toBe(false); expect(host.why).toContain('STILL OPEN'); expect(host.why).toContain('tp-worst');
+    expect(stepGate(m, snap({ ...BASE, 'sim/data/rules.json': 'b' }), open, 'tp-long').run).toBe(true);
+    expect(stepGate(m, snap(BASE), open, 'tp-long', '--full').run).toBe(true);
+    expect(recordSteps(open, snap(BASE), ['tp-long'], BUILD).stepFails).toEqual({});
   });
   test('--full and --submission force every step', () => {
     expect(stepGate(m, snap(BASE), seed(BASE), 'sim', '--full')).toEqual({ run: true, why: '--full' });

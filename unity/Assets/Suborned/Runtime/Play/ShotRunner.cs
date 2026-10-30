@@ -183,7 +183,7 @@ namespace Suborned.Play
             if (fadeOff != null) { fadeOff.fade = fadeWas; fadeOff = null; }
             HudToolkit.WorldMarksOff = false; h.controls.conversations = keep; HandoverHost.PointerOverride = null; HudToolkit.ActMarkOff = false;
             bool ok = results.All(r => r.Status is "ok" or "note");
-            Write(ok ? "ok" : "failed"); yield return new WaitForSecondsRealtime(0.5f); Application.Quit(ok ? 0 : 1);
+            Write(ok ? "ok" : "failed"); yield return new WaitForSecondsRealtime(0.1f); GameBoot.Leave(ok ? 0 : 1);
         }
 
         ArchitectureFade fadeOff; bool fadeWas;

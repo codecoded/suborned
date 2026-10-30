@@ -12,9 +12,9 @@ const stub = (id: string, ok: boolean, log: string[]): Step => ({ id, title: `ti
 const tmp = () => mkdtempSync(join(tmpdir(), 'batch-'));
 
 describe('the steps are the ones Sky named, in order', () => {
-  test('sim, kit, world, Unity, build, check, shots, budget, late-fight, tp-long, perf064', () => {
+  test('sim, words, compile, host logic, kit, world, Unity, build, check, shots, budget, late-fight, tp-long, perf064', () => {
     const ids = STEPS.map(s => s.id);
-    expect(ids).toEqual(['sim', 'compile', 'kit', 'world', 'unity-world', 'unity-match', 'game-build', 'game-check', 'shots', 'budget', 'late-fight', 'tp-long', 'perf064']);
+    expect(ids).toEqual(['sim', 'words', 'compile', 'hostlogic', 'kit', 'world', 'unity-world', 'unity-match', 'game-build', 'game-check', 'shots', 'budget', 'late-fight', 'tp-long', 'perf064']);
     expect(STEPS.find(s => s.id === 'sim')!.plan(ctx())).toEqual(['bun tools/sim/unity.ts --tree']);
     expect(STEPS.find(s => s.id === 'game-build')!.plan(ctx({ rebuild: true }))[0]).toContain('bun tools/game/cli.ts --build');
   });

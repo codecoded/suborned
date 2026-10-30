@@ -1,4 +1,5 @@
-// usage: bun tools/game/briefstills.ts [--mission handover] [--app <The Suborned.app>] [--resolve-only] [--out <dir>]
+// usage: bun tools/game/briefstills.ts [--mission handover] [--app <The Suborned.app>] [--resolve-only] [--out <dir>] [--key <what they are made from>]
+// --key (the batch's delta; tools/game/cli.ts): when the folder holds a complete set taken under the same key, no player runs: the set goes into the new app as it is (about 15 s saved).
 // Brief 070 (GDD v0.27.0 §10 briefing): the briefing page's stills, captured at build time from a replay of the mission's reference routes, HUD off,
 // one per pinned place, so a generated mission gets its own page from its own data. This file derives the pins from the mission's data (never by
 // hand) and writes two files into out/build/play/stills/<mission>/:
@@ -210,7 +211,19 @@ function main() {
   const args = process.argv.slice(2), val = (k: string) => { const i = args.indexOf(k); return i >= 0 ? args[i + 1] : undefined; };
   const mission = val('--mission') ?? 'handover', app = val('--app') ?? join(ROOT, 'out/build/play/The Suborned.app');
   const out = resolve(val('--out') ?? join(ROOT, 'out/build/play/stills', mission));
-  const s = derive(mission);
+  const s = derive(mission), key = val('--key'), keyFile = join(out, 'stills.key');
+  const place = () => { // into the app, where BriefScreen reads it (StreamingAssets/missions/<mission>/stills), then the ad hoc signature over the changed bundle
+    const dst = join(app, 'Contents/Resources/Data/StreamingAssets/missions', mission, 'stills');
+    rmSync(dst, { recursive: true, force: true }); mkdirSync(dst, { recursive: true });
+    for (const f of ['stills.json', ...s.pins.map(p => p.file)]) copyFileSync(join(out, f), join(dst, f));
+    const sign = spawnSync('/usr/bin/codesign', ['--force', '--deep', '--sign', '-', app], { encoding: 'utf8' });
+    console.log(`stills: ${readdirSync(dst).length} files into ${dst.replace(ROOT + '/', '')}; ad hoc signature ${sign.status === 0 ? 'ok' : 'FAILED ' + sign.stderr}`);
+    if (sign.status !== 0) process.exit(1);
+  };
+  if (key && !args.includes('--resolve-only') && existsSync(keyFile) && readFileSync(keyFile, 'utf8') === key && existsSync(join(out, 'stills.json')) && readFileSync(join(out, 'stills.json'), 'utf8') === JSON.stringify(s, null, 1) + '\n' && s.pins.every(p => existsSync(join(out, p.file)))) {
+    console.log(`stills: the last set stands, nothing they are made from changed (${key.slice(0, 12)})`);
+    place(); return;
+  }
   rmSync(out, { recursive: true, force: true }); mkdirSync(out, { recursive: true });
   writeFileSync(join(out, 'stills.json'), JSON.stringify(s, null, 1) + '\n');
   const sf = shotsFile(s, out); writeFileSync(join(out, 'stills.shots.json'), JSON.stringify(sf, null, 1) + '\n');
@@ -219,19 +232,14 @@ function main() {
   const exe = join(app, 'Contents/MacOS/The Suborned');
   if (!existsSync(exe)) { console.error(`stills: no player at ${exe}`); process.exit(1); }
   const t0 = Date.now();
-  const r = spawnSync(exe, ['-shots', join(out, 'stills.shots.json'), out, '-novsync', '-logFile', join(out, 'player.log')], { encoding: 'utf8', timeout: 600000 });
+  const r = spawnSync(exe, ['-shots', join(out, 'stills.shots.json'), out, '-novsync', ...(key ? ['-fastExit'] : []), '-logFile', join(out, 'player.log')], { encoding: 'utf8', timeout: 600000 });
   const rep = existsSync(join(out, 'shots.json')) ? JSON.parse(readFileSync(join(out, 'shots.json'), 'utf8')) : null;
   const missing = s.pins.filter(p => !existsSync(join(out, p.file)));
   console.log(`stills: the player took ${rep?.shots?.filter((x: Json) => x.status === 'ok').length ?? 0}/${s.pins.length} in ${Math.round((Date.now() - t0) / 1000)} s (exit ${r.status}; ${out}/player.log)`);
   for (const x of rep?.shots ?? []) if (x.status !== 'ok') console.error(`stills: ${x.name}: ${x.status} ${x.error}`);
   if (missing.length) { console.error(`stills: FAILED: missing ${missing.map(p => p.file).join(', ')}`); process.exit(1); }
-  // into the app, where BriefScreen reads it (StreamingAssets/missions/<mission>/stills), then the ad hoc signature over the changed bundle
-  const dst = join(app, 'Contents/Resources/Data/StreamingAssets/missions', mission, 'stills');
-  rmSync(dst, { recursive: true, force: true }); mkdirSync(dst, { recursive: true });
-  for (const f of ['stills.json', ...s.pins.map(p => p.file)]) copyFileSync(join(out, f), join(dst, f));
-  const sign = spawnSync('/usr/bin/codesign', ['--force', '--deep', '--sign', '-', app], { encoding: 'utf8' });
-  console.log(`stills: ${readdirSync(dst).length} files into ${dst.replace(ROOT + '/', '')}; ad hoc signature ${sign.status === 0 ? 'ok' : 'FAILED ' + sign.stderr}`);
-  if (sign.status !== 0) process.exit(1);
+  if (key) writeFileSync(keyFile, key);
+  place();
 }
 
 if (import.meta.main) main();

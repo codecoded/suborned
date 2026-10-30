@@ -19,6 +19,13 @@ namespace Suborned.Play
     {
         public static bool Arg(string name) => Environment.GetCommandLineArgs().Contains(name);
         public static string ArgValue(string name) { var a = Environment.GetCommandLineArgs(); int i = Array.IndexOf(a, name); return i >= 0 && i + 1 < a.Length ? a[i + 1] : null; }
+        [System.Runtime.InteropServices.DllImport("libc", EntryPoint = "_exit")] static extern void SysExit(int code);
+        /// <summary>Brief 078: `-fastExit` (the batch's delta proof, shots and stills): the report is written, so the process ends now with this exit code. Application.Quit tears the whole scene down, about 23 s on OldTown.unity, and a delta checks nothing there; a full proof still quits through Unity.</summary>
+        public static void Leave(int code)
+        {
+            if (Application.isEditor || !Arg("-fastExit")) { Application.Quit(code); return; }
+            try { SysExit(code); } catch (Exception e) { Debug.LogWarning($"-fastExit: {e.Message}; quitting through Unity"); Application.Quit(code); }
+        }
 
         /// <summary>A proof, a batch row or a probe launched this player (the same rule as tools/game/playing.ts: any flag but a person's launch
         /// flags: -windowed, -popupwindow, -screen-*, -window-mode, -monitor, -psn_, -NS*, -Apple*). Batchmode always.</summary>
@@ -93,7 +100,10 @@ namespace Suborned.Play
         /// <summary>`-proofOnly a,b,…`: run just these sections (GATED names, `drive` for the driven session, `frames` for the follow and people spots); every other section stays null.
         /// The batch uses it for a delta proof (tools/game/proofdelta.ts). A null section fails the gate unless the ledger holds an earlier pass with nothing it reads changed since.</summary>
         static readonly HashSet<string> only = GameBoot.ArgValue("-proofOnly") is string po ? new HashSet<string>(po.Split(',', StringSplitOptions.RemoveEmptyEntries)) : null;
-        static bool Only(string section) => only == null || only.Contains(section);
+        static bool Only(string section) { bool on = only == null || only.Contains(section); if (on) Stamp(section); return on; }
+        /// <summary>Brief 078: when each section started, seconds since the player began, in order: proof.json's frames.sectionAt, printed by the check as what each took.</summary>
+        static readonly List<(string name, float at)> stamps = new();
+        static void Stamp(string name) { foreach (var x in stamps) if (x.name == name) return; stamps.Add((name, Time.realtimeSinceStartup)); }
         /// <summary>Brief 078: the follow and people frame-time spots are not in the proof; `-proofSpots` (bun run batch --spots) or `-proofOnly frames` takes them. They never gated and the Air is the real measure.</summary>
         static bool Spots => GameBoot.Arg("-proofSpots") || (only != null && only.Contains("frames"));
 
@@ -103,6 +113,7 @@ namespace Suborned.Play
             HandoverHost h = null; float t0 = Time.realtimeSinceStartup;
             while ((h = FindAnyObjectByType<HandoverHost>()) == null || h.Game == null) { if (Time.realtimeSinceStartup - t0 > 60f) { Write(null, "no host after 60 s"); Application.Quit(2); yield break; } yield return null; }
             h.controls.conversations = ConversationScenes.Never; // brief 032: the proof measures play, never a conversation cutaway (its café spot played one)
+            Stamp("boot");
             yield return new WaitForSecondsRealtime(3f); // the HUD built, the briefing up, the world streamed in
             log.Add($"briefing up: {h.ShowBriefing}, modal {h.Modal}, screen {Screen.width}x{Screen.height} {Screen.fullScreenMode}, HUD scale {HudScale()}");
             yield return Shot("briefing", "active");
@@ -160,7 +171,7 @@ namespace Suborned.Play
             var r067 = new string[] { "null" }; if (Only("r067")) yield return Proof067.Run(h, Dir, log, r067); // batch 0.2.123: brief 067
             var r123 = new string[] { "null" }; if (Only("r123")) yield return Proof123.Run(h, Dir, log, r123); // batch 0.2.123 host round 4: the fight with no lines (each shooter's facing measured), the rival crew's four looks at 3:10 (not gated yet) (Sky's 0.2.122 notes, Glyph's spec): the square and the cars, cones on demand, portrait and third person, locked ways, squad Board and Drive, the conversation from the ground, the lock reticle, the host record // batch 0.2.123: brief 059 (the rival car seen arriving at 2:35, the drop at 2:46, the park at 3:10; the Watch; Vale driven round; the Take from the back seat; Drive)
             var r083 = new string[] { "null" }; if (Only("r083")) yield return Proof083.Run(h, Dir, log, r083); // brief 083: Sky's play notes on 0.2.159
-            var seed = new string[] { "null" }; if (only != null && only.Contains("seed") || only == null) yield return ProofSeed.Run(h, Dir, log, seed); // brief 080: the seed, Replay, a saved run
+            var seed = new string[] { "null" }; if (only != null && only.Contains("seed") || only == null) Stamp("seed"); if (only != null && only.Contains("seed") || only == null) yield return ProofSeed.Run(h, Dir, log, seed); // brief 080: the seed, Replay, a saved run
             var rings = new string[] { "null" }; if (Only("rings")) yield return ProofRings.Handover(h, Dir, log, rings); // Glyph 0.2.79 #2: the plain target rings (brief 049) // brief 043: the done moment, the walk-in, the cancel, the window; next-batch item 7 (third person on the calm patrol)
             var fire = new string[] { "null" }; var fireSession = new string[1]; if (Only("fire")) yield return ProofFire.Fire(h, Dir, log, fire, drive, fireSession);
             var cars = new string[] { "null" }; if (Only("cars")) yield return ProofFire.Cars(h, Dir, log, cars);
@@ -169,7 +180,8 @@ namespace Suborned.Play
             // brief 020: what the people cost: the opening (the square and its crowd) with the figures, then with capsules only, the same moment
             var people = new List<string>();
             if (Spots) yield return PeopleCost(h, log, people, 6f, Dir);
-            var frames = $"{{\"seed\": {seed[0]}, \"seconds\": 10, \"frames\": {dts.Count}, \"meanMs\": {F(mean)}, \"fps\": {F(1000f / mean)}, \"p95Ms\": {F(p95)}, \"p99Ms\": {F(p99)}, \"over20msFrames\": {slow}, \"vSyncCount\": {QualitySettings.vSyncCount}, \"targetFrameRate\": {Application.targetFrameRate}, \"zoom\": {F(cam ? cam.orthographicSize : -1)}, \"byYaw\": [{string.Join(", ", byYaw)}], \"follow\": [{string.Join(", ", follow)}], \"people\": [{string.Join(", ", people)}], \"drive\": [{string.Join(", ", drive)}], \"driveSession\": {(session[0] == null ? "null" : "\"" + session[0].Replace("\\", "/") + "\"")}, \"driveClick\": {driveClick[0]}, \"fireStop\": {fireStop[0]}, \"ringCheck\": {ringCheck[0]}, \"inputMap\": {inputMap[0]}, \"act\": {act[0]}, \"fire\": {fire[0]}, \"cars\": {cars[0]}, \"hudClick\": __HUDCLICK__, \"dblClick\": {dblClick[0]}, \"holdActs\": {holdActs[0]}, \"done\": {done[0]}, \"rings\": {rings[0]}, \"levels\": {levels[0]}, \"r29\": {r29[0]}, \"r118\": {r118[0]}, \"r059\": {r059[0]}, \"r067\": {r067[0]}, \"r123\": {r123[0]}, \"r083\": {r083[0]}, \"holdRange\": __HOLDRANGE__, \"leash\": __LEASH__, \"fireSession\": {(fireSession[0] == null ? "null" : "\"" + fireSession[0].Replace("\\", "/") + "\"")}}}";
+            Stamp("menu");
+            var frames = $"{{\"sectionAt\": __SECTIONAT__, \"seed\": {seed[0]}, \"seconds\": 10, \"frames\": {dts.Count}, \"meanMs\": {F(mean)}, \"fps\": {F(1000f / mean)}, \"p95Ms\": {F(p95)}, \"p99Ms\": {F(p99)}, \"over20msFrames\": {slow}, \"vSyncCount\": {QualitySettings.vSyncCount}, \"targetFrameRate\": {Application.targetFrameRate}, \"zoom\": {F(cam ? cam.orthographicSize : -1)}, \"byYaw\": [{string.Join(", ", byYaw)}], \"follow\": [{string.Join(", ", follow)}], \"people\": [{string.Join(", ", people)}], \"drive\": [{string.Join(", ", drive)}], \"driveSession\": {(session[0] == null ? "null" : "\"" + session[0].Replace("\\", "/") + "\"")}, \"driveClick\": {driveClick[0]}, \"fireStop\": {fireStop[0]}, \"ringCheck\": {ringCheck[0]}, \"inputMap\": {inputMap[0]}, \"act\": {act[0]}, \"fire\": {fire[0]}, \"cars\": {cars[0]}, \"hudClick\": __HUDCLICK__, \"dblClick\": {dblClick[0]}, \"holdActs\": {holdActs[0]}, \"done\": {done[0]}, \"rings\": {rings[0]}, \"levels\": {levels[0]}, \"r29\": {r29[0]}, \"r118\": {r118[0]}, \"r059\": {r059[0]}, \"r067\": {r067[0]}, \"r123\": {r123[0]}, \"r083\": {r083[0]}, \"holdRange\": __HOLDRANGE__, \"leash\": __LEASH__, \"fireSession\": {(fireSession[0] == null ? "null" : "\"" + fireSession[0].Replace("\\", "/") + "\"")}}}";
             h.OpenMenu(); yield return null;
             log.Add($"menu: open {h.MenuOpen}, modal {h.Modal}, paused {h.Paused}");
             yield return Shot("menu", "active");
@@ -185,11 +197,12 @@ namespace Suborned.Play
                 else log.Add("rangePanelClick: no range host after 60 s");
                 ProofInput.Focusless(false);
             }
+            Stamp("end"); frames = frames.Replace("__SECTIONAT__", "{" + string.Join(", ", stamps.ConvertAll(x => $"\"{x.name}\": {F(x.at)}")) + "}");
             frames = frames.Replace("__LEASH__", leash[0]).Replace("__HOLDRANGE__", holdRange[0]);
             frames = frames.Replace("__HUDCLICK__", !Only("hudClick") ? "null" : $"{{\"ok\": {(hudClick[0].StartsWith("{\"ok\": true") && rangeClick[0].StartsWith("{\"ok\": true") ? "true" : "false")}, \"handover\": {hudClick[0]}, \"range\": {rangeClick[0]}}}");
             Write(frames, rendered ? "ok" : "blank");
-            yield return new WaitForSecondsRealtime(0.5f);
-            Application.Quit(rendered ? 0 : 3); // the Handover's run was saved by the switch (QuitFromMenu's save)
+            yield return new WaitForSecondsRealtime(0.1f);
+            GameBoot.Leave(rendered ? 0 : 3); // the Handover's run was saved by the switch (QuitFromMenu's save)
         }
 
         /// <summary>Route G's orders up to the way out (briefs/013/play/route-g-by-hand.script.json): the fight starts on the walk out with Vale.</summary>

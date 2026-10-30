@@ -5,10 +5,11 @@
 //   proofledger.json     per section, the build, commit and snapshot it last PASSED on, and a hash of the map rows that can name it. Lives beside the build (out/build/play): lost, the next proof is full.
 //   planProof()          a section is skipped only with a pass on the ledger, the same map hash and no change since that pass that its rows name. Anything else runs. Pure, so the gate can re-derive it.
 //   a skip is never a pass: judgeGates says "not run, unchanged since build N (commit)", and the gate takes the skip only from planProof over the ledger, never from the plan file's word.
+// A row's `steps` names the batch's gated steps its path can affect (a scene builder: the scene and the frame-time steps, never the engine's; the words: the copy of the words). Absent: a `full` row forces them all, a list row none.
 // A fix loop runs just the failing section (CLAUDE.md, Delta only). Order can matter to this proof (0.2.145: r29 alone passed where the full run failed), so a pass alone after a failure in company is said, with what ran before it, and marked on the ledger (Pass.alone); it is not re-run in company unless asked. A delta run cannot catch what only the sections it skipped would have disturbed: --full, and any submission build, runs them all.
 // usage: bun tools/game/proofdelta.ts plan                  what the next batch's proof would run
 //        bun tools/game/proofdelta.ts what-if <path>...     what a change to these paths alone would run, as if every section had just passed
-import { existsSync, readFileSync, writeFileSync } from 'node:fs';
+import { existsSync, readdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { createHash } from 'node:crypto';
 import { join, resolve } from 'node:path';
 import { z } from 'zod';
@@ -19,8 +20,12 @@ export const MAP_FILE = join(ROOT, 'tools/game/proofmap.json');
 /** What the app carries or is made from that git does not hold, read by content: the kit and the figures, and the world export. */
 export const SNAPSHOT_IGNORED = [...IGNORED_INPUTS, 'unity/Assets/Suborned/Kit', 'unity/Assets/Suborned/People', 'out/world/harbour-district.world.json', 'out/world/harbour-district.walk.json'];
 
-const Row = z.strictObject({ match: z.array(z.string().min(1)).min(1), run: z.union([z.literal('full'), z.literal('none'), z.array(z.string())]), why: z.string().min(8), shots: z.union([z.literal('all'), z.array(z.string().min(1))]).optional() });
-const ProofMapFile = z.strictObject({ schema: z.literal('suborned.proofmap/1'), note: z.string(), baseSeconds: z.number(), sections: z.array(z.strictObject({ id: z.string(), seconds: z.number() })).min(1), rows: z.array(Row) });
+const Row = z.strictObject({ match: z.array(z.string().min(1)).min(1), run: z.union([z.literal('full'), z.literal('none'), z.array(z.string())]), why: z.string().min(8), shots: z.union([z.literal('all'), z.array(z.string().min(1))]).optional(),
+  /** the batch's gated steps this path can affect (stepGate). Absent: a `full` row forces them all, a list row none. */
+  steps: z.array(z.string().min(1)).optional() });
+const ProofMapFile = z.strictObject({ schema: z.literal('suborned.proofmap/1'), note: z.string(), baseSeconds: z.number(), sections: z.array(z.strictObject({ id: z.string(), seconds: z.number() })).min(1), rows: z.array(Row),
+  /** host members the proofs call to reach a moment, not what they check: not counted by hostGaps */
+  setup: z.strictObject({ why: z.string().min(8), members: z.array(z.string().min(1)) }).optional() });
 export type MapRow = z.infer<typeof Row>;
 export type ProofMap = z.infer<typeof ProofMapFile>;
 
@@ -73,13 +78,15 @@ export type Pass = { build: string; commit: string; at: string; snapshot: string
 export type Retry = { build: string; ran: string[] };
 /** A batch step that ran and passed, or the check's scenarios: on what tree. */
 export type StepPass = { build: string; commit: string; snapshot: string };
-export type Ledger = { schema: 'suborned.proofledger/1'; sections: Record<string, Pass>; retry: Record<string, Retry>; steps: Record<string, StepPass>; snapshots: Record<string, Record<string, string>> };
-export const emptyLedger = (): Ledger => ({ schema: 'suborned.proofledger/1', sections: {}, retry: {}, steps: {}, snapshots: {} });
+/** A step that ran and failed, on what tree: it does not run again until something it reads changes (or --full, --only), and the screen says it is still open. */
+export type StepFail = StepPass & { problem: string };
+export type Ledger = { schema: 'suborned.proofledger/1'; sections: Record<string, Pass>; retry: Record<string, Retry>; steps: Record<string, StepPass>; stepFails: Record<string, StepFail>; snapshots: Record<string, Record<string, string>> };
+export const emptyLedger = (): Ledger => ({ schema: 'suborned.proofledger/1', sections: {}, retry: {}, steps: {}, stepFails: {}, snapshots: {} });
 export function readLedger(file: string): Ledger {
   try { const j = JSON.parse(readFileSync(file, 'utf8')); return j.schema === 'suborned.proofledger/1' ? { ...emptyLedger(), ...j } : emptyLedger(); } catch { return emptyLedger(); }
 }
 export function writeLedger(file: string, l: Ledger): void {
-  const used = new Set([...Object.values(l.sections), ...Object.values(l.steps)].map(p => p.snapshot));
+  const used = new Set([...Object.values(l.sections), ...Object.values(l.steps), ...Object.values(l.stepFails ?? {})].map(p => p.snapshot));
   writeFileSync(file, JSON.stringify({ ...l, snapshots: Object.fromEntries(Object.entries(l.snapshots).filter(([id]) => used.has(id))) }) + '\n');
 }
 /** The words a gate line and the screen use for a skip. Never "passed": it was not run. */
@@ -132,10 +139,13 @@ export function planProof(m: ProofMap, snap: Snapshot, l: Ledger, o: { force?: s
  *  It runs with no recorded pass, or when anything marked full or unplaced changed since that pass, or when forced; a change the map places in sections cannot affect it. */
 export function stepGate(m: ProofMap, snap: Snapshot, l: Ledger, step: string, force?: string): { run: boolean; why: string } {
   if (force) return { run: true, why: force };
+  const moved = (was: Record<string, string>) => changedPaths(was, snap.files).find(f => { const r = classify(m, f); return !r || (r.steps ? r.steps.includes(step) : r.run === 'full'); });
+  const open = l.stepFails?.[step], openWas = open && l.snapshots[open.snapshot];
+  if (open && openWas && !moved(openWas)) return { run: false, why: `STILL OPEN, failed on build ${open.build} and nothing it reads changed: ${open.problem}` };
   const p = l.steps[step], was = p && l.snapshots[p.snapshot];
   if (!p || !was) return { run: true, why: 'no recorded pass' };
-  for (const f of changedPaths(was, snap.files)) { const r = classify(m, f); if (!r || r.run === 'full') return { run: true, why: `${f} changed` }; }
-  return { run: false, why: `engine, world and kit unchanged since build ${p.build}` };
+  const hit = moved(was);
+  return hit ? { run: true, why: `${hit} changed` } : { run: false, why: `nothing it reads changed since build ${p.build}` };
 }
 /** The shots a change can show in: what the rows of the paths changed since the last shots pass name. Anything full or unplaced, or no recorded pass: all of them. */
 export function shotsGate(m: ProofMap, snap: Snapshot, l: Ledger, force?: string): { names: 'all' | string[]; why: string } {
@@ -150,9 +160,17 @@ export function shotsGate(m: ProofMap, snap: Snapshot, l: Ledger, force?: string
   }
   return names.size ? { names: [...names], why: `${by} changed` } : { names: [], why: `no HUD or view path changed since build ${p.build}` };
 }
+/** What the briefing's stills are drawn from: the snapshot less what cannot show in them (no HUD in a still: tools/game/briefstills.ts). The figures' and the light's code stay in. Any other Runtime/Play file, tool or word: the same key. */
+const NOT_IN_STILLS = /^unity\/Assets\/Suborned\/Runtime\/Play\/(?!HostViews|FigureLibrary|LightPhase|HandoverHost)|^tools\/|^contracts\/missions\/handover\/text\.|^unity\/Assets\/StreamingAssets\/sim\/text\.json/;
+export function stillsKeyOf(snap: Snapshot): string {
+  return createHash('sha256').update(JSON.stringify(Object.entries(snap.files).filter(([f]) => !NOT_IN_STILLS.test(f)).sort(([a], [b]) => (a < b ? -1 : 1)))).digest('hex').slice(0, 16);
+}
 /** Steps that passed in this batch, on the tree its player was built from. */
-export function recordSteps(l: Ledger, snap: Snapshot, steps: string[], build: { version: string; commit: string }): Ledger {
-  return steps.length ? { ...l, steps: { ...l.steps, ...Object.fromEntries(steps.map(s => [s, { build: build.version, commit: build.commit, snapshot: snap.id }])) }, snapshots: { ...l.snapshots, [snap.id]: snap.files } } : l;
+export function recordSteps(l: Ledger, snap: Snapshot, steps: string[], build: { version: string; commit: string }, failed?: { step: string; problem: string }): Ledger {
+  if (!steps.length && !failed) return l;
+  const fails = Object.fromEntries(Object.entries(l.stepFails ?? {}).filter(([s]) => !steps.includes(s)));
+  if (failed) fails[failed.step] = { build: build.version, commit: build.commit, snapshot: snap.id, problem: failed.problem };
+  return { ...l, steps: { ...l.steps, ...Object.fromEntries(steps.map(s => [s, { build: build.version, commit: build.commit, snapshot: snap.id }])) }, stepFails: fails, snapshots: { ...l.snapshots, [snap.id]: snap.files } };
 }
 
 /** What a change to `paths` alone would run, as if every section had just passed on the same tree (the table's answer, for `what-if` and the tests). */
@@ -169,7 +187,9 @@ type Frames = Record<string, any> | null | undefined;
 /** Did the proof run this section? A section it did not run is null; `drive` has no object of its own, its saved session says. */
 export const ranIn = (frames: Frames, s: string) => s === 'drive' ? frames?.driveSession != null : frames?.[s] != null;
 export type Replays = { driveSession?: boolean; fireSession?: boolean };
-const passedIn = (frames: Frames, s: string, r: Replays) => s === 'drive' ? ranIn(frames, s) && r.driveSession === true : frames?.[s]?.ok === true && (s !== 'fire' || r.fireSession === true);
+/** Sections the gate does not judge yet (proofgates.ts: r123, until Glyph agrees its density): having run is its pass, or it would run again on every delta whatever changed. What it said stays in proof.json. */
+const NOT_GATED = ['r123'];
+const passedIn = (frames: Frames, s: string, r: Replays) => s === 'drive' ? ranIn(frames, s) && r.driveSession === true : NOT_GATED.includes(s) ? ranIn(frames, s) : frames?.[s]?.ok === true && (s !== 'fire' || r.fireSession === true);
 
 /** Record what the proof said against the snapshot the player was built from. Only a section that ran can pass; a section that ran and did not pass loses its pass. A pass after a failure in
  *  company without what ran before it is marked `alone`. A section "not reached" (ok null) is reported by the gate and has no pass: it just runs next time. */
@@ -235,9 +255,95 @@ export function coverageGaps(m: ProofMap, sources: Sources): string[] {
   return gaps;
 }
 
+// ---------------------------------------------------------------- the host against the proofs
+
+const noComments = (t: string) => t.replace(/\/\/\/?[^\n]*/g, '');
+const HOST_FILE = /^(?:HandoverHost|Host(?!Views)\w*)\.cs$/, VIEWS_FILE = /^HostViews[\w.]*\.cs$/, MEMBER_LINE = /^ {8}(?:\[[^\]]*\]\s*)*((?:public|internal|private|protected|static|readonly|const|sealed|partial|override|virtual|abstract|new|async|unsafe|event)\s+)+/;
+/** A class's own members, from its 8-space lines (nested classes sit deeper): name → the file names that declare it; `public` or `internal` only, the proofs cannot see the rest. */
+function membersIn(sources: Sources, files: string[]): Map<string, string[]> {
+  const out = new Map<string, string[]>();
+  for (const f of files) for (const l of noComments(sources[f]!).split('\n')) {
+    const head = l.match(MEMBER_LINE); if (!head || !/\b(?:public|internal)\b/.test(head[0])) continue;
+    const rest = l.slice(head[0].length), names = new Set<string>(), type = rest.match(/^(?:class|struct|enum|record|interface|delegate)\s+(?:\S+\s+)??([A-Z]\w*)\s*(?:[:<({]|$)/)?.[1];
+    if (type) names.add(type); // a nested type's own members are not the host's
+    else {
+      const first = rest.match(/^[\w<>\[\],.? ()]*?\b([A-Z]\w*)\s*(?:<[^>(]*>\s*)?(?:\(|=>|=[^>]|\{|;|,)/)?.[1]; if (first) names.add(first);
+      if (first && new RegExp(`\\b${first}\\s*(?:=[^>]|;|,)`).test(rest)) for (const x of rest.split(';')[0]!.replace(/\([^()]*\)|\{[^{}]*\}|<[^<>]*>/g, '').matchAll(/,\s*([A-Z]\w*)\s*(?:=|,|$)/g)) names.add(x[1]!); // `public const float A = 1, B = 2;`
+    }
+    for (const n of names) out.set(n, [...new Set([...(out.get(n) ?? []), f])]);
+  }
+  return out;
+}
+/** The methods of a proof file, by its 8-space lines: name → its text up to the next member. */
+function methodsOf(text: string): Map<string, string> {
+  const out = new Map<string, string>(); let name = '', body: string[] = [];
+  const flush = () => { if (name) out.set(name, (out.get(name) ?? '') + body.join('\n')); };
+  for (const l of text.split('\n')) {
+    const m = /^ {8}\S/.test(l) && !/^ {8}[{}]/.test(l) ? l.match(/\b([A-Z]\w*)\s*(?:<[^>(]*>\s*)?\(/) : null;
+    if (m) { flush(); name = m[1]!; body = []; }
+    body.push(l);
+  }
+  flush(); return out;
+}
+/** Each section's way in, as GameBoot runs it, the range's three included; `drive` is GameBoot's own DriveSpot. */
+export function sectionEntries(sources: Sources): Map<string, [string, string][]> {
+  const boot = noComments(sources['GameBoot.cs'] ?? ''), out = new Map<string, [string, string][]>();
+  const add = (s: string, f: string, e: string) => out.set(s, [...(out.get(s) ?? []), [f, e]]);
+  for (const [, s, q, e] of boot.matchAll(/Only\("(\w+)"\)\) yield return (Proof\w+)\.(\w+)\(/g)) add(s!, `${q}.cs`, e!);
+  for (const [, s, e] of boot.matchAll(/Only\("(\w+)"\)\) yield return (\w+)\(/g)) add(s!, 'GameBoot.cs', e!);
+  if (/ProofInput\.RangePanelClick\(/.test(boot)) add('hudClick', 'ProofInput.cs', 'RangePanelClick');
+  if (/ProofInput\.Leash\(/.test(boot)) add('leash', 'ProofInput.cs', 'Leash');
+  if (/ProofHold\.Range\(/.test(boot)) add('holdRange', 'ProofHold.cs', 'Range');
+  return out;
+}
+/** Per section, the host members its proof code reads: from its way in, through the proof's own helpers and other proofs' (`h.Ring`, `HandoverHost.Charge`, `h.Views.Find`). */
+export function sectionReads(sources: Sources): Map<string, Set<string>> {
+  const methods = new Map<string, Map<string, string>>(), of = (f: string) => { let x = methods.get(f); if (!x) { x = methodsOf(noComments(sources[f] ?? '')); methods.set(f, x); } return x; };
+  const out = new Map<string, Set<string>>();
+  for (const [s, entries] of sectionEntries(sources)) {
+    const seen = new Set<string>(), reads = new Set<string>(), todo: [string, string][] = [...entries];
+    while (todo.length) {
+      const [f, e] = todo.pop()!, key = `${f}#${e}`; if (seen.has(key)) continue; seen.add(key);
+      const body = of(f).get(e); if (body === undefined) continue;
+      for (const x of body.matchAll(/\b(?:HandoverHost|[a-z]?h|host)\.([A-Z]\w*)/g)) reads.add(x[1]!);
+      for (const x of body.matchAll(/\.Views\.([A-Z]\w*)/g)) reads.add(`Views.${x[1]!}`);
+      for (const x of body.matchAll(/\b([A-Z]\w*)\s*(?:<[^>(]*>\s*)?\(/g)) if (of(f).has(x[1]!)) todo.push([f, x[1]!]);
+      for (const x of body.matchAll(/\b(Proof\w+)\.([A-Z]\w*)/g)) if (sources[`${x[1]!}.cs`]) todo.push([`${x[1]!}.cs`, x[2]!]);
+    }
+    out.set(s, reads);
+  }
+  return out;
+}
+/** Which section reads which host file, and through what: the table the host rows are held to (`bun tools/game/proofdelta.ts host-reads`). `setup` names are not counted: they drive a proof to its moment, they are not what it checks (the map's `setup`, each with its reason). */
+export function hostReads(sources: Sources, setup: string[] = []): Map<string, Map<string, string[]>> {
+  const names = Object.keys(sources), host = membersIn(sources, names.filter(f => HOST_FILE.test(f))), views = membersIn(sources, names.filter(f => VIEWS_FILE.test(f)));
+  const out = new Map<string, Map<string, string[]>>();
+  for (const [s, reads] of sectionReads(sources)) for (const r of reads) {
+    if (setup.includes(r)) continue;
+    const homes = r.startsWith('Views.') ? views.get(r.slice(6)) : host.get(r);
+    for (const f of homes ?? []) { const by = out.get(f) ?? new Map<string, string[]>(); by.set(s, [...(by.get(s) ?? []), r]); out.set(f, by); }
+  }
+  return out;
+}
+/** Holes in the table: a section that reads a host member must be on the row of the file that holds it, and every host file must have a row. */
+export function hostGaps(m: ProofMap, sources: Sources): string[] {
+  const rowOf = (f: string) => classify(m, PLAY + f), gaps: string[] = [], setup = m.setup?.members ?? [];
+  for (const f of Object.keys(sources).filter(n => HOST_FILE.test(n) || VIEWS_FILE.test(n))) if (!rowOf(f)) gaps.push(`${f} has no row`);
+  for (const [f, by] of hostReads(sources, setup)) {
+    const r = rowOf(f)?.run; if (r === 'full' || !r) continue;
+    for (const [s, members] of by) if (r === 'none' || !r.includes(s)) gaps.push(`${s} reads ${members.join(', ')}, held in ${f}: its row lacks ${s}`);
+  }
+  return gaps;
+}
+
 if (import.meta.main) {
   const [cmd, ...rest] = process.argv.slice(2), m = loadMap(), dir = process.env.SUBORNED_GAME_OUT ? resolve(process.env.SUBORNED_GAME_OUT) : join(ROOT, 'out/build/play');
   if (cmd === 'plan') { const t0 = performance.now(), s = snapshot(ROOT, m), p = planProof(m, s, readLedger(ledgerFile(dir))); for (const l of planLines(p)) console.log(l); console.log(`  (${Object.keys(s.files).length} paths read in ${Math.round(performance.now() - t0)} ms)`); }
   else if (cmd === 'what-if' && rest.length) for (const l of planLines(whatIf(m, rest))) console.log(l);
-  else { console.error('usage: bun tools/game/proofdelta.ts plan | what-if <path>...'); process.exit(2); }
+  else if (cmd === 'host-reads') {
+    const play = join(ROOT, PLAY), sources = Object.fromEntries(readdirSync(play).filter(f => f.endsWith('.cs')).map(f => [f, readFileSync(join(play, f), 'utf8')]));
+    for (const [f, by] of [...hostReads(sources, rest.includes('--all') ? [] : m.setup?.members ?? [])].sort()) console.log(`${f}: ${[...by].map(([s, x]) => `${s}(${x.join(' ')})`).join(' ')}`);
+    for (const g of [...coverageGaps(m, sources), ...hostGaps(m, sources)]) console.log(`GAP ${g}`);
+  }
+  else { console.error('usage: bun tools/game/proofdelta.ts plan | what-if <path>... | host-reads [--all]'); process.exit(2); }
 }

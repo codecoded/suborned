@@ -1,7 +1,9 @@
 // usage: bun run batch [--force] [--wait-timeout <s>] [--dry-run] [--from <step>] [--restart] [--full | --submission] [--spots] [--only a,b] [--skip a,b] [--editor | --batchmode] [--shots <file>] [--shots-out <dir>] [--no-shots] [--rebuild] [--perf064] [--rows a,b] [--behind]
 // The one command Latch runs per build (brief 034 item 3). In order, stopping at the first failure:
 //   sim          bun tools/sim/unity.ts --tree           the engine, the inputs and the DLL into the Unity project (headless scenarios first)
+//   words        tools/game/words.ts                     text.json checked (schema, its tests, the words the proofs compare) and into StreamingAssets/sim: the words alone need no engine build
 //   compile      tools/game/runtime-compile.ts           the player's scripts compile (dotnet, no Editor); the shot runner is installed first when it is not
+//   hostlogic    tools/game/hostlogic.ts                 the host's decisions in plain dotnet, no Unity (about 5 s): who is busy, what a click does, ring offers, prices, the HUD model, words, windows, and the Editor tests that read no scene
 //   kit          bun run kit                             the DecoKit catalogue and the hash-checked copy of adopted pieces
 //   world        bun run world                           the plan → world export
 //   unity-world  Unity reimport + HarbourWorldBuilder rebuild from the export      (Editor open: its menu, through the Unity CLI; closed: batchmode)
@@ -14,7 +16,7 @@
 //   tp-long      the built player with -tplong          tools/game/tplong.json: the two third-person views (Sky's street, the worst heading) and the play view at 2880x1864, ~40 s: triangles, SetPass, shadow casters, renderers drawn and far, mean and p99 against the gates in tplong.ts (brief 048); SKIPPED, with the reason, until the built player has the hook
 //   perf064      the built player with -perf064         (opt-in: --perf064 or --only perf064, ~3 minutes) Redline's scene at 2880x1864, four 20 s windows, before/after: frame ms, the host's cone cost, the CPU/GPU split and each window's load when the build writes them (brief 064 R7; tools/game/perfrow.ts). Counts are the gate; ms only on a quiet machine
 //   Every step that reports frame times (game-check, shots, late-fight, tp-long, perf064) records the load average (1/5/15) at its start and end and prints it under its row, NOISY MACHINE included.
-// Delta only (brief 078; Sky: "a small change reaches Sky in about 5 minutes"; tools/game/proofdelta.ts, proofmap.json): the proof runs only the sections a change since each one's last recorded pass can affect. sim, kit, world, unity-world, unity-match, the check's scenarios, late-fight and tp-long run only when the engine, the world, the kit or a path the map cannot place changed since their last pass, or with --full or --submission (--only names a step to run whatever changed). shots and budget run only for what a HUD or view path can show. A section or step not run says why, never "passed". The last line of the screen is the time budget; a delta over 5 minutes warns. --spots adds the frame-time spots to the proof (off by default).
+// Delta only (brief 078; Sky: "a small change reaches Sky in about 5 minutes"; tools/game/proofdelta.ts, proofmap.json): the proof runs only the sections a change since each one's last recorded pass can affect. sim, kit, world, unity-world, unity-match, the check's scenarios, late-fight and tp-long run only when a path that can affect them changed since their last pass (a row's `steps`; a `full` row without them, or a path the map cannot place, is all of them), or with --full or --submission (--only names a step to run whatever changed). shots and budget run only for what a HUD or view path can show. A section or step not run says why, never "passed". The last line of the screen is the time budget; a delta over 5 minutes warns. --spots adds the frame-time spots to the proof (off by default).
 // After a failure the screen prints the command that goes on (next line); a bare `bun run batch` does the same while the sources are unchanged: it starts at the failed step on the same player (--restart: from the top). No step before it runs, so nothing rewrites the scene and forces a rebuild. A failed proof section runs alone; a pass alone after a failure in company is said, and --full checks it.
 // Sky is playing (a player of his, no automation flag; playing.ts): before every step the batch waits ("Sky is playing; waiting") up to --wait-timeout seconds (default 1200), then stops; --force goes on.
 // Every player step starts the player ONCE with its whole list (-shots, -late, -tplong take a file of rows; -perf064 is one scene): launchPlayer below. The window opens
@@ -30,6 +32,7 @@ import { cpus, homedir, loadavg } from 'node:os';
 import { dirname, join, resolve } from 'node:path';
 import { compile as runtimeCompile } from './runtime-compile';
 import { guardConfig, takeGuardFlags, timeoutText, waitForSky } from './playing';
+import { hostLogic } from './hostlogic';
 import { GATES, MARKER as TPLONG_MARKER, judgeTpLong, resolveTpLong, type TpLongReport } from './tplong';
 import { LIMITS, loadText, noisy as loadNoisy, resolveLate, runLate, type End, type LateReport, type LateResolvedFile, type LoadSample } from './late';
 import { perf064Lines, spanEnd, spanStart, spanText, type LoadSpan, type Perf064Report } from './perfrow';
@@ -37,7 +40,7 @@ import { build as buildEngine, engineAt } from '../missions/check/engine';
 import { DEFAULT_FILE, ROOT, expectedFiles, fileResolver, pngFileSize, resolveShots, type ResolvedFile } from './shots';
 import { judgeProofBudget, loadProofSet, type ProofBudget } from './proofset';
 import { walkFileState } from './walkfile';
-import { gateFile, ledgerFile, loadMap, planLines, planProof, readLedger, recordSteps, shotsGate, snapshot, stepGate, writeLedger, writePlan, planFile, type Plan, type Snapshot } from './proofdelta';
+import { changedPaths, gateFile, ledgerFile, loadMap, planLines, planProof, readLedger, recordSteps, shotsGate, snapshot, stepGate, writeLedger, writePlan, planFile, type Plan, type Snapshot } from './proofdelta';
 
 const UNITY = join(ROOT, 'unity'), OUT = process.env.SUBORNED_BATCH_OUT ? resolve(process.env.SUBORNED_BATCH_OUT) : join(ROOT, 'out/batch'), /* SUBORNED_BATCH_OUT: the tests' scratch folder */ APP = join(ROOT, 'out/build/play/The Suborned.app'), PROOF = join(ROOT, 'out/build/play/proof/proof.json');
 const BUILD_DIR = dirname(dirname(PROOF));
@@ -47,8 +50,22 @@ async function oldTown(t0: number): Promise<string | null> {
   const S = 'Suborned.OldTown.Editor.Swap.OldTownSwap', swapOut = join(OUT, 'swap');
   return await run('unity-swap.log', '-executeMethod', `${S}.Build`, '-swapHeights', 'rule', '-swapHq', 'ours', '-swapOurs', 'Assets/Scenes/HarbourDistrict.unity', '-swapWorld', 'out/world/harbour-district.world.json', '-swapScene', 'OldTown', '-swapPlan', 'contracts/world/harbour-district.plan.json', '-swapOut', swapOut)
     ?? await run('unity-swap-verify.log', '-executeMethod', `${S}.Verify`, '-swapOurs', 'Assets/Scenes/HarbourDistrict.unity', '-swapScene', 'OldTown', '-swapOut', swapOut)
+    ?? zoneProblem(readJson(join(swapOut, 'zone-regression-OldTown.json')))
     ?? await run('unity-town-host.log', '-executeMethod', 'Suborned.World.Play.OldTownPlay.Install')
     ?? (existsSync(TOWN) && statSync(TOWN).mtimeMs > t0 ? null : `${TOWN} was not written`);
+}
+/** The gate on the old town's scene: the Handover zone only (Sky: the plan-match's mismatches outside the zone need not count; tools/world/oldmatch is not a batch step). The zone holds what our own scene holds: the same kit renderers, each within 2 cm (the swap's move lands on a float: two of the 906 round 1 cm apart), the same drawn area and material counts, and no old renderer standing in it. Old sky traffic flying over at 70 m is not standing in it, and OldTownPlay.Install turns it off. Null when it holds, else why. */
+export function zoneProblem(z: any): string | null {
+  if (!z) return 'the swap wrote no zone-regression-OldTown.json';
+  const bad: string[] = [], key = (k: string) => { const x = k.match(/^R:([^,]+),(-?\d+),(-?\d+),(-?\d+),(.*)$/); return x ? { mesh: x[1]!, at: [+x[2]!, +x[3]!, +x[4]!], mats: x[5]! } : null; };
+  if (z.ours?.kitRenderers !== z.swapped?.kitRenderers) bad.push(`kit renderers ${z.ours?.kitRenderers} in ours, ${z.swapped?.kitRenderers} in the zone`);
+  const swapped = (z.kitOnlyInSwapped ?? []).map(key);
+  for (const k of z.kitOnlyInOurs ?? []) { const a = key(k); if (!a || !swapped.some((b: any) => b && b.mesh === a.mesh && b.mats === a.mats && a.at.every((v, i) => Math.abs(v - b.at[i]) <= 2))) bad.push(`moved or missing: ${k.slice(0, 80)}`); }
+  if ((z.kitOnlyInOurs ?? []).length >= 12) bad.push('12 or more kit renderers differ (the list is cut at 12)');
+  if ((z.materialCountsThatDiffer ?? []).length) bad.push(`materials differ: ${z.materialCountsThatDiffer.slice(0, 3).join('; ')}`);
+  const old = Object.keys(z.oldRenderersInZoneByPath ?? {}).filter(p => !/^Deco Sky Traffic\//.test(p));
+  if (old.length) bad.push(`old renderers in the zone: ${old.slice(0, 3).join('; ')}`);
+  return bad.length ? `the Handover zone differs from our scene: ${bad.join(' | ')}` : null;
 }
 const TOWN = join(UNITY, 'Assets/Scenes/OldTown.unity');
 const SCENE = join(UNITY, 'Assets/Scenes/HarbourDistrict.unity'), MATCH = join(ROOT, 'out/sim-unity/unity-editor.json');
@@ -186,6 +203,10 @@ export const STEPS: Step[] = [
     },
   },
   {
+    id: 'words', when: c => gated(c, 'words'), title: 'the mission\'s words', plan: () => ['bun tools/game/words.ts  (text.json: its schema, its tests, the words the proofs compare, then into StreamingAssets/sim)'],
+    async run() { const r = await sh('words', ['bun', 'tools/game/words.ts']); return r.code === 0 ? { ok: true, detail: tail(r.out, 1).slice(0, 110) } : fail('the words failed', r); },
+  },
+  {
     id: 'compile', title: 'player scripts compile', plan: () => ['install tools/game/unity/ShotRunner.cs and CaptureSize.cs into unity/Assets/Suborned/Runtime/Play when they are not there', 'bun tools/game/runtime-compile.ts'],
     async run(c) {
       let how: string;
@@ -193,8 +214,13 @@ export const STEPS: Step[] = [
       if (how !== 'installed') c.say(`shot runner ${how}`);
       const r = runtimeCompile();
       if (r.missing) return fail(r.missing);
+      c.facts.compiled = r.ok;
       return r.ok ? { ok: true, detail: `Suborned.Runtime compiles, ${r.warnings} warnings (shot runner ${how.split(' ')[0]})` } : fail(`${r.errors.length} compile error${r.errors.length === 1 ? '' : 's'}:\n${r.errors.slice(0, 8).join('\n')}`);
     },
+  },
+  {
+    id: 'hostlogic', title: 'the host\'s decisions (no Unity)', plan: () => ['bun tools/game/hostlogic.ts  (the player\'s compiled scripts, the engine and text.json in plain dotnet, on a copy of Unity\'s assemblies with native calls answering defaults)'],
+    async run(c) { const r = hostLogic('', { skipCompile: !!c.facts.compiled }); return r.ok ? { ok: true, detail: r.line } : fail(r.line, { out: r.out, code: 1 } as any); },
   },
   {
     id: 'kit', when: c => gated(c, 'kit'), title: 'kit catalogue and import', plan: () => ['bun run kit'],
@@ -259,7 +285,7 @@ export const STEPS: Step[] = [
   {
     id: 'game-build', title: 'player build', plan: c => [c.rebuild ? 'bun tools/game/cli.ts --build --proof-plan out/build/play/proofplan.json  (--rebuild)' : 'skipped when nothing under unity/Assets, ProjectSettings or Packages is newer than the app; else bun tools/game/cli.ts --build --proof-plan out/build/play/proofplan.json'],
     async run(c) {
-      const cur = c.rebuild ? undefined : appCurrent();
+      const cur = c.rebuild ? undefined : appCurrent() ?? playerUnchanged(c);
       c.facts.snap = snapshot(ROOT, loadMap()); // what this build reads: after the world steps, before Unity
       if (cur) { c.facts.build = readJson(join(ROOT, 'out/build/play/build.json')); c.facts.rebuildSkipped = cur; return { ok: true, detail: `NOT REBUILT, no build number spent: ${cur}` }; }
       const plan = makePlan(c); c.facts.plan = plan; for (const l of planLines(plan)) c.say(l); // the snapshot is taken here, on what this build reads: after the world steps, before Unity
@@ -293,7 +319,7 @@ export const STEPS: Step[] = [
       const exe = join(APP, 'Contents/MacOS/The Suborned');
       if (!existsSync(exe)) return fail(`no built player at ${rel(APP)}; run the game-build step`);
       const t0 = Date.now();
-      const r = await launchPlayer(c, 'shots', ['-shots', join(OUT, 'shots.resolved.json'), c.shotsOut, '-novsync', '-logFile', join(c.shotsOut, 'player.log')], [1920, 1080], { timeoutMs: 1800000 });
+      const r = await launchPlayer(c, 'shots', ['-shots', join(OUT, 'shots.resolved.json'), c.shotsOut, '-novsync', '-fastExit', '-logFile', join(c.shotsOut, 'player.log')], [1920, 1080], { timeoutMs: 1800000 });
       const rep = readJson(join(c.shotsOut, 'shots.json')) as Report | undefined;
       if (!rep) return fail(`the player wrote no shots.json (exit ${r.code}); see ${rel(c.shotsOut)}/player.log`);
       c.facts.shots = rep; c.facts.resolved = resolved;
@@ -400,6 +426,13 @@ export function newestInput(roots: string[]): { at: number; what: string } {
   const walk = (d: string) => { for (const e of readdirSync(d, { withFileTypes: true })) { const p = join(d, e.name); if (e.isDirectory()) walk(p); else { const m = statSync(p).mtimeMs; if (m > at) { at = m; what = p; } } } };
   for (const r of roots) if (existsSync(r)) walk(r);
   return { at, what };
+}
+/** The app is current by content: no path the player reads changed since the build the ledger knows (an Editor capture tool's edit or a scene written byte for byte moves the clock, not the player). */
+function playerUnchanged(c: Ctx): string | undefined {
+  const b = readJson(join(ROOT, 'out/build/play/build.json')), l = readLedger(ledgerFile(BUILD_DIR)), m = loadMap(), now = snapshot(ROOT, m);
+  if (!c.tree || b?.result !== 'Succeeded' || !existsSync(APP)) return undefined;
+  const mine = Object.values(l.sections).filter(p => p.build === b.version).map(p => l.snapshots[p.snapshot]).find(Boolean);
+  return mine && !changedPaths(mine, now.files).length ? `${b.version}: nothing the player reads changed since it was built; --rebuild to build anyway` : undefined;
 }
 /** Why the built app is current (nothing under unity/Assets, ProjectSettings or Packages is newer than its build), or undefined when it needs building. */
 export function appCurrent(o: { app?: string; stamp?: string; roots?: string[] } = {}): string | undefined {
@@ -666,6 +699,7 @@ export function screen(rows: Row[], o: { when: string; mode: string; build?: any
   for (const l of o.tplong ?? []) out.push(`tp-long  ${l}`);
   for (const l of o.perf064 ?? []) out.push(`perf064  ${l}`);
   if (o.shots) out.push(`shots   ${rel(o.shotsOut)}/  (${o.shots.shots.length}; shots.json is the report)`);
+  for (const r of rows) if (r.status === 'skipped' && r.why?.startsWith('STILL OPEN')) out.push(`WARNING ${r.id}: ${r.why}`);
   out.push(...timeLines(rows, o.gate?.mode));
   if (bad) out.push(nextCommand(bad.id, bad.id === 'game-check' ? o.gate?.failed : []));
   out.push(bad ? `STOPPED at ${bad.id}: ${bad.title}. Log: out/batch/logs/${bad.id}.log` : `BATCH OK: ${rows.filter(r => r.status === 'ok').length} steps in ${rows.reduce((a, r) => a + r.seconds, 0).toFixed(0)} s`);
@@ -707,9 +741,10 @@ if (import.meta.main) {
   const failed = rows.find(r => r.status === 'FAILED'), gate = c.facts.gate as ProofGate | undefined;
   mkdirSync(OUT, { recursive: true });
   // what passed goes on the ledger, against the tree the build read; before the build there is no such tree and nothing is recorded
-  const snapOfBuild = c.facts.snap as Snapshot | undefined, passed = rows.filter(r => r.status === 'ok').map(r => r.id).filter(id => ['sim', 'kit', 'world', 'unity-world', 'unity-match', 'shots', 'late-fight', 'tp-long'].includes(id));
+  const snapOfBuild = c.facts.snap as Snapshot | undefined, passed = rows.filter(r => r.status === 'ok').map(r => r.id).filter(id => ['sim', 'words', 'kit', 'world', 'unity-world', 'unity-match', 'shots', 'late-fight', 'tp-long'].includes(id));
   if (c.facts.scenariosRan && rows.find(r => r.id === 'game-check')?.status === 'ok') passed.push('scenarios');
-  if (snapOfBuild && passed.length) { const b = readJson(join(BUILD_DIR, 'build.json')); writeLedger(ledgerFile(BUILD_DIR), recordSteps(readLedger(ledgerFile(BUILD_DIR)), snapOfBuild, passed, { version: b?.version ?? '?', commit: `${b?.sha ?? '?'}${b?.dirty ? '+' : ''}` })); }
+  const openFail = failed && ['late-fight', 'tp-long'].includes(failed.id) ? { step: failed.id, problem: failed.detail.split('\n').slice(1, 2).join('').slice(0, 160) } : undefined; // the whole-game measures: a finding stays open on the screen, it does not stop every delta after it until the world changes
+  if (snapOfBuild && (passed.length || openFail)) { const b = readJson(join(BUILD_DIR, 'build.json')); writeLedger(ledgerFile(BUILD_DIR), recordSteps(readLedger(ledgerFile(BUILD_DIR)), snapOfBuild, passed, { version: b?.version ?? '?', commit: `${b?.sha ?? '?'}${b?.dirty ? '+' : ''}` }, openFail)); }
   if (failed) writeFileSync(lastFile, JSON.stringify({ failedStep: failed.id, failedSections: failed.id === 'game-check' ? gate?.failed ?? [] : [], build: readJson(join(BUILD_DIR, 'build.json'))?.version, snapshot: tree(), at: new Date().toISOString() } satisfies LastRun, null, 1) + '\n');
   else rmSync(lastFile, { force: true });
   console.log(screen(rows, { gate, when: new Date().toISOString().slice(0, 16).replace('T', ' '), mode, build: c.facts.build ?? readJson(join(ROOT, 'out/build/play/build.json')), proof: c.facts.proof, shots: c.facts.shots as Report | undefined, shotsOut, skipped: c.facts.rebuildSkipped as string | undefined, late: c.facts.late as LateReport | undefined, lateNotes: c.facts.lateNotes as string[] | undefined, tplong: c.facts.tplong as string[] | undefined, perf064: c.facts.perf064 as string[] | undefined }));
