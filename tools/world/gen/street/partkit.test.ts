@@ -117,7 +117,7 @@ test('brief 061 kit adoption: SignalLens and HaloRing are adopted (HaloRing with
   expect(by.get('SignalLens')!.tags.use).toEqual(['signal:lens']); expect(by.get('HaloRing')!.tags.use).toEqual(['signal:halo']);
   expect(by.get('SignalLens')!.files.some((f: any) => f.role === 'data' && f.path === 'Data/signal-lens.json')).toBe(true); // Latch's SignalHead and Glint read the look data beside the model
   expect(Object.values(PART_USE).flat()).not.toContain('signal:halo'); // the ring is placed by Latch from signal.halo, never by the export
-  expect(by.get('LightDotRow_2')!.size).toEqual([1.8, 0.002, 0.3]); expect(by.get('LightDotRow_1')!.size).toEqual([0.8, 0.002, 0.3]);
+  expect(by.get('LightDotRow_2')!.size).toEqual([1.84, 0.012, 0.34]); expect(by.get('LightDotRow_1')!.size).toEqual([0.84, 0.012, 0.34]); // brief 079: the nickel housing, 0.34 m across, 12 mm proud
   for (const id of ['LightDotRow_2', 'LightDotRow_1', 'Kerb_Pearl_0', 'Kerb_Pearl_1', 'RoadRibbon_Straight_6m', 'RoadRibbon_Arc90_R4', 'RoadRibbon_Arc90_R8', 'LightBar_4', 'RoadMark_Lozenge', 'RoadMark_Seam']) expect(by.get(id)!.materials, id).not.toContain('DK_Brass_Civic'); // 072-G: none on the road edge (LightBar_4's frame is the charcoal seat)
   const retired = ['SignalEye', 'KerbStud', 'CrossEdgeLine_1', 'CrossEdgeLine_2', 'CrossInlayArc_R24_W08', 'LightField_1', 'LightField_2'], text = JSON.stringify(w);
   for (const id of retired) { expect(by.get(id)!.status, id).toBe('rejected'); expect(by.get(id)!.tags.use.some((u: string) => /^(signal:eye|stud:kerb|crossing:edge|inlay:crossing-arc|crossing:field)$/.test(u)), id).toBe(false); expect(text.includes(`"${id}"`), id).toBe(false); }

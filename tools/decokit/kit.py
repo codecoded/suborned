@@ -9,10 +9,10 @@ import crown
 from geo import Shape
 
 REGISTRY = {}
-FAMILIES = ("street", "signals", "booths", "ground", "vehicles", "structures", "plants", "plaza", "paving", "skyline", "landmarks", "rooftop", "skycraft", "facades", "lowrise", "roofdeck", "highrise", "alleys", "furnish", "signage", "skyport", "mobility", "robots", "calib", "regen", "atompunk", "horizon", "liner", "civic008", "crossing009", "crossing_opts", "crossing_lens", "cafe_grand", "cafe_upper", "cars020", "cars067", "cars070", "play020", "street020", "ground_set", "restore026", "cabinet", "lamps026", "road_ribbon", "cafe_fascia", "palms026", "pave026", "cafe_testbed", "pavilion", "fountain_tb", "palms_avenue", "palm_lod", "records_open", "robot_attention", "sides", "records_tower", "shopfill", "streamstack", "tram075", "vista075", "skyrail075", "caps075")
+FAMILIES = ("street", "signals", "booths", "ground", "vehicles", "structures", "plants", "plaza", "paving", "skyline", "landmarks", "rooftop", "skycraft", "facades", "lowrise", "roofdeck", "highrise", "alleys", "furnish", "signage", "skyport", "mobility", "robots", "calib", "regen", "atompunk", "horizon", "liner", "civic008", "crossing009", "crossing_opts", "crossing_lens", "cafe_grand", "cafe_upper", "cars020", "cars067", "cars070", "play020", "street020", "ground_set", "restore026", "cabinet", "lamps026", "road_ribbon", "cafe_fascia", "palms026", "pave026", "cafe_testbed", "pavilion", "fountain_tb", "palms_avenue", "palm_lod", "records_open", "robot_attention", "sides", "records_tower", "shopfill", "streamstack", "tram075", "vista075", "skyrail075", "caps075", "crossing079")
 
 
-def asset(name, cat, bevel=0.005, lod=0, lean=1.0, cap=0, far=None, near=None, floor=None, retired=None):
+def asset(name, cat, bevel=0.005, lod=0, lean=1.0, cap=0, far=None, near=None, floor=None, retired=None, footprint=None):
     """lod = triangle target of a decimated distance version (LOD1) exported beside the asset; 0 = none.
     lean = segment scale for lathes, sweeps and rounded boxes (1 = as written): small street props seen at 15-120 px
     at play zoom take lean < 1 and bevel 0 to meet the per-category triangle caps (out/review/lod-thresholds.html).
@@ -25,9 +25,10 @@ def asset(name, cat, bevel=0.005, lod=0, lean=1.0, cap=0, far=None, near=None, f
     "seat" lifts or lowers the whole piece (parts too) so its lowest vertex is at z 0 (flat paving, tree pits, a hover robot); "clamp" leaves the piece
     where it is and flattens any vertex below z 0 onto it (foliage cards that droop under the ground, a window box's sprays below its sill).
     retired = a reason string (brief 061): the piece is marked for retirement. Its builder stays until Splice has re-cut the export; export_kit writes the reason into the manifest row (`retired`) so the
-    catalogue step can list it. Retiring in kit.json is Splice's: drop its `use` tag from tools/kit/tags.ts, then set status `rejected` once the world export places none."""
+    catalogue step can list it. Retiring in kit.json is Splice's: drop its `use` tag from tools/kit/tags.ts, then set status `rejected` once the world export places none.
+    footprint = (x, depth) in metres (brief 079): the manifest's size and bounds across the ground, when a piece's light spills past the thing itself (a stud's glow on the road, a signal's pool): the catalogue and the world bind the thing."""
     def deco(fn):
-        REGISTRY[name] = dict(cat=cat, fn=fn, bevel=bevel, lod=lod, lean=lean, cap=cap, far=far, near=near, floor=floor, retired=retired)
+        REGISTRY[name] = dict(cat=cat, fn=fn, bevel=bevel, lod=lod, lean=lean, cap=cap, far=far, near=near, floor=floor, retired=retired, footprint=footprint)
         return fn
     return deco
 

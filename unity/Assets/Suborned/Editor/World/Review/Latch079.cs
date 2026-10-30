@@ -27,7 +27,7 @@ namespace Suborned.World.Review
     public static class Latch079
     {
         const string Key = "latch079";
-        static readonly string[] Names = { "script", "out", "ticks" };
+        static readonly string[] Names = { "script", "out", "ticks", "mode" };
         static string Arg(string n) { var a = Environment.GetCommandLineArgs(); int i = Array.IndexOf(a, n); return i >= 0 && i + 1 < a.Length ? a[i + 1] : null; }
         static Latch079() { if (SessionState.GetBool(Key, false)) EditorApplication.update += Step; }
 
@@ -101,6 +101,7 @@ namespace Suborned.World.Review
             tex = new Texture2D(W, H, TextureFormat.RGB24, false); hudTex = new Texture2D(W, H, TextureFormat.RGBA32, false);
             cam.targetTexture = hdr; HudToolkit.HudInto(hudRt);
             h.Begin(); h.IntelOpen = false; h.SetSpeed(1);
+            if (A["mode"] == "crossing") { yield return Crossing(); yield break; }
             { var noCut = new Dictionary<string, int>(); foreach (var r in FindObjectsByType<Renderer>(FindObjectsInactive.Exclude)) { if ((r.renderingLayerMask & ArchitectureFade.Layer) == 0) continue; foreach (var m in r.sharedMaterials) if (m && !m.shader.keywordSpace.FindKeyword(FadeReach.Keyword).isValid) { var k = $"{m.name} ({m.shader.name}, q{m.renderQueue})"; noCut.TryGetValue(k, out var c); noCut[k] = c + 1; } } Log("materials on tagged renderers with no cutting variant: " + (noCut.Count == 0 ? "none" : string.Join("; ", noCut.OrderByDescending(kv => kv.Value).Take(14).Select(kv => $"{kv.Key} x{kv.Value}")))); }
             Log($"opening: size {F(cam.orthographicSize)} (preset zoom {F(h.Cam.overhead.zoom)}), range {F(h.zoomMin)} to {F(h.zoomMax)}, build {BuildStamp.Line}");
 
@@ -170,6 +171,33 @@ namespace Suborned.World.Review
                 yield return Still("30-" + v.id);
                 Cost(v.id);
             }
+        }
+
+        /// <summary>Brief 079 note 2: the two crossings by the café and the Office at zoom 10, at both quarter turns, in stop, walk and clearing (SignalHead.Hold, as the shots do), and the pieces' materials as built.</summary>
+        IEnumerator Crossing()
+        {
+            h.StartClock(); h.SetPaused(true); h.RunTo(300); cam.orthographicSize = 10f;
+            Log($"size {F(cam.orthographicSize)}, heads {SignalHead.All.Count}");
+            var seen = new HashSet<string>();
+            foreach (var (id, crossing) in new[] { ("cafe", "crossing/starline-street/0"), ("office", "crossing/orbit-walk/0") })
+            {
+                var head = SignalHead.All.First(x => x.Crossing == crossing && x.Dots.Length > 0);
+                var b = head.Dots[0].bounds; foreach (var d in head.Dots) if (d) b.Encapsulate(d.bounds);
+                Log($"{id}: {head.Crossing} at {F(b.center.x)},{F(b.center.z)} size {F(b.size.x)} x {F(b.size.z)}, {head.Dots.Length} modules, cross length {F(head.CrossLength)}");
+                foreach (var r in new[] { head.Rim, head.Ring, head.Beam, head.Halo, head.Dots[0] }) if (r) foreach (var m in r.sharedMaterials) if (m && seen.Add(m.name)) Log($"  {r.name}: {m.name} ({m.shader.name}, q{m.renderQueue}{(m.HasProperty("_Mode") ? ", mode " + m.GetFloat("_Mode") : "")})");
+                foreach (var d in head.Dots) foreach (var m in d.sharedMaterials) if (m && seen.Add(m.name)) Log($"  {d.name}: {m.name} ({m.shader.name}, q{m.renderQueue})");
+                foreach (var turn in id == "cafe" ? new[] { 1, 3 } : new[] { 0, 2 }) // the café itself or a roof hides the café crossing from 30 and 210
+                {
+                    h.TurnSnap(turn); h.LookAt(new Vector3(b.center.x, 0f, b.center.z));
+                    foreach (var st in new[] { "stop", "walk", "clearing" })
+                    {
+                        SignalHead.Hold = st; SignalHead.HoldLeft = 5f; for (int i = 0; i < 24; i++) yield return null;
+                        Log($"  {id} turn {turn} {st}: head state {head.State}, ring lit {head.RingLit}");
+                        yield return Still($"{id}-y{30 + 90 * turn:000}-{st}");
+                    }
+                }
+            }
+            SignalHead.Hold = "";
         }
 
         void RunTo(int t)

@@ -147,7 +147,7 @@ test('signal textures carry real alpha and their metas import it (Alpha Source =
   try {
     expect(a.errors).toEqual([]);
     const pngs = [...new Set(kit.assets.filter(x => x.status === 'adopted').flatMap(x => x.files.map(f => f.path)).filter(p => /^Textures\/signal_[^/]*\.png$/.test(p)))].sort();
-    expect(pngs).toEqual(['Textures/signal_atlas_v1.png', 'Textures/signal_ring_v1.png']);
+    expect(pngs).toEqual(['Textures/signal_atlas_v1.png', 'Textures/signal_ring_v2.png']); // brief 079: the lit-in-the-paving ring
     const trees = [['copy', dest], ...(existsSync(resolve(import.meta.dir, '../../unity/Assets/Suborned/Kit/Textures')) ? [['unity Kit', resolve(import.meta.dir, '../../unity/Assets/Suborned/Kit')]] : [])] as [string, string][];
     for (const [where, base] of trees) for (const p of pngs) {
       const im = decodePng(readFileSync(join(base, p)));

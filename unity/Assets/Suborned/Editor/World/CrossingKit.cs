@@ -27,7 +27,7 @@ namespace Suborned.World
         public static int EnsureSignalTextures()
         {
             int n = 0;
-            foreach (var path in new[] { "Assets/Suborned/Kit/Textures/signal_atlas_v1.png", "Assets/Suborned/Kit/Textures/signal_ring_v1.png" })
+            foreach (var path in new[] { "Assets/Suborned/Kit/Textures/signal_atlas_v1.png", "Assets/Suborned/Kit/Textures/signal_ring_v2.png" })
             {
                 if (AssetImporter.GetAtPath(path) is not TextureImporter ti) throw new InvalidDataException($"World: signal heads: {path} missing (the SignalLens and HaloRing pieces need it)");
                 if (ti.alphaSource == TextureImporterAlphaSource.FromInput && ti.alphaIsTransparency) continue;
@@ -244,17 +244,14 @@ namespace Suborned.World
             return lightMat = Lens(kit);
         }
 
-        /// <summary>The seafoam light drawn as emission only, from the kit row (its colour, shader and fade); saved beside the scene.</summary>
+        /// <summary>The seafoam light on the crossings with no signal, from the kit row's colour; saved beside the scene. Brief 079: Signal Dots, not URP Lit (the row's lens and its
+        /// spill share one slot, and Lit would draw the spill as an opaque ring on the road); the shader's defaults, wide gate, always lit.</summary>
         static Material Lens(Material kit)
         {
-            var m = new Material(kit) { name = Light + "_Glow" };
+            var sh = Shader.Find("Suborned/Signal Dots") ?? throw new InvalidDataException("World: shader Suborned/Signal Dots missing (Shaders/SignalDots.shader)");
             var c = kit.GetColor("_BaseColor").linear * LightGlow;
-            m.SetColor("_BaseColor", Color.black);
-            m.SetColor("_EmissionColor", new Color(c.r, c.g, c.b, 1f)); m.EnableKeyword("_EMISSION");
-            m.SetFloat("_Smoothness", 0f); m.SetFloat("_SpecularHighlights", 0f); m.SetFloat("_EnvironmentReflections", 0f);
-            m.EnableKeyword("_SPECULARHIGHLIGHTS_OFF"); m.EnableKeyword("_ENVIRONMENTREFLECTIONS_OFF");
-            // Redline 2026-10-15 L7: on a black base the main-light shadow lookups multiply to nothing; emission is not shadowed
-            m.SetFloat("_ReceiveShadows", 0f); m.EnableKeyword("_RECEIVE_SHADOWS_OFF");
+            var m = new Material(sh) { name = Light + "_Glow" };
+            m.SetColor("_EmissionColor", new Color(c.r, c.g, c.b, 1f));
             var path = Path.ChangeExtension(HarbourWorldBuilder.ScenePath, null) + "-crosslight.mat";
             AssetDatabase.DeleteAsset(path);
             AssetDatabase.CreateAsset(m, path);

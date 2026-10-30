@@ -106,3 +106,34 @@ Next owners
 - Latch (+ Glint): the four .mat and six texture .meta into out/decokit-077 (then I re-run the catalogue); KitLods lodSize, objects[].shadows and the _TB internal names; placement stays default-off.
 - Vela: re-declare or drop the copied collide on the 8 _TB rows (4); optionally switch the generators' TESTBED_SRC default to the vendored copy.
 - Keel and Aster or Sky: the sight and sim decision (3), unchanged, before any adoption.
+
+---
+Brief 079, 2026-10-30 (Splice): out/decokit repair and the crossing lights adopted. This section is about 079; it's filed here as Aster asked. No commits.
+
+Repair (Vela's stray full export into out/decokit)
+- Check: every kit.json file with root generated or extra, by sha256 against its root (out/scratch/splice/kitcheck079.ts): 10,532 ok, 0 bad after the repair. Before it: 6 bad, all candidates (BoxTruck_Play, SkyRailStation_Blank and their L1/L2). No adopted piece was off, and none changed.
+- Cause of "kit.json is the manifest": the export wrote 86 FBX into out/decokit for pieces kit.json takes from the legacy root. The catalogue prefers a generator binary that exists, so a rebuild would have swapped adopted pieces' FBX. A batch's `bun run kit` step would have done exactly that. Those 86 are moved to out/scratch/splice/decokit-quarantine-079 (recoverable). Dumpster's copy was byte-identical to what kit.collide.json measured, so it went back.
+- The 2 pieces: the export had already regenerated them with the current generator, and tris and size match the manifest rows (checked in Blender for the L0 files). They were re-catalogued and re-measured; both stay candidates.
+- Cause of "volumes for its current mesh": the same stray FBX. Also, collide.ts dropped a candidate's entry when its mesh isn't on the machine, which would have lost 8 entries here (7 with no mesh left: AlleyStair_9, AlleyWall_6/9/10/6D, BoxTruck, SkyRailStation). It now keeps them, and I restored them.
+- tools/decokit/run.ts refuses unknown flags through the shared usage gate, before it writes anything (tools/decokit/run.test.ts, 5 tests).
+- A running batch's kit step: safe now. `bun run kit` rebuilds kit.json with no change to adopted pieces, and its source hashes all match.
+- Not touched: the other files outside kit.json that the export wrote (135 FBX, 48 materials and others). Nothing reads them while the manifest doesn't list them.
+
+Crossing lights (Vela's rework, out/decokit-079; same ids)
+- crossing079.py and run.ts: the rework is the default now; DECOKIT_CROSS079=0 builds the old pieces.
+- LightDotRow_2, LightDotRow_1, HaloRing and SignalLens are adopted with their new binaries (hash-checked against briefs/079/crossing/PROVENANCE.json), Data/signal-lens.json, signal_ring_v2 and cross_bezel_v1. kit.test's alpha list now has signal_ring_v2. partkit.test has the new sizes. In kit.json only those four entries changed.
+- A gap I fixed: the handoff says DK_Cross_Housing has _BaseMap cross_bezel_v1.png, but the .mat in out/decokit-079 had no base map and the texture had no .meta. Without them the ring would have had no seam, wall or grain. unity_mats.py now writes it (BASE_MAPPED). So DK_Cross_Housing.mat's hash differs from PROVENANCE's (4e9a44ca..., was 7541c7db...). Vela should check it and refresh PROVENANCE, whose status still says candidate.
+- Evidence:
+  - bun run kit: 0 (85 files copied; 0 adopted files now differ from kit.json in Kit/). That includes about 40 materials Kit/ held at other bytes, which a batch's kit step would also have overwritten.
+  - bun run collide: 0 (4 re-measured). The three flat pieces still have no volumes. SignalLens's volumes changed, but crossing parts stand no solid.
+  - bun run world: 0, sha256 b4c862677d81... unchanged (the export names the pieces by id). So there is no drift at all.
+  - plan: 0. Overlay: 0. cover: 0, only from.kit moved. cover --check: 0.
+  - sim/data byte-identical, and the site rebuild equals the committed file.
+  - geometry --check: 1, G-3a 59 > 58 as before, all counts identical.
+  - typecheck: clean.
+  - Tests: the partkit failure is fixed in the test; re-run in the report.
+
+Next owners
+- Latch, blocking the next Unity build: CrossingKit.cs EnsureSignalTextures throws if Textures/signal_ring_v1.png is missing, and it's now pruned (no adopted piece lists it). Change it to signal_ring_v2. Then the Unity handoff: shaders, the Glow materials, and the new DK_Signal_RimLens.mat, which has no kit .mat.
+- Datum, FYI: the plan's streetscape.crossings.strip.lights.dots has d 0.22 and width 0.30; the new lens is 0.18 and the housing 0.34. The checker doesn't care: CD and crossing-parts compare the export to the plan, never to the kit. The export still carries 0.22 and 0.30 until the plan changes.
+- Vela: the .mat note above.

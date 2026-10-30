@@ -61970,7 +61970,7 @@
      "root": "generated",
      "role": "fbx",
      "path": "Models/Vehicles/DK_BoxTruck_Play.fbx",
-     "sha256": "541143c1239f02597906748387d761a818ac3744ce1b935ae1247d8b7335029d",
+     "sha256": "4c50874499a4b4b1468b40a2f4c5576084e72c878c7ad0294f9d5f2bdb94acf6",
      "bytes": 727948
     },
     {
@@ -62239,14 +62239,14 @@
      "root": "generated",
      "role": "lod",
      "path": "Models/Vehicles/DK_BoxTruck_Play_L1.fbx",
-     "sha256": "b9dab8274e35a1c3226703519e3bdbecde36e09a7bf86f269804aad5c0ed10bd",
+     "sha256": "904fe17689f886127364e609c307f71b00d127f379c2b7c3813a42481192a375",
      "bytes": 242380
     },
     {
      "root": "generated",
      "role": "lod",
      "path": "Models/Vehicles/DK_BoxTruck_Play_L2.fbx",
-     "sha256": "0d0b9c62a48e108e75b6a523a20a1d0f8fb7dd13f103d9ff884ed565e70e6628",
+     "sha256": "62005e3e2fd3250e00c6e893e4625ce43318fa4e4b64faa25ba62ae772471b1b",
      "bytes": 93532
     }
    ],
@@ -77921,14 +77921,22 @@
    "category": "Ground",
    "size": [
     1.24,
-    0,
+    0.002,
     1.24
    ],
    "pivot": "footprint-centre-ground",
    "front": "+Z",
-   "tris": 2,
+   "tris": 130,
    "materials": [
-    "DK_Signal_Ring"
+    "DK_Signal_Ring",
+    "DK_Cross_Housing"
+   ],
+   "lods": [
+    {
+     "file": "Models/Ground/DK_HaloRing_L1.fbx",
+     "tris": 66,
+     "screen": 0.008
+    }
    ],
    "lodCategory": "street",
    "files": [
@@ -77936,14 +77944,14 @@
      "root": "generated",
      "role": "fbx",
      "path": "Models/Ground/DK_HaloRing.fbx",
-     "sha256": "6b277b7c0b86a181bf442095615c4877c20e847fce2e3ece865129f078e7f350",
-     "bytes": 17932
+     "sha256": "fc8cdff40bff2ad8db1ec77f120ea3e4f996e08c6115a210af526228558242ba",
+     "bytes": 22316
     },
     {
      "root": "generated",
      "role": "material",
      "path": "Materials/DK_Signal_Ring.mat",
-     "sha256": "a728b99097abf6cd34034de992ff3dc19837dd033d2b3dac07d2ce41c8f5908e",
+     "sha256": "26e00103327db96743fabdb94a7a48da6730af7937a6fb8bcc26399e7273a86f",
      "bytes": 4093
     },
     {
@@ -77955,17 +77963,52 @@
     },
     {
      "root": "generated",
+     "role": "material",
+     "path": "Materials/DK_Cross_Housing.mat",
+     "sha256": "4e9a44ca22911af3b8888c3c7b61e10b4e56c3e1f9e772c598d4ab3bbf0961f6",
+     "bytes": 3998
+    },
+    {
+     "root": "generated",
+     "role": "material-meta",
+     "path": "Materials/DK_Cross_Housing.mat.meta",
+     "sha256": "33e5d46abcce7bf5f0735f19c241da2c58b40d5345454b3cad6506613c2477fa",
+     "bytes": 188
+    },
+    {
+     "root": "generated",
      "role": "texture",
-     "path": "Textures/signal_ring_v1.png",
-     "sha256": "fa400002d3e4adcab82faaf2d8df7c664e34c4a26a152dde74ded58757a9eb41",
-     "bytes": 6672
+     "path": "Textures/cross_bezel_v1.png",
+     "sha256": "acfdff283f275ece72d4db1b321238445e4027a72d6ba89a6760803046f0ecd1",
+     "bytes": 14542
     },
     {
      "root": "generated",
      "role": "texture-meta",
-     "path": "Textures/signal_ring_v1.png.meta",
-     "sha256": "a573b064648b711e23ab4f81e198cefb0a9e13a30246707d5481cd739e302245",
+     "path": "Textures/cross_bezel_v1.png.meta",
+     "sha256": "5b271c67a82bdd13d4372dba27b0fa47953712a57c7974437e8b58eac67e0ed1",
      "bytes": 2715
+    },
+    {
+     "root": "generated",
+     "role": "texture",
+     "path": "Textures/signal_ring_v2.png",
+     "sha256": "9e64c5ff8afe4c199f25a4326612e8dba5b1d4deab4a285c80d6a4909ddfe8ec",
+     "bytes": 25882
+    },
+    {
+     "root": "generated",
+     "role": "texture-meta",
+     "path": "Textures/signal_ring_v2.png.meta",
+     "sha256": "fad38f11615c86853e4377740eb052d795c3807a58b6b159c70502e634903b62",
+     "bytes": 2715
+    },
+    {
+     "root": "generated",
+     "role": "lod",
+     "path": "Models/Ground/DK_HaloRing_L1.fbx",
+     "sha256": "4cf1b671b0dc3e3130c276ef93a95b6d4588b8b46a38676c891358f90de1b5bc",
+     "bytes": 21308
     }
    ],
    "tags": {
@@ -80490,21 +80533,21 @@
    "id": "LightDotRow_1",
    "category": "Ground",
    "size": [
-    0.8,
-    0.002,
-    0.3
+    0.84,
+    0.012,
+    0.34
    ],
    "pivot": "footprint-centre-ground",
    "front": "+Z",
-   "tris": 24,
+   "tris": 168,
    "materials": [
-    "DK_Enamel_Charcoal",
-    "DK_Cross_Light"
+    "DK_Cross_Light",
+    "DK_Cross_Housing"
    ],
    "lods": [
     {
      "file": "Models/Ground/DK_LightDotRow_1_L1.fbx",
-     "tris": 12,
+     "tris": 80,
      "screen": 0.008
     }
    ],
@@ -80514,22 +80557,8 @@
      "root": "generated",
      "role": "fbx",
      "path": "Models/Ground/DK_LightDotRow_1.fbx",
-     "sha256": "edc5f24f820d14773df52a49ed6b243213abf8a0e99d8390c02c5799a4a492dd",
-     "bytes": 16604
-    },
-    {
-     "root": "generated",
-     "role": "material",
-     "path": "Materials/DK_Enamel_Charcoal.mat",
-     "sha256": "4f538c712a86dec1250e31fee5c04576ca35c6ece211b326220f7057e560086a",
-     "bytes": 3982
-    },
-    {
-     "root": "generated",
-     "role": "material-meta",
-     "path": "Materials/DK_Enamel_Charcoal.mat.meta",
-     "sha256": "ce702950c476b32bd295b298169282db67ad3c1dbfe1a6f85b698a657d1a906b",
-     "bytes": 188
+     "sha256": "bcb587c253fe078bf39e24773ac3a82f8e414fff8a69d062932664fb39abe252",
+     "bytes": 22588
     },
     {
      "root": "generated",
@@ -80547,38 +80576,38 @@
     },
     {
      "root": "generated",
+     "role": "material",
+     "path": "Materials/DK_Cross_Housing.mat",
+     "sha256": "4e9a44ca22911af3b8888c3c7b61e10b4e56c3e1f9e772c598d4ab3bbf0961f6",
+     "bytes": 3998
+    },
+    {
+     "root": "generated",
+     "role": "material-meta",
+     "path": "Materials/DK_Cross_Housing.mat.meta",
+     "sha256": "33e5d46abcce7bf5f0735f19c241da2c58b40d5345454b3cad6506613c2477fa",
+     "bytes": 188
+    },
+    {
+     "root": "generated",
      "role": "texture",
-     "path": "Textures/surface_enamel_detail_v1.png",
-     "sha256": "a407da57c4a52fc85b1946b9f33f91f2ae1a1c5ff3d31fd2bebcc210d60fd147",
-     "bytes": 474006
+     "path": "Textures/cross_bezel_v1.png",
+     "sha256": "acfdff283f275ece72d4db1b321238445e4027a72d6ba89a6760803046f0ecd1",
+     "bytes": 14542
     },
     {
      "root": "generated",
      "role": "texture-meta",
-     "path": "Textures/surface_enamel_detail_v1.png.meta",
-     "sha256": "30eb7058ac45ff6a9f483843d9f9118b13b98ab96576ef30bd3233c6b64dd0d6",
-     "bytes": 2718
-    },
-    {
-     "root": "generated",
-     "role": "texture",
-     "path": "Textures/surface_enamel_detail_v1_normal.png",
-     "sha256": "45e4c502424bb43719e315020ffb03d7ac8dd5fb85658f978cd099d8d7d6af45",
-     "bytes": 1964610
-    },
-    {
-     "root": "generated",
-     "role": "texture-meta",
-     "path": "Textures/surface_enamel_detail_v1_normal.png.meta",
-     "sha256": "ff1f0ca0ac42c65a890f56d5f8aee70ad346771c991ed17c4174132622d09279",
-     "bytes": 2718
+     "path": "Textures/cross_bezel_v1.png.meta",
+     "sha256": "5b271c67a82bdd13d4372dba27b0fa47953712a57c7974437e8b58eac67e0ed1",
+     "bytes": 2715
     },
     {
      "root": "generated",
      "role": "lod",
      "path": "Models/Ground/DK_LightDotRow_1_L1.fbx",
-     "sha256": "3139d779fa0b00a67d8edce364f473d2a60311e476066e64147e1da410d37465",
-     "bytes": 16268
+     "sha256": "e9fb8fcc61e23238dd09e597a7c09a6ae37d9b4afe2a4131996cce84fa5f13ce",
+     "bytes": 20428
     }
    ],
    "tags": {
@@ -80599,21 +80628,21 @@
    "id": "LightDotRow_2",
    "category": "Ground",
    "size": [
-    1.8,
-    0.002,
-    0.3
+    1.84,
+    0.012,
+    0.34
    ],
    "pivot": "footprint-centre-ground",
    "front": "+Z",
-   "tris": 48,
+   "tris": 336,
    "materials": [
-    "DK_Enamel_Charcoal",
-    "DK_Cross_Light"
+    "DK_Cross_Light",
+    "DK_Cross_Housing"
    ],
    "lods": [
     {
      "file": "Models/Ground/DK_LightDotRow_2_L1.fbx",
-     "tris": 24,
+     "tris": 160,
      "screen": 0.008
     }
    ],
@@ -80623,22 +80652,8 @@
      "root": "generated",
      "role": "fbx",
      "path": "Models/Ground/DK_LightDotRow_2.fbx",
-     "sha256": "23f772ea108de61be15f9767cd16eabe79da03ce750290a8bd6c75acb65fe05e",
-     "bytes": 16700
-    },
-    {
-     "root": "generated",
-     "role": "material",
-     "path": "Materials/DK_Enamel_Charcoal.mat",
-     "sha256": "4f538c712a86dec1250e31fee5c04576ca35c6ece211b326220f7057e560086a",
-     "bytes": 3982
-    },
-    {
-     "root": "generated",
-     "role": "material-meta",
-     "path": "Materials/DK_Enamel_Charcoal.mat.meta",
-     "sha256": "ce702950c476b32bd295b298169282db67ad3c1dbfe1a6f85b698a657d1a906b",
-     "bytes": 188
+     "sha256": "7fb57641163b4a62580e69ed6019469c4197a28dd653793895a3a15a9a207fde",
+     "bytes": 25356
     },
     {
      "root": "generated",
@@ -80656,38 +80671,38 @@
     },
     {
      "root": "generated",
+     "role": "material",
+     "path": "Materials/DK_Cross_Housing.mat",
+     "sha256": "4e9a44ca22911af3b8888c3c7b61e10b4e56c3e1f9e772c598d4ab3bbf0961f6",
+     "bytes": 3998
+    },
+    {
+     "root": "generated",
+     "role": "material-meta",
+     "path": "Materials/DK_Cross_Housing.mat.meta",
+     "sha256": "33e5d46abcce7bf5f0735f19c241da2c58b40d5345454b3cad6506613c2477fa",
+     "bytes": 188
+    },
+    {
+     "root": "generated",
      "role": "texture",
-     "path": "Textures/surface_enamel_detail_v1.png",
-     "sha256": "a407da57c4a52fc85b1946b9f33f91f2ae1a1c5ff3d31fd2bebcc210d60fd147",
-     "bytes": 474006
+     "path": "Textures/cross_bezel_v1.png",
+     "sha256": "acfdff283f275ece72d4db1b321238445e4027a72d6ba89a6760803046f0ecd1",
+     "bytes": 14542
     },
     {
      "root": "generated",
      "role": "texture-meta",
-     "path": "Textures/surface_enamel_detail_v1.png.meta",
-     "sha256": "30eb7058ac45ff6a9f483843d9f9118b13b98ab96576ef30bd3233c6b64dd0d6",
-     "bytes": 2718
-    },
-    {
-     "root": "generated",
-     "role": "texture",
-     "path": "Textures/surface_enamel_detail_v1_normal.png",
-     "sha256": "45e4c502424bb43719e315020ffb03d7ac8dd5fb85658f978cd099d8d7d6af45",
-     "bytes": 1964610
-    },
-    {
-     "root": "generated",
-     "role": "texture-meta",
-     "path": "Textures/surface_enamel_detail_v1_normal.png.meta",
-     "sha256": "ff1f0ca0ac42c65a890f56d5f8aee70ad346771c991ed17c4174132622d09279",
-     "bytes": 2718
+     "path": "Textures/cross_bezel_v1.png.meta",
+     "sha256": "5b271c67a82bdd13d4372dba27b0fa47953712a57c7974437e8b58eac67e0ed1",
+     "bytes": 2715
     },
     {
      "root": "generated",
      "role": "lod",
      "path": "Models/Ground/DK_LightDotRow_2_L1.fbx",
-     "sha256": "1853d6e610d467c00e6d02383a9baba40cfa44e38d5bb23276b6efd08c40cbb0",
-     "bytes": 16364
+     "sha256": "39fe5386ee8a010ed9647adb6e04988128c869c800c1ca8d1899775a3d8ae546",
+     "bytes": 21708
     }
    ],
    "tags": {
@@ -102371,14 +102386,14 @@
    ],
    "pivot": "footprint-centre-ground",
    "front": "+Z",
-   "tris": 650,
+   "tris": 822,
    "materials": [
     "DK_Chrome",
     "DK_Enamel_Charcoal",
     "DK_Cross_Beam",
     "DK_Signal_Atlas",
     "DK_Cross_Halo",
-    "DK_Signal_Rim"
+    "DK_Signal_RimLens"
    ],
    "parts": [
     "DK_SignalLens_Beam",
@@ -102401,8 +102416,8 @@
      "root": "generated",
      "role": "fbx",
      "path": "Models/Signals/DK_SignalLens.fbx",
-     "sha256": "18dcc243ae88ade4fe12bf17bad6820fc8299250d84d0ec5c6e05c13b9940dd1",
-     "bytes": 53212
+     "sha256": "643ceca47f36454b643c7f1b370d14bb1a948cace7bf288622df10e7b65a1967",
+     "bytes": 57436
     },
     {
      "root": "generated",
@@ -102444,20 +102459,6 @@
      "role": "material-meta",
      "path": "Materials/DK_Signal_Atlas.mat.meta",
      "sha256": "baaad421a47c5ede23d7712022f8c9ba6fa1fa6f2a5a17fdfee2672b72bbb719",
-     "bytes": 188
-    },
-    {
-     "root": "generated",
-     "role": "material",
-     "path": "Materials/DK_Signal_Rim.mat",
-     "sha256": "1c6d8a3667accad13b53813cf2ff584060ac7d1d7c0a9dab43a7e6868d2bcb36",
-     "bytes": 3895
-    },
-    {
-     "root": "generated",
-     "role": "material-meta",
-     "path": "Materials/DK_Signal_Rim.mat.meta",
-     "sha256": "927b1863f3d0454eafdf08636e4389d49d72c63f7113ecff343b87ecb060e015",
      "bytes": 188
     },
     {
@@ -102534,15 +102535,15 @@
      "root": "generated",
      "role": "lod",
      "path": "Models/Signals/DK_SignalLens_L1.fbx",
-     "sha256": "9bad3169d3141652baafd23e283d8459c584ec5a446a7c41cad259c8df396028",
-     "bytes": 42924
+     "sha256": "f8acc71db02b6964e0a642c755a5a9ca868a143c2d7b4198dcdbfa471576d5d5",
+     "bytes": 42700
     },
     {
      "root": "generated",
      "role": "data",
      "path": "Data/signal-lens.json",
-     "sha256": "6082f530f17c9fcc56fc38b3cc5c39cf98f6a10fa426ba2a14488ceb2bf4851f",
-     "bytes": 10549
+     "sha256": "837321fb056d90a0e924bc64fe549c2023213ae4adf17d164769e88b25a9a32d",
+     "bytes": 10732
     }
    ],
    "tags": {
@@ -103320,7 +103321,7 @@
      "root": "generated",
      "role": "fbx",
      "path": "Models/Skyport/DK_SkyRailStation_Blank.fbx",
-     "sha256": "9278ee106ae2685d942972622f9249e4127c7a5af073f2ba2704733a38a264f3",
+     "sha256": "92b4ea896b0baada2acecc6c9455e1b9a8d2b93f47497f85b0dbf34649e87b97",
      "bytes": 422860
     },
     {
@@ -103663,14 +103664,14 @@
      "root": "generated",
      "role": "lod",
      "path": "Models/Skyport/DK_SkyRailStation_Blank_L1.fbx",
-     "sha256": "f85de2ad18e3bdc5682a88194da70544bcf3784a04407eeb6e685f4614ac7aa3",
+     "sha256": "99851f5cacc516e8cd07d22377e6954213f662f79adeda89bb169e223191b038",
      "bytes": 171964
     },
     {
      "root": "generated",
      "role": "lod",
      "path": "Models/Skyport/DK_SkyRailStation_Blank_L2.fbx",
-     "sha256": "3c81e5222adfe3f1de8dd6e58ddb040f3ad36d49c5538bc75c067bdd239722c4",
+     "sha256": "e3601924d96b309e63d3762e4ce2d7fea593409f5c12380d6d9e794232df4514",
      "bytes": 84652
     }
    ],

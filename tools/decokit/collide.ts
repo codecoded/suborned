@@ -41,7 +41,7 @@ if (import.meta.main) {
   const pieces: Record<string, PieceCollide> = {}, todo: [string, string, string][] = [];
   for (const a of [...kitAssets().values()].sort((x, y) => (x.id < y.id ? -1 : 1))) {
     if (a.status === 'rejected' || (only && !only.includes(a.id))) { if (keep[a.id]) pieces[a.id] = keep[a.id]!; continue; }
-    const f = fbxOf(a); if (!f) continue;
+    const f = fbxOf(a); if (!f) { if (keep[a.id]) pieces[a.id] = keep[a.id]!; continue; } // a candidate whose mesh is not on this machine keeps its measured entry (was dropped: brief 079)
     const s = sha(readFileSync(f)), k = keep[a.id];
     if (k && !only?.includes(a.id) && k.sha256 === s && ('declared' in k ? k.declared : undefined) === dsha(a.id)) pieces[a.id] = k; else todo.push([a.id, f, s]);
   }

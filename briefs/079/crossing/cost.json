@@ -1,0 +1,58 @@
+{
+ "table": {
+  "Stud, L0 (always at play zoom: a module is 6% of the screen, L1 starts at 0.8%)": {
+   "now": "12 tris (seat 6, dot 6)",
+   "proposed": "84 tris: the metal ring 48 (two bands of 12 quads; the seam, wall and grain are texture, not triangles), lens 12, spill 24"
+  },
+  "Stud, L1": {
+   "now": "6 tris",
+   "proposed": "40 tris"
+  },
+  "13 m crossing (48 studs), L0": {
+   "now": "624 tris",
+   "proposed": "4,368 tris"
+  },
+  "Whole city: 274 + 40 modules, 1,176 studs": {
+   "now": "14.1k tris",
+   "proposed": "98.8k tris (frustum-culled: at play zoom 1 to 2 crossings show)"
+  },
+  "Signal eye (SignalLens) L0 / L1": {
+   "now": "650 / 234 tris",
+   "proposed": "822 / 234 tris (a chrome lip round each display, in the body's slot: no new draw)"
+  },
+  "Clock ring (HaloRing) L0 / L1": {
+   "now": "2 tris",
+   "proposed": "130 / 66 tris (two flush bezels, 4.5 and 3.5 cm, flat, one band each)"
+  },
+  "Material slots per module, so draws": {
+   "now": "2",
+   "proposed": "2: lens and spill are one slot; no new draw"
+  },
+  "Material slots per clock ring": {
+   "now": "1",
+   "proposed": "2 (+1 draw on each of 35 rings, only those on screen)"
+  },
+  "New materials": {
+   "now": "",
+   "proposed": "DK_Cross_Housing (kit, URP Lit, sun specular off, one 256 x 64 map cross_bezel_v1.png, shared by studs and rings); DK_Signal_RimLens (Materials/Glow, Signal Dots). Signal Dots and Cross Glow change; no new shader file"
+  },
+  "Real-time lights": {
+   "now": "0",
+   "proposed": "0"
+  },
+  "Blended overdraw, 13 m crossing at play zoom (arithmetic, 916 px per m2 of road at ortho 14, pitch 38)": {
+   "now": "about 2.6k px (2 haloes, 2 beams)",
+   "proposed": "about 20k px, 1.0% of a 1080p frame, one layer of a very cheap fragment (no texture, no lighting): spills 12.9k, pools 6.3k, beams 1.3k"
+  }
+ },
+ "notes": [
+  "Eevee, not Unity. The Unity shaders are written out as node trees from the same numbers, and 'now' is built the same way from the committed shaders' numbers. 'Now' lands close to Sky's frame (top of the stop, shade row), which is the check on the stage.",
+  "Bloom and grade are a numpy pass of lens.json bloomPlay (threshold 1.05, intensity 0.45), ACES and the play grade, with URP's pyramid as three blur radii. No SSAO, no contact shade, no fog. The studs' bloom in the game is the part to look at first.",
+  "The road is DK_Ground_RoadAsphalt on a flat stage, as near Sky's frame. The night rig is a moon and a low ambient with no lamps, so the road reads blacker than the game's night floor: judge the lights there, not the road.",
+  "Shadow frames: a blocker out of frame stands in for the Records Office, with the ambient raised until the shaded road measures close to Sky's frame (the stage has no sky bounce or walls). The penumbra's grain is Eevee's.",
+  "Nothing here has been compiled or measured in Unity: Glint has it this round. The overdraw figure is arithmetic. Latch and Redline measure on the Air.",
+  "No reflection in the road: on purpose. An orthographic camera would make it a fixed smear, and note 1 is about too much shine. The spill on the road does that job.",
+  "The ring is nickel, not brass: GDD 15 and brief 072-G keep brass off the carriageway. 009's concept shows brass frames; that is Sky's call. Eevee's flat ambient flatters the metal's reflections: Unity's probe decides how bright it really sits.",
+  "The stud's lens is 0.18 m against the plan's dots.d 0.22, and the housing 0.34 m against the plan's 0.30 width: inside fitsPart's 0.05 m, plan untouched. Datum may want to bring the plan's numbers to the piece."
+ ]
+}

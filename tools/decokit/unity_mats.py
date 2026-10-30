@@ -14,6 +14,7 @@ from pathlib import Path
 
 LIT = "2529b42165e1d45a8bcfb0013bb5aba3"       # the shader guid every kit .mat uses (Complex Lit for enamel: 206122...)
 COMPLEX = "206122040e60d470e92cddeccf1aacf6"
+BASE_MAPPED = ("DK_Cross_Housing",)  # brief 079: rows of a supported kind whose .mat carries their own texture
 SUPPORTED = ("enamel", "metal", "brass", "emit", "ceramic", "stone", "chrome", "rubber", "roadmetal", "roadpaint")
 
 
@@ -336,6 +337,17 @@ def write(table_path, dst, retuned):
             (Path(dst) / "Textures" / f"{row['texture']}.meta").write_text(re.sub(r"guid: [0-9a-f]{32}", f"guid: {tg}", tm, count=1))
             d.mkdir(parents=True, exist_ok=True)
             (d / f"{n}.mat").write_text(lit_art_text(row, legacy, tg))
+            (d / f"{n}.mat.meta").write_text(meta_text(n, legacy))
+            out.append(n)
+            continue
+        if n in BASE_MAPPED and row["texture"]:  # brief 079: a supported row with its own map (the crossing's nickel bezel): the row's .mat with the map on _BaseMap and _MainTex; the texture's .meta is its generator's (name-derived guid)
+            d.mkdir(parents=True, exist_ok=True)
+            text = mat_text(row)
+            for slot in ("_BaseMap", "_MainTex"):
+                old = f"    - {slot}:\n        m_Texture: {{fileID: 0}}\n"
+                assert old in text, slot
+                text = text.replace(old, f"    - {slot}:\n        m_Texture: {{fileID: 2800000, guid: {tex_guid(row['texture'])}, type: 3}}\n")
+            (d / f"{n}.mat").write_text(text)
             (d / f"{n}.mat.meta").write_text(meta_text(n, legacy))
             out.append(n)
             continue

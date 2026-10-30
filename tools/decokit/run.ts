@@ -6,9 +6,13 @@ import { resolve } from 'node:path';
 import { type Built, fitRow, printTable } from './fit';
 import { BUILD, readOrders, writeOrders } from './orders';
 import { WAVE1 } from '../kit/tags';
+import { usageGate } from '../gen/flags';
 
 const repo = resolve(import.meta.dir, '../..');
 const argv = process.argv.slice(2), opt = (k: string) => { const i = argv.indexOf(k); return i >= 0 ? argv[i + 1] : undefined; };
+// Brief 079 (Splice): an unknown flag never builds. A stray `--version` ran a full export into the shared out/decokit (2026-10-30), overwriting files the catalogue pins.
+usageGate(argv, { flags: ['--mats-only', '--lods-only', '--no-lods'], valued: [{ flag: '--only', required: true }, { flag: '--cats', required: true }, { flag: '--out', required: true }] },
+  'usage: bun run decokit [--only a,b] [--cats X] [--mats-only] [--lods-only] [--no-lods] [--out dir]\n  no flag: a full export into out/decokit ($DECOKIT_OUT, or --out); a review build belongs in its own --out\n  --help, -h or any unknown option prints this and does nothing', 'decokit');
 const out = resolve(opt('--out') ?? process.env.DECOKIT_OUT ?? resolve(repo, 'out/decokit'));
 mkdirSync(out, { recursive: true });
 const orders = resolve(out, 'orders.json'); writeOrders(orders);
@@ -25,6 +29,7 @@ const ft = Bun.spawnSync(['python3', resolve(import.meta.dir, 'fountain_tex.py')
 const rt = Bun.spawnSync(['python3', resolve(import.meta.dir, 'robot_tex.py')], { stdout: 'inherit', stderr: 'inherit' }); if (rt.exitCode) process.exit(rt.exitCode);
 const ca = Bun.spawnSync(['python3', resolve(import.meta.dir, 'car_tex.py')], { stdout: 'inherit', stderr: 'inherit' }); if (ca.exitCode) process.exit(ca.exitCode); // brief 070: the car enamel detail pair (DK_CarEnamel_*)
 const sg = Bun.spawnSync(['python3', resolve(import.meta.dir, 'signal_tex.py')], { stdout: 'inherit', stderr: 'inherit' }); if (sg.exitCode) process.exit(sg.exitCode); // brief 061: the lens face atlas and the clock ring map
+if (process.env.DECOKIT_CROSS079 !== '0') { const s9 = Bun.spawnSync(['python3', resolve(import.meta.dir, 'signal_tex079.py')], { stdout: 'inherit', stderr: 'inherit' }); if (s9.exitCode) process.exit(s9.exitCode); } // brief 079: the candidate clock map (crossing079.py)
 const hz = Bun.spawnSync(['python3', resolve(import.meta.dir, 'horizon_tex.py')], { stdout: 'inherit', stderr: 'inherit' }); if (hz.exitCode) process.exit(hz.exitCode); // 2026-10-27: the old DecoKit planet, ring and moon maps (sky_sheet.py) for Horizon_PlanetRinged / Horizon_Moon, and the ring profile horizon.py cuts
 const su = Bun.spawnSync(['python3', resolve(import.meta.dir, 'surface_tex.py')], { stdout: 'inherit', stderr: 'inherit' }); if (su.exitCode) process.exit(su.exitCode); // brief 072-F: the colourless surface detail (FacadeLit layer array + kit detail pairs)
 const cw = Bun.spawnSync(['python3', resolve(import.meta.dir, 'colourways.py')], { stdout: 'inherit', stderr: 'inherit' }); if (cw.exitCode) process.exit(cw.exitCode); // brief 075 old palette: removes 074-B's neutral sheet (the colourways tint the old sheet again; unity_mats writes the sets)

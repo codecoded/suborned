@@ -224,6 +224,10 @@ def main():
                    bounds=[round(-max(v.x for v in box), 3), round(-min(v.x for v in box), 3),  # footprint about the pivot in kit axes
                            round(-max(v.y for v in box), 3), round(-min(v.y for v in box), 3)],  # [x0, x1, z0, z1]; the FBX import mirrors X (kit x = -Blender x) and kit z = -Blender y
                    materials=list(dict.fromkeys(m.name for o in objs for m in o.data.materials)))
+        if kit.REGISTRY[n].get("footprint"):  # brief 079: light spilling past the thing is no part of its size (kit.asset footprint=)
+            fx, fz = kit.REGISTRY[n]["footprint"]
+            row["size"][0], row["size"][2] = round(fx, 4), round(fz, 4)
+            row["bounds"] = [round(-fx / 2, 3), round(fx / 2, 3), round(-fz / 2, 3), round(fz / 2, 3)]
         if src.get("dk_volumes"):  # volumes the builder declared (geo.Shape.solid), builder frame -> kit frame
             row["collide"] = [dict(shape="box", min=[round(-v["max"][0], 4), round(v["min"][2], 4), round(-v["max"][1], 4)], max=[round(-v["min"][0], 4), round(v["max"][2], 4), round(-v["min"][1], 4)],
                                    **({"stand": True} if v["stand"] else {})) for v in json.loads(src["dk_volumes"])]

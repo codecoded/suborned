@@ -1,0 +1,113 @@
+{
+ "schema": "suborned.provenance/1",
+ "brief": "079 note 2",
+ "owner": "Vela",
+ "date": "2026-10-30",
+ "status": "candidate, not adopted",
+ "generator": {
+  "crossing079.py": "d9895c8d3b567e3d2749cc946f83a893dffa0343d6d2d9a1acb87cdd9df5cd40",
+  "signal_tex079.py": "fb3ca6bf1986c7acd9dc98e66e7655b05baef46d3ed9ff5b122be95a99696177",
+  "crossing079_board.py": "be33a731c73cb820a15266f4d149719c82596662ed1666dc21cff243e275f92e",
+  "crossing079_sheet.py": "e93ad81a211462e6a978eff2fedde546e78adb579980b1064c3781527218a4a1"
+ },
+ "command": "DECOKIT_CROSS079=1 bun tools/decokit/run.ts --out out/decokit-079 --only LightDotRow_2,LightDotRow_1,HaloRing,SignalLens (a fresh --out needs decokit_materials.json and decokit_manifest.json seeded from out/decokit, or carpaint.write_mats exits before the manifest)",
+ "offSwitch": "with DECOKIT_CROSS079 unset the four FBX are byte-identical to contracts/world/kit.json's sha256 (checked 2026-10-30)",
+ "root": "out/decokit-079",
+ "pieces": {
+  "LightDotRow_2": {
+   "DK_LightDotRow_2.fbx": "7fb57641163b4a62580e69ed6019469c4197a28dd653793895a3a15a9a207fde",
+   "DK_LightDotRow_2_L1.fbx": "39fe5386ee8a010ed9647adb6e04988128c869c800c1ca8d1899775a3d8ae546"
+  },
+  "LightDotRow_1": {
+   "DK_LightDotRow_1.fbx": "bcb587c253fe078bf39e24773ac3a82f8e414fff8a69d062932664fb39abe252",
+   "DK_LightDotRow_1_L1.fbx": "e9fb8fcc61e23238dd09e597a7c09a6ae37d9b4afe2a4131996cce84fa5f13ce"
+  },
+  "HaloRing": {
+   "DK_HaloRing.fbx": "fc8cdff40bff2ad8db1ec77f120ea3e4f996e08c6115a210af526228558242ba",
+   "DK_HaloRing_L1.fbx": "4cf1b671b0dc3e3130c276ef93a95b6d4588b8b46a38676c891358f90de1b5bc"
+  },
+  "SignalLens": {
+   "DK_SignalLens.fbx": "643ceca47f36454b643c7f1b370d14bb1a948cace7bf288622df10e7b65a1967",
+   "DK_SignalLens_L1.fbx": "f8acc71db02b6964e0a642c755a5a9ca868a143c2d7b4198dcdbfa471576d5d5"
+  }
+ },
+ "manifest": {
+  "LightDotRow_2": {
+   "tris": 336,
+   "size": [
+    1.84,
+    0.012,
+    0.34
+   ],
+   "materials": [
+    "DK_Cross_Light",
+    "DK_Cross_Housing"
+   ],
+   "lods": [
+    160
+   ]
+  },
+  "LightDotRow_1": {
+   "tris": 168,
+   "size": [
+    0.84,
+    0.012,
+    0.34
+   ],
+   "materials": [
+    "DK_Cross_Light",
+    "DK_Cross_Housing"
+   ],
+   "lods": [
+    80
+   ]
+  },
+  "HaloRing": {
+   "tris": 130,
+   "size": [
+    1.24,
+    0.002,
+    1.24
+   ],
+   "materials": [
+    "DK_Signal_Ring",
+    "DK_Cross_Housing"
+   ],
+   "lods": [
+    66
+   ]
+  },
+  "SignalLens": {
+   "tris": 822,
+   "size": [
+    0.95,
+    3.085,
+    0.94
+   ],
+   "materials": [
+    "DK_Chrome",
+    "DK_Enamel_Charcoal",
+    "DK_Cross_Beam",
+    "DK_Signal_Atlas",
+    "DK_Cross_Halo",
+    "DK_Signal_RimLens"
+   ],
+   "lods": [
+    234
+   ]
+  }
+ },
+ "textures": {
+  "signal_ring_v2.png": "9e64c5ff8afe4c199f25a4326612e8dba5b1d4deab4a285c80d6a4909ddfe8ec",
+  "cross_bezel_v1.png": "acfdff283f275ece72d4db1b321238445e4027a72d6ba89a6760803046f0ecd1"
+ },
+ "materials": {
+  "DK_Cross_Housing.mat": "7541c7dbda6eb08e761cfd4ddc6019f25079eb3a0d6c97332a820634d6259172"
+ },
+ "paidCost": 0,
+ "concepts": [
+  "briefs/009/concepts/crossing-future-play-2.jpg",
+  "briefs/009/concepts/crossing-future-eye.jpg"
+ ],
+ "revision": "2 (Sky, 2026-10-30: 'the lights should have metal ring around them, as they're embedded in the floor')"
+}
