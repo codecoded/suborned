@@ -5,8 +5,7 @@
 //   proofledger.json     per section, the build, commit and snapshot it last PASSED on, and a hash of the map rows that can name it. Lives beside the build (out/build/play): lost, the next proof is full.
 //   planProof()          a section is skipped only with a pass on the ledger, the same map hash and no change since that pass that its rows name. Anything else runs. Pure, so the gate can re-derive it.
 //   a skip is never a pass: judgeGates says "not run, unchanged since build N (commit)", and the gate takes the skip only from planProof over the ledger, never from the plan file's word.
-// Order matters to this proof (0.2.145: r29 alone passed where the full run failed), so a section that failed in company runs alone first, then, if it passes, after what ran before it;
-// only that run counts as its pass (ledger.retry). A delta run cannot catch what only the sections it skipped would have disturbed: --full, and any submission build, runs them all.
+// A fix loop runs just the failing section (CLAUDE.md, Delta only). Order can matter to this proof (0.2.145: r29 alone passed where the full run failed), so a pass alone after a failure in company is said, with what ran before it, and marked on the ledger (Pass.alone); it is not re-run in company unless asked. A delta run cannot catch what only the sections it skipped would have disturbed: --full, and any submission build, runs them all.
 // usage: bun tools/game/proofdelta.ts plan                  what the next batch's proof would run
 //        bun tools/game/proofdelta.ts what-if <path>...     what a change to these paths alone would run, as if every section had just passed
 import { existsSync, readFileSync, writeFileSync } from 'node:fs';
@@ -20,7 +19,7 @@ export const MAP_FILE = join(ROOT, 'tools/game/proofmap.json');
 /** What the app carries or is made from that git does not hold, read by content: the kit and the figures, and the world export. */
 export const SNAPSHOT_IGNORED = [...IGNORED_INPUTS, 'unity/Assets/Suborned/Kit', 'unity/Assets/Suborned/People', 'out/world/harbour-district.world.json', 'out/world/harbour-district.walk.json'];
 
-const Row = z.strictObject({ match: z.array(z.string().min(1)).min(1), run: z.union([z.literal('full'), z.literal('none'), z.array(z.string())]), why: z.string().min(8) });
+const Row = z.strictObject({ match: z.array(z.string().min(1)).min(1), run: z.union([z.literal('full'), z.literal('none'), z.array(z.string())]), why: z.string().min(8), shots: z.union([z.literal('all'), z.array(z.string().min(1))]).optional() });
 const ProofMapFile = z.strictObject({ schema: z.literal('suborned.proofmap/1'), note: z.string(), baseSeconds: z.number(), sections: z.array(z.strictObject({ id: z.string(), seconds: z.number() })).min(1), rows: z.array(Row) });
 export type MapRow = z.infer<typeof Row>;
 export type ProofMap = z.infer<typeof ProofMapFile>;
@@ -69,16 +68,18 @@ export function changedPaths(was: Record<string, string>, now: Record<string, st
 
 // ---------------------------------------------------------------- the ledger
 
-export type Pass = { build: string; commit: string; at: string; snapshot: string; map: string };
-/** A section that failed in company: `ran` is what ran with it; aloneOk once it has passed by itself (it still owes the pass after what ran before it). */
-export type Retry = { build: string; ran: string[]; aloneOk?: boolean };
-export type Ledger = { schema: 'suborned.proofledger/1'; sections: Record<string, Pass>; retry: Record<string, Retry>; snapshots: Record<string, Record<string, string>> };
-export const emptyLedger = (): Ledger => ({ schema: 'suborned.proofledger/1', sections: {}, retry: {}, snapshots: {} });
+export type Pass = { build: string; commit: string; at: string; snapshot: string; map: string; /** passed without what ran before it when it failed (build, those sections): order or timing; --full checks it */ alone?: { build: string; without: string[] } };
+/** A section that failed in company: `ran` is what ran with it. */
+export type Retry = { build: string; ran: string[] };
+/** A batch step that ran and passed, or the check's scenarios: on what tree. */
+export type StepPass = { build: string; commit: string; snapshot: string };
+export type Ledger = { schema: 'suborned.proofledger/1'; sections: Record<string, Pass>; retry: Record<string, Retry>; steps: Record<string, StepPass>; snapshots: Record<string, Record<string, string>> };
+export const emptyLedger = (): Ledger => ({ schema: 'suborned.proofledger/1', sections: {}, retry: {}, steps: {}, snapshots: {} });
 export function readLedger(file: string): Ledger {
   try { const j = JSON.parse(readFileSync(file, 'utf8')); return j.schema === 'suborned.proofledger/1' ? { ...emptyLedger(), ...j } : emptyLedger(); } catch { return emptyLedger(); }
 }
 export function writeLedger(file: string, l: Ledger): void {
-  const used = new Set(Object.values(l.sections).map(p => p.snapshot));
+  const used = new Set([...Object.values(l.sections), ...Object.values(l.steps)].map(p => p.snapshot));
   writeFileSync(file, JSON.stringify({ ...l, snapshots: Object.fromEntries(Object.entries(l.snapshots).filter(([id]) => used.has(id))) }) + '\n');
 }
 /** The words a gate line and the screen use for a skip. Never "passed": it was not run. */
@@ -107,7 +108,7 @@ export function planProof(m: ProofMap, snap: Snapshot, l: Ledger, o: { force?: s
   if (!Object.keys(l.sections).length) return fullPlan(m, 'no section has a recorded pass yet', snap.id);
   for (const s of ids) {
     const p = l.sections[s];
-    if (!p) { run.set(s, l.retry[s] ? (l.retry[s]!.aloneOk ? 'passed alone; owes the pass after what ran before it' : 'failed last time; alone first') : 'no recorded pass'); continue; }
+    if (!p) { run.set(s, l.retry[s] ? 'failed last time' : 'no recorded pass'); continue; }
     if (p.map !== mapHash(m, s)) { run.set(s, 'its rows in the map changed since its pass'); continue; }
     const was = l.snapshots[p.snapshot];
     if (!was) { run.set(s, 'the snapshot of its pass is gone'); continue; }
@@ -120,10 +121,38 @@ export function planProof(m: ProofMap, snap: Snapshot, l: Ledger, o: { force?: s
     }
     if (hit) run.set(s, `${hit} changed`); else skips[s] = skipText(p);
   }
-  for (const [s, r] of Object.entries(l.retry)) if (r.aloneOk) for (const x of before(m, s, r.ran)) if (!run.has(x)) { run.set(x, `ran before ${s} when it failed`); delete skips[x]; }
   if (run.size === ids.length) return fullPlan(m, 'every section has to run', snap.id);
   const only = ids.filter(s => run.has(s));
   return { schema: 'suborned.proofplan/1', mode: 'delta', why: only.length ? `${only.length} of ${ids.length} sections touched by what changed` : 'nothing the proof reads changed', only, skips, reasons: Object.fromEntries(run), seconds: secondsOf(m, only), snapshot: snap.id };
+}
+
+// ---------------------------------------------------------------- the batch's steps (brief 078; Sky: "delta only")
+
+/** A step whose answer depends on the engine, the world or the kit, or that is a whole-game measure (sim, kit, world, unity-world, unity-match, the check's scenarios, late-fight, tp-long).
+ *  It runs with no recorded pass, or when anything marked full or unplaced changed since that pass, or when forced; a change the map places in sections cannot affect it. */
+export function stepGate(m: ProofMap, snap: Snapshot, l: Ledger, step: string, force?: string): { run: boolean; why: string } {
+  if (force) return { run: true, why: force };
+  const p = l.steps[step], was = p && l.snapshots[p.snapshot];
+  if (!p || !was) return { run: true, why: 'no recorded pass' };
+  for (const f of changedPaths(was, snap.files)) { const r = classify(m, f); if (!r || r.run === 'full') return { run: true, why: `${f} changed` }; }
+  return { run: false, why: `engine, world and kit unchanged since build ${p.build}` };
+}
+/** The shots a change can show in: what the rows of the paths changed since the last shots pass name. Anything full or unplaced, or no recorded pass: all of them. */
+export function shotsGate(m: ProofMap, snap: Snapshot, l: Ledger, force?: string): { names: 'all' | string[]; why: string } {
+  if (force) return { names: 'all', why: force };
+  const p = l.steps.shots, was = p && l.snapshots[p.snapshot];
+  if (!p || !was) return { names: 'all', why: 'no recorded pass' };
+  const names = new Set<string>(); let by = '';
+  for (const f of changedPaths(was, snap.files)) {
+    const r = classify(m, f);
+    if (!r || r.run === 'full' || r.shots === 'all') return { names: 'all', why: `${f} changed` };
+    if (r.shots?.length) { for (const n of r.shots) names.add(n); by ||= f; }
+  }
+  return names.size ? { names: [...names], why: `${by} changed` } : { names: [], why: `no HUD or view path changed since build ${p.build}` };
+}
+/** Steps that passed in this batch, on the tree its player was built from. */
+export function recordSteps(l: Ledger, snap: Snapshot, steps: string[], build: { version: string; commit: string }): Ledger {
+  return steps.length ? { ...l, steps: { ...l.steps, ...Object.fromEntries(steps.map(s => [s, { build: build.version, commit: build.commit, snapshot: snap.id }])) }, snapshots: { ...l.snapshots, [snap.id]: snap.files } } : l;
 }
 
 /** What a change to `paths` alone would run, as if every section had just passed on the same tree (the table's answer, for `what-if` and the tests). */
@@ -137,35 +166,32 @@ export function whatIf(m: ProofMap, paths: string[]): Plan {
 // ---------------------------------------------------------------- the proof's answer on the ledger
 
 type Frames = Record<string, any> | null | undefined;
-/** Did the proof run this section? A section it did not run is null; `frames` (the follow, drive and people spots) has no object of its own, its rows do. */
-export const ranIn = (frames: Frames, s: string) => s === 'frames' ? (frames?.follow?.length ?? 0) > 0 : frames?.[s] != null;
+/** Did the proof run this section? A section it did not run is null; `drive` has no object of its own, its saved session says. */
+export const ranIn = (frames: Frames, s: string) => s === 'drive' ? frames?.driveSession != null : frames?.[s] != null;
 export type Replays = { driveSession?: boolean; fireSession?: boolean };
-const passedIn = (frames: Frames, s: string, r: Replays) => s === 'frames' ? ranIn(frames, s) && r.driveSession === true : frames?.[s]?.ok === true && (s !== 'fire' || r.fireSession === true);
+const passedIn = (frames: Frames, s: string, r: Replays) => s === 'drive' ? ranIn(frames, s) && r.driveSession === true : frames?.[s]?.ok === true && (s !== 'fire' || r.fireSession === true);
 
 /** Record what the proof said against the snapshot the player was built from. Only a section that ran can pass; a section that ran and did not pass loses its pass. A pass after a failure in
- *  company counts only when what ran before it ran again (Retry). A section "not reached" (ok null) is reported by the gate and has no pass: it just runs next time. */
+ *  company without what ran before it is marked `alone`. A section "not reached" (ok null) is reported by the gate and has no pass: it just runs next time. */
 export function recordProof(m: ProofMap, l: Ledger, snap: Snapshot, plan: Plan, frames: Frames, replays: Replays, build: { version: string; commit: string; at: string }): Ledger {
   const out: Ledger = { ...l, sections: { ...l.sections }, retry: { ...l.retry }, snapshots: { ...l.snapshots, [snap.id]: snap.files } }, ids = sectionIds(m);
   const ran = ids.filter(s => ranIn(frames, s));
   for (const s of ran) {
     const r = out.retry[s], ok = passedIn(frames, s, replays), mine = before(m, s, ran), owed = r ? before(m, s, r.ran) : [];
     if (ok) {
-      if (r && !owed.every(x => mine.includes(x))) { out.retry[s] = { ...r, aloneOk: true }; delete out.sections[s]; continue; }
       delete out.retry[s];
-      out.sections[s] = { build: build.version, commit: build.commit, at: build.at, snapshot: snap.id, map: mapHash(m, s) };
+      const without = owed.filter(x => !mine.includes(x));
+      out.sections[s] = { build: build.version, commit: build.commit, at: build.at, snapshot: snap.id, map: mapHash(m, s), ...(without.length ? { alone: { build: r!.build, without } } : {}) };
       continue;
     }
     delete out.sections[s];
-    if (frames?.[s]?.ok === null || frames?.[s]?.ok === undefined && s !== 'frames') continue; // not reached
-    if (r?.aloneOk) continue; // it passed alone and fails in company: it stays owed, and the gate's line says so
+    if (frames?.[s]?.ok === null || frames?.[s]?.ok === undefined && s !== 'drive') continue; // not reached
     if (mine.length) out.retry[s] = { build: build.version, ran };
   }
   return out;
 }
-/** Sections that passed alone and still owe the run after what ran before them. */
-export const owedCompany = (l: Ledger) => Object.entries(l.retry).filter(([, r]) => r.aloneOk).map(([s]) => s);
-/** The gate's words for a section that passed alone and failed after what ran before it: the 0.2.145 case. */
-export const companyLine = (m: ProofMap, s: string, r: Retry) => `game: ${s} passes alone and fails after ${before(m, s, r.ran).join(', ')}: it depends on what runs before it`;
+/** The gate's words for a section that passed without what ran before it when it failed: the 0.2.145 case. */
+export const aloneLine = (s: string, p: Pass) => `game: ${s} passed without ${p.alone!.without.length} section${p.alone!.without.length === 1 ? '' : 's'} that ran before it when it failed on build ${p.alone!.build}: order or timing; bun run batch --full checks it`;
 
 export const planFile = (dir: string) => join(dir, 'proofplan.json');
 export const ledgerFile = (dir: string) => join(dir, 'proofledger.json');

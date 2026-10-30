@@ -114,7 +114,8 @@ namespace Suborned.Play
             yield return Shoot(dir, "tp-prompt", "rest", log);
             // E held 0.3 s opens the ring (the options); Esc closes it
             for (int w = 0; w < 60 && !(h.DriveFocus is { Kind: "person", Key: "waitress" }); w++) { MouseAt(IzScreen()); yield return null; } // a passer-by can cross between: wait (up to 1 s) for the prompt to be Inez's again
-            Keys(Key.E); yield return new WaitForSecondsRealtime(0.32f); for (int w = 0; w < 30 && h.Ring == null; w++) yield return null; bool ringByHold = h.Ring != null; // a slow frame (the 2160 run) reads the hold a frame or two late yield return Shoot(dir, "tp-options", "active", log); Keys(); yield return Frames(3);
+            Keys(Key.E); yield return new WaitForSecondsRealtime(0.32f); for (int w = 0; w < 30 && h.Ring == null; w++) yield return null; bool ringByHold = h.Ring != null; // a slow frame (the 2160 run) reads the hold a frame or two late
+            yield return Shoot(dir, "tp-options", "active", log); Keys(); yield return Frames(3);
             Keys(Key.Escape); yield return Frames(2); Keys(); yield return Frames(2); parts.Add($"\"eHoldRing\": {B(ringByHold)}, \"escClosed\": {B(h.Ring == null)}"); ok &= ringByHold && h.Ring == null;
             if (h.MenuOpen) h.ResumeFromMenu();
             // 2 · prompt = act: E tap, then a left click on the prompt (clickActs on): the prompt's way is what is given, or the ring opens
@@ -298,9 +299,10 @@ namespace Suborned.Play
             yield return new WaitForSecondsRealtime(0.15f); yield return Shoot(dir, "tp-stopped", "rest", log);
             // a lock on a second agent (the commander's lasting order on the Fixer) while the driven agent fires
             string carBefore = g.CarOf(T) is { } cb0 ? $"{(cb0.Blown ? "blown" : cb0.Gun != null && cb0.Gun.Down ? "down" : "up")} {cb0.Gun?.Health ?? -1}/{cb0.Gun?.Max ?? -1}" : "none";
+            bool carUp = carBefore.StartsWith("up");
             bool fixTaken = h.Issue(new Order { Op = "fixer", Do = "fire", Target = T }); string fixWhy = fixTaken ? "" : h.Status; if (placed && !g.OneInputOn) h.Issue(new Order { Op = "scout", Do = "fire", Target = T }); h.RunTo(g.Tick + 1); // the Scout's own lock (placed off the follow ring, above); one input: not given, so the car stands while the Fixer draws for his
             string fixLock = g.LockOf(OpId.Fixer); if (g.OneInputOn) { int w0 = g.Tick; while (g.Tick < w0 + 2 * Suborned.Sim.Game.Hz && h.FireNow[X].Mode != "lock" && !g.Over) h.RunTo(g.Tick + 1); } yield return Frames(2); // one input: the lock draws him first (FireStateOf reads lock once drawn)
-            parts.Add($"\"secondLock\": \"{fixLock}\", \"secondMode\": \"{h.FireNow[X].Mode}\", \"secondTaken\": {B(fixTaken)}, \"secondWhy\": \"{fixWhy.Replace("\"", "'")}\", \"carBeforeSecond\": \"{carBefore}\""); ok &= fixLock == T && h.FireNow[X].Mode == "lock";
+            parts.Add($"\"secondLock\": \"{fixLock}\", \"secondMode\": \"{h.FireNow[X].Mode}\", \"secondTaken\": {B(fixTaken)}, \"secondWhy\": \"{fixWhy.Replace("\"", "'")}\", \"carBeforeSecond\": \"{carBefore}\", \"secondStaged\": {B(carUp)}"); ok &= !carUp || (fixLock == T && h.FireNow[X].Mode == "lock"); // the stage apart from the check (brief 078): a car already spent says nothing about the lock, it is the proof's own staging (the reds of 0.2.124, 0.2.134-136)
             h.TriggerScripted(T, true); yield return new WaitForSecondsRealtime(1.2f); Point();
             yield return Shoot(dir, "tp-lock", "rest", log);
             yield return new WaitForSecondsRealtime(0.8f);
@@ -365,7 +367,9 @@ namespace Suborned.Play
                 if (!burn && c.BurningAt >= 0 && !c.Blown) { burn = true; foreach (var a in new[] { "scout", "fixer", "enforcer" }) h.Issue(new Order { Op = a, Do = "cease" }); yield return new WaitForSecondsRealtime(0.7f); yield return Shoot(dir, "car-burning", "rest", log); }
                 if (c.Blown) { blown = true; yield return new WaitForSecondsRealtime(0.22f); yield return Shoot(dir, "car-blast", "rest", log); break; }
             }
-            parts.Add($"\"smoke\": {B(smoke)}, \"burning\": {B(burn)}, \"blown\": {B(blown)}, \"over\": {B(g.Over)}, \"result\": \"{g.FailCode}\", \"blastM\": {F(g.R.CarBlastCm / 100f)}"); ok &= smoke && burn && blown;
+            parts.Add($"\"smoke\": {B(smoke)}, \"burning\": {B(burn)}, \"blown\": {B(blown)}, \"over\": {B(g.Over)}, \"result\": \"{g.FailCode}\", \"blastM\": {F(g.R.CarBlastCm / 100f)}");
+            if (g.Over && !blown) { log.Add($"cars: not reached: the mission ended ({g.FailCode}) before the car blew"); h.Begin(); json[0] = $"{{\"ok\": null, \"why\": \"the mission ended before the car blew\", {string.Join(", ", parts)}}}"; yield break; } // the stage apart from the check (brief 078)
+            ok &= smoke && burn && blown;
             // the getaway car wrecked: Fable's getaway-lost fail card
             h.Begin(); h.IntelOpen = false; h.StartClock(); h.SetPaused(false); yield return null; g = h.Game;
             h.Select(OpId.Enforcer, false); h.FireScripted("car:getaway");

@@ -90,10 +90,12 @@ namespace Suborned.Play
             Destroy(t); return seen.Count > 16;
         }
 
-        /// <summary>`-proofOnly a,b,…`: run just these sections (GATED names, plus `frames` for the follow, drive and people spots); every other section stays null.
+        /// <summary>`-proofOnly a,b,…`: run just these sections (GATED names, `drive` for the driven session, `frames` for the follow and people spots); every other section stays null.
         /// The batch uses it for a delta proof (tools/game/proofdelta.ts). A null section fails the gate unless the ledger holds an earlier pass with nothing it reads changed since.</summary>
         static readonly HashSet<string> only = GameBoot.ArgValue("-proofOnly") is string po ? new HashSet<string>(po.Split(',', StringSplitOptions.RemoveEmptyEntries)) : null;
         static bool Only(string section) => only == null || only.Contains(section);
+        /// <summary>Brief 078: the follow and people frame-time spots are not in the proof; `-proofSpots` (bun run batch --spots) or `-proofOnly frames` takes them. They never gated and the Air is the real measure.</summary>
+        static bool Spots => GameBoot.Arg("-proofSpots") || (only != null && only.Contains("frames"));
 
         IEnumerator Start()
         {
@@ -112,12 +114,13 @@ namespace Suborned.Play
             yield return Shot("play", "rest");
             // frame times at play zoom, the clock running
             var dts = new List<float>(); float s0 = Time.realtimeSinceStartup;
-            while (Time.realtimeSinceStartup - s0 < 10f) { yield return null; dts.Add(Time.unscaledDeltaTime * 1000f); }
+            float frameS = only == null ? 10f : 1f; // a delta proof is not a frame-time measure
+            while (Time.realtimeSinceStartup - s0 < frameS) { yield return null; dts.Add(Time.unscaledDeltaTime * 1000f); }
             dts.Sort(); float mean = dts.Average(), p95 = dts[(int)(dts.Count * 0.95f)], p99 = dts[(int)(dts.Count * 0.99f)];
             int slow = dts.Count(d => d > 1000f / 60f * 1.2f);
             // brief 016: the same at each of the four yaws (the view turned with the host's own snap; 1 s to settle, 6 s sampled each)
             var byYaw = new List<string>();
-            for (int k = 0; k < 4; k++)
+            for (int k = 0; k < (only == null ? 4 : 0); k++)
             {
                 h.TurnSnap(k); yield return new WaitForSecondsRealtime(1f);
                 var ys = new List<float>(); float y0 = Time.realtimeSinceStartup;
@@ -129,10 +132,10 @@ namespace Suborned.Play
             h.TurnSnap(0);
             // the test follow view (Sky 2026-10-18): frame times behind an agent at the café front, the pickup and mid-fight (FollowSpots)
             var follow = new List<string>();
-            if (Only("frames")) yield return FollowSpots(h, Dir, log, follow);
+            if (Spots) yield return FollowSpots(h, Dir, log, follow);
             // brief 025: take control of the Scout at street level (frame times while driven), E on Inez, let go; the session replays headless (game:check)
             var drive = new List<string>(); var session = new string[1];
-            if (Only("frames")) yield return DriveSpot(h, Dir, log, drive, session);
+            if (Only("drive")) yield return DriveSpot(h, Dir, log, drive, session);
             // Latch 2026-10-21: the input checks (a ground click while driven, WASD taking the stick back; a fire order stopping a walk)
             var driveClick = new string[] { "null" }; var fireStop = new string[] { "null" };
             ProofInput.Focusless(true); log.Add($"input checks: focused {Application.isFocused}, background {UnityEngine.InputSystem.InputSystem.settings.backgroundBehavior}");
@@ -163,7 +166,7 @@ namespace Suborned.Play
             ProofInput.Focusless(false);
             // brief 020: what the people cost: the opening (the square and its crowd) with the figures, then with capsules only, the same moment
             var people = new List<string>();
-            if (Only("frames")) yield return PeopleCost(h, log, people, 6f, Dir);
+            if (Spots) yield return PeopleCost(h, log, people, 6f, Dir);
             var frames = $"{{\"seconds\": 10, \"frames\": {dts.Count}, \"meanMs\": {F(mean)}, \"fps\": {F(1000f / mean)}, \"p95Ms\": {F(p95)}, \"p99Ms\": {F(p99)}, \"over20msFrames\": {slow}, \"vSyncCount\": {QualitySettings.vSyncCount}, \"targetFrameRate\": {Application.targetFrameRate}, \"zoom\": {F(cam ? cam.orthographicSize : -1)}, \"byYaw\": [{string.Join(", ", byYaw)}], \"follow\": [{string.Join(", ", follow)}], \"people\": [{string.Join(", ", people)}], \"drive\": [{string.Join(", ", drive)}], \"driveSession\": {(session[0] == null ? "null" : "\"" + session[0].Replace("\\", "/") + "\"")}, \"driveClick\": {driveClick[0]}, \"fireStop\": {fireStop[0]}, \"ringCheck\": {ringCheck[0]}, \"inputMap\": {inputMap[0]}, \"act\": {act[0]}, \"fire\": {fire[0]}, \"cars\": {cars[0]}, \"hudClick\": __HUDCLICK__, \"dblClick\": {dblClick[0]}, \"holdActs\": {holdActs[0]}, \"done\": {done[0]}, \"rings\": {rings[0]}, \"levels\": {levels[0]}, \"r29\": {r29[0]}, \"r118\": {r118[0]}, \"r059\": {r059[0]}, \"r067\": {r067[0]}, \"r123\": {r123[0]}, \"holdRange\": __HOLDRANGE__, \"leash\": __LEASH__, \"fireSession\": {(fireSession[0] == null ? "null" : "\"" + fireSession[0].Replace("\\", "/") + "\"")}}}";
             h.OpenMenu(); yield return null;
             log.Add($"menu: open {h.MenuOpen}, modal {h.Modal}, paused {h.Paused}");

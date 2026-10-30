@@ -133,7 +133,6 @@ namespace Suborned.World.Review
             File.WriteAllText(Path.Combine(outDir, "own-avatar-clips.tsv"), own.ToString());
 
             // 3b. stills: c6 (optimised, as the game draws it) beside the clip on its own skeleton (a sphere per bone, a capsule per limb), mid-clip
-            // OwnStills(m, outDir, new[] { "sit", "sit_talk", "cover_fire", "cover_pin", "run_lean", "carry_shoulder", "serve", "serve_walk", "stand_to_sit", "carried_drape" });
             // 4. the tray on the waitress (the optimised figure, the exposed RightHand, the library's seat)
             TrayStills(m, outDir);
             Debug.Log($"AvatarCheck069: written {outDir}\n{sb}");

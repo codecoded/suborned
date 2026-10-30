@@ -27,6 +27,8 @@ namespace Suborned.Play
     /// Nothing here changes a rule; every order is the host's own. The light is put back to day at the end.</summary>
     public static class Proof118
     {
+        /// <summary>Brief 078 (Suture's section ranking; Sky: delta only): r118 keeps its asserts (cam058, heads, uncut, reach). The pictures with no pass or fail (the camera states, the head pictures past one yaw by day, evening and night, Vale, the driver, the four agents, the footway) run only under `-proofPictures`, for Glint's or Glyph's review.</summary>
+        static readonly bool Archive = GameBoot.Arg("-proofPictures");
         static string F(float v) => v.ToString("0.###", CultureInfo.InvariantCulture);
         static string B(bool b) => b ? "true" : "false";
         static string J(string x) => (x ?? "").Replace("\\", "/").Replace("\"", "'").Replace("\n", " ");
@@ -180,6 +182,7 @@ namespace Suborned.Play
             // ---- Glyph's unverified 0.2.122 states (Aster 0.2.123 item 4): the looped camera's hollow dashed cone (the Tech watches the entrance camera
             // first, so its cone is learned and drawn), the Alt breakdowns for Loop and Disable (the camera's panel with Alt), the "Camera on" pop at the
             // loop's 2:00 end, then the shot-out dead disc (disc_light_24, the ink fire icon). Pictures, not gated; the words logged.
+            if (Archive)
             {
                 yield return Fresh(h); var g = h.Game; var ec = h.Views.Find("camera/entrance");
                 bool learned = false, looped = false, on = false, shot = false; string fans = "", alt = "", pop = "", shotCam = "";
@@ -241,21 +244,21 @@ namespace Suborned.Play
                     var head = heads[0]; var crossing = head.Crossing; var shots = new List<string>();
                     string[] states = { "walk", "clearing", "stop", "arriving" };
                     yield return Phase(h, "day");
-                    for (int y = 0; y < 4; y++) { h.TurnSnap(y); h.LookAt(head.transform.position); foreach (var st in states) { SignalHead.Hold = st; SignalHead.HoldLeft = st == "arriving" ? 2f : 7f; yield return Frames(2); yield return new WaitForSecondsRealtime(SignalHead.CrossfadeS + 0.15f); /* past the crossfade: 0.2.120's frames caught it mid-fade */ var n = $"r118-h1-{st}-yaw{Mathf.RoundToInt(h.Yaw)}"; yield return Shoot(h, dir, n, log); shots.Add(n); log.Add($"{n}: h1 figure {Rect(h, head.Figure)} face {Rect(h, head.Rim)}"); } }
-                    foreach (var ph in new[] { "evening", "night" })
+                    for (int y = 0; y < (Archive ? 4 : 1); y++) { h.TurnSnap(y); h.LookAt(head.transform.position); foreach (var st in states) { SignalHead.Hold = st; SignalHead.HoldLeft = st == "arriving" ? 2f : 7f; yield return Frames(2); yield return new WaitForSecondsRealtime(SignalHead.CrossfadeS + 0.15f); /* past the crossfade: 0.2.120's frames caught it mid-fade */ var n = $"r118-h1-{st}-yaw{Mathf.RoundToInt(h.Yaw)}"; yield return Shoot(h, dir, n, log); shots.Add(n); log.Add($"{n}: h1 figure {Rect(h, head.Figure)} face {Rect(h, head.Rim)}"); } }
+                    foreach (var ph in Archive ? new[] { "evening", "night" } : new string[0])
                     {
                         yield return Phase(h, ph);
                         foreach (var y in new[] { 0, 2 }) { h.TurnSnap(y); h.LookAt(head.transform.position); foreach (var st in states) { SignalHead.Hold = st; yield return Frames(2); yield return new WaitForSecondsRealtime(SignalHead.CrossfadeS + 0.15f); var n = $"r118-h2-{ph}-{st}-yaw{Mathf.RoundToInt(h.Yaw)}"; yield return Shoot(h, dir, n, log); shots.Add(n); } }
                     }
                     // H3: eye level on the head, walk, clearing, stop, by day and at night
-                    foreach (var ph in new[] { "day", "night" })
+                    foreach (var ph in Archive ? new[] { "day", "night" } : new string[0])
                     {
                         yield return Phase(h, ph);
                         var hp = head.transform.position; var fwd = head.transform.forward; fwd.y = 0f; if (fwd.sqrMagnitude < 1e-4f) fwd = Vector3.forward; fwd.Normalize();
                         foreach (var st in new[] { "walk", "clearing", "stop" }) { SignalHead.Hold = st; yield return Frames(2); yield return new WaitForSecondsRealtime(SignalHead.CrossfadeS + 0.15f); var n = $"r118-h3-{ph}-{st}"; yield return Pose(h, dir, n, hp + fwd * 6f + Vector3.up * 1.7f, hp + Vector3.up * 2.4f, 45f, log); shots.Add(n); }
                     }
                     // H4: the clearing head and the guard's cone in one frame at play zoom, day and night (composed: the guard stands where he stands)
-                    foreach (var ph in new[] { "day", "night" })
+                    foreach (var ph in Archive ? new[] { "day", "night" } : new string[0])
                     {
                         yield return Phase(h, ph); SignalHead.Hold = "clearing"; yield return new WaitForSecondsRealtime(SignalHead.CrossfadeS + 0.15f); var gd = h.Views.Find("guard");
                         h.TurnSnap(2); h.LookAt(gd ? (gd.position + head.transform.position) * 0.5f : head.transform.position); yield return Frames(4);
@@ -263,6 +266,7 @@ namespace Suborned.Play
                         log.Add($"{n}: head {Points(h)} guard {(gd ? (gd.position - head.transform.position).magnitude.ToString("0.0", CultureInfo.InvariantCulture) : "?")} m from the head");
                     }
                     // H5: three states in one frame at night (the three nearest heads of other crossings, each held on its own)
+                    if (Archive)
                     {
                         yield return Phase(h, "night"); SignalHead.Hold = "";
                         // 0.2.122's frame showed no head (Glint): the three were the nearest of three crossings to the Office, too far apart for one frame, and
@@ -295,10 +299,10 @@ namespace Suborned.Play
             {
                 yield return Fresh(h); var g = h.Game; Play(h, Route("route-a"), 130 * Suborned.Sim.Game.Hz, 130 * Suborned.Sim.Game.Hz);
                 var fade = h.View ? h.View.GetComponent<ArchitectureFade>() : null; var rows = new List<string>();
-                foreach (var ph in new[] { "day", "evening", "night" })
+                foreach (var ph in Archive ? new[] { "day", "evening", "night" } : new[] { "day" }) // the reach's gate needs one frame at yaw 210
                 {
                     yield return Phase(h, ph);
-                    foreach (var y in new[] { 2, 0 })
+                    foreach (var y in Archive ? new[] { 2, 0 } : new[] { 2 })
                     {
                         h.TurnSnap(y); var en = h.Views.Find("op/enforcer"); if (en) h.LookAt(en.position); h.SetPaused(false); yield return new WaitForSecondsRealtime(0.35f); h.SetPaused(true); yield return Frames(2);
                         var n = $"r118-r-{ph}-yaw{Mathf.RoundToInt(h.Yaw)}"; yield return Shoot(h, dir, n, log);
@@ -313,6 +317,7 @@ namespace Suborned.Play
 
             // ---- V1-V3 (Glint, brief 063): Vale C out of the official entrance on his landing (yaw 210, day/evening/night; day also at 30, 120, 300), carried by the Enforcer
             // (yaw 30 and 120, day), at eye level in sun
+            if (Archive)
             {
                 yield return Fresh(h); var g = h.Game; var vrows = new List<string>();
                 var vale = h.Views.Find("councillor"); var gd = h.Views.Find("guard"); bool landing = false;
@@ -379,6 +384,7 @@ namespace Suborned.Play
             }
 
             // ---- E: the driver's face and hands (Glyph's albedo, brief 063), eye level, and at play zoom
+            if (Archive)
             {
                 yield return Fresh(h); var dv = h.Views.Find("driver"); bool on = dv && dv.gameObject.activeInHierarchy;
                 if (on)
@@ -393,6 +399,7 @@ namespace Suborned.Play
             }
 
             // ---- C (056 F): the four agents close together in front of the café and of the Office, yaw 30, 120, 210 and 300, by day
+            if (Archive)
             {
                 var crows = new List<string>();
                 foreach (var (place, tag) in new[] { ("d:Courtyard", "cafe"), ("d:Office approach", "office") })
@@ -420,6 +427,7 @@ namespace Suborned.Play
             }
 
             // ---- F: a lane-mouth footway (brief 061, the export's ground.footways), the one nearest the Records Office, at play zoom and eye level
+            if (Archive)
             {
                 yield return Fresh(h);
                 var office = h.Views.Find("camera/entrance"); var near = office ? office.position : h.frame.World(HandoverHost.OpeningFocus);

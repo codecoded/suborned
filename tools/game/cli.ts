@@ -25,7 +25,7 @@ import { spawnSync as realSpawnSync, type SpawnSyncOptions, type SpawnSyncReturn
 import { usageGate } from '../gen/flags';
 import { INPUTS, fingerprint, ignoredFiles } from './fingerprint';
 import { GATED, judgeGates } from './proofgates';
-import { companyLine, gateFile, ledgerFile, loadMap, owedCompany, planLines, planProof, ranIn, readLedger, readPlan, recordProof, writeLedger, type Plan, type Replays, type Snapshot } from './proofdelta';
+import { aloneLine, gateFile, ledgerFile, loadMap, planLines, planProof, ranIn, readLedger, readPlan, recordProof, writeLedger, type Plan, type Replays, type Snapshot } from './proofdelta';
 import { appShips } from './ships';
 
 const ROOT = join(import.meta.dir, '..', '..');
@@ -58,10 +58,10 @@ const USAGE = `usage: bun tools/game/cli.ts [flags]   (or bun run game, game:bui
   --pack             zip the app for another Mac   --send [device]  pack and send by Taildrop (default skys-macbook-air-1)
   --dry-run          with any of the above: print what would be built, checked, packed, sent or opened, and stop (exit 0); builds, starts and writes nothing
   --signing-check    say whether the signing identity and notary profile exist
-  --no-open  --windowed  --native  --capture-size WxH  --no-air  --reuse-proof  --proof-plan FILE   (modifiers of the above)
+  --no-open  --windowed  --native  --capture-size WxH  --no-air  --reuse-proof  --proof-plan FILE  --no-scenarios  --spots   (modifiers of the above)
   --help, -h         print this and exit; any unknown option does the same and does nothing (no build, no Unity)`;
 usageGate(args, {
-  flags: ['--build', '--check', '--pack', '--dry-run', '--signing-check', '--no-open', '--windowed', '--native', '--no-air', '--reuse-proof'],
+  flags: ['--build', '--check', '--pack', '--dry-run', '--signing-check', '--no-open', '--windowed', '--native', '--no-air', '--reuse-proof', '--no-scenarios', '--spots'],
   valued: [{ flag: '--send' }, { flag: '--capture-size', required: true }, { flag: '--proof-plan', required: true }],
 }, USAGE, 'game');
 
@@ -190,9 +190,10 @@ function check(): boolean {
   const out = join(DIR, 'proof');
   const scen = join(out, 'scenarios.json');
   run('mkdir', ['-p', out]);
-  const s = spawnSync(bin, ['-batchmode', '-nographics', '-runScenarios', scen, '-logFile', join(out, 'scenarios.log')], { encoding: 'utf8', timeout: 600000 });
-  const sj = existsSync(scen) ? JSON.parse(readFileSync(scen, 'utf8')) : null;
-  console.log(`game: scenarios ${sj ? `${sj.matching}/${sj.scenarios} match headless, passed ${sj.passed} (${sj.runtime}, DLL ${String(sj.dllSha256).slice(0, 12)})` : 'no report'}; exit ${s.status}`);
+  const noScen = has('--no-scenarios') && !!proofPlan(); // the batch's delta: the engine is unchanged since they last passed (proofdelta.ts stepGate)
+  const s = noScen ? { status: 0 } : spawnSync(bin, ['-batchmode', '-nographics', '-runScenarios', scen, '-logFile', join(out, 'scenarios.log')], { encoding: 'utf8', timeout: 600000 });
+  const sj = !noScen && existsSync(scen) ? JSON.parse(readFileSync(scen, 'utf8')) : null;
+  console.log(noScen ? 'game: scenarios: not run, the engine is unchanged since they passed' : `game: scenarios ${sj ? `${sj.matching}/${sj.scenarios} match headless, passed ${sj.passed} (${sj.runtime}, DLL ${String(sj.dllSha256).slice(0, 12)})` : 'no report'}; exit ${s.status}`);
   const reuse = has('--reuse-proof') ? reusableProof() : null; // `bun run batch`: the build just took this proof (buildDrawn); it is not taken a second time
   if (reuse) console.log(`game: proof reused, taken right after the build (${reuse.screen} ${reuse.mode}, ${reuse.frames?.fps} fps mean, p99 ${reuse.frames?.p99Ms} ms)`);
   const first = reuse ? { pj: reuse, status: 0 } : proof();
@@ -200,14 +201,14 @@ function check(): boolean {
   // a skip comes from the ledger, re-derived here from the snapshot the player was built from: the plan file's own word is not taken
   const given = proofPlan(), map = given ? loadMap() : null, ledger = given ? readLedger(ledgerFile(DIR)) : null;
   const judged = given ? planProof(map!, given.snap, ledger!, { force: given.plan.force }) : null, skips = judged?.skips ?? {};
-  const replays: Replays = { driveSession: sessionReplay(pj, 'driveSession', 'drive-session.script.json', 'frames', skips), fireSession: sessionReplay(pj, 'fireSession', 'fire-session.script.json', 'fire', skips) }; // brief 024: the trigger session (press, hold, release, tap, a lock) replays too
+  const replays: Replays = { driveSession: sessionReplay(pj, 'driveSession', 'drive-session.script.json', 'drive', skips), fireSession: sessionReplay(pj, 'fireSession', 'fire-session.script.json', 'fire', skips) }; // brief 024: the trigger session (press, hold, release, tap, a lock) replays too
   const drive = replays.driveSession !== false && replays.fireSession !== false;
   const inputs = inputChecks(pj, skips);
   if (given) settleProof(given, judged!, map!, ledger!, pj, replays);
   // the app carries the audio cue file the sim step staged (briefs/067/splice.md item 2): only a build that has the cues code (the r059 proof section) is asked for it
   const ships = pj?.frames?.r059 === undefined ? { ok: true, lines: ['game: audio cues: not asked of this build (no r059 section: an older build)'] } : appShips(APP, ROOT);
   for (const l of ships.lines) console.log(l);
-  return !!sj?.passed && s.status === 0 && pj?.status === 'ok' && status === 0 && drive && inputs && ships.ok;
+  return (noScen || !!sj?.passed) && s.status === 0 && pj?.status === 'ok' && status === 0 && drive && inputs && ships.ok;
 }
 
 /** Latch 2026-10-21 (ProofInput.cs): the input checks the proof ran through the Input System's devices. ok false fails the check; ok null
@@ -230,8 +231,8 @@ function settleProof(given: { plan: Plan; snap: Snapshot }, judged: Plan, map: R
   const st = stamp(), next = recordProof(map, ledger, given.snap, judged, pj?.frames, replays, { version: st.version ?? '?', commit: `${st.sha ?? '?'}${st.dirty ? '+' : ''}`, at: new Date().toISOString() });
   writeLedger(ledgerFile(DIR), next);
   const g = judgeGates(pj?.frames, GATED, judged.skips);
-  for (const s of Object.keys(next.retry)) if (next.retry[s]!.aloneOk && g.failed.includes(s)) console.error(companyLine(map, s, next.retry[s]!));
-  Bun.write(gateFile(DIR), JSON.stringify({ schema: 'suborned.proofgate/1', mode: judged.mode, why: judged.why, build: st.version, ran: map.sections.map(s => s.id).filter(s => ranIn(pj?.frames, s)), skips: Object.fromEntries(Object.entries(judged.skips).filter(([s]) => !ranIn(pj?.frames, s))), failed: g.failed, notReached: g.notReached, owed: owedCompany(next), at: new Date().toISOString() }, null, 1) + '\n');
+  for (const [s, p] of Object.entries(next.sections)) if (p.alone && p.build === st.version && ranIn(pj?.frames, s)) console.log(aloneLine(s, p));
+  Bun.write(gateFile(DIR), JSON.stringify({ schema: 'suborned.proofgate/1', mode: judged.mode, why: judged.why, build: st.version, ran: map.sections.map(s => s.id).filter(s => ranIn(pj?.frames, s)), skips: Object.fromEntries(Object.entries(judged.skips).filter(([s]) => !ranIn(pj?.frames, s))), failed: g.failed, notReached: g.notReached, at: new Date().toISOString() }, null, 1) + '\n');
 }
 
 /** Brief 025: the driven session the proof saved in the built player (take control of the Scout, E on Inez, let go) replays headless on
@@ -260,8 +261,10 @@ function proof(sub = 'proof', extra: string[] = []): { pj: any; status: number |
   const out = join(DIR, sub);
   run('mkdir', ['-p', out]);
   if (existsSync(join(out, 'proof.json'))) run('rm', ['-f', join(out, 'proof.json')]);
-  const p = spawnSync(bin, ['-gameProof', out, '-novsync', ...(has('--windowed') ? ['-windowed'] : []), ...(has('--native') ? ['-capture-native'] : []), ...(has('--capture-size') ? ['-capture-size', args[args.indexOf('--capture-size') + 1]] : []), ...(onePass() && !extra.includes('-capture-size') ? ['-frames-size', AIR] : []), ...onlyArgs(), ...extra, '-logFile', join(out, 'player.log')], { encoding: 'utf8', timeout: 900000 }); // brief 024's act, fire and car checks add about 3 min; uncapped: the headroom over 60 fps; 420 s: the follow spots, the people cost, brief 022's café call and brief 025's drive run about 4 min (180 s cut it off, 2026-10-18)
+  const proofT0 = Date.now();
+  const p = spawnSync(bin, ['-gameProof', out, '-novsync', ...(has('--spots') ? ['-proofSpots'] : []), ...(has('--windowed') ? ['-windowed'] : []), ...(has('--native') ? ['-capture-native'] : []), ...(has('--capture-size') ? ['-capture-size', args[args.indexOf('--capture-size') + 1]] : []), ...(onePass() && !extra.includes('-capture-size') ? ['-frames-size', AIR] : []), ...onlyArgs(), ...extra, '-logFile', join(out, 'player.log')], { encoding: 'utf8', timeout: 900000 }); // brief 024's act, fire and car checks add about 3 min; uncapped: the headroom over 60 fps; 420 s: the follow spots, the people cost, brief 022's café call and brief 025's drive run about 4 min (180 s cut it off, 2026-10-18)
   const pj = existsSync(join(out, 'proof.json')) ? JSON.parse(readFileSync(join(out, 'proof.json'), 'utf8')) : null;
+  console.log(`game: proof took ${Math.round((Date.now() - proofT0) / 1000)} s`);
   console.log(`game: proof ${pj ? `${pj.status}, ${pj.screen} ${pj.mode}, HUD x${pj.hudScale}, ${pj.frames ? `${pj.frames.fps} fps mean (p99 ${pj.frames.p99Ms} ms)${pj.frames.byYaw ? `; by yaw ${pj.frames.byYaw.map((y: { yaw: number; fps: number; p99Ms: number }) => `${y.yaw}° ${y.fps} fps (p99 ${y.p99Ms} ms)`).join(', ')}` : ''}${pj.frames.follow?.length ? `; spots ${pj.frames.follow.map((f: { spot: string; fps: number; p99Ms: number; gpuMs?: number }) => `${f.spot} ${f.fps} fps (p99 ${f.p99Ms} ms${f.gpuMs !== undefined && f.gpuMs >= 0 ? `, gpu ${f.gpuMs} ms` : ''})`).join(', ')}` : ''}${pj.frames.people?.length ? `; people ${pj.frames.people.map((f: { spot: string; fps: number; p99Ms: number; gpuMs?: number }) => `${f.spot} ${f.fps} fps (p99 ${f.p99Ms} ms${f.gpuMs !== undefined && f.gpuMs >= 0 ? `, gpu ${f.gpuMs} ms` : ''})`).join(', ')}` : ''}` : 'no frames'}` : 'no proof.json'}; exit ${p.status}`);
   return { pj, status: p.status };
 }

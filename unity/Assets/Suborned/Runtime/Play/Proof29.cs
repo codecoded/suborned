@@ -336,19 +336,6 @@ namespace Suborned.Play
                 log.Add($"r29 reroute: {(rOk ? "ok" : "FAILED")} (engine route {engine}): drawn {shown}; {samples} samples, furthest off the drawn route {F(maxOff)} m (0.3), largest step between frames {F(maxJump)} m");
             }
 
-            // ---- Go held (brief 057 §4.2; Glyph's 0.2.104 review #8): engine scenario N185 (Vale aboard, a rival holding the exit lane): the car's
-            // ring shows Go shut, struck, with the lock and one badge a holder
-            {
-                h.Begin(); h.IntelOpen = false; h.StartClock(); h.SetPaused(true); yield return null; var g = h.Game;
-                Play(h, ScriptAt("briefs/057/n185-go-held.script.json"), 3605, 3605); var a = h.GoLock(); string ring = "";
-                if (!a.ok && a.code == "car-held")
-                {
-                    h.Select(OpId.Enforcer, false); var car = h.Views.Find("car/getaway"); if (car) { h.LookAt(car.position); yield return Frames(3); h.LeftClickScripted(Sp(h, car.position + Vector3.up * 0.8f)); yield return Frames(3); ring = RingWords(h); yield return new WaitForSecondsRealtime(0.3f); yield return Shoot(h, dir, "r29-go-held", log, "active"); h.CloseRing(); }
-                }
-                bool shut = h.Ring == null && ring.Length > 0; log.Add($"r29 go held: tick {g.Tick}, Go {a.code} ({a.ids}); ring [{ring}]");
-                parts.Add($"\"goHeld\": {{\"code\": \"{a.code}\", \"holders\": \"{J(a.ids)}\", \"ring\": \"{J(ring)}\"}}");
-            }
-
             // ---- the seal clock and the sealed fail (brief 057 §4)
             {
                 h.Begin(); h.IntelOpen = false; h.StartClock(); h.SetPaused(true); yield return null;

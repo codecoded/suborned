@@ -350,9 +350,11 @@ namespace Suborned.Play
             log.Add($"holdRange focus: {(focusOk ? "ok" : "FAILED")}: fight on {fightOn}; [{string.Join(",", focus)}]");
             int ufK = -1; { float tu = Time.realtimeSinceStartup; while (ufK < 0 && Time.realtimeSinceStartup - tu < 8f) { for (int k = 0; k < 4 && ufK < 0; k++) if (h.UnderFireNow[k].Count > 0) ufK = k; if (ufK < 0) yield return null; } }
             string ufFace = ufK >= 0 ? h.FaceOf(ufK).ToString() : "", ufBy = ufK >= 0 ? string.Join(",", h.UnderFireNow[ufK].Select(x => x.By)) : "";
+            // brief 078: why each shooter fires is read while the fire is on, not after the picture's pause, when the spell may have ended (a red under load and in two of three runs on 0.2.146 and 0.2.147, never a game fault)
+            string ufWhy = ""; if (ufK >= 0) { float tw = Time.realtimeSinceStartup; while (h.FireWhyNow[ufK].Count == 0 && Time.realtimeSinceStartup - tw < 2f) yield return null; ufWhy = string.Join(",", h.FireWhyNow[ufK].Select(x => x.by + ":" + x.main)); }
             if (ufK >= 0) { yield return Frames(2); ufFace = h.FaceOf(ufK).ToString(); h.SetPaused(true); HandoverHost.PointerWorld = null; Btn(new Vector2(Screen.width * 0.5f, Screen.height * 0.08f)); yield return Frames(2); yield return Shoot(dir, "hold-under-fire", log); h.SetPaused(false); }
             bool ufOk = ufK >= 0 && ufFace == "UnderFire" && ufBy.Length > 0;
-            string ufWhy = ufK >= 0 ? string.Join(",", h.FireWhyNow[ufK].Select(x => x.by + ":" + x.main)) : ""; ufOk &= ufWhy.Length > 0; // engine 0.25.0: why each shooter fires (data)
+            ufOk &= ufWhy.Length > 0; // engine 0.25.0: why each shooter fires (data)
             parts.Add($"\"underFire\": {{\"ok\": {B(ufOk)}, \"agent\": {ufK}, \"by\": \"{ufBy}\", \"face\": \"{ufFace}\", \"why\": \"{J(ufWhy)}\", \"drawnBefore\": {B(ufK >= 0 && g.Ops[ufK].Gun.Drawn)}}}"); ok &= ufOk;
             log.Add($"holdRange under fire: {(ufOk ? "ok" : "FAILED")}: agent {ufK} shot at by [{ufBy}], face {ufFace}");
             // 3c · one input (engine 0.35, brief 039; GDD v0.30.1 §06/§10): weapons free is always on and has no toggle; G is walk/run, X and V

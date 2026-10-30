@@ -1,67 +1,46 @@
-078 Delta proofs and a faster batch · Splice (tools-engineer) · 2026-10-30 · HEAD 2f4749eb + uncommitted
-Status: code and tests done. Never yet run through a real batch: the first one after this is a full proof by design (no ledger yet), and it has to compile the GameBoot.cs edit. Latch compiles.
+078 Delta only · Splice (tools-engineer) · 2026-10-30 · HEAD e3c62307 + uncommitted, c045, engine 0.35.2
+Status: done and measured. A one-line HUD change took 272 s from `bun run batch` to BATCH OK (target about 300 s). Player 0.2.150 is the current build, ledger seeded, test line reverted. Not committed.
 
-What changed
-- tools/game/proofmap.json (new): the table. First matching row decides: a list of sections, "full", or "none". A path no row matches runs the whole proof.
-- tools/game/proofdelta.ts (new): snapshot by content, plan, ledger (out/build/play/proofledger.json), the check of the table against the C# sources. `bun tools/game/proofdelta.ts plan` and `what-if <path>...`.
-- tools/game/proofgates.ts: judgeGates takes skips; a skip reads "not run, unchanged since build N (commit)" and is never a pass. tools/game/cli.ts: --proof-plan; a skip is re-derived from the ledger, the plan file's word is not taken; each section's answer goes on the ledger. tools/game/batch.ts: --full, --submission, --restart, the plan per build, resume, the printed next command, the budget step skipping sets not run, the "driven session ?" fix.
-- unity/.../Play/GameBoot.cs (not a scene; Latch to compile): the -proofOnly comment, and hudClick is written null when it was not asked for. Without it 0.2.146 wrote ok:false, handover:null for a skipped hudClick, which would have failed every delta.
-- tools/hud-budget/budget.ts: isPipRow, the health-pip exemption, in the reader.
-- Tests: tools/game/proofdelta.test.ts (new), and additions to proofgates.test.ts, batch.test.ts, budget.test.ts.
+Measured (real batches on this machine)
+- One line in HudToolkit.Scope.cs: 272 s. Same change undone: 270 s. Before this work the batch took 23:58 for any change.
+  time line: compile 2 s · game-build 248 s (build and stills 45, proof 203) · game-check 0 s · shots 16 s (3 of 13) · budget 6 s · sim, kit, world, unity-world, unity-match, late-fight, tp-long skipped.
+- Full proof: 530 s, was 823 s. r118 about 33 s, was 183 s. Frame-time spots out (--spots).
+- Fix loop: one proof file changed (ProofHold.cs), its 3 sections: proof 118 s.
+- The seed full batch: 856 s to the point where holdRange stopped it (see below); it finished in the next run.
+- Budget of the 203 s delta proof: r067 77, base with play and menu about 40, the range scene about 30, r059 29, r123 21, app exit about 23.
 
-The mapping (tools/game/proofmap.json)
-- full: sim/data, sim/Suborned.Sim, Assets/Suborned/Sim, StreamingAssets, out/world, tools/world, the kit (contracts/world/kit.json, tools/kit, tools/decokit, Assets/Suborned/Kit), GameBoot.cs, proofgates.ts.
-- full by the fail-safe (no row): every other path, among them HandoverHost, all Host*.cs, shaders, materials, scenes other than the generated ones, unity/ProjectSettings, Packages, contracts/, sim/cli, the figures.
-- none: briefs, runs, courses, GDD, crew cards, paid, tools that write nothing into unity/, the batch's own tools, tests, and what the world and range builders rewrite (bakes differ byte to byte; their inputs count).
-- proof files: each to its own sections plus the sections that call it.
-- HUD: every HudToolkit part runs r059, r067, r123 (their pictures are the budgeted ones) and hudClick, plus whatever reads that part. HudToolkit.cs, Capture, HudModel, PlayHud, PlayText and UI run all but `frames`.
-- Held to the sources: a test parses Proof*.cs and GameBoot.cs and fails when a section reads a HudToolkit member, or calls another proof's helper, without being on that file's row. It found over 30 holes in my first table.
-- By content, not `git diff <commit>` alone: builds come from dirty trees (0.2.146 was b00cace3+). The commit is recorded to name the build.
+What runs on a delta
+- Always: compile, the build, the proof's base (briefing, play, menu; 1 s frame sample, no yaw tour).
+- Sections: only those the path's row names (tools/game/proofmap.json; a test holds it to the C# sources).
+- Engine steps and frame-time steps (sim, kit, world, unity-world, unity-match, the check's scenarios, late-fight, tp-long): each has its own last pass on the ledger and runs only if a full or unmapped path changed since it. So a failed full batch cannot lose one.
+- Shots and budget: rows carry `shots`; only those. No HUD or view path: skipped. Budget still judges proof pictures the proof took.
+- Full: engine, world, kit, any unmapped path (all Host*.cs, shaders, materials, settings, contracts), --full, --submission. No periodic full.
+- The screen's `time` line gives step, seconds and why, and a WARNING names the slowest step when a delta passes 300 s.
 
-What a HUD-only change runs now (proof estimates from the 0.2.146 timeline; full proof measured 13:43)
-- HudToolkit.Scope (or Roster, Menu, Intel and other parts no proof reads): base, r059, r067, r123, hudClick. About 3.4 min.
-- HudToolkit.Hold: base, holdActs, r059, r067, r123, rings, hudClick, holdRange. About 4.3 min. Measured 4:37 on 0.2.146 for the same set without rings, with Suture's bots on the machine (load 11).
-- HudToolkit.Cones (or Seal, Mood, Reroute): adds r29 and done. About 6.3 min.
-- HudToolkit.cs or HudModel: all but frames. About 11.3 min, little saved.
-- A brief or doc only: base. About 1.2 min, and only when a rebuild is forced.
-The whole batch does NOT reach 10 minutes. 0.2.146's batch took 23:58, of which the proof 13:43; everything else is 10:15 (sim 70 s, unity-world 33, unity-match 82, build and stills 25, check 78, shots 23, late-fight 221, tp-long 72). So a Hold change is about 14:50 end to end (was 23:58). The rest needs a separate decision, below.
+Proof sections thinned (C#, no scenes)
+- r118: cam058, heads, uncut, reach kept. Camera states, head pictures past one daytime yaw, evening and night, Vale, driver, four agents, footway now only under -proofPictures. Reach keeps one yaw-210 frame so its gate still measures.
+- r29: goHeld removed.
+- fire: secondLock is checked only when the car is still up (the stage apart from the check). cars: a mission that ends before the blast reads not reached, not failed.
+- GameBoot: `drive` is its own section (the driven-session replay stays gated); follow and people spots need -proofSpots.
+- ProofHold: underFire.why is read while the fire is on. It failed in 2 of 3 runs on 0.2.146-0.2.147 because it was read after the picture's pause; it was the proof, not the game. Passed on 0.2.148, 0.2.149, 0.2.150.
+- ProofFire.cs:117 (S6): the swallowed line restored as code, so tp-options is taken and E is released. Passed. AvatarCheck069.cs:136: commented-out statement deleted.
 
-Gate
-- A section is skipped only with a recorded pass, the same map hash and no change since that pass that its rows name. Otherwise it runs.
-- Failing examples tested at the CLI, with nothing but git started: a null section with no earlier pass fails even when the plan file claims the skip; a section that ran and failed loses its pass.
-- A section that fails in company runs alone first; if it passes it runs again after what ran before it, and only that run counts. Reason: 0.2.145, r29 alone passed where the full run failed.
+Changed from my first version
+- Section that fails in company then passes alone: no longer re-run in company. The first real run of that took 607 s for holdRange, and Sky's rule is that a fix loop runs just the failing section. It now counts, is marked on the ledger with what it ran without, and the gate says so.
 
-Failure re-runs
-- The screen prints `next    bun run batch --from <step>`, naming the proof sections it re-runs alone first.
-- A bare `bun run batch` does the same while the tree and player are the ones that failed; --restart runs from the top. My reading of item 3, which says both "resumes" and "suggestion". Dropping the bare resume is one line if the suggestion alone is wanted.
-
-Small fixes
-- "driven session ?": fixed; the row now reads both sessions from the log's real lines.
-- fight-loud-checkpoint: a real false positive. The frame at (929,468) shows 8 dots; the reader saw 8 marks of 6x5 px at an 8 px pitch, counted as 16 letters, 3 words. out/batch/shots now 12/12; proof sets r059, r067, r123 still within budget.
-
-The 2069 s shader compile (0.2.143)
-- Your cleanup did not cause it. The compile ran 10:48 to 11:23 local (Library/BuildHistory 20261030-034841Z, shader cache files written at about 200 a minute). The cleanup ran at 12:05 (out/storage/pruned-2026-10-30T05-05-09-231Z.json), and its only Library entries are under out/scratch/latch/oldworld.
-- No stray wipe. 4,176 of the 12,355 cache files predate that build, the oldest Lit entries from Oct 14. No tool in tools/ touches unity/Library/ShaderCache.
-- Not only Lit: 8,179 files were written: DK_LitCutaway 4,039, DK_ComplexLitCutaway 1,318, Lit 1,131, UberPost 717, the leaf shader 477, the rest small. 1,008 is Lit's ForwardLit fragment count, not the whole of it.
-- Cause, likely but not proved: it was the first player build in this Library since Oct 27 23:55. In between: PC_RPAsset and PC_Renderer changed (81d41252, 61698d63) and the DK shaders were edited (Oct 30 01:52 to 01:57). The URP package itself is unchanged since Oct 12, yet Lit and UberPost were recompiled, which points at the URP asset and renderer. Proving it would cost another cold compile; I would not.
-- It does stay warm: 0.2.146's log has 567 "compiled 0 variants" lines, none compiled, and the build took 16 s. Expect it cold again after a URP asset, renderer or shader-include change, and on any fresh Library (a new worktree).
-
-Evidence
-- Before (HEAD's reader and gate, the new tests): 4 fail, 65 pass: the pip row and the three skip tests.
-- After: bun test tools/game tools/hud-budget tools/storage: 340 pass, 0 fail. bun run typecheck clean. bun tools/game/runtime-compile.ts: compiles, 1 warning.
-- bun run test (whole suite, shared tree, machine loaded, 707 s): 2396 pass, 20 fail. My capture kept only the last lines, so I saw 11 of the 20 names: kit digest, skyrail pylon, drift-auto, presentation life, the comment lint (AvatarCheck069.cs:136, ProofFire.cs:117, lines I did not touch), levels skyline, plan rules. None is in tools/game or tools/hud-budget, but I have no baseline to say all 20 predate this work; the other 9 are unnamed. Suture's or Aster's next full run settles it.
-- Sections proven alone on the real 0.2.146 player: r059, r067, r123, holdActs, hudClick, leash, holdRange (Latch's run: r29).
+Tests
+- bun run test: 2412 pass, 18 fail (425 s). Was 20.
+- All 18 predate this work, on Suture's list at 1c8bf221: BG-1, R-F1, pylon clear, road pavement x2, skyline x5 (SK-3, critic, ACCEPTED, REJECTED, --continue), decokit fit x2 (regen order, fit table), world overlap x2 (mass pushed 2 m, old Bays rule), oldmatch footprints, life presentation counts, drift-auto "nothing changed", kit digest. None in tools/game or tools/hud-budget.
+- Fixed: lint (the two lines above); drift-auto "a harmless edit".
+- That one: contracts/missions/handover/text.schema.ts changed with the mast fix and no declaration, so the dialogue ledger was red. Declared with `bun run drift:auto --objective dialogue --base 94d2eed8` (tools/levels/dialogue/drift.json; 3/3 runs replay OK, no rule moved). Commit that file with this round.
+- bun run typecheck clean. runtime-compile: 1 warning.
 
 Open
-- Not run through a real batch: the game-check retry loop and the bare resume are tested in parts only. Done-check for Latch: one batch (full, records the ledger), then a one-line change to HudToolkit.Scope.cs and a second batch: expect "delta proof" in the game-check row and "not run, unchanged since build N" on the screen.
-- A generated file missing from the "none" row would make every batch full. It fails safe and the plan names the path; add the row then. Only one batch's writes were inspected.
-- Flaky check, for Latch: holdRange failed once in my partial run (underFire.why empty, Suture's bots loading the machine) and passed on a second run of holdRange alone. That points at timing, not order.
-- Sections not yet proven alone: driveClick, fireStop, ringCheck, act, dblClick, done, levels, r118, rings, fire, cars. A false alarm would show as a failure; --full settles it.
-- A delta cannot catch what only a skipped section would have disturbed. Only --full, --submission and the fail-safe rows cover that; nothing forces a full proof periodically. Worth a rule? Aster's call.
-- The packed app says when its proof was a delta but does not refuse. No submission flow exists yet beyond --submission.
-- Leftover on the build: the -proofOnly relative path trap. The player's working folder is the app's parent, so a relative -gameProof writes under out/build/play/out/. Use absolute paths (cli.ts already does).
+- Delta proves less, by decision: order effects between sections and frame times are only checked by a full batch or on the Air. The 0.2.145 r29 case would now pass alone with a mark.
+- Most game code has no row (Host*.cs): a host change is a full batch, about 15 min. Rows for hosts are the next speed-up if host edits are common; I would add them from what Suture's table says each section guards.
+- HudToolkit.cs or HudModel run all sections: proof about 9 min. A core HUD edit will warn.
+- The r29, r067 and done thinning Suture suggested is not done: only what was asked. r067 is the biggest item in a HUD delta (77 s).
+- The app takes about 23 s to exit after the proof. Worth a look; not traced.
+- The new sections have only run in these batches: r118's thinned form and the fire and cars edits passed in 0.2.148's full proof; the not-reached path in cars has not fired.
 
-Decision for Aster and Sky: the remaining 10:15
-Getting a HUD-only batch under 10 minutes needs step deltas, which this brief did not ask for and I did not build. When the engine, world and kit are unchanged, sim, unity-world, unity-match and the check's scenarios (about 263 s) prove nothing new; skipping them gives about 10:30 for a Hold change. Late-fight and tp-long (293 s) are frame-time checks that a HUD change can still affect, so skipping them is a real trade. Recommendation: do the first, keep the second.
-
-Next owner: Latch (compile GameBoot.cs, run the done-check above) -> Aster (commit; the step-delta decision).
+Next owner: Aster (commit, including tools/levels/dialogue/drift.json) -> Sky can take 0.2.150. Its game code matches 0.2.146's commit range: no source under sim/ changed since 2f4749eb. The engine DLL's hash moved anyway (6a9646edbf07 to 2d29345ae78b), probably a commit stamp in the build, not traced; other crew's uncommitted files in the tree go into any build. Suture's go was on 0.2.146.

@@ -4,7 +4,7 @@ import { existsSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync, 
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { GATED } from './proofgates';
-import { changedPaths, classify, coverageGaps, emptyLedger, gateFile, ledgerFile, loadMap, mapHash, owedCompany, planFile, planLines, planProof, recordProof, readLedger, sectionIds, skipText, snapshot, snapshotOf, whatIf, writeLedger, writePlan, ROOT, type Ledger, type ProofMap } from './proofdelta';
+import { aloneLine, recordSteps, shotsGate, stepGate, changedPaths, classify, coverageGaps, emptyLedger, gateFile, ledgerFile, loadMap, mapHash, planFile, planLines, planProof, recordProof, readLedger, sectionIds, skipText, snapshot, snapshotOf, whatIf, writeLedger, writePlan, ROOT, type Ledger, type ProofMap } from './proofdelta';
 
 const m = loadMap(), ids = sectionIds(m), PLAY = 'unity/Assets/Suborned/Runtime/Play/';
 const snap = (o: Record<string, string>) => snapshotOf(new Map(Object.entries(o)));
@@ -16,13 +16,13 @@ function passedAll(files: Record<string, string>): Ledger {
   return l;
 }
 /** A proof's `frames` in which exactly these sections ran and passed (everything else null, as the player writes them). */
-const framesOf = (ran: string[], over: Record<string, unknown> = {}) => ({ follow: ran.includes('frames') ? [{ spot: 'cafe' }] : [], ...Object.fromEntries(ids.filter(i => i !== 'frames').map(i => [i, ran.includes(i) ? { ok: true } : null])), ...over });
+const framesOf = (ran: string[], over: Record<string, unknown> = {}) => ({ follow: [], driveSession: ran.includes('drive') ? '/x/drive.json' : null, ...Object.fromEntries(ids.filter(i => i !== 'drive').map(i => [i, ran.includes(i) ? { ok: true } : null])), ...over });
 const HOLD = PLAY + 'HudToolkit.Hold.cs', BASE = { [HOLD]: 'a', 'sim/data/rules.json': 'a', 'tools/mystery/x.ts': 'a' };
 
 describe('the table', () => {
   test('every gated section is one the map can run, but the input map, which the player always runs', () => {
     expect(GATED.filter(g => !ids.includes(g))).toEqual(['inputMap']);
-    expect(ids.filter(i => !(GATED as readonly string[]).includes(i))).toEqual(['frames', 'r123']);
+    expect(ids.filter(i => !(GATED as readonly string[]).includes(i))).toEqual(['drive', 'r123']);
   });
   test('the engine, its data, the world export and the kit are full, as the brief names them', () => {
     for (const p of ['sim/data/rulebook.json', 'sim/Suborned.Sim/Game.cs', 'out/world/harbour-district.world.json', 'contracts/world/kit.json', 'tools/kit/cli.ts', 'unity/Assets/Suborned/Kit/a/b.fbx', 'unity/Assets/Suborned/Sim/Plugins/Suborned.Sim.dll', 'unity/Assets/StreamingAssets/sim/x.json', PLAY + 'GameBoot.cs']) expect(classify(m, p)?.run).toBe('full');
@@ -123,41 +123,39 @@ describe('the ledger', () => {
     expect(Object.keys(back.snapshots).sort()).toEqual([now.id, snap(BASE).id].sort());
     expect(planProof(m, now, back).only).toEqual([]);
   });
-  test('a section that fails loses its pass, and the next plan runs it alone first', () => {
+  test('a section that fails loses its pass, and the next plan runs it alone', () => {
     const now = snap(BASE), full = planProof(m, now, emptyLedger());
     const after = recordProof(m, emptyLedger(), now, full, framesOf(ids, { r29: { ok: false } }), { driveSession: true, fireSession: true }, BUILD);
     expect(after.sections.r29).toBeUndefined(); expect(after.sections.r118!.build).toBe(BUILD.version);
     const p = planProof(m, now, after);
-    expect(p.only).toEqual(['r29']); expect(p.reasons.r29).toBe('failed last time; alone first');
+    expect(p.only).toEqual(['r29']); expect(p.reasons.r29).toBe('failed last time');
   });
-  test('passing alone is not its pass: it runs again after what ran before it, and only that counts (the 0.2.145 case: r29 alone passed where the full run failed)', () => {
+  test('passing alone after failing in company is a pass, marked with what it ran without (the 0.2.145 case), and no whole proof is re-run for it', () => {
     const now = snap(BASE), full = planProof(m, now, emptyLedger());
     const failed = recordProof(m, emptyLedger(), now, full, framesOf(ids, { r29: { ok: false } }), { driveSession: true, fireSession: true }, BUILD);
-    const alone = recordProof(m, failed, now, planProof(m, now, failed), framesOf(['r29']), {}, BUILD);
-    expect(alone.sections.r29).toBeUndefined(); expect(owedCompany(alone)).toEqual(['r29']);
-    const company = planProof(m, now, alone);
-    expect(company.only).toEqual(['frames', 'driveClick', 'fireStop', 'ringCheck', 'act', 'dblClick', 'holdActs', 'done', 'levels', 'r29']); // nothing that ran after it
-    const stillBad = recordProof(m, alone, now, company, framesOf(company.only, { r29: { ok: false } }), { driveSession: true }, BUILD);
-    expect(stillBad.sections.r29).toBeUndefined(); expect(owedCompany(stillBad)).toEqual(['r29']);
-    const good = recordProof(m, alone, now, company, framesOf(company.only), { driveSession: true }, BUILD);
-    expect(good.sections.r29!.build).toBe(BUILD.version); expect(owedCompany(good)).toEqual([]);
-    expect(planProof(m, now, good).only).toEqual([]);
+    const alone = recordProof(m, failed, now, planProof(m, now, failed), framesOf(['r29']), {}, { ...BUILD, version: '0.2.147' });
+    expect(alone.sections.r29!.build).toBe('0.2.147'); expect(alone.retry).toEqual({});
+    expect(alone.sections.r29!.alone).toEqual({ build: '0.2.146', without: ['drive', 'driveClick', 'fireStop', 'ringCheck', 'act', 'dblClick', 'holdActs', 'done', 'levels'] });
+    expect(aloneLine('r29', alone.sections.r29!)).toContain('--full checks it');
+    expect(planProof(m, now, alone).only).toEqual([]);
+    const inCompany = recordProof(m, failed, now, full, framesOf(ids), { driveSession: true, fireSession: true }, BUILD);
+    expect(inCompany.sections.r29!.alone).toBeUndefined();
   });
   test('a section that failed alone owes nothing: nothing ran before it', () => {
     const now = snap(BASE), l = passedAll(BASE); delete l.sections.r29;
     const after = recordProof(m, l, now, planProof(m, now, l), framesOf([], { r29: { ok: false } }), {}, BUILD);
     expect(after.retry).toEqual({});
     const fixed = recordProof(m, after, now, planProof(m, now, after), framesOf(['r29']), {}, BUILD);
-    expect(fixed.sections.r29).toBeDefined();
+    expect(fixed.sections.r29).toBeDefined(); expect(fixed.sections.r29!.alone).toBeUndefined();
   });
   test('not reached (ok null) has no pass and no debt: it just runs next time', () => {
     const now = snap(BASE), after = recordProof(m, emptyLedger(), now, planProof(m, now, emptyLedger()), framesOf(ids, { fire: { ok: null } }), { driveSession: true, fireSession: true }, BUILD);
     expect(after.sections.fire).toBeUndefined(); expect(after.retry).toEqual({});
     expect(planProof(m, now, after).reasons.fire).toBe('no recorded pass');
   });
-  test('the follow spots pass only with the driven session replaying, the fire section only with its session', () => {
+  test('the driven section passes only with its session replaying, the fire section only with its session', () => {
     const now = snap(BASE), bad = recordProof(m, emptyLedger(), now, planProof(m, now, emptyLedger()), framesOf(ids), { driveSession: false, fireSession: false }, BUILD);
-    expect(bad.sections.frames).toBeUndefined(); expect(bad.sections.fire).toBeUndefined(); expect(bad.sections.cars).toBeDefined();
+    expect(bad.sections.drive).toBeUndefined(); expect(bad.sections.fire).toBeUndefined(); expect(bad.sections.cars).toBeDefined();
   });
 });
 
@@ -181,6 +179,51 @@ describe('the snapshot', () => {
   });
 });
 
+describe('the batch\'s steps (delta only)', () => {
+  const seed = (files: Record<string, string>, steps = ['sim', 'unity-match', 'scenarios', 'late-fight', 'shots']) => recordSteps(emptyLedger(), snap(files), steps, BUILD);
+  test('a HUD change skips the engine steps and the frame-time steps; they say why', () => {
+    for (const step of ['sim', 'unity-match', 'scenarios', 'late-fight']) expect(stepGate(m, snap({ ...BASE, [HOLD]: 'b' }), seed(BASE), step)).toEqual({ run: false, why: 'engine, world and kit unchanged since build 0.2.146' });
+  });
+  test('failing example: an engine change or a path the map cannot place runs them, and a step with no pass runs', () => {
+    expect(stepGate(m, snap({ ...BASE, 'sim/data/rules.json': 'b' }), seed(BASE), 'sim')).toEqual({ run: true, why: 'sim/data/rules.json changed' });
+    expect(stepGate(m, snap({ ...BASE, 'tools/mystery/x.ts': 'b' }), seed(BASE), 'late-fight').run).toBe(true);
+    expect(stepGate(m, snap(BASE), seed(BASE, []), 'sim')).toEqual({ run: true, why: 'no recorded pass' });
+  });
+  test('--full and --submission force every step', () => {
+    expect(stepGate(m, snap(BASE), seed(BASE), 'sim', '--full')).toEqual({ run: true, why: '--full' });
+    expect(shotsGate(m, snap(BASE), seed(BASE), '--full').names).toBe('all');
+  });
+  test('a step that failed keeps its old pass, so an engine change is still owed after a section\'s fix: the plan going delta does not lose it', () => {
+    const l = seed(BASE, ['sim']), now = { ...BASE, 'sim/data/rules.json': 'b' };
+    expect(stepGate(m, snap({ ...now, [HOLD]: 'c' }), l, 'late-fight').why).toBe('no recorded pass');
+    expect(stepGate(m, snap({ ...now, [HOLD]: 'c' }), recordSteps(l, snap(BASE), ['late-fight'], BUILD), 'late-fight').run).toBe(true);
+  });
+  test('the shots a path can show in: the rows of what changed since the last shots pass', () => {
+    expect(shotsGate(m, snap({ ...BASE, [HOLD]: 'b' }), seed(BASE)).names).toEqual(['plate-pay-armed']);
+    const ring = PLAY + 'HudToolkit.Ring.cs', both = { ...BASE, [ring]: 'a' };
+    expect(shotsGate(m, snap({ ...both, [HOLD]: 'b', [ring]: 'b' }), seed(both)).names).toEqual(expect.arrayContaining(['plate-pay-armed', 'office-front-yaw210', 'cafe-front-day']));
+    expect(shotsGate(m, snap({ ...BASE, [PLAY + 'HudToolkit.cs']: 'n' }), seed(BASE)).names).toBe('all');
+  });
+  test('a proof file, a document, a bot script: no shots', () => {
+    const f = PLAY + 'Proof067.cs', g = shotsGate(m, snap({ ...BASE, [f]: 'n' }), seed(BASE));
+    expect(g.names).toEqual([]); expect(g.why).toContain('no HUD or view path changed');
+  });
+  test('failing example: an engine change or an unplaced path takes every shot, and no record takes every shot', () => {
+    expect(shotsGate(m, snap({ ...BASE, 'sim/data/rules.json': 'b' }), seed(BASE)).names).toBe('all');
+    expect(shotsGate(m, snap({ ...BASE, 'tools/mystery/x.ts': 'b' }), seed(BASE)).names).toBe('all');
+    expect(shotsGate(m, snap(BASE), seed(BASE, [])).names).toBe('all');
+  });
+  test('every shot the map names is a row of shots.json, and every HUD part has shots', () => {
+    const rows = JSON.parse(readFileSync(join(ROOT, 'tools/game/shots.json'), 'utf8')).shots.map((s: { name: string }) => s.name);
+    for (const r of m.rows) if (Array.isArray(r.shots)) expect(r.shots.filter(n => !rows.includes(n))).toEqual([]);
+    for (const r of m.rows) if (r.match.some(g => g.includes('HudToolkit'))) expect(r.shots).toBeDefined();
+  });
+  test('a skipped step\'s snapshot survives the write', () => {
+    const f = join(mkdtempSync(join(tmpdir(), 'ledger-')), 'l.json'), l = seed(BASE, ['sim']); writeLedger(f, l);
+    expect(stepGate(m, snap(BASE), readLedger(f), 'sim').run).toBe(false);
+  });
+});
+
 // The gate, at the CLI: cli.ts --check over a scratch build folder, nothing but git really started (SUBORNED_GAME_SPAWN_STUB; the same harness as cli.test.ts).
 describe('the gate at the CLI', () => {
   const sha = Bun.spawnSync(['git', 'rev-parse', '--short', 'HEAD'], { cwd: ROOT, stdout: 'pipe' }).stdout.toString().trim();
@@ -196,7 +239,7 @@ describe('the gate at the CLI', () => {
     const s = snap(files), p = planProof(m, s, ledger); writePlan(d, writePlanLie ? writePlanLie(p) : p, s);
     return d;
   }
-  const check = (d: string) => Bun.spawnSync([process.execPath, join(ROOT, 'tools/game/cli.ts'), '--check', '--reuse-proof', '--proof-plan', planFile(d), '--no-open'], { cwd: ROOT, stdout: 'pipe', stderr: 'pipe', env: { ...process.env, SUBORNED_GAME_OUT: d, SUBORNED_GAME_SPAWN_STUB: '1' } });
+  const check = (d: string, ...more: string[]) => Bun.spawnSync([process.execPath, join(ROOT, 'tools/game/cli.ts'), '--check', '--reuse-proof', '--proof-plan', planFile(d), '--no-open', ...more], { cwd: ROOT, stdout: 'pipe', stderr: 'pipe', env: { ...process.env, SUBORNED_GAME_OUT: d, SUBORNED_GAME_SPAWN_STUB: '1' } });
   const delta = (over: Record<string, unknown> = {}) => { const { r059: _gone, ...rest } = framesOf(['r067'], { inputMap: { ok: true }, ...over }) as Record<string, unknown>; return rest; }; // no r059 key: the app is not asked for its audio cues here
   const FILES = { [PLAY + 'Proof067.cs']: 'a' };
 
@@ -210,6 +253,14 @@ describe('the gate at the CLI', () => {
     expect(after.sections.r067!.build).toBe('0.2.147'); expect(after.sections.r118!.build).toBe('0.2.146');
     expect(gate).toMatchObject({ mode: 'delta', failed: [] }); expect(gate.ran).toContain('r067'); expect(gate.skips.r118).toContain('not run');
     rmSync(d, { recursive: true, force: true });
+  });
+  test('--no-scenarios: a delta goes through with no scenario report and says so; failing example: without the flag, no report fails', () => {
+    const was = { [PLAY + 'Proof067.cs']: 'old' }, mk = () => { const d = folder(delta(), passedAll(was), FILES); rmSync(join(d, 'proof/scenarios.json')); return d; };
+    const a = mk(), ra = check(a, '--no-scenarios');
+    expect(ra.exitCode).toBe(0); expect(ra.stdout.toString()).toContain('game: scenarios: not run, the engine is unchanged');
+    const b = mk(), rb = check(b);
+    expect(rb.exitCode).toBe(1); expect(rb.stdout.toString()).toContain('game: scenarios no report');
+    rmSync(a, { recursive: true, force: true }); rmSync(b, { recursive: true, force: true });
   });
   test('failing example: a null section with no earlier pass fails the gate, even when the plan file says it was skipped', () => {
     const was = { [PLAY + 'Proof067.cs']: 'old' }, l = passedAll(was); delete l.sections.r118;

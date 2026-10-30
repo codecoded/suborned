@@ -4,7 +4,7 @@ import { describe, expect, test } from 'bun:test';
 import { existsSync, mkdirSync, mkdtempSync, readFileSync, writeFileSync, utimesSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-import { appCurrent, frameLines, gateWords, nextCommand, resumeFrom, sessionWords, type LastRun, type ProofGate, installRunner, judgeProofSets, judgeShots, logProblems, matchResult, onlyRows, pick, playerCommand, playerHasTpLong, rotateShots, runSteps, screen, STEPS, type Ctx, type Report, type Step } from './batch';
+import { onlyShots, timeLines, appCurrent, frameLines, gateWords, nextCommand, resumeFrom, sessionWords, type LastRun, type ProofGate, installRunner, judgeProofSets, judgeShots, logProblems, matchResult, onlyRows, pick, playerCommand, playerHasTpLong, rotateShots, runSteps, screen, STEPS, type Ctx, type Report, type Step } from './batch';
 import { resolveShots, type Resolver } from './shots';
 
 const ctx = (over: Partial<Ctx> = {}): Ctx => ({ dry: false, mode: 'batchmode', shotsFile: '', shotsOut: '', facts: {}, say: () => {}, ...over });
@@ -284,7 +284,7 @@ describe('one player launch per step (brief 042, Splice 2026-10-26)', () => {
 });
 
 describe('delta proofs in the batch (brief 078)', () => {
-  const delta: ProofGate = { mode: 'delta', why: '6 of 20', ran: ['r29'], skips: { r118: 'not run, unchanged since build 0.2.146 (b00cace3)', leash: 'not run, unchanged since build 0.2.146 (b00cace3)' }, failed: [], notReached: [], owed: [] };
+  const delta: ProofGate = { mode: 'delta', why: '6 of 20', ran: ['r29'], skips: { r118: 'not run, unchanged since build 0.2.146 (b00cace3)', leash: 'not run, unchanged since build 0.2.146 (b00cace3)' }, failed: [], notReached: [] };
   test('the game-check row reads what the check prints, not "driven session ?" (0.2.146\'s row)', () => {
     const log = 'game: driveSession replays headless on every checkpoint (12 checkpoints; x)\ngame: fireSession replays headless on every checkpoint (9 checkpoints; y)\n';
     expect(sessionWords(log)).toBe('driven session replays, fire session replays');
@@ -301,7 +301,7 @@ describe('delta proofs in the batch (brief 078)', () => {
     const rows = [{ id: 'game-check', title: 'player proof', status: 'FAILED' as const, seconds: 1, detail: 'game:check failed' }];
     const text = screen(rows, { when: 'now', mode: 'batchmode', shotsOut: '/o', gate: { ...delta, failed: ['r29'] } });
     expect(text).toContain('next    bun run batch --from game-check');
-    expect(text).toContain('re-runs r29 alone first');
+    expect(text).toContain('re-runs r29 alone');
     expect(nextCommand('budget')).not.toContain('alone first');
     expect(screen([{ id: 'a', title: 't', status: 'ok', seconds: 1, detail: '' }], { when: 'now', mode: 'batchmode', shotsOut: '/o' })).not.toContain('next ');
   });
@@ -322,5 +322,31 @@ describe('delta proofs in the batch (brief 078)', () => {
     let ran = 0;
     judgeProofSets({ frames: { r059: null } }, '/p/proof', '/o/stage', (_d, name) => { ran++; return { ok: true, detail: name, problems: [], judged: 1, pass: 1 }; });
     expect(ran).toBe(1);
+  });
+  test('a step whose when says no is not run, says why, and the batch goes on; --only runs it anyway', async () => {
+    const log: string[] = [], a = { ...stub('a', true, log), when: () => ({ run: false, why: 'engine, world and kit unchanged since build 0.2.146' }) }, b = stub('b', true, log);
+    const rows = await runSteps([a, b], ctx(), ['a', 'b']);
+    expect(log).toEqual(['b']); expect(rows[0]).toMatchObject({ status: 'skipped', why: 'engine, world and kit unchanged since build 0.2.146' });
+    const log2: string[] = [], a2 = { ...stub('a', true, log2), when: () => ({ run: false, why: 'no' }) };
+    expect((await runSteps([a2], ctx({ explicit: ['a'] }), ['a']))[0]).toMatchObject({ status: 'ok', why: 'asked for' }); expect(log2).toEqual(['a']);
+  });
+  test('the time budget is one line: step, seconds, why it ran or was skipped; steps not asked for are left out', () => {
+    const rows: Parameters<typeof timeLines>[0] = [
+      { id: 'compile', title: '', status: 'ok', seconds: 8, detail: '', why: 'always' }, { id: 'game-build', title: '', status: 'ok', seconds: 200, detail: '', why: 'proof 170 s; 7 of 20 sections' },
+      { id: 'sim', title: '', status: 'skipped', seconds: 0, detail: '', why: 'unchanged' }, { id: 'tp-long', title: '', status: 'skipped', seconds: 0, detail: '', why: 'unchanged' }, { id: 'perf064', title: '', status: 'skipped', seconds: 0, detail: '' }];
+    const l = timeLines(rows, 'delta');
+    expect(l).toEqual(['time    208 s: compile 8 s (always) · game-build 200 s (proof 170 s; 7 of 20 sections) · sim, tp-long skipped (unchanged)']);
+  });
+  test('a delta over 5 minutes warns and names its slowest step; failing example: a full batch never warns', () => {
+    const rows: Parameters<typeof timeLines>[0] = [{ id: 'game-build', title: '', status: 'ok', seconds: 290, detail: '', why: 'proof 250 s' }, { id: 'shots', title: '', status: 'ok', seconds: 20, detail: '' }];
+    expect(timeLines(rows, 'delta')[1]).toBe('WARNING this delta took 310 s, over the 300 s target; slowest: game-build 290 s (proof 250 s)');
+    expect(timeLines(rows, 'full')).toHaveLength(1);
+    expect(screen(rows, { when: 'now', mode: 'batchmode', shotsOut: '/o', gate: { ...delta } })).toContain('WARNING this delta took 310 s');
+  });
+  test('only the shots the change can affect; failing example: a name the file lacks is an error', () => {
+    const raw = { shots: [{ name: 'a' }, { name: 'b' }, { name: 'c' }] };
+    expect(onlyShots(raw, ['c', 'a']).shots.map(s => s.name)).toEqual(['a', 'c']);
+    expect(onlyShots(raw, 'all')).toBe(raw); expect(onlyShots(raw)).toBe(raw);
+    expect(() => onlyShots(raw, ['z'])).toThrow('shots.json lacks: z');
   });
 });
