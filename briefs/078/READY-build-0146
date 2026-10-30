@@ -1,0 +1,31 @@
+078 Handover player build · Latch (unity-engineer) · 2026-10-30 · HEAD b00cace3 + one proof-only edit, uncommitted, c045, engine 0.35.2
+Status: usable. Build 0.2.146 is ready for Suture's bot playtests and for Sky. One non-blocking budget row is red (a false positive).
+Player: out/build/play/The Suborned.app. World b4c862677d81, walk file fresh. Shots: out/batch/shots. Not sent to the Air.
+
+Batch rows
+- sim 360/360 · compile ok · kit ok · world ok · unity-world ok · unity-match 457/457 · game-build ok · game-check ok (r29, r059, r067, r118 and the rest) · shots 13/13
+- budget FAILED: 11/12. fight-loud-checkpoint flags 1 line of running text at (929,468), 62x5 px. That is the row of 8 health pips over a fighter, not words. Audit 12/12 clean; proof sets r059, r067, r123 within budget.
+- late-fight ok (run with --from, same player) · tp-long ok · perf064 not run (opt-in)
+Mast proof, -shots031 on 0.2.146: mast spot (-1800,-950); old robot robot-1 at 4:06.3. No mast-314 left in the app's site or text inputs.
+
+Frame times (M-series proxy, not the Air; late-fight and tp-long marked NOISY MACHINE)
+- play zoom 303.5 fps, p99 4.8 ms at 2880x1864; slowest spot fire-commander 117.2 fps, p99 6.7 ms
+- late-fight loud-fight: worst 22.2 ms, p99 6 ms, mean 4.5 ms
+- tp-long play-opening: mean 4.1, p99 5.6 ms, 1.5 M tris, SetPass 110, casters 476, drawn 290
+
+Builds
+- 0.2.143: r29 cones failed. Hover read car/getaway, not the customer.
+- 0.2.144: same failure. My first fix (skip people within a car's 28 px pick radius) rested on a wrong theory.
+- 0.2.145: diagnostic. r29 alone passed, so the failure depends on what runs before it.
+- 0.2.146: the proof waits on wall clock instead of 40 frames. First hover car/getaway, customer after 0.192 s, r29 ok. Budget row as above.
+
+Code change: unity/Assets/Suborned/Runtime/Play/Proof29.cs only (the wait; a log line; a ray probe that fires only if the hover stays wrong). No game code changed.
+
+Open
+- Source of the stray car hover is not proved. Likely the real desktop mouse, read for 2 frames while PointerWorld is null. Why it began after 0139 is also not proved.
+- Budget false positive: owner Splice (reader) or Latch (register the pips in the manifest, next build).
+- batch.ts prints "driven session ?" because its pattern misses the log's "driveSession replays headless". The log shows both sessions replay.
+- game-build ran long: 2908 s on 0.2.143 (2069 s build, 1008-variant Lit compile, not cached; cause of the cold cache not established), about 850 s after that. Over the 10-minute limit.
+- Nobody has played this build by hand. Bot rows are Suture's; the batch runs none.
+
+Next owner: Aster (commit Proof29.cs and tools/game/version.json) -> Suture (bots) -> Sky (play).
