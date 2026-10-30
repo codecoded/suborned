@@ -90,7 +90,7 @@ namespace Suborned.Sim
             if (best == null) return;
             if (best.St != "wait")
             {
-                var from = UnitPose(best)!.Value.pos; var route = Walk.Route(Walk.NearestFree(from) ?? from, at);
+                var from = UnitPose(best)!.Value.pos; var route = Walk.Route(Walk.NearestFree(from) ?? from, ClearStop(best.Id, at)); // brief 081 (fight.spacing): beside who stands there
                 best.Route = new Path(route != null && route.Length >= 2 ? route : new[] { from, at }); best.Launch = Tick; best.St = "walk"; // radioed: it turns now
             }
             best.Dest = at; best.Act = a.Id; best.Scene = true; best.Verified = false; best.ToOpen.Clear(); if (stash.Length > 0) best.ToOpen.Add(stash);
@@ -314,7 +314,7 @@ namespace Suborned.Sim
                         if (Tick < u.Launch) break;
                         {
                             var from = u.Patrol ? PatrolPose()!.Value.pos : u.From;
-                            var a = Walk.NearestFree(from) ?? from; var b = Walk.NearestFree(u.Dest) ?? u.Dest;
+                            var a = Walk.NearestFree(from) ?? from; var b = ClearStop(u.Id, Walk.NearestFree(u.Dest) ?? u.Dest); // brief 081 (engine 0.37.0; fight.spacing): officers sent to one place spread round it, each past the last's claim
                             var route = Walk.Route(a, b); u.Route = new Path(route != null && route.Length >= 2 ? route : new[] { a, b });
                             u.Launch = Tick; u.St = "walk";
                             if (u.Patrol) Note("patrol.alarm", "The patrol leaves its sweep for the alarm.");
@@ -520,12 +520,20 @@ namespace Suborned.Sim
                 if (!door.HasValue) continue;
                 int j = i; while (j + 1 < stops.Count && PostAt(j + 1) == place && stops[j + 1].from == stops[j].to) j++;
                 int end = p == GuardP ? INF : stops[j].to;
+                if (p == GuardP && S.GuardMark >= 0) { int per = T(R.CheckInPeriodS), off = ((from - T(S.GuardMark)) % per + per) % per; from -= off; } // brief 080 (pacing): his marks stay 1:00, 2:30, 4:00 when the shift comes forward, whatever minute his stop began
                 if (end > tick) return (place, door.Value, from, end);
                 i = j;
             }
             return null;
         }
-        List<(string place, int from, int to, bool outside)>? StopsOf(Person p) => People2 != null && People2.Stops.TryGetValue(p.Id, out var s) ? s : null;
+        List<(string place, int from, int to, bool outside)>? StopsOf(Person p)
+        {
+            if (People2 == null || !People2.Stops.TryGetValue(p.Id, out var s)) return null;
+            if (!Start.OldClock) return s;
+            if (oldStops.TryGetValue(p.Id, out var o)) return o; // test only: a minute later, as the walkers are (SeedStart)
+            o = new List<(string, int, int, bool)>(s.Count); foreach (var (pl, f, t, ou) in s) o.Add((pl, f + T(OldClockS), t + T(OldClockS), ou)); oldStops[p.Id] = o; return o;
+        }
+        readonly Dictionary<string, List<(string place, int from, int to, bool outside)>> oldStops = new Dictionary<string, List<(string, int, int, bool)>>(StringComparer.Ordinal);
         /// <summary>The next check-in mark at or after `tick` of a staff person (ticks), or -1.</summary>
         public int NextMarkOf(Person p, int tick)
         {
@@ -653,7 +661,7 @@ namespace Suborned.Sim
             guardBackAt = -1; if (GuardDown || !GuardHeld || heldPhase != "woken") return;
             var from = heldPos; GuardHeld = false;
             guardRun = new Path(Walk.Route(Walk.NearestFree(from) ?? from, S.Stand(S.GuardPost)) ?? new[] { from, S.Stand(S.GuardPost) });
-            guardRunning = true; LureTick = Tick; GuardAwayUntil = Tick + (int)((guardRun.Length + secSpeed - 1) / secSpeed);
+            guardRunning = true; LureTick = Tick; GuardAwayUntil = Tick + (int)((guardRun.Length + guardSpeed - 1) / guardSpeed);
             Note("guard.back-to-post", "The guard walks back to his post.");
         }
 

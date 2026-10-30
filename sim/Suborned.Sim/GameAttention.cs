@@ -104,7 +104,7 @@ namespace Suborned.Sim
                     {
                         row.Reported[k] = true;
                         int land;
-                        if (WatcherKind(w) == "camera") { int period = T(R.AttnScanS), phase = (int)(Streams.Fnv1a32(w) % (uint)period); land = Tick + ((phase - Tick % period) % period + period) % period + T(R.AttnCallS); }
+                        if (WatcherKind(w) == "camera") { int period = T(R.AttnScanS), phase = ScanPhase(w, period); land = Tick + ((phase - Tick % period) % period + period) % period + T(R.AttnCallS); }
                         else land = Tick + T(R.AttnCallS);
                         attnReps.Add(new AttnRep { W = w, Op = k, From = Tick, LandAt = land, At = op.Pos });
                         Note("attention.reporting", $"{w.Replace("camera:", "the camera ")} reports the {Sim.Op.Name(op.Id)} loitering (lands {Sim.Report.Clock(land)}).");

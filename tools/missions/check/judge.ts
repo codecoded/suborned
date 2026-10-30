@@ -149,7 +149,7 @@ const want = (s: RouteScript) => (s.expects.fail ? `${s.expects.outcome} ${s.exp
 /** brief 018: a script that names who is left behind must leave exactly them, so (as `want`) */
 const met = (s: RouteScript, d?: Digest) => !!d && d.outcome === s.expects.outcome && (!s.expects.fail || d.fail === s.expects.fail) && (!s.expects.left || leftOf(s.expects.left) === leftOf(d.left)) && (s.expects.alert === undefined || d.alert === s.expects.alert) && d.replayIdentical;
 
-export function judge(r: Routes, scripts: Record<string, Script>, plays: Plays, slack: Slack[], o: { caseTrailEq?: number; getaway?: Getaway | Getaway[]; facts?: Facts; scenarios?: Scenarios } = {}): Report {
+export function judge(r: Routes, scripts: Record<string, Script>, plays: Plays, slack: Slack[], o: { caseTrailEq?: number; getaway?: Getaway | Getaway[]; facts?: Facts; scenarios?: Scenarios; planFails?: string[] } = {}): Report {
   const eq = o.caseTrailEq ?? 0, totalTrail = (d: Digest) => totalTrailOf(d, eq);
   const live = r.scripts.filter(s => !s.pending), pending = r.scripts.filter(s => s.pending).map(s => s.id);
   const rows: Row[] = live.map(s => { const d = plays[s.id]!; return { id: s.id, kind: s.kind, route: s.route, expects: want(s), got: gotA(s, d), ok: met(s, d), at: clock(d.tick), trail: d.trail, alert: d.alert, shots: d.shots, fightShots: d.gunfire - d.shots, fight: d.fight ?? '', cash: d.cash, replay: d.replayIdentical }; });
@@ -176,7 +176,8 @@ export function judge(r: Routes, scripts: Record<string, Script>, plays: Plays, 
 
   // brief 039 (Keel's spec; Sky 2026-10-27): a line that names an engine scenario is reached, too, when `suborned-sim check <scenario>` prints ": ok"
   const reached = (f: Routes['fails'][number]) => [...live.filter(s => s.kind === 'fail' && s.reaches === f.id && plays[s.id]?.outcome === 'failure' && f.codes.includes(plays[s.id]!.fail)).map(s => s.id),
-    ...(f.scenario && scenarioOk(o.scenarios, f.scenario) ? [`scenario ${f.scenario}`] : [])];
+    ...(f.scenario && scenarioOk(o.scenarios, f.scenario) ? [`scenario ${f.scenario}`] : []),
+    ...(f.codes.some(c => o.planFails?.includes(c)) ? ['an adaptive plan across seeds'] : [])]; // brief 080
   // brief 067 (§09: a fail that needs a watcher the site doesn't place is not counted): a line with `needs` counts only where the site's fact
   // holds; an engine that states no facts (before 0.34.0) counts it, as before
   const FACT = { 'patrol-watches-entry': 'patrolWatchesEntry' } as const, NOT_ON = { 'patrol-watches-entry': 'no patrol watches an entry' } as const;

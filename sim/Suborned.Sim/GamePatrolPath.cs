@@ -158,7 +158,7 @@ namespace Suborned.Sim
         PatrolLeg SweepLeg(int t)
         {
             Pt a = S.Stand(S.PatrolA), b = S.Stand(S.PatrolB);
-            int period = T(R.PatrolPeriodS), half = period / 2, ph = t % period;
+            int period = T(R.PatrolPeriodS), half = period / 2, ph = (t + PatrolPhase) % period;
             bool toB = ph < half; // SweepPos: A at phase 0, B at half, back to A at period
             var leg = new PatrolLeg { Kind = "sweep", Walk = true, From = t };
             var at = SweepPos(t); leg.Points.Add(at); leg.Ticks.Add(t);

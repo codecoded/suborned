@@ -100,7 +100,7 @@ namespace Suborned.Sim
         /// sighting is read (WatcherNotices).</summary>
         int NextScan(string watcher, int tick)
         {
-            int period = T(R.CameraScanS), phase = (int)(Streams.Fnv1a32(watcher) % (uint)period);
+            int period = T(R.CameraScanS), phase = ScanPhase(watcher, period);
             return tick + ((phase - tick % period) % period + period) % period;
         }
 

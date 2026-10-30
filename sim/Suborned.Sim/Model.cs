@@ -56,6 +56,11 @@ namespace Suborned.Sim
     {
         public readonly string Id;                     // an operative, "guard", "patrol", "security-1", "rivals", a role, a hostile's id
         public Weapon? W; public bool Trained;         // null: unarmed (an operative without Arms, a civilian)
+        /// <summary>Brief 080: the shooter's aim % (rulebook weapons.sheet.aim by class + the character's offset) and how many shots it has fired, the
+        /// index into its own stream (GameSeed.cs: a read never moves it). Hashed only once a shot is fired; Acc and Mem hold the pair's streak.</summary>
+        public int Aim, ShotN;
+        /// <summary>Brief 080 (weapons.sheet.intake): until this tick a hostile's shot on this agent misses, whoever fires it. Hashed only while it runs.</summary>
+        public int IntakeUntil;
         public int Health, Max; public bool Down;
         public bool Drawn; public int DrawReady, HolsterAt = -1, DrawTick = -1; // drawing until DrawReady; holstering until HolsterAt
         public string Stance = "return";              // hold, return, free (an operative's)

@@ -26,6 +26,8 @@ namespace Suborned.Sim
             h.S(g.Id).S(g.W?.Id ?? "").Z(g.Trained).I(g.Health).I(g.Max).Z(g.Down).Z(g.Drawn).I(g.DrawReady).I(g.HolsterAt).I(g.DrawTick).S(g.Stance)
              .S(g.Order).Z(g.Force).S(g.Target).I(g.Acc).I(g.NextShot).I(g.LostAt).S(g.ShotBy).Z(g.Fired).Z(g.Engaged).Z(g.Hit)
              .I(g.ShotByTick).S(g.St).I(g.Until).I(g.NoFoeSince).I(g.StepAt).I(g.UnprotSince).I(g.Class).I(g.LostTick).I(g.SightLostAt).S(g.Cover).S(g.LostTarget);
+            if (g.ShotN > 0) h.S("shots").I(g.ShotN); // brief 080: only a rolled shot adds bytes
+            if (g.IntakeUntil > HTick) h.S("intake").I(g.IntakeUntil); // brief 080: only while it runs
             if (g.Order.Length > 0) h.I(g.OrderTick); // engine 0.15.0: only a standing order adds bytes
             if (g.Order.Length > 0 && g.Reached) h.S("reached"); // engine 0.21.0: only a standing order that has had reach and line adds bytes
             if (g.DrawnBy.Length > 0) h.S(g.DrawnBy); // brief 030: how the weapon was drawn (only an operative's drawn weapon adds bytes)

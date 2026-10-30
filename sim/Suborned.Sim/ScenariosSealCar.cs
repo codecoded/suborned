@@ -57,7 +57,7 @@ namespace Suborned.Sim
             {
                 var g = r.G;
                 Script(r, "[{\"tick\":0,\"op\":\"tech\",\"do\":\"move\",\"to\":\"cabinet\",\"run\":true},{\"tick\":0,\"op\":\"enforcer\",\"do\":\"move\",\"to\":[6925,-4250]},{\"tick\":0,\"op\":\"scout\",\"do\":\"move\",\"to\":\"d:Office approach\"},{\"tick\":0,\"op\":\"fixer\",\"do\":\"move\",\"to\":\"crew:fixer\"},{\"tick\":166,\"op\":\"tech\",\"do\":\"loop\",\"target\":\"entrance\"},{\"tick\":462,\"op\":\"scout\",\"do\":\"watch\",\"target\":\"guard\"},{\"tick\":662,\"op\":\"scout\",\"do\":\"move\",\"to\":\"crew:scout\"},{\"tick\":1060,\"op\":\"tech\",\"do\":\"reroute\",\"target\":\"patrol\"},{\"tick\":1440,\"op\":\"enforcer\",\"do\":\"move\",\"to\":[6520,-4110]},{\"tick\":1510,\"op\":\"enforcer\",\"do\":\"takedown\",\"target\":\"guard\",\"how\":\"kill\"},{\"tick\":1540,\"op\":\"enforcer\",\"do\":\"enter\"},{\"tick\":1540,\"op\":\"tech\",\"do\":\"move\",\"to\":[675,-4625]},{\"tick\":1540,\"op\":\"scout\",\"do\":\"move\",\"to\":[1175,-4825]},{\"tick\":1540,\"op\":\"fixer\",\"do\":\"move\",\"to\":[1025,-4625]},{\"tick\":1920,\"op\":\"enforcer\",\"do\":\"stance\",\"stance\":\"hold\"}]"); // N128's orders
-                r.To(T(g.S.Over));
+                r.To(T(g.ClockOver));
                 r.Eq(g.FailCode, "sealed", "the loud fight's seal runs out");
                 var c = CauseIs(r, "sealed", "sealed", false, "", "", Enf);
                 r.Is(g.Vale != ValeAt.Car, "Vale never boarded");
@@ -95,16 +95,16 @@ namespace Suborned.Sim
                 bool aboard = !g.Over && g.Issue(new Order { Tick = g.Tick, Op = Enf, Do = "board", Target = "car" }).ok;
                 if (!r.Line(aboard, $"he boards with Vale before the seal ({g.Result} {g.FailCode} at {Report.Clock(g.Tick)}; brief 059: with no final fight the posted three round our car fire on the Vale holder in their cone, Sky's answer 3)"))
                 {
-                    while (!g.Over && g.Tick < T(g.S.Over) + T(600)) { g.Step(); Check(); }
+                    while (!g.Over && g.Tick < T(g.ClockOver) + T(600)) { g.Step(); Check(); }
                     r.Is(same, $"the seal window matches Lockdown every tick, gone at the end ({off})");
                     return;
                 }
                 while (!g.Over && r.Op(Enf).Busy != null) { g.Step(); Check(); }
                 r.Line(g.Vale == ValeAt.Car && !g.Over, $"Vale is in the car ({Report.Clock(g.Tick)}), the seal at {Report.Clock(g.Lockdown)}");
                 int bin = g.Log.FindLastIndex(l => l.Code == "board.in"); var before = g.Windows().FirstOrDefault(x => x.Kind == "seal");
-                if (!r.Line(bin >= 0 && before != null, $"Vale is aboard with the seal running ({g.Result} {g.FailCode} at {Report.Clock(g.Tick)}; brief 059: the posted three round our car)")) { while (!g.Over && g.Tick < T(g.S.Over) + T(600)) { g.Step(); Check(); } r.Is(same, $"the seal window matches Lockdown every tick, gone at the end ({off})"); return; }
+                if (!r.Line(bin >= 0 && before != null, $"Vale is aboard with the seal running ({g.Result} {g.FailCode} at {Report.Clock(g.Tick)}; brief 059: the posted three round our car)")) { while (!g.Over && g.Tick < T(g.ClockOver) + T(600)) { g.Step(); Check(); } r.Is(same, $"the seal window matches Lockdown every tick, gone at the end ({off})"); return; }
                 int boarded = g.Log[bin].Tick;
-                while (!g.Over && g.Tick < T(g.S.Over) + T(600)) { g.Step(); Check(); }
+                while (!g.Over && g.Tick < T(g.ClockOver) + T(600)) { g.Step(); Check(); }
                 r.Is(same, $"the seal window matches Lockdown every tick, gone at the end ({off})");
                 r.Eq(g.FailCode, "sealed", "nobody gave Go: the district seals");
                 var c = CauseIs(r, "sealed", "sealed", false, "", "", g.Cause?.Ops.Count > 0 ? string.Join(",", g.Cause.Ops) : "");
@@ -152,7 +152,7 @@ namespace Suborned.Sim
                 int refused = g.Tick;
                 List<string> last = new List<string>();
                 // the three hold their fire on the blocker: they cease whenever one fires on it, so the lane stays held to the seal
-                while (!g.Over && g.Tick < T(g.S.Over) + T(900))
+                while (!g.Over && g.Tick < T(g.ClockOver) + T(900))
                 {
                     foreach (var s in new[] { Scout, Fixer, Tech }) { var o = r.Op(s); if (!o.Down && o.Gun.Target == b!.Id) g.Issue(new Order { Tick = g.Tick, Op = s, Do = "cease" }); }
                     last = g.CarHolders(); g.Step();

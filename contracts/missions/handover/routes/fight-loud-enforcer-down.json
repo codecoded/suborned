@@ -10,8 +10,8 @@
   {"tick":327,"op":"tech","do":"reroute","target":"patrol"},
   {"tick":777,"op":"enforcer","do":"fire","target":"guard"},
   {"tick":817,"op":"enforcer","do":"move","to":"d:Office entrance","run":true},
-  {"tick":845,"op":"enforcer","do":"enter"},
-  {"tick":1525,"op":"enforcer","do":"move","to":"police-1"}
+  {"tick":880,"op":"enforcer","do":"enter"},
+  {"tick":1560,"op":"enforcer","do":"move","to":"police-1"}
  ],
- "until": 5100
+ "until": 4500
 }

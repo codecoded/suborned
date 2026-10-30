@@ -3,13 +3,13 @@
  "mission": "handover",
  "note": "Route B, the pickup, quiet (GDD v0.26.0 §07; Keel N11b), fight it out (brief 018 §5). The Scout listens to the driver and the Fixer pays him by 5:40 ($70,000); his word sends the rivals' lookout off; the Scout gives the rival car a false tip at 3:10; the Tech reroutes the patrol from the cabinet at 5:00 (it lands at 5:45 and keeps the yard clear to 7:40: brief 067 A, the patrol sweeps the service yard; rerouted it never breaks to the yard fight), then runs to the getaway car and Drives it round behind Vale's car once it parks in the service bay (car.parks). The Enforcer waits at the square until 5:50 (in the yard before the Reroute the patrol reported him at 1:53.4), walks to the service lane, takes Vale from the back seat (38 s, off-screen) and carries him 3.5 m to the car. The posted three run after the Driven car and spring at the Take; the Fixer and then the Scout, 0.5 s later (Motive's rb-st: on the same tick the Fixer took both rivals' fire and went down), lock rival-1 then rival-2 (focus fire, Motive M059-B7: at will the three shoot the carrying Enforcer down) until the crew breaks; then Go. The three left behind on a calm street walk out.",
  "start": {},
- "until": 5100,
+ "until": 4500,
  "steps": [
   {
    "op": "enforcer",
    "do": "move",
    "to": "d:Service lane",
-   "at": "5:50",
+   "at": "4:50",
    "why": "brief 067 A (the patrol sweeps the service yard): waits at the square until the Reroute has landed (5:45), then walks to the service lane"
   },
   {
@@ -57,7 +57,7 @@
    "do": "turn",
    "target": "driver",
    "approach": "pay",
-   "by": "5:40",
+   "by": "4:40",
    "label": "turned",
    "why": "the card shows Pay works on this driver (a Mercenary); §07's Help is one step worse on him"
   },
@@ -92,7 +92,7 @@
    "after": [
     "tip"
    ],
-   "at": "5:55",
+   "at": "4:55",
    "label": "scout-yard"
   },
   {
@@ -105,7 +105,7 @@
    "after": [
     "turned"
    ],
-   "at": "5:55",
+   "at": "4:55",
    "label": "fixer-yard"
   },
   {
@@ -119,7 +119,7 @@
    "op": "tech",
    "do": "reroute",
    "target": "patrol",
-   "at": "5:00",
+   "at": "4:00",
    "label": "rr",
    "why": "brief 067 A: ordered at 5:00, it lands 5:45, the patrol away to 7:40: the yard is clear for the Take and the fight (a rerouted patrol never breaks to gunfire)"
   },
@@ -151,7 +151,7 @@
    "do": "take",
    "when": "car.parks",
    "label": "take",
-   "at": "6:45",
+   "at": "5:45",
    "why": "Vale reaches the car in the service lane at 6:10"
   },
   {

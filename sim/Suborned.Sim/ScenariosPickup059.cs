@@ -146,15 +146,15 @@ namespace Suborned.Sim
             Add("P59-NOBODY", "059", "Brief 059 K4: the turned driver waits with Vale in the service bay until the close; nobody takes him; at 8:30 he drives on: vale-leaves.", r =>
             {
                 var g = r.G;
-                Open059(r); Tip059(r, T(g.S.Over - g.R.MisleadAwayS - g.R.MisleadS) + 1); // a tip that runs past the close: no tail comes back before it
+                Open059(r); Tip059(r, T(g.ClockOver - g.R.MisleadAwayS - g.R.MisleadS) + 1); // a tip that runs past the close: no tail comes back before it
                 r.To(T(390));
                 r.Until(() => g.CarInBayTick > 0 && g.Tick >= g.CarInBayTick, T(60));
                 r.Is(g.Vale == ValeAt.InCar && g.PickupService, "Vale waits in his car in the bay");
-                r.To(T(g.S.Over) - 1);
+                r.To(T(g.ClockOver) - 1);
                 r.Is(!g.Over && g.Vale == ValeAt.InCar, "he waits until the close, past the driver's day in the people file (7:30)");
-                r.To(T(g.S.Over));
-                r.Eq((g.Result, g.FailCode, g.Tick), (Outcome.Failure, "vale-leaves", T(g.S.Over)), "at 8:30 the driver gives up and drives Vale on");
-                r.Is(g.Log.Exists(l => l.Code == "car.leaves" && l.Tick == T(g.S.Over)), "car.leaves at the close");
+                r.To(T(g.ClockOver));
+                r.Eq((g.Result, g.FailCode, g.Tick), (Outcome.Failure, "vale-leaves", T(g.ClockOver)), "at 8:30 the driver gives up and drives Vale on");
+                r.Is(g.Log.Exists(l => l.Code == "car.leaves" && l.Tick == T(g.ClockOver)), "car.leaves at the close");
             });
 
             Add("P59-UNTURNED", "059", "Brief 059 K2 (Sky 3a): with the driver unturned, Vale gets in at 6:13 and is driven away: the mission fails vale-leaves.", r =>
@@ -357,7 +357,7 @@ namespace Suborned.Sim
                 r.To(r.Send(Tech, "cabinet"));
                 r.To(T(300)); r.Do(Tech, "loop", "pickup"); r.Done(Tech);
                 r.To(r.SendTo(Enf, Beside(r, g.CarPos())!.Value));
-                r.To(T(g.S.ValeAtCar));
+                r.To(T(g.ClockValeAtCar));
                 r.Is(g.Crew[4].Mode == CrewMode.Aboard && g.CarSt == CrewCar.Parked, "the rival car is parked with its wheelman aboard");
                 r.Do(Enf, "take", Vale);
                 r.Eq(g.FailCode, "rivals-reach-vale", "the crew reaches Vale first");

@@ -247,6 +247,8 @@ namespace Suborned.Sim
         /// step and a cover-snap walk fire nothing), measured, not adopted.</summary>
         public readonly bool CoverStepFires;
         public readonly int ModRunning, ModRunningAway, ModTargetRunning, RunAwayConeDeg, RunAwayCosPm; public readonly bool PointBlankCover;
+        /// <summary>Brief 080: the stat sheet (weapons.sheet) and the seeded start (seed).</summary>
+        public readonly SheetRules Sheet; public readonly SeedRules Seeds;
         public readonly int PointBlankCm, AccPoint, AccEff, AccLong, AccStart, ModMoving, ModCover, ModVale, ModUntrained, DrawTicks, HolsterTicks, AimNewTicks, ReactS, LineLapseS, SidearmArms;
         /// <summary>car.footprint (engine 0.33.1, brief 041): a standing car's footprint (cm, along and across its heading), the clearance a walker keeps off its body, and "at the car" from its body.</summary>
         public readonly int CarLenCm, CarWCm, CarClearCm, CarReachCm;
@@ -337,7 +339,7 @@ namespace Suborned.Sim
         /// <summary>Each memory act's facts as rulebook memory.acts lists them (empty for a told entry, whose facts it carries).</summary>
         public readonly Dictionary<string, List<string>> ActFacts = new Dictionary<string, List<string>>(StringComparer.Ordinal);
         // the final fight
-        public readonly int BodyClearCm, BodyFileTicks; // engine 0.36.0 (fight.spacing)
+        public readonly bool BodyCellEnds; public readonly int CarAheadTicks, CloseWarnS; public readonly bool StaffLegDirect; public readonly int BodyClearCm, BodyFileTicks; // engine 0.36.0 (fight.spacing)
         public readonly int SafeHostiles, SafeWarnS, SafeAmbushCm, LoudOfficers, LoudAlert, LoudCivilian, HoldCm; public readonly bool FightTraced;
         /// <summary>Brief 059, Sky's open questions as values. S1 (engine 0.33.0; Sky 2026-10-25: no): fight.safe.always (the value fight-always:
         /// true, the final fight always comes: the gate, the late spring, the floor, crew-wiped; false, 0.32.0's leave-unfought) and fight.safe.floor
@@ -367,7 +369,7 @@ namespace Suborned.Sim
         {
             Book = JNode.Parse(rulebookJson, "rulebook"); People = JNode.Parse(peopleJson, "people");
             var b = Book; var pp = People;
-            b.Only("schema", "author", "gdd", "rule", "reads", "tags", "units", "values", "standing", "alert", "fit", "reports", "ladders", "memory", "exposure", "traceable", "privacy", "cell", "security", "weapons", "ai", "crowd", "summon", "cancel", "perception", "sight", "mood", "attention", "takedown", "witness", "response", "campaign", "rounds", "car", "fight", "rivals", "investigation", "preview", "streams", "phases", "debrief", "events");
+            b.Only("schema", "author", "gdd", "rule", "reads", "tags", "units", "values", "standing", "alert", "fit", "reports", "ladders", "memory", "exposure", "traceable", "privacy", "cell", "security", "weapons", "ai", "crowd", "summon", "cancel", "perception", "sight", "mood", "attention", "takedown", "witness", "response", "campaign", "rounds", "car", "fight", "rivals", "investigation", "preview", "streams", "phases", "debrief", "events", "seed");
             if (b["schema"].Str() != "suborned.rulebook/1") throw new FormatException("rulebook schema is not suborned.rulebook/1");
             pp.Only("schema", "author", "gdd", "rule", "person", "tiers", "scales", "temperaments", "institutions", "approaches", "needs", "secrets", "ties", "knowledge", "talker", "positions", "temperamentsBy", "names");
             if (pp["schema"].Str() != "suborned.people.rules/1") throw new FormatException("people rules schema is not suborned.people.rules/1");
@@ -428,7 +430,7 @@ namespace Suborned.Sim
                 {
                     "s" => (1L, 3600L), "usd" => (-1_000_000_000L, 1_000_000_000L), "m" => (0L, 1000L), "cm" => (0L, 100_000L), "cm-per-s" => (1L, 10_000L),
                     "trail" => (-100L, 100L), "alert" => (0L, 3L), "standing" => (-1000L, 1000L), "orders" => (-10L, 10L), /* brief 054 §4.2: a ready line takes Trail or orders off */ "scale-steps" => (-10L, 10L),
-                    "entries" => (1L, 100L), "hops" => (0L, 10L), "count" => (0L, 100L), "per-mille" => (0L, 1_000_000L), "ticks" => (1L, 36_000L), "pct" => (0L, 100L), "deg" => (0L, 360L),
+                    "entries" => (1L, 100L), "hops" => (0L, 10L), "count" => (0L, 100L), "per-mille" => (0L, 1_000_000L), "ticks" => (1L, 36_000L), "pct" => (0L, 100L), "pct-points" => (-100L, 100L), "deg" => (0L, 360L),
                     _ => throw new FormatException($"{v.Path}.unit '{unit}' is unknown"),
                 };
                 if (x < lo || x > hi) throw new FormatException($"{v.Path} = {x} is outside {lo}..{hi} for unit {unit}");
@@ -550,7 +552,7 @@ namespace Suborned.Sim
             SecuritySpeed = RI(se["speed"]);
             se["rivals"].Only("speed", "drawn", "retreat"); RivalsSpeed = RI(se["rivals"]["speed"]); RivalsDrawnS = RI(se["rivals"]["drawn"]); RivalsRetreatS = RI(se["rivals"]["retreat"]);
             se["patrol"].Only("breakTo", "period", "chase"); PatrolBreakCm = RI(se["patrol"]["breakTo"]) * 100; PatrolPeriodS = RI(se["patrol"]["period"]); PatrolChase = RI(se["patrol"]["chase"]);
-            var wp = b["weapons"]; wp.Only("pistol", "carbine", "pointBlank", "pointBlankCover", "runAwayCone", "acc", "mod", "draw", "holster", "aimNew", "settle", "trigger", "follow", "free", "react", "lineLapse", "sidearmArms", "close", "autoHolster", "health", "costs", "oneInput", "focus", "takeCover", "pin", "moves", "rule", "tag", "src", "proposed", "reason");
+            var wp = b["weapons"]; wp.Only("sheet", "pistol", "carbine", "pointBlank", "pointBlankCover", "runAwayCone", "acc", "mod", "draw", "holster", "aimNew", "settle", "trigger", "follow", "free", "react", "lineLapse", "sidearmArms", "close", "autoHolster", "health", "costs", "oneInput", "focus", "takeCover", "pin", "moves", "rule", "tag", "src", "proposed", "reason");
             WeaponsSettle = wp.Opt("settle")?.Str() ?? throw new FormatException("weapons.settle is missing: engine 0.16.0 settles a shooter whose run ends (tuning.md §10.2)"); if (WeaponsSettle.Length == 0) throw new FormatException("weapons.settle is empty");
             WeaponsTrigger = wp.Opt("trigger")?.Str() ?? throw new FormatException("weapons.trigger is missing: engine 0.17.0 reads the driven agent's trigger (tuning.md §11)"); if (WeaponsTrigger.Length == 0) throw new FormatException("weapons.trigger is empty");
             FollowCm = RI(wp.Opt("follow") ?? throw new FormatException("weapons.follow: engine 0.17.0 reads the follow ring (tuning.md §11.1, follow-m)")) * 100; if (FollowCm < 100) throw new FormatException("weapons.follow is 1 m or more");
@@ -573,6 +575,8 @@ namespace Suborned.Sim
             HealthEnforcer = RI(hp["enforcer"]); HealthOp = RI(hp["op"]); HealthGuard = RI(hp["guard"]); HealthOfficer = RI(hp["officer"]); HealthRival = RI(hp["rival"]); HealthPatrol = RI(hp["patrol"]); HealthCivilian = RI(hp["civilian"]); ResponseOfficers = RI(hp["responseOfficers"]);
             foreach (var h in new[] { HealthEnforcer, HealthOp, HealthGuard, HealthOfficer, HealthRival, HealthPatrol, HealthCivilian }) if (h < 1) throw new FormatException("weapons.health: every health is at least 1");
             if (ResponseOfficers < 1) throw new FormatException("weapons.health.responseOfficers must be at least 1");
+            Sheet = new SheetRules(wp.Opt("sheet") ?? throw new FormatException("weapons.sheet: engine 0.37.0 reads the stat sheet (brief 080)"), RI);
+            Seeds = new SeedRules(b.Opt("seed") ?? throw new FormatException("seed: engine 0.37.0 reads the seeded start (brief 080)"), RI);
             var co = wp["costs"]; co.Only("hit", "down", "gunfire", "drawWindow", "drawSeenSecurity", "drawSeenPeople", "loudHold");
             HitTrail = RI(co["hit"]); DownTrail = RI(co["down"]); GunfireTrail = RI(co["gunfire"]); DrawWindowS = RI(co["drawWindow"]); DrawSeenSecurity = RI(co["drawSeenSecurity"]); DrawSeenPeople = RI(co["drawSeenPeople"]); LoudHoldTicks = RI(co["loudHold"]);
             // brief 039 B (engine 0.35.0): each block optional, absent = off (a rulebook pinned before it plays as 0.34); unknown = reject
@@ -638,12 +642,12 @@ namespace Suborned.Sim
                 sec.Only("rule", "perPerson", "list", "src", "proposed", "reason");
                 foreach (var kv in sec["list"].Entries) { kv.Value.Only("requires", "learnedBy", "src", "proposed", "reason"); OneOf(kv.Value["requires"], new[] { "nothing", "lover-tie" }); SecretIds.Add(kv.Key); }
             }
-            var cr = b["crowd"]; cr.Only("scatter", "startle", "startleFearful", "run", "walk", "fleeMax", "quiet", "occlude", "pace", "rule", "tag", "src", "proposed", "reason");
+            var cr = b["crowd"]; cr.Only("staffDirect", "scatter", "startle", "startleFearful", "run", "walk", "fleeMax", "quiet", "occlude", "pace", "rule", "tag", "src", "proposed", "reason");
             CrowdScatterCm = RI(cr["scatter"]) * 100; CrowdStartleTicks = RI(cr["startle"]); CrowdStartleFearfulTicks = RI(cr["startleFearful"]); CrowdRunSpeed = RI(cr["run"]);
             PeopleWalk = RI(cr.Opt("walk") ?? throw new FormatException("crowd.walk is missing: engine 0.34.0 walks the city at its own pace, split from cell.speed (brief 067, Motive M067-B1)")); // engine 0.34.0: the city's walk
             if (PeopleWalk < 1 || CrowdRunSpeed < 1) throw new FormatException("crowd.walk and crowd.run are at least 1 cm/s (a walk that never moves never arrives)");
             CrowdFleeMaxCm = RI(cr["fleeMax"]); CrowdQuietS = RI(cr["quiet"]); CrowdOccludeCm = RI(cr["occlude"]);
-            CrowdPaceSpreadPct = RI(cr["pace"]); if (CrowdPaceSpreadPct < 0 || CrowdPaceSpreadPct > 50) throw new FormatException("crowd.pace: a spread of 0..50 %"); // brief 023 (engine 0.8.2)
+            StaffLegDirect = (cr.Opt("staffDirect") ?? throw new FormatException("crowd.staffDirect: engine 0.37.0 reads it (brief 080)")).Bool(); CrowdPaceSpreadPct = RI(cr["pace"]); if (CrowdPaceSpreadPct < 0 || CrowdPaceSpreadPct > 50) throw new FormatException("crowd.pace: a spread of 0..50 %"); // brief 023 (engine 0.8.2)
             if (b.Opt("mood") is JNode md) // brief 054 §2, §4
             {
                 md.Only("scared", "uneasy", "friendly", "shift", "offers", "rule", "tag", "src", "proposed", "reason");
@@ -821,8 +825,8 @@ namespace Suborned.Sim
             cd.Only("drive", "pace", "footprint", "paceRule", "target", "pickup", "tag", "src", "proposed", "reason");
             { // engine 0.33.1 (brief 041, Sky: "characters are walking through cars"): a standing car blocks the walk; required (unknown = reject)
                 var fp = cd.Opt("footprint") ?? throw new FormatException("rulebook car.footprint is missing: engine 0.33.1 keeps walkers out of a standing car (brief 041)");
-                fp.Only("len", "w", "clear", "reach", "rule"); fp["rule"].Str();
-                CarLenCm = RI(fp["len"]); CarWCm = RI(fp["w"]); CarClearCm = RI(fp["clear"]); CarReachCm = RI(fp["reach"]);
+                fp.Only("len", "w", "clear", "reach", "rule", "ahead"); fp["rule"].Str();
+                CarAheadTicks = RI(fp.Opt("ahead") ?? throw new FormatException("car.footprint.ahead: engine 0.37.0 reads it (brief 081)")); CarLenCm = RI(fp["len"]); CarWCm = RI(fp["w"]); CarClearCm = RI(fp["clear"]); CarReachCm = RI(fp["reach"]);
                 if (CarLenCm < 100 || CarWCm < 50 || CarWCm > CarLenCm || CarClearCm < 0 || CarReachCm <= CarClearCm) throw new FormatException("car.footprint: len at least 1 m, w at least 50 cm and no more than len, clear not negative, reach beyond clear (the first free ring is at the car)");
             }
             { var pk = cd.Opt("pickup") ?? throw new FormatException("rulebook car.pickup is missing: engine 0.32.0 puts Vale in his car at the official bay (brief 059 K1)"); pk.Only("valeIn", "rule"); pk["rule"].Str(); ValeInS = RI(pk["valeIn"]); if (ValeInS < 1) throw new FormatException("car.pickup.valeIn is at least 1 s"); } CarDrive = cd["drive"].Str(); if (CarDrive.Length == 0) throw new FormatException("car.drive is empty");
@@ -844,9 +848,9 @@ namespace Suborned.Sim
             foreach (var v in rd["ends"].Strs()) { if (Array.IndexOf(new[] { "alert-2", "gunfire", "body-found", "final-fight" }, v) < 0) throw new FormatException($"rounds.ends: '{v}' is unknown"); RoundEnds.Add(v); }
             if (PartnersCloseCm < 1) throw new FormatException("rounds.close is a distance of 1 cm or more (the summoned lover stops this short of her post)");
             if (PartnersClearCm < 1) throw new FormatException("rounds.clear is a distance of 1 cm or more (the summoned partner's room round his stop)");
-            var fg = b["fight"]; fg.Only("safe", "loud", "hold", "block", "blockNear", "blockFar", "blockers", "traced", "rivalsPublic", "rivalsPublicReason", "tracedReason", "over", "overReason", "lab", "kite", "openRule", "alwaysRule", "unguarded", "holdRule", "spacing", "rule", "tag", "src");
+            var fg = b["fight"]; fg.Only("safe", "loud", "hold", "block", "blockNear", "blockFar", "blockers", "traced", "rivalsPublic", "rivalsPublicReason", "tracedReason", "over", "overReason", "lab", "kite", "openRule", "alwaysRule", "unguarded", "holdRule", "spacing", "close", "rule", "tag", "src");
             var fsp = fg.Opt("spacing") ?? throw new FormatException("rulebook fight.spacing is missing: engine 0.36.0 keeps a fight's bodies out of one another (brief 079)");
-            fsp.Only("clear", "file", "rule"); BodyClearCm = RI(fsp["clear"]); BodyFileTicks = RI(fsp["file"]);
+            var fcl = fg.Opt("close") ?? throw new FormatException("fight.close: engine 0.37.0 reads it (brief 080, Redline E8)"); fcl.Only("warn", "rule"); CloseWarnS = RI(fcl["warn"]); if (fcl["rule"].Str().Length == 0) throw new FormatException("fight.close.rule is empty"); fsp.Only("clear", "file", "cell", "rule"); BodyCellEnds = (fsp.Opt("cell") ?? throw new FormatException("fight.spacing.cell: engine 0.37.0 reads it (brief 081)")).Bool(); BodyClearCm = RI(fsp["clear"]); BodyFileTicks = RI(fsp["file"]);
             if (BodyClearCm < 0 || BodyFileTicks < 0 || fsp["rule"].Str().Length == 0) throw new FormatException("fight.spacing: clear and file are not negative, and it carries its rule");
             if (fg.Opt("holdRule") is not JNode hr || hr.Str().Length == 0) throw new FormatException("fight.holdRule is missing: engine 0.34.0 plays Motive's M067-SQ1 (the hold is entered only on purpose)");
             if (fg.Opt("unguarded") is not JNode ung || ung.Str().Length == 0) throw new FormatException("fight.unguarded is missing: engine 0.34.0 plays Motive's M067-K3 (hiding in a held car loses, the cell down fails, Go needs a driver)");

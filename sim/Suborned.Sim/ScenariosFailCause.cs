@@ -112,8 +112,8 @@ namespace Suborned.Sim
             Add("N123", "—", "The fail camera: Vale is driven away (§07, Sky's answer 3a; brief 059 K2): nobody touches anything; at 6:13 Vale is in his car and his driver drives him away. The culprit is the official car, then Vale; no operative is named.", r =>
             {
                 var g = r.G;
-                r.To(T(g.S.Over));
-                r.Eq((g.FailCode, g.Tick), ("vale-leaves", T(g.S.ValeAtCar) + T(g.R.ValeInS)), "at 6:13 he is driven away");
+                r.To(T(g.ClockOver));
+                r.Eq((g.FailCode, g.Tick), ("vale-leaves", T(g.ClockValeAtCar) + T(g.R.ValeInS)), "at 6:13 he is driven away");
                 var c = CauseIs(r, "vale-leaves", "driven-away", true, "car", "car", "");
                 r.Is(c != null && c.Culprits.Count == 2 && c.Culprits[1].Kind == "vale" && c.Culprits[1].Role == "left", "then Vale leaving in it");
             });
@@ -122,7 +122,7 @@ namespace Suborned.Sim
             {
                 var g = r.G;
                 Script(r, "[{\"tick\":0,\"op\":\"scout\",\"do\":\"move\",\"to\":[9300,-3100]},{\"tick\":2361,\"op\":\"scout\",\"do\":\"mislead\",\"target\":\"rivals\"}]");
-                r.To(T(g.S.Over));
+                r.To(T(g.ClockOver));
                 r.Eq(g.FailCode, "vale-leaves", "Vale leaves in the official car");
                 var c = CauseIs(r, "vale-leaves", "too-late", true, "car", "car", "");
                 r.Is(c != null && c.Culprits[0].At == g.CarPos() && g.CarPos() == g.S.CarStand(g.S.CarService) && c.Culprits.Count == 2 && c.Culprits[1].Kind == "vale" && c.Culprits[1].Role == "left", "the official car in the service bay, then Vale leaving in it");
@@ -153,7 +153,7 @@ namespace Suborned.Sim
             {
                 var g = r.G;
                 r.To(r.Send(Enf, "d:Boarding pavilion"));
-                r.To(T(g.S.ValeExits) + T(1));
+                r.To(T(g.ClockValeExits) + T(1));
                 r.Fire(Enf, Driver, force: true);
                 r.Until(() => g.Over, T(20));
                 r.Eq(g.FailCode, "driver-shot", "the driver is shot with Vale out");
@@ -181,7 +181,7 @@ namespace Suborned.Sim
             {
                 var g = r.G;
                 Script(r, "[{\"tick\":0,\"op\":\"tech\",\"do\":\"move\",\"to\":\"cabinet\",\"run\":true},{\"tick\":0,\"op\":\"enforcer\",\"do\":\"move\",\"to\":[6925,-4250]},{\"tick\":0,\"op\":\"scout\",\"do\":\"move\",\"to\":\"d:Office approach\"},{\"tick\":0,\"op\":\"fixer\",\"do\":\"move\",\"to\":\"crew:fixer\"},{\"tick\":166,\"op\":\"tech\",\"do\":\"loop\",\"target\":\"entrance\"},{\"tick\":462,\"op\":\"scout\",\"do\":\"watch\",\"target\":\"guard\"},{\"tick\":662,\"op\":\"scout\",\"do\":\"move\",\"to\":\"crew:scout\"},{\"tick\":1060,\"op\":\"tech\",\"do\":\"reroute\",\"target\":\"patrol\"},{\"tick\":1440,\"op\":\"enforcer\",\"do\":\"move\",\"to\":[6520,-4110]},{\"tick\":1510,\"op\":\"enforcer\",\"do\":\"takedown\",\"target\":\"guard\",\"how\":\"kill\"},{\"tick\":1540,\"op\":\"enforcer\",\"do\":\"enter\"},{\"tick\":1540,\"op\":\"tech\",\"do\":\"move\",\"to\":[675,-4625]},{\"tick\":1540,\"op\":\"scout\",\"do\":\"move\",\"to\":[1175,-4825]},{\"tick\":1540,\"op\":\"fixer\",\"do\":\"move\",\"to\":[1025,-4625]},{\"tick\":1920,\"op\":\"enforcer\",\"do\":\"stance\",\"stance\":\"hold\"}]"); // c022's careless-body-found, without its three free stances and the Enforcer's walk to the car (tuning.md §7.9, 2026-10-20: with the 16 m sidearm the three can no longer hold the officers off from beyond their reach, and the police now answer such fire: walked out, the Enforcer goes down before the seal; he holds with Vale where he came out instead)
-                r.To(T(g.S.Over));
+                r.To(T(g.ClockOver));
                 r.Eq(g.FailCode, "sealed", "the loud fight's seal runs out");
                 var c = CauseIs(r, "sealed", "sealed", false, "", "", Enf);
                 var o = c?.Origin; var cam = g.S.Cameras.Single(x => x.Id == "entrance");

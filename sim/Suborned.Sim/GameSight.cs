@@ -720,7 +720,7 @@ namespace Suborned.Sim
                         bool? was = null;
                         for (int t = from; t <= end; t++)
                         {
-                            int ph = t % period;
+                            int ph = (t + PatrolPhase) % period;
                             if (t > from && ph == 0) add(t, "turn-at-a");
                             if (t > from && ph == half) add(t, "turn-at-b");
                             bool sees = SweepSeesEntrance(t);

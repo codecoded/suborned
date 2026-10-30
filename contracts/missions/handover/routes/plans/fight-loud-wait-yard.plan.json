@@ -3,13 +3,13 @@
  "mission": "handover",
  "note": "MC-13 (brief 059, Motive M059-5.3; Keel's P59-LOUD-YARD), the service drive's loud-wait twin: route-b-board to the pickup, but the Fixer shoots the pickup camera out as Vale's car parks (gunfire: Alert 2), and the Scout and Fixer get into the car the Tech drove round. The Enforcer takes Vale from the back seat, carries him 3.5 m and boards, and Go is refused: the car is held (the official entrance's officers, the nearest entry to the stand, §07 loud: their blocker on the lane). Nobody of the cell fights, so the car can't leave, and the player withdraws (the free abort). Left to wait, the run seals (9:47.7 under the rulebook's final intent, agent) or, under the control intent every, the police shoot the cell down in the car: the Withdraw keeps the twin to what MC-13 reads, the refusal.",
  "start": {},
- "until": 5100,
+ "until": 4500,
  "steps": [
   {
    "op": "enforcer",
    "do": "move",
    "to": "d:Service lane",
-   "at": "5:50",
+   "at": "4:50",
    "why": "brief 067 A (the patrol sweeps the service yard): waits at the square until the Reroute has landed (5:45), then walks to the service lane"
   },
   {
@@ -57,7 +57,7 @@
    "do": "turn",
    "target": "driver",
    "approach": "pay",
-   "by": "5:40",
+   "by": "4:40",
    "label": "turned",
    "why": "the card shows Pay works on this driver (a Mercenary); §07's Help is one step worse on him"
   },
@@ -92,7 +92,7 @@
    "after": [
     "tip"
    ],
-   "at": "5:55",
+   "at": "4:55",
    "label": "scout-yard"
   },
   {
@@ -105,7 +105,7 @@
    "after": [
     "turned"
    ],
-   "at": "5:55",
+   "at": "4:55",
    "label": "fixer-yard"
   },
   {
@@ -119,7 +119,7 @@
    "op": "tech",
    "do": "reroute",
    "target": "patrol",
-   "at": "5:00",
+   "at": "4:00",
    "label": "rr",
    "why": "brief 067 A: ordered at 5:00, it lands 5:45, the patrol away to 7:40: the yard is clear for the Take and the fight (a rerouted patrol never breaks to gunfire)"
   },
@@ -195,7 +195,7 @@
    "do": "take",
    "when": "car.parks",
    "label": "take",
-   "at": "6:45",
+   "at": "5:45",
    "why": "Vale reaches the car in the service lane at 6:10"
   },
   {

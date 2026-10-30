@@ -2,6 +2,8 @@
 //   play <scenario id | script.json> [--json]   play a scenario (S01…S28, N8…) or an order script; print outcome, log, checksums
 //   batch [paths | dir | - ] [--list f] [--no-replay] [--jobs n] [--out f] [--timeout s]   many scripts in one process (inputs loaded once, every core): one `play --json` line each, in order
 //   batch --serve                               the same as a server: lines `tag<TAB>replay|noreplay<TAB>path` on stdin, `tag<TAB>json` out as each finishes (tools/missions/check/engine.ts)
+//   play <script.json> --seed n                 brief 080: the same on that seed (the script's record is dropped); `batch --seeds n` for many
+//   spread <dir | scripts> --seeds n [--seed-from k] [--retry-go] [--json f]   brief 080: per script: wins and fails by cause, fight length, HP, Trail, and when runs diverge from seed 0
 //   check [ids] [--no-replay] [--timeout s]     every scenario (or the named): failed checks and a bit-for-bit replay, in one process on every core
 //   dump <script.json> <out.json> [--crowd-step n] [--no-fans]   a script played with every tick read out, for the look tool (bun run simview; brief 081, sim/cli/Dump.cs)
 //   list                                        the scenarios
@@ -63,7 +65,8 @@ static class Program
                     }
                 case "batch": return BatchCli.Run(inputs, root, args); // brief 042: many scripts, one process, every core
                 case "check": return CheckCli.Run(inputs, args); // brief 059 (Keel): every scenario, its checks and its replay, on every core
-                case "play": return Play(inputs, root, args.Length > 1 ? args[1] : throw new ArgumentException("play what?"), json);
+                case "play": { int sd = Array.IndexOf(args, "--seed"); return Play(inputs, root, (args.Length > 1 ? args[1] : throw new ArgumentException("play what?")) + (sd > 0 ? "#seed=" + args[sd + 1] : ""), json); } // brief 080
+                case "spread": return SpreadCli.Run(inputs, root, args); // brief 080: how far runs spread across seeds
                 case "perf": return Perf(inputs, args.Length > 1 ? int.Parse(args[1], CultureInfo.InvariantCulture) : 20, args.Length > 2 ? args[2] : "S10");
                 case "dump": return DumpCli.Run(inputs, root, args); // brief 081: read-only, exits 1 if the reads moved a checkpoint
                 case "probe": Probe.Run(inputs); return 0;

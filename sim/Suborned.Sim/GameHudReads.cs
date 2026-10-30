@@ -75,7 +75,7 @@ namespace Suborned.Sim
         public (int tick, bool known) NextRound(string stashId)
         {
             var s = StashById(stashId); if (s == null || s.Kind != "container") return (-1, false);
-            int period = T(R.ServicePeriodS), phase = (int)(Streams.Fnv1a32(s.Id) % (uint)period);
+            int period = T(R.ServicePeriodS), phase = ScanPhase(s.Id, period);
             int next = Tick + ((phase - Tick % period) % period + period) % period;
             return (next, KnowsRound(s.Id));
         }

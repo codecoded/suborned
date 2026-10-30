@@ -14,5 +14,5 @@
   {"tick":770,"op":"enforcer","do":"move","to":[6520,-4110]},
   {"tick":1110,"op":"enforcer","do":"takedown","target":"guard","how":"knockout"}
  ],
- "until": 5100
+ "until": 4500
 }

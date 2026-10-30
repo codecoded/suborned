@@ -103,10 +103,10 @@
     "reason": "the GDD names the temperament but not which institutions exist. Two kinds keep it checkable from data the expander already has (work unit, home)."
   },
   "approaches": {
-    "ask": { "requires": "nothing", "usd": 0, "timeS": 25, "trail": 1, "leaves": "remembered refusal: later offers +$10,000, +1 T" },
-    "pay": { "requires": "routine", "usd": 70000, "timeS": 50, "trail": 2, "leaves": "traceable payment; neutral" },
-    "help": { "requires": "need", "usd": 40000, "timeS": 50, "trail": 1, "leaves": "gratitude; bravery can grow" },
-    "pressure": { "requires": "need", "usd": 0, "timeS": 35, "trail": 3, "leaves": "fear; resentment grows; can identify Fixer" },
+    "ask": { "requires": "nothing", "usd": 0, "timeS": 20, "trail": 1, "leaves": "remembered refusal: later offers +$10,000, +1 T" },
+    "pay": { "requires": "routine", "usd": 70000, "timeS": 35, "trail": 2, "leaves": "traceable payment; neutral" },
+    "help": { "requires": "need", "usd": 40000, "timeS": 35, "trail": 1, "leaves": "gratitude; bravery can grow" },
+    "pressure": { "requires": "need", "usd": 0, "timeS": 25, "trail": 3, "leaves": "fear; resentment grows; can identify Fixer" },
     "src": "§04 approaches [B], Inez's prices in the training mission. Reference prices: a person's own price is Keel's rule, not this file's."
   },
   "needs": {

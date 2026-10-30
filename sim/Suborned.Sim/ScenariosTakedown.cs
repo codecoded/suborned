@@ -519,10 +519,10 @@ namespace Suborned.Sim
                 r.Body(Enf, "stash", DumpsterId); r.Done(Enf);
                 r.SendTo(Enf, BesideDoor);
                 r.Is(!a.Witnessed && !a.Landed, "unseen, unknown");
-                r.To(T(g.S.ValeExits) + 1);
+                r.To(T(g.ClockValeExits) + 1);
                 r.Eq(g.Vale, ValeAt.Leaving, "5:50: Vale comes out to his car (the city doesn't know)");
                 r.Is(r.Until(() => g.Log.Exists(l => l.Code == "person.missed"), T(60)), "he grows suspicious");
-                r.Eq(g.Tick, T(g.S.ValeAtCar) + T(g.R.SuspicionS), "20 s after he reached the car (6:10): 6:30");
+                r.Eq(g.Tick, T(g.ClockValeAtCar) + T(g.R.SuspicionS), "20 s after he reached the car (6:10): 6:30");
                 var rep = g.Reps.FirstOrDefault(x => x.Act == a.Id && x.Kind == "missing");
                 if (!r.Is(rep != null, $"a missing-person report is made ({string.Join(", ", g.Reps.Where(x => x.Act == a.Id).Select(x => x.Kind + ":" + x.By))})")) return;
                 r.Is(rep!.P == g.ValeP, "Vale calls it in");
@@ -551,7 +551,7 @@ namespace Suborned.Sim
                 r.To(r.SendTo(Enf, Dumpster));
                 r.Body(Enf, "stash", DumpsterId); r.Done(Enf);
                 r.To(r.SendTo(Enf, Beside(r, g.CarPos())!.Value));
-                r.To(T(g.S.ValeAtCar));
+                r.To(T(g.ClockValeAtCar));
                 r.Do(Enf, "take", Vale);
                 r.Wait(T(g.R.SuspicionS + 5));
                 r.Is(!g.Over && g.Vale == ValeAt.Taking || g.Vale == ValeAt.WithEnforcer, "Vale is being taken");
@@ -568,7 +568,7 @@ namespace Suborned.Sim
                 r.Eq(g.Issue(new Order { Tick = g.Tick, Op = Enf, Do = "takedown", Target = "p-cafe-14", How = "stun" }).code, "takedown-how", "a knockout or a kill");
                 r.Eq(g.Issue(new Order { Tick = g.Tick, Op = Enf, Do = "takedown", Target = "p-cafe-14", How = "kill" }).code, "too-far", "within reach");
                 r.Eq(g.Issue(new Order { Tick = g.Tick, Op = Enf, Do = "takedown", Target = "councillor", How = "kill" }).code, "person-away", "Vale is inside");
-                r.To(T(g.S.ValeAtCar)); r.To(r.SendTo(Enf, Beside(r, g.ValePos()!.Value)!.Value));
+                r.To(T(g.ClockValeAtCar)); r.To(r.SendTo(Enf, Beside(r, g.ValePos()!.Value)!.Value));
                 r.Eq(g.Issue(new Order { Tick = g.Tick, Op = Enf, Do = "takedown", Target = "councillor", How = "knockout" }).code, "takedown-vale", "Vale is taken, not knocked out");
                 r.Takedown("councillor", "kill"); r.Done(Enf);
                 r.Eq((g.Result, g.FailCode), (Outcome.Failure, "vale-dead"), "Vale killed: the mission fails");

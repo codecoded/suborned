@@ -25,6 +25,7 @@ const src = z.string().min(1);
 export const RouteScript = z.strictObject({
   id, file: z.string().regex(/^[a-z0-9-]+\.json$/),
   plan: z.string().regex(/^[a-z0-9-]+\.plan\.json$/).optional().describe('routes/plans/<file>: the plan the script is composed from (bun run missions:check compose)'),
+  adaptive: id.optional().describe('brief 080: the adaptive plan (<mission>/adaptive/<id>.adaptive.json) this reference is judged from, across seeds: its script file is not played'),
   kind: z.enum(['quiet', 'loud', 'fail', 'outcome', 'careless']),
   route: z.string().min(1).optional().describe('the route it plays: A, B, …; quiet and loud scripts name one'),
   primary: z.boolean().optional(),

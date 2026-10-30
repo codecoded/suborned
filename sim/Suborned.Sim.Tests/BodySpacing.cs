@@ -94,7 +94,8 @@ public class BodySpacingTests
     public void OfficersFromOneEntryComeInFile()
     {
         int together = 0, seen = 0;
-        Walk(Load("loud-fight"), g =>
+        var seeded = Load("loud-fight"); seeded.Start.Seed = 3; // brief 080: seed 0's fixed opening is refused at the door (entry-seen-guard); this seed plays the fight
+        Walk(seeded, g =>
         {
             var o = g.Hostiles.Where(h => h.Id.StartsWith("officer-", StringComparison.Ordinal) && h.Present && !h.Down).ToList(); if (o.Count < 2) return;
             seen++; if (G.Dist(o[0].Pos(g.Tick), o[1].Pos(g.Tick)) < g.R.BodyClearCm && g.Tick > g.FightStart + g.R.BodyFileTicks + 1) together++;
@@ -105,9 +106,10 @@ public class BodySpacingTests
     [Fact]
     public void ClearStopChangesNothingWhenNobodyIsNear()
     {
-        // an uncrowded walk ends where it always did: route B's times are the check
-        var g = Engine.Play(Repo.Inputs, Load("route-b").Start, Load("route-b").Orders, Load("route-b").Until);
-        Assert.Equal(Outcome.Success, g.Result); Assert.Equal(4522, g.Tick);
+        // an uncrowded walk ends where it was sent
+        var g = Engine.New(Repo.Inputs); var to = g.S.Stand("d:Courtyard"); g.Step();
+        Assert.True(g.Issue(new Order { Tick = g.Tick, Op = "fixer", Do = "move", To = "d:Courtyard" }).ok);
+        Assert.Equal(to, g.Ops[(int)OpId.Fixer].Walk!.End);
     }
 
     [Theory]

@@ -201,7 +201,7 @@ namespace Suborned.Sim
                 r.To(T(g.S.RivalsArrive) + 1); r.Do(Scout, "mislead", "rivals");
                 r.To(T(300)); r.Do(Tech, "loop", "pickup"); r.Done(Tech);
                 r.To(r.SendTo(Enf, Beside(r, g.CarPos())!.Value));
-                r.To(T(g.S.ValeAtCar));
+                r.To(T(g.ClockValeAtCar));
                 var w74 = WalkerById(r, "p-records-office-74");
                 r.Is(g.CrowdPos(w74) is Pt p74 && G.Within(p74, g.ValePos()!.Value, g.R.WitnessRangeCm), "guard 74 stands within witness range of Vale at his car");
                 int trail = g.Trail, standing = g.Standing;
@@ -237,7 +237,7 @@ namespace Suborned.Sim
                 r.Eq(g.Alert, 1, "a knockout: Alert 1");
                 r.Is(g.SceneHolds.Count == 1 && g.SceneHolds[0].Doors.Contains(g.EnterDoor) && !g.SceneHolds[0].Doors.Contains(g.ExitDoor), $"the scene holds the doors in its sight: {string.Join(", ", g.SceneHolds[0].Doors)} (the service door is round the corner)");
                 var unit = g.Units.FirstOrDefault(u => !u.Robot && u.Act == a.Id && u.Scene);
-                r.Is(unit != null && unit.Launch == g.Tick + T(g.DialNow.DispatchS), "a unit of officers is sent at Alert 1, the level's dispatch after the landing");
+                r.Is(unit != null && unit.Launch >= g.Tick - T(60) && unit.Launch <= g.Tick + T(g.DialNow.DispatchS), "a unit of officers is sent at Alert 1, the level's dispatch after the first landing (brief 080: a clerk's report may land first)");
                 if (unit == null) return;
                 r.Is(!g.DoorHeld(g.EnterDoor), "not held until it arrives");
                 r.Is(r.Until(() => unit.St == "check", T(120)), "it arrives");

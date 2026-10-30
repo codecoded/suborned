@@ -11,7 +11,7 @@ public class FailCauseTests
 {
     static readonly Engine.Inputs I = Repo.Inputs;
     static readonly string Root = Engine.FindRoot(AppContext.BaseDirectory);
-    static readonly string[] Fails = { "vale-dead", "vale-leaves", "rivals-reach-vale", "sealed", "enforcer-down", "entry-seen-guard", "entry-seen-camera", "entry-seen-patrol", "abduction-seen-camera", "driver-shot", "getaway-lost", "cell-down", "engine-error" }; // cell-down: engine 0.34.0 (Motive M067-K3 b)
+    static readonly string[] Fails = { "vale-dead", "vale-leaves", "rivals-reach-vale", "sealed", "enforcer-down", "entry-seen-guard", "entry-seen-camera", "entry-seen-patrol", "abduction-seen-camera", "driver-shot", "getaway-lost", "cell-down", "closed-in", "engine-error" }; // cell-down: engine 0.34.0 (Motive M067-K3 b)
     static readonly string[] Kinds = { "camera", "guard", "patrol", "officer", "robot", "rival", "person", "vale", "op", "car", "desk", "heard" };
 
     /// <summary>The cause's shape, whatever the ending: it matches the result, it is at the last tick, a single culprit is named and placed

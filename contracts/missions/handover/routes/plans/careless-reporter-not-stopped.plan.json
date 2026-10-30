@@ -3,7 +3,7 @@
  "mission": "handover",
  "note": "Careless violence (brief 013 D), the twin of route-b: the idle Enforcer kills guard 73 (p-records-office-73, the incoming door guard) on his walk from the café to the public door and leaves him where he fell. c038 (Waymark, engine 0.34.1): his walk now runs 3.5 m south of the old spot (walks off the grid since 0.33.0), so the Enforcer waits 1.2 m beside the new line at (33.0, -40.1); the kill (about 4:30) is timed to his arrival, the first tick he is in reach, from the side, unseen. His missed 5:30 mark is the desk's report (Alert 1), which no Tech action stops; nobody finds the body before the car leaves, so the debrief carries a missing person and an open case: a win at Alert 1 (route-b: Alert 0) and dearer in total Trail (MC-7).",
  "start": {},
- "until": 5100,
+ "until": 4500,
  "steps": [
   {
    "op": "enforcer",
@@ -59,7 +59,7 @@
    "do": "turn",
    "target": "driver",
    "approach": "pay",
-   "by": "5:40",
+   "by": "4:40",
    "label": "turned",
    "why": "the card shows Pay works on this driver (a Mercenary); §07's Help is one step worse on him"
   },
@@ -94,7 +94,7 @@
    "after": [
     "tip"
    ],
-   "at": "5:55",
+   "at": "4:55",
    "label": "scout-yard"
   },
   {
@@ -107,7 +107,7 @@
    "after": [
     "turned"
    ],
-   "at": "5:55",
+   "at": "4:55",
    "label": "fixer-yard"
   },
   {
@@ -121,7 +121,7 @@
    "op": "tech",
    "do": "reroute",
    "target": "patrol",
-   "at": "5:00",
+   "at": "4:00",
    "label": "rr",
    "why": "brief 067 A: ordered at 5:00, it lands 5:45, the patrol away to 7:40: the yard is clear for the Take and the fight (a rerouted patrol never breaks to gunfire)"
   },
@@ -153,7 +153,7 @@
    "do": "takedown",
    "target": "p-records-office-73",
    "how": "kill",
-   "at": "4:25",
+   "at": "3:25",
    "every": 0.5,
    "why": "timed to his arrival, not a tick: the first moment he is within takedown reach (1.5 m) as he walks by, from the side, outside his facing cone, so he doesn't see it coming (3 s, no struggle, no scream); the search tries every 0.5 s since he is in reach for about 2 s"
   },
@@ -171,7 +171,7 @@
    "do": "take",
    "when": "car.parks",
    "label": "take",
-   "at": "6:45",
+   "at": "5:45",
    "why": "Vale reaches the car in the service lane at 6:10"
   },
   {

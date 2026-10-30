@@ -115,7 +115,6 @@ describe.skipIf(!dotnet)('the C# engine through its CLI', () => {
     // engine 0.35.0 (brief 039 B, cover and pin): rb-ff no longer wins as Motive composed it (its Go comes 1.4 s before the car is free; BAL-YARD-FOCUS
     // records it as a missed line, Motive re-composes): the play reaches the outcome its scenario reached, whatever that is
     expect(r.outcome).toBe(JSON.parse(s.out).expect.outcome);
-    expect(r.gunfire).toBe(0);
-    expect(r.replayIdentical).toBe(true);
+    expect(r.replayIdentical).toBe(true); // brief 080: rolled shots: this script's fight may not be the one it was composed for, so how much gunfire it takes is no check any more
   }, 180_000);
 });

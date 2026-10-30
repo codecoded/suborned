@@ -92,7 +92,7 @@ public class RulesTests
     {
         var g = New(Knowing("idealist"));
         var help = g.Preview("help", "waitress");
-        Assert.Equal((40000L, 50L, 1L, 1L, "turned"), (help.Usd, help.S, help.Trail, help.Orders, help.Outcome));
+        Assert.Equal((40000L, 35L, 1L, 1L, "turned"), (help.Usd, help.S, help.Trail, help.Orders, help.Outcome)); // brief 080 pacing: Help 50 to 35 s, and the card follows
         Assert.Equal("refused", g.Preview("pay", "waitress").Outcome); // Sky 2026-10-15: Inez is an Idealist, Pay is the lesson
         Assert.Equal(4L, g.Preview("pressure", "waitress").Trail);    // one step worse
         Assert.Equal("refused", g.Preview("ask", "waitress").Outcome);

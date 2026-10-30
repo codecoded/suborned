@@ -3,7 +3,7 @@
  "mission": "handover",
  "note": "Route A (fight it out) with Disable in place of the Loop (brief 058 §4, §6): the cut (+2 T, where the loop is +1) is reported by the desk at its next scan, the run's first incident (Alert 1); route A has no later report, so it wins at the same time as route-a and one Trail dearer, with no 2:00 window to keep. No Reroute (brief 067 A): the patrol answers the dead screen and stands down without a report. The Enforcer holds Vale at (20.0, -65.0) as route-a does (Motive's rad-h3).",
  "start": {},
- "until": 5100,
+ "until": 4500,
  "steps": [
   {
    "op": "scout",

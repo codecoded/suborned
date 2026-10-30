@@ -3,7 +3,7 @@
  "mission": "handover",
  "note": "Route A, the front door, quiet (GDD v0.26.0 §07; Keel N11), fight it out (brief 018 §5). The Scout watches Inez and listens; the Tech loops the entrance camera at 1:25 (live 1:45 to 3:45, so it still runs at the Enter) and takes no Reroute (brief 067 A: the patrol sweeps the service yard, not the door; informed play doesn't pay 1 T for nothing); the Fixer helps Inez twice (the cast's Inez is Fearful, §04) and has her call the guard away; the Enforcer enters while the door is unwatched and comes out by the service door with Vale. He holds Vale at (20.0, -65.0), 20.4 m from the car and 20.8 m or more from every ambush spot (Motive's ra-h3, briefs/067/motive.md §1.5), beyond the pistol's 16 m, so the cell's fire springs the ambush; the three fight the rival crew until it breaks (fight.over), then he boards with Vale and the car leaves at once; the three, on a calm street, walk out at no cost. c038 (Waymark, engine 0.34.1): the cell walks at 1.8 m/s and its runs are noticed, never an Alert, so route A ends at Alert 0.",
  "start": {},
- "until": 5100,
+ "until": 4500,
  "steps": [
   {
    "op": "scout",

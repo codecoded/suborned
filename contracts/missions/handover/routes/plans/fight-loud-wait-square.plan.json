@@ -3,7 +3,7 @@
  "mission": "handover",
  "note": "MC-13 (brief 059, Motive M059-5.3), the square's loud-wait twin: loud's opening (the guard shot just after his 2:30 mark, the Enter at Alert 2), but the cell waits in the car: the Scout, Fixer and Tech board while the Enforcer is inside, and nobody fights the response unit or the rivals drawn by the gunfire. He walks Vale out toward the car alone and is shot down on the way (Enforcer down before Vale is in the car): the square opens no unfought loud exit.",
  "start": {},
- "until": 5100,
+ "until": 4500,
  "steps": [
   {
    "op": "tech",

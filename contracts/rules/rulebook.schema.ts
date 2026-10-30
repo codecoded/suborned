@@ -116,7 +116,7 @@ export type Eff = z.infer<typeof Eff>;
 /** The bounds of a value by its unit, the same in the C# loader (Rules.cs): a duration is at least 1 s (Redline E3), nothing wraps (E9). */
 export const UNIT_BOUNDS = {
   s: [1, 3600], usd: [-1e9, 1e9], m: [0, 1000], cm: [0, 100000], 'cm-per-s': [1, 10000], trail: [-100, 100], alert: [0, 3], standing: [-1000, 1000],
-  orders: [-10, 10], 'scale-steps': [-10, 10], entries: [1, 100], hops: [0, 10], count: [0, 100], 'per-mille': [0, 1000000], ticks: [1, 36000], pct: [0, 100], deg: [0, 360],
+  orders: [-10, 10], 'scale-steps': [-10, 10], entries: [1, 100], hops: [0, 10], count: [0, 100], 'per-mille': [0, 1000000], ticks: [1, 36000], pct: [0, 100], 'pct-points': [-100, 100], deg: [0, 360],
 } as const;
 const Value = ground({
   v: z.number().int(), // integer state (§11)
@@ -290,6 +290,17 @@ export const Rulebook = z.strictObject({
   }),
   // Weapons, health and what a shot costs (Sky 2026-10-15, briefs/011/motive-fights.md): deterministic hits by accumulator.
   weapons: ground({
+    // brief 080 (engine 0.37.0): the stat sheet; the shot's sum, its limits, the streak caps. Optional only so a rulebook pinned before it parses.
+    sheet: z.strictObject({
+      aim: z.strictObject({ civilian: Ref, robot: Ref, guard: Ref, tech: Ref, fixer: Ref, officer: Ref, scout: Ref, rival: Ref, enforcer: Ref }),
+      offset: z.record(z.string().min(1), Ref), // per character, by id: the door to a cast with their own traits
+      range: z.strictObject({ point: Ref, eff: Ref, long: Ref }),
+      cover: z.strictObject({ full: Ref, partial: Ref, targetRunning: Ref }),
+      move: z.strictObject({ walk: Ref, run: Ref, runAway: Ref, pinned: Ref }),
+      limit: z.strictObject({ min: Ref, max: Ref }),
+      streak: z.strictObject({ hits: Ref, misses: Ref, floor: Ref }),
+      intake: Ref, warnHealth: Ref, guardSpeed: Ref, rule: text,
+    }).optional(),
     pistol: Weapon, carbine: Weapon, pointBlank: Ref, /* engine 0.15.0 (tuning.md §8.3–8.4); optional only so runs pinned before it parse */ pointBlankCover: z.boolean().optional(), runAwayCone: Ref.optional(),
     acc: z.strictObject({ point: Ref, eff: Ref, long: Ref, start: Ref }),
     mod: z.strictObject({ moving: Ref, running: Ref.optional(), runningAway: Ref.optional(), targetRunning: Ref.optional(), cover: Ref, vale: Ref, untrained: Ref }),
@@ -334,7 +345,7 @@ export const Rulebook = z.strictObject({
     }).optional(),
   }),
   // The crowd in a fight (Pulse §4): every number a ref.
-  crowd: ground({ scatter: Ref, startle: Ref, startleFearful: Ref, run: Ref, walk: Ref.optional() /* engine 0.34.0 (Motive M067-B1): the city's walking pace, split from cell.speed; optional only for runs pinned before it */, fleeMax: Ref, quiet: Ref, occlude: Ref, pace: Ref.optional(), rule: text }), // pace (brief 023, Pulse): optional only so runs pinned before it parse (dialogue r017-r019); rulebook.test.ts holds the live rulebook to it
+  crowd: ground({ staffDirect: z.boolean().optional() /* engine 0.37.0, brief 080: security staff walk a routine leg at the city's walk, not stretched over the stops' minutes */, scatter: Ref, startle: Ref, startleFearful: Ref, run: Ref, walk: Ref.optional() /* engine 0.34.0 (Motive M067-B1): the city's walking pace, split from cell.speed; optional only for runs pinned before it */, fleeMax: Ref, quiet: Ref, occlude: Ref, pace: Ref.optional(), rule: text }), // pace (brief 023, Pulse): optional only so runs pinned before it parse (dialogue r017-r019); rulebook.test.ts holds the live rulebook to it
   // The summons (Motive, motive-lovers.md §1.3): numbers only, every one a ref.
   // together: retired in engine 0.29.0 (brief 054 §9.2); optional only so runs pinned before it parse (rulebook.test.ts holds the live one to none)
   summon: ground({ stay: Ref, walkMax: Ref, alertMax: Ref, perShift: Ref, together: Ref.optional(), rule: text }),
@@ -449,7 +460,7 @@ export const Rulebook = z.strictObject({
   car: ground({ drive: text, pace: z.strictObject({ road: Ref, yard: Ref }).optional(), paceRule: text.optional(),
     // brief 059 K1–K4 (engine 0.32.0): Vale gets into his car at the official bay; optional only for runs pinned before it (rulebook.test.ts holds the live one to it)
     pickup: z.strictObject({ valeIn: Ref, rule: text }).optional(),
-    footprint: z.strictObject({ len: Ref, w: Ref, clear: Ref, reach: Ref, rule: text }).optional(), // engine 0.33.1 (optional only for runs pinned before it)
+    footprint: z.strictObject({ len: Ref, w: Ref, clear: Ref, reach: Ref, ahead: Ref.optional(), rule: text }).optional(), // engine 0.33.1 (optional only for runs pinned before it)
     target: z.strictObject({ health: Ref, disabledAt: Ref, burn: Ref, blast: z.strictObject({ m: Ref, damage: Ref }), rule: text, src: text }).optional() }).optional(),
   fight: ground({
     // brief 059 (engine 0.32.0, Motive M059-3.7): `minus` is retired (the −1s are people who have left); optional only so runs pinned before it parse, and
@@ -459,7 +470,8 @@ export const Rulebook = z.strictObject({
     loud: z.strictObject({ officers: Ref, alert: Ref, civilian: Ref, entry: z.enum(['response', 'nearest']).optional() }),
     openRule: text.optional(), // brief 059: Sky's open questions S1–S3, each a value
     alwaysRule: text.optional(), // engine 0.33.0: the final fight always comes (Sky's S1 = no; Motive M059-S1.2 to S1.5)
-    spacing: z.strictObject({ clear: Ref, file: Ref, rule: text }).optional(), // engine 0.36.0 (brief 079): optional only for runs pinned before it
+    close: z.strictObject({ warn: Ref, rule: text }).optional(), // engine 0.37.0 (Motive on Redline E8)
+    spacing: z.strictObject({ clear: Ref, file: Ref, cell: z.boolean().optional(), rule: text }).optional(), // engine 0.36.0 (brief 079): optional only for runs pinned before it
     unguarded: text.optional(), // engine 0.34.0 (Motive M067-K3): hiding in a held car loses, the cell down fails, Go needs a driver; optional only for runs pinned before it
     holdRule: text.optional(), // engine 0.34.0 (Motive M067-SQ1): the hold is entered only on purpose; optional only for runs pinned before it
     hold: Ref, traced: z.boolean(), tracedReason: text, rule: text,
@@ -489,6 +501,15 @@ export const Rulebook = z.strictObject({
   }).optional(),
   investigation: ground({ base: Ref, perAlert: Ref, hops: Ref, rule: text }),
   preview: ground({ rule: text, unknown: z.literal('?'), knownBy: z.array(eventId).min(1), knownByRule: text }),
+  // brief 080 (engine 0.37.0): the seeded start. Optional only so a rulebook pinned before it parses.
+  seed: ground({
+    crowd: z.strictObject({ phase: Ref, staffFixed: z.boolean() }),
+    rivals: z.strictObject({ id, arrive: Ref }),
+    patrol: z.strictObject({ id }),
+    fair: z.strictObject({ firstS: Ref, tries: Ref }),
+    fuzz: z.strictObject({ default: Ref, people: z.record(z.string().min(1), Ref) }),
+    rule: text,
+  }).optional(),
   streams: ground({
     hash: z.literal('fnv1a-32'), generator: z.literal('mulberry32'), draw: z.literal('integer'),
     keys: z.record(id, z.string().regex(/^[a-z{}/-]+$/)), weightScale: Ref, weights: text, rule: text,

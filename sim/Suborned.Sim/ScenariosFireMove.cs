@@ -52,10 +52,11 @@ namespace Suborned.Sim
                 const string Victim = "p-pylon-row-east-05"; // N48's customer at terrace table 2
                 r.To(T(240));
                 var seat = g.CrowdPos(WalkerById(r, Victim)) ?? throw new InvalidOperationException($"{Victim} is not on the street at 4:00");
-                r.To(r.SendTo(Enf, g.S.Grid.NearestFree(seat + new Pt(400, 0)) ?? seat));
+                r.To(Max(r.SendTo(Enf, g.S.Grid.NearestFree(seat + new Pt(400, 0)) ?? seat), r.SendTo(Scout, g.S.Grid.NearestFree(seat + new Pt(-400, 0)) ?? seat))); // brief 080: a civilian has 3 health and runs at the first shot: the carbine's 2 and a pistol's 1, together
                 int standing = g.Standing;
                 r.Is(r.Fire(Enf, Victim, force: true), "the forced fire on the customer is taken");
-                r.Is(r.Until(() => g.PersonById(Victim)!.Down, T(10)), "she is down");
+                r.Fire(Scout, Victim, force: true);
+                r.Is(r.Until(() => g.PersonById(Victim)!.Down, T(40)), "she is down"); // brief 080: a civilian has 3 health, two carbine hits, and runs after the first
                 r.Eq(g.Alert, 3, "violence seen by civilians: Alert 3");
                 r.Is(g.StandingMoves.Exists(m => m.cause == "seen-violence"), "a Menace step (seen-violence)");
                 var b = g.BodyById(Victim);

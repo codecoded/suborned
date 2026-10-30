@@ -529,7 +529,7 @@ namespace Suborned.Sim
                 r.Is(!g.Log.Exists(l => l.Code == "order.draw"), $"{fx}: nobody of the cell draws");
                 int forCar = LogTick(g, "rivals.for-car");
                 r.Is(g.FailCode == "rivals-reach-vale" && forCar >= 0, $"{fx}, never drawn, loses: the rivals walk to the held car past the undrawn cell and take Vale ({g.Result} {g.FailCode} at {Report.Clock(g.Tick)}; rivals.for-car {(forCar >= 0 ? Report.Clock(forCar) : "-")})");
-                r.Is(g.Tick < T(g.S.Over), $"{fx}: an outcome before the close, no stall ({Report.Clock(g.Tick)})");
+                r.Is(g.Tick < T(g.ClockOver), $"{fx}: an outcome before the close, no stall ({Report.Clock(g.Tick)})");
             }
             Add("BAL-YARD-NEVER-DRAWN", "059", "Engine 0.35.2 (Motive rulings-0.35.1 §2, Sky's yes 2026-10-27: only a drawn agent guards a held car): route B at the yard, Motive's rb-ff and rbb-ff with their locks dropped and nobody pressing F. An undrawn agent standing by is no guard: the rivals walk to the held car with Vale aboard and take him (rivals-reach-vale with rivals.for-car). 0.35.1: none at 8:30, the run idled to the close.", r =>
             {
@@ -659,7 +659,7 @@ namespace Suborned.Sim
                 }
                 if (!g.Issue(o).ok) refused++;
             }
-            if (!g.Over) To(s.Until > 0 ? s.Until : T(g.S.Over));
+            if (!g.Over) To(s.Until > 0 ? s.Until : T(g.ClockOver));
             r.Line(refused == 0, $"{name}: every order taken where it was composed ({refused} refused; else re-compose: bun tools/sim/fixtures059.ts)");
             return true;
         }

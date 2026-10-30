@@ -3,7 +3,7 @@
  "mission": "handover",
  "note": "Route B thinned (brief 059 S1; Motive's s1-rulings route-b-thin): route-b with one posted rival taken down before the pickup where the other two cannot see it. At about 5:31 the Enforcer, waiting at the square, knocks out rival-3 at his lone post by the café terrace from behind (1.3 m off his back; he faces our car), 28 m from the pair on the square's east side, beyond their pistols' 16 m, and leaves him; he wakes after the fight. At the Take the floor (rivals-floor 3) recalls the warned lookout and the tipped car, so the fight is the two posted plus the late two: thinner, never skipped (MC-14). The knockout costs nothing while nobody reports it before the car leaves (a passer-by finds him at 7:30 and is still walking over).",
  "start": {},
- "until": 5100,
+ "until": 4500,
  "steps": [
   {
    "op": "scout",
@@ -50,7 +50,7 @@
    "do": "turn",
    "target": "driver",
    "approach": "pay",
-   "by": "5:40",
+   "by": "4:40",
    "label": "turned",
    "why": "the card shows Pay works on this driver (a Mercenary); §07's Help is one step worse on him"
   },
@@ -85,7 +85,7 @@
    "after": [
     "tip"
    ],
-   "at": "5:55",
+   "at": "4:55",
    "label": "scout-yard"
   },
   {
@@ -98,7 +98,7 @@
    "after": [
     "turned"
    ],
-   "at": "5:55",
+   "at": "4:55",
    "label": "fixer-yard"
   },
   {
@@ -112,7 +112,7 @@
    "op": "tech",
    "do": "reroute",
    "target": "patrol",
-   "at": "5:00",
+   "at": "4:00",
    "label": "rr",
    "why": "brief 067 A: ordered at 5:00, it lands 5:45, the patrol away to 7:40: the yard is clear for the Take and the fight (a rerouted patrol never breaks to gunfire)"
   },
@@ -146,7 +146,7 @@
     -700,
     -3600
    ],
-   "at": "5:15",
+   "at": "4:15",
    "why": "behind rival-3 at his lone post by the café terrace (-5.75, -36.25), 1.3 m off his back (he faces our car), out of his cone and 28 m from the pair on the square's east side, beyond their pistols' 16 m"
   },
   {
@@ -154,7 +154,7 @@
    "do": "takedown",
    "target": "rival-3",
    "how": "knockout",
-   "at": "5:28",
+   "at": "4:28",
    "unless": "takedown.fails",
    "clear": 1,
    "label": "td"
@@ -174,7 +174,7 @@
    "do": "take",
    "when": "car.parks",
    "label": "take",
-   "at": "6:45",
+   "at": "5:45",
    "why": "Vale reaches the car in the service lane at 6:10"
   },
   {

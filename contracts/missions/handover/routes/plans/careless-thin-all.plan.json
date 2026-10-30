@@ -3,7 +3,7 @@
  "mission": "handover",
  "note": "Careless violence (brief 059 S1; Motive's s1-rulings careless-thin-all), the twin of route-b: the Enforcer sets out to take down all three posted rivals on the square before the pickup. The lone one by the café terrace goes down unseen (as route-b-thin), but the pair on its east side cannot be thinned quietly (M059-S1.6): rival-2 sees rival-1 taken down and draws, the Enforcer shoots him, and the run is loud from then on (the shots traced, Alert 2 when the bodies are found), so the yard fight is the police from the official entrance; the car goes once their blocker is down, leaving the Scout and Fixer behind.",
  "start": {},
- "until": 5100,
+ "until": 4500,
  "steps": [
   {
    "op": "scout",
@@ -50,7 +50,7 @@
    "do": "turn",
    "target": "driver",
    "approach": "pay",
-   "by": "5:40",
+   "by": "4:40",
    "label": "turned",
    "why": "the card shows Pay works on this driver (a Mercenary); §07's Help is one step worse on him"
   },
@@ -85,7 +85,7 @@
    "after": [
     "tip"
    ],
-   "at": "5:55",
+   "at": "4:55",
    "label": "scout-yard"
   },
   {
@@ -98,7 +98,7 @@
    "after": [
     "turned"
    ],
-   "at": "5:55",
+   "at": "4:55",
    "label": "fixer-yard"
   },
   {
@@ -112,7 +112,7 @@
    "op": "tech",
    "do": "reroute",
    "target": "patrol",
-   "at": "5:00",
+   "at": "4:00",
    "label": "rr",
    "why": "brief 067 A: ordered at 5:00, it lands 5:45, the patrol away to 7:40: the yard is clear for the Take and the fight (a rerouted patrol never breaks to gunfire)"
   },
@@ -146,7 +146,7 @@
     -700,
     -3600
    ],
-   "at": "5:15",
+   "at": "4:15",
    "why": "behind rival-3 at his lone post by the café terrace (-5.75, -36.25), 1.3 m off his back (he faces our car), out of his cone and 28 m from the pair on the square's east side, beyond their pistols' 16 m"
   },
   {
@@ -154,7 +154,7 @@
    "do": "takedown",
    "target": "rival-3",
    "how": "knockout",
-   "at": "5:28",
+   "at": "4:28",
    "unless": "takedown.fails",
    "clear": 1,
    "label": "td"
@@ -206,7 +206,7 @@
    "do": "take",
    "when": "car.parks",
    "label": "take",
-   "at": "6:45",
+   "at": "5:45",
    "why": "Vale reaches the car in the service lane at 6:10"
   },
   {

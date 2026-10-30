@@ -63,7 +63,7 @@ export const DIALOGUE_VERBS = [...VERBS, 'turn', 'turn-view', 'step-target', 'ex
 /** A target's reply: the rulebook's turn outcomes, and `suspicious` when the person reports the approach (rulebook `reports`). */
 export const OUTCOMES = ['turned', 'refused', 'not-yet', 'kept', 'suspicious'] as const;
 /** The engine's fail codes (Game.Fail), `withdraw` (an order) and `engine-error`. `cell-down` (engine 0.34.0, brief 067): every operative is down. */
-export const FAILS = ['abduction-seen-camera', 'cell-down', 'driver-shot', 'enforcer-down', 'entry-seen-camera', 'entry-seen-guard',
+export const FAILS = ['abduction-seen-camera', 'cell-down', 'closed-in', 'driver-shot', 'enforcer-down', 'entry-seen-camera', 'entry-seen-guard',
   'getaway-lost', 'rivals-reach-vale', 'sealed', 'vale-dead', 'vale-leaves', 'engine-error'] as const;
 /** Fail codes the engine keeps only for rulebooks pinned before a change; live text words none of them. `entry-seen-patrol` (engine 0.34.2, Sky 2026-10-26,
  *  GDD v0.28.0 section 07): the patrol seeing the Enter is a report (log entry.seen, entry.reported, entry.stopped), no fail. */
@@ -312,6 +312,24 @@ export const Less = z.strictObject({
     line: z.strictObject({ held: Line, ready: Line, empty: Line, unknown: Line }).describe('brief 057 section 4: the fail card\'s sub-line when the district seals, by FailCause.Car (held, ready, empty), and `unknown` when the engine gave none; {holders} is names.holders as holdersPhrase says it'),
     tip: z.strictObject({ held: Short(36), ready: Short(36), empty: Short(36) }).describe('what to do next time, by FailCause.Car; at most six words, the fail camera\'s tip form'),
     story: z.strictObject({ held: Line, ready: Line }).describe('the debrief\'s extra route line after "Vale reached the getaway car.", by FailCause.Car; none when the car was empty'),
+  }),
+  closedIn: z.strictObject({
+    rule: z.string().min(1),
+    line: z.strictObject({ 'no-driver': Line, 'car-held': Line, 'on-foot': Line, 'no-go': Line }).describe('brief 080 (engine 0.37.0): the fail card\'s sub-line for closed-in, by FailCause.Why; {by} as less.failcam.by'),
+  }),
+  odds: z.strictObject({
+    rule: z.string().min(1),
+    chip: Short(32).describe('brief 080: the fire preview\'s chip: {pct} the hit chance, {s} rough seconds to down'),
+    chipBare: Short(12).describe('the chip with no estimate of the time to down: {pct}'),
+    sum: Line.describe('Alt: the sum behind the chance: {pct} {aim} {range} {cover} {move}, the last three signed'),
+    limits: Line.describe('Alt: the limits of a chance (rulebook sheet-min, sheet-max)'),
+    streak: z.strictObject({ head: Short(40), hits: Line, misses: Line }).describe('the streak note, said openly (Sky on design.html, decision 2); rulebook sheet-streak-hits, -misses, -floor'),
+  }),
+  takedown: z.strictObject({
+    rule: z.string().min(1),
+    coming: Line.describe('brief 080 (TakedownQuote.Coming): the card\'s row for who will arrive and notice before the act ends: {list} of `item`s'),
+    item: Short(36).describe('one person coming: {who} {s} {verb}'),
+    short: Short(24).describe('one person coming, at rest: {who} {s}'),
   }),
   fates: z.record(z.string(), z.enum(FATES)).describe('every player-facing group of this file by its path, with where it goes (the inventory in briefs/014/fable-less.md, as data)'),
   hint: z.strictObject({

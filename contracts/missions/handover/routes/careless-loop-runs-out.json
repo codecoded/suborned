@@ -12,11 +12,11 @@
   {"tick":127,"op":"tech","do":"loop","target":"entrance"},
   {"tick":290,"op":"scout","do":"listen","target":"waitress"},
   {"tick":327,"op":"enforcer","do":"move","to":[6925,-4250]},
-  {"tick":710,"op":"fixer","do":"turn","target":"waitress","approach":"help"},
-  {"tick":1210,"op":"fixer","do":"turn","target":"waitress","approach":"help"},
-  {"tick":1710,"op":"fixer","do":"call","target":"waitress"},
-  {"tick":1710,"op":"enforcer","do":"move","to":"d:Office entrance","run":true},
-  {"tick":1729,"op":"enforcer","do":"enter"}
+  {"tick":590,"op":"fixer","do":"turn","target":"waitress","approach":"help"},
+  {"tick":940,"op":"fixer","do":"turn","target":"waitress","approach":"help"},
+  {"tick":1560,"op":"fixer","do":"call","target":"waitress"},
+  {"tick":1560,"op":"enforcer","do":"move","to":"d:Office entrance","run":true},
+  {"tick":1579,"op":"enforcer","do":"enter"}
  ],
- "until": 5100
+ "until": 4500
 }

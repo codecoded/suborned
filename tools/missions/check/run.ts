@@ -12,11 +12,13 @@ import { Routes } from '../../../contracts/missions/routes.schema';
 import { ROOT, engineAt, engineInputs, facts as factsOf, playAll, scenarios as scenariosOf, type EngineAt, type Facts, type Scenarios, type Script } from './engine';
 import { digest, judge, clock, caseTrailEqOf, type Getaway, type Plays, type Report, type Slack } from './judge';
 import { contactsOf, lateFrom, stepsOf, withoutContact } from './vary';
+import { runBands, type BandReport } from './bands';
+import { failsReached, fromBands, type PlanFile } from './fromBands';
 
 const sha = (s: string | Buffer) => createHash('sha256').update(s).digest('hex');
 /** The longest slip a step is tried for (s). [S] */
 export const SLACK_MAX_S = 120;
-const TOOL = ['tools/missions/check/engine.ts', 'tools/missions/check/vary.ts', 'tools/missions/check/judge.ts', 'tools/missions/check/blocker.ts', 'tools/missions/check/run.ts', 'contracts/missions/routes.schema.ts'];
+const TOOL = ['tools/missions/check/engine.ts', 'tools/missions/check/vary.ts', 'tools/missions/check/judge.ts', 'tools/missions/check/blocker.ts', 'tools/missions/check/run.ts', 'contracts/missions/routes.schema.ts', 'tools/missions/check/bands.ts', 'tools/missions/check/fromBands.ts'];
 
 export type Loaded = { mission: string; manifest: Routes; texts: Record<string, string>; scripts: Record<string, Script> };
 /** A mission's routes: `dir` holds routes.json and the scripts it names (contracts/missions/<id>/routes, or a recorded copy). */
@@ -33,13 +35,13 @@ export function load(dir: string): Loaded {
   return { mission: manifest.mission, manifest, texts, scripts };
 }
 
-export type Check = { mission: string; engine: EngineAt; inputs: Record<string, string>; tool: string; scripts: Record<string, string>; facts: Facts; scenarios: Scenarios; plays: Plays; slack: Slack[]; report: Report };
+export type Check = { bands?: BandReport; mission: string; engine: EngineAt; inputs: Record<string, string>; tool: string; scripts: Record<string, string>; facts: Facts; scenarios: Scenarios; plays: Plays; slack: Slack[]; report: Report };
 
 /** Play the base scripts and the contact variations, then scan each primary quiet route's steps for slack. */
-export async function check(L: Loaded, e: EngineAt = engineAt(), log: (m: string) => void = () => {}, o: { slack?: boolean } = {}): Promise<Check> {
+export async function check(L: Loaded, e: EngineAt = engineAt(), log: (m: string) => void = () => {}, o: { slack?: boolean; seeds?: number } = {}): Promise<Check> {
   const m = L.manifest, roles = m.contacts.map(c => c.role), plays: Plays = {};
   const jobs: { name: string; script: Script }[] = [];
-  for (const s of m.scripts.filter(x => !x.pending)) {
+  for (const s of m.scripts.filter(x => !x.pending && !x.adaptive)) {
     jobs.push({ name: s.id, script: L.scripts[s.id]! });
     if (s.kind === 'quiet') for (const role of contactsOf(L.scripts[s.id]!, roles)) jobs.push({ name: `${s.id}~no-${role}`, script: withoutContact(L.scripts[s.id]!, role) });
   }
@@ -47,8 +49,16 @@ export async function check(L: Loaded, e: EngineAt = engineAt(), log: (m: string
   const out = await playAll(jobs, e);
   jobs.forEach((j, i) => { plays[j.name] = digest(out[i]!, sha(JSON.stringify(j.script)), !j.name.includes('~')); });
 
-  const slack: Slack[] = [];
-  for (const s of m.scripts.filter(x => o.slack !== false && x.kind === 'quiet' && x.primary && !x.pending && plays[x.id]?.outcome === 'success')) {
+  // brief 080: the references are adaptive plans across seeds; their rows stand in for scripts in the judge (fromBands.ts). Their windows are the slack.
+  const slack: Slack[] = [], adaptive = m.scripts.some(x => x.adaptive && !x.pending); let bandReport: BandReport | undefined, scriptsAll = L.scripts, reached: string[] = [];
+  if (adaptive) {
+    bandReport = await runBands(L.mission, e, { seeds: o.seeds ?? 200, from: 1, log });
+    const dir = join(ROOT, 'contracts/missions', L.mission, 'adaptive'), plans = Object.fromEntries(readdirSync(dir).filter(f => f.endsWith('.adaptive.json')).map(f => { const p = JSON.parse(readFileSync(join(dir, f), 'utf8')) as PlanFile; return [p.id, p]; }));
+    const f = fromBands(m, bandReport, plans);
+    if (f.missing.length) throw new Error(`the bands have no rows for: ${f.missing.join('; ')}`);
+    Object.assign(plays, f.plays); scriptsAll = { ...L.scripts, ...f.scripts }; slack.push(...f.slack); reached = failsReached(bandReport.rows ?? []);
+  }
+  for (const s of m.scripts.filter(x => o.slack !== false && !x.adaptive && x.kind === 'quiet' && x.primary && !x.pending && plays[x.id]?.outcome === 'success')) {
     // the plan's steps, up to the one that secures Vale (the route's closing event reads it); the final fight after it is fought, not planned
     const sc = L.scripts[s.id]!, secured = s.closes ? plays[s.id]!.marks[s.closes.secured] : undefined, steps = stepsOf(sc).filter(t => secured === undefined || t <= secured);
     log(`late from each of ${s.id}'s ${steps.length} planned steps, 1 s at a time to ${SLACK_MAX_S} s`);
@@ -71,8 +81,11 @@ export async function check(L: Loaded, e: EngineAt = engineAt(), log: (m: string
   const tool = sha(TOOL.map(f => `${f}\n${readFileSync(join(ROOT, f), 'utf8')}`).join('\n')), fx = factsOf(e);
   const scIds = scenarioIds(m); if (scIds.length) log(`checking the engine's scenarios the fail lines name: ${scIds.join(', ')}`);
   const sc = scenariosOf(e, scIds);
-  return { mission: L.mission, engine: e, inputs, tool, scripts: Object.fromEntries(Object.entries(L.texts).map(([f, t]) => [f, sha(t)])), facts: fx, scenarios: sc, plays, slack, report: judge(L.manifest, L.scripts, plays, slack, { caseTrailEq: caseTrailEqAt(e.dir), getaway: getawayAt(e.dir, L.mission), facts: fx, scenarios: sc }) };
+  return { mission: L.mission, engine: e, inputs, tool, scripts: Object.fromEntries(Object.entries(L.texts).map(([f, t]) => [f, sha(t)])), facts: fx, scenarios: sc, plays, slack, bands: bandReport, report: withBands(judge(L.manifest, scriptsAll, plays, slack, { caseTrailEq: caseTrailEqAt(e.dir), getaway: getawayAt(e.dir, L.mission), facts: fx, scenarios: sc, planFails: reached }), bandReport) };
 }
+
+/** Brief 080: the verdict is the conditions, the rigid lines and the bands together. A line carries its owner's words in the report (bands.ts). */
+const withBands = (r: Report, b?: BandReport): Report => { if (!b) return r; const extra = [...b.rigid, ...b.bands].map(l => ({ id: l.id, rule: l.rule, ok: l.ok, value: l.value, detail: l.note ?? '' })); return { ...r, ok: r.ok && extra.every(x => x.ok), conditions: [...r.conditions, ...extra] }; };
 
 /** The engine scenarios a mission's fail lines name (brief 039), sorted, once each. */
 export const scenarioIds = (m: Routes) => [...new Set(m.fails.flatMap(f => f.scenario ? [f.scenario] : []))].sort();
@@ -142,9 +155,11 @@ export async function replay(dir: string, log: (m: string) => void = () => {}): 
     lines.push(now === h ? `ok    input ${f}` : `${tree ? 'drift' : 'FAIL '} input ${f} changed since the check (${h.slice(0, 12)} → ${now.slice(0, 12)})`);
   }
   lines.push(e.hash === run.engine.sourceSha256 ? `ok    engine ${String(run.engine.commit).slice(0, 12)} source ${e.hash.slice(0, 12)}` : `drift engine source ${e.hash.slice(0, 12)}, recorded ${String(run.engine.sourceSha256).slice(0, 12)}`);
-  const rec = run.plays as Plays, names = Object.keys(rec).sort();
+  // brief 080: a plan's stand-in digest has no script to replay (R-5 proved its saved runs at the check; the verdict below reads the recorded one)
+  const isPlan = (n: string) => !!L.manifest.scripts.find(x => x.id === n.split('~')[0])?.adaptive;
+  const rec = run.plays as Plays, names = Object.keys(rec).filter(n => !isPlan(n)).sort();
   log(`replaying ${names.length} recorded plays on the engine at ${String(run.engine.commit).slice(0, 12)}`);
-  const jobs = names.map(name => ({ name, script: scriptOf(L, name) })), out = await playAll(jobs, e), now: Plays = {};
+  const jobs = names.map(name => ({ name, script: scriptOf(L, name) })), out = await playAll(jobs, e), now: Plays = Object.fromEntries(Object.entries(rec).filter(([n]) => isPlan(n)));
   let same = 0;
   jobs.forEach((j, i) => {
     const a = rec[j.name]!, b = digest(out[i]!, sha(JSON.stringify(j.script)), !j.name.includes('~'));

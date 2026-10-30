@@ -314,6 +314,7 @@ namespace Suborned.Sim
         void KiteRivals(CrewMember m)
         {
             var g = m.Gun; if (!RivalsDrawn || m.Fight || !Up(m) || !m.OnFoot || g.Down) { m.Disp = null; return; }
+            if (m.Mode == CrewMode.Walking && (m.Goal == "flee" || m.Goal == "exit")) return; // brief 081 (engine 0.37.0): a broken crew runs for its car: no answering fire, no walking on toward a shooter 38 m out
             if (IntentPress(m)) return; // engine 0.19.0 (ai.intent.rivals.press): the press owns the member's walk
             if (m.Disp != null)
             {
@@ -337,9 +338,11 @@ namespace Suborned.Sim
                 }
                 if (d.Phase == 2 && (long)(Tick - d.BackStart) * rivSpeed >= len)
                 {
-                    if (m.Mode == CrewMode.Walking) m.WalkStart += Tick - d.Start; // his walk's clock shifts by the detour
                     Note("ai.kite", $"{m.Id} leans out again after {(Tick - d.Start) / Hz} s out of the line.");
+                    var here = DispPose(d, rivSpeed, Tick).pos; // brief 081 (engine 0.37.0; a 22.7 m jump at 5:09.5 once an advance had replaced the detour, so its start was no longer his walk's): he goes on from where he stands
                     m.Disp = null; KiteClear(g);
+                    if (m.Mode == CrewMode.Walking) StartWalk(m, here, m.Walk!.End, m.Goal, m.Speed);
+                    else if (m.Mode == CrewMode.Posted && m.Post != "lookout") m.Place = here;
                 }
                 return;
             }

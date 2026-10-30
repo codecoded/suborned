@@ -215,6 +215,7 @@ namespace Suborned.Sim
         void StartWalk(CrewMember m, Pt from, Pt to, string goal, int speed)
         {
             var a = Walk.NearestFree(from) ?? from; var b = Walk.NearestFree(to) ?? to;
+            if (goal == "spot" || goal == "word" || goal == "door") b = ClearStop(m.Id, b); // brief 081 (engine 0.37.0; fight.spacing): a place on the street, clear of who stands there; a walk to the car ends at the car
             var route = (goal == "spot" ? RouteRoundHold(a, b) : null) ?? Walk.Route(a, b) ?? new[] { a, b }; // engine 0.34.0 (Motive M067-SQ1): to his post round the car's hold
             m.Walk = new Path(route); m.WalkStart = Tick; m.Speed = Math.Max(1, speed); m.Goal = goal; m.Mode = CrewMode.Walking; m.ModeTick = Tick; m.Disp = null;
             if (m.Walk.Length == 0) ArriveWalk(m);
@@ -300,6 +301,7 @@ namespace Suborned.Sim
                 long d = WalkMm(from, S.Stand(st.Ambush[k]));
                 if (d < bd) { bd = d; best = k; }
             }
+            if (rivalPosts != null && m.N - 1 < rivalPosts.Length && rivalPosts[m.N - 1] < st.Ambush.Length && !taken.Contains(rivalPosts[m.N - 1])) best = rivalPosts[m.N - 1]; // brief 080: the seed says who takes which post
             m.Spot = best < 0 ? Math.Min(m.N - 1, st.Ambush.Length - 1) : best; m.SpotStand = st.Id;
         }
         long WalkMm(Pt a, Pt b) { var r = Walk.Route(Walk.NearestFree(a) ?? a, Walk.NearestFree(b) ?? b); return r == null ? long.MaxValue / 4 : new Path(r).Length; }
@@ -460,7 +462,7 @@ namespace Suborned.Sim
                 if (m == l && (lookoutWarned || (m.Mode == CrewMode.Walking && m.Goal == "exit"))) continue; // warned off: gone
                 if (m.Mode == CrewMode.Aboard && carAway) continue; // the wheelman away with the tipped car (he joins if it comes back in time)
                 if (m == l && (m.Mode == CrewMode.Talking || (m.Mode == CrewMode.Walking && m.Goal == "word"))) { m.Until = INF; m.Mode = CrewMode.Posted; m.Post = "word"; m.Place = MemberPos(m, Tick); } // the word is cut short: he fights from where he stands
-                if (m == l && lookoutBoards) { m.Disp = null; StartWalk(m, MemberPos(m, Tick), StepOutAt(), "board", rivSpeed); continue; } // F6: to the car; his body joins at the stand
+                if (m == l && lookoutBoards) { var from = MemberPos(m, Tick); m.Disp = null; StartWalk(m, from, StepOutAt(), "board", rivSpeed); continue; } // F6: to the car; his body joins at the stand
                 MakeFightBody(m, st);
             }
             switch (CarSt)
@@ -747,9 +749,9 @@ namespace Suborned.Sim
             foreach (var x in Crew)
             {
                 if (!Up(x) || x.Fight || !x.OnFoot) continue;
-                x.Until = INF; x.Disp = null;
-                if (car) { StartWalk(x, MemberPos(x, Tick), StepOutAt(), "flee", rivSpeed); any = true; }
-                else StartWalk(x, MemberPos(x, Tick), S.Stand(S.RivalLookoutExit), "exit", rivSpeed);
+                var from = MemberPos(x, Tick); x.Until = INF; x.Disp = null; // brief 081 (engine 0.37.0): read before the detour is dropped: he leaves from where he stands, not from his old post (rival-4's 22 m jump at 4:21.5)
+                if (car) { StartWalk(x, from, StepOutAt(), "flee", rivSpeed); any = true; }
+                else StartWalk(x, from, S.Stand(S.RivalLookoutExit), "exit", rivSpeed);
             }
             if (car && !any) CrewLeaves();
         }

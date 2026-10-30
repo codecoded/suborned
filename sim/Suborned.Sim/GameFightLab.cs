@@ -26,6 +26,8 @@ namespace Suborned.Sim
         public string Refused = "";
         public int Pips;                  // 1–4 now with pips on; 0 out of range, no line, or with pips off
         public int Acc;                   // the chance now, per mille (the step for the pips; today's multipliers with pips off)
+        /// <summary>Brief 080: the sum that gives the chance (Alt on the fire chip): aim + range + cover + movement, kept between the sheet's limits.</summary>
+        public RollSum Sum;
         public int Damage;                // a hit's damage at this distance
         public int Health, Max;           // the target's health now and its full bar
         public int HitsToDown;            // hits to take the bar to 0 (ceil(health / damage))
@@ -145,6 +147,7 @@ namespace Suborned.Sim
         /// place), and inside point blank no cover unless weapons.pointBlankCover. Pips 0 inside the max ring is the pip0 rung (a runner's).</summary>
         int ShotAcc(Gun g, string t, Pt from, Pt at, long d, Gait gait, bool vale, out int pips)
         {
+            if (Rolled) { pips = 0; return SumOf(g, t, from, at, d, gait).Pct * 10; } // brief 080: the stat sheet's sum, per mille as every read of a chance
             int cov = MarkedFor(g, t) ? 1000 : CoverMod(t, at, from); // brief 039: Mark, his cover doesn't count against the cell
             if (!R.PointBlankCover && d <= R.PointBlankCm) cov = 1000; // Sky 2026-10-21 (tuning.md §8.4, §9.7): can't miss at arm's length, as the lab
             bool running = TargetRunning(t);
@@ -202,7 +205,7 @@ namespace Suborned.Sim
         /// count, else fight.lab.accStart for a target it has not fired at.</summary>
         /// <summary>The count a shooter takes a target with: the pair's, for the mission, in both presets (tuning.md §6.1–6.2; today since §13.1,
         /// engine 0.18.0: the tap-switch reset closed); a target it has not fired at starts at acc.start (the lab: fight.lab.accStart).</summary>
-        int AccFor(Gun g, string t) => g.Mem != null && g.Mem.TryGetValue(t, out int a) ? a : Lab ? Labr!.AccStart : R.AccStart;
+        int AccFor(Gun g, string t) => g.Mem != null && g.Mem.TryGetValue(t, out int a) ? a : Rolled ? 0 : Lab ? Labr!.AccStart : R.AccStart;
 
         /// <summary>A fire order cleared elsewhere (a run, a carry, Board, the Take): its volley's unfired charge comes back, its walk into range ends.</summary>
         void LabTidy(Op op)
@@ -451,8 +454,8 @@ namespace Suborned.Sim
             var gait = walk ? Sim.Gait.Stand : OpGait(op, at);
             p.Gait = gait == Sim.Gait.Walk ? "walk" : gait == Sim.Gait.Run ? "run" : gait == Sim.Gait.RunAway ? "run-away" : "stand"; p.TargetRunning = TargetRunning(t);
             int start = g.Target == t ? g.Acc : AccFor(g, t); bool vale = op.Id == OpId.Enforcer && Vale == ValeAt.WithEnforcer;
-            int ToDown(int acc) { if (acc <= 0) return -1; int a = start, hits = 0, shots = 0; while (hits < p.HitsToDown && shots < 1000) { shots++; a += acc; if (a >= 1000) { a -= 1000; hits++; } } return shots; }
-            if (p.Line) { p.Acc = ShotAcc(g, t, from, at, d, gait, vale, out int pips); p.Pips = pips; p.ShotsToDown = ToDown(p.Acc); }
+            int ToDown(int acc) { if (acc <= 0) return -1; if (Rolled) return (p.HitsToDown * 1000 + acc - 1) / acc; /* brief 080: the shots a run of average luck takes */ int a = start, hits = 0, shots = 0; while (hits < p.HitsToDown && shots < 1000) { shots++; a += acc; if (a >= 1000) { a -= 1000; hits++; } } return shots; }
+            if (p.Line) { p.Acc = ShotAcc(g, t, from, at, d, gait, vale, out int pips); p.Pips = pips; p.ShotsToDown = ToDown(p.Acc); if (Rolled) p.Sum = SumOf(g, t, from, at, d, gait); }
             else p.ShotsToDown = -1;
             if (!walk && p.ShotsToDown > 0) // preview only: the time to down at the weapon's cadence (Aim: a new target waits aimNew; Shoot: every)
             {

@@ -1,0 +1,555 @@
+diff --git a/contracts/missions/handover/brief.json b/contracts/missions/handover/brief.json
+index c07c3f68..486b98b5 100644
+--- a/contracts/missions/handover/brief.json
++++ b/contracts/missions/handover/brief.json
+@@ -3,7 +3,7 @@
+   "mission": "handover",
+   "title": "The Handover",
+   "place": "Civic Records Office, the civic block",
+-  "time": "Evening, 5:30: shift handover",
++  "time": "Evening: shift handover",
+   "pick": "A",
+   "order": [
+     "hook",
+@@ -43,13 +43,13 @@
+     },
+     {
+       "id": "chime",
+-      "at": "5:30",
++      "at": "4:30",
+       "icon": "enter",
+       "lit": true
+     },
+     {
+       "id": "over",
+-      "at": "8:30",
++      "at": "7:30",
+       "icon": "car"
+     }
+   ],
+@@ -61,7 +61,7 @@
+     ],
+     "yaw": 0
+   },
+-  "dataSrc": "Waymark, 2026-10-25 (brief 062 'Portraits and ids', Glyph, Fable and Waymark): the briefing's mission data, read by Latch's Briefing.cs (HostBriefing.cs BriefScreen.Load: brief.json first, then mission.json brief). target: role is the roles[] id of the man to take (his photograph is portraits/card_<role>); at is where the briefing's Target leader lands, a mission.json destination as a place id (d:<name>, as camera.place): d:Official entrance, the door Vale comes out of at 5:50 under the canopy (timeline), not the guard's public door (Glyph N1 on 0.2.122, briefs/041/port-progress.md); tools/missions/handover/brief.ts rejects an unknown one. ways: one per way in; id is the text.json less.briefing.ways key and, for front-door, mission.json windows[0].id (route A); contact a roles[] id (its face portraits/face_<contact>); steps up to three kit icons after the face (front door: Inez, the guard's badge, the door; pickup: the driver, the car, the take). pickup has no window yet. clock: the marks from mission.json timeline (0:00 the start, 5:30 the handover chime, 8:30 the close: rivals take Vale or the car leaves). camera: the briefing frame (062 §5: overhead-pickup, the Office door right of centre at play zoom), 5 m on from d:Meet driver, opening yaw; the same frame the host derived before this data existed, so the screen does not move.",
++  "dataSrc": "Waymark, 2026-10-25 (brief 062 'Portraits and ids', Glyph, Fable and Waymark): the briefing's mission data, read by Latch's Briefing.cs (HostBriefing.cs BriefScreen.Load: brief.json first, then mission.json brief). target: role is the roles[] id of the man to take (his photograph is portraits/card_<role>); at is where the briefing's Target leader lands, a mission.json destination as a place id (d:<name>, as camera.place): d:Official entrance, the door Vale comes out of at 4:50 under the canopy (timeline), not the guard's public door (Glyph N1 on 0.2.122, briefs/041/port-progress.md); tools/missions/handover/brief.ts rejects an unknown one. ways: one per way in; id is the text.json less.briefing.ways key and, for front-door, mission.json windows[0].id (route A); contact a roles[] id (its face portraits/face_<contact>); steps up to three kit icons after the face (front door: Inez, the guard's badge, the door; pickup: the driver, the car, the take). pickup has no window yet. clock: the marks from mission.json timeline (0:00 the start, 4:30 the handover chime, 7:30 the close: rivals take Vale or the car leaves). camera: the briefing frame (062 §5: overhead-pickup, the Office door right of centre at play zoom), 5 m on from d:Meet driver, opening yaw; the same frame the host derived before this data existed, so the screen does not move.",
+   "variants": {
+     "A": {
+       "hook": "Vale has a file on you.",
+@@ -73,7 +73,7 @@
+       "dossier": {
+         "target": "Councillor Vale. Holds the file on you.",
+         "location": "Civic Records Office, the civic block.",
+-        "window": "Shift change, 5:30 pm. He leaves soon after.",
++        "window": "Shift change, 4:30. He leaves soon after.",
+         "objective": "Take him alive before it reaches Security."
+       },
+       "intel": [
+@@ -95,11 +95,11 @@
+         },
+         {
+           "field": "window",
+-          "src": "contracts/missions/handover/mission.json clock (startsAt 17:24:30: the 5:30 chime is the shift change; Vale exits at 5:50, soon after); GDD/the-suborned-agent-gdd-v0.24.0-2026-10-18.md §07 line 164. Sky 2026-10-23: the file (replaces the clearance order), coordinator 2026-10-23: Vale leaves the Office at shift change carrying the file and takes it to Security tonight, so the take always lands before the hand-off"
++          "src": "contracts/missions/handover/mission.json clock (startsAt 17:25:30: the 4:30 chime is the shift change; Vale exits at 4:50, soon after); GDD/the-suborned-agent-gdd-v0.24.0-2026-10-18.md §07 line 164. Sky 2026-10-23: the file (replaces the clearance order), coordinator 2026-10-23: Vale leaves the Office at shift change carrying the file and takes it to Security tonight, so the take always lands before the hand-off"
+         },
+         {
+           "field": "objective",
+-          "src": "GDD/the-suborned-agent-gdd-v0.24.0-2026-10-18.md §07 lines 160, 174 (take him alive to the getaway car; win = Vale alive at the getaway car). No file objective: the game does not model the file yet (Sky 2026-10-23). Fable 2026-10-25 (brief 062, Sky: pick B): the briefing on the street shows only the hook and this line; \"it\" is the file, and the deadline is its delivery (Vale's car leaving, or 8:30 with a turned driver). Where he is taken is the goal line in play (text.json less.briefing.goal)"
++          "src": "GDD/the-suborned-agent-gdd-v0.24.0-2026-10-18.md §07 lines 160, 174 (take him alive to the getaway car; win = Vale alive at the getaway car). No file objective: the game does not model the file yet (Sky 2026-10-23). Fable 2026-10-25 (brief 062, Sky: pick B): the briefing on the street shows only the hook and this line; \"it\" is the file, and the deadline is its delivery (Vale's car leaving, or 7:30 with a turned driver). Where he is taken is the goal line in play (text.json less.briefing.goal)"
+         },
+         {
+           "field": "intel.waitress",
+@@ -145,7 +145,7 @@
+       "dossier": {
+         "target": "Councillor Vale. He built the file on your cell.",
+         "location": "Civic Records Office, the civic block.",
+-        "window": "Shift change, 5:30 pm. He leaves soon after.",
++        "window": "Shift change, 4:30. He leaves soon after.",
+         "objective": "Take him alive. Deliver him to the getaway car."
+       },
+       "intel": [
+@@ -167,7 +167,7 @@
+         },
+         {
+           "field": "window",
+-          "src": "contracts/missions/handover/mission.json clock (startsAt 17:24:30: the 5:30 chime is the shift change; Vale exits at 5:50, soon after); GDD/the-suborned-agent-gdd-v0.24.0-2026-10-18.md §07 line 164. Sky 2026-10-23: the file (replaces the clearance order), coordinator 2026-10-23: Vale leaves the Office at shift change carrying the file and takes it to Security tonight, so the take always lands before the hand-off"
++          "src": "contracts/missions/handover/mission.json clock (startsAt 17:25:30: the 4:30 chime is the shift change; Vale exits at 4:50, soon after); GDD/the-suborned-agent-gdd-v0.24.0-2026-10-18.md §07 line 164. Sky 2026-10-23: the file (replaces the clearance order), coordinator 2026-10-23: Vale leaves the Office at shift change carrying the file and takes it to Security tonight, so the take always lands before the hand-off"
+         },
+         {
+           "field": "objective",
+@@ -209,7 +209,7 @@
+       "dossier": {
+         "target": "Councillor Vale",
+         "location": "Civic Records Office",
+-        "window": "5:30 pm shift change",
++        "window": "4:30 shift change",
+         "objective": "Vale alive, in the getaway car."
+       },
+       "intel": [],
+diff --git a/contracts/missions/handover/text.json b/contracts/missions/handover/text.json
+index 3a74f599..b8d8796b 100644
+--- a/contracts/missions/handover/text.json
++++ b/contracts/missions/handover/text.json
+@@ -199,7 +199,7 @@
+    "At shift change he carries it out of the Civic Records Office.",
+    "We take him alive, get him into our getaway car and drive off.",
+    "Quietly, if we can. Others want him too, and this city notices noise.",
+-   "We have $100,000, four people, and until 6:10, or 8:30 if we turn his driver."
++   "We have $100,000, four people, and until 5:10, or 7:30 if we turn his driver."
+   ],
+   "objective": "Take Councillor Vale alive to the getaway car.",
+   "win": "Vale in the getaway car when it leaves.",
+@@ -208,6 +208,7 @@
+    "vale-leaves": "Vale left in his car. We were too slow.",
+    "rivals-reach-vale": "The rival crew got to Vale first.",
+    "sealed": "The getaway car hadn't left when security sealed the district.",
++   "closed-in": "The district closed in before we got Vale away.",
+    "enforcer-down": "The Enforcer is down. Nobody else can carry Vale.",
+    "cell-down": "The whole cell is down. Nobody is left to get Vale out.",
+    "entry-seen-guard": "The guard saw the Enforcer go in. Vale was warned.",
+@@ -219,8 +220,8 @@
+    "withdraw": "We pulled out. The attempt is over."
+   },
+   "clock": {
+-   "close": "8:30",
+-   "line": "Handover chime at 5:30. Vale's driver takes him away at 6:10, or 8:30 if turned."
++   "close": "7:30",
++   "line": "Handover chime at 4:30. Vale's driver takes him away at 5:10, or 7:30 if turned."
+   },
+   "purse": {
+    "usd": 100000,
+@@ -230,7 +231,7 @@
+    "front-door": "Front door: Inez and the door guard are close.",
+    "pickup": "Pickup: Vale rides from the official bay; his driver is short of cash."
+   },
+-  "tracker": "Take Vale alive to the getaway car · closes 8:30",
++  "tracker": "Take Vale alive to the getaway car · closes 7:30",
+   "heat": {"unknown":"Unknown","noticed":"Noticed","wanted":"Wanted","infamous":"Infamous"},
+   "timeline": [
+    {
+@@ -252,32 +253,32 @@
+     "known": false
+    },
+    {
+-    "at": "5:30",
++    "at": "4:30",
+     "label": "Handover chime",
+     "short": "Chime",
+     "known": true
+    },
+    {
+-    "at": "5:40",
++    "at": "4:40",
+     "label": "Last chance to turn the driver",
+     "short": "Last chance",
+     "known": true
+    },
+    {
+-    "at": "5:50",
++    "at": "4:50",
+     "label": "Vale leaves the Office",
+     "short": "Vale out",
+     "known": true
+    },
+    {
+-    "at": "6:10",
++    "at": "5:10",
+     "label": "Vale at his car; unless turned, the driver leaves",
+     "short": "Vale at car",
+     "known": true
+    },
+    {
+-    "at": "8:30",
+-    "label": "Close: a turned driver gives up and drives Vale away",
++    "at": "7:30",
++    "label": "Close: a turned driver drives Vale away; if we hold Vale, we're closed in",
+     "short": "Close",
+     "known": true
+    }
+@@ -289,16 +290,16 @@
+    "enforcer": "Enforcer: goes in, takes Vale, takes people down. Only he carries Vale."
+   },
+   "page": {
+-   "rule": "Brief 070 (Sky, 2026-10-26: the briefing as a full-screen page, modal until Begin; Glyph's mock briefs/070/glyph). Outside play, so the reading limits don't apply, but each way keeps to two sentences: its hint after the way's name (briefing.hints, the part after ': '), then `ways.<id>.line`. `when` is the plate beside the way's name, `target` the line under Vale's one fact (brief.json dossier.target), `ending` the line under the getaway car's still, `clock` the stations the page's clock shows (labels from briefing.timeline, unless `stations` words the mark for the page: Glyph R1 on 0.2.133, the 6:10 station is the short form, since the 5:40 station carries the condition; play's timeline keeps the full, true label), `cell` one line under each face, about this mission. `heads` the section heads (Glyph's mock; brief 070, Latch: the page showed none): `ways` keyed by how many ways the mission has (brief.json ways), so the head counts from the data; `where` over the plan, `clock` over the stations, `heat` beside the Heat word. `captions` a still's caption by its pin's place, where the target's name alone would not say where (Glyph N11 and R6: the pickup's words end at the service bay, so its still and legend name the service bay); other stills take targets.<key>.name. The target head stays less.briefing.target. Day and Night are off the page (Sky: night is not a toggle).",
+-   "target": "Comes out at 5:50 and leaves by car.",
++   "rule": "Brief 070 (Sky, 2026-10-26: the briefing as a full-screen page, modal until Begin; Glyph's mock briefs/070/glyph). Outside play, so the reading limits don't apply, but each way keeps to two sentences: its hint after the way's name (briefing.hints, the part after ': '), then `ways.<id>.line`. `when` is the plate beside the way's name, `target` the line under Vale's one fact (brief.json dossier.target), `ending` the line under the getaway car's still, `clock` the stations the page's clock shows (labels from briefing.timeline, unless `stations` words the mark for the page: Glyph R1 on 0.2.133, the 5:10 station is the short form, since the 4:40 station carries the condition; play's timeline keeps the full, true label), `cell` one line under each face, about this mission. `heads` the section heads (Glyph's mock; brief 070, Latch: the page showed none): `ways` keyed by how many ways the mission has (brief.json ways), so the head counts from the data; `where` over the plan, `clock` over the stations, `heat` beside the Heat word. `captions` a still's caption by its pin's place, where the target's name alone would not say where (Glyph N11 and R6: the pickup's words end at the service bay, so its still and legend name the service bay); other stills take targets.<key>.name. The target head stays less.briefing.target. Day and Night are off the page (Sky: night is not a toggle).",
++   "target": "Comes out at 4:50 and leaves by car.",
+    "ways": {
+-    "front-door": {"when": "Before 5:50", "line": "Turn her to call him off and loop his camera."},
+-    "pickup": {"when": "From 6:10", "line": "Turn him before 5:40 and he brings Vale to the service bay."}
++    "front-door": {"when": "Before 4:50", "line": "Turn her to call him off and loop his camera."},
++    "pickup": {"when": "From 5:10", "line": "Turn him before 4:40 and he brings Vale to the service bay."}
+    },
+    "ending": "Both ways end here: Vale in the getaway car as it leaves.",
+    "captions": {"service-bay": "Service bay"},
+-   "clock": ["2:35", "5:30", "5:40", "5:50", "6:10"],
+-   "stations": {"6:10": "Vale's car leaves"},
++   "clock": ["2:35", "4:30", "4:40", "4:50", "5:10"],
++   "stations": {"5:10": "Vale's car leaves"},
+    "cell": {
+     "scout": "Listens to Inez and the driver. Gives the rivals a false tip.",
+     "fixer": "Turns Inez or the driver, and calls Inez when it's time.",
+@@ -590,6 +591,8 @@
+  "cards": {
+   "rule": "The feed's cards for engine events no scene covers (Sky's review 2026-10-16, messages.html §1 D). Each is a title and one result in the player's words with the engine's numbers, never the engine's sentence (its log keeps that). A card with `sight` in-sight shows only when an agent can see the place, as a city scene does; `sight` always shows wherever the cell stands (brief 067: the rival car turning in off Orbit Walk is heard, never seen), and its `at` then only says what the card points at. A result that is a record is chosen by the engine state `pick` names. {who} is the person or watcher as names.targets says it, {agent} \"the Scout\"; the host capitalises the first letter after filling. Brief 013 (takedowns): a card says only what the cell has seen or been told. Three kinds: (1) the cell's own acts (the agent is there, so no `sight`); (2) things at a place the cell may not be near: `sight` in-sight, and `at` names the engine position the check looks at (the log carries none; the host reads it from the game); (3) the city's answer to an Alert, which the Alert pill and the street show: a card says that it came and when, never who made the report or why. `needs` routine: a cause the cell can name only once a Watch has taught the person's routine (a missed check in); until then report.landed speaks alone. Codes the engine builds (stash.container, stash.door) are one card keyed by the prefix. A spoken line of an event shows with that event's card or scene, so it follows the same sight rule: a line is never shown when its card is hidden. Brief 014 (less reading): every card has a `fate`: beat (a one-line feed beat, `beat`; at most ten distinct lines in the file), icon (the street shows it: a marker, ring, lock or pip), alt (history only, behind L), debrief (the end says it). A card with no beat is never a card on screen; its title and result are the history lines.",
+   "items": {
++   "close.warning": {"kind":"warning","fate":"beat","beat":"Vale's been missed.","title":"Vale has been missed","result":"The district closes in {n} s. Get Vale away."},
++   "enforcer.warning": {"kind":"warning","fate":"icon","title":"The Enforcer is badly hurt","result":"{n} health left. Get him into cover or out of the line."},
+    "rivals.coming": {"kind":"city","fate":"beat","beat":"Rival car coming.","title":"A rival car turns in","sight":"always","at":"rival-car","result":"Off Orbit Walk. They are after Vale too."},
+    "rivals.drop": {"kind":"city","fate":"icon","title":"Rivals post round our car","sight":"in-sight","at":"rival-car","result":"Three of them are taking posts round our car."},
+    "rivals.arrive": {"kind":"city","fate":"icon","title":"Rival car parks","sight":"in-sight","result":"Across from Vale's car. A lookout watches the official door."},
+@@ -747,10 +750,10 @@
+   "read": {"kind":"read","trigger":"a Watch or Listen lands: the Scout says what the cell learned (Listen reveals need and temperament, Watch the routine); the Tech or the Scout on a camera or the patrol, its sight, and the patrol's rounds once they are known (Sky 2026-10-18: the Tech watches machines)","speakers":["scout","tech","fixer","enforcer"],"log":["scout.watch.watched","tech.watch.watched","fixer.watch.watched","enforcer.watch.watched","scout.listen.heard"],"verbs":["watch","listen"]},
+   "taken": {"kind":"reply","trigger":"Vale is brought out (the Enforcer takes him at the car, or comes out of the Office with him)","speakers":["councillor"],"log":["take.done","enter.out"],"verbs":["enter","take"]},
+   "start": {"kind":"world","trigger":"the mission starts, cell at the getaway car","speakers":["scout","fixer","tech","enforcer"],"log":["start"]},
+-  "chime": {"kind":"world","trigger":"the 5:30 handover chime","speakers":["scout","fixer"],"clock":"5:30"},
+-  "last-turn": {"kind":"world","trigger":"the 5:40 last chance to turn the driver","speakers":["scout","fixer"],"clock":"5:40"},
+-  "vale-exits": {"kind":"world","trigger":"Vale leaves the Office","speakers":["scout"],"log":["vale.exits"],"clock":"5:50"},
+-  "vale-at-car": {"kind":"world","trigger":"Vale reaches his car","speakers":["scout","councillor"],"log":["vale.at-car"],"clock":"6:10"},
++  "chime": {"kind":"world","trigger":"the 4:30 handover chime","speakers":["scout","fixer"],"clock":"4:30"},
++  "last-turn": {"kind":"world","trigger":"the 4:40 last chance to turn the driver","speakers":["scout","fixer"],"clock":"4:40"},
++  "vale-exits": {"kind":"world","trigger":"Vale leaves the Office","speakers":["scout"],"log":["vale.exits"],"clock":"4:50"},
++  "vale-at-car": {"kind":"world","trigger":"Vale reaches his car","speakers":["scout","councillor"],"log":["vale.at-car"],"clock":"5:10"},
+   "rivals-arrive": {"kind":"world","trigger":"the rival car parks near the pickup (or comes in on gunfire)","speakers":["rivals","scout"],"log":["rivals.arrive"],"clock":"3:10"},
+   "rivals-coming": {"kind":"world","trigger":"the rival car turns in from Orbit Walk","speakers":["scout"],"log":["rivals.coming"],"clock":"2:35","note":"brief 067 (Aster, from Sky on 0.2.122: they should be coming in from somewhere when the chime comes): the car always turns in out of sight, so the beat and the Scout's line show wherever the cell stands (the card's sight is `always`, its `at` still points at the car), and the Scout speaks of what he hears, never of what he sees. The 2:46 drop and the 3:10 park stay in sight."},
+   "rivals-drop": {"kind":"world","trigger":"the rival car drops three by the cell's car","speakers":["rivals","scout"],"log":["rivals.drop"],"clock":"2:46"},
+@@ -808,6 +811,8 @@
+   "summon-refused": {"kind":"world","trigger":"the call is refused for a summon-* reason: the contact says why (Inez answers the Fixer; the guard, if he is within earshot)","speakers":["waitress","guard"],"note":"outcome is the refusal code; refused at no cost"},
+   "agent-down": {"kind":"world","trigger":"an agent is hit down (not the Enforcer: that is a fail)","speakers":["scout","fixer","tech","enforcer"],"log":["scout.down","fixer.down","tech.down"]},
+   "win": {"kind":"end","trigger":"the car leaves with Vale in it (Go)","speakers":["scout","fixer","tech","enforcer","councillor"],"log":["success"]},
++  "close-warning": {"kind":"world","trigger":"brief 080 (rulebook fight.close): Vale is in the cell's hands a minute before the close; his absence is noticed, once","speakers":["scout","fixer","security"],"log":["close.warning"]},
++  "enforcer-warning": {"kind":"world","trigger":"brief 080 (rulebook weapons.sheet.warnHealth): the Enforcer falls to 3 health, once, before he can drop","speakers":["enforcer","fixer"],"log":["enforcer.warning"]},
+   "fail": {"kind":"end","trigger":"the mission fails; outcome is the fail code","speakers":["fixer","enforcer","scout","guard","watcher","councillor","rivals","security","crowd"],"log":["fail."]},
+   "withdraw": {"kind":"end","trigger":"the cell withdraws, or the car leaves without Vale","speakers":["fixer"],"log":["withdraw","withdraw.car"],"verbs":["withdraw"]},
+   "cliffhanger": {"kind":"end","trigger":"the debrief: in the getaway car Vale names who else has a copy of the file (Story spine, ending beat; revised for the file story, Sky 2026-10-23). outcome named = Halcyon (pending Sky), unnamed = the safe version","speakers":["councillor","fixer"]},
+@@ -1422,6 +1427,13 @@
+   "pending": "cut",
+    "less.mood": "beat",
+    "less.sealed": "debrief",
++   "less.closedIn": "debrief",
++   "less.odds.chip": "label",
++   "less.odds.chipBare": "label",
++   "less.odds.sum": "alt",
++   "less.odds.limits": "alt",
++   "less.odds.streak": "alt",
++   "less.takedown": "label",
+    "less.alt.mood": "alt",
+    "less.failcam": "beat",
+    "less.done": "label",
+@@ -1665,10 +1677,10 @@
+    "examples": {
+     "knockout": "Knock out · 7 s · +4 · ▲1 · 👁 none",
+     "kill": "Kill · 4 s · +8 · ▲2 · 👁 none",
+-    "ask": "Ask · 25 s · +1 · ✗",
+-    "pay": "Pay · $90k · 50 s · +2 · ✓",
+-    "help": "Help · $40k · 50 s · +1 · ½",
+-    "pressure": "Pressure · 35 s · +3 · ✓",
++    "ask": "Ask · 20 s · +1 · ✗",
++    "pay": "Pay · $90k · 35 s · +2 · ✓",
++    "help": "Help · $40k · 35 s · +1 · ½",
++    "pressure": "Pressure · 25 s · +3 · ✓",
+     "fire": "Fire · +2/hit · ▲≥2",
+     "fire-camera": "Fire · +2 · ▲≥2",
+     "loop": "Loop · 20 s · +1 · 2:00",
+@@ -1688,7 +1700,7 @@
+    "cityBeats": 3
+   },
+   "objective": {
+-   "rule": "The Next Objective is one imperative with the nouns that have a marker in [brackets], coloured as their markers. It shows for `showSeconds` when the clock starts, on each change (take, bring, carry) and when the pill's next mark passes (the chime, Vale's exit), then fades; the close (8:30) is on the clock pill. It never explains and it is not a hint.",
++   "rule": "The Next Objective is one imperative with the nouns that have a marker in [brackets], coloured as their markers. It shows for `showSeconds` when the clock starts, on each change (take, bring, carry) and when the pill's next mark passes (the chime, Vale's exit), then fades; the close (7:30) is on the clock pill. It never explains and it is not a hint.",
+    "take": "Take [Vale] alive.",
+    "bring": "Bring [Vale] out.",
+    "carry": "Get [Vale] to the [car].",
+@@ -1717,6 +1729,7 @@
+     "vale-leaves": "Vale got away.",
+     "rivals-reach-vale": "Rivals took Vale.",
+     "sealed": "District sealed.",
++    "closed-in": "District closed in.",
+     "enforcer-down": "Enforcer down.",
+     "cell-down": "Whole cell down.",
+     "entry-seen-guard": "The guard saw you.",
+@@ -1837,6 +1850,33 @@
+     "ready": "Go was never given."
+    }
+   },
++  "closedIn": {
++   "rule": "Brief 080 (engine 0.37.0, rulebook fight.close): the fail card's sub-line when the close catches the cell with Vale in hand, by Game.Cause.Why. {by} is the first culprit, worded as less.failcam.by. The caption and tip are less.failcam's closed-in.",
++   "line": {
++    "no-driver": "Vale was aboard, but nobody in the car could drive.",
++    "car-held": "{by} held the car until the district closed in.",
++    "on-foot": "Vale was still on foot when the district closed in.",
++    "no-go": "Vale was aboard and the car was free, but nobody pressed Go."
++   }
++  },
++  "odds": {
++   "rule": "Brief 080 (Sky: real hit chances a player can read; design.html sections 3, 4): the fire preview. The chip reads FirePreview's Acc as a percent and the host's seconds to down; `chipBare` when there is no estimate. Alt shows `sum` from FirePreview.Sum (range, cover and move signed), `limits` under it, then the streak note: it leans the player's way on purpose, and the game says so (decision 2). Their numbers are the rulebook's.",
++   "chip": "{pct} % · down in about {s} s",
++   "chipBare": "{pct} %",
++   "sum": "{pct} % to hit: aim {aim}, range {range}, cover {cover}, movement {move}.",
++   "limits": "Never under 5 % or over 95 %.",
++   "streak": {
++    "head": "Streaks lean your way, on purpose",
++    "hits": "After 3 hits in a row on one agent, that shooter's next shot misses.",
++    "misses": "After 3 misses in a row on one target, the next hits, at odds of 20 % or more."
++   }
++  },
++  "takedown": {
++   "rule": "Brief 080 (TakedownQuote.Coming): someone not in range now who will arrive and notice before the act ends. `coming` is the card's Before row, {list} the `item`s joined by '; ': {who} is the name the card already gives a person, {s} seconds, {verb} what they would do ('?' until known). `short` is the same for one person at rest.",
++   "coming": "Coming: {list}. They would see it.",
++   "item": "{who} in {s} s: {verb}",
++   "short": "{who} · {s} s"
++  },
+   "hint": {
+    "rule": "The Next Step is `hints.items.*.short`: one imperative, one [noun] ringed in the street and coloured as its ring, no agent named (the agent's portrait pulses with the verb icon at the line's left). It shows for `showSeconds`, fades to its ring, returns once after `returnSeconds` more of idling if still undone, and never shows more than `maxShows` times in a run. It retires for good, per profile, once the player has given the verb it teaches; the long `line` is Alt and the relearn key.",
+    "showSeconds": 6,
+@@ -1909,6 +1949,12 @@
+     "getaway-lost": {
+      "wrecked": "The getaway car is wrecked."
+     },
++    "closed-in": {
++     "no-driver": "Nobody left who can drive.",
++     "car-held": "{by} held the car.",
++     "on-foot": "Vale was still on foot.",
++     "no-go": "Car ready, and nobody said Go."
++    },
+     "sealed": {
+      "response": "{by} raised the alarm.",
+      "confirmed": "{by} reported it.",
+@@ -1955,6 +2001,12 @@
+     "getaway-lost": {
+      "wrecked": "Keep fire off the getaway car."
+     },
++    "closed-in": {
++     "no-driver": "Keep one agent fit to drive.",
++     "car-held": "Clear the car before the close.",
++     "on-foot": "Get Vale aboard before the close.",
++     "no-go": "Press Go once Vale is aboard."
++    },
+     "sealed": {
+      "response": "Anyone who sees you can report.",
+      "confirmed": "A found body gets reported.",
+@@ -2409,6 +2461,14 @@
+   {"event":"fail","speaker":"crowd","outcome":"driver-shot","lines":["He shot the driver!","Somebody help him!"]},
+   {"event":"fail","speaker":"fixer","outcome":"getaway-lost","lines":["The car's wrecked. We can't get him out.","No car, no way out. It's over."]},
+   {"event":"fail","speaker":"scout","outcome":"getaway-lost","lines":["Our car's gone. Nowhere to run.","That was our way out. Burned."]},
++  {"event":"fail","speaker":"fixer","outcome":"closed-in","lines":["They've closed in. We held him too long.","Every street's shut. We ran out of time."]},
++  {"event":"fail","speaker":"scout","outcome":"closed-in","lines":["They're on every corner. It's over.","Too late. The whole district's here."]},
++  {"event":"fail","speaker":"security","outcome":"closed-in","lines":["Councillor located. Nobody moves.","Streets closed. Hand over the councillor."]},
++  {"event":"close-warning","speaker":"scout","lines":["They've missed Vale. We have a minute.","Word's out on Vale. One minute."]},
++  {"event":"close-warning","speaker":"fixer","lines":["They know he's gone. Get us out.","He's been missed. A minute, no more."]},
++  {"event":"close-warning","speaker":"security","lines":["Find the councillor. Close the streets.","Councillor Vale is missing. All units."]},
++  {"event":"enforcer-warning","speaker":"enforcer","lines":["I'm badly hit. Need cover.","Can't take much more."]},
++  {"event":"enforcer-warning","speaker":"fixer","lines":["He's badly hurt. Get him into cover.","Cover him. He won't last."]},
+   {"event":"withdraw","speaker":"fixer","lines":["Pull out. We try again.","Walk away. Slowly."]},
+   {"event":"cliffhanger","speaker":"councillor","outcome":"named","temperament":"loyal","pending":"pending Sky: Halcyon is a Story proposal (the-suborned-story-v0.1, ending beat). Revised for the file story (Sky 2026-10-23: the file replaces the clearance order). Ship `unnamed` until Sky decides.","lines":["It was never only my file. Halcyon has a copy.","Halcyon reads everything first. Security is second."]},
+   {"event":"cliffhanger","speaker":"councillor","outcome":"named","temperament":"mercenary","pending":"pending Sky: Halcyon is a Story proposal (the-suborned-story-v0.1, ending beat). Revised for the file story (Sky 2026-10-23: the file replaces the clearance order). Ship `unnamed` until Sky decides.","lines":["Get me safe and I'll name them. Halcyon.","Halcyon bought the first copy. Mine was second."]},
+diff --git a/contracts/missions/handover/text.schema.ts b/contracts/missions/handover/text.schema.ts
+index be3d4c7f..8e30d85e 100644
+--- a/contracts/missions/handover/text.schema.ts
++++ b/contracts/missions/handover/text.schema.ts
+@@ -63,7 +63,7 @@ export const DIALOGUE_VERBS = [...VERBS, 'turn', 'turn-view', 'step-target', 'ex
+ /** A target's reply: the rulebook's turn outcomes, and `suspicious` when the person reports the approach (rulebook `reports`). */
+ export const OUTCOMES = ['turned', 'refused', 'not-yet', 'kept', 'suspicious'] as const;
+ /** The engine's fail codes (Game.Fail), `withdraw` (an order) and `engine-error`. `cell-down` (engine 0.34.0, brief 067): every operative is down. */
+-export const FAILS = ['abduction-seen-camera', 'cell-down', 'driver-shot', 'enforcer-down', 'entry-seen-camera', 'entry-seen-guard',
++export const FAILS = ['abduction-seen-camera', 'cell-down', 'closed-in', 'driver-shot', 'enforcer-down', 'entry-seen-camera', 'entry-seen-guard',
+   'getaway-lost', 'rivals-reach-vale', 'sealed', 'vale-dead', 'vale-leaves', 'engine-error'] as const;
+ /** Fail codes the engine keeps only for rulebooks pinned before a change; live text words none of them. `entry-seen-patrol` (engine 0.34.2, Sky 2026-10-26,
+  *  GDD v0.28.0 section 07): the patrol seeing the Enter is a report (log entry.seen, entry.reported, entry.stopped), no fail. */
+@@ -313,6 +313,24 @@ export const Less = z.strictObject({
+     tip: z.strictObject({ held: Short(36), ready: Short(36), empty: Short(36) }).describe('what to do next time, by FailCause.Car; at most six words, the fail camera\'s tip form'),
+     story: z.strictObject({ held: Line, ready: Line }).describe('the debrief\'s extra route line after "Vale reached the getaway car.", by FailCause.Car; none when the car was empty'),
+   }),
++  closedIn: z.strictObject({
++    rule: z.string().min(1),
++    line: z.strictObject({ 'no-driver': Line, 'car-held': Line, 'on-foot': Line, 'no-go': Line }).describe('brief 080 (engine 0.37.0): the fail card\'s sub-line for closed-in, by FailCause.Why; {by} as less.failcam.by'),
++  }),
++  odds: z.strictObject({
++    rule: z.string().min(1),
++    chip: Short(32).describe('brief 080: the fire preview\'s chip: {pct} the hit chance, {s} rough seconds to down'),
++    chipBare: Short(12).describe('the chip with no estimate of the time to down: {pct}'),
++    sum: Line.describe('Alt: the sum behind the chance: {pct} {aim} {range} {cover} {move}, the last three signed'),
++    limits: Line.describe('Alt: the limits of a chance (rulebook sheet-min, sheet-max)'),
++    streak: z.strictObject({ head: Short(40), hits: Line, misses: Line }).describe('the streak note, said openly (Sky on design.html, decision 2); rulebook sheet-streak-hits, -misses, -floor'),
++  }),
++  takedown: z.strictObject({
++    rule: z.string().min(1),
++    coming: Line.describe('brief 080 (TakedownQuote.Coming): the card\'s row for who will arrive and notice before the act ends: {list} of `item`s'),
++    item: Short(36).describe('one person coming: {who} {s} {verb}'),
++    short: Short(24).describe('one person coming, at rest: {who} {s}'),
++  }),
+   fates: z.record(z.string(), z.enum(FATES)).describe('every player-facing group of this file by its path, with where it goes (the inventory in briefs/014/fable-less.md, as data)'),
+   hint: z.strictObject({
+     rule: z.string().min(1),
+diff --git a/contracts/missions/handover/text.test.ts b/contracts/missions/handover/text.test.ts
+index 3eb23828..0f80d75a 100644
+--- a/contracts/missions/handover/text.test.ts
++++ b/contracts/missions/handover/text.test.ts
+@@ -93,6 +93,9 @@ const push = (path: string, text: string, spoken = false, max?: number) => strin
+     for (const k of ['footer', 'footerHurt', 'footerBare'] as const) push(`less.mood.${k}`, L.mood[k], false, 44);
+     for (const k of ['likely', 'hurt'] as const) push(`less.mood.${k}`, L.mood[k], false, 10);
+     for (const [k, x] of Object.entries(L.sealed.line)) push(`less.sealed.line.${k}`, x);
++    for (const [k, x] of Object.entries(L.closedIn.line)) push(`less.closedIn.line.${k}`, x);
++    push('less.odds.chip', L.odds.chip.replace('{pct}', '95').replace('{s}', '120'), false, 32); push('less.odds.chipBare', L.odds.chipBare.replace('{pct}', '95'), false, 12); push('less.odds.sum', L.odds.sum.replace('{pct}', '95').replace('{aim}', '75').replace('{range}', '+30').replace('{cover}', '-45').replace('{move}', '-55')); push('less.odds.limits', L.odds.limits); push('less.odds.streak.head', L.odds.streak.head, false, 40); push('less.odds.streak.hits', L.odds.streak.hits); push('less.odds.streak.misses', L.odds.streak.misses);
++    push('less.takedown.coming', L.takedown.coming); push('less.takedown.item', L.takedown.item.replace('{s}', '12').replace('{verb}', 'report'), false, 36); push('less.takedown.short', L.takedown.short.replace('{s}', '12'), false, 24);
+     for (const [k, x] of Object.entries(L.sealed.tip)) push(`less.sealed.tip.${k}`, x, false, 36);
+     for (const [k, x] of Object.entries(L.sealed.story)) push(`less.sealed.story.${k}`, x);
+     for (const [g, m] of Object.entries({ need: L.intel.need, temperament: L.intel.temperament, secret: L.intel.secret, verb: L.intel.verb })) for (const [k, x] of Object.entries(m)) push(`less.intel.${g}.${k}`, x.replace('{name}', 'Inez'), false, 20); }
+@@ -269,7 +272,7 @@ describe('times and numbers agree with the mission', () => {
+       const hint = t.briefing.hints[id as 'front-door' | 'pickup'];
+       expect(hint, id).toMatch(/^[A-Z][a-z]+( [a-z]+)?: /); expect(sentences(hint.split(': ', 2)[1]!) + sentences(w.line), id).toBeLessThanOrEqual(2);
+     }
+-    expect(p.clock).toEqual(['2:35', '5:30', '5:40', '5:50', '6:10']); // Sky, brief 070: five stations
++    expect(p.clock).toEqual(['2:35', '4:30', '4:40', '4:50', '5:10']); // Sky, brief 070: five stations
+     const marks = t.briefing.timeline.map((x) => x.at); expect(p.clock.every((a) => marks.includes(a))).toBe(true);
+     expect([...p.clock].sort((a, b) => marks.indexOf(a) - marks.indexOf(b))).toEqual(p.clock);
+     expect(Object.keys(p.cell).sort()).toEqual([...AGENTS].sort());
+@@ -283,7 +286,7 @@ describe('times and numbers agree with the mission', () => {
+     expect([h.where, h.clock, h.heat]).toEqual(['Where', 'The clock', 'Heat']);
+     for (const x of [...Object.values(h.ways), h.where, h.clock, h.heat]) { expect(x.split(/\s+/).length, x).toBeLessThanOrEqual(4); expect(x, x).not.toMatch(/[.!?:]/); }
+   });
+-  test('the briefing page\'s words (Glyph N7, N11, N12 on 0.2.130): no stranded word, the pickup still says where, the 6:10 station is one fragment', () => {
++  test('the briefing page\'s words (Glyph N7, N11, N12 on 0.2.130): no stranded word, the pickup still says where, the 5:10 station is one fragment', () => {
+     const p = t.briefing.page; const m = json('contracts/missions/handover/mission.json') as { points: { id: string }[]; destinations: Record<string, unknown> };
+     expect(p.ways['front-door'].line).toBe('Turn her to call him off and loop his camera.'); // Aster 2026-10-26: the page cut to 220 words
+     expect(p.cell.scout).toMatch(/false tip/); expect(p.cell.enforcer).toMatch(/Only he can carry him/); // the glossary's verb; the carry rule stays
+@@ -291,18 +294,18 @@ describe('times and numbers agree with the mission', () => {
+     expect(p.captions).toEqual({ 'service-bay': 'Service bay' }); // Glyph R6 on 0.2.133: still 4 and its legend; within the page's 5-word caption cap
+     for (const k of Object.keys(p.captions ?? {})) expect(m.points.some((x) => x.id === k) || k in m.destinations, k).toBe(true);
+     expect(p.ways.pickup.line).toMatch(/service bay/); expect(p.captions!['service-bay']).toMatch(/service bay$/i);
+-    const at = t.briefing.timeline.find((x) => x.at === '6:10')!.label;
++    const at = t.briefing.timeline.find((x) => x.at === '5:10')!.label;
+     expect(at).toBe('Vale at his car; unless turned, the driver leaves'); expect(at).not.toMatch(/\.\s/); // play's timeline keeps the true label
+-    expect(p.stations).toEqual({ '6:10': "Vale's car leaves" }); // Glyph R1 on 0.2.133: the page's station; 5:40 carries the condition
++    expect(p.stations).toEqual({ '5:10': "Vale's car leaves" }); // Glyph R1 on 0.2.133: the page's station; 4:40 carries the condition
+     for (const k of Object.keys(p.stations ?? {})) expect(p.clock, k).toContain(k);
+-    expect(t.briefing.timeline.find((x) => x.at === '5:40')!.label).toMatch(/turn the driver/);
++    expect(t.briefing.timeline.find((x) => x.at === '4:40')!.label).toMatch(/turn the driver/);
+   });
+-  test('the clock is true whether or not the driver is turned (brief 070): unturned he leaves at 6:10, turned he waits until 8:30', () => {
+-    const c = t.briefing.clock.line; expect(c).toMatch(/6:10/); expect(c).toMatch(/8:30/); expect(c).toMatch(/turn/);
+-    expect(t.briefing.card.at(-1)).toMatch(/6:10.*8:30.*turn/);
++  test('the clock is true whether or not the driver is turned (brief 070): unturned he leaves at 5:10, turned he waits until 7:30', () => {
++    const c = t.briefing.clock.line; expect(c).toMatch(/5:10/); expect(c).toMatch(/7:30/); expect(c).toMatch(/turn/);
++    expect(t.briefing.card.at(-1)).toMatch(/5:10.*7:30.*turn/);
+     const at = (m: string) => t.briefing.timeline.find((x) => x.at === m)!.label;
+-    expect(at('6:10')).toMatch(/[Uu]nless turned/); expect(at('8:30')).toMatch(/turned driver/);
+-    expect(JSON.stringify(t.briefing)).not.toMatch(/At 8:30 Vale's driver|the driver drives Vale away/);
++    expect(at('5:10')).toMatch(/[Uu]nless turned/); expect(at('7:30')).toMatch(/turned driver/);
++    expect(JSON.stringify(t.briefing)).not.toMatch(/At 7:30 Vale's driver|the driver drives Vale away/);
+   });
+   test('the hints name the two known approaches', () => {
+     expect(t.briefing.hints['front-door']).toMatch(/Inez/);
+@@ -1080,11 +1083,11 @@ describe('brief 014: the short forms, the price line, the beats', () => {
+     }
+     expect(bad).toEqual([]);
+   });
+-  test('the beats are few: at most ten distinct lines in the feed, and the ones Sky named are there', () => {
++  test('the beats are few: at most eleven distinct lines in the feed, and the ones Sky named are there', () => {
+     const lines = new Set<string>();
+     for (const c of Object.values(t.cards.items)) for (const x of typeof c.beat === 'string' ? [c.beat] : Object.values(c.beat ?? {})) lines.add(x);
+     for (const sc of t.scenes.items) if (sc.beat) lines.add(sc.beat);
+-    expect(lines.size).toBeLessThanOrEqual(10);
++    expect(lines.size).toBeLessThanOrEqual(11); // brief 080: ten, plus "Vale's been missed.", the close's only fair warning
+     for (const x of ['Inez called the guard.', 'Body found.', 'Police coming.']) expect(lines.has(x), x).toBe(true);
+     expect(L.feed.maxOnScreen).toBeLessThanOrEqual(2);
+   });
+@@ -1321,8 +1324,8 @@ describe('brief 014: the short forms, the price line, the beats', () => {
+       expect(ex.length, ex).toBeLessThanOrEqual(40);
+     }
+     expect(L.price.examples.knockout).toBe('Knock out · 7 s · +4 · ▲1 · 👁 none');
+-    expect(L.price.examples.pay).toBe('Pay · $90k · 50 s · +2 · ✓');
+-    expect(L.price.examples.help).toBe('Help · $40k · 50 s · +1 · ½');
++    expect(L.price.examples.pay).toBe('Pay · $90k · 35 s · +2 · ✓');
++    expect(L.price.examples.help).toBe('Help · $40k · 35 s · +1 · ½');
+     expect(L.price.fields.usd.shows).toContain('$90k');
+     expect(L.price.fields.usd.shows).toContain('$40k–60k');
+   });
+@@ -1342,7 +1345,7 @@ describe('brief 014: the short forms, the price line, the beats', () => {
+     const ways: Record<string, string[]> = {
+       'entry-seen-guard': ['seen'], 'entry-seen-camera': ['seen'], 'abduction-seen-camera': ['seen'],
+       'rivals-reach-vale': ['beat-to-pickup', 'downed-enforcer', 'reached-at-close', 'reached-car'], 'vale-leaves': ['too-late'], 'vale-dead': ['killed', 'shot'],
+-      'enforcer-down': ['shot'], 'cell-down': ['shot'], 'driver-shot': ['shot'], 'getaway-lost': ['wrecked'], 'sealed': ['response', 'confirmed', 'loud-fight', 'desk', 'heard'], 'engine-error': ['error'] };
++      'enforcer-down': ['shot'], 'cell-down': ['shot'], 'driver-shot': ['shot'], 'getaway-lost': ['wrecked'], 'sealed': ['response', 'confirmed', 'loud-fight', 'desk', 'heard'], 'closed-in': ['no-driver', 'car-held', 'on-foot', 'no-go'], 'engine-error': ['error'] };
+     expect(Object.keys(F.caption).sort()).toEqual(Object.keys(ways).sort());
+     for (const [f, ws] of Object.entries(ways)) expect(Object.keys(F.caption[f]!).sort(), f).toEqual([...ws].sort());
+     for (const f of FAILS) expect(f in F.caption, f).toBe(true);
+@@ -1350,7 +1353,7 @@ describe('brief 014: the short forms, the price line, the beats', () => {
+     for (const [f, ws] of Object.entries(ways)) if (f !== 'engine-error') expect(Object.keys(F.tip[f]!).sort(), f).toEqual([...ws].sort());
+     expect('engine-error' in F.tip).toBe(false);
+     // words once filled (the HUD line limit is six): {by} is two words ("The guard") except where a camera or a police officer can be the culprit (three)
+-    const three = new Set(['entry-seen-camera.seen', 'abduction-seen-camera.seen', 'sealed.response', 'sealed.confirmed', 'enforcer-down.shot', 'cell-down.shot', 'driver-shot.shot', 'vale-dead.shot']);
++    const three = new Set(['entry-seen-camera.seen', 'abduction-seen-camera.seen', 'sealed.response', 'sealed.confirmed', 'enforcer-down.shot', 'cell-down.shot', 'driver-shot.shot', 'vale-dead.shot', 'closed-in.car-held']);
+     const bad: string[] = [];
+     for (const [f, m] of Object.entries(F.caption)) for (const [w, x] of Object.entries(m)) {
+       const filled = x.replace(/\{by\}/g, three.has(`${f}.${w}`) ? 'The entrance camera' : 'The guard').replace(/\{agent\}/g, 'the Enforcer');
+@@ -1382,7 +1385,7 @@ describe('brief 014: the short forms, the price line, the beats', () => {
+     for (const [v, a] of Object.entries(t.actions)) expect(a.does.length, v).toBeGreaterThan(10);
+     for (const l of Object.values(t.locks)) expect(l.line.length).toBeGreaterThan(l.short.length);
+     for (const h of Object.values(t.hints.items)) expect(h.line.length).toBeGreaterThan(h.short.length);
+-    expect(Object.keys(t.cards.items).length).toBe(80); // 58 + camera.cut and camera.cut-reported (brief 058, engine 0.31.0), less car.blocks (brief 059, engine 0.32.0: the driver's Call is retired, Motive M059-6.1), plus the eleven worded codes of the rival car and Vale's car (rivals.coming, drop, follow-car, follows, back, warned, no-warning, at-vale; car.parks, car.blocked; board.missed), plus the five of the rival crew as people and the floor (rivals.recalled, wiped, see-takedown, wakes, frees; engine 0.33.0), plus the two of the held car (rivals.for-car, rivals.back-to-cover; engine 0.34.0, which the host already makes fallback cards of), plus the three of the patrol's report of the Enter (entry.seen, entry.reported, entry.stopped; engine 0.34.2)
++    expect(Object.keys(t.cards.items).length).toBe(82); // 58 + camera.cut and camera.cut-reported (brief 058, engine 0.31.0), less car.blocks (brief 059, engine 0.32.0: the driver's Call is retired, Motive M059-6.1), plus the eleven worded codes of the rival car and Vale's car (rivals.coming, drop, follow-car, follows, back, warned, no-warning, at-vale; car.parks, car.blocked; board.missed), plus the five of the rival crew as people and the floor (rivals.recalled, wiped, see-takedown, wakes, frees; engine 0.33.0), plus the two of the held car (rivals.for-car, rivals.back-to-cover; engine 0.34.0, which the host already makes fallback cards of), plus the three of the patrol's report of the Enter (entry.seen, entry.reported, entry.stopped; engine 0.34.2)
+     expect(t.briefing.card.length).toBeGreaterThanOrEqual(3);
+     expect(t.toasts['run-seen']!.line).toMatch(/noticed/);
+   });
+@@ -1622,7 +1625,7 @@ describe('briefs 058, 059, 062: cameras, the pickup and rivals, the briefing', (
+     for (const [c, x] of Object.entries(pe.cards)) live[c] = x as never;
+     for (const c of Object.values(live)) for (const x of typeof c.beat === 'string' ? [c.beat] : Object.values(c.beat ?? {})) beats.add(x);
+     for (const sc of t.scenes.items) if (sc.beat && sc.event !== 'rivals-arrive') beats.add(sc.beat); // the rivals-arrive scene loses its beat when rivals.coming lands
+-    expect(beats.size).toBeLessThanOrEqual(10);
++    expect(beats.size).toBeLessThanOrEqual(11);
+     // the pending short forms use no gendered word
+     for (const [c, x] of Object.entries(pe.locks)) expect(x.short, c).not.toMatch(GENDER);
+     for (const [c, x] of Object.entries(pe.cards)) if (typeof x.beat === 'string') expect(x.beat, c).not.toMatch(GENDER);
+@@ -1926,3 +1929,34 @@ describe('engine 0.35.1: the four moves parked, the fight-on line silent', () =>
+     expect(spoken.filter((c) => c.startsWith('fire.free'))).toEqual([]);
+   });
+ });
++
++describe('brief 080: the seeded game\'s words', () => {
++  const v = (json('contracts/rules/rulebook.json') as { values: Record<string, { v: number }> }).values;
++  const L = t.less;
++  test('the streak note and the limits say the rulebook\'s numbers, and say the lean aloud', () => {
++    expect(L.odds.limits).toContain(`${v['sheet-min']!.v} %`); expect(L.odds.limits).toContain(`${v['sheet-max']!.v} %`);
++    expect(L.odds.streak.hits).toContain(`After ${v['sheet-streak-hits']!.v} hits`);
++    expect(L.odds.streak.misses).toContain(`After ${v['sheet-streak-misses']!.v} misses`); expect(L.odds.streak.misses).toContain(`${v['sheet-streak-floor']!.v} %`);
++    expect(L.odds.streak.head).toMatch(/your way/);
++  });
++  test('the fire chip and the sum fit once filled, and name all four parts', () => {
++    expect(L.odds.chip.replace('{pct}', '40').replace('{s}', '30')).toBe('40 % · down in about 30 s');
++    const sum = L.odds.sum.replace('{pct}', '95').replace('{aim}', '75').replace('{range}', '+30').replace('{cover}', '-45').replace('{move}', '-55');
++    expect(sum.length).toBeLessThanOrEqual(MAX_LINE); for (const w of ['aim', 'range', 'cover', 'movement']) expect(sum).toContain(w);
++  });
++  test('the takedown card\'s Coming row names who and when', () => {
++    const line = L.takedown.coming.replace('{list}', L.takedown.item.replace('{who}', 'a passer-by').replace('{s}', '12').replace('{verb}', 'report'));
++    expect(line).toBe('Coming: a passer-by in 12 s: report. They would see it.');
++    expect(line.length).toBeLessThanOrEqual(MAX_LINE);
++  });
++  test('closed-in has a card line, a caption and a tip for every why the engine gives', () => {
++    const src = simAll().join('\n'); const whys = ['no-driver', 'car-held', 'on-foot', 'no-go'] as const;
++    for (const w of whys) { if (haveSim) expect(src, w).toContain(`"${w}"`); expect(L.closedIn.line[w], w).toBeTruthy(); expect(L.failcam.caption['closed-in']![w], w).toBeTruthy(); expect(L.failcam.tip['closed-in']![w], w).toBeTruthy(); }
++  });
++  test('the two warnings have a card and spoken lines; the close warning is a beat', () => {
++    for (const [code, ev, who, fate] of [['close.warning', 'close-warning', 'fixer', 'beat'], ['enforcer.warning', 'enforcer-warning', 'enforcer', 'icon']] as const) { // the Enforcer's is the roster flash and his line, so the feed's beats stay few
++      const c = t.cards.items[code]!; expect(c.fate).toBe(fate); expect(JSON.stringify(c.result)).toContain('{n}');
++      expect(t.events[ev]!.log).toEqual([code]); expect(lookup(t, { event: ev, speaker: who }), ev).toBeTruthy();
++    }
++  });
++});
+diff --git a/tools/missions/handover/brief.test.ts b/tools/missions/handover/brief.test.ts
+index 1940b814..ce2ab873 100644
+--- a/tools/missions/handover/brief.test.ts
++++ b/tools/missions/handover/brief.test.ts
+@@ -14,10 +14,10 @@ describe('brief.json against mission.json', () => {
+   test('the shipped brief passes', () => {
+     expect(checkBrief(brief, mission)).toEqual([]);
+   });
+-  test('target.at is the official entrance Vale leaves by (timeline 5:50), not the guard\'s public door', () => {
++  test('target.at is the official entrance Vale leaves by (timeline 4:50), not the guard\'s public door', () => {
+     expect(brief.target).toEqual({ role: 'councillor', at: 'd:Official entrance' });
+     expect(mission.destinations!.some((d) => d.name === 'Official entrance')).toBe(true);
+-    expect((mission.timeline as { at: string; what: string }[]).find((t) => t.at === '5:50')?.what).toMatch(/official door/);
++    expect((mission.timeline as { at: string; what: string }[]).find((t) => t.at === '4:50')?.what).toMatch(/official door/);
+   });
+ });
+ 

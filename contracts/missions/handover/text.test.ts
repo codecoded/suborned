@@ -93,6 +93,9 @@ const push = (path: string, text: string, spoken = false, max?: number) => strin
     for (const k of ['footer', 'footerHurt', 'footerBare'] as const) push(`less.mood.${k}`, L.mood[k], false, 44);
     for (const k of ['likely', 'hurt'] as const) push(`less.mood.${k}`, L.mood[k], false, 10);
     for (const [k, x] of Object.entries(L.sealed.line)) push(`less.sealed.line.${k}`, x);
+    for (const [k, x] of Object.entries(L.closedIn.line)) push(`less.closedIn.line.${k}`, x);
+    push('less.odds.chip', L.odds.chip.replace('{pct}', '95').replace('{s}', '120'), false, 32); push('less.odds.chipBare', L.odds.chipBare.replace('{pct}', '95'), false, 12); push('less.odds.sum', L.odds.sum.replace('{pct}', '95').replace('{aim}', '75').replace('{range}', '+30').replace('{cover}', '-45').replace('{move}', '-55')); push('less.odds.limits', L.odds.limits); push('less.odds.streak.head', L.odds.streak.head, false, 40); push('less.odds.streak.hits', L.odds.streak.hits); push('less.odds.streak.misses', L.odds.streak.misses);
+    push('less.takedown.coming', L.takedown.coming); push('less.takedown.item', L.takedown.item.replace('{s}', '12').replace('{verb}', 'report'), false, 36); push('less.takedown.short', L.takedown.short.replace('{s}', '12'), false, 24);
     for (const [k, x] of Object.entries(L.sealed.tip)) push(`less.sealed.tip.${k}`, x, false, 36);
     for (const [k, x] of Object.entries(L.sealed.story)) push(`less.sealed.story.${k}`, x);
     for (const [g, m] of Object.entries({ need: L.intel.need, temperament: L.intel.temperament, secret: L.intel.secret, verb: L.intel.verb })) for (const [k, x] of Object.entries(m)) push(`less.intel.${g}.${k}`, x.replace('{name}', 'Inez'), false, 20); }
@@ -269,7 +272,7 @@ describe('times and numbers agree with the mission', () => {
       const hint = t.briefing.hints[id as 'front-door' | 'pickup'];
       expect(hint, id).toMatch(/^[A-Z][a-z]+( [a-z]+)?: /); expect(sentences(hint.split(': ', 2)[1]!) + sentences(w.line), id).toBeLessThanOrEqual(2);
     }
-    expect(p.clock).toEqual(['2:35', '5:30', '5:40', '5:50', '6:10']); // Sky, brief 070: five stations
+    expect(p.clock).toEqual(['2:35', '4:30', '4:40', '4:50', '5:10']); // Sky, brief 070: five stations
     const marks = t.briefing.timeline.map((x) => x.at); expect(p.clock.every((a) => marks.includes(a))).toBe(true);
     expect([...p.clock].sort((a, b) => marks.indexOf(a) - marks.indexOf(b))).toEqual(p.clock);
     expect(Object.keys(p.cell).sort()).toEqual([...AGENTS].sort());
@@ -283,7 +286,7 @@ describe('times and numbers agree with the mission', () => {
     expect([h.where, h.clock, h.heat]).toEqual(['Where', 'The clock', 'Heat']);
     for (const x of [...Object.values(h.ways), h.where, h.clock, h.heat]) { expect(x.split(/\s+/).length, x).toBeLessThanOrEqual(4); expect(x, x).not.toMatch(/[.!?:]/); }
   });
-  test('the briefing page\'s words (Glyph N7, N11, N12 on 0.2.130): no stranded word, the pickup still says where, the 6:10 station is one fragment', () => {
+  test('the briefing page\'s words (Glyph N7, N11, N12 on 0.2.130): no stranded word, the pickup still says where, the 5:10 station is one fragment', () => {
     const p = t.briefing.page; const m = json('contracts/missions/handover/mission.json') as { points: { id: string }[]; destinations: Record<string, unknown> };
     expect(p.ways['front-door'].line).toBe('Turn her to call him off and loop his camera.'); // Aster 2026-10-26: the page cut to 220 words
     expect(p.cell.scout).toMatch(/false tip/); expect(p.cell.enforcer).toMatch(/Only he can carry him/); // the glossary's verb; the carry rule stays
@@ -291,18 +294,18 @@ describe('times and numbers agree with the mission', () => {
     expect(p.captions).toEqual({ 'service-bay': 'Service bay' }); // Glyph R6 on 0.2.133: still 4 and its legend; within the page's 5-word caption cap
     for (const k of Object.keys(p.captions ?? {})) expect(m.points.some((x) => x.id === k) || k in m.destinations, k).toBe(true);
     expect(p.ways.pickup.line).toMatch(/service bay/); expect(p.captions!['service-bay']).toMatch(/service bay$/i);
-    const at = t.briefing.timeline.find((x) => x.at === '6:10')!.label;
+    const at = t.briefing.timeline.find((x) => x.at === '5:10')!.label;
     expect(at).toBe('Vale at his car; unless turned, the driver leaves'); expect(at).not.toMatch(/\.\s/); // play's timeline keeps the true label
-    expect(p.stations).toEqual({ '6:10': "Vale's car leaves" }); // Glyph R1 on 0.2.133: the page's station; 5:40 carries the condition
+    expect(p.stations).toEqual({ '5:10': "Vale's car leaves" }); // Glyph R1 on 0.2.133: the page's station; 4:40 carries the condition
     for (const k of Object.keys(p.stations ?? {})) expect(p.clock, k).toContain(k);
-    expect(t.briefing.timeline.find((x) => x.at === '5:40')!.label).toMatch(/turn the driver/);
+    expect(t.briefing.timeline.find((x) => x.at === '4:40')!.label).toMatch(/turn the driver/);
   });
-  test('the clock is true whether or not the driver is turned (brief 070): unturned he leaves at 6:10, turned he waits until 8:30', () => {
-    const c = t.briefing.clock.line; expect(c).toMatch(/6:10/); expect(c).toMatch(/8:30/); expect(c).toMatch(/turn/);
-    expect(t.briefing.card.at(-1)).toMatch(/6:10.*8:30.*turn/);
+  test('the clock is true whether or not the driver is turned (brief 070): unturned he leaves at 5:10, turned he waits until 7:30', () => {
+    const c = t.briefing.clock.line; expect(c).toMatch(/5:10/); expect(c).toMatch(/7:30/); expect(c).toMatch(/turn/);
+    expect(t.briefing.card.at(-1)).toMatch(/5:10.*7:30.*turn/);
     const at = (m: string) => t.briefing.timeline.find((x) => x.at === m)!.label;
-    expect(at('6:10')).toMatch(/[Uu]nless turned/); expect(at('8:30')).toMatch(/turned driver/);
-    expect(JSON.stringify(t.briefing)).not.toMatch(/At 8:30 Vale's driver|the driver drives Vale away/);
+    expect(at('5:10')).toMatch(/[Uu]nless turned/); expect(at('7:30')).toMatch(/turned driver/);
+    expect(JSON.stringify(t.briefing)).not.toMatch(/At 7:30 Vale's driver|the driver drives Vale away/);
   });
   test('the hints name the two known approaches', () => {
     expect(t.briefing.hints['front-door']).toMatch(/Inez/);
@@ -1080,11 +1083,11 @@ describe('brief 014: the short forms, the price line, the beats', () => {
     }
     expect(bad).toEqual([]);
   });
-  test('the beats are few: at most ten distinct lines in the feed, and the ones Sky named are there', () => {
+  test('the beats are few: at most eleven distinct lines in the feed, and the ones Sky named are there', () => {
     const lines = new Set<string>();
     for (const c of Object.values(t.cards.items)) for (const x of typeof c.beat === 'string' ? [c.beat] : Object.values(c.beat ?? {})) lines.add(x);
     for (const sc of t.scenes.items) if (sc.beat) lines.add(sc.beat);
-    expect(lines.size).toBeLessThanOrEqual(10);
+    expect(lines.size).toBeLessThanOrEqual(11); // brief 080: ten, plus "Vale's been missed.", the close's only fair warning
     for (const x of ['Inez called the guard.', 'Body found.', 'Police coming.']) expect(lines.has(x), x).toBe(true);
     expect(L.feed.maxOnScreen).toBeLessThanOrEqual(2);
   });
@@ -1321,8 +1324,8 @@ describe('brief 014: the short forms, the price line, the beats', () => {
       expect(ex.length, ex).toBeLessThanOrEqual(40);
     }
     expect(L.price.examples.knockout).toBe('Knock out · 7 s · +4 · ▲1 · 👁 none');
-    expect(L.price.examples.pay).toBe('Pay · $90k · 50 s · +2 · ✓');
-    expect(L.price.examples.help).toBe('Help · $40k · 50 s · +1 · ½');
+    expect(L.price.examples.pay).toBe('Pay · $90k · 35 s · +2 · ✓');
+    expect(L.price.examples.help).toBe('Help · $40k · 35 s · +1 · ½');
     expect(L.price.fields.usd.shows).toContain('$90k');
     expect(L.price.fields.usd.shows).toContain('$40k–60k');
   });
@@ -1342,7 +1345,7 @@ describe('brief 014: the short forms, the price line, the beats', () => {
     const ways: Record<string, string[]> = {
       'entry-seen-guard': ['seen'], 'entry-seen-camera': ['seen'], 'abduction-seen-camera': ['seen'],
       'rivals-reach-vale': ['beat-to-pickup', 'downed-enforcer', 'reached-at-close', 'reached-car'], 'vale-leaves': ['too-late'], 'vale-dead': ['killed', 'shot'],
-      'enforcer-down': ['shot'], 'cell-down': ['shot'], 'driver-shot': ['shot'], 'getaway-lost': ['wrecked'], 'sealed': ['response', 'confirmed', 'loud-fight', 'desk', 'heard'], 'engine-error': ['error'] };
+      'enforcer-down': ['shot'], 'cell-down': ['shot'], 'driver-shot': ['shot'], 'getaway-lost': ['wrecked'], 'sealed': ['response', 'confirmed', 'loud-fight', 'desk', 'heard'], 'closed-in': ['no-driver', 'car-held', 'on-foot', 'no-go'], 'engine-error': ['error'] };
     expect(Object.keys(F.caption).sort()).toEqual(Object.keys(ways).sort());
     for (const [f, ws] of Object.entries(ways)) expect(Object.keys(F.caption[f]!).sort(), f).toEqual([...ws].sort());
     for (const f of FAILS) expect(f in F.caption, f).toBe(true);
@@ -1350,7 +1353,7 @@ describe('brief 014: the short forms, the price line, the beats', () => {
     for (const [f, ws] of Object.entries(ways)) if (f !== 'engine-error') expect(Object.keys(F.tip[f]!).sort(), f).toEqual([...ws].sort());
     expect('engine-error' in F.tip).toBe(false);
     // words once filled (the HUD line limit is six): {by} is two words ("The guard") except where a camera or a police officer can be the culprit (three)
-    const three = new Set(['entry-seen-camera.seen', 'abduction-seen-camera.seen', 'sealed.response', 'sealed.confirmed', 'enforcer-down.shot', 'cell-down.shot', 'driver-shot.shot', 'vale-dead.shot']);
+    const three = new Set(['entry-seen-camera.seen', 'abduction-seen-camera.seen', 'sealed.response', 'sealed.confirmed', 'enforcer-down.shot', 'cell-down.shot', 'driver-shot.shot', 'vale-dead.shot', 'closed-in.car-held']);
     const bad: string[] = [];
     for (const [f, m] of Object.entries(F.caption)) for (const [w, x] of Object.entries(m)) {
       const filled = x.replace(/\{by\}/g, three.has(`${f}.${w}`) ? 'The entrance camera' : 'The guard').replace(/\{agent\}/g, 'the Enforcer');
@@ -1382,7 +1385,7 @@ describe('brief 014: the short forms, the price line, the beats', () => {
     for (const [v, a] of Object.entries(t.actions)) expect(a.does.length, v).toBeGreaterThan(10);
     for (const l of Object.values(t.locks)) expect(l.line.length).toBeGreaterThan(l.short.length);
     for (const h of Object.values(t.hints.items)) expect(h.line.length).toBeGreaterThan(h.short.length);
-    expect(Object.keys(t.cards.items).length).toBe(80); // 58 + camera.cut and camera.cut-reported (brief 058, engine 0.31.0), less car.blocks (brief 059, engine 0.32.0: the driver's Call is retired, Motive M059-6.1), plus the eleven worded codes of the rival car and Vale's car (rivals.coming, drop, follow-car, follows, back, warned, no-warning, at-vale; car.parks, car.blocked; board.missed), plus the five of the rival crew as people and the floor (rivals.recalled, wiped, see-takedown, wakes, frees; engine 0.33.0), plus the two of the held car (rivals.for-car, rivals.back-to-cover; engine 0.34.0, which the host already makes fallback cards of), plus the three of the patrol's report of the Enter (entry.seen, entry.reported, entry.stopped; engine 0.34.2)
+    expect(Object.keys(t.cards.items).length).toBe(82); // 58 + camera.cut and camera.cut-reported (brief 058, engine 0.31.0), less car.blocks (brief 059, engine 0.32.0: the driver's Call is retired, Motive M059-6.1), plus the eleven worded codes of the rival car and Vale's car (rivals.coming, drop, follow-car, follows, back, warned, no-warning, at-vale; car.parks, car.blocked; board.missed), plus the five of the rival crew as people and the floor (rivals.recalled, wiped, see-takedown, wakes, frees; engine 0.33.0), plus the two of the held car (rivals.for-car, rivals.back-to-cover; engine 0.34.0, which the host already makes fallback cards of), plus the three of the patrol's report of the Enter (entry.seen, entry.reported, entry.stopped; engine 0.34.2)
     expect(t.briefing.card.length).toBeGreaterThanOrEqual(3);
     expect(t.toasts['run-seen']!.line).toMatch(/noticed/);
   });
@@ -1622,7 +1625,7 @@ describe('briefs 058, 059, 062: cameras, the pickup and rivals, the briefing', (
     for (const [c, x] of Object.entries(pe.cards)) live[c] = x as never;
     for (const c of Object.values(live)) for (const x of typeof c.beat === 'string' ? [c.beat] : Object.values(c.beat ?? {})) beats.add(x);
     for (const sc of t.scenes.items) if (sc.beat && sc.event !== 'rivals-arrive') beats.add(sc.beat); // the rivals-arrive scene loses its beat when rivals.coming lands
-    expect(beats.size).toBeLessThanOrEqual(10);
+    expect(beats.size).toBeLessThanOrEqual(11);
     // the pending short forms use no gendered word
     for (const [c, x] of Object.entries(pe.locks)) expect(x.short, c).not.toMatch(GENDER);
     for (const [c, x] of Object.entries(pe.cards)) if (typeof x.beat === 'string') expect(x.beat, c).not.toMatch(GENDER);
@@ -1924,5 +1927,36 @@ describe('engine 0.35.1: the four moves parked, the fight-on line silent', () =>
     expect(t.silentLogs['fire.free-on']).toMatch(/once per fight/);
     const spoken = Object.values(t.events).flatMap((e) => e.log ?? []);
     expect(spoken.filter((c) => c.startsWith('fire.free'))).toEqual([]);
+  });
+});
+
+describe('brief 080: the seeded game\'s words', () => {
+  const v = (json('contracts/rules/rulebook.json') as { values: Record<string, { v: number }> }).values;
+  const L = t.less;
+  test('the streak note and the limits say the rulebook\'s numbers, and say the lean aloud', () => {
+    expect(L.odds.limits).toContain(`${v['sheet-min']!.v} %`); expect(L.odds.limits).toContain(`${v['sheet-max']!.v} %`);
+    expect(L.odds.streak.hits).toContain(`After ${v['sheet-streak-hits']!.v} hits`);
+    expect(L.odds.streak.misses).toContain(`After ${v['sheet-streak-misses']!.v} misses`); expect(L.odds.streak.misses).toContain(`${v['sheet-streak-floor']!.v} %`);
+    expect(L.odds.streak.head).toMatch(/your way/);
+  });
+  test('the fire chip and the sum fit once filled, and name all four parts', () => {
+    expect(L.odds.chip.replace('{pct}', '40').replace('{s}', '30')).toBe('40 % · down in about 30 s');
+    const sum = L.odds.sum.replace('{pct}', '95').replace('{aim}', '75').replace('{range}', '+30').replace('{cover}', '-45').replace('{move}', '-55');
+    expect(sum.length).toBeLessThanOrEqual(MAX_LINE); for (const w of ['aim', 'range', 'cover', 'movement']) expect(sum).toContain(w);
+  });
+  test('the takedown card\'s Coming row names who and when', () => {
+    const line = L.takedown.coming.replace('{list}', L.takedown.item.replace('{who}', 'a passer-by').replace('{s}', '12').replace('{verb}', 'report'));
+    expect(line).toBe('Coming: a passer-by in 12 s: report. They would see it.');
+    expect(line.length).toBeLessThanOrEqual(MAX_LINE);
+  });
+  test('closed-in has a card line, a caption and a tip for every why the engine gives', () => {
+    const src = simAll().join('\n'); const whys = ['no-driver', 'car-held', 'on-foot', 'no-go'] as const;
+    for (const w of whys) { if (haveSim) expect(src, w).toContain(`"${w}"`); expect(L.closedIn.line[w], w).toBeTruthy(); expect(L.failcam.caption['closed-in']![w], w).toBeTruthy(); expect(L.failcam.tip['closed-in']![w], w).toBeTruthy(); }
+  });
+  test('the two warnings have a card and spoken lines; the close warning is a beat', () => {
+    for (const [code, ev, who, fate] of [['close.warning', 'close-warning', 'fixer', 'beat'], ['enforcer.warning', 'enforcer-warning', 'enforcer', 'icon']] as const) { // the Enforcer's is the roster flash and his line, so the feed's beats stay few
+      const c = t.cards.items[code]!; expect(c.fate).toBe(fate); expect(JSON.stringify(c.result)).toContain('{n}');
+      expect(t.events[ev]!.log).toEqual([code]); expect(lookup(t, { event: ev, speaker: who }), ev).toBeTruthy();
+    }
   });
 });

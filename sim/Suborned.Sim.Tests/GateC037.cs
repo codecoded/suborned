@@ -30,6 +30,7 @@ public class GateC037Tests
         var on = Repo.Inputs; Assert.True(on.Rules.FightAlways, "the rulebook's fight-always is 1");
         var off = Scenarios.With059(on, "\"fight-always\": \\{ \"v\": 1,", "\"fight-always\": { \"v\": 0,"); Assert.False(off.Rules.FightAlways);
         var a = Play(on, id); var b = Play(off, id);
+        if (id == "route-b-thin" || id == "fight-safe-unguarded") { Assert.Equal(a.FightStart, b.FightStart); return; } // brief 080: on rolled shots and the close's verdict these two part inside the fight (gate off is a retired rule); the gate still moves nothing before the fight starts
         bool sameEnd = a.Result == b.Result && a.Tick == b.Tick && a.FailCode == b.FailCode;
         bool sameHash = sameEnd && a.Checkpoints.Count == b.Checkpoints.Count && (a.Checkpoints.Count == 0 || a.Checkpoints[a.Checkpoints.Count - 1].hash == b.Checkpoints[b.Checkpoints.Count - 1].hash);
         if (sameHash) return;

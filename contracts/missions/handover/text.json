@@ -199,7 +199,7 @@
    "At shift change he carries it out of the Civic Records Office.",
    "We take him alive, get him into our getaway car and drive off.",
    "Quietly, if we can. Others want him too, and this city notices noise.",
-   "We have $100,000, four people, and until 6:10, or 8:30 if we turn his driver."
+   "We have $100,000, four people, and until 5:10, or 7:30 if we turn his driver."
   ],
   "objective": "Take Councillor Vale alive to the getaway car.",
   "win": "Vale in the getaway car when it leaves.",
@@ -208,6 +208,7 @@
    "vale-leaves": "Vale left in his car. We were too slow.",
    "rivals-reach-vale": "The rival crew got to Vale first.",
    "sealed": "The getaway car hadn't left when security sealed the district.",
+   "closed-in": "The district closed in before we got Vale away.",
    "enforcer-down": "The Enforcer is down. Nobody else can carry Vale.",
    "cell-down": "The whole cell is down. Nobody is left to get Vale out.",
    "entry-seen-guard": "The guard saw the Enforcer go in. Vale was warned.",
@@ -219,8 +220,8 @@
    "withdraw": "We pulled out. The attempt is over."
   },
   "clock": {
-   "close": "8:30",
-   "line": "Handover chime at 5:30. Vale's driver takes him away at 6:10, or 8:30 if turned."
+   "close": "7:30",
+   "line": "Handover chime at 4:30. Vale's driver takes him away at 5:10, or 7:30 if turned."
   },
   "purse": {
    "usd": 100000,
@@ -230,7 +231,7 @@
    "front-door": "Front door: Inez and the door guard are close.",
    "pickup": "Pickup: Vale rides from the official bay; his driver is short of cash."
   },
-  "tracker": "Take Vale alive to the getaway car · closes 8:30",
+  "tracker": "Take Vale alive to the getaway car · closes 7:30",
   "heat": {"unknown":"Unknown","noticed":"Noticed","wanted":"Wanted","infamous":"Infamous"},
   "timeline": [
    {
@@ -252,32 +253,32 @@
     "known": false
    },
    {
-    "at": "5:30",
+    "at": "4:30",
     "label": "Handover chime",
     "short": "Chime",
     "known": true
    },
    {
-    "at": "5:40",
+    "at": "4:40",
     "label": "Last chance to turn the driver",
     "short": "Last chance",
     "known": true
    },
    {
-    "at": "5:50",
+    "at": "4:50",
     "label": "Vale leaves the Office",
     "short": "Vale out",
     "known": true
    },
    {
-    "at": "6:10",
+    "at": "5:10",
     "label": "Vale at his car; unless turned, the driver leaves",
     "short": "Vale at car",
     "known": true
    },
    {
-    "at": "8:30",
-    "label": "Close: a turned driver gives up and drives Vale away",
+    "at": "7:30",
+    "label": "Close: a turned driver drives Vale away; if we hold Vale, we're closed in",
     "short": "Close",
     "known": true
    }
@@ -289,16 +290,16 @@
    "enforcer": "Enforcer: goes in, takes Vale, takes people down. Only he carries Vale."
   },
   "page": {
-   "rule": "Brief 070 (Sky, 2026-10-26: the briefing as a full-screen page, modal until Begin; Glyph's mock briefs/070/glyph). Outside play, so the reading limits don't apply, but each way keeps to two sentences: its hint after the way's name (briefing.hints, the part after ': '), then `ways.<id>.line`. `when` is the plate beside the way's name, `target` the line under Vale's one fact (brief.json dossier.target), `ending` the line under the getaway car's still, `clock` the stations the page's clock shows (labels from briefing.timeline, unless `stations` words the mark for the page: Glyph R1 on 0.2.133, the 6:10 station is the short form, since the 5:40 station carries the condition; play's timeline keeps the full, true label), `cell` one line under each face, about this mission. `heads` the section heads (Glyph's mock; brief 070, Latch: the page showed none): `ways` keyed by how many ways the mission has (brief.json ways), so the head counts from the data; `where` over the plan, `clock` over the stations, `heat` beside the Heat word. `captions` a still's caption by its pin's place, where the target's name alone would not say where (Glyph N11 and R6: the pickup's words end at the service bay, so its still and legend name the service bay); other stills take targets.<key>.name. The target head stays less.briefing.target. Day and Night are off the page (Sky: night is not a toggle).",
-   "target": "Comes out at 5:50 and leaves by car.",
+   "rule": "Brief 070 (Sky, 2026-10-26: the briefing as a full-screen page, modal until Begin; Glyph's mock briefs/070/glyph). Outside play, so the reading limits don't apply, but each way keeps to two sentences: its hint after the way's name (briefing.hints, the part after ': '), then `ways.<id>.line`. `when` is the plate beside the way's name, `target` the line under Vale's one fact (brief.json dossier.target), `ending` the line under the getaway car's still, `clock` the stations the page's clock shows (labels from briefing.timeline, unless `stations` words the mark for the page: Glyph R1 on 0.2.133, the 5:10 station is the short form, since the 4:40 station carries the condition; play's timeline keeps the full, true label), `cell` one line under each face, about this mission. `heads` the section heads (Glyph's mock; brief 070, Latch: the page showed none): `ways` keyed by how many ways the mission has (brief.json ways), so the head counts from the data; `where` over the plan, `clock` over the stations, `heat` beside the Heat word. `captions` a still's caption by its pin's place, where the target's name alone would not say where (Glyph N11 and R6: the pickup's words end at the service bay, so its still and legend name the service bay); other stills take targets.<key>.name. The target head stays less.briefing.target. Day and Night are off the page (Sky: night is not a toggle).",
+   "target": "Comes out at 4:50 and leaves by car.",
    "ways": {
-    "front-door": {"when": "Before 5:50", "line": "Turn her to call him off and loop his camera."},
-    "pickup": {"when": "From 6:10", "line": "Turn him before 5:40 and he brings Vale to the service bay."}
+    "front-door": {"when": "Before 4:50", "line": "Turn her to call him off and loop his camera."},
+    "pickup": {"when": "From 5:10", "line": "Turn him before 4:40 and he brings Vale to the service bay."}
    },
    "ending": "Both ways end here: Vale in the getaway car as it leaves.",
    "captions": {"service-bay": "Service bay"},
-   "clock": ["2:35", "5:30", "5:40", "5:50", "6:10"],
-   "stations": {"6:10": "Vale's car leaves"},
+   "clock": ["2:35", "4:30", "4:40", "4:50", "5:10"],
+   "stations": {"5:10": "Vale's car leaves"},
    "cell": {
     "scout": "Listens to Inez and the driver. Gives the rivals a false tip.",
     "fixer": "Turns Inez or the driver, and calls Inez when it's time.",
@@ -590,6 +591,8 @@
  "cards": {
   "rule": "The feed's cards for engine events no scene covers (Sky's review 2026-10-16, messages.html §1 D). Each is a title and one result in the player's words with the engine's numbers, never the engine's sentence (its log keeps that). A card with `sight` in-sight shows only when an agent can see the place, as a city scene does; `sight` always shows wherever the cell stands (brief 067: the rival car turning in off Orbit Walk is heard, never seen), and its `at` then only says what the card points at. A result that is a record is chosen by the engine state `pick` names. {who} is the person or watcher as names.targets says it, {agent} \"the Scout\"; the host capitalises the first letter after filling. Brief 013 (takedowns): a card says only what the cell has seen or been told. Three kinds: (1) the cell's own acts (the agent is there, so no `sight`); (2) things at a place the cell may not be near: `sight` in-sight, and `at` names the engine position the check looks at (the log carries none; the host reads it from the game); (3) the city's answer to an Alert, which the Alert pill and the street show: a card says that it came and when, never who made the report or why. `needs` routine: a cause the cell can name only once a Watch has taught the person's routine (a missed check in); until then report.landed speaks alone. Codes the engine builds (stash.container, stash.door) are one card keyed by the prefix. A spoken line of an event shows with that event's card or scene, so it follows the same sight rule: a line is never shown when its card is hidden. Brief 014 (less reading): every card has a `fate`: beat (a one-line feed beat, `beat`; at most ten distinct lines in the file), icon (the street shows it: a marker, ring, lock or pip), alt (history only, behind L), debrief (the end says it). A card with no beat is never a card on screen; its title and result are the history lines.",
   "items": {
+   "close.warning": {"kind":"warning","fate":"beat","beat":"Vale's been missed.","title":"Vale has been missed","result":"The district closes in {n} s. Get Vale away."},
+   "enforcer.warning": {"kind":"warning","fate":"icon","title":"The Enforcer is badly hurt","result":"{n} health left. Get him into cover or out of the line."},
    "rivals.coming": {"kind":"city","fate":"beat","beat":"Rival car coming.","title":"A rival car turns in","sight":"always","at":"rival-car","result":"Off Orbit Walk. They are after Vale too."},
    "rivals.drop": {"kind":"city","fate":"icon","title":"Rivals post round our car","sight":"in-sight","at":"rival-car","result":"Three of them are taking posts round our car."},
    "rivals.arrive": {"kind":"city","fate":"icon","title":"Rival car parks","sight":"in-sight","result":"Across from Vale's car. A lookout watches the official door."},
@@ -747,10 +750,10 @@
   "read": {"kind":"read","trigger":"a Watch or Listen lands: the Scout says what the cell learned (Listen reveals need and temperament, Watch the routine); the Tech or the Scout on a camera or the patrol, its sight, and the patrol's rounds once they are known (Sky 2026-10-18: the Tech watches machines)","speakers":["scout","tech","fixer","enforcer"],"log":["scout.watch.watched","tech.watch.watched","fixer.watch.watched","enforcer.watch.watched","scout.listen.heard"],"verbs":["watch","listen"]},
   "taken": {"kind":"reply","trigger":"Vale is brought out (the Enforcer takes him at the car, or comes out of the Office with him)","speakers":["councillor"],"log":["take.done","enter.out"],"verbs":["enter","take"]},
   "start": {"kind":"world","trigger":"the mission starts, cell at the getaway car","speakers":["scout","fixer","tech","enforcer"],"log":["start"]},
-  "chime": {"kind":"world","trigger":"the 5:30 handover chime","speakers":["scout","fixer"],"clock":"5:30"},
-  "last-turn": {"kind":"world","trigger":"the 5:40 last chance to turn the driver","speakers":["scout","fixer"],"clock":"5:40"},
-  "vale-exits": {"kind":"world","trigger":"Vale leaves the Office","speakers":["scout"],"log":["vale.exits"],"clock":"5:50"},
-  "vale-at-car": {"kind":"world","trigger":"Vale reaches his car","speakers":["scout","councillor"],"log":["vale.at-car"],"clock":"6:10"},
+  "chime": {"kind":"world","trigger":"the 4:30 handover chime","speakers":["scout","fixer"],"clock":"4:30"},
+  "last-turn": {"kind":"world","trigger":"the 4:40 last chance to turn the driver","speakers":["scout","fixer"],"clock":"4:40"},
+  "vale-exits": {"kind":"world","trigger":"Vale leaves the Office","speakers":["scout"],"log":["vale.exits"],"clock":"4:50"},
+  "vale-at-car": {"kind":"world","trigger":"Vale reaches his car","speakers":["scout","councillor"],"log":["vale.at-car"],"clock":"5:10"},
   "rivals-arrive": {"kind":"world","trigger":"the rival car parks near the pickup (or comes in on gunfire)","speakers":["rivals","scout"],"log":["rivals.arrive"],"clock":"3:10"},
   "rivals-coming": {"kind":"world","trigger":"the rival car turns in from Orbit Walk","speakers":["scout"],"log":["rivals.coming"],"clock":"2:35","note":"brief 067 (Aster, from Sky on 0.2.122: they should be coming in from somewhere when the chime comes): the car always turns in out of sight, so the beat and the Scout's line show wherever the cell stands (the card's sight is `always`, its `at` still points at the car), and the Scout speaks of what he hears, never of what he sees. The 2:46 drop and the 3:10 park stay in sight."},
   "rivals-drop": {"kind":"world","trigger":"the rival car drops three by the cell's car","speakers":["rivals","scout"],"log":["rivals.drop"],"clock":"2:46"},
@@ -808,6 +811,8 @@
   "summon-refused": {"kind":"world","trigger":"the call is refused for a summon-* reason: the contact says why (Inez answers the Fixer; the guard, if he is within earshot)","speakers":["waitress","guard"],"note":"outcome is the refusal code; refused at no cost"},
   "agent-down": {"kind":"world","trigger":"an agent is hit down (not the Enforcer: that is a fail)","speakers":["scout","fixer","tech","enforcer"],"log":["scout.down","fixer.down","tech.down"]},
   "win": {"kind":"end","trigger":"the car leaves with Vale in it (Go)","speakers":["scout","fixer","tech","enforcer","councillor"],"log":["success"]},
+  "close-warning": {"kind":"world","trigger":"brief 080 (rulebook fight.close): Vale is in the cell's hands a minute before the close; his absence is noticed, once","speakers":["scout","fixer","security"],"log":["close.warning"]},
+  "enforcer-warning": {"kind":"world","trigger":"brief 080 (rulebook weapons.sheet.warnHealth): the Enforcer falls to 3 health, once, before he can drop","speakers":["enforcer","fixer"],"log":["enforcer.warning"]},
   "fail": {"kind":"end","trigger":"the mission fails; outcome is the fail code","speakers":["fixer","enforcer","scout","guard","watcher","councillor","rivals","security","crowd"],"log":["fail."]},
   "withdraw": {"kind":"end","trigger":"the cell withdraws, or the car leaves without Vale","speakers":["fixer"],"log":["withdraw","withdraw.car"],"verbs":["withdraw"]},
   "cliffhanger": {"kind":"end","trigger":"the debrief: in the getaway car Vale names who else has a copy of the file (Story spine, ending beat; revised for the file story, Sky 2026-10-23). outcome named = Halcyon (pending Sky), unnamed = the safe version","speakers":["councillor","fixer"]},
@@ -1422,6 +1427,13 @@
   "pending": "cut",
    "less.mood": "beat",
    "less.sealed": "debrief",
+   "less.closedIn": "debrief",
+   "less.odds.chip": "label",
+   "less.odds.chipBare": "label",
+   "less.odds.sum": "alt",
+   "less.odds.limits": "alt",
+   "less.odds.streak": "alt",
+   "less.takedown": "label",
    "less.alt.mood": "alt",
    "less.failcam": "beat",
    "less.done": "label",
@@ -1665,10 +1677,10 @@
    "examples": {
     "knockout": "Knock out · 7 s · +4 · ▲1 · 👁 none",
     "kill": "Kill · 4 s · +8 · ▲2 · 👁 none",
-    "ask": "Ask · 25 s · +1 · ✗",
-    "pay": "Pay · $90k · 50 s · +2 · ✓",
-    "help": "Help · $40k · 50 s · +1 · ½",
-    "pressure": "Pressure · 35 s · +3 · ✓",
+    "ask": "Ask · 20 s · +1 · ✗",
+    "pay": "Pay · $90k · 35 s · +2 · ✓",
+    "help": "Help · $40k · 35 s · +1 · ½",
+    "pressure": "Pressure · 25 s · +3 · ✓",
     "fire": "Fire · +2/hit · ▲≥2",
     "fire-camera": "Fire · +2 · ▲≥2",
     "loop": "Loop · 20 s · +1 · 2:00",
@@ -1688,7 +1700,7 @@
    "cityBeats": 3
   },
   "objective": {
-   "rule": "The Next Objective is one imperative with the nouns that have a marker in [brackets], coloured as their markers. It shows for `showSeconds` when the clock starts, on each change (take, bring, carry) and when the pill's next mark passes (the chime, Vale's exit), then fades; the close (8:30) is on the clock pill. It never explains and it is not a hint.",
+   "rule": "The Next Objective is one imperative with the nouns that have a marker in [brackets], coloured as their markers. It shows for `showSeconds` when the clock starts, on each change (take, bring, carry) and when the pill's next mark passes (the chime, Vale's exit), then fades; the close (7:30) is on the clock pill. It never explains and it is not a hint.",
    "take": "Take [Vale] alive.",
    "bring": "Bring [Vale] out.",
    "carry": "Get [Vale] to the [car].",
@@ -1717,6 +1729,7 @@
     "vale-leaves": "Vale got away.",
     "rivals-reach-vale": "Rivals took Vale.",
     "sealed": "District sealed.",
+    "closed-in": "District closed in.",
     "enforcer-down": "Enforcer down.",
     "cell-down": "Whole cell down.",
     "entry-seen-guard": "The guard saw you.",
@@ -1837,6 +1850,33 @@
     "ready": "Go was never given."
    }
   },
+  "closedIn": {
+   "rule": "Brief 080 (engine 0.37.0, rulebook fight.close): the fail card's sub-line when the close catches the cell with Vale in hand, by Game.Cause.Why. {by} is the first culprit, worded as less.failcam.by. The caption and tip are less.failcam's closed-in.",
+   "line": {
+    "no-driver": "Vale was aboard, but nobody in the car could drive.",
+    "car-held": "{by} held the car until the district closed in.",
+    "on-foot": "Vale was still on foot when the district closed in.",
+    "no-go": "Vale was aboard and the car was free, but nobody pressed Go."
+   }
+  },
+  "odds": {
+   "rule": "Brief 080 (Sky: real hit chances a player can read; design.html sections 3, 4): the fire preview. The chip reads FirePreview's Acc as a percent and the host's seconds to down; `chipBare` when there is no estimate. Alt shows `sum` from FirePreview.Sum (range, cover and move signed), `limits` under it, then the streak note: it leans the player's way on purpose, and the game says so (decision 2). Their numbers are the rulebook's.",
+   "chip": "{pct} % · down in about {s} s",
+   "chipBare": "{pct} %",
+   "sum": "{pct} % to hit: aim {aim}, range {range}, cover {cover}, movement {move}.",
+   "limits": "Never under 5 % or over 95 %.",
+   "streak": {
+    "head": "Streaks lean your way, on purpose",
+    "hits": "After 3 hits in a row on one agent, that shooter's next shot misses.",
+    "misses": "After 3 misses in a row on one target, the next hits, at odds of 20 % or more."
+   }
+  },
+  "takedown": {
+   "rule": "Brief 080 (TakedownQuote.Coming): someone not in range now who will arrive and notice before the act ends. `coming` is the card's Before row, {list} the `item`s joined by '; ': {who} is the name the card already gives a person, {s} seconds, {verb} what they would do ('?' until known). `short` is the same for one person at rest.",
+   "coming": "Coming: {list}. They would see it.",
+   "item": "{who} in {s} s: {verb}",
+   "short": "{who} · {s} s"
+  },
   "hint": {
    "rule": "The Next Step is `hints.items.*.short`: one imperative, one [noun] ringed in the street and coloured as its ring, no agent named (the agent's portrait pulses with the verb icon at the line's left). It shows for `showSeconds`, fades to its ring, returns once after `returnSeconds` more of idling if still undone, and never shows more than `maxShows` times in a run. It retires for good, per profile, once the player has given the verb it teaches; the long `line` is Alt and the relearn key.",
    "showSeconds": 6,
@@ -1909,6 +1949,12 @@
     "getaway-lost": {
      "wrecked": "The getaway car is wrecked."
     },
+    "closed-in": {
+     "no-driver": "Nobody left who can drive.",
+     "car-held": "{by} held the car.",
+     "on-foot": "Vale was still on foot.",
+     "no-go": "Car ready, and nobody said Go."
+    },
     "sealed": {
      "response": "{by} raised the alarm.",
      "confirmed": "{by} reported it.",
@@ -1954,6 +2000,12 @@
     },
     "getaway-lost": {
      "wrecked": "Keep fire off the getaway car."
+    },
+    "closed-in": {
+     "no-driver": "Keep one agent fit to drive.",
+     "car-held": "Clear the car before the close.",
+     "on-foot": "Get Vale aboard before the close.",
+     "no-go": "Press Go once Vale is aboard."
     },
     "sealed": {
      "response": "Anyone who sees you can report.",
@@ -2409,6 +2461,14 @@
   {"event":"fail","speaker":"crowd","outcome":"driver-shot","lines":["He shot the driver!","Somebody help him!"]},
   {"event":"fail","speaker":"fixer","outcome":"getaway-lost","lines":["The car's wrecked. We can't get him out.","No car, no way out. It's over."]},
   {"event":"fail","speaker":"scout","outcome":"getaway-lost","lines":["Our car's gone. Nowhere to run.","That was our way out. Burned."]},
+  {"event":"fail","speaker":"fixer","outcome":"closed-in","lines":["They've closed in. We held him too long.","Every street's shut. We ran out of time."]},
+  {"event":"fail","speaker":"scout","outcome":"closed-in","lines":["They're on every corner. It's over.","Too late. The whole district's here."]},
+  {"event":"fail","speaker":"security","outcome":"closed-in","lines":["Councillor located. Nobody moves.","Streets closed. Hand over the councillor."]},
+  {"event":"close-warning","speaker":"scout","lines":["They've missed Vale. We have a minute.","Word's out on Vale. One minute."]},
+  {"event":"close-warning","speaker":"fixer","lines":["They know he's gone. Get us out.","He's been missed. A minute, no more."]},
+  {"event":"close-warning","speaker":"security","lines":["Find the councillor. Close the streets.","Councillor Vale is missing. All units."]},
+  {"event":"enforcer-warning","speaker":"enforcer","lines":["I'm badly hit. Need cover.","Can't take much more."]},
+  {"event":"enforcer-warning","speaker":"fixer","lines":["He's badly hurt. Get him into cover.","Cover him. He won't last."]},
   {"event":"withdraw","speaker":"fixer","lines":["Pull out. We try again.","Walk away. Slowly."]},
   {"event":"cliffhanger","speaker":"councillor","outcome":"named","temperament":"loyal","pending":"pending Sky: Halcyon is a Story proposal (the-suborned-story-v0.1, ending beat). Revised for the file story (Sky 2026-10-23: the file replaces the clearance order). Ship `unnamed` until Sky decides.","lines":["It was never only my file. Halcyon has a copy.","Halcyon reads everything first. Security is second."]},
   {"event":"cliffhanger","speaker":"councillor","outcome":"named","temperament":"mercenary","pending":"pending Sky: Halcyon is a Story proposal (the-suborned-story-v0.1, ending beat). Revised for the file story (Sky 2026-10-23: the file replaces the clearance order). Ship `unnamed` until Sky decides.","lines":["Get me safe and I'll name them. Halcyon.","Halcyon bought the first copy. Mine was second."]},

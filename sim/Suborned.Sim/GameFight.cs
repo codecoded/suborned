@@ -123,7 +123,7 @@ namespace Suborned.Sim
             // the guard runs in against the rivals (safe); his shots are in Combat()
             if (GuardAlly && guardAllyPath != null && !GuardDown)
             {
-                long mm = (long)(Tick - guardAllyStart) * secSpeed;
+                long mm = (long)(Tick - guardAllyStart) * guardSpeed;
                 heldPos = guardAllyPath.At(mm); heldFacing = guardAllyPath.Heading(mm);
             }
         }
@@ -142,15 +142,15 @@ namespace Suborned.Sim
                 if (GuardAlly)
                 {
                     var from = GuardPose()?.pos ?? S.Stand(S.GuardPost);
-                    var stop = AllyStop(); // his post, or the cover beside it (Pulse §3.4)
+                    var stop = ClearStop("guard", AllyStop()); // brief 081 (fight.spacing): clear of who stands there; his post, or the cover beside it (Pulse §3.4)
                     var route = Walk.Route(Walk.NearestFree(from) ?? from, Walk.NearestFree(stop) ?? stop);
-                    guardAllyPath = new Path(route ?? new[] { from, stop }); guardAllyStart = Tick;
+                    guardAllyPath = new Path(route ?? new[] { from, stop }); guardAllyStart = Tick; // brief 081: stop is clear of the fight's claims (fight.spacing)
                     GuardHeld = true; heldPhase = "fighting the rivals"; heldPos = from; GuardAwayUntil = INF;
                     Note("fight.guard", "The guard hears the shooting and runs in against the rivals.");
                 }
             }
         }
-        bool GuardAllyMoving => GuardAlly && guardAllyPath != null && (long)(Tick - guardAllyStart) * secSpeed < guardAllyPath.Length;
+        bool GuardAllyMoving => GuardAlly && guardAllyPath != null && (long)(Tick - guardAllyStart) * guardSpeed < guardAllyPath.Length;
 
         Hostile? NearestHostile(Pt from, int reach)
         {

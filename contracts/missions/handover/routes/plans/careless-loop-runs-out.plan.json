@@ -3,7 +3,7 @@
  "mission": "handover",
  "note": "Careless timing (brief 058 §6; Loop v2: a loop runs 2:00 from its landing), the twin of route-a: route-a with the loop planted first, as soon as the Tech reaches the cabinet (live 0:32.7 to 2:32.7), not at 1:25: it has run out 20 s before the Enter at about 2:53, and the entrance camera sees it (entry seen by a live camera).",
  "start": {},
- "until": 5100,
+ "until": 4500,
  "steps": [
   {
    "op": "scout",
@@ -85,7 +85,9 @@
    "op": "fixer",
    "do": "call",
    "target": "waitress",
-   "label": "call"
+   "label": "call",
+   "at": "2:36",
+   "why": "brief 080: talk is shorter now, so the call waits till the tape has run out at about 2:33"
   },
   {
    "op": "enforcer",

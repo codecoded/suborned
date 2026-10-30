@@ -151,7 +151,7 @@ namespace Suborned.Sim
                 r.Is(g.KnownFans().Exists(f => f.Watcher == "camera:entrance"), "and still drawn on Alt");
                 r.Eq(g.Issue(new Order { Tick = g.Tick, Op = Scout, Do = "watch", Target = "camera:pickup" }).code, "agent-down", "a downed Scout watches nothing");
                 r.Is(!g.Detection().Exists(n => n.Op == Scout), "a downed operative is not noticed");
-            });
+            }, new Start { OneInput = false }); // brief 080: stance hold, or she out-shoots the guard
 
             Add("N45", "—", "The response unit and the rivals come for the cell: their sight is known from the moment they are on the street (rulebook sight.kinds learn arrival), never watched, never told. Gunfire at the guard draws both.", r =>
             {

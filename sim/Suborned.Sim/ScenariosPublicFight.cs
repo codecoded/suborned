@@ -203,15 +203,15 @@ namespace Suborned.Sim
                 r.Is(r.Until(() => g.Fights.Count > 0, T(60)), $"the fight ends at {Report.Clock(g.Tick)}");
                 var f = g.Fights[0];
                 r.Eq(f.End - f.Last, g.R.FightQuietTicks, "30 s after the last shot");
-                r.Eq((f.Public, f.OnSecurity, f.FirstSecurity, f.Outcome, f.Delta), (true, true, "patrol", "security", -1), "a fight with authority: −1");
+                r.Eq((f.Public, f.OnSecurity, f.FirstSecurity, f.Outcome, f.Delta), (true, true, "patrol", "security", -2), "a fight with authority, city people within reach: −2 (Sky 2026-10-30)");
                 var m = FightMoves(g);
                 if (!r.Is(m.Count == 1, $"one Standing move ({Moves(g)})")) return; // engine 0.34.0: no index past the moves there are (N98 threw on an empty list)
                 r.Eq((m.Count, m[0].tick, m[0].cause, m[0].who), (1, f.End, "seen-fight-security", "patrol"), "once, when it ends");
-                r.Eq(g.Standing, g.R.StandingStart - 1, "+2 → +1");
+                r.Eq(g.Standing, g.R.StandingStart - 2, "+2 → 0");
                 r.Eq((g.Trail, g.Alert), (g.R.GunfireTrail + g.R.HitTrail + g.R.DownTrail, g.R.GunfireAlert), "Trail and Alert are the shots' own: a shooting, a hit, a down; Alert 2");
                 r.Wait(T(5));
                 var l = OneLine(r, g.BetweenMissions(g.Investigate()));
-                r.Eq((l.From, l.End, l.Word, l.Drift, l.To, l.Cause, l.Who), (2, 1, 0, 0, 1, "seen-fight-security", "patrol"), "the district ends at +1, the fight its cause");
+                r.Eq((l.From, l.End, l.Word, l.Drift, l.To, l.Cause, l.Who), (2, 0, 0, 0, 0, "seen-fight-security", "patrol"), "the district ends at 0, the fight its cause");
             }, new Start { FinalFight = false });
 
             // N99, N101: the patrol shot down, then the rival crew its gunfire draws, driven off: inside 30 s one fight, after 30 s two.
@@ -232,9 +232,9 @@ namespace Suborned.Sim
                 PatrolThenRivals(r, false);
                 r.Eq(g.Fights.Count, 1, "one fight: no 30 s gap");
                 var f = g.Fights[0];
-                r.Eq((f.Public, f.OnSecurity, f.OnRivals, f.Outcome, f.Delta, f.Cause), (true, true, true, "security", -1, "seen-fight-security"), "on security and rivals: authority outranks, −1");
+                r.Eq((f.Public, f.OnSecurity, f.OnRivals, f.Outcome, f.Delta, f.Cause), (true, true, true, "security", -2, "seen-fight-security"), "on security and rivals: authority outranks, −2");
                 r.Is(f.CrewBroken >= 0, "though the rivals broke");
-                r.Eq(Moves(g), "-1 seen-fight-security patrol", "one move, naming the patrol");
+                r.Eq(Moves(g), "-2 seen-fight-security patrol", "one move, naming the patrol");
             }, new Start { FinalFight = false });
 
             Add("N100", "—", "A fight nobody heard (rulebook fight.public): N98's orders in a world with no crowd (Start.Crowd off); the cast's civilians (Inez, the driver, Vale inside) are all beyond 30 m of every shot. The fight ends unheard: Standing does not move, and the district stands steady at +2. Trail and Alert are N98's.", r =>
@@ -261,8 +261,8 @@ namespace Suborned.Sim
                 // weapon at 5:33.7, so the second fight is on security too (authority outranks): still two fights 30 s apart, two moves, which is this
                 // case's rule; the rivals-won +1 is N95's (feared rivals driven off)
                 r.Eq(string.Join(", ", g.Fights.Select(f => $"{f.Public} {f.Outcome}")), "True security, True security", "two fights: the patrol's, then the rivals' with the response unit in it");
-                r.Eq(Moves(g), "-1 seen-fight-security patrol, -1 seen-fight-security security-1", "two moves, one a fight each");
-                r.Eq(g.Standing, g.R.StandingStart - 2, "+2 → +1 → 0");
+                r.Eq(Moves(g), "-2 seen-fight-security patrol, -2 seen-fight-security security-1", "two moves, one a fight each");
+                r.Eq(g.Standing, g.R.StandingStart - 4, "+2 → 0 → -2");
             }, new Start { FinalFight = false, Security = 0 });
         }
     }

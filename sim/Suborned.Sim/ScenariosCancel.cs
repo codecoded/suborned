@@ -163,7 +163,7 @@ namespace Suborned.Sim
                 r.Is(!r.Op(Fixer).Carrying.HasValue && r.Op(Scout).Pos == at, "laid down where the Fixer stands");
                 r.Send(Fixer, "d:Office approach"); r.Wait(T(3));
                 r.Eq(r.Op(Scout).Pos, at, "and stays there");
-            });
+            }, new Start { OneInput = false }); // brief 080: stance hold, or she out-shoots the guard
 
             Add("N35", "—", "Cancel a draw and a fire order: a draw not yet done goes back; a fire order ceases before the first shot, the weapon stays drawn.", r =>
             {

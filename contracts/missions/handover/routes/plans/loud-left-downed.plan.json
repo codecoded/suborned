@@ -3,7 +3,7 @@
  "mission": "handover",
  "note": "Brief 018 §5: the run that leaves a downed op. Loud (board and go) with the Scout sent out of cover toward the officers on the café wall when the rivals break: she is downed, nobody carries her, and the car leaves without her, so she is captured (downed) and +4 T goes to the campaign.",
  "start": {},
- "until": 5100,
+ "until": 4500,
  "steps": [
   {
    "op": "tech",

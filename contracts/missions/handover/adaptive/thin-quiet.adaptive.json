@@ -1,0 +1,31 @@
+{
+ "schema": "suborned.mission.adaptive/1",
+ "mission": "handover",
+ "id": "thin-quiet",
+ "style": "thin-quiet",
+ "note": "Quiet with little preparation: straight to Inez, Listen, one Pressure and the call; the Loop only when she's turned; no Help so no warning; the three stand at the car and the Enforcer brings Vale straight there. A distracted player: attention lapses.",
+ "pace": "distracted",
+ "rules": [
+  {"id":"scout-to-inez","op":"scout","do":"move","to":"beside-inez"},
+  {"id":"fixer-to-court","op":"fixer","do":"move","to":"d:Courtyard"},
+  {"id":"tech-to-cabinet","op":"tech","do":"move","to":"cabinet"},
+  {"id":"enforcer-wait","op":"enforcer","do":"move","to":[5650,-4750]},
+  {"id":"watch-inez","op":"scout","do":"watch","target":"waitress","after":["scout-to-inez"],"when":["free:scout"],"retry":3},
+  {"id":"listen-inez","op":"scout","do":"listen","target":"waitress","after":[],"when":["log:scout.watch.watched"],"retry":3},
+  {"id":"pressure","op":"fixer","do":"turn","target":"waitress","approach":"pressure","when":["log:scout.listen.heard"],"retry":3},
+  {"id":"loop","op":"tech","do":"loop","target":"entrance","when":["log:scout.listen.heard","free:tech"],"retry":3,"why":"the Loop as soon as the plan is known, not timed to the turn: the tape may be short at the door"},
+  {"id":"enforcer-door-side","op":"enforcer","do":"move","to":[6925,-4250],"when":["log:loop.on"],"unless":["log:call.waitress"]},
+  {"id":"call","op":"fixer","do":"call","target":"waitress","when":["log:turn.pressure.turned","log:loop.on"],"retry":3},
+  {"id":"to-door","op":"enforcer","do":"move","to":"d:Office entrance","when":["log:call.waitress"]},
+  {"id":"enter","op":"enforcer","do":"enter","when":["done:to-door","free:enforcer"],"retry":2},
+  {"id":"fixer-post","op":"fixer","do":"move","to":[725,-5025],"when":["log:call.waitress"]},
+  {"id":"scout-post","op":"scout","do":"move","to":[725,-4625],"when":["log:call.waitress"]},
+  {"id":"tech-post","op":"tech","do":"move","to":[675,-4625],"when":["log:enter.in"]},
+  {"id":"draw-all","op":"scout","do":"draw","when":["log:fight.ambush"]},
+  {"id":"draw-fixer","op":"fixer","do":"draw","with":"draw-all"},
+  {"id":"draw-tech","op":"tech","do":"draw","with":"draw-all"},
+  {"id":"to-car","op":"enforcer","do":"move","to":"d:Getaway bay","when":["log:enter.out"],"retry":1},
+  {"id":"board","op":"enforcer","do":"board","target":"car","when":["free:enforcer","near:enforcer:d%Getaway bay:4"],"retry":1},
+  {"id":"go","op":"cell","do":"go","when":["log:board.in"],"retry":2}
+ ]
+}

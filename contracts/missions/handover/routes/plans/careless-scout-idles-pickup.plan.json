@@ -3,13 +3,13 @@
  "mission": "handover",
  "note": "Careless loiter (brief 031), the twin of route-b: route-b, but the Scout waits for the 3:10 tip in the pickup camera's view: reported as a loiterer at its desk's next scan (Alert 1, the dial's two robots, no Trail); the route still wins, one Alert dearer than its twin (Alert 0). As route-b: the Reroute at 5:00, the Enforcer at the square until 5:50, the Scout's lock 0.5 s after the Fixer's.",
  "start": {},
- "until": 5100,
+ "until": 4500,
  "steps": [
   {
    "op": "enforcer",
    "do": "move",
    "to": "d:Service lane",
-   "at": "5:50",
+   "at": "4:50",
    "why": "to wait where the turned driver will bring the car"
   },
   {
@@ -57,7 +57,7 @@
    "do": "turn",
    "target": "driver",
    "approach": "pay",
-   "by": "5:40",
+   "by": "4:40",
    "label": "turned",
    "why": "the card shows Pay works on this driver (a Mercenary); §07's Help is one step worse on him"
   },
@@ -93,7 +93,7 @@
    "after": [
     "tip"
    ],
-   "at": "5:55",
+   "at": "4:55",
    "label": "scout-yard"
   },
   {
@@ -106,7 +106,7 @@
    "after": [
     "turned"
    ],
-   "at": "5:55",
+   "at": "4:55",
    "label": "fixer-yard"
   },
   {
@@ -120,7 +120,7 @@
    "op": "tech",
    "do": "reroute",
    "target": "patrol",
-   "at": "5:00",
+   "at": "4:00",
    "label": "rr",
    "why": "brief 067 A: ordered at 5:00, it lands 5:45, the patrol away to 7:40: the yard is clear for the Take and the fight (a rerouted patrol never breaks to gunfire)"
   },
@@ -152,7 +152,7 @@
    "do": "take",
    "when": "car.parks",
    "label": "take",
-   "at": "6:45",
+   "at": "5:45",
    "why": "Vale reaches the car in the service lane at 6:10"
   },
   {

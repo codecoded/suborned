@@ -27,7 +27,7 @@ namespace Suborned.Sim
     {
         static List<Scenario>? range;
         /// <summary>The fight range's scenarios (brief 029). Run each on Engine.LoadRange(root, s.Layout).</summary>
-        public static List<Scenario> Range { get { if (range == null) { range = new List<Scenario>(); RangeSet(); } return range; } }
+        public static List<Scenario> Range { get { if (range == null) { range = new List<Scenario>(); RangeSet(); foreach (var s in range) if (Array.IndexOf(CountedShots, s.Id) >= 0) s.Start.Pre080 = true; } return range; } }
         public static Scenario? FindRange(string id) { foreach (var s in Range) if (string.Equals(s.Id, id, StringComparison.OrdinalIgnoreCase)) return s; return null; }
         /// <summary>A range scenario on its own layout's inputs.</summary>
         public static Run RunRange(string root, Scenario s) => Run(Engine.LoadRange(root, s.Layout), s);

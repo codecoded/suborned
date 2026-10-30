@@ -274,7 +274,7 @@ namespace Suborned.Sim
             {
                 var g = r.G;
                 r.To(r.Send(Enf, "d:Boarding pavilion"));
-                r.To(T(370));
+                r.To(T(366)); // brief 080: Vale has a civilian's 3 health now, two carbine hits: time for both before he is driven away at 6:13
                 r.Fire(Enf, Vale, force: true);
                 r.Until(() => g.Over, T(10));
                 r.Eq(g.Result, Outcome.Failure, "killing the live capture target fails the objective");
@@ -715,7 +715,7 @@ namespace Suborned.Sim
                 while (g.Tick < at) { g.Step(); var p = r.Op(Scout).Pos; if (g.S.InsideOccluder(p) || !(g.S.Grid.Free(p) || g.S.Grid.Free(p + new Pt(10, 0)) || g.S.Grid.Free(p + new Pt(-10, 0)) || g.S.Grid.Free(p + new Pt(0, 10)) || g.S.Grid.Free(p + new Pt(0, -10)))) { outside = false; inside ??= p; } /* a string-pulled line is sampled every 10 cm (Grid.LineFree), so it may cut a blocked cell's corner by a few cm: engine 0.33.1's walk round Vale's car cuts one by 3 cm at (6900, -4403) */ if (g.Walk.CarCovers(p)) offCar = false; }
                 r.Is(outside, $"the operative stays outside the Office{(inside.HasValue ? $" (in at {inside.Value}: {string.Join(", ", g.S.Occluders.FindAll(o => o.Contains(inside.Value)).ConvertAll(o => o.Id))})" : "")}");
                 r.Is(offCar, "and never walks over Vale's car (engine 0.33.1, car.footprint)");
-                r.Eq(r.Op(Scout).Pos, sent, "and arrives where sent: d:Meet driver lies on the ground of Vale's car at the pickup, so beside it, on the side he comes to (Walk.RouteBeside)");
+                r.Is(G.Within(r.Op(Scout).Pos, sent!.Value, r.G.R.BodyClearCm * 6) && !G.Within(r.Op(Scout).Pos, r.G.DriverPos()!.Value, r.G.R.BodyClearCm), "and arrives where sent: d:Meet driver lies on the ground of Vale's car at the pickup, so beside it, on the side he comes to (Walk.RouteBeside), and clear of the driver (fight.spacing.cell, engine 0.37.0)");
             });
 
             Add("S28", "471", "Engaging nearby stops the approach walk.", r =>
@@ -1020,8 +1020,10 @@ namespace Suborned.Sim
                 r.To(scoutAt);
                 r.Eq(r.Op(Scout).Pos, r.Stand("d:Courtyard"), "the Scout is there at the tick the run gives");
                 r.Is(r.Op(Fixer).Walk != null, "the Fixer is still walking");
+                var fixerEnd = r.Op(Fixer).Walk!.End;
                 r.To(fixerAt);
-                r.Eq(r.Op(Fixer).Pos, r.Stand("d:Courtyard"), "the Fixer arrives at the tick the walk gives");
+                r.Eq(r.Op(Fixer).Pos, fixerEnd, "the Fixer arrives at the tick the walk gives");
+                r.Is(fixerEnd != r.Stand("d:Courtyard") && G.Within(fixerEnd, r.Stand("d:Courtyard"), g.R.BodyClearCm * 6) && !G.Within(fixerEnd, r.Op(Scout).Pos, g.R.BodyClearCm), "beside the Scout, not in her (fight.spacing.cell, engine 0.37.0)");
                 r.Is(walkTicks - runTicks > 0, $"running saved {walkTicks - runTicks} ticks");
             });
 
@@ -1123,6 +1125,7 @@ namespace Suborned.Sim
             FinalIntentCases(); // engine 0.20.0 (tuning.md §15.2, PROVISIONAL): the final fight per agent (ScenariosFinalIntent.cs)
             SealCarCases(); // engine 0.30.0 (briefs 057 §2 and §4, 060 #8): FailCause.Car, the debrief true to the run, the seal window, the reroute walk and PatrolLegs (ScenariosSealCar.cs)
             WindowCases(); // engine 0.24.0 (brief 043 §6): Windows(), the window marker's one read, and patrol.returns (ScenariosWindows.cs)
+            SeedCases(); // brief 080: the seed and the rolled shot (ScenariosSeed.cs)
             FireWhyCases(); // engine 0.25.0 (Sky playing 0.2.56): why a hostile fires on an operative, FireWhyOf and ai.why (ScenariosFireWhy.cs)
             NoticeCases(); // engine 0.28.0 (briefs 054, 055): sight from real heights, civilian notice by cone and Alert, the Watch that shows something (ScenariosNotice.cs)
             CameraLineCases(); // engine 0.31.0 (brief 058 §6, brief 054 §8): Loop v2, Disable, the camera shot's price, a runner remembered from Alert 2 (ScenariosCameraLines.cs)

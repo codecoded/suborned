@@ -1,0 +1,20 @@
+Enter at | Vale 4:50 wins/60 [fails] | Vale 5:05 wins/60 [fails]
+2:52 (+0) | 60 [] | 60 []
+3:02 (+10) | 60 [] | 60 []
+3:12 (+20) | 60 [] | 60 []
+3:22 (+30) | 60 [] | 60 []
+3:32 (+40) | 60 [] | 60 []
+3:42 (+50) | 60 [] | 60 []
+3:52 (+60) | 60 [] | 60 []
+4:02 (+70) | 60 [] | 60 []
+4:12 (+80) | 60 [] | 60 []
+4:22 (+90) | 60 [] | 60 []
+4:32 (+100) | 60 [] | 60 []
+4:42 (+110) | 60 [] | 60 []
+4:52 (+120) | 0 [vale-leavesx60] | 60 []
+5:02 (+130) | 0 [vale-leavesx60] | 60 []
+5:12 (+140) | 0 [vale-leavesx60] | 0 [vale-leavesx60]
+slow bot entry 5:02.8, 60 seeds: Vale 4:50 (0, 60, 'vale-leavesx60') | Vale 5:05 (60, 60, '')
+slow bot entry 5:02.8, 200 seeds: Vale 4:50 (0, 200, 'vale-leavesx200') | Vale 5:05 (200, 200, '')
+## slow-bot: seed 0 Failure vale-leaves end 5:13 fight 0s hp 0 T 4 A 1
+## slow-bot: seed 0 Success end 6:48 fight 20s hp 5 T 4 A 1

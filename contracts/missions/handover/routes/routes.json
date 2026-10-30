@@ -3,7 +3,7 @@
  "mission": "handover",
  "note": "The Handover's route scripts (brief 011 B, Waymark), played headless by the mission checker (bun run missions:check handover). Rewritten 2026-10-15 for Keel's round-2 engine: the final fight (N10, N11) and the crowd are on in every script, the cast is M-2's from the promoted people run r016 (sim/data/handover.site.json cast, 2026-10-16; Inez p-cafe-14 Fearful, the guard p-records-office-01, the driver p-records-office-31 and Vale p-records-office-07 Mercenary), so route A helps Inez twice (§04: a Fearful person needs Help ×2), Watch takes 20 s and the fight's shots are untraced (Sky's balance rulings). The scripts start from Keel's scenarios where one exists (N10, N11, N11b, S09, S25, N08), without their fixtures and keeping only the orders the engine took; every fixture a script would need became orders. Keel's readings are kept: the response unit enters from the north street (§07 'west street'), one door guard stays the whole mission, and Vale follows the mission's timeline, not his routine. Closing events (Suture's question; Aster 2026-10-15): route A's is Vale's exit at 5:50 (§07 route A, before 5:50), secured when the Enforcer is inside; route B's is the mission's close, 8:30 since Sky's ruling (rivals take Vale or the car leaves), secured when Vale is with the Enforcer. A carry in progress at the close (Waymark's ruling, 2026-10-15, on Keel's E8): the close ends the take, not a carry already under way. If the Enforcer holds Vale at 8:30 the run goes on (the engine logs horizon.open) and wins only when Vale reaches the getaway car; the final fight, the seal and the Enforcer's health bound the carry. Recommended to Keel and Motive, not yet in the engine: a hard stop at 12:00 (§01: a mission is 8-12 min) where a carry still under way ends as 'district seals'. Brief 013 D (Waymark, 2026-10-16): the takedown engine (Keel 0.5.0, security level 2, the guard's check-in marks every 90 s). Route G takes the guard out (knockout; fast; kill hidden behind the service door). Careless scripts (kind careless) do the same violence seen by a camera, seen by a crowd, found before the exit, or reported unstopped, each against its careful twin (MC-7). Trail is compared in total, the mission's plus what the debrief carries into the campaign. Rev 4 (2026-10-16): a found body holds the doors in its sight (careless-guard-left-door-held); open cases are priced at the rulebook's case-trail-eq in the totals. The driver route (Motive §6.2) is still not scripted: with the pickup loop and three bodies to a service door it plays, but each staff victim's missed mark is its own incident (the second lands at Alert 2, and the search opens the service door), and every witness at the bay tells a Loyal workmate by telephone (briefs/013/waymark-handover.md §5). Brief 018 (Waymark, 2026-10-18; Keel's engine 0.7.0, the getaway): extract is retired into Board and Go. Each quiet route has two references: fight it out (the original id: the Enforcer waits for the crew to break, boards, and the car leaves; the three walk out) and board and go (<id>-board, the primary of A, B and G: the Enforcer walks Vale to the car as the ambush springs, the three board once the blocker is down, nobody left behind). Loud has board and go (loud), fight it out (loud-fight) and the cheapest (loud-fast), each boarding the whole cell, since the seal clock captures anyone left standing. loud-left-downed and loud-left-standing are the two runs that leave an op behind (captured downed; captured fighting, abandoned). Plans may wait for the engine's `blocker.out` (c019: the engine logs it, and `car.free`). c019 (engine 0.7.x: walking Vale, the Enforcer does not fire): plans recomposed; loud-fast keeps its cover and carries its downed Fixer in. MC-10 checks quiet beats loud on Trail (a captive's +4 T counts as campaign Trail), Alert, Standing and the seal; MC-11 that no ambush spot or police stand holds the car. Brief 031 (Waymark, 2026-10-20; Keel's engine 0.11.0: every agent Watches at its own reach, and security watchers notice loiterers: a clock per watcher and agent, running while the agent stands still in its sight, noticed at 8 s, wary at 20 s, reported at 45 s at the Handover's Heat 0, mission.json start.heat): every quiet and loud route's waits are re-sited out of sight, so no watcher that keeps a clock sees an agent stand. The Enforcer waits on the forecourt (56.5, -47.5), behind the entrance camera's cone and the patrol's sweep and outside the guard's, and goes to the door's south side only once the patrol has left (A, loud) or walks in for the blow (G); in route B the Scout watches the driver from the Office's south-west corner and waits for the tip 2.8 m outside the pickup camera's cone, and the Fixer walks to the driver as the Watch ends; in route G the Scout watches the guard from 27.4 m, beyond his cone. A Watch in reach starts where the agent stands, so a Watch step waits (gap) for the walk to its spot. Every script states the Alert it ends at (expects.alert); MC-12 checks that no quiet script is reported for loitering and that the careless-loiter twin costs more than its careful twin. The fail scripts keep their fail codes; where a careless player's agent stands in a camera's view, it is now reported (Alert 1), which they keep. Brief 055 (Waymark, 2026-10-24; Keel's engine 0.27.0: the four Office-front cypresses are walk solids): the Enforcer's wait beside the public door, (69.5, -42.5), fell inside cyp-office-w's body clearance, so the move there was refused and the Enter after it failed; it is re-sited to (69.25, -42.5), the free cell beside it on the street (the scenarios' BesideDoor), in route A and its twin, the five loud plans, and the seven hand scripts that stand there (careless-body-found, careless-takedown-seen-camera, careless-takedown-seen-crowd, fail-district-seals, fail-entry-seen-camera, -guard, -patrol). Route G-kill's stash is re-composed (3:07.1, the carry round the cypresses is longer). Brief 056 (Waymark, 2026-10-24; Keel's engine 0.28.0: sight from real heights, the drawn walk grid and occluders, civilians who see by a cone and below Alert 2 care only about violence, and a Watch offered only where it shows something): every plan re-composed. The driver shows no mood (a Mercenary at fear 0), so no Watch on her is offered and Listen and Pay need none: the Scout's Watch of the driver is dropped from route-b, -board, -block, -block-board, careless-reporter-not-stopped and careless-scout-idles-pickup (and from the hand scripts fail-rivals-reach-vale and fight-safe-rivals-reach-vale, where it was refused); the Scout and the Fixer go on from the corner to the driver once there, about 20 s sooner. On the drawn walk the board-and-go Scout's cover by the car's east end (1175, -4825) is in rival-3's line as he walks to board, and he is downed short of the car: route-g-board, -g-fast-board, -g-kill-board and -a-pressure-board now cover from the car's north-west corner (725, -4625, cv-003), route G's own post (route-a-board, route-b-board and route-b-block-board still board from the east end). careless-reporter-not-stopped and careless-scout-idles-pickup take route-b's final-fight posts, so each differs from its twin only in its mistake. A guard's sight is watched once, so careless-enforcer-watches-guard drops the Scout's Watch and the Enforcer's from 3 m is the only one. The mission's cameras name their kind (pole-camera, the lens height the rulebook's perception.mount reads). Fight-it-out wins end 8-11 s later than on 0.27.0 (the crew takes longer to break on the drawn ground); board-and-go wins within 0.3 s. Brief 058 (Waymark, 2026-10-25; Keel's engine 0.31.0, Loop v2: a loop lands 20 s after it is ordered and runs 2:00 from the landing on its own, with no tether; Disable cuts a camera for good, +2 T, and the desk's report of the dead screen is an incident): every route that loops is re-timed so its loop still runs at the act it covers. Route A and its board twin plant the loop at 1:25 (live 1:45 to 3:45) and reroute as it lands (the patrol away 2:30 to 4:25): rerouting first, as brief 058 §6 suggested, brings the patrol back at 2:56.5, 3 s after the Enter, where this order keeps c036's slack (7 s, the Inez limit; 51 s from the wait by the door); the loud family plants at 1:00 (live 1:20 to 3:20) and reroutes as it lands (patrol away 2:05 to 4:00, as c036); route G and its twin plant at 1:00 (live 1:20 to 3:20); route G-kill and its twin reroute at 1:25, not 1:46, and plant the loop as the patrol leaves (2:10, live 2:30 to 4:30: it lands before the 2:31 kill and still runs at the 4:04 Enter); A-pressure and G-fast keep their order (loop first, then Reroute) and, recomposed, run faster, since the loop now holds the Tech 20 s, not 62 s: A-pressure-board 3:38.1 to 3:20.5, G-fast-board 3:53 to 3:11, same Trail, Alert and Standing. Every re-timed route keeps c036's end, Trail, Alert and Standing. fail-entry-seen-patrol plants its loop at 2:40 and walks the Enforcer to the door as it lands; careless-guard-left-door-held's mistake is now the Enforcer dawdling a minute after the blow (the Tech walking off no longer ends a loop): the loop runs out with the guard at the door and the unit holds it. careless-takedown-seen-crowd is re-sited to 5:30.0, when the clerks leaving face the door, so a civilian reports it (brief 054 §6), with the Enforcer waiting on the forecourt and the loop planted at 4:20. New: route-a-disable (route A with Disable in place of the Loop: 6 T, Alert 1, a quiet win counted under A), careless-g-disable (route G with Disable: the guard's missed 4:00 mark becomes the second incident, Alert 2 in the final fight, security joins it and the three are captured) and careless-loop-runs-out (route A with the loop planted first: it runs out before the Enter, entry-seen-camera; careless fault timing). c038 (Waymark, 2026-10-26; Keel's engine 0.34.1, GDD v0.26.0; briefs 059 and 067): one re-compose on the final engine. The cell walks 1.8 m/s and runs 3.6 m/s, and a run is noticed, never an Alert (route A ends at Alert 0); the patrol sweeps the service yard (brief 067 A), so the plain A and G references take no Reroute (informed play doesn't pay 1 T for nothing), while route B and its twins take it at 5:00 and keep the Enforcer at the square until 5:50 (in the yard before it he was reported at 1:53.4), and the G-kill pair takes it before the carry; route-a and route-a-disable hold Vale at (20.0, -65.0), beyond the pistol's reach of every ambush spot (Motive's ra-h3); route B's Scout locks 0.5 s after the Fixer (rb-st); route-g-kill-board walks Vale in once the blocker is out (rgkb-bo). The Pressure pair sends the Enforcer to the door from 2:40 so Vale comes out to the posted crew (out at 2:24 he met all five arriving hot: 3 wins of 8). The loud family breaks the crew gunfire draws before Vale is walked in (Motive's loud-x4, S11's shape); loud-fight brings the Enforcer's carbine to the officers. Brief 059: route-b-block and route-b-block-board are retired with the driver's Call, loud-fast with the cheap loud win it stood for; new route-b-thin (a posted rival thinned unseen; the floor recalls the late two), careless-thin-all (the pair can't be thinned quietly: the run goes loud), and one loud-wait twin per stand for MC-13 (fight-loud-wait-square, fight-loud-wait-yard). GDD v0.26.0 §07's fail line adds the cell down (fight-safe-cell-down); 'entry seen by patrol' needs a patrol that watches an entry (MC-3, suborned-sim facts), so fail-entry-seen-patrol is pending. GDD v0.28.0 (Sky 2026-10-26; Waymark, checker and data only, no re-compose): 'entry seen by patrol' is no fail. Keel's engine 0.34.2 makes a patrol that sees the Enter a report (Alert 1, a found fault, no Trail), so the line leaves the fail list and fail-entry-seen-patrol goes; no twin shows the report yet, since on today's site the patrol sweeps the service yard and sees no entry (patrolWatchesEntry stays a site fact). The fail line is §07's eight. Checks MC-11 (every stand; no hold that did not come for the car), MC-13, MC-14 and MC-15 are new or extended (tools/missions/check/judge.ts). Engine 0.35.1 (brief 039, Waymark 2026-10-27; fight B, one input): every route re-composed from its plan in one-input form. Routes A and G: the panic becomes F on each of the four at the spring (the draws land on the panic's own tick in every route); route B and its careless twins: the panic goes (the Scout and Fixer are drawn by their locks, the Tech is in the car, the Enforcer is boarding Vale, so F has nobody to draw); the loud family's stance-free orders go (weapons free is always on). careless-body-found and careless-takedown-seen-camera have no plans: their stance orders go and the panic (never reached: the run ends at 2:37) becomes four draws. route-g-board takes Motive's g-board-hold; careless-thin-all leaves the Scout captured fighting; fight-safe-cell-down is re-composed as 'never draws' and does not reach cell-down (no cause for the rivals: ai.intent). Route-diff 0.34.2 against 0.35.1: briefs/039/waymark/. Engine 0.35.2 (Waymark, Aster 2026-10-27; only a drawn op guards a held car): fight-safe-cell-down is renamed fight-safe-unguarded and expects rivals-reach-vale (the undrawn cell is no guard, so the rivals walk to the car and take Vale, 3:09.7); the §07 line 'the cell down' is covered by Keel's K3-CELL-DOWN scenario (fails[].scenario, counted by MC-3 when `suborned-sim check K3-CELL-DOWN` prints ': ok'; Sky: \"Sure\"), not a route. The routes 0.35.2 moved by log only are re-recorded.",
  "closing": {
-  "at": "8:30",
+  "at": "7:30",
   "what": "rivals take Vale or car leaves = over",
   "src": "mission.json timeline: the last entry closes the mission (GDD §07 schedule 8:00; Sky 2026-10-15 moves it to 8:30)"
  },
@@ -86,11 +86,17 @@
    "kind": "quiet",
    "route": "A",
    "expects": {
-    "outcome": "success",
-    "alert": 0
+    "outcome": "success"
    },
    "src": "GDD §07 route A; Keel N11",
-   "note": "c038 (Waymark, engine 0.34.1): Route A, the front door, quiet (GDD v0.26.0 §07; Keel N11), fight it out (brief 018 §5). The Scout watches Inez and listens; the Tech loops the entrance camera at 1:25 (live 1:45 to 3:45, so it still runs at the Enter) and takes no Reroute (brief 067 A: the patrol sweeps the service yard, not the door; informed play doesn't pay 1 T for nothing); the Fixer helps Inez twice (the cast's Inez is Fearful, §04) and has her call the guard away; the Enforcer enters while the door is unwatched and comes out by the service door with Vale. He holds Vale at (20.0, -65.0), 20.4 m from the car and 20.8 m or more from every ambush spot (Motive's ra-h3, briefs/067/motive.md §1.5), beyond the pistol's 16 m, so the cell's fire springs the ambush; the three fight the rival crew until it breaks (fight.over), then he boards with Vale and the car leaves at once; the three, on a calm street, walk out at no cost. c038 (Waymark, engine 0.34.1): the cell walks at 1.8 m/s and its runs are noticed, never an Alert, so route A ends at Alert 0."
+   "note": "c038 (Waymark, engine 0.34.1): Route A, the front door, quiet (GDD v0.26.0 §07; Keel N11), fight it out (brief 018 §5). The Scout watches Inez and listens; the Tech loops the entrance camera at 1:25 (live 1:45 to 3:45, so it still runs at the Enter) and takes no Reroute (brief 067 A: the patrol sweeps the service yard, not the door; informed play doesn't pay 1 T for nothing); the Fixer helps Inez twice (the cast's Inez is Fearful, §04) and has her call the guard away; the Enforcer enters while the door is unwatched and comes out by the service door with Vale. He holds Vale at (20.0, -65.0), 20.4 m from the car and 20.8 m or more from every ambush spot (Motive's ra-h3, briefs/067/motive.md §1.5), beyond the pistol's 16 m, so the cell's fire springs the ambush; the three fight the rival crew until it breaks (fight.over), then he boards with Vale and the car leaves at once; the three, on a calm street, walk out at no cost. c038 (Waymark, engine 0.34.1): the cell walks at 1.8 m/s and its runs are noticed, never an Alert, so route A ends at Alert 0.",
+   "adaptive": "quiet-a",
+   "primary": true,
+   "closes": {
+    "at": "4:50",
+    "what": "Vale exits (GDD §07 route A: before 5:50), after which he is no longer inside",
+    "secured": "enter.in"
+   }
   },
   {
    "id": "route-a-board",
@@ -98,18 +104,13 @@
    "plan": "route-a-board.plan.json",
    "kind": "quiet",
    "route": "A",
-   "primary": true,
-   "closes": {
-    "at": "5:50",
-    "what": "Vale exits (GDD §07 route A: before 5:50), after which he is no longer inside",
-    "secured": "enter.in"
-   },
    "expects": {
     "outcome": "success",
     "alert": 0
    },
    "src": "brief 018 §5 (board and go); GDD §07 route A; Keel N11",
-   "note": "c038 (Waymark, engine 0.34.1): Route A, board and go (brief 018 §5), the route's primary: the same route as route-a to the ambush (no Reroute: the patrol sweeps the service yard, brief 067 A); then the Enforcer walks Vale to the car as it springs, the three fire until the blocker is down, then board, and the car leaves with the whole cell. Route A, the front door, quiet (GDD v0.26.0 §07; Keel N11): watch and listen to Inez, loop the entrance camera at 1:25, help Inez as often as the card asks (twice: the cast's Inez is Fearful, §04) and have her call the guard away, enter while the door is unwatched, take Vale out by the service door, and fight the rivals' ambush at the getaway car with the whole armed cell (Arms 3). The cell runs where a player in a hurry would (to the café, the cabinet and the door): a run is noticed, never an Alert (engine 0.34.0), so the quiet route ends at Alert 0."
+   "note": "c038 (Waymark, engine 0.34.1): Route A, board and go (brief 018 §5), the route's primary: the same route as route-a to the ambush (no Reroute: the patrol sweeps the service yard, brief 067 A); then the Enforcer walks Vale to the car as it springs, the three fire until the blocker is down, then board, and the car leaves with the whole cell. Route A, the front door, quiet (GDD v0.26.0 §07; Keel N11): watch and listen to Inez, loop the entrance camera at 1:25, help Inez as often as the card asks (twice: the cast's Inez is Fearful, §04) and have her call the guard away, enter while the door is unwatched, take Vale out by the service door, and fight the rivals' ambush at the getaway car with the whole armed cell (Arms 3). The cell runs where a player in a hurry would (to the café, the cabinet and the door): a run is noticed, never an Alert (engine 0.34.0), so the quiet route ends at Alert 0.",
+   "pending": "retired (brief 080): fixed ticks on a seeded game; the adaptive plan quiet-a plays this style across seeds. The file stays for what still reads it (tools/qa, closing hash)."
   },
   {
    "id": "route-a-pressure",
@@ -122,7 +123,8 @@
     "alert": 0
    },
    "src": "Keel S25; Sky Q4",
-   "note": "c038 (Waymark, engine 0.34.1): Route A with Pressure for Help (Keel S25; Sky Q4), fight it out: Pressure leans on Inez's affair, learned by Listen ($0, +3 T); the cast's Inez is Fearful, so it is also her own approach and one order turns her, and she calls the guard away at about 1:46. No Reroute (brief 067 A). c038 (Waymark, engine 0.34.1): the Enforcer goes to the door from 2:40, not as soon as she calls: Pressure brings no warning from Inez, and Vale out before the rival car posts (2:24 on the call's timing) meant all five coming hot at the Enforcer with no posts (the c037 script lost rivals-reach-vale at 3:17.2; composed fresh it won 3 of 8 jitters). Out at about 3:20, after the crew has posted, he holds Vale at (20.0, -65.0) as route-a does while the three break the crew, then boards; the car leaves at once and the three walk out. Faster than route-a by the Pressure's one turn, at 2 T more and no money."
+   "note": "c038 (Waymark, engine 0.34.1): Route A with Pressure for Help (Keel S25; Sky Q4), fight it out: Pressure leans on Inez's affair, learned by Listen ($0, +3 T); the cast's Inez is Fearful, so it is also her own approach and one order turns her, and she calls the guard away at about 1:46. No Reroute (brief 067 A). c038 (Waymark, engine 0.34.1): the Enforcer goes to the door from 2:40, not as soon as she calls: Pressure brings no warning from Inez, and Vale out before the rival car posts (2:24 on the call's timing) meant all five coming hot at the Enforcer with no posts (the c037 script lost rivals-reach-vale at 3:17.2; composed fresh it won 3 of 8 jitters). Out at about 3:20, after the crew has posted, he holds Vale at (20.0, -65.0) as route-a does while the three break the crew, then boards; the car leaves at once and the three walk out. Faster than route-a by the Pressure's one turn, at 2 T more and no money.",
+   "pending": "retired (brief 080): fixed ticks on a seeded game; the adaptive plan quiet-a plays this style across seeds. The file stays for what still reads it (tools/qa, closing hash)."
   },
   {
    "id": "route-a-pressure-board",
@@ -135,7 +137,8 @@
     "alert": 0
    },
    "src": "brief 018 §5 (board and go); Keel S25; Sky Q4",
-   "note": "c038 (Waymark, engine 0.34.1): Board and go (brief 018 §5), the twin of route-a-pressure: the same route to the ambush (Pressure for Help, no Reroute, the Enforcer at the door from 2:40 so Vale comes out to the posted crew, c038); then the Enforcer holds Vale 19.5 m out while the three fire, walks him in once the blocker is out (Motive briefs/067/motive-square.md §7), boards, the three board after him, and the car leaves with the whole cell. Pressure brings no warning from Inez, so the five fire at once."
+   "note": "c038 (Waymark, engine 0.34.1): Board and go (brief 018 §5), the twin of route-a-pressure: the same route to the ambush (Pressure for Help, no Reroute, the Enforcer at the door from 2:40 so Vale comes out to the posted crew, c038); then the Enforcer holds Vale 19.5 m out while the three fire, walks him in once the blocker is out (Motive briefs/067/motive-square.md §7), boards, the three board after him, and the car leaves with the whole cell. Pressure brings no warning from Inez, so the five fire at once.",
+   "pending": "retired (brief 080): fixed ticks on a seeded game; the adaptive plan quiet-a plays this style across seeds. The file stays for what still reads it (tools/qa, closing hash)."
   },
   {
    "id": "route-a-disable",
@@ -148,7 +151,8 @@
     "alert": 1
    },
    "src": "brief 058 §4, §6 (Disable instead of the Loop, early; Sky 2026-10-25: Disable is an incident); GDD §07 route A",
-   "note": "c038 (Waymark, engine 0.34.1): Route A (fight it out) with Disable in place of the Loop (brief 058 §4, §6): the cut (+2 T, where the loop is +1) is reported by the desk at its next scan, the run's first incident (Alert 1); route A has no later report, so it wins at the same time as route-a and one Trail dearer, with no 2:00 window to keep. No Reroute (brief 067 A): the patrol answers the dead screen and stands down without a report. The Enforcer holds Vale at (20.0, -65.0) as route-a does (Motive's rad-h3)."
+   "note": "c038 (Waymark, engine 0.34.1): Route A (fight it out) with Disable in place of the Loop (brief 058 §4, §6): the cut (+2 T, where the loop is +1) is reported by the desk at its next scan, the run's first incident (Alert 1); route A has no later report, so it wins at the same time as route-a and one Trail dearer, with no 2:00 window to keep. No Reroute (brief 067 A): the patrol answers the dead screen and stands down without a report. The Enforcer holds Vale at (20.0, -65.0) as route-a does (Motive's rad-h3).",
+   "pending": "retired (brief 080): fixed ticks on a seeded game; the adaptive plan quiet-a plays this style across seeds. The file stays for what still reads it (tools/qa, closing hash)."
   },
   {
    "id": "route-b",
@@ -157,11 +161,17 @@
    "kind": "quiet",
    "route": "B",
    "expects": {
-    "outcome": "success",
-    "alert": 0
+    "outcome": "success"
    },
    "src": "GDD §07 route B; Keel N11b",
-   "note": "c038 (Waymark, engine 0.34.1): Route B, the pickup, quiet (GDD v0.26.0 §07; Keel N11b), fight it out (brief 018 §5). The Scout listens to the driver and the Fixer pays him by 5:40 ($70,000); his word sends the rivals' lookout off; the Scout gives the rival car a false tip at 3:10; the Tech reroutes the patrol from the cabinet at 5:00 (it lands at 5:45 and keeps the yard clear to 7:40: brief 067 A, the patrol sweeps the service yard; rerouted it never breaks to the yard fight), then runs to the getaway car and Drives it round behind Vale's car once it parks in the service bay (car.parks). The Enforcer waits at the square until 5:50 (in the yard before the Reroute the patrol reported him at 1:53.4), walks to the service lane, takes Vale from the back seat (38 s, off-screen) and carries him 3.5 m to the car. The posted three run after the Driven car and spring at the Take; the Fixer and then the Scout, 0.5 s later (Motive's rb-st: on the same tick the Fixer took both rivals' fire and went down), lock rival-1 then rival-2 (focus fire, Motive M059-B7: at will the three shoot the carrying Enforcer down) until the crew breaks; then Go. The three left behind on a calm street walk out."
+   "note": "c038 (Waymark, engine 0.34.1): Route B, the pickup, quiet (GDD v0.26.0 §07; Keel N11b), fight it out (brief 018 §5). The Scout listens to the driver and the Fixer pays him by 5:40 ($70,000); his word sends the rivals' lookout off; the Scout gives the rival car a false tip at 3:10; the Tech reroutes the patrol from the cabinet at 5:00 (it lands at 5:45 and keeps the yard clear to 7:40: brief 067 A, the patrol sweeps the service yard; rerouted it never breaks to the yard fight), then runs to the getaway car and Drives it round behind Vale's car once it parks in the service bay (car.parks). The Enforcer waits at the square until 5:50 (in the yard before the Reroute the patrol reported him at 1:53.4), walks to the service lane, takes Vale from the back seat (38 s, off-screen) and carries him 3.5 m to the car. The posted three run after the Driven car and spring at the Take; the Fixer and then the Scout, 0.5 s later (Motive's rb-st: on the same tick the Fixer took both rivals' fire and went down), lock rival-1 then rival-2 (focus fire, Motive M059-B7: at will the three shoot the carrying Enforcer down) until the crew breaks; then Go. The three left behind on a calm street walk out.",
+   "adaptive": "quiet-b",
+   "primary": true,
+   "closes": {
+    "at": "7:30",
+    "what": "rivals take Vale or the car leaves = over (GDD §07 schedule, the 8:30 close since Sky's 2026-10-15 ruling)",
+    "secured": "take.done"
+   }
   },
   {
    "id": "route-b-board",
@@ -169,18 +179,13 @@
    "plan": "route-b-board.plan.json",
    "kind": "quiet",
    "route": "B",
-   "primary": true,
-   "closes": {
-    "at": "8:30",
-    "what": "rivals take Vale or the car leaves = over (GDD §07 schedule, the 8:30 close since Sky's 2026-10-15 ruling)",
-    "secured": "take.done"
-   },
    "expects": {
     "outcome": "success",
     "alert": 0
    },
    "src": "brief 018 §5 (board and go); GDD §07 route B; Keel N11b",
-   "note": "c038 (Waymark, engine 0.34.1): Route B, board and go (brief 018 §5), the route's primary: as route-b to the Take (the driver paid, the false tip, the Reroute at 5:00, the car Driven round behind Vale's, the Enforcer at the square until 5:50); then the Enforcer carries Vale 3.5 m into the car while the Fixer and the Scout (0.5 s after him) lock rival-1 then rival-2, and once the blocker is down the two board and the car leaves with the whole cell."
+   "note": "c038 (Waymark, engine 0.34.1): Route B, board and go (brief 018 §5), the route's primary: as route-b to the Take (the driver paid, the false tip, the Reroute at 5:00, the car Driven round behind Vale's, the Enforcer at the square until 5:50); then the Enforcer carries Vale 3.5 m into the car while the Fixer and the Scout (0.5 s after him) lock rival-1 then rival-2, and once the blocker is down the two board and the car leaves with the whole cell.",
+   "pending": "retired (brief 080): fixed ticks on a seeded game; the adaptive plan quiet-b plays this style across seeds. The file stays for what still reads it (tools/qa, closing hash)."
   },
   {
    "id": "route-b-thin",
@@ -193,7 +198,8 @@
     "alert": 0
    },
    "src": "brief 059 S1 (Sky 2026-10-25: the fight always comes); Motive briefs/059/motive/s1-rulings.json route-b-thin, M059-S1.4 (the floor), M059-S1.6",
-   "note": "c038 (Waymark, engine 0.34.1): Route B thinned (brief 059 S1; Motive's s1-rulings route-b-thin): route-b with one posted rival taken down before the pickup where the other two cannot see it. At about 5:31 the Enforcer, waiting at the square, knocks out rival-3 at his lone post by the café terrace from behind (1.3 m off his back; he faces our car), 28 m from the pair on the square's east side, beyond their pistols' 16 m, and leaves him; he wakes after the fight. At the Take the floor (rivals-floor 3) recalls the warned lookout and the tipped car, so the fight is the two posted plus the late two: thinner, never skipped (MC-14). The knockout costs nothing while nobody reports it before the car leaves (a passer-by finds him at 7:30 and is still walking over)."
+   "note": "c038 (Waymark, engine 0.34.1): Route B thinned (brief 059 S1; Motive's s1-rulings route-b-thin): route-b with one posted rival taken down before the pickup where the other two cannot see it. At about 5:31 the Enforcer, waiting at the square, knocks out rival-3 at his lone post by the café terrace from behind (1.3 m off his back; he faces our car), 28 m from the pair on the square's east side, beyond their pistols' 16 m, and leaves him; he wakes after the fight. At the Take the floor (rivals-floor 3) recalls the warned lookout and the tipped car, so the fight is the two posted plus the late two: thinner, never skipped (MC-14). The knockout costs nothing while nobody reports it before the car leaves (a passer-by finds him at 7:30 and is still walking over).",
+   "pending": "retired (brief 080): fixed ticks on a seeded game; the adaptive plan quiet-b plays this style across seeds. The file stays for what still reads it (tools/qa, closing hash)."
   },
   {
    "id": "route-g",
@@ -202,11 +208,17 @@
    "kind": "quiet",
    "route": "G",
    "expects": {
-    "outcome": "success",
-    "alert": 1
+    "outcome": "success"
    },
    "src": "brief 013 D; Motive briefs/013/motive-takedowns.md §6.1 G-KO; Keel N46",
-   "note": "c038 (Waymark, engine 0.34.1): Route G, knockout (brief 013 D; Motive 013 §6.1 G-KO), fight it out: the Scout watches the guard (his cone and check-in marks), the Tech loops the entrance camera at 1:00, and the Enforcer knocks the guard out from beside just after his 2:30 mark and leaves him where he fell, enters at once and takes Vale out by the service door. No Reroute (brief 067 A: the patrol sweeps the service yard, and nothing is carried into it). He holds Vale at (24.0, -60.0) while the Scout, Fixer and Tech lock rival-2 then rival-1 (focus fire, Motive M059-B7) until the crew breaks; then he boards and the car leaves; the three walk out."
+   "note": "c038 (Waymark, engine 0.34.1): Route G, knockout (brief 013 D; Motive 013 §6.1 G-KO), fight it out: the Scout watches the guard (his cone and check-in marks), the Tech loops the entrance camera at 1:00, and the Enforcer knocks the guard out from beside just after his 2:30 mark and leaves him where he fell, enters at once and takes Vale out by the service door. No Reroute (brief 067 A: the patrol sweeps the service yard, and nothing is carried into it). He holds Vale at (24.0, -60.0) while the Scout, Fixer and Tech lock rival-2 then rival-1 (focus fire, Motive M059-B7) until the crew breaks; then he boards and the car leaves; the three walk out.",
+   "adaptive": "quiet-g",
+   "primary": true,
+   "closes": {
+    "at": "4:50",
+    "what": "Vale exits (GDD §07 route A: before 5:50), after which he is no longer inside",
+    "secured": "enter.in"
+   }
   },
   {
    "id": "route-g-board",
@@ -219,7 +231,8 @@
     "alert": 1
    },
    "src": "brief 018 §5 (board and go); brief 013 D; Motive briefs/013/motive-takedowns.md §6.1 G-KO; Keel N46",
-   "note": "Engine 0.35.1 (brief 039, Waymark 2026-10-27): Motive's g-board-hold (briefs/039/motive/probe-0.35/routes/g-board-hold.json): the three draw at the spring and lock rival-2 and hold it, with no second lock on rival-1 (the sticky focus: that lock took them off the blocker at 3:47.6 and the rivals reached Vale at 4:08.5); they walk to the car as the Enforcer's Board is given, which brings the blocker into their reach, and board once he is down (blocker.out); Go at 3:59.6, as on 0.34.2. c038 (Waymark, engine 0.34.1): Board and go (brief 018 §5), the twin of route-g: the same route to the ambush (no Reroute); then the Enforcer walks Vale to the car as it springs while the three lock rival-2 then rival-1, and once the blocker is down they board and the car leaves with the whole cell."
+   "note": "Engine 0.35.1 (brief 039, Waymark 2026-10-27): Motive's g-board-hold (briefs/039/motive/probe-0.35/routes/g-board-hold.json): the three draw at the spring and lock rival-2 and hold it, with no second lock on rival-1 (the sticky focus: that lock took them off the blocker at 3:47.6 and the rivals reached Vale at 4:08.5); they walk to the car as the Enforcer's Board is given, which brings the blocker into their reach, and board once he is down (blocker.out); Go at 3:59.6, as on 0.34.2. c038 (Waymark, engine 0.34.1): Board and go (brief 018 §5), the twin of route-g: the same route to the ambush (no Reroute); then the Enforcer walks Vale to the car as it springs while the three lock rival-2 then rival-1, and once the blocker is down they board and the car leaves with the whole cell.",
+   "pending": "retired (brief 080): fixed ticks on a seeded game; the adaptive plan quiet-g plays this style across seeds. The file stays for what still reads it (tools/qa, closing hash)."
   },
   {
    "id": "route-g-fast",
@@ -232,7 +245,8 @@
     "alert": 1
    },
    "src": "brief 013 D; Motive 013 §6.1 G-fast",
-   "note": "c038 (Waymark, engine 0.34.1): Route G, fast (brief 013 D; Motive 013 §6.1 G-fast), fight it out: route G with the loop as soon as the Tech reaches the cabinet (live 0:32.7 to 2:32.7) and the guard knocked out at about 1:26, from beside, as the Enforcer walks in at 1:17 (when the patrol left the door, before brief 067 A moved it to the yard: no Reroute now). He enters at once (out at about 2:11), holds Vale at (24.0, -60.0) while the three lock rival-1, rival-2 and rival-3 in turn from the spring (focus fire, Motive M059-B7), and boards once the crew breaks; the three walk out. The fastest quiet win (MC-6)."
+   "note": "c038 (Waymark, engine 0.34.1): Route G, fast (brief 013 D; Motive 013 §6.1 G-fast), fight it out: route G with the loop as soon as the Tech reaches the cabinet (live 0:32.7 to 2:32.7) and the guard knocked out at about 1:26, from beside, as the Enforcer walks in at 1:17 (when the patrol left the door, before brief 067 A moved it to the yard: no Reroute now). He enters at once (out at about 2:11), holds Vale at (24.0, -60.0) while the three lock rival-1, rival-2 and rival-3 in turn from the spring (focus fire, Motive M059-B7), and boards once the crew breaks; the three walk out. The fastest quiet win (MC-6).",
+   "pending": "retired (brief 080): fixed ticks on a seeded game; the adaptive plan quiet-g plays this style across seeds. The file stays for what still reads it (tools/qa, closing hash)."
   },
   {
    "id": "route-g-fast-board",
@@ -240,18 +254,13 @@
    "plan": "route-g-fast-board.plan.json",
    "kind": "quiet",
    "route": "G",
-   "primary": true,
-   "closes": {
-    "at": "5:50",
-    "what": "Vale exits (GDD §07 route A: before 5:50), after which he is no longer inside",
-    "secured": "enter.in"
-   },
    "expects": {
     "outcome": "success",
     "alert": 1
    },
    "src": "brief 018 §5 (board and go); brief 013 D; Motive 013 §6.1 G-fast",
-   "note": "c038 (Waymark, engine 0.34.1): Route G, fast, board and go (brief 018 §5), the route's primary: as route-g-fast to the ambush (the loop at once, the guard knocked out at about 1:26 with no Reroute, the Enter at once); then the Enforcer walks Vale to the car as it springs while the three lock rival-1, rival-2 and rival-3 in turn, and once the blocker is down they board and the car leaves with the whole cell."
+   "note": "c038 (Waymark, engine 0.34.1): Route G, fast, board and go (brief 018 §5), the route's primary: as route-g-fast to the ambush (the loop at once, the guard knocked out at about 1:26 with no Reroute, the Enter at once); then the Enforcer walks Vale to the car as it springs while the three lock rival-1, rival-2 and rival-3 in turn, and once the blocker is down they board and the car leaves with the whole cell.",
+   "pending": "retired (brief 080): fixed ticks on a seeded game; the adaptive plan quiet-g plays this style across seeds. The file stays for what still reads it (tools/qa, closing hash)."
   },
   {
    "id": "route-g-kill",
@@ -264,7 +273,8 @@
     "alert": 1
    },
    "src": "brief 013 D; Motive 013 §6.1 G-kill; Keel N47",
-   "note": "c038 (Waymark, engine 0.34.1): Route G with a kill (brief 013 D; Motive 013 §6.1 G-kill), fight it out: the guard killed (3 s) and his body carried to the Office's service door and put through it, never found in the mission (a missing person, an open case: GDD §07 kill variant). The Tech reroutes the patrol before the carry (brief 067 A: the yard's sweep would see the carry; Motive briefs/067/motive-square.md §5.2). The Enforcer holds Vale at (20.0, -65.0) while the three fight the crew until it breaks (SQ2: a rival with nobody in reach advances on the op, so the fight ends), then boards; the three walk out."
+   "note": "c038 (Waymark, engine 0.34.1): Route G with a kill (brief 013 D; Motive 013 §6.1 G-kill), fight it out: the guard killed (3 s) and his body carried to the Office's service door and put through it, never found in the mission (a missing person, an open case: GDD §07 kill variant). The Tech reroutes the patrol before the carry (brief 067 A: the yard's sweep would see the carry; Motive briefs/067/motive-square.md §5.2). The Enforcer holds Vale at (20.0, -65.0) while the three fight the crew until it breaks (SQ2: a rival with nobody in reach advances on the op, so the fight ends), then boards; the three walk out.",
+   "pending": "retired (brief 080): fixed ticks on a seeded game; the adaptive plan quiet-g plays this style across seeds. The file stays for what still reads it (tools/qa, closing hash)."
   },
   {
    "id": "route-g-kill-board",
@@ -277,7 +287,8 @@
     "alert": 1
    },
    "src": "brief 018 §5 (board and go); brief 013 D; Motive 013 §6.1 G-kill; Keel N47",
-   "note": "c038 (Waymark, engine 0.34.1): Board and go (brief 018 §5), the twin of route-g-kill: the same route to the ambush (the kill, the carry through the service door with the patrol rerouted); then the Enforcer holds Vale at (20.0, -65.0) until the blocker is out and only then walks him in (Motive's rgkb-bo: walking in at the spring crossed the blocker's lane walk, and the blocker fires as he walks), boards, the three board after him, and the car leaves with the whole cell."
+   "note": "c038 (Waymark, engine 0.34.1): Board and go (brief 018 §5), the twin of route-g-kill: the same route to the ambush (the kill, the carry through the service door with the patrol rerouted); then the Enforcer holds Vale at (20.0, -65.0) until the blocker is out and only then walks him in (Motive's rgkb-bo: walking in at the spring crossed the blocker's lane walk, and the blocker fires as he walks), boards, the three board after him, and the car leaves with the whole cell.",
+   "pending": "retired (brief 080): fixed ticks on a seeded game; the adaptive plan quiet-g plays this style across seeds. The file stays for what still reads it (tools/qa, closing hash)."
   },
   {
    "id": "loud",
@@ -287,11 +298,11 @@
    "route": "A",
    "primary": true,
    "expects": {
-    "outcome": "success",
-    "alert": 2
+    "outcome": "success"
    },
    "src": "GDD §07 loud; Keel N10",
-   "note": "c038 (Waymark, engine 0.34.1): The loud reference, board and go (GDD v0.26.0 §07 loud; Keel N10; brief 018 §5): loop the camera and reroute the patrol, shoot the guard just after his 2:30 mark (gunfire: Alert 2, the shots traced), enter (68 s at Alert 2), and take Vale out by the service door. The gunfire draws the rival car to the Office front (16 s), four of them on foot; when the final fight opens (police from the north street, the seal clock running) the Scout, Fixer and Tech down the response unit (security-2 then security-1, the blocker), then the Scout and Fixer flank across the square and drop rival-1, rival-2 and rival-3 in turn (traced: they are not the final fight's hostiles), until the crew breaks (§06: more than half down; Motive M059-B5, S11's shape: break the drawn crew before Vale is walked into it). Only then does the Enforcer walk Vale to the car; the three board after him and the car leaves with officers 1 and 2 still at their stands: one of them sees it go (+1 T, the car hunted)."
+   "note": "c038 (Waymark, engine 0.34.1): The loud reference, board and go (GDD v0.26.0 §07 loud; Keel N10; brief 018 §5): loop the camera and reroute the patrol, shoot the guard just after his 2:30 mark (gunfire: Alert 2, the shots traced), enter (68 s at Alert 2), and take Vale out by the service door. The gunfire draws the rival car to the Office front (16 s), four of them on foot; when the final fight opens (police from the north street, the seal clock running) the Scout, Fixer and Tech down the response unit (security-2 then security-1, the blocker), then the Scout and Fixer flank across the square and drop rival-1, rival-2 and rival-3 in turn (traced: they are not the final fight's hostiles), until the crew breaks (§06: more than half down; Motive M059-B5, S11's shape: break the drawn crew before Vale is walked into it). Only then does the Enforcer walk Vale to the car; the three board after him and the car leaves with officers 1 and 2 still at their stands: one of them sees it go (+1 T, the car hunted).",
+   "adaptive": "prepared-loud"
   },
   {
    "id": "loud-fight",
@@ -304,7 +315,8 @@
     "alert": 2
    },
    "src": "brief 018 §5 (fight it out); GDD §07 loud; Keel N10",
-   "note": "c038 (Waymark, engine 0.34.1): Fight it out, the loud twin (brief 018 §5): as loud to the Enforcer's Board; then he steps out again (Vale stays in) and the whole cell, his carbine with the three sidearms, downs the final fight's two officers on the café wall (the police never break; three sidearms alone lose to two trained officers on this engine), and only then do they board: the seal clock runs, so anyone left standing would be captured. Nobody is up to see the car go, so it costs 1 T less than loud."
+   "note": "c038 (Waymark, engine 0.34.1): Fight it out, the loud twin (brief 018 §5): as loud to the Enforcer's Board; then he steps out again (Vale stays in) and the whole cell, his carbine with the three sidearms, downs the final fight's two officers on the café wall (the police never break; three sidearms alone lose to two trained officers on this engine), and only then do they board: the seal clock runs, so anyone left standing would be captured. Nobody is up to see the car go, so it costs 1 T less than loud.",
+   "pending": "retired (brief 080): fixed ticks on a seeded game; the adaptive plan prepared-loud plays this style across seeds. The file stays for what still reads it (tools/qa, closing hash)."
   },
   {
    "id": "fail-vale-dead",
@@ -353,7 +365,8 @@
     "alert": 2
    },
    "reaches": "district-seals",
-   "src": "GDD §07 fail; §05 district seals 2:25 after the response unit arrives; Suture N3"
+   "src": "GDD §07 fail; §05 district seals 2:25 after the response unit arrives; Suture N3",
+   "pending": "retired (brief 080): the district seals is reached by the adaptive plans across seeds (prepared-loud, unprepared-loud)."
   },
   {
    "id": "fail-enforcer-down",
@@ -389,7 +402,8 @@
     "alert": 1
    },
    "reaches": "entry-seen-camera",
-   "src": "GDD §07 fail; Suture N6"
+   "src": "GDD §07 fail; Suture N6",
+   "pending": "retired (brief 080): entry seen by a live camera is reached by the adaptive plans across seeds (careless, unprepared-loud, thin-quiet)."
   },
   {
    "id": "fail-take-seen-camera",
@@ -495,7 +509,8 @@
     "alert": 2
    },
    "src": "brief 018 §5: one run that leaves a downed op (captured, +4 T)",
-   "note": "c038 (Waymark, engine 0.34.1): Brief 018 §5: the run that leaves a downed op. Loud (board and go) with the Scout sent out of cover toward the officers on the café wall when the rivals break: she is downed, nobody carries her, and the car leaves without her, so she is captured (downed) and +4 T goes to the campaign."
+   "note": "c038 (Waymark, engine 0.34.1): Brief 018 §5: the run that leaves a downed op. Loud (board and go) with the Scout sent out of cover toward the officers on the café wall when the rivals break: she is downed, nobody carries her, and the car leaves without her, so she is captured (downed) and +4 T goes to the campaign.",
+   "pending": "retired (brief 080): fixed ticks on a seeded game; the adaptive plan prepared-loud plays this style across seeds. The file stays for what still reads it (tools/qa, closing hash)."
   },
   {
    "id": "loud-left-standing",
@@ -510,7 +525,8 @@
     "alert": 2
    },
    "src": "brief 018 §5: one run that leaves a standing op mid-fight (captured, abandoned)",
-   "note": "c038 (Waymark, engine 0.34.1): Brief 018 §5: the run that leaves a standing op mid-fight. Loud (board and go) without the Scout boarding: the blocker is down and the car free, but the officers at their stands are still up, so the Scout, left standing, is captured (fighting: abandoned, resentment +1, loyalty -1) and +4 T goes to the campaign."
+   "note": "c038 (Waymark, engine 0.34.1): Brief 018 §5: the run that leaves a standing op mid-fight. Loud (board and go) without the Scout boarding: the blocker is down and the car free, but the officers at their stands are still up, so the Scout, left standing, is captured (fighting: abandoned, resentment +1, loyalty -1) and +4 T goes to the campaign.",
+   "pending": "retired (brief 080): fixed ticks on a seeded game; the adaptive plan prepared-loud plays this style across seeds. The file stays for what still reads it (tools/qa, closing hash)."
   },
   {
    "id": "careless-takedown-seen-camera",
@@ -562,7 +578,8 @@
    "twin": "route-b",
    "src": "brief 013 D: a reporter not stopped; Keel N65",
    "note": "c038 (Waymark, engine 0.34.1): Careless violence (brief 013 D), the twin of route-b: the idle Enforcer kills guard 73 (p-records-office-73, the incoming door guard) on his walk from the café to the public door and leaves him where he fell. c038 (Waymark, engine 0.34.1): his walk now runs 3.5 m south of the old spot (walks off the grid since 0.33.0), so the Enforcer waits 1.2 m beside the new line at (33.0, -40.1); the kill (about 4:30) is timed to his arrival, the first tick he is in reach, from the side, unseen. His missed 5:30 mark is the desk's report (Alert 1), which no Tech action stops; nobody finds the body before the car leaves, so the debrief carries a missing person and an open case: a win at Alert 1 (route-b: Alert 0) and dearer in total Trail (MC-7).",
-   "plan": "careless-reporter-not-stopped.plan.json"
+   "plan": "careless-reporter-not-stopped.plan.json",
+   "pending": "retired (brief 080): fixed ticks on a seeded game; the adaptive plan careless plays this style across seeds. The file stays for what still reads it (tools/qa, closing hash)."
   },
   {
    "id": "careless-guard-left-door-held",
@@ -600,7 +617,7 @@
    "twin": "route-b",
    "expects": {
     "outcome": "success",
-    "alert": 1
+    "alert": 2
    },
    "src": "brief 031 §7 (Waymark 4)",
    "note": "c038 (Waymark, engine 0.34.1): Careless loiter (brief 031), the twin of route-b: route-b, but the Scout waits for the 3:10 tip in the pickup camera's view: reported as a loiterer at its desk's next scan (Alert 1, the dial's two robots, no Trail); the route still wins, one Alert dearer than its twin (Alert 0). As route-b: the Reroute at 5:00, the Enforcer at the square until 5:50, the Scout's lock 0.5 s after the Fixer's."
@@ -616,7 +633,8 @@
     "alert": 2
    },
    "src": "brief 058 §4, §6 (Disable is worse on every G route)",
-   "note": "c038 (Waymark, engine 0.34.1): Careless (brief 058 §4, §6), the twin of route-g: route G with Disable in place of the Loop (at 1:10): the desk's report of the dead screen is the first incident (Alert 1), and the knocked-out guard, found at the door while the cell is still at the car, is the second (Alert 2, before the fight is over). The Tech reroutes the patrol at 1:46 as c037's twin did: without it the patrol answers the dead screen at the camera and the run goes loud and seals (probed on 0.34.1). Focus fire as route-g (Motive M059-B7): the three lock rival-2 then rival-1 from the spring."
+   "note": "c038 (Waymark, engine 0.34.1): Careless (brief 058 §4, §6), the twin of route-g: route G with Disable in place of the Loop (at 1:10): the desk's report of the dead screen is the first incident (Alert 1), and the knocked-out guard, found at the door while the cell is still at the car, is the second (Alert 2, before the fight is over). The Tech reroutes the patrol at 1:46 as c037's twin did: without it the patrol answers the dead screen at the camera and the run goes loud and seals (probed on 0.34.1). Focus fire as route-g (Motive M059-B7): the three lock rival-2 then rival-1 from the spring.",
+   "pending": "retired (brief 080): fixed ticks on a seeded game; the adaptive plan careless plays this style across seeds. The file stays for what still reads it (tools/qa, closing hash)."
   },
   {
    "id": "careless-loop-runs-out",
@@ -648,7 +666,8 @@
     "alert": 2
    },
    "src": "brief 059 S1; Motive briefs/059/motive/s1-rulings.json careless-thin-all, M059-S1.6 (a crewmate who sees a takedown fires)",
-   "note": "c038 (Waymark, engine 0.34.1): Careless violence (brief 059 S1; Motive's s1-rulings careless-thin-all), the twin of route-b: the Enforcer sets out to take down all three posted rivals on the square before the pickup. The lone one by the café terrace goes down unseen (as route-b-thin), but the pair on its east side cannot be thinned quietly (M059-S1.6): rival-2 sees rival-1 taken down and draws, the Enforcer shoots him, and the run is loud from then on (the shots traced, Alert 2 when the bodies are found), so the yard fight is the police from the official entrance; the car goes once their blocker is down, leaving the Scout and Fixer behind. Engine 0.35.1 (brief 039, Waymark 2026-10-27): the same orders (its panic dropped: the Scout and Fixer were drawn by their locks, the Tech in the car), but the Scout, drawn and fighting on his own (weapons free, always on), drops officer-1 at 7:28.0 and is at 1 health when the car leaves at 7:29.3: left behind captured fighting, not downed (0.34.2: downed). Still the price M059-S1.6 names: the pair can't be thinned quietly, the run goes loud (A 2) and leaves two behind."
+   "note": "c038 (Waymark, engine 0.34.1): Careless violence (brief 059 S1; Motive's s1-rulings careless-thin-all), the twin of route-b: the Enforcer sets out to take down all three posted rivals on the square before the pickup. The lone one by the café terrace goes down unseen (as route-b-thin), but the pair on its east side cannot be thinned quietly (M059-S1.6): rival-2 sees rival-1 taken down and draws, the Enforcer shoots him, and the run is loud from then on (the shots traced, Alert 2 when the bodies are found), so the yard fight is the police from the official entrance; the car goes once their blocker is down, leaving the Scout and Fixer behind. Engine 0.35.1 (brief 039, Waymark 2026-10-27): the same orders (its panic dropped: the Scout and Fixer were drawn by their locks, the Tech in the car), but the Scout, drawn and fighting on his own (weapons free, always on), drops officer-1 at 7:28.0 and is at 1 health when the car leaves at 7:29.3: left behind captured fighting, not downed (0.34.2: downed). Still the price M059-S1.6 names: the pair can't be thinned quietly, the run goes loud (A 2) and leaves two behind.",
+   "pending": "retired (brief 080): fixed ticks on a seeded game; the adaptive plan careless plays this style across seeds. The file stays for what still reads it (tools/qa, closing hash)."
   }
  ]
 }

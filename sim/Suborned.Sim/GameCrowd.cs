@@ -185,7 +185,7 @@ namespace Suborned.Sim
                     if (w.Place[i] == "beyond" || w.Place[i + 1] == "beyond") return null;
                     var path = CrowdPath(w.Place[i], w.Place[i + 1], w.To[i]);
                     int span = w.From[i + 1] - w.To[i];
-                    return span <= 0 ? path.End : path.At(LegMm(w, path, tick - w.To[i], span));
+                    return span <= 0 ? path.End : path.At(LegMm(w, path, tick - w.To[i], span, LeavesPost(w, i)));
                 }
             }
             return null;
@@ -193,11 +193,21 @@ namespace Suborned.Sim
         /// <summary>How far along a routine leg a person is, `t` ticks into a leg timed `span` (brief 023, engine 0.8.2; rulebook crowd.pace): each
         /// person walks it (100 + k) % of its timed pace, k = 0..pace from a hash of their id, so people who set out together string out; once
         /// at its end they wait there until the next stop starts (never late: the leg's own timing is the slowest).</summary>
-        internal long LegMm(Walker w, Path path, long t, int span)
+        internal long LegMm(Walker w, Path path, long t, int span, bool leaving = false)
         {
-            if (w.PacePct < 0) w.PacePct = (int)(Streams.Fnv1a32(w.P.Id + "/pace") % (uint)(R.CrowdPaceSpreadPct + 1));
+            if (w.PacePct < 0) w.PacePct = PaceOf(w);
             long mm = path.Length * t * (100 + w.PacePct) / (100L * span);
+            if (leaving) mm = Math.Max(mm, t * peopleWalk * (100 + w.PacePct) / 100L); // Motive's ruling (brief 080): an off-shift guard leaves directly, at the city's walk, and waits at the far end; a leg's timing is the stops' minutes, no one's pace
             return mm < path.Length ? mm : path.Length;
+        }
+        /// <summary>Crowd.staffDirect: this leg takes a guard off her post (she stood at a door or beside one and is bound elsewhere): she goes directly. A relief walking to her post keeps her timing.</summary>
+        bool LeavesPost(Walker w, int i) => R.StaffLegDirect && !Start.OldClock && IsStaff(w.P) && IsPostPlace(w.Place[i]) && !IsPostPlace(w.Place[i + 1]);
+        readonly Dictionary<string, bool> postPlace = new Dictionary<string, bool>(StringComparer.Ordinal);
+        bool IsPostPlace(string place)
+        {
+            if (postPlace.TryGetValue(place, out var v)) return v;
+            v = People2!.Beside.ContainsKey(place); if (!v) foreach (var (id, _, kind) in S.Refuges) if (kind == "door" && id == "door:" + place) { v = true; break; }
+            postPlace[place] = v; return v;
         }
         /// <summary>A routine leg's walk, for a leg that sets out at tick `from`. Engine 0.33.1 (rulebook car.footprint): it goes round the cars
         /// standing when it sets out (CarEpochAt). While those are the mission's start cars (the getaway car at its first stand, the official car

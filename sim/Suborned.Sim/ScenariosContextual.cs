@@ -8,6 +8,7 @@ namespace Suborned.Sim
 {
     public static partial class Scenarios
     {
+        static Start N176Start() { var st = new Start { Security = 0, Pre080 = true, FinalFight = false }; st.CrewGone.AddRange(new[] { "rival-1", "rival-2", "rival-3", "rival-4", "rival-5" }); return st; }
         static void ContextualCases()
         {
             Add("N176", "—", "Auto-holster (brief 030 §5; weapons.autoHolster 4 s): the Enforcer's carbine, drawn by his fire order on the guard (route fail-enforcer-down's orders), is holstered by the engine 4 s after the fight goes quiet (fight.public); in a twin where he drew it with a draw order (F) a tick before, it stays drawn.", r =>
@@ -29,7 +30,7 @@ namespace Suborned.Sim
                 { t.RunTo(o.Tick); t.Issue(o); }
                 t.RunTo(Math.Max(t.Tick, end + T(g.R.AutoHolsterS) + T(5)));
                 r.Is(!t.Log.Exists(l => l.Code == "holster.auto") && (t.OpOf(OpId.Enforcer).Down || (t.OpOf(OpId.Enforcer).Gun.Drawn && t.OpOf(OpId.Enforcer).Gun.DrawnBy == "key")), $"drawn with F, it stays drawn (by {t.OpOf(OpId.Enforcer).Gun.DrawnBy})");
-            });
+            }, N176Start()); // brief 080: rolled or not, the rivals drawn by the gunfire could finish him first; this reads the holster
 
             Add("N177", "—", "A fire order out of reach walks in outside the lab (brief 030; weapons.close): the Scout's fire order on the guard from the car is taken and walks her into her pistol's effective ring, where she fires; driven (cell.drive), the engine does not walk her, and PreviewFireWalkIn shows the host the walk-in it would make.", r =>
             {

@@ -197,6 +197,24 @@ namespace Suborned.Sim
             }
         }
 
+        int carAheadLeg = -1;
+        /// <summary>Rulebook car.footprint.ahead (engine 0.37.0; brief 081: the Scout stood 1.1 s on the rival car's ground as it parked): when the rival car is that close to the end of
+        /// a leg, an agent standing on the ground it will stop on steps off first. Once a leg; its walk is hashed as any walk is.</summary>
+        void CarAheadStep()
+        {
+            if (Range || ccPath == null || ccProf == null || !CarMoving || carAheadLeg == ccStart || ccProf.Length - 1 - (Tick - ccStart) > R.CarAheadTicks) return;
+            carAheadLeg = ccStart;
+            var mask = MaskOf(S.Grid, R, new[] { (ccPath.End, FacingOf(ccStop)) }); if (mask == null) return;
+            var g = S.Grid;
+            foreach (var op in Ops)
+            {
+                if (op.Inside || op.InCar || op.Down || op.CarriedBy.HasValue || op.Driven || op.Busy != null || op.Walk != null) continue;
+                int i = g.CI(op.Pos.X), j = g.CJ(op.Pos.Y);
+                if (i < 0 || j < 0 || i >= g.Nx || j >= g.Ny || !mask[i * g.Ny + j]) continue;
+                if (g.NearestFree(op.Pos, mask) is Pt f) { op.Walk = new Path(new[] { op.Pos, f }); op.WalkMm = 0; }
+            }
+        }
+
         /// <summary>The cars' epoch in force at `tick` (the last one begun by then; before the first, or past the last read, the nearest).</summary>
         (int id, bool home, bool[]? mask) CarEpochAt(int tick)
         {

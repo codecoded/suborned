@@ -286,7 +286,7 @@ namespace Suborned.Sim
             {
                 var g = r.G;
                 r.To(r.SendTo(Scout, FrontOfGuard(r)));
-                r.Do(Scout, "draw");
+                r.Do(Scout, "draw"); g.Issue(new Order { Tick = g.Tick, Op = Scout, Do = "stance", Stance = "hold" }); // she holds her fire: the guard is what downs her
                 r.Until(() => r.Op(Scout).Down || g.Over, T(40));
                 if (!r.Is(r.Op(Scout).Down && !g.Over, $"the guard shoots the drawn Scout down ({(r.Op(Scout).Down ? "down" : "up")} at {Report.Clock(g.Tick)})")) return;
                 r.To(r.SendTo(Enf, g.Walk.NearestFree(r.Op(Scout).Pos) ?? r.Op(Scout).Pos));

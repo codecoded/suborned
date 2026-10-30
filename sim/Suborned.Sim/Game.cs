@@ -17,6 +17,18 @@ namespace Suborned.Sim
     public sealed class Start
     {
         public int? RivalsAtS;                                            // §07 3:10 unless a scenario moves it
+        /// <summary>Brief 080 (engine 0.37.0, Sky 2026-10-30): the run's seed, 0..2^31-1. The host rolls one at each new game (never 0) and saves it with
+        /// the run: seed + orders replay exactly. It sets the start (rulebook seed) and every shot's draw (weapons.sheet). 0, and a script with none:
+        /// the neutral start, every start draw at the middle of its band, the mission's own timetable; shots still roll, on seed 0's streams.
+        /// Hashed into the start when set.</summary>
+        public int Seed;
+        /// <summary>Test only (brief 080, engine 0.37.0): true plays the shots before brief 080 (the counted accumulator, today's multipliers), as
+        /// Pre039 plays the fight before brief 039, for scenarios whose subject is another rule and that need a shot to land on a known tick.
+        /// Never in a route or a session; hashed when set.</summary>
+        public bool Pre080;
+        /// <summary>Test only (brief 080 pacing, engine 0.37.0): the clock before the shift came forward a minute: Vale out 5:50, close 8:30, the city's routines a minute later (the rivals never
+        /// moved). For the scenarios of other rules, written to the old clock's ticks, until Waymark retimes them. Never in a route or a session; hashed when set.</summary>
+        public bool OldClock;
         public readonly List<string> Turned = new List<string>();         // roles turned before the mission (a scenario fixture)
         public readonly Dictionary<string, List<string>> Known = new Dictionary<string, List<string>>(StringComparer.Ordinal);
         public readonly Dictionary<string, string> Temperament = new Dictionary<string, string>(StringComparer.Ordinal);
@@ -81,7 +93,10 @@ namespace Suborned.Sim
         public static Start Parse(JNode? n)
         {
             var s = new Start(); if (n == null) return s;
-            n.Only("rivalsAt", "turned", "known", "temperament", "cash", "finalFight", "crowd", "arms", "untie", "security", "standing", "rivalsPublic", "rounds", "holds", "drive", "fightLab", "heat", "followLock", "weaponsFree", "pinCell", "grilles", "oneInput", "pre039", "valeWaits", "crewGone");
+            n.Only("seed", "pre080", "oldClock", "rivalsAt", "turned", "known", "temperament", "cash", "finalFight", "crowd", "arms", "untie", "security", "standing", "rivalsPublic", "rounds", "holds", "drive", "fightLab", "heat", "followLock", "weaponsFree", "pinCell", "grilles", "oneInput", "pre039", "valeWaits", "crewGone");
+            if (n.Opt("seed") is JNode sd) { long sv = sd.Long(); if (sv < 0 || sv > int.MaxValue) throw new FormatException($"{sd.Path}: seed 0..2147483647"); s.Seed = (int)sv; } // brief 080
+            if (n.Opt("pre080") is JNode p80) s.Pre080 = p80.Bool(); // brief 080, test only
+            if (n.Opt("oldClock") is JNode oc) s.OldClock = oc.Bool(); // brief 080, test only
             if (n.Opt("valeWaits") is JNode vw) s.ValeWaits = vw.Bool(); // brief 059: test only
             if (n.Opt("crewGone") is JNode cg) foreach (var x in cg.Items) { var id = x.Str(); if (!id.StartsWith("rival-", StringComparison.Ordinal) || s.CrewGone.Contains(id)) throw new FormatException($"{x.Path}: crewGone names rival-1..rival-5, once each"); s.CrewGone.Add(id); } // engine 0.33.0: test only
             if (n.Opt("fightLab") is JNode fl) // brief 027 (EXPERIMENTAL): the fight lab's switches; the rulebook checks the weapon ids when the game starts
@@ -140,6 +155,9 @@ namespace Suborned.Sim
         public string Canonical()
         {
             var w = new JWriter().Obj();
+            if (Seed != 0) w.Prop("seed", Seed); // brief 080: only a seeded start adds bytes
+            if (Pre080) w.Prop("pre080", true); // brief 080, test only: likewise
+            if (OldClock) w.Prop("oldClock", true); // brief 080, test only: likewise
             if (RivalsAtS.HasValue) w.Prop("rivalsAt", RivalsAtS.Value);
             if (Turned.Count > 0) { w.OpenArr("turned"); foreach (var x in Turned) w.Str(x); w.EndArr(); }
             if (Known.Count > 0) { w.Open("known"); var ks = new List<string>(Known.Keys); ks.Sort(StringComparer.Ordinal); foreach (var k in ks) { w.OpenArr(k); foreach (var x in Known[k]) w.Str(x); w.EndArr(); } w.EndObj(); }
@@ -272,7 +290,7 @@ namespace Suborned.Sim
 
         // numbers read once from the rules and the site
         readonly int eye, near, actReach, approachReach, listenReach, witnessRange;
-        readonly int cellWalk, peopleWalk, secSpeed, rivSpeed, chaseSpeed; // engine 0.34.0 (brief 067, Motive M067-B1): the cell's walk (cell.speed) and the city's (crowd.walk)
+        readonly int cellWalk, peopleWalk, secSpeed, guardSpeed, rivSpeed, chaseSpeed; // engine 0.34.0 (brief 067, Motive M067-B1): the cell's walk (cell.speed) and the city's (crowd.walk)
         int walkT, stayT; readonly int rivalsArriveS, driverLastS, valeExitsS, valeAtCarS, overS, blockMoveT, blockHoldT;
 
         public Game(Rules rules, Site site, Start? start = null, string? startText = null, Crowd? crowd = null)
@@ -288,8 +306,8 @@ namespace Suborned.Sim
             ResolveStopFaces(); // brief 054 §3.3: every on-street stop's facing, or the start is rejected
             actReach = R.ActReachCm; approachReach = R.ApproachReachCm; listenReach = R.ListenReachCm;
             witnessRange = R.WitnessRangeCm;
-            cellWalk = R.CellSpeed; peopleWalk = R.PeopleWalk; secSpeed = R.SecuritySpeed; rivSpeed = R.RivalsSpeed; chaseSpeed = R.PatrolChase;
-            rivalsArriveS = S.RivalsArrive; driverLastS = S.DriverLast; valeExitsS = S.ValeExits; valeAtCarS = S.ValeAtCar; overS = S.Over;
+            cellWalk = R.CellSpeed; peopleWalk = R.PeopleWalk; secSpeed = R.SecuritySpeed; guardSpeed = R.Sheet.GuardSpeed; rivSpeed = R.RivalsSpeed; chaseSpeed = R.PatrolChase;
+            rivalsArriveS = S.RivalsArrive; int oldClock = Start.OldClock && !Range ? OldClockS : 0; driverLastS = S.DriverLast + oldClock; valeExitsS = S.ValeExits + oldClock; valeAtCarS = S.ValeAtCar + oldClock; overS = S.Over + oldClock; // brief 080 pacing: test only
             blockMoveT = T(S.BlockMoveS); blockHoldT = T(S.BlockHoldS);
 
             Cash = Start.Cash ?? S.Purse;
@@ -301,7 +319,7 @@ namespace Suborned.Sim
             for (int i = 0; i < 4; i++)
             {
                 var id = (OpId)i; bool enf = id == OpId.Enforcer;
-                var gun = new Gun(Sim.Op.Name(id)) { W = Lab ? LoadoutWeapon(i) : enf ? R.Carbine : i < sidearms ? R.Pistol : null, Trained = enf, Health = (enf ? R.HealthEnforcer : R.HealthOp) * HealthScale };
+                var gun = new Gun(Sim.Op.Name(id)) { W = Lab ? LoadoutWeapon(i) : enf ? R.Carbine : i < sidearms ? R.Pistol : null, Trained = enf, Health = (enf ? R.HealthEnforcer : R.HealthOp) * HealthScale, Aim = R.Sheet.AimOf(Sim.Op.Name(id)) };
                 gun.Max = gun.Health;
                 Ops[i] = new Op { Id = id, Pos = S.Stand(crew[i]), Gun = gun, Charge = Lab ? Labr!.ChargeMax : 0 };
             }
@@ -349,7 +367,7 @@ namespace Suborned.Sim
                     if (w == "sight" || !IsPersonRoleName(kv.Key)) ToldWatcher(kv.Key, w); // told of a watcher (rulebook sight): the briefing, a previous mission
                     else PersonByRole(kv.Key).Learn(w);
                 }
-            RivalAt = T(Start.RivalsAtS ?? rivalsArriveS);
+            RivalAt = T(Start.RivalsAtS ?? rivalsArriveS + DrawBand(R.Seeds.RivalsId, "arrive", R.Seeds.RivalsArriveS)); // brief 080: every beat of the car moves with it (InitCrew)
             CurStand = S.Stands[0]; // brief 059 K6: the getaway car starts at its first stand (getaway.car)
             if (!Range) { InitCrew(); if (Driver.Turned) driverTurnedAt = 0; } // brief 059 K7: the crew's timetable, computed back from the park; a driver turned before the mission turned at 0:00 (F4)
 
@@ -363,6 +381,7 @@ namespace Suborned.Sim
             if (Range) InitRange(); // brief 029 (GameRange.cs): the fight range: no mission, no schedule, no cast but what is spawned
             else Note("start", "Vale is inside. His official car will collect him later. The city is already moving.");
             CarEpochStep(); // engine 0.33.1 (car.footprint): the cars standing at the start (the crowd's legs built at load go round them)
+            if (!Range) SeedStart(); // brief 080 (GameSeed.cs): the crowd's phases, the patrol's, the rivals' posts; nothing at seed 0
         }
 
         public Person PersonByRole(string role)
@@ -413,6 +432,7 @@ namespace Suborned.Sim
         {
             Tick++;
             CarStandStep(); // engine 0.36.0 (car.footprint): a car that has come to stand clears its ground
+            CarAheadStep(); // engine 0.37.0 (car.footprint.ahead; brief 081): and an agent steps off the ground it is about to stop on
             CarEpochStep(); // engine 0.33.1 (car.footprint): the standing cars as this tick starts, for the crowd's legs that set out now
             if (!Range) { GuardTimeline(); CarTimeline(); CrewStep(); ValeTimeline(); PatrolTimeline(); } // brief 029: the range has no schedule; brief 059: the crew's step (GameCrew.cs)
             UnguardedStep(); // engine 0.34.0 (Motive M067-K3 a, GameUnguarded.cs): the rivals go for a car nobody guards from outside, read after the last tick's orders
@@ -444,8 +464,7 @@ namespace Suborned.Sim
             if (!Over) CrowdStep();
             if (!Over) TakedownStep(); // brief 013: bodies, reports, check-in marks, suspicion, the response's units
             if (!Over && Tick >= Lockdown) Fail("sealed", "Security seals the district before the getaway car leaves.", Sealed); // brief 018: the car must leave, not only be reached
-            if (!Over && Tick == T(overS) && Vale == ValeAt.WithEnforcer)
-                Note("horizon.open", Sim.Report.Clock(Tick) + " (the mission's close) with Vale in the Enforcer's hands: whether the mission closes here is a ruling for Waymark and Motive (Redline E8); the run goes on.");
+            if (!Over && !Range) CloseStep(); // Motive's ruling on Redline E8 (brief 080; GameSeed.cs): Vale's absence is noticed, then the close is a verdict
             // brief 059 K4: at the close the turned driver gives up and drives Vale on (a Take begun before it holds him until it ends); with no
             // driver, Vale leaves by other means (the rivals reach Vale only physically now: the tail, the fight)
             if (!Over && Tick >= T(overS) && Vale != ValeAt.WithEnforcer && Vale != ValeAt.Car && Vale != ValeAt.Taking)
@@ -468,7 +487,7 @@ namespace Suborned.Sim
             {
                 var from = GuardPose()!.Value.pos;
                 guardRun = new Path(Walk.Route(Walk.NearestFree(from) ?? from, S.Stand(S.GuardPost)) ?? new[] { from, S.Stand(S.GuardPost) });
-                guardRunning = true; LureTick = Tick; GuardAwayUntil = Tick + (int)((guardRun.Length + secSpeed - 1) / secSpeed);
+                guardRunning = true; LureTick = Tick; GuardAwayUntil = Tick + (int)((guardRun.Length + guardSpeed - 1) / guardSpeed);
                 Note("guard.recalled", "The alarm is up: the guard runs back to his post.");
                 return;
             }
@@ -580,7 +599,7 @@ namespace Suborned.Sim
             if (GuardHeld) return (heldPos, heldFacing, heldPhase);
             var post = S.Stand(S.GuardPost);
             if (LureTick < 0 || Tick >= GuardAwayUntil) return (post, S.GuardFacing, "door");
-            if (guardRunning) { long rm = (long)(Tick - LureTick) * secSpeed; return (guardRun.At(rm), guardRun.Heading(rm), "returning to door"); }
+            if (guardRunning) { long rm = (long)(Tick - LureTick) * guardSpeed; return (guardRun.At(rm), guardRun.Heading(rm), "returning to door"); }
             int age = Tick - LureTick;
             if (age < walkT) { long mm = guardOut.Length * age / walkT; return (guardOut.At(mm), guardOut.Heading(mm), "walking to café"); }
             if (age < walkT + stayT) return (guardOut.End, cafeFace, "at café"); // brief 022: facing her when she has a round
@@ -670,7 +689,7 @@ namespace Suborned.Sim
         }
         Pt SweepPos(int t)
         {
-            int period = T(R.PatrolPeriodS), half = period / 2, ph = t % period;
+            int period = T(R.PatrolPeriodS), half = period / 2, ph = (t + PatrolPhase) % period;
             return G.Lerp(S.Stand(S.PatrolA), S.Stand(S.PatrolB), ph <= half ? ph : period - ph, half);
         }
 

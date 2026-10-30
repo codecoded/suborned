@@ -243,7 +243,7 @@ namespace Suborned.Sim
                 r.Is(r.Op(Tech).Walk != null && !r.Op(Tech).Running && g.LoopOn, "the Tech walks away too, and the loop still runs");
             });
 
-            Add("N22", "—", "Hits are counted, not rolled (motive-fights.md §2.2): the untrained Scout's pistol at point blank is 750 ‰, so exactly three hits in four, the third shot the miss; the guard's 3 health falls on the fourth shot. +2 T for the hit, +2 for the down.", r =>
+            Add("N22", "—", "Fired on until down (brief 080: each shot rolls; the fight lab keeps the count): the Scout's pistol puts the guard's 3 health down in hits, not in a set number of shots; a pistol fires every 1.5 s. +2 T for the hit, +2 for the down, once each.", r =>
             {
                 var g = r.G;
                 r.Eq(g.R.Accuracy(g.R.Pistol, 300, false, false, false, true), 750, "point blank × untrained: 750 ‰");
@@ -255,10 +255,10 @@ namespace Suborned.Sim
                 r.Fire(Scout, GuardR);
                 r.Is(r.Until(() => g.GuardDown, T(20)), "the guard is down");
                 var mine = r.Shots().FindAll(x => x.by == Scout && x.target == GuardR);
-                r.Eq(string.Join(",", mine.ConvertAll(x => x.hit ? "hit" : "miss")), "hit,hit,miss,hit", "exactly three in four, in this order, every run");
+                r.Eq(mine.FindAll(x => x.hit).Count, g.R.HealthGuard / g.R.Pistol.DamageAt(0), "three hits at 1 damage drop him; the misses are the roll's");
                 r.Eq(mine[1].tick - mine[0].tick, g.R.Pistol.Every, "a pistol fires every 1.5 s");
                 r.Eq(g.Trail - trail, g.R.GunfireTrail + g.R.HitTrail + g.R.DownTrail, "+2 T the shooting (once), +2 T hit, +2 T down: not per shot (Motive addendum Q1)");
-                r.Eq(g.Gunfire, 4, "four shots fired");
+                r.Eq(g.Gunfire, mine.Count, "every shot fired is counted");
                 r.Is(!r.Op(Scout).Down, $"the guard fired back but the Scout stands ({r.Op(Scout).Gun.Health}/{r.Op(Scout).Gun.Max})");
             }, new Start { PinCell = false }); // brief 039: unpinned, the Scout's count stays 750 a shot (the guard fires back: pinned she fires at half, N-PIN's case)
 

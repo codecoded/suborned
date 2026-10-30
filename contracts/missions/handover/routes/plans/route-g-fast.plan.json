@@ -3,7 +3,7 @@
  "mission": "handover",
  "note": "Route G, fast (brief 013 D; Motive 013 §6.1 G-fast), fight it out: route G with the loop as soon as the Tech reaches the cabinet (live 0:32.7 to 2:32.7) and the guard knocked out at about 1:26, from beside, as the Enforcer walks in at 1:17 (when the patrol left the door, before brief 067 A moved it to the yard: no Reroute now). He enters at once (out at about 2:11), holds Vale at (24.0, -60.0) while the three lock rival-1, rival-2 and rival-3 in turn from the spring (focus fire, Motive M059-B7), and boards once the crew breaks; the three walk out. The fastest quiet win (MC-6).",
  "start": {},
- "until": 5100,
+ "until": 4500,
  "steps": [
   {
    "op": "tech",

@@ -24,7 +24,7 @@ namespace Suborned.Sim
             if (R.RerouteWalkCmS <= 0 || !from.HasValue) return;
             long v = (long)R.RerouteWalkCmS * 10 / Hz; if (v <= 0) return; // cm/s → mm a tick
             int until = PatrolAwayUntil, span = until - Tick; var back = SweepPos(until);
-            var outWalk = WalkPath(from.Value, S.Stand(S.PatrolReroute));
+            var outWalk = WalkPath(from.Value, ClearStop("patrol", S.Stand(S.PatrolReroute))); // brief 081 (engine 0.37.0; fight.spacing): its wait spot, clear of whoever stands there
             int Ticks(long mm) => (int)((mm + v - 1) / v);
             Path backWalk = WalkPath(outWalk.End, back); long turn = outWalk.Length;
             if (Ticks(turn) + Ticks(backWalk.Length) > span) // too far for the false orders: the farthest point out from which the walk back still lands on time

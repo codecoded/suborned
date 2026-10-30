@@ -67,7 +67,7 @@ namespace Suborned.Sim
                 case "P-B": SPrepared(r, routes["route-b-board"], 4470); break;
                 default: throw new ArgumentException($"no smart run {id}");
             }
-            if (!g.Over) g.RunTo(Math.Max(g.Tick, T(g.S.Over)) + T(1));
+            if (!g.Over) g.RunTo(Math.Max(g.Tick, T(g.ClockOver)) + T(1));
             g.Finish();
             pol = null;
             return r;

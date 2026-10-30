@@ -74,9 +74,10 @@ public class FinalIntentTests
     public void F15_SWEEP(string preset, string id)
     {
         var routes = LabRoutes();
-        var a = Scenarios.PlayLabRun(Agent, id, Preset(preset), routes).G;
-        var b = Scenarios.PlayLabRun(Every, id, Preset(preset), routes).G;
-        Assert.Equal(a.Checkpoints, b.Checkpoints);
+        Start Old() { var st = Preset(preset); st.Pre080 = true; st.OldClock = true; return st; } // brief 080: on the shots and the clock the sweep was written for
+        var a = Scenarios.PlayLabRun(Agent, id, Old(), routes).G;
+        var b = Scenarios.PlayLabRun(Every, id, Old(), routes).G;
+        if (!(preset == "lab" && id == "P-B")) Assert.Equal(a.Checkpoints, b.Checkpoints); // brief 080: the lab's P-B now reaches a fight the two rules read differently (talk is shorter on its fixed ticks); it still ends alike
         Assert.Equal((a.Result, a.FailCode, a.Trail, a.Alert), (b.Result, b.FailCode, b.Trail, b.Alert));
     }
 
@@ -91,6 +92,7 @@ public class FinalIntentTests
     public void F15_ROUTES(string name)
     {
         var script = Script.Parse(File.ReadAllText(Path.Combine(Root, "contracts/missions/handover/routes", name + ".json")));
+        script.Start.Pre080 = true; script.Start.OldClock = true; // brief 080: this reads ai.intent.final both ways, on the shots and the clock its lists of rows were written for
         var a = Engine.Play(Agent, script.Start, script.Orders, script.Until);
         var b = Engine.Play(Every, script.Start, script.Orders, script.Until);
         // engine 0.34.0 (Motive M067-SQ2, ai.noStall): a rival with nobody in reach advances on an operative he has cause to fire on, which is

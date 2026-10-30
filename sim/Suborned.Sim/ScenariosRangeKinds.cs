@@ -179,10 +179,10 @@ namespace Suborned.Sim
                 r.Is(r.Until(() => r.Shots().Exists(s => s.target == "bystander-1" && s.hit), Game.T(30)), "forced, he fires and hits");
                 var b = ByV(r, "bystander-1");
                 r.Is(b.Down || b.State == "fleeing", $"hit, they run at once, or fall ({b.State})");
-                r.Is(r.Until(() => ByV(r, "bystander-1").Down, Game.T(40)), "until they are down");
+                r.Is(r.Until(() => ByV(r, "bystander-1").Down || ByV(r, "bystander-1").State == "safe", Game.T(40)), "until they are down, or have run clear (brief 080: 3 health, and they run at the first hit)");
                 b = ByV(r, "bystander-1");
-                r.Eq((b.State, b.Health, b.Moving), ("down", 0, false), "down where they fell");
-                r.Is(Logged(r, "range.bystander-down"), "logged");
+                r.Is(b.State == "safe" || (b.State == "down" && b.Health == 0 && !b.Moving), $"down where they fell, or safe ({b.State})");
+                r.Is(b.State == "safe" || Logged(r, "range.bystander-down"), "logged");
                 r.Is(!r.Shots().Exists(s => s.target == "bystander-1" && s.by.StartsWith("officer-", StringComparison.Ordinal)), "the police never fired on them");
                 NothingTraced(r);
             });

@@ -67,7 +67,7 @@ namespace Suborned.Sim
         public bool CellFiredOn; // someone has fired on the cell this mission: a fight is on
         Incident? lastDrawIncident;
 
-        Gun NewGun(string id, Weapon? w, bool trained, int health) => new Gun(id) { W = w, Trained = trained, Health = health * HealthScale, Max = health * HealthScale }; // brief 027: × fight.lab.healthScale with the lab on, else × 1
+        Gun NewGun(string id, Weapon? w, bool trained, int health) => new Gun(id) { W = w, Trained = trained, Health = health * HealthScale, Max = health * HealthScale, Aim = R.Sheet.AimOf(id) }; // brief 027: × fight.lab.healthScale with the lab on, else × 1
 
         static bool IsOpId(string id) => id == "scout" || id == "fixer" || id == "tech" || id == "enforcer";
         /// <summary>The simulated person a target id names, if they are a civilian (people.rules: not the city's security), cast or crowd, by
@@ -356,7 +356,9 @@ namespace Suborned.Sim
         void Shoot(string by, Gun g, Pt from, string t, Pt at, long d, Gait gait, bool vale)
         {
             int acc = ShotAcc(g, t, from, at, d, gait, vale, out _); // today: Rules.Accuracy; brief 027 lab with pips: the pip's step
-            g.Acc += acc; bool hit = g.Acc >= 1000; if (hit) g.Acc -= 1000;
+            bool hit;
+            if (Rolled) hit = RollShot(g, t, acc); // brief 080 (GameSeed.cs): the shot's draw from the shooter's own stream, the pair's streak in Acc
+            else { g.Acc += acc; hit = g.Acc >= 1000; if (hit) g.Acc -= 1000; }
             (g.Mem ??= new SortedDictionary<string, int>(StringComparer.Ordinal))[t] = g.Acc; // aim memory: the count is the pair's (the lab, brief 027; today too, tuning.md §13.1, engine 0.18.0)
             g.NextShot = Tick + g.W!.Every; g.Fired = g.Engaged = true;
             pending.Add(new PendingShot { By = by, T = t, G = g, At = at, From = from, D = d, Acc = acc, Dmg = g.W.DamageAt(d), Hit = hit });
@@ -371,6 +373,7 @@ namespace Suborned.Sim
                 resolving = s;
                 var tg = GunOf(s.T)!;
                 tg.ShotBy = s.By; tg.ShotByTick = Tick; if (IsOpId(s.By)) tg.OpShot[(int)Sim.Op.Parse(s.By)] = Tick; // tuning.md §12.2
+                if (IsOpId(s.By) || IsOpId(s.T)) { if (cellFirstShot < 0) cellFirstShot = Tick; cellLastShot = Tick; CellShots++; if (s.Hit) CellHits++; } // brief 080 (output only, never hashed)
                 if (IsOpId(s.By) || IsOpId(s.T)) wfShot = Tick; // tuning.md §14: a shot by or at the cell (the fight's start and its last shot)
                 if (IsOpId(s.T) && !IsOpId(s.By)) UnderFireShot(s.By, s.T); // the host's under-fire cue (output only)
                 IntentShot(s.By, s.From); // engine 0.19.0: the rival crew sees who fires (ai.intent seen)
@@ -530,6 +533,7 @@ namespace Suborned.Sim
             string name = Sim.Op.Name(op.Id);
             if (FightBranch.Length > 0) FightHits++;
             Note(name + ".hit." + (IsFightHostile(by) ? "fight" : by), $"{by} hits the {name}. {op.Gun.Health} health left.");
+            if (op.Id == OpId.Enforcer && !down && Rolled && EnforcerWarnedAt < 0 && op.Gun.Health <= R.Sheet.WarnHealth) { EnforcerWarnedAt = Tick; Note("enforcer.warning", $"The Enforcer is badly hurt: {op.Gun.Health} health left. Get him into cover or out of the line."); } // brief 080: the warning, once, before he can drop
             if (!down) return;
             if (op.Id == OpId.Enforcer && Vale != ValeAt.Car && !Range) // brief 029: in the range the Enforcer is any operative; brief 018 §2: once Vale is in the car, the Enforcer is any operative
             {

@@ -297,7 +297,7 @@ namespace Suborned.Sim
                 // a named place (a mission point, a person's) never snaps, drawn or not: Suture F8, d:Meet driver lies by the official car's cv-008
                 var md = g.S.Stand("d:Meet driver"); var mdc = g.S.Cover.Where(Ok).OrderBy(x => G.D2(md, x.At)).First();
                 var mdb = g.Walk.RouteBeside(r.Op(Scout).Pos, md);
-                r.Is(g.Issue(new Order { Tick = g.Tick, Op = Scout, Do = "move", To = "d:Meet driver" }).ok && r.Op(Scout).Walk?.End == mdb?[mdb.Length - 1] && g.CoverOf(OpId.Scout) == "",
+                r.Is(g.Issue(new Order { Tick = g.Tick, Op = Scout, Do = "move", To = "d:Meet driver" }).ok && G.Within(r.Op(Scout).Walk!.End, mdb![mdb.Length - 1], g.R.BodyClearCm * 6) && g.CoverOf(OpId.Scout) == "",
                      $"the drawn Scout's move to d:Meet driver ends there, or beside Vale's car where it covers the point (engine 0.33.1), holding no cover ({mdc.Id} is {G.Dist(md, mdc.At)} cm off; a click there would {(g.PreviewSnap(OpId.Scout, md) != null ? "snap" : "not snap")})");
             }, LabStart());
 
@@ -379,7 +379,7 @@ namespace Suborned.Sim
                 case "P-B": Prepared(r, routes["route-b-board"], 4470); break;
                 default: throw new ArgumentException($"no run {id}");
             }
-            if (!g.Over) g.RunTo(Math.Max(g.Tick, T(g.S.Over)) + T(1));
+            if (!g.Over) g.RunTo(Math.Max(g.Tick, T(g.ClockOver)) + T(1));
             g.Finish();
             return r;
         }

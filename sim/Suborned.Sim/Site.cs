@@ -128,7 +128,7 @@ namespace Suborned.Sim
             }
             return best;
         }
-        public readonly int RivalsArrive, Chime, DriverLast, ValeExits, ValeAtCar, Over, BlockMoveS, BlockHoldS; // the guard's visit: the summons' grid walk and the rulebook's stay (Game.VisitWalkTicks), never the site
+        public readonly int GuardMark, RivalsArrive, Chime, DriverLast, ValeExits, ValeAtCar, Over, BlockMoveS, BlockHoldS; // the guard's visit: the summons' grid walk and the rulebook's stay (Game.VisitWalkTicks), never the site
         public readonly long Purse;
         /// <summary>Brief 031: the cell's Heat at the mission's start as the mission gives it (mission.json start.heat, via the site); 0 when absent.</summary>
         public readonly int Heat;
@@ -353,9 +353,9 @@ namespace Suborned.Sim
             }
             else if (Mission == "handover") throw new FormatException($"{ge.Path}.stands is missing: engine 0.32.0 drives the getaway car between its stands (brief 059 K6; bun run sim:site --fold-stands)");
             else Stands.Add(new Stand { Id = "square", Car = GetawayCar, CarAt = at[GetawayCar], CarCell = at[GetawayCar], Exit = ExitLane, ExitHalfCm = ExitHalfCm, Ambush = FightAmbush, Police = FightPolice, Facing = new Pt(100, 0) }); // the range: its parked car's one stand
-            var sc = r["schedule"]; sc.Only("rivalsArrive", "chime", "driverLast", "valeExits", "valeAtCar", "over", "blockMoveS", "blockHoldS", "src");
+            var sc = r["schedule"]; sc.Only("guardMark", "rivalsArrive", "chime", "driverLast", "valeExits", "valeAtCar", "over", "blockMoveS", "blockHoldS", "src");
             int Sec(string k, int lo) { int v = sc[k].Int(); if (v < lo || v > 3600) throw new FormatException($"{sc.Path}.{k} = {v} is outside {lo}..3600"); Schedule[k] = v; return v; }
-            RivalsArrive = Sec("rivalsArrive", 0); Chime = Sec("chime", 0); DriverLast = Sec("driverLast", 0); ValeExits = Sec("valeExits", 0); ValeAtCar = Sec("valeAtCar", 0); Over = Sec("over", 1);
+            GuardMark = sc.Opt("guardMark")?.Int() ?? -1; RivalsArrive = Sec("rivalsArrive", 0); Chime = Sec("chime", 0); DriverLast = Sec("driverLast", 0); ValeExits = Sec("valeExits", 0); ValeAtCar = Sec("valeAtCar", 0); Over = Sec("over", 1);
             BlockMoveS = Sec("blockMoveS", 1); BlockHoldS = Sec("blockHoldS", 1);
             if (!(DriverLast < ValeExits && ValeExits < ValeAtCar && ValeAtCar < Over)) throw new FormatException("site schedule: driverLast < valeExits < valeAtCar < over");
             Purse = r["purse"].Long(); if (Purse < 0 || Purse > 1_000_000_000) throw new FormatException("site purse is out of range");

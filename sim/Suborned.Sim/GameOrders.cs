@@ -130,6 +130,7 @@ namespace Suborned.Sim
             var walk = Walk; bool onCar = walk.CarCovers(to);
             if (onCar && walk.RouteBeside(op.Pos, to) is Pt[] rb) to = rb[rb.Length - 1]; // engine 0.33.1 (car.footprint): a move onto a standing car's ground ends beside it, on the side he comes to
             if (!walk.Free(to)) return No("unwalkable", "that ground can't be walked (a roof, a wall or a solid)");
+            if (R.BodyCellEnds && !Range) to = ClearStop(Sim.Op.Name(op.Id), to); // brief 081 (engine 0.37.0; fight.spacing.cell): an agent sent where someone stands stops beside them, not in them
             if (o.Run) { var no = RunRefusal(op); if (no.Length > 0) return no; }
             var route = Walk.Route(op.Pos, to); if (route == null) return No("no-walk", "no walk there");
             if (op.Driven) EndDrive(op, false); // brief 025: a click move takes control back

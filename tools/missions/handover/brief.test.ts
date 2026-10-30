@@ -14,10 +14,10 @@ describe('brief.json against mission.json', () => {
   test('the shipped brief passes', () => {
     expect(checkBrief(brief, mission)).toEqual([]);
   });
-  test('target.at is the official entrance Vale leaves by (timeline 5:50), not the guard\'s public door', () => {
+  test('target.at is the official entrance Vale leaves by (timeline 4:50), not the guard\'s public door', () => {
     expect(brief.target).toEqual({ role: 'councillor', at: 'd:Official entrance' });
     expect(mission.destinations!.some((d) => d.name === 'Official entrance')).toBe(true);
-    expect((mission.timeline as { at: string; what: string }[]).find((t) => t.at === '5:50')?.what).toMatch(/official door/);
+    expect((mission.timeline as { at: string; what: string }[]).find((t) => t.at === '4:50')?.what).toMatch(/official door/);
   });
 });
 

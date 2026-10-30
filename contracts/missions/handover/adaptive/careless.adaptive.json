@@ -1,0 +1,22 @@
+{
+ "schema": "suborned.mission.adaptive/1",
+ "mission": "handover",
+ "id": "careless",
+ "style": "careless",
+ "note": "A careless player: skips the Watch, tries the door without a plan for the camera, runs everywhere in sight, stands about where watchers can see, and only draws when hit. Doesn't shoot on purpose: that's unprepared-loud.",
+ "pace": "distracted",
+ "rules": [
+  {"id":"all-run-door","op":"enforcer","do":"move","to":"d:Office entrance","run":true,"when":["t>=:0:20"]},
+  {"id":"scout-square","op":"scout","do":"move","to":"beside-inez","run":true},
+  {"id":"fixer-square","op":"fixer","do":"move","to":"d:Courtyard","run":true},
+  {"id":"tech-cabinet","op":"tech","do":"move","to":"cabinet","run":true},
+  {"id":"watch","op":"scout","do":"watch","target":"waitress","when":["free:scout"],"retry":5},
+  {"id":"listen","op":"scout","do":"listen","target":"waitress","when":["log:scout.watch.watched"],"retry":5},
+  {"id":"pressure","op":"fixer","do":"turn","target":"waitress","approach":"pressure","when":["log:scout.listen.heard"],"retry":5},
+  {"id":"call","op":"fixer","do":"call","target":"waitress","when":["log:turn.pressure.turned"],"retry":4},
+  {"id":"enter","op":"enforcer","do":"enter","when":["log:call.waitress"],"retry":3},
+  {"id":"to-car","op":"enforcer","do":"move","to":"d:Getaway bay","when":["log:enter.out"],"retry":2},
+  {"id":"board","op":"enforcer","do":"board","target":"car","when":["done:to-car","free:enforcer"],"retry":2},
+  {"id":"go","op":"cell","do":"go","when":["log:board.in"],"retry":2}
+ ]
+}

@@ -89,6 +89,8 @@ public class ClosingHashTests
     public void LateFightAtEveryOrderTick(string file)
     {
         var sc = Script.Parse(File.ReadAllText(Path.Combine(Root, file)));
+        if (file == LoudFight) sc.Start.Seed = 3; // brief 080: seed 0's fixed opening never reaches the fight
+        else { sc.Start.Pre080 = true; sc.Start.OldClock = true; } // Sky's session, recorded on the old shots and clock
         var played = Engine.Play(Repo.Inputs, sc.Start, sc.Orders, sc.Until);
         var (_, _, fight) = Live(Repo.Inputs, sc.Start, sc.Orders, sc.Until);
         Assert.True(fight.Count >= (file == LoudFight ? 15 : 1), $"{file}: a fight is open at {fight.Count} saves"); // session 1 was recorded on 0.2.58's engine: today it meets fewer;
@@ -100,6 +102,7 @@ public class ClosingHashTests
     public void CostsUnderOneMillisecond()
     {
         var sc = Script.Parse(File.ReadAllText(Path.Combine(Root, Session1)));
+        sc.Start.Pre080 = true; sc.Start.OldClock = true; // Sky's session, recorded on the old shots and clock
         var (_, _, fight) = Live(Repo.Inputs, sc.Start, sc.Orders, sc.Until);
         Assert.True(fight.Count > 0 && fight[^1].tick >= Game.T(400), "Sky's session 1 has a fight open late (after 6:40)");
         int at = fight[^1].tick; // the run's last save with a fight open: the dear case (the very last tick is over, a lookup)

@@ -271,7 +271,14 @@ namespace Suborned.Sim
     public static partial class Scenarios
     {
         static List<Scenario>? all;
-        public static List<Scenario> All { get { if (all == null) { all = new List<Scenario>(); Handover(); } return all; } }
+        public static List<Scenario> All { get { if (all == null) { all = new List<Scenario>(); Handover(); foreach (var s in all) { if (Array.IndexOf(CountedShots, s.Id) >= 0) s.Start.Pre080 = true; if (Array.IndexOf(OldClockTicks, s.Id) >= 0) s.Start.OldClock = true; } } return all; } }
+        /// <summary>Brief 080: the scenarios whose subject is another rule (a Trail price, a carry, a fail's cause, a rival walking to a car nobody guards) and that need a shot to
+        /// land on a known tick: they play the counted shot (Start.Pre080), as the fights' mechanics keep Pre039. Rolled shots have their own: SEED-*. Keep this short: a new
+        /// scenario reads its shots, or fires until down, rather than joining it.</summary>
+        /// <summary>Brief 080 pacing: the scenarios written to the old clock's ticks and to the crowd's old stops (Vale out 5:50, a clerk at 5:30): their subject is another rule, so they play the old clock
+        /// (Start.OldClock) until Waymark retimes them. PACE-* reads the new clock; a new scenario reads g.S's schedule, never a tick.</summary>
+        static readonly string[] OldClockTicks = { "N113", "N185", "BAL-YARD-AT-WILL", "BAL-YARD-FOCUS-LATE", "S02", "S09", "S20", "S21", "N11", "N11b", "N18", "N19b", "N33", "N42", "N47", "N49", "N50", "N53", "N55", "N56", "N65", "N57", "N68", "N69", "N70", "N71", "N74", "N74b", "N75", "N77", "N78", "N81", "N82", "N84", "N85", "N95", "N98", "N99", "N101", "N114", "S9-AFTER", "N120", "N121", "N122", "N128", "ND-1", "P59-B", "P59-UNTURNED", "P59-TAIL", "P59-TIP", "P59-FRONT", "CREW-FREE", "BAL-YARD-NEVER-DRAWN", "K3-BACK", "K3-UNDRAWN", "POST-BESIDE" };
+        static readonly string[] CountedShots = { "S03", "S06", "S09", "N34", "N44", "N113", "S9-CROWD", "N127", "FW-VALE", "K3-DRIVER", "BAL-LOUD-BREAK", "N176", "F12-ROT", "F8-O11", "B-PIN", "LF-WALK", "F8-O7", "F8-O10", "RK-BY-SHOT", "LF-RUN", "F8-O8", "F8-O4", "F8-O3", "RK-LINES-TODAY", "RK-LINES", "N11", "N18", "N74", "N95", "N114", "S9-AFTER", "BAL-YARD-AT-WILL", "BAL-YARD-FOCUS-LATE" };
         public static Scenario? Find(string id) { foreach (var s in All) if (string.Equals(s.Id, id, StringComparison.OrdinalIgnoreCase)) return s; return null; }
         public static Run Run(Engine.Inputs i, Scenario s) => Bounded(() =>
         {

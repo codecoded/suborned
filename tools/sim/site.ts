@@ -143,9 +143,9 @@ export function buildSite(src: Source = { people: PROMOTED_PEOPLE }, opts: SiteO
   };
   // the guard's visit (mission.json windows rule summon) is the engine's: its grid walk and the rulebook's stay; the site writes neither
   const schedule = {
-    rivalsArrive: at('3:10', /rival car parks/), chime: at('5:30', /chime/), driverLast: at('5:40', /turn the driver/), valeExits: at('5:50', /Vale comes out/), valeAtCar: at('6:10', /Vale at his car/), over: at('8:30', /\(over\)$/), // GDD v0.25.0 §07's words (brief 059): each pattern matches one entry
+    rivalsArrive: at('3:10', /rival car parks/), chime: at('4:30', /chime/), driverLast: at('4:40', /turn the driver/), valeExits: at('4:50', /Vale comes out/), valeAtCar: at('5:10', /Vale at his car/), over: at('7:30', /\(over\)$/), guardMark: 60, // GDD v0.25.0 §07's words (brief 059): each pattern matches one entry
     blockMoveS: 8, blockHoldS: 150,
-    src: 'mission.json timeline (GDD §07) and windows.front-door; blockHoldS: §07 route B, driver blocks pickup camera 2:30; blockMoveS: the top-down test, the car takes 8 s to block the camera. over: the timeline\'s closing entry, read by its words (§07 8:00; Sky 2026-10-15 moves it to 8:30, Waymark retimes mission.json)',
+    src: 'guardMark: the door guard\'s first check-in mark, 1:00, fixed when the shift came forward a minute (Sky 2026-10-30, brief 080 pacing: marks 1:00, 2:30, 4:00); mission.json timeline (GDD §07) and windows.front-door; blockHoldS: §07 route B, driver blocks pickup camera 2:30; blockMoveS: the top-down test, the car takes 8 s to block the camera. over: the timeline\'s closing entry, read by its words (§07 8:00; Sky 2026-10-15 moves it to 8:30, Waymark retimes mission.json)',
   };
 
   // ---- the cast: M-2's own casting (tools/missions/handover/cast.ts castRoles, { play: true }) on the people file, at the mission's

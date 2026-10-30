@@ -20,6 +20,15 @@ namespace Suborned.Sim
         List<Pt> BodyClaims(string who)
         {
             var l = new List<Pt>();
+            foreach (var op in Ops) // brief 081 (engine 0.37.0): the rule always named them; a walk now ends clear of an operative, or of where he is bound
+            {
+                if (Sim.Op.Name(op.Id) == who || op.Inside || op.InCar || op.CarriedBy.HasValue) continue;
+                l.Add(op.Walk != null ? op.Walk.End : op.Pos);
+            }
+            if (who != "guard" && !GuardDown && GuardPose() is var gd && gd.HasValue) l.Add(GuardAlly && guardAllyPath != null ? guardAllyPath.End : gd.Value.pos); // brief 081: the guard where he stands or is bound
+            if (who != "patrol" && !PatrolDown && (PatrolChasing || PatrolAwayUntil > Tick) && PatrolUnit() == null) { if (rerouteOut != null) l.Add(rerouteOut.End); else if (PatrolPose() is var pd && pd.HasValue) l.Add(pd.Value.pos); } // the patrol at rest off its sweep; on its sweep it passes, as the crowd does
+            foreach (var who2 in new[] { Inez, Driver }) if (who2.Id != who && who2.Role != who && !who2.Down && PersonPos(who2) is Pt cp && !(who2 == Driver && valeDriveStart >= 0)) l.Add(cp); // the cast at their places; a driver at the wheel is off the street
+            foreach (var b in Bodies) if (b.Open && !b.Carrier.HasValue) l.Add(BodyPos(b)); // brief 081: and a body where it lies (the patrol stood 9.8 s on the knocked-out guard in route G)
             foreach (var h in Hostiles) if (h.Id != who && h.Present && Up(h)) l.Add(h.At);
             foreach (var m in Crew)
             {
@@ -51,8 +60,8 @@ namespace Suborned.Sim
             var claims = BodyClaims(who); long c2 = (long)clear * clear;
             bool Clear(Pt q) { foreach (var p in claims) if (G.D2(q, p) < c2) return false; return true; }
             if (Clear(to)) return to;
-            bool hold = HoldsCar(to);
-            return Walk.Nearest(to, q => Clear(q) && (hold || !HoldsCar(q)), clear * 6) ?? to;
+            bool hold = HoldsCar(to), atCar = !Range && AtGetaway(to); // Motive's ruling (brief 080): a place within Board's reach stays within it: a spaced end never makes Board refuse for good
+            return Walk.Nearest(to, q => Clear(q) && (hold || !HoldsCar(q)) && (!atCar || AtGetaway(q)), clear * 6) ?? to;
         }
     }
 }

@@ -25,13 +25,13 @@
   {"tick":1684,"op":"fixer","do":"fire","target":"rival-1"},
   {"tick":1684,"op":"tech","do":"fire","target":"rival-1"},
   {"tick":1706,"op":"enforcer","do":"board","target":"car"},
-  {"tick":1753,"op":"scout","do":"fire","target":"rival-2"},
-  {"tick":1753,"op":"fixer","do":"fire","target":"rival-2"},
-  {"tick":1753,"op":"tech","do":"fire","target":"rival-2"},
-  {"tick":1753,"op":"scout","do":"fire","target":"rival-3"},
-  {"tick":1753,"op":"fixer","do":"fire","target":"rival-3"},
-  {"tick":1753,"op":"tech","do":"fire","target":"rival-3"},
-  {"tick":1786,"op":"cell","do":"go"}
+  {"tick":1754,"op":"scout","do":"fire","target":"rival-2"},
+  {"tick":1754,"op":"fixer","do":"fire","target":"rival-2"},
+  {"tick":1754,"op":"tech","do":"fire","target":"rival-2"},
+  {"tick":1754,"op":"scout","do":"fire","target":"rival-3"},
+  {"tick":1754,"op":"fixer","do":"fire","target":"rival-3"},
+  {"tick":1754,"op":"tech","do":"fire","target":"rival-3"},
+  {"tick":1808,"op":"cell","do":"go"}
  ],
- "until": 5100
+ "until": 4500
 }

@@ -1,11 +1,22 @@
 {
  "schema": "suborned.sim.script/1",
  "mission": "handover",
- "note": "§07 fail \"Vale killed\" (Keel S09): the Enforcer shoots Vale at the official car at 6:10.",
+ "note": "§07 fail \"Vale killed\" (Keel S09): the Enforcer shoots Vale on his walk to the official car, from 4:51 (shots roll: he needs the walk).",
  "start": {},
  "orders": [
-  {"tick": 0, "op": "enforcer", "do": "move", "to": "d:Boarding pavilion"},
-  {"tick": 3700, "op": "enforcer", "do": "fire", "target": "councillor", "force": true}
+  {
+   "tick": 0,
+   "op": "enforcer",
+   "do": "move",
+   "to": "d:Boarding pavilion"
+  },
+  {
+   "tick": 2910,
+   "op": "enforcer",
+   "do": "fire",
+   "target": "councillor",
+   "force": true
+  }
  ],
- "until": 5100
+ "until": 4500
 }

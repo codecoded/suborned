@@ -52,6 +52,8 @@ namespace Suborned.Sim
         public bool Armed; public string IfAware = "";     // "struggle" or "fight" (an armed target who sees it coming)
         public SeenQuote Seen = new SeenQuote();           // watchers: true answer if known, "?" if not (rulebook sight.unknown)
         public readonly List<(string id, string name, string verb, int landS)> People = new List<(string, string, string, int)>(); // within witness range now: verb "?" until the temperament is known
+        /// <summary>Brief 080: not in range now, but on their routine they would see it before the act ends: id, name, verb, in how many seconds. A fair price: the card warns of them as of those in range.</summary>
+        public readonly List<(string id, string name, string verb, int inS)> Coming = new List<(string, string, string, int)>();
         public int AlertIfSeen, AlertIfFound, TrailIfFound, TrailIfMissing; public bool MenaceIfFound;
         public int PoliceInS = -1;                         // a body found here now by staff: the response on the scene in ~n s (rev 4: a unit comes at any Alert)
         public readonly List<string> HoldsDoors = new List<string>(); // rev 4 R4.1: the entrances a found body here would hold (Enter refused, no exit)
@@ -150,13 +152,18 @@ namespace Suborned.Sim
                 if (stopFace != null && w.St == "startled" && lastShooterFor.TryGetValue(w.P.Id, out var src)) { var d = src - w.At; if (d != new Pt(0, 0)) return d; }
                 return null;
             }
+            return RoutineFacing(w, Tick);
+        }
+        /// <summary>The way the routine has a person of the crowd facing at a tick (their leg, the stop's facing); a read for a card too.</summary>
+        Pt? RoutineFacing(Walker w, int tick)
+        {
             var c = People2!;
             for (int i = 0; i + 1 < w.Place.Length; i++)
-                if (Tick >= w.To[i] && Tick < w.From[i + 1] && w.Place[i] != "beyond" && w.Place[i + 1] != "beyond")
+                if (tick >= w.To[i] && tick < w.From[i + 1] && w.Place[i] != "beyond" && w.Place[i + 1] != "beyond")
                 {
                     var path = CrowdPath(w.Place[i], w.Place[i + 1], w.To[i]); int span = w.From[i + 1] - w.To[i];
                     if (span <= 0) return null;
-                    long lm = LegMm(w, path, Tick - w.To[i], span);
+                    long lm = LegMm(w, path, tick - w.To[i], span, LeavesPost(w, i));
                     if (stopFace != null && lm >= path.Length && StopFace(w.Place[i + 1]) is Pt sf) return sf; // brief 054 §3.3: early at the leg's end, waiting
                     return path.Heading(lm);
                 }
@@ -471,7 +478,7 @@ namespace Suborned.Sim
             if (what == "body") RoundsEnd("body-found"); // brief 022
             if (w.StartsWith("camera:", StringComparison.Ordinal))
             {
-                int phase = (int)(Streams.Fnv1a32(w) % (uint)T(R.CameraScanS)), period = T(R.CameraScanS);
+                int period = T(R.CameraScanS), phase = ScanPhase(w, period);
                 int next = Tick + ((phase - Tick % period) % period + period) % period;
                 AddRep(a, kind, w, null, ActAt(a, b), next + T(R.PostCallS), "watcher");
                 Note("witness.camera", $"The {w.Substring(7)} camera records it; its watcher reads the screen at {Sim.Report.Clock(next)}.");
@@ -866,7 +873,7 @@ namespace Suborned.Sim
         void ServiceRound(Body b)
         {
             var s = StashById(b.Stash); if (s == null || s.Kind != "container") return;
-            int period = T(R.ServicePeriodS), phase = (int)(Streams.Fnv1a32(s.Id) % (uint)period);
+            int period = T(R.ServicePeriodS), phase = ScanPhase(s.Id, period);
             if ((Tick - phase) % period != 0) return;
             var a = ActOf(b);
             if (a.Noticed.Contains("round:" + s.Id)) return;
@@ -906,6 +913,7 @@ namespace Suborned.Sim
                 else if (verb == "report") { var rp = ReportPoint(wp); land = R.WitnessReactS + R.CallS + (rp == null ? 0 : (int)((rp.Value.path.Length / R.CrowdRunSpeed + 9) / 10)); }
                 q.People.Add((w.Id, w.Name, verb, land));
             }
+            foreach (var (w, inS) in ComingToSee(at.Value, q.S, "takedown", p)) q.Coming.Add((w.Id, w.Name, VerbShown(probe, w, "act"), inS));
             q.AlertIfSeen = Math.Max(Alert, R.AlertSeen);
             q.AlertIfFound = Math.Max(Alert, kill ? R.AlertDead : Math.Min(R.AlertDown, R.KoAlertMax));
             q.TrailIfFound = R.HitTrail + R.DownTrail + (kill ? R.KillTrail : 0); q.MenaceIfFound = kill;

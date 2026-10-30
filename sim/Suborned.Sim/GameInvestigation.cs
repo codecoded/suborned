@@ -49,6 +49,18 @@ namespace Suborned.Sim
     public static class Streams
     {
         public static uint Fnv1a32(string key) { unchecked { uint h = 0x811c9dc5; foreach (var c in key) { h ^= c; h *= 0x01000193; } return h; } }
+        /// <summary>Brief 080: the n-th output (n from 1) of the Mulberry stream with this key: mulberry32 steps its state by a constant, so any draw can be
+        /// read by its index with no state kept. A read of the odds never calls it; a character's index moves only when it draws.</summary>
+        public static uint Nth(uint key, int n)
+        {
+            unchecked
+            {
+                uint s = key == 0 ? 1u : key; s += 0x6d2b79f5u * (uint)n; uint t = s;
+                t = (t ^ (t >> 15)) * (t | 1);
+                t ^= t + (t ^ (t >> 7)) * (t | 61);
+                return t ^ (t >> 14);
+            }
+        }
         public sealed class Mulberry
         {
             uint s;

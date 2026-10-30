@@ -137,7 +137,7 @@ public class SightTests
         // route A's orders, played with no watcher known and with every watcher's sight told: the same run, but for the knowledge itself
         var played = Scenarios.Run(Repo.Inputs, Scenarios.Find("N11")!).G;
         var orders = played.Orders.Select(o => o.order).ToList();
-        var told = new Start();
+        var told = new Start { Pre080 = played.Start.Pre080, OldClock = played.Start.OldClock };
         foreach (var kv in played.Start.Known) told.Known[kv.Key] = new List<string>(kv.Value);
         foreach (var kv in played.Start.Temperament) told.Temperament[kv.Key] = kv.Value;
         told.Turned.AddRange(played.Start.Turned); told.Cash = played.Start.Cash; told.Arms = played.Start.Arms; told.FinalFight = played.Start.FinalFight; told.Crowd = played.Start.Crowd;
