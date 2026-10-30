@@ -17,5 +17,7 @@ Owner: Aster. Opened 2026-10-30, from the prepared-loud video (seed 108): the En
 2. "Rivals block you in when they see vale's car leave and go wrong way - they block your own car as soon as enforcer leaves with Vale".
 3. "yeah.. I'm not even sure about this rival tip concept - not one of mine". So: the tip is in question; don't build new rules on it.
 
+4. "they block vales car if you take it since it shouldn't be at the service entrance".
+
 ## Next
 Motive: one page, briefs/082/getaway.html, no code. Then Sky.
