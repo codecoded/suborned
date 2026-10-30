@@ -30,3 +30,9 @@ Evidence
 - Plan with the Handover overlay: exit 0.
 - `sim batch`: 59 played, 10 not ok, every c045 route ok.
 - `game:check`: dry run only (it would build 0.2.143).
+
+Update, build 0.2.146 (commit 2f4749eb) · Suture · 2026-10-30
+GO: Sky can play it. 7 bot rows through `bun run guard`: 0 crashes, 0 stuck, 0 console errors, end cards clean, 6 refusals in 355 orders. No row won; both human-pace rows failed on timing (S1).
+The car explosion ran in the player (rival car, 4:20.7, 0 errors, worst frame 21 ms).
+New: S8 saved runs stop 1.2-1.6 s before the fail (Latch) · S9 possible 95 ms hitch on re-order, to measure (Redline) · S10 Q-GIVER false alarm on Drive from the car (Latch, Suture).
+Report section and the proof-section table: briefs/078/handover-health.html. Rows: out/scratch/suture/078/bot-0146/.
