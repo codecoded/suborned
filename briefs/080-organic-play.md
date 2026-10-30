@@ -23,6 +23,9 @@ On briefs/080/design.html: "1. ok 2. ok 3. ok". The seed sets timings as well as
 ## Sky, 2026-10-30: pacing (briefs/080/pacing.html)
 "no, skipping isn't the game mechanic I want - this is syndicate with strategy not the other way round. so 1 and 2 make sense, 3 also, but dangerous to add at this stage". No skip offer. The shift moves forward a minute (Vale out 4:50, close 7:30, rivals unchanged) and talking shortens about 30% (Help 50 to 35, Listen 42 to 30; Enter and Take stay at 38), both in the 0.37.0 round. "The world offers more" is agreed in principle and parked: not before the submission's build is solid.
 
+## Sky, 2026-10-30: preparation > improvisation holds
+"Preparation > improvisation I think still holds, you need to know what your objective is, and play it cleverly, can't just firefight your way through it like syndicate which is the only way. e.g. you don't just roam the streets shooting at everything. You take care, watch, listen, and work out when you can go guns blazing if you want e.g. turn off camera, take out guards / bots etc to reduce being watched". So going loud is a choice you prepare for. Bands split loud in two: prepared loud (cameras off, guards and bots out first) well above unprepared loud, which should mostly fail. The adaptive plans include both.
+
 ## Checks
 Stay rigid: no crash or stall, unknown = reject, a saved run replays exactly, every order shows its price, every fail names its cause.
 Become bands across many seeds: win rates by playing style, fight length, down rate, cost of loud against quiet. Route scripts become smoke tests that play an adaptive plan, not fixed ticks.
