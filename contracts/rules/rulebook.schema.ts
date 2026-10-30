@@ -459,6 +459,7 @@ export const Rulebook = z.strictObject({
     loud: z.strictObject({ officers: Ref, alert: Ref, civilian: Ref, entry: z.enum(['response', 'nearest']).optional() }),
     openRule: text.optional(), // brief 059: Sky's open questions S1–S3, each a value
     alwaysRule: text.optional(), // engine 0.33.0: the final fight always comes (Sky's S1 = no; Motive M059-S1.2 to S1.5)
+    spacing: ground({ clear: Ref, file: Ref, rule: text }).optional(), // engine 0.36.0 (brief 079): optional only for runs pinned before it
     unguarded: text.optional(), // engine 0.34.0 (Motive M067-K3): hiding in a held car loses, the cell down fails, Go needs a driver; optional only for runs pinned before it
     holdRule: text.optional(), // engine 0.34.0 (Motive M067-SQ1): the hold is entered only on purpose; optional only for runs pinned before it
     hold: Ref, traced: z.boolean(), tracedReason: text, rule: text,
