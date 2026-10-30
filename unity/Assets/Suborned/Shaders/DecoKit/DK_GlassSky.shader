@@ -45,6 +45,10 @@ Shader "Suborned/DecoKit/GlassSky"
             // the same renderer as its frame) fell back to the per-renderer path (Latch, 0.2.80 tp-long: SetPass 332 -> 390, shadow casters 898 -> 1,885)
             #include_with_pragmas "Packages/com.unity.render-pipelines.universal/ShaderLibrary/DOTS.hlsl"
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
+            // brief 079 (the café's square patch, Sky's fight video): the film goes with the wall it sits in. Without the cut it stayed whole in a person's capsule, a hard-edged tinted
+            // pane over the street behind; FadeReach gives this material a twin only because the keyword exists here. The plain variant is as it was.
+            #pragma multi_compile_fragment _ _DK_CUT
+            #include "DK_Cutaway.hlsl"
 
             CBUFFER_START(UnityPerMaterial)
                 half4 _BaseColor; half4 _SkyHorizon; half4 _SkyZenith; half4 _Street; half _Edge; half _Fresnel; half _Sheen; half _Glow; half _Lit; half4 _LitColour;
@@ -65,6 +69,7 @@ Shader "Suborned/DecoKit/GlassSky"
 
             half4 frag(V i, half facing : VFACE) : SV_Target
             {
+                DKCutaway(i.pos);
                 half3 n = normalize(i.wn) * (facing > 0 ? 1 : -1);
                 half3 v = GetWorldSpaceNormalizeViewDir(i.wp);
                 half ndv = saturate(dot(n, v));

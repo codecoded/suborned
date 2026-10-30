@@ -205,7 +205,7 @@ namespace Suborned.Play
                 for (int k = 0; k < 4; k++) { h.TurnSnap(k); var f = h.View.transform.forward; f.y = 0f; float d = Vector3.Dot(f.normalized, -n); if (d > bestDot + 1e-4f) { bestDot = d; best = k; } }
                 h.TurnSnap(best);
             }
-            if (s.zoom > 0 && h.View) h.View.orthographicSize = s.zoom;
+            if (h.View) h.View.orthographicSize = s.zoom > 0 ? s.zoom : Mathf.Clamp(h.Cam.overhead.zoom, h.zoomMin, h.zoomMax); // brief 079: no zoom in the manifest = the play zoom, never what the last shot left
             if (s.focus.Length > 0) // brief 070: `focus2`, the midpoint of two views (the driver and his car); `shift`, in from the door's outward side
             {
                 var f = s.focus2.Length > 0 ? (At(s.focus) + At(s.focus2)) / 2f : At(s.focus);

@@ -433,6 +433,8 @@ namespace Suborned.Play
         public static float FeetRaisedMax;
         public void Frame(float alpha)
         {
+            GetawayLeaving(); // brief 079: the car that left drives away (HostViews.Leaving)
+            FallenSilhouettes();
             foreach (var kv in things)
             {
                 var (t, from, to, shown) = kv.Value;
@@ -495,6 +497,7 @@ namespace Suborned.Play
             foreach (var kv in things)
             {
                 var k = kv.Key; if (!(k.StartsWith("hostile/") || k.StartsWith("unit/") || IsCrewId(k) || k.StartsWith("security/") || k == "patrol")) continue;
+                if (lifted.ContainsKey(k)) continue; // brief 079: a fallen hostile needs no cut (the second half of the fight's patch through the café, open on his body to the end card)
                 var (t, _, _, shown) = kv.Value; if (shown && t.gameObject.activeInHierarchy) yield return t.position;
             }
         }

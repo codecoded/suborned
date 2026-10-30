@@ -71,6 +71,7 @@ namespace Suborned.Play
         /// <summary>The getaway car's engine heading as a world direction (along its Drive, else its stand's facing).</summary>
         Vector3? GetawayFacing()
         {
+            if (leaveHeading is Vector3 lh) return lh; // brief 079: along the way out, once it has left
             var g = host.Game; if (g == null || g.Range) return null; Pt h, at;
             try { h = g.GetawayHeading(); at = g.GetawayCarPos(); } catch { return null; }
             if (h.X == 0 && h.Y == 0) return null;

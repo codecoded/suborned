@@ -85,7 +85,7 @@ namespace Suborned.Play
 
         /// <summary>T back to the map (Sky on 0.2.122; Glyph 067 G3): instead of the hard restore, a 0.5 s smoothstep glide up the line the swing came
         /// down (from the chase camera to a point high on the map view's line through the agent), then the map view exactly as it was left but
-        /// centred on the agent at play zoom 14, at the quarter-step yaw it was left at. The world marks fade back in over the glide's last 0.2 s.</summary>
+        /// centred on the agent at the play zoom, at the quarter-step yaw it was left at. The world marks fade back in over the glide's last 0.2 s.</summary>
         void FollowExitGlide(int k)
         {
             if (!Following || !cam) return;

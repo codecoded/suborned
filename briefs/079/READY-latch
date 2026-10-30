@@ -1,0 +1,5 @@
+brief 079, Latch, 2026-10-30. Code and a targeted Play-mode check only, nothing built, no scene saved, no commit. One build with Keel's fix and Vela's crossing lights.
+1 play zoom: built-in preset 10, wheel 8 to 18.5, host range no longer serialized, shots with no zoom take the play zoom.
+2 car: view-only way out behind the end card (HostViews.Leaving.cs); hash 43b2b7a2fce65008 same as the 078 reel, replay hash same.
+3 café cut: three causes fixed: fallen hostiles held the capsule and silhouette, DK_GlassDark film (Suborned/DecoKit/GlassSky) had no cut variant, the soft edge was noise; now one clean line.
+evidence: briefs/079/latch/report.txt and stills there; tool Assets/Suborned/Editor/World/Review/Latch079.cs.

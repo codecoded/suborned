@@ -72,7 +72,7 @@ namespace Suborned.Play
         public float standOff = 160f;
         public float panSpeed = 18f;
         [Tooltip("§10: characters 40–60 px tall at 1080p. A 1.75 m capsule is 60 px at ortho size 12.5 and 40 px at 18.5 (14 = play zoom, 53 px).")]
-        public float zoomMin = 12.5f, zoomMax = 18.5f;
+        [System.NonSerialized] public float zoomMin = 8f, zoomMax = 18.5f; // brief 079: the preset's range (CamApply); not serialized, or the built scene's old 12.5 would clamp the opening 10
 
         public Game Game { get; private set; }
         public SimBundle.Loaded Bundle { get; private set; }
@@ -244,7 +244,7 @@ namespace Suborned.Play
             ResetRound24(); // Redline 064 #9: the 2026-10-24 round's host state (rewalks, noticing, cones, reroute, seal span, the no-walk cell)
             // open on the cell (Waymark 2026-10-16: the four stand by the getaway car's boarding pavilion): centred on block (-2.5, -40.5), play zoom 14,
             // so the cell sits below the briefing card at any resolution; Replay opens the same way
-            TurnReset(); if (cam) { cam.orthographicSize = Mathf.Clamp(Cam.overhead.zoom, zoomMin, zoomMax); CamProjection(); } LookAt(frame.World(OpeningFocus)); // the preset's zoom (brief 025; built-in 14)
+            TurnReset(); if (cam) { cam.orthographicSize = Mathf.Clamp(Cam.overhead.zoom, zoomMin, zoomMax); CamProjection(); } LookAt(frame.World(OpeningFocus)); // the preset's zoom (brief 025; built-in 10, brief 079)
             SessionPath = SessionFile();
             Save();
             FollowSettingAtStart(); // brief 024: the follow setting, when on, as the engine's logged follow order
