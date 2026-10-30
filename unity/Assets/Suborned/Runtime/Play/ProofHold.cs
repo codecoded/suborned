@@ -143,6 +143,7 @@ namespace Suborned.Play
             // a double click on the ground runs (the whole cell, in formation: their destination rings)
             h.SelectAll(); yield return null; var me = h.Views.Find("op/scout").position; Vector3 gw = me + new Vector3(4f, 0f, 3f); bool found = false;
             foreach (var off in new[] { new Vector3(4f, 0, 3f), new Vector3(-4f, 0, 3f), new Vector3(4f, 0, -3f), new Vector3(-4f, 0, -3f), new Vector3(6f, 0, 0) }) { var q = h.frame.Engine(me + off); if (g.S.Grid.Free(q)) { gw = me + off; found = true; break; } }
+            h.LookAt(gw); yield return Frames(2); // brief 079: on screen first: at play zoom 10 the spot lay under the minimap, whose press pans the view (a player can't click the ground there)
             n0 = g.Orders.Count;
             { var sp = Aim(h, gw); yield return Frames(2); Btn(sp, left: true); yield return null; Btn(sp); yield return Frames(2); Btn(sp, left: true); yield return null; Btn(sp); yield return Frames(3); }
             var dbl = OrdersSince(h, n0); bool runs = dbl.Exists(o => o.Contains(":move:run")); int movers = dbl.Select(o => o.Split(':')[0]).Distinct().Count();
