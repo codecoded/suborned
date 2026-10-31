@@ -21,4 +21,6 @@ Note 7, Sky's calls on `briefs/085/reports/Writing good game dialogue.md` (2026-
 
 Blind result (Sky, 2026-10-31): he picked Y on both scenes, which the key shows is today's brief, over the brief built on the classics: "that spell out the story, and coherently. starting with a short sentences as well feels more natural". He faulted "I'm too scared to say no. I won't forget your face." / "No, you won't. If you're ever questioned, you could describe it.": it "doesn't make sense - and not something Ines would say". The new brief changed many things at once, so the test doesn't say which part lost. Next run: today's brief, with a fuller Inez, game facts on the cards, a check on named fear and review faults sent back; the excerpts stay out.
 
+Rule idea, not built (Sky, 2026-10-31, on the call): "if you get inez to call the guard, he runs back to the door because she said someone told him about them" "and said they looked supsicious (if she hasn't favoured the cell)". Today every turned Inez calls him and he stays, on all routes. Until Sky decides, the scenes keep to that: she gives him a reason to come and never tells him anyone knows. Owners if yes: Motive (the rule and its price), Keel (the sim), Fable (the scene).
+
 After this round: the `HandoverHost.cs` split (brief 084), with one full batch.

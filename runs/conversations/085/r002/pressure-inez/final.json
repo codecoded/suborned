@@ -1,0 +1,54 @@
+{
+  "id": "pressure-inez",
+  "title": "Pressure Inez",
+  "kind": "turn",
+  "picked": 1,
+  "why": "Take 1 has the most life: she says yes before she has heard the price, and \"that's the pity\" carries both love and hate. It only needed its invented details and its filler taken out. The scene holds to the sheet: threat of exposure, her call, a few minutes, nobody told [e1dd761142af169bfd1cc0d3] [96030c4c4a1a18523a3fdbbb].",
+  "changes": [
+    "Cut what the sheet doesn't give: the Bureau card, 'two stamps' and 'six tables'. Also removed 'him' and 'his', which the sheet bars.",
+    "Merged the reveal and the threat, and cut the 'can it be after' dodge. She now gives way at once, which is truer to her and clearer.",
+    "Replaced the closing logistics. 'That's all we ask' now draws her bitter 'very polite', so she shows she hates it without saying she's scared.",
+    "New last line: the Fixer owns what this is and bars her from telling Okafor, ending on the steel. 'Need' is a banned word, so 'ask' is used."
+  ],
+  "beats": [
+    {
+      "speaker": "Inez",
+      "line": "Who saw you? Is it the Bureau? I know I'm behind."
+    },
+    {
+      "speaker": "Fixer",
+      "line": "Not the Bureau. Softly. The Office could learn about you and Okafor."
+    },
+    {
+      "speaker": "Inez",
+      "line": "All right. Yes. Whatever it is, yes. Just not the Office."
+    },
+    {
+      "speaker": "Fixer",
+      "line": "Hear it first. When I telephone, you call Okafor off the door."
+    },
+    {
+      "speaker": "Inez",
+      "line": "He'd come, that's the pity. I'd say it can't go by telephone."
+    },
+    {
+      "speaker": "Fixer",
+      "line": "Keep Okafor with you a few minutes. That's all we ask."
+    },
+    {
+      "speaker": "Inez",
+      "line": "You're very polite about it. Go, before someone sees you."
+    },
+    {
+      "speaker": "Fixer",
+      "line": "I know what this is. Not a word of us to Okafor."
+    }
+  ],
+  "learned": [
+    "Threatened, she agreed; knows Fixer's face."
+  ],
+  "opens": [
+    "Call Inez"
+  ],
+  "faults": []
+}

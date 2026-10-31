@@ -1,0 +1,133 @@
+{
+  "takes": [
+    {
+      "situation": "She mistakes him for a Bureau man until he says he paid; she questions him.",
+      "beats": [
+        {
+          "speaker": "Inez",
+          "line": "They send a man now? The clockwork collector was bad enough."
+        },
+        {
+          "speaker": "Fixer",
+          "line": "Not the Bureau, no. I've paid them part of your loan."
+        },
+        {
+          "speaker": "Inez",
+          "line": "Not so loud, the terrace hears. Why pay a stranger's loan?"
+        },
+        {
+          "speaker": "Fixer",
+          "line": "We look after people. One day we'd ask you a small favour."
+        },
+        {
+          "speaker": "Inez",
+          "line": "What favour? Who's been asking about me?"
+        },
+        {
+          "speaker": "Fixer",
+          "line": "The books get read. Let's keep to the loan, shall we?"
+        },
+        {
+          "speaker": "Inez",
+          "line": "I won't send it back, I can't. But don't ask me yet."
+        },
+        {
+          "speaker": "Fixer",
+          "line": "Then I won't, not today. I'll be back with the rest."
+        }
+      ],
+      "learned": [
+        "Inez took it. Not ready yet."
+      ],
+      "opens": [
+        "Help again"
+      ]
+    },
+    {
+      "situation": "She says yes far too fast, and he won't take a yes that hollow.",
+      "beats": [
+        {
+          "speaker": "Fixer",
+          "line": "I've paid part of your Bureau loan, Miss Nikolaou. Just now."
+        },
+        {
+          "speaker": "Inez",
+          "line": "Did anyone see you? Whatever it is, I'll do it."
+        },
+        {
+          "speaker": "Fixer",
+          "line": "You don't know me. You don't even know what I'd ask."
+        },
+        {
+          "speaker": "Inez",
+          "line": "Will a stamped card come here, with my name on it?"
+        },
+        {
+          "speaker": "Fixer",
+          "line": "It stays at the Bureau. And your yes wouldn't last the shift."
+        },
+        {
+          "speaker": "Inez",
+          "line": "No. I'll keep what you paid, but I can't do anything yet."
+        },
+        {
+          "speaker": "Fixer",
+          "line": "We'd want one word to someone. I'll be back with the rest."
+        },
+        {
+          "speaker": "Inez",
+          "line": "Then come quietly. And please, don't say my name out here."
+        }
+      ],
+      "learned": [
+        "Inez took it. Not ready yet."
+      ],
+      "opens": [
+        "Help again"
+      ]
+    },
+    {
+      "situation": "She calls it a mistake and tries to undo it; he shows it can't be undone.",
+      "beats": [
+        {
+          "speaker": "Inez",
+          "line": "Part of my Bureau loan? Mister, you've got the wrong girl."
+        },
+        {
+          "speaker": "Fixer",
+          "line": "Inez Nikolaou, behind with the Bureau. I paid part of it."
+        },
+        {
+          "speaker": "Inez",
+          "line": "Who told you that? Have it sent back, before someone sees."
+        },
+        {
+          "speaker": "Fixer",
+          "line": "It went down their tube and got stamped. It doesn't come back."
+        },
+        {
+          "speaker": "Inez",
+          "line": "I don't know you, and I've tables. What's it going to cost?"
+        },
+        {
+          "speaker": "Fixer",
+          "line": "Nothing today. Later, one small thing that hurts nobody."
+        },
+        {
+          "speaker": "Inez",
+          "line": "I'll keep it, then. I can't do a thing for it yet."
+        },
+        {
+          "speaker": "Fixer",
+          "line": "Not yet, no. I'll come back with the rest, and we'll talk."
+        }
+      ],
+      "learned": [
+        "Inez took it. Not ready yet."
+      ],
+      "opens": [
+        "Help again"
+      ]
+    }
+  ]
+}

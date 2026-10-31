@@ -1,0 +1,54 @@
+{
+  "picked": 3,
+  "why": "Take 3 has the most life because the scene's fight is over how long Zhou will wait. This pass applies only the three review fixes. All three lines stay true to the sheet, and the rest is untouched.",
+  "changes": [
+    "Fixer's second line: removed the figure as the review asked. The review's reason conflicts with the GDD, which prices paying the driver at $70,000 [c80996fabd6600872368f214]; its cited source wasn't supplied. The cut line is true either way, but Aster should settle the price.",
+    "Fixer's 'Until we've got him. Not long.': removed 'out of the back seat' so the line holds under both the built and decided Take. The route B passage still says the Enforcer takes Vale from the back seat [c80996fabd6600872368f214], so this was a safe cut, not a contradiction.",
+    "Zhou's last line: changed 'this bay' to 'the service bay', as the review asked, so the offer points at the east yard rather than the bay they're standing in. It's now 12 words, the limit.",
+    "Left as is, per 'change nothing else': Zhou's 'never paid like that' now refers to no stated sum. It still reads, but more loosely."
+  ],
+  "beats": [
+    {
+      "speaker": "Zhou",
+      "line": "You said money, and it's been a lean month. For what, exactly?"
+    },
+    {
+      "speaker": "Fixer",
+      "line": "We've paid already. One short drive with the Councillor."
+    },
+    {
+      "speaker": "Zhou",
+      "line": "I won't ask who's we. Driving the Councillor's never paid like that."
+    },
+    {
+      "speaker": "Fixer",
+      "line": "At the chime he gets in. Not home, the service bay."
+    },
+    {
+      "speaker": "Zhou",
+      "line": "East yard, round the back. And I wait how long, exactly?"
+    },
+    {
+      "speaker": "Fixer",
+      "line": "Until we've got him. Not long."
+    },
+    {
+      "speaker": "Zhou",
+      "line": "Been paid for 'not long' before. Couple of minutes, then I drive."
+    },
+    {
+      "speaker": "Fixer",
+      "line": "A couple of minutes, Zhou. We'll be at the service bay."
+    },
+    {
+      "speaker": "Zhou",
+      "line": "I won't look. Anyone watching the service bay, I can send off."
+    }
+  ],
+  "learned": [
+    "Zhou waits a couple of minutes."
+  ],
+  "opens": [
+    "Be at the service bay"
+  ]
+}

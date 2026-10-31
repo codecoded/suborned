@@ -1,0 +1,54 @@
+{
+  "picked": 3,
+  "why": "Take 3 has the only real fight, how long the wait lasts, and its \"not long\" line comes from Zhou's history of being paid to be vague. The job holds to the route B and driver passages [d2afe30a71ad4118e3119ea0, 70d0d453860f76178706b08c]; $70,000 is the Pay price.",
+  "changes": [
+    "Rebuilt the opening and the 'we' line: Zhou now says the lean month, and 'Driving the Councillor's never paid like that' gives the job, the lack of money and why Zhou won't ask.",
+    "Cut invented detail: the pay coming down the tube and the 'Seventy doesn't buy longer' tag. The second is also gone because the deal now closes on the Fixer's acceptance.",
+    "Moved 'not long' so the Fixer says it and Zhou throws it straight back, which makes the couple of minutes a term Zhou sets and the Fixer accepts.",
+    "Tightened the close: the Fixer repeats the term and names the service bay, and Zhou's 'I won't look' (from take 1) replaces a promise that Zhou wouldn't see it, which the facts don't give."
+  ],
+  "beats": [
+    {
+      "speaker": "Zhou",
+      "line": "You said money, and it's been a lean month. For what, exactly?"
+    },
+    {
+      "speaker": "Fixer",
+      "line": "We've paid seventy thousand already. One short drive with the Councillor."
+    },
+    {
+      "speaker": "Zhou",
+      "line": "I won't ask who's we. Driving the Councillor's never paid like that."
+    },
+    {
+      "speaker": "Fixer",
+      "line": "At the chime he gets in. Not home, the service bay."
+    },
+    {
+      "speaker": "Zhou",
+      "line": "East yard, round the back. And I wait how long, exactly?"
+    },
+    {
+      "speaker": "Fixer",
+      "line": "Until we've got him out of the back seat. Not long."
+    },
+    {
+      "speaker": "Zhou",
+      "line": "Been paid for 'not long' before. Couple of minutes, then I drive."
+    },
+    {
+      "speaker": "Fixer",
+      "line": "A couple of minutes, Zhou. We'll be at the service bay."
+    },
+    {
+      "speaker": "Zhou",
+      "line": "I won't look. Anyone watching this bay, I can send off."
+    }
+  ],
+  "learned": [
+    "Zhou brings Vale round, waits briefly."
+  ],
+  "opens": [
+    "Be at the service bay"
+  ]
+}

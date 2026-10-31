@@ -1,0 +1,133 @@
+{
+  "takes": [
+    {
+      "situation": "She takes the Fixer for the Bureau, dodges, then says yes before hearing what she's agreed to.",
+      "beats": [
+        {
+          "speaker": "Inez",
+          "line": "Who saw you? Is it my Bureau card? It's two stamps behind."
+        },
+        {
+          "speaker": "Fixer",
+          "line": "Not the Bureau, Inez. Softly. We know you're seeing Okafor."
+        },
+        {
+          "speaker": "Inez",
+          "line": "The Office guard? I've six tables waiting. Can it be after?"
+        },
+        {
+          "speaker": "Fixer",
+          "line": "The Office could learn of you both. I won't dress it up."
+        },
+        {
+          "speaker": "Inez",
+          "line": "All right. Yes. Whatever it is, yes. Just not the Office."
+        },
+        {
+          "speaker": "Fixer",
+          "line": "Hear it first. I telephone, you call Okafor off the Office door."
+        },
+        {
+          "speaker": "Inez",
+          "line": "He'd come, that's the pity. I'd say it can't go by telephone."
+        },
+        {
+          "speaker": "Fixer",
+          "line": "Say that. Okafor stands with you a few minutes, then walks back."
+        }
+      ],
+      "learned": [
+        "She hates it, knows Fixer's face."
+      ],
+      "opens": [
+        "Call Inez"
+      ]
+    },
+    {
+      "situation": "The talk is already under way; she guards Okafor with questions and asks what the empty door is for.",
+      "beats": [
+        {
+          "speaker": "Fixer",
+          "line": "I could have gone to the Office first. I came to you."
+        },
+        {
+          "speaker": "Inez",
+          "line": "Who can hear you? Gone with what? The shift's about to change."
+        },
+        {
+          "speaker": "Fixer",
+          "line": "Quietly. You and Okafor. One note down the tube, the Office knows."
+        },
+        {
+          "speaker": "Inez",
+          "line": "What's Okafor done? Does he know you've been watching us?"
+        },
+        {
+          "speaker": "Fixer",
+          "line": "He knows nothing. When I telephone, you call Okafor off the door."
+        },
+        {
+          "speaker": "Inez",
+          "line": "What happens at the Office door while he's with me?"
+        },
+        {
+          "speaker": "Fixer",
+          "line": "That's ours to carry. A few minutes, then Okafor walks back."
+        },
+        {
+          "speaker": "Inez",
+          "line": "I'll say there's something I can't tell on the line. Now go."
+        }
+      ],
+      "learned": [
+        "Threatened, she agreed; knows Fixer's face."
+      ],
+      "opens": [
+        "Call Inez"
+      ]
+    },
+    {
+      "situation": "She turns the Fixer's manners back on them, then has to invent the reason that brings Okafor over.",
+      "beats": [
+        {
+          "speaker": "Inez",
+          "line": "The clockwork's been for the Bureau already. 'At your convenience.' You too?"
+        },
+        {
+          "speaker": "Fixer",
+          "line": "We're not the Bureau. The Office could learn about you and Okafor."
+        },
+        {
+          "speaker": "Inez",
+          "line": "Has anyone seen you here? Don't tell the Office. Just say what."
+        },
+        {
+          "speaker": "Fixer",
+          "line": "I don't enjoy this. When I telephone, call Okafor off the door."
+        },
+        {
+          "speaker": "Inez",
+          "line": "You're as polite as the clockwork. Okafor won't leave for nothing."
+        },
+        {
+          "speaker": "Fixer",
+          "line": "Softly, then. Give Okafor a reason. You'd know better than we would."
+        },
+        {
+          "speaker": "Inez",
+          "line": "I'd say I've something to tell, and not on the line."
+        },
+        {
+          "speaker": "Fixer",
+          "line": "Keep Okafor at your side a few minutes. Never say anyone knows."
+        }
+      ],
+      "learned": [
+        "Inez gave in, knows Fixer's face."
+      ],
+      "opens": [
+        "Call Inez"
+      ]
+    }
+  ]
+}

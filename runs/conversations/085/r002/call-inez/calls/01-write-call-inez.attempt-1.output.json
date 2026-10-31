@@ -1,0 +1,133 @@
+{
+  "takes": [
+    {
+      "situation": "Inez stalls the Fixer and loses; Okafor comes at once, trusting her, and she apologises for more than he knows.",
+      "beats": [
+        {
+          "speaker": "Fixer",
+          "line": "It's time, Miss Nikolaou. Call Okafor across to you now."
+        },
+        {
+          "speaker": "Inez",
+          "line": "Who's on the line with you? I've a full terrace."
+        },
+        {
+          "speaker": "Fixer",
+          "line": "Only me. Your Bureau card reads paid. We kept our word."
+        },
+        {
+          "speaker": "Inez",
+          "line": "I know what I said. Can't it wait till shift change?"
+        },
+        {
+          "speaker": "Fixer",
+          "line": "No, it can't. We want that door empty a few minutes."
+        },
+        {
+          "speaker": "Inez",
+          "line": "It's me, love. Come across. It can't wait, and not by telephone."
+        },
+        {
+          "speaker": "Okafor",
+          "line": "Post's only a post. I'm leaving the door, crossing to you now."
+        },
+        {
+          "speaker": "Inez",
+          "line": "I'm sorry, love. I wouldn't ask if I could help it."
+        }
+      ],
+      "learned": [
+        "Door empty a few minutes"
+      ],
+      "opens": [
+        "Enter the Office"
+      ]
+    },
+    {
+      "situation": "She gives way to the Fixer fast, but Okafor refuses; she wins him with her true Bureau news, withheld.",
+      "beats": [
+        {
+          "speaker": "Fixer",
+          "line": "Bureau's paid, Miss Nikolaou. It's time. Call Okafor across to you."
+        },
+        {
+          "speaker": "Inez",
+          "line": "A few minutes, you said. Yes. Let me get off this line."
+        },
+        {
+          "speaker": "Inez",
+          "line": "Okafor, love, it's me. Come over. I've something to tell you."
+        },
+        {
+          "speaker": "Okafor",
+          "line": "Can't. I hold this door till shift's end. Say it here."
+        },
+        {
+          "speaker": "Inez",
+          "line": "It won't keep, and not down a telephone. A Bureau notice came."
+        },
+        {
+          "speaker": "Okafor",
+          "line": "The Bureau? How bad? You've gone quiet on me."
+        },
+        {
+          "speaker": "Inez",
+          "line": "I want to see your face when I say it. Please."
+        },
+        {
+          "speaker": "Okafor",
+          "line": "Then the door can wait. I'm leaving it now. Coming across."
+        }
+      ],
+      "learned": [
+        "Door empty a few minutes"
+      ],
+      "opens": [
+        "Enter the Office"
+      ]
+    },
+    {
+      "situation": "She hangs up without answering the Fixer; Okafor hears fear, and leaves his door to protect her.",
+      "beats": [
+        {
+          "speaker": "Fixer",
+          "line": "It's time, Miss Nikolaou. We've paid the Bureau; you call Okafor across."
+        },
+        {
+          "speaker": "Inez",
+          "line": "Are you alone over there, love? I've got to see you."
+        },
+        {
+          "speaker": "Okafor",
+          "line": "You sound wrong, Inez. Someone on that terrace giving you trouble?"
+        },
+        {
+          "speaker": "Inez",
+          "line": "No. Why, what have you heard? Has anybody come to your door?"
+        },
+        {
+          "speaker": "Okafor",
+          "line": "Not a soul. Just Office tubes rattling. What's got you like this?"
+        },
+        {
+          "speaker": "Inez",
+          "line": "It won't wait, and I can't say it down this line."
+        },
+        {
+          "speaker": "Okafor",
+          "line": "Then I'm leaving the door. Nobody troubles you on my shift."
+        },
+        {
+          "speaker": "Inez",
+          "line": "Walk, love. Don't run. I don't want anyone looking."
+        }
+      ],
+      "learned": [
+        "Door empty a few minutes"
+      ],
+      "opens": [
+        "Enter the Office"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,50 @@
+{
+  "picked": 1,
+  "why": "Take 1 has the cleanest chain: paid, what's owed, the ask, she works it out, her question, her own reason, the warning. It invents least, once the collector goes. Take 2's tube notice and Take 3's form-stamping cover story both add things the sheet doesn't give. Facts checked against 96030c4c4a1a18523a3fdbbb and 62d54666eaf88ce7b9ee177f.",
+  "changes": [
+    "Cut the clockwork collector: the sheet gives no such robot. The opening now pays off 'I'll be back with the rest' and says plainly that nothing is owed.",
+    "Rebuilt her first reply around debt: 'Now what do I owe you?' It shows her looking over her shoulder and makes the ask necessary, and 'A few minutes' now answers it directly.",
+    "Changed 'nothing of us' to 'Not a word that anyone knows': she has just used 'us' for herself and Okafor, and the sheet's rule is that he must never learn anyone knows.",
+    "Her warning now grows from the habit Milena caught ('Then stop looking'): 'I can't stop watching that square'. Frightened and useful, it replaces the boast of seeing every face."
+  ],
+  "beats": [
+    {
+      "speaker": "Fixer",
+      "line": "That's the rest paid. You owe the Bureau nothing, Miss Nikolaou."
+    },
+    {
+      "speaker": "Inez",
+      "line": "Not so loud. Thank you. Now what do I owe you?"
+    },
+    {
+      "speaker": "Fixer",
+      "line": "A few minutes. When I telephone, call Okafor off the Office door."
+    },
+    {
+      "speaker": "Inez",
+      "line": "Okafor. You know about us, then. What happens to him?"
+    },
+    {
+      "speaker": "Fixer",
+      "line": "Easy, now. Nothing, if this goes right. And he never sees us."
+    },
+    {
+      "speaker": "Inez",
+      "line": "I'll say I've news that won't wait. Not on the line."
+    },
+    {
+      "speaker": "Fixer",
+      "line": "Not a word that anyone knows. You're with us now."
+    },
+    {
+      "speaker": "Inez",
+      "line": "I can't stop watching that square. If trouble comes, I'll warn you."
+    }
+  ],
+  "learned": [
+    "Loan paid. Inez is with us."
+  ],
+  "opens": [
+    "Call Inez"
+  ]
+}

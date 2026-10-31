@@ -1,0 +1,155 @@
+{
+  "run": "r002",
+  "brief": "085",
+  "note": "Proposal for Sky to read; nothing here reaches text.json or the game.",
+  "corpusHash": "64aeea6f98869bb73228f1db219c490d3863f90740095faaaf79950124d0d5d1",
+  "git": "c7c45902d08a2bbbb56e3769b8f7dc9de803abe6",
+  "inputs": {
+    "sim/data/handover.people.json": "5b38499783a6a9395122d4387132f3f6bc56b649584dfb331def541b499dcc59",
+    "contracts/missions/handover/text.json": "866c6098f59116be1fe5ead0e00558a742bacd6932fef13027c94d11edde34d0",
+    "briefs/085/fable/writer.md": "691b31616dae8522e8bb989c29143c7a7bcbb60bf499f071d7ab7a2a72c5b70f",
+    "briefs/085/fable/editor.md": "560cfce769ce8ec4ddd3cbc9cfa94201cb978cf9f00412eeb67c45d17259197f"
+  },
+  "calls": [
+    {
+      "id": "01-write-listen-inez",
+      "role": "dialogue-designer",
+      "model": "claude-opus-5-5",
+      "status": "accepted",
+      "seconds": 153,
+      "costUsd": 0.36344740000000003,
+      "hits": 8
+    },
+    {
+      "id": "02-edit-listen-inez",
+      "role": "dialogue-designer",
+      "model": "claude-opus-5-5",
+      "status": "accepted",
+      "seconds": 72,
+      "costUsd": 0.2113422,
+      "hits": 8
+    },
+    {
+      "id": "01-write-pay-driver",
+      "role": "dialogue-designer",
+      "model": "claude-opus-5-5",
+      "status": "accepted",
+      "seconds": 192,
+      "costUsd": 0.4376775,
+      "hits": 8
+    },
+    {
+      "id": "02-edit-pay-driver",
+      "role": "dialogue-designer",
+      "model": "claude-opus-5-5",
+      "status": "accepted",
+      "seconds": 98,
+      "costUsd": 0.2562748,
+      "hits": 8
+    },
+    {
+      "id": "01-write-help-inez-1",
+      "role": "dialogue-designer",
+      "model": "claude-opus-5-5",
+      "status": "accepted",
+      "seconds": 133,
+      "costUsd": 0.3107632,
+      "hits": 8
+    },
+    {
+      "id": "02-edit-help-inez-1",
+      "role": "dialogue-designer",
+      "model": "claude-opus-5-5",
+      "status": "accepted",
+      "seconds": 61,
+      "costUsd": 0.17904409999999998,
+      "hits": 8
+    },
+    {
+      "id": "01-write-pressure-inez",
+      "role": "dialogue-designer",
+      "model": "claude-opus-5-5",
+      "status": "accepted",
+      "seconds": 188,
+      "costUsd": 0.42973130000000004,
+      "hits": 8
+    },
+    {
+      "id": "02-edit-pressure-inez",
+      "role": "dialogue-designer",
+      "model": "claude-opus-5-5",
+      "status": "accepted",
+      "seconds": 96,
+      "costUsd": 0.2548558,
+      "hits": 8
+    },
+    {
+      "id": "01-write-help-inez-2",
+      "role": "dialogue-designer",
+      "model": "claude-opus-5-5",
+      "status": "accepted",
+      "seconds": 312,
+      "costUsd": 0.6684774,
+      "hits": 8
+    },
+    {
+      "id": "02-edit-help-inez-2",
+      "role": "dialogue-designer",
+      "model": "claude-opus-5-5",
+      "status": "accepted",
+      "seconds": 112,
+      "costUsd": 0.2853219,
+      "hits": 8
+    },
+    {
+      "id": "01-write-call-inez",
+      "role": "dialogue-designer",
+      "model": "claude-opus-5-5",
+      "status": "accepted",
+      "seconds": 164,
+      "costUsd": 0.3701748,
+      "hits": 8
+    },
+    {
+      "id": "02-edit-call-inez",
+      "role": "dialogue-designer",
+      "model": "claude-opus-5-5",
+      "status": "accepted",
+      "seconds": 84,
+      "costUsd": 0.23186190000000004,
+      "hits": 8
+    },
+    {
+      "id": "01-review-fit",
+      "role": "systems-designer",
+      "model": "claude-opus-5-5",
+      "status": "accepted",
+      "seconds": 80,
+      "costUsd": 0.2826682,
+      "hits": 8
+    },
+    {
+      "id": "14-review-fix-call-inez",
+      "role": "dialogue-designer",
+      "model": "claude-opus-5-5",
+      "status": "accepted",
+      "seconds": 9,
+      "costUsd": 0.0881662,
+      "hits": 8
+    },
+    {
+      "id": "14-review-fix-pay-driver",
+      "role": "dialogue-designer",
+      "model": "claude-opus-5-5",
+      "status": "accepted",
+      "seconds": 20,
+      "costUsd": 0.11066830000000001,
+      "hits": 8
+    }
+  ],
+  "callCount": 15,
+  "wallSeconds": 1195,
+  "modelSeconds": 1774,
+  "faults": [],
+  "reviewFaults": 4
+}

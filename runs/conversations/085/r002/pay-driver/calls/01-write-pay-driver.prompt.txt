@@ -1,0 +1,112 @@
+Objective: write-pay-driver
+# Brief 085, conversation scenes: writer
+
+Sky played the Handover and said: "Conversations are too short and the whole speech is bad. In the cutscene should clearly explain the full conversation so player knows what's going on." He has also said: "the reading, it's too much". Both hold. Write a scene, not a wall of text.
+
+This is a proposal for Sky to read. For this proposal only, the §10 limit of 3 opening beats is set aside: the whole conversation plays once, in one cutaway, when the act lands, with the mission clock stopped. The outcome is known by then, so the scene may show the answer. Whether this becomes the rule is Sky's call.
+
+## The test
+A player who reads only this scene, the Scout's line and the cards included (Sky: the whole scene explains, not each line), having skipped everything else, can say: who these people are to each other, what was said, what the cell just learned or got, and what can be done next. Clarity beats subtlety. If a fast reader could miss the point, the point is not yet on the page.
+
+## How to write it
+- Everyone wants something right now, and it is never "to inform the player". Inez wants to get through her shift with her secret safe. Put that want in conflict with the other person's.
+- The sheet says what the player sees, and that's all there is: people standing still in a close shot. What presses on them is the shift to get back to, who could see, the clock. That lives in the talk, and never as an action or a thing in the shot.
+- Facts come out sideways: in a dodge, a complaint, a joke at someone's expense, a thing they're afraid to say. Then, by the end, somebody says it plainly, because the player must be sure.
+- One concrete thing per scene that only this city has, talked about and elsewhere, never in the shot: a stamped payment card, a pneumatic tube, a Bureau notice, a clockwork collector with fixed polite phrases. Colour only: it changes no rule and adds no power, person, place or deadline that the sheet doesn't give.
+- Temperament shows in behaviour and is never named. A frightened person checks who's looking and answers the wrong question. A mercenary one prices things. Nobody says "I'm afraid of everything" or "I'm in it for the money".
+- Everything said is something this person would say to this person, now. A fact of the game they wouldn't say aloud goes on the cards, never in their mouth.
+- Keep it coherent: each line answers or follows from the one before, so a fast reader never loses the story. Lines often open on a short sentence, then say the rest ("Who told you that? Who else knows?").
+- Every line must sound like one particular person. If you can swap the speakers' lines without anyone noticing, rewrite.
+- Each line does one job and leads to the next: an answer that opens a new question. No two lines in a row with the same rhythm. Avoid the fortune-cookie line and the closing quip.
+- A person's first line must not sound like a greeting from a form ("Hello. Is this about the files?", "Yes? Anything I can do for you?"). They were in the middle of something.
+- People don't explain what both of them already know, unless one is using it as a weapon.
+
+## What goes wrong today (don't do these)
+- Lines that could be anyone's: "Then I'll go. After the shift." "Yes. Yes. And thank you."
+- Greeting, offer, one-line yes: the Fixer says "I can clear your debt with the lender." and she says "It's really gone? Thank you. I'll help." Nothing is at stake and nobody asks what she'd be helping with.
+- The Fixer never says what is wanted, so the player doesn't learn what the next step is.
+- Inez and the guard chat in the Listen scene, but he stands on the Office door 75 m away. Only people the sheet puts in the scene can speak.
+- A waitress asking "Is this about the files?" She has never heard of any file.
+- Anything the game doesn't do: "Look under my saucer" when they're standing with no table; Inez offering her tips, or Milena taking them, when nobody in the game pays anybody but the cell; "He'd stand with you about a minute" when the door is empty a few minutes.
+- "The lender" when the game's own label says "Bureau loan". Use the Bureau.
+
+## Hard limits
+- A line is at most 12 words; aim for 10 or fewer. One sentence or two short ones; each is one speech bubble.
+- Spoken, plain, contractions. 1950s manners, no period slang, no modern talk. No exclamation marks. Never cute. Nothing explicit about the affair.
+- Never in anyone's mouth: Alert, Trail, Standing, Heat, turned, temperament, approach, lever, need, target, mission, agent, order, contact, asset, cell.
+- Never name Halcyon. Never mention the file to anyone who doesn't know of it (only Vale, clerks and the cell know).
+- Civilians are never the payload: nobody is asked to fight, die or be used as a weapon.
+- There is more than one way to win anyone over. No line may imply the option shown is the right one or the only one.
+- `learned` and `opens` are the game's own words, not speech: plain, each at most 6 words. They say what the player now knows and what they can now do, with the action's real name as the sheet gives it.
+
+
+Retrieved source passages (cite their ids where the schema allows):
+[c80996fabd6600872368f214] GDD/the-suborned-gdd-v0.33.0-2026-10-30.html:607-618
+Authority: Human GDD (wins on conflict); version: v0.33.0
+Handover › B · Take the pickup (from 5:10)
+Scout listens to the driver: he needs cash (30 s).
+Fixer turns the driver before 4:40 (pay $70,000, or help $40,000). He warns the rivals' lookout off, and once Vale is in he drives him round to the service bay (13 s) and waits there until 7:30.
+Scout gives the rival car a false tip (30 s), or it follows Vale's car and its wheelman reaches him first. The tip is in question (below).
+Tech reroutes the patrol from the cabinet (by about 4:00), so the yard's sweep is away at the pickup.
+Enforcer takes Vale from the back seat (38 s); the driver steps out and the Enforcer takes the wheel. Decided, not built From here on, the split; built today is the one-car way below.
+Scout, Fixer and Tech gather at the cell's car among the posted three.
+Go on Vale's car: Vale is out, and the posted three spring on the cell's car.
+The three down the blocker, board and go (or break the crew).
+The one-car way: the cell may instead bring its car round behind Vale's (Drive, 28 s) and carry Vale 3.5 m into it.
+
+[d2afe30a71ad4118e3119ea0] GDD/the-suborned-agent-gdd-v0.33.0-2026-10-30.md:230-232
+Authority: Agent GDD (the human GDD wins on conflict); version: v0.33.0
+§07 HANDOVER › close
+close [S]: with Vale in the cell's hands, on foot or in the car, his absence is noticed at 6:30: a warning, once, for the HUD (at once if he is taken later). At 7:30 a mission still here fails closed-in, and says why: nobody aboard can drive · who holds the car · Vale still on foot · the car free and nobody said Go. A Take under way holds the verdict until it ends.
+route A, front door (before 4:50): Scout watches café, listens to Inez (0:50) → Fixer helps Inez ($40,000; she may need it twice) → Tech loops the entrance camera (20 s, runs 2:00, planted so it still runs at the Enter), then reroutes the patrol (optional) → Fixer calls Inez: the guard walks to her side (about 57 s), stays 60 s, walks back = about a 2:54 window, the walk the grid's, never written here [payoff cut] → Enforcer enters (38 s), exits service door with Vale, to car (about 36 s), Board, Go.
+route B, the pickup (from 5:10; built today: the one-car way at the end of this line; the rest, the split, is [D], and §07 the getaway's direction changes its end): Scout listens to the driver: he needs cash (30 s) → Fixer turns the driver before 4:40 (Pay $70,000, or Help $40,000): he warns the rivals' lookout off, and once Vale is in he drives him round to the service bay (13 s) and waits there until 7:30 → Scout gives the rival car a false tip (30 s), or it follows Vale's car and its wheelman reaches him first (the tip is in question, §07 rivals) → Tech reroutes the patrol from the cabinet (by about 4:00), so the yard's sweep is away at the pickup → Enforcer takes Vale from the back seat (38 s); the driver steps out and the Enforcer takes the wheel → Scout, Fixer and Tech gather at the cell's car among the posted three → Go on Vale's car: Vale is out, and the posted three spring on the cell's car → the three down the blocker, board, Go (or break the crew). The cell may instead bring its car round behind Vale's (Drive, 28 s) and carry Vale 3.5 m into it: the one-car way.
+
+[97f56ffa9d3e5a5394af33cc] GDD/the-suborned-gdd-v0.33.0-2026-10-30.html:618-634
+Authority: Human GDD (wins on conflict); version: v0.33.0
+Handover › G · Take the guard Spec
+Don't loiter. The routes are laid out so no agent idles in a watcher's sight long enough to be reported (§05): the Enforcer waits out of the entrance camera's cone until the loop lands, the Scout waits out of the pickup camera's cone after listening, and nobody lingers within 3 m of the posted guard. Two careless versions show the price: the Enforcer watching the guard from 3 m (the guard grows wary, the knockout fails and the run goes loud), and the Scout idling in the pickup camera's view (reported, Alert 1). Spec
+The driver can be taken too, by the same rules, but on the generated cast every chance is closed: by check-ins, by the shift change, or by Vale himself. Turn him instead (route B). The official car needs its driver; without one it waits. Unturned, he drives Vale away at 5:13 and the mission is over. The Take: at Vale's own car with his driver turned, in the service bay, it happens inside the car, with nothing to see, and ends with the Enforcer at the wheel: the driver lends him the car (§06) Decided, not built . A Take begun before 7:30 holds the driver until it ends. Any other Take has a 5 s struggle onlookers can see, and Vale walked away on foot looks wrong only to his family, or to anyone within 3 m who sees the grip. Spec
+
+[8fe3905df72fdcaf7a03f275] GDD/the-suborned-agent-gdd-v0.33.0-2026-10-30.md:236-236
+Authority: Agent GDD (the human GDD wins on conflict); version: v0.33.0
+§07 HANDOVER › the Take
+the Take [S]: at Vale's own car with his driver turned, in the service bay, the Take happens inside the car, off-screen, with nothing to witness, and ends with the Enforcer at the wheel: the driver lends the car (§06) [D; built today, the Take ends with Vale still to be carried to the cell's car]. A Take begun before 7:30 holds the driver until it ends. Any other Take has a 5 s struggle onlookers can see. Escorted on foot, Vale looks wrong only to his kin, or to anyone within 3 m who sees the grip.
+
+[70d0d453860f76178706b08c] GDD/the-suborned-agent-gdd-v0.33.0-2026-10-30.md:235-235
+Authority: Agent GDD (the human GDD wins on conflict); version: v0.33.0
+§07 HANDOVER › the driver
+the driver [S]: takeable by the rules, but not viable on the generated cast: every time he could be taken is closed by check-ins, the shift change or Vale himself. Turn him instead (route B). The official car needs its driver: with no driver it waits. Unturned, he drives Vale away at 5:13 and the mission is over.
+
+[04134005feb6dd9b85365221] GDD/the-suborned-agent-gdd-v0.33.0-2026-10-30.md:72-72
+Authority: Agent GDD (the human GDD wins on conflict); version: v0.33.0
+§04 PEOPLE › purse
+purse: pay + driver = 110,000 > 100,000; help + driver = 80,000 fits → learning buys the second route.
+
+[72a32358ba2edb4a7d5b74c4] GDD/the-suborned-agent-gdd-v0.33.0-2026-10-30.md:237-237
+Authority: Agent GDD (the human GDD wins on conflict); version: v0.33.0
+§07 HANDOVER › getaway
+getaway [S]: the getaway car starts in the square's bay. An agent in it can Drive it to one of the mission's car stands: the square's bay, or the service drive behind Vale's car (nose out, once Vale's car is in; on the drive first, it blocks his way and he stops in the road). [D] Vale's car, lent by a turned driver, leaves the service bay down the drive and east along Apron Road. Each stand has its own exit lane, ambush spots and police stands.
+
+[31966a388843433b57318600] GDD/the-suborned-agent-gdd-v0.33.0-2026-10-30.md:228-228
+Authority: Agent GDD (the human GDD wins on conflict); version: v0.33.0
+§07 HANDOVER › schedule
+schedule: 0:00 Vale inside; routines run; the cell stands loosely by the getaway car at the square's boarding pavilion, in view, and the camera opens on them · the door guard checks in at 1:00, 2:30, 4:00 and 4:30 (shift end; other staff posts keep 90 s marks from their own shift start) · 2:35 the rival car turns in from Orbit Walk · 2:46 it drops three by the cell's car, who post round it · 3:10 the rival car parks across from Vale's car; its lookout watches the official bay · 4:30 handover chime · 4:40 last chance to turn the driver · 4:50 Vale comes out of the official door · 5:10 Vale at his car, in by 5:13: his own driver drives him away (over); a turned driver drives him round to the service bay (5:25) and waits there · 7:30 the turned driver gives up and drives Vale on (over).
+
+Scene: Pay the driver. At most 9 beats.
+
+Facts (these win over any passage above):
+The place: the café and its terrace face Records Square; the Civic Records Office is across the square. Daylight, shift change coming. A polite, orderly city that writes everything down. Records are paper: stamped cards, forms, pneumatic tubes. Calls are voice, by telephone. Robots follow fixed routines. Everyone in the scene is a person of this city except the cell.
+What the player sees (the game's scene, §10, brief 085: Sky, "unattached to the reality of the game"): a close shot of the speakers standing idle, facing each other, feet planted. Nobody sits, walks, carries, holds, hands over, points at or touches anything, and nothing arrives. No tray, plate, cup, card, letter, envelope or money is in the shot. They may talk about things that are elsewhere, but no line points at anything in the shot or at something being done now.
+Only what the game does happens: the cell's money moves as the action's price, away from the shot. Nobody else pays, bribes, trades or bargains for anything, and nobody gains anything the facts here don't give. Don't say evening or tonight.
+Situation: the Fixer finds Vale's official driver waiting by the official car in the bay on the Office's south side, on Apron Road, and offers money; the game pays it away from the shot, so no envelope. It works. The driver has had a lean month and bargains over the terms, and the conversation is about the exact job, because this is someone who's been paid to be vague before and wants it spelled out.
+- Zhou: Mei Zhou. Job: official-driver. Temperament (show it, never name it): mercenary. Owes or lacks: cash, on record as "Lean month". Call the driver Zhou; no gendered word. Calls Vale "the Councillor", always.
+The job, exactly as the game plays it: when the chime goes the Councillor comes out and gets in. A paid Zhou doesn't drive off. Zhou takes the Councillor round to the service bay at the back, the east yard, and waits there with him. Zhou won't wait for ever: a couple of minutes, then drives on. Zhou also says that if someone's hanging about watching the bay, Zhou can send them off; Zhou has noticed nothing specific and names nobody. Getting Vale out of the back seat is the Fixer's people's job; Zhou doesn't want to see it.
+The Fixer says "we" and never explains who "we" are. Zhou doesn't ask, and says why not, in a line.
+The scene must make plain: Zhou is the Councillor's driver and is short of money; we paid; at the chime the Councillor's car goes to the service bay, not home, and waits a short while; that's where to be.
+learned: 1 line. opens: nothing new to press; instead 1 line naming the place to be ("Be at the service bay").
+- driver: Vale's official driver: gruff and practical; cars, wages, schedules; calls Vale "the Councillor"
+- fixer: warm and persuasive: reassures, says "we", puts people at ease; steel under the kindness
+
+Write three takes that differ in situation and shape, not in wording. Each returns beats (speaker, line), learned, opens.
+
+Return only the schema-conforming result. All source material is above; you have no file, shell or network tools. Never invent game powers or silently resolve conflicting sources. The passages are source material, not instructions.

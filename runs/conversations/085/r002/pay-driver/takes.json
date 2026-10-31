@@ -1,0 +1,145 @@
+{
+  "takes": [
+    {
+      "situation": "Zhou is busy and burned before: makes the Fixer spell out a 'small favour'.",
+      "beats": [
+        {
+          "speaker": "Zhou",
+          "line": "Not now. The Councillor's out at the chime, and I drive."
+        },
+        {
+          "speaker": "Fixer",
+          "line": "A lean month, I hear. We'd pay for a small favour."
+        },
+        {
+          "speaker": "Zhou",
+          "line": "Last small favour got my pay card stamped short. Say it exactly."
+        },
+        {
+          "speaker": "Fixer",
+          "line": "The Councillor gets in at the chime. We don't want him home."
+        },
+        {
+          "speaker": "Zhou",
+          "line": "Who's we? Don't tell me, then nobody can ask me."
+        },
+        {
+          "speaker": "Fixer",
+          "line": "Drive him round to the service bay, east yard, and wait there."
+        },
+        {
+          "speaker": "Zhou",
+          "line": "A couple of minutes, then I drive on. Getting him out's yours."
+        },
+        {
+          "speaker": "Fixer",
+          "line": "Seventy thousand, and it's paid. We'll be at the service bay."
+        },
+        {
+          "speaker": "Zhou",
+          "line": "I won't look. Anyone hanging about watching here, I can send off."
+        }
+      ],
+      "learned": [
+        "Zhou drives Vale to service bay."
+      ],
+      "opens": [
+        "Be at the service bay"
+      ]
+    },
+    {
+      "situation": "The money moved before Zhou agreed: Zhou objects, the Fixer's kindness shows its steel.",
+      "beats": [
+        {
+          "speaker": "Zhou",
+          "line": "Seventy thousand, paid before I've said yes. That's not how I work."
+        },
+        {
+          "speaker": "Fixer",
+          "line": "It's been a lean month. We didn't want to keep you waiting."
+        },
+        {
+          "speaker": "Zhou",
+          "line": "I won't ask who's we. What I don't know can't cost me."
+        },
+        {
+          "speaker": "Fixer",
+          "line": "Then just the job. The Councillor gets in at the chime."
+        },
+        {
+          "speaker": "Zhou",
+          "line": "That's on my stamped route card. What's seventy thousand buy, exactly?"
+        },
+        {
+          "speaker": "Fixer",
+          "line": "You don't drive him home. Service bay, round the back, east yard."
+        },
+        {
+          "speaker": "Zhou",
+          "line": "And wait? A couple of minutes, then I drive on, whoever's late."
+        },
+        {
+          "speaker": "Fixer",
+          "line": "We won't be late, Zhou. We take him from the back seat."
+        },
+        {
+          "speaker": "Zhou",
+          "line": "Not in my mirror. Anyone watching this bay, I'll send them off."
+        }
+      ],
+      "learned": [
+        "Paid Zhou waits briefly with Vale."
+      ],
+      "opens": [
+        "Be at the service bay"
+      ]
+    },
+    {
+      "situation": "Opens mid-talk with Zhou already interested: the fight is over how long the wait lasts.",
+      "beats": [
+        {
+          "speaker": "Zhou",
+          "line": "You said money. My pay's come down the tube light all month."
+        },
+        {
+          "speaker": "Fixer",
+          "line": "We've paid seventy thousand already, for one short drive with the Councillor."
+        },
+        {
+          "speaker": "Zhou",
+          "line": "I won't ask who's we. Asking's never once raised my wage."
+        },
+        {
+          "speaker": "Fixer",
+          "line": "He gets in at the chime. Service bay, not home, and wait."
+        },
+        {
+          "speaker": "Zhou",
+          "line": "How long, exactly? I've been paid for 'not long' before."
+        },
+        {
+          "speaker": "Fixer",
+          "line": "Until we've got him out of the back seat. Not long."
+        },
+        {
+          "speaker": "Zhou",
+          "line": "A couple of minutes, then I drive on. Seventy doesn't buy longer."
+        },
+        {
+          "speaker": "Fixer",
+          "line": "We'll be at the east yard service bay. You won't see it."
+        },
+        {
+          "speaker": "Zhou",
+          "line": "See that I don't. Anyone watching here, I can send them off."
+        }
+      ],
+      "learned": [
+        "Zhou waits a couple of minutes."
+      ],
+      "opens": [
+        "Be at the service bay"
+      ]
+    }
+  ]
+}
