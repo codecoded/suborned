@@ -145,7 +145,7 @@ let text = 'absent (the host shows its placeholders)';
     const dir = join(work, 'text'); mkdirSync(join(dir, 'contracts/missions/handover'), { recursive: true });
     writeFileSync(join(dir, TEXT_SCHEMA), schema);
     // the schema imports the people rules and the rulebook ref from the same source tree
-    for (const dep of ['contracts/people/people.rules.schema.ts', 'contracts/rules/rulebook.ref.ts', 'contracts/rules/rulebook.schema.ts']) {
+    for (const dep of ['contracts/missions/handover/conversations.schema.ts', 'contracts/people/people.rules.schema.ts', 'contracts/rules/rulebook.ref.ts', 'contracts/rules/rulebook.schema.ts']) {
       const b = at(dep); if (!b) { console.error(`${TEXT_SCHEMA} needs ${dep}, which is missing`); process.exit(1); }
       mkdirSync(join(dir, dep, '..'), { recursive: true }); writeFileSync(join(dir, dep), b);
     }

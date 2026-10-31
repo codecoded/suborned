@@ -1,7 +1,8 @@
-// Brief 085: full conversation scenes, written through the RAG core at build time. A proposal for Sky to read: nothing here reaches the game or text.json.
+// Brief 085: full conversation scenes, written through the RAG core at build time. A proposal for Sky to read: nothing here reaches the game; what he agrees is moved by hand into text.json scenes.conversations.
 // Each scene: facts bound by code from the sim's people (sheet) + retrieved world and rules + the writer brief -> Fable writes takes -> a script-editor pass ->
 // this file's checks (a fault goes back to the editor once) -> Motive reviews the set for fit with the rules. Every call is saved by runAgent under the run.
 //   bun tools/dialogue/conversations.ts [--only id,id] [--run r002] [--base dir] [--retrieve-only]   then: bun tools/dialogue/conversations-page.ts
+// With --only, a scene's `after` scenes outside the list come from what Sky agreed (briefs/085/fable/approved.json), so the writer still knows what the player has read.
 import { createHash } from 'node:crypto';
 import { existsSync, mkdirSync, readdirSync } from 'node:fs';
 import { resolve } from 'node:path';
@@ -14,6 +15,7 @@ import { retrieve } from '../rag/retrieval';
 const read = (p: string) => Bun.file(resolve(root, p)).text();
 const peopleFile = 'sim/data/handover.people.json', textFile = 'contracts/missions/handover/text.json';
 const people = JSON.parse(await read(peopleFile)), text = JSON.parse(await read(textFile));
+const approved = JSON.parse(await read('briefs/085/fable/approved.json')) as { scenes: { id: string; beats: [string, string][] }[] };
 const person = (id: string) => people.people.find((p: { id: string }) => p.id === id);
 const recordLabel = (r: string) => people.needs.records[r]?.[1] ?? r;
 const place = (id: string) => (people.places as Record<string, [number, number]>)[id]!;
@@ -35,6 +37,8 @@ Only what the game does happens: the cell's money moves as the action's price, a
 const GUARD_AWAY = `He leaves the door, walks across the square, stands at her side and walks back: the door is empty about three minutes. In speech say "a few minutes", never "a minute".`;
 /** Sky, 2026-10-31: asking him over "feels unrealistic without a reason", and if she said someone knew, "he runs back to the door". */
 const GUARD_REASON = `He only leaves his post for a reason: she says she has something to give him or tell him that can't wait and can't be said on the line. It's her reason, in her own words, and it's enough to keep him at her side. She never tells him anyone knows about them: he'd run straight back to his door.`;
+/** GDD v0.34.0 §07 (Sky, brief 085): a pressured Inez, and only she, tells him. She still needs a reason to get him off the door. */
+const GUARD_REASON_THEN_TELLS = `He only leaves his post for a reason: she says she has something to tell him that can't wait and can't be said on the line. It's her reason, in her own words, and he steps off the door for it.`;
 const VOICES = (...k: string[]) => k.map(v => `- ${v}: ${text.tone.voices[v]}`).join('\n');
 const INEZ_GUARD = `Inez and the door guard are lovers, in secret. He stands the Office's public door, ${apart} m across the square from her. The two are never together unless she calls him. In speech call him Okafor (never his given name, and no gendered word beyond "he").`;
 
@@ -121,6 +125,22 @@ The scene must make plain: she called him and he is leaving the door now. The ca
 learned: 1 line ("Door empty a few minutes"). opens: 1 line naming what the door allows now, "Enter the Office" (the Enforcer's action).
 ${VOICES('waitress', 'guard', 'fixer')}`,
   },
+  {
+    id: 'call-inez-pressure', title: 'The call, after Pressure', after: ['listen-inez', 'pressure-inez'], kind: 'call', maxBeats: 9, speakers: ['Fixer', 'Inez', 'Okafor'],
+    query: ['pressured Inez tells the guard someone knows, they looked suspicious, he runs back to his door, window shorter', 'Pressure leaves fear resentment can identify Fixer', 'route A front door Call Inez window Enforcer enters', 'calls are voice telephone'],
+    mustSay: [{ what: 'someone knows about them', re: /\bknows?\b/i }, { what: 'that they looked suspicious', re: /suspicious|looked wrong|not right|wrong about/i }, { what: 'he goes back', re: /\bback\b/i }, { what: 'the door', re: /door/i }],
+    sheet: `${WORLD}
+Situation: the moment the front-door plan was for, and it goes wrong. The Fixer threatened to tell the Office about Inez and Okafor, and told her not to say a word of it to him. Now the Fixer telephones the café and says it's time. Inez then speaks to Okafor on the Office door's handset. The shot cuts between them, each standing alone; no one is seen holding a telephone. He doesn't arrive in this scene, so all she says to him she says on the line.
+${INEZ_WHO}
+${who(GUARD, 'Okafor', 'In speech he is Okafor to the Fixer; Inez may call him "love". He has a shift to finish and likes her more than the job. He says nothing about money here, and doesn\'t say how long the door stands empty.')}
+${INEZ_GUARD}
+It's the same woman the player has just read, and she hates the Fixer. In order: she answers the Fixer as if she's giving way, as she did before. She talks to Okafor the way she always does, an ordinary word about his shift. ${GUARD_REASON_THEN_TELLS} Once he has agreed and stepped off the door, she tells him, on the line, in her own words: someone knows about the two of them, and whoever it was looked suspicious to her. This is the first thing she has done for herself and she never says so; for this one moment she doesn't give way. She only knows she was threatened: she doesn't say who, gives no name or face, says nothing of what the Fixer wants or of anyone going into the Office. The Fixer isn't on this line and doesn't hear it, and no one in the scene remarks on the plan.
+Okafor doesn't argue. He has left his door, and he says he's running back to it, now. He does go back: never have him say he won't leave or never left, because in the game the door does stand empty for a short while.
+The player must feel the plan go wrong from what she says: the Fixer told her not a word, and here is the word. Nobody says how long the door stands empty, and no number of minutes is said.
+The scene must make plain, the cards included: she called him; she told him someone knows; he is running back, so the door is empty for less time than the plan needed.
+learned: 1 line that names it: she told him, so the door's empty for less time. opens: 1 line naming what the door still allows, "Enter the Office" (the Enforcer's action).
+${VOICES('waitress', 'guard', 'fixer')}`,
+  },
 ];
 
 const Beat = z.strictObject({ speaker: z.string(), line: z.string() });
@@ -156,6 +176,16 @@ export function check(s: Spec, f: Pick<Final, 'beats' | 'learned' | 'opens'>): s
   return out;
 }
 
+type Read = { id: string; title: string; beats: { speaker: string; line: string }[] };
+/** What the player has read before a scene, in its `after` order: the scenes this run wrote, else what Sky agreed. */
+export function priorScenes(s: Pick<Spec, 'after'>, written: Read[]): Read[] {
+  return (s.after ?? []).flatMap((id): Read[] => {
+    const w = written.find(x => x.id === id); if (w) return [w];
+    const a = approved.scenes.find(x => x.id === id); if (!a) return [];
+    return [{ id, title: specs.find(x => x.id === id)?.title ?? id, beats: a.beats.map(([speaker, line]) => ({ speaker, line })) }];
+  });
+}
+
 const args = Bun.argv.slice(2), arg = (k: string) => { const i = args.indexOf(k); return i >= 0 ? args[i + 1] : undefined; };
 if (import.meta.main) {
   const only = arg('--only')?.split(','), base = arg('--base') ?? 'runs/conversations/085';
@@ -173,7 +203,8 @@ if (import.meta.main) {
   type Scene = { spec: Spec; final: Final; faults: string[]; reviewFix: (found: string[], into: Call[]) => Promise<void> };
   const one = async (s: Spec, before: Scene[]): Promise<Scene> => {
     const d = `${dir}/${s.id}`, calls: Call[] = [];
-    const story = before.length ? `What the player has already read, in order. Stay true to it, and don't reuse its phrases:\n${before.map(b => `${b.spec.title}:\n${b.final.beats.map(x => `${x.speaker}: ${x.line}`).join('\n')}`).join('\n\n')}\n\n` : '';
+    const seen = priorScenes(s, before.map(b => ({ title: b.spec.title, id: b.spec.id, beats: b.final.beats })));
+    const story = seen.length ? `What the player has already read, in order. Stay true to it, and don't reuse its phrases:\n${seen.map(b => `${b.title}:\n${b.beats.map(x => `${x.speaker}: ${x.line}`).join('\n')}`).join('\n\n')}\n\n` : '';
     const o: Objective = { id: `write-${s.id}`, role: 'dialogue-designer', brief: 'briefs/085/fable/writer.md', query: s.query, effort: 'high' };
     const task = `Scene: ${s.title}. At most ${s.maxBeats} beats.\n\nFacts (these win over any passage above):\n${s.sheet}\n\n${story}Write three takes that differ in situation and shape, not in wording. Each returns beats (speaker, line), learned, opens.`;
     const takes = await runAgent(o, task, Takes, calls, d);
@@ -219,7 +250,7 @@ if (import.meta.main) {
   const sha = async (p: string) => createHash('sha256').update(await read(p)).digest('hex');
   await writeJson(`${dir}/run.json`, {
     run, brief: '085', note: 'Proposal for Sky to read; nothing here reaches text.json or the game.', corpusHash, git: Bun.spawnSync(['git', 'rev-parse', 'HEAD'], { cwd: root }).stdout.toString().trim(),
-    inputs: { [peopleFile]: await sha(peopleFile), [textFile]: await sha(textFile), 'briefs/085/fable/writer.md': await sha('briefs/085/fable/writer.md'), 'briefs/085/fable/editor.md': await sha('briefs/085/fable/editor.md') },
+    inputs: { [peopleFile]: await sha(peopleFile), [textFile]: await sha(textFile), 'briefs/085/fable/writer.md': await sha('briefs/085/fable/writer.md'), 'briefs/085/fable/editor.md': await sha('briefs/085/fable/editor.md'), 'briefs/085/fable/approved.json': await sha('briefs/085/fable/approved.json') },
     calls: allCalls.map(c => ({ id: c.id, role: c.role, model: c.model, status: c.status, seconds: c.seconds, costUsd: c.costUsd, hits: c.retrieval.hits.length })),
     callCount: allCalls.length, wallSeconds: Math.round((Date.now() - start) / 1000), modelSeconds: allCalls.reduce((n, c) => n + c.seconds, 0),
     faults: done.flatMap(x => x.faults.map(f => `${x.spec.id}: ${f}`)), reviewFaults: review.faults.length,

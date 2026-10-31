@@ -21,10 +21,11 @@ const recordLabel = (r: string) => people.needs.records[r]?.[1] ?? r;
 const place = (id: string) => (people.places as Record<string, [number, number]>)[id]!;
 const metres = (a: string, b: string) => { const [x, y] = [place(a), place(b)]; return Math.round(Math.hypot(x[0] - y[0], x[1] - y[1]) / 100); };
 
-/** The test's only change to Fable's role card, made for this arm's calls and never on disk: the 10-word bubble limit in the system prompt becomes Sky's 12. */
+/** The test's only change to Fable's role card, made for this arm's calls and never on disk: the 10-word bubble limit in the system prompt becomes Sky's 12. Since GDD v0.34.0 the card says 12 itself, and the patch leaves it. */
 export const CARD_FROM = 'bubbles ≤ 10 words', CARD_TO = 'bubbles ≤ 12 words';
 export function patchCard(c: Card): Card {
   if (c.name !== 'dialogue-designer') return c;
+  if (/bubbles\s+≤\s+12\s+words/.test(c.body)) return c;
   const norm = (s: string) => s.replace(/bubbles\s+≤\s+10\s+words/, CARD_TO);
   if (!/bubbles\s+≤\s+10\s+words/.test(c.body)) throw new Error(`the card no longer says "${CARD_FROM}"`);
   return { ...c, body: norm(c.body), text: norm(c.text) };

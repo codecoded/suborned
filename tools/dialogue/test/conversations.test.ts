@@ -1,6 +1,6 @@
 // Brief 085: Sky's read of the blind test. A person says what they'd say; game facts stay on the cards. No model calls.
 import { describe, expect, test } from 'bun:test';
-import { check, specs } from '../conversations';
+import { check, priorScenes, specs } from '../conversations';
 
 const spec = (id: string) => specs.find(s => s.id === id)!;
 const scene = (lines: string[], s = spec('pressure-inez')) => ({
@@ -34,8 +34,27 @@ describe('what a person would say', () => {
   });
   test('every scene with Inez carries who she is', () => {
     const withInez = specs.filter(s => s.speakers.includes('Inez'));
-    expect(withInez.length).toBe(5);
+    expect(withInez.length).toBe(6);
     for (const s of withInez) expect(s.sheet).toContain('never threatens anyone');
+  });
+  test('the call after Pressure: she gives a reason, then tells him; only this sheet lets her', () => {
+    const s = spec('call-inez-pressure');
+    expect(s.after).toEqual(['listen-inez', 'pressure-inez']);
+    expect(s.sheet).not.toContain('She never tells him anyone knows');
+    expect(s.sheet).toContain('someone knows about the two of them');
+    expect(s.sheet).toContain("can't be said on the line");
+    const lines = ['It is time.', 'He is on the door.', 'The shift is long, love.', 'Come over, it will not wait.'];
+    expect(check(s, scene(lines, s)).join()).toContain('never says: someone knows');
+    expect(check(s, scene([...lines, 'Someone knows, and looked suspicious.', "I'm going back to my door."], s))).toEqual([]);
+  });
+  test('with --only, a scene still knows what the player read: from this run, else what Sky agreed', () => {
+    const s = spec('call-inez-pressure'), got = priorScenes(s, []);
+    expect(got.map(x => x.id)).toEqual(['listen-inez', 'pressure-inez']);
+    expect(got[1]!.title).toBe('Pressure Inez');
+    expect(got[1]!.beats[0]).toEqual({ speaker: 'Inez', line: 'Is it the Bureau? I know I\'m behind.' });
+    const mine = { id: 'pressure-inez', title: 'mine', beats: [{ speaker: 'Inez', line: 'written this run' }] };
+    expect(priorScenes(s, [mine])[1]).toEqual(mine);
+    expect(priorScenes({}, [])).toEqual([]);
   });
   test('the sheets keep game facts out of speech and never count the ways', () => {
     expect(spec('pressure-inez').sheet).toContain('nobody says it aloud');

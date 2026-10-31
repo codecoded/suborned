@@ -1,0 +1,50 @@
+{
+  "picked": 1,
+  "why": "Take 1 has the cleanest order and a true, ordinary shift line. Its gaps close with lifts from takes 2 and 3. It holds to the capstone [d8719fcc42e7edb421793dc5]: she calls him, tells him someone knows and looked suspicious, and he runs back.",
+  "changes": [
+    "Fixer's opening lifted from take 3, so 'and nothing else' sets up the word she then breaks. Inez's reply now gives way fast and shows her fear as a question, replacing the tables excuse.",
+    "Okafor's 'That's not your voice' lifted from take 2, replacing 'ringing the door', so his question makes her next line necessary and only he could say it.",
+    "'Then it's bad' became 'It's only a door', which shows he likes her more than the job and turns on him when he runs back to it.",
+    "Cut 'See to your tables' from his last line; 'my door's standing empty' now says plainly what her word has done, with no time given. Learned line reworded to name Okafor."
+  ],
+  "beats": [
+    {
+      "speaker": "Fixer",
+      "line": "It's time, Inez. Okafor hears what we agreed, and nothing else."
+    },
+    {
+      "speaker": "Inez",
+      "line": "Yes, I'll call him. Did anyone hear you ask for me?"
+    },
+    {
+      "speaker": "Inez",
+      "line": "It's me, love. Have they stamped your shift card yet?"
+    },
+    {
+      "speaker": "Okafor",
+      "line": "Not till the change. That's not your voice. What is it?"
+    },
+    {
+      "speaker": "Inez",
+      "line": "I've something to tell you that can't wait. Not on the line."
+    },
+    {
+      "speaker": "Okafor",
+      "line": "It's only a door. All right, I'm off it."
+    },
+    {
+      "speaker": "Inez",
+      "line": "Someone knows about us, love. Whoever it was looked suspicious."
+    },
+    {
+      "speaker": "Okafor",
+      "line": "And my door's standing empty. I'm running back to it, now."
+    }
+  ],
+  "learned": [
+    "Okafor warned: door empty less time."
+  ],
+  "opens": [
+    "Enforcer can still Enter the Office."
+  ]
+}

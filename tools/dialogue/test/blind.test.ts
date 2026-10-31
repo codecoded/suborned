@@ -68,7 +68,8 @@ describe('the second arm', () => {
     expect(() => patchCard({ ...base, body: 'none' })).toThrow();
     const real = await cardAdapter.loadCard('dialogue-designer');
     expect(real.body).toContain(CARD_TO); expect(real.body).not.toContain('bubbles ≤ 10 words');
-    expect(text('.claude/agents/dialogue-designer.md')).toContain('bubbles ≤ 10 words');
+    expect(text('.claude/agents/dialogue-designer.md')).toContain(CARD_TO); // GDD v0.34.0: the card says 12 itself, so the patch has nothing to change
+    expect(patchCard(real).body).toBe(real.body);
   });
   test('the brief drops what Sky\'s calls and the report remove, and keeps the limits', () => {
     const w = text('briefs/085/fable/writer-b.md'), e = text('briefs/085/fable/editor-b.md');

@@ -1,0 +1,19 @@
+--- /Users/sky/Projects/suborned/contracts/rules/rulebook.json	2026-10-30 19:49:40
++++ tree2/contracts/rules/rulebook.json	2026-10-31 17:19:37
+@@ -57,6 +57,7 @@
+   "refusal-trail": { "v": 1, "unit": "trail", "tag": "B", "src": "§04 remembered refusal: +1 T; top-down test offerInez, turnInez, pressureInez (+1 T when inezRefused; pressure adds no $)" },
+   "help-orders": { "v": 1, "unit": "orders", "tag": "B", "src": "§07 route A: Fixer helps Inez ($40,000), once" },
+   "worse-help-orders": { "v": 1, "unit": "orders", "tag": "S", "src": "§04 wrong approach [S] (Sky Q4): one more Help; §04 Fearful, Hero: needs Help ×2" },
++  "worse-help-usd": { "v": -20000, "unit": "usd", "tag": "S", "src": "Motive probe 085", "proposed": true, "reason": "probe" },
+   "worse-pay-usd": { "v": 20000, "unit": "usd", "tag": "S", "src": "§04 wrong approach [S] (Sky Q4): a higher price, Keel sets the number", "proposed": true, "reason": "Pay's step is money. $20,000 is twice the refusal surcharge, so a wrong approach costs more than a cold ask's leftover, and it keeps every §04 lesson: a Mercenary is cheapest by Pay ($70,000 < Help ×2 $80,000), a Fearful or Loyal person is cheaper by Help ($80,000 < $90,000) but slower (100 s vs 50 s), and Pay plus the driver stays over the purse." },
+   "worse-pressure-trail": { "v": 1, "unit": "trail", "tag": "S", "src": "§04 wrong approach [S] (Sky Q4): a higher price; Pressure's price is Trail", "proposed": true, "reason": "Pressure costs no money, so its step is +1 T (a louder threat), in one order. A second threat instead would add a second +1 resentment and make an Informer of anyone not Fearful (resentment max 2): a cliff, not a step." },
+   "loyal-help-orders": { "v": 1, "unit": "orders", "tag": "S", "src": "§04 Loyal (institution): trust over time; Hero: turns after repeated Help", "proposed": true, "reason": "'repeated' read as the smallest repeat: one Help more than anyone else, so a Loyal person turns on the second Help even though Help suits them." },
+@@ -1405,6 +1406,8 @@
+     { "line": "base", "usd": "p:approaches.help.usd", "s": "p:approaches.help.timeS", "trail": "p:approaches.help.trail", "orders": "v:help-orders" },
+     { "line": "refused-before", "when": [{ "k": "memory", "act": "refusal", "has": true }], "usd": "v:refusal-usd", "trail": "v:refusal-trail" },
+     { "line": "one-more-help", "when": [{ "k": "turned", "is": false }, { "k": "fit", "is": ["worse"] }], "orders": "v:worse-help-orders" },
++    { "line": "visits-share-first", "when": [{ "k": "turned", "is": false }, { "k": "fit", "is": ["worse"] }, { "k": "memory", "act": "help", "has": false }], "usd": "v:worse-help-usd" },
++    { "line": "visits-share-later", "when": [{ "k": "turned", "is": false }, { "k": "memory", "act": "help", "has": true }, { "k": "temperament", "in": ["fearful", "mercenary", "idealist"] }], "usd": "v:worse-help-usd" },
+     { "line": "trust-over-time", "when": [{ "k": "turned", "is": false }, { "k": "temperament", "in": ["loyal"] }, { "k": "fit", "is": ["suits"] }], "orders": "v:loyal-help-orders" },
+     { "line": "ready", "when": [{ "k": "turned", "is": false }, { "k": "fit", "is": ["ready"] }, { "k": "orders-base", "above": "v:ready-help-floor" }], "orders": "v:ready-help-orders" },
+     { "line": "ready-at-one", "when": [{ "k": "turned", "is": false }, { "k": "fit", "is": ["ready"] }, { "k": "orders-base", "atMost": "v:ready-help-floor" }], "usd": "v:ready-help-one-usd" }
