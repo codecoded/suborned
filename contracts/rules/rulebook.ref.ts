@@ -171,7 +171,7 @@ function priceLines(rb: Rulebook, people: PeopleRules, ev: Event, x: Ctx): Omit<
   const truthOf = (q: QuoteLine, i: number) => (ev.price![i]!.when ?? []).every((c) => holds(rb, people, c, x, ev));
   const sum = (pick: (q: QuoteLine, i: number) => boolean) => lines.reduce((a, q, i) => (pick(q, i) ? { usd: a.usd + q.usd, s: a.s + q.s, trail: a.trail + q.trail } : a), { usd: 0, s: 0, trail: 0 });
   const perOrder = sum(truthOf);
-  const worst = sum((q, i) => truthOf(q, i) || q.holds === '?');
+  const worst = { ...sum((q, i) => truthOf(q, i) || q.holds === '?'), usd: sum((q, i) => (q.holds === '?' ? q.usd > 0 : truthOf(q, i))).usd }; // brief 085: a '?' line that would lower the price doesn't lower the cash asked
   const orders = lines.reduce((n, q, i) => n + (truthOf(q, i) ? q.orders : 0), 0) || 1;
   return { lines, perOrder, worst, orders };
 }

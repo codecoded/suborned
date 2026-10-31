@@ -458,7 +458,7 @@ namespace Suborned.Sim
                 r.Is(!g.CanCall(Inez), "the card says the call can't be given");
             }, Turned(Inez));
 
-            Add("N39d", "—", "Alert reaching 2 ends the visit (rulebook summon): he runs back to his post at security's pace; and a call at Alert 2 is refused (summon-alert).", r =>
+            Add("N39d", "—", "Alert reaching 2 ends the visit (rulebook summon): he heads straight back at a guard's pace; and a call at Alert 2 is refused (summon-alert).", r =>
             {
                 var g = r.G;
                 r.To(r.SendTo(Enf, BesideDoor));
@@ -468,7 +468,7 @@ namespace Suborned.Sim
                 r.Fire(Enf, "patrol");
                 r.Is(r.Until(() => g.Alert >= 2, T(60)), "gunfire: Alert 2");
                 r.Wait(1);
-                r.Is(g.Log.Exists(l => l.Code == "guard.recalled"), "the visit ends: he runs back");
+                r.Is(g.Log.Exists(l => l.Code == "guard.recalled"), "the visit ends: he heads back");
                 r.Is(g.GuardAwayUntil < planned, $"back sooner than the planned window ({Report.Clock(g.GuardAwayUntil)} < {Report.Clock(planned)})");
             }, Turned(Inez));
 

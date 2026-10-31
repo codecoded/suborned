@@ -177,7 +177,7 @@ describe('Sky Q3 and K8: the card shows the price always, "?" for what reads the
   test('a keeper tip gives the need, not the temperament: Help shows its base, "?" lines and outcome', () => {
     const q = card('help', person('mercenary'), 'neutral', new Set<R.Know>(['need']));
     expect(q.outcome).toBe('?');
-    expect(q.lines.map((l) => [l.line, l.holds])).toEqual([['base', true], ['refused-before', false], ['one-more-help', '?'], ['trust-over-time', '?'], ['ready', false], ['ready-at-one', false]]); // brief 054 §4.2: ready reads a mood, which a card with none never has
+    expect(q.lines.map((l) => [l.line, l.holds])).toEqual([['base', true], ['refused-before', false], ['one-more-help', '?'], ['visits-share-first', '?'], ['visits-share-later', false], ['trust-over-time', '?'], ['ready', false], ['ready-at-one', false]]); // brief 054 §4.2; brief 085: ready reads a mood, which a card with none never has
     expect(q.worst.usd).toBe(40000);
   });
 

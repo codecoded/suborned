@@ -291,7 +291,7 @@ namespace Suborned.Sim
         // numbers read once from the rules and the site
         readonly int eye, near, actReach, approachReach, listenReach, witnessRange;
         readonly int cellWalk, peopleWalk, secSpeed, guardSpeed, rivSpeed, chaseSpeed; // engine 0.34.0 (brief 067, Motive M067-B1): the cell's walk (cell.speed) and the city's (crowd.walk)
-        int walkT, stayT; readonly int rivalsArriveS, driverLastS, valeExitsS, valeAtCarS, overS, blockMoveT, blockHoldT;
+        int walkT, stayT, backT; readonly int rivalsArriveS, driverLastS, valeExitsS, valeAtCarS, overS, blockMoveT, blockHoldT;
 
         public Game(Rules rules, Site site, Start? start = null, string? startText = null, Crowd? crowd = null)
         {
@@ -482,18 +482,18 @@ namespace Suborned.Sim
         void GuardTimeline()
         {
             if (LureTick < 0 || GuardHeld || GuardDown) return;
-            // Alert above summon.alertMax ends the visit: he runs back to his post at security's pace (Motive, motive-lovers.md §1.3)
-            if (!guardRunning && Tick < GuardAwayUntil && Alert > R.SummonAlertMax)
+            // Alert above summon.alertMax ends the visit: he heads straight back at a guard's pace (guardSpeed; Motive, motive-lovers.md §1.3)
+            if (!guardRunning && Tick < GuardAwayUntil && Alert > R.SummonAlertMax && !GuardRunningBack) // brief 085 (ruling): a pressed run back keeps its pace
             {
                 var from = GuardPose()!.Value.pos;
                 guardRun = new Path(Walk.Route(Walk.NearestFree(from) ?? from, S.Stand(S.GuardPost)) ?? new[] { from, S.Stand(S.GuardPost) });
                 guardRunning = true; LureTick = Tick; GuardAwayUntil = Tick + (int)((guardRun.Length + guardSpeed - 1) / guardSpeed);
-                Note("guard.recalled", "The alarm is up: the guard runs back to his post.");
+                Note("guard.recalled", "The alarm is up: the guard heads back to his post.");
                 return;
             }
             if (guardRunning) { if (Tick == GuardAwayUntil) { guardRunning = false; Note("guard.back", "The guard is back at the office entrance."); } return; }
-            if (Tick == LureTick + walkT) { GuardReachedCafe = true; Note("guard.at-cafe", "The guard reaches Inez at the café. She keeps him talking, away from the door."); }
-            if (Tick == LureTick + walkT + stayT) Note("guard.leaves-cafe", "The guard leaves the café and walks back toward his post.");
+            if (Tick == LureTick + walkT) { GuardReachedCafe = true; Note("guard.at-cafe", GuardCallPressed ? "The guard reaches Inez at the café. She tells him someone knows about them." : "The guard reaches Inez at the café. She keeps him talking, away from the door."); }
+            if (Tick == LureTick + walkT + stayT) Note("guard.leaves-cafe", GuardCallPressed ? "The guard leaves the café and runs back toward his post." : "The guard leaves the café and walks back toward his post.");
             if (Tick == GuardAwayUntil) Note("guard.back", "The guard returns to the office entrance.");
         }
         /// <summary>Brief 059 K2, K5: the turned driver's drive round with Vale in the back. Where it reaches the service drive, a getaway car on
@@ -603,7 +603,7 @@ namespace Suborned.Sim
             int age = Tick - LureTick;
             if (age < walkT) { long mm = guardOut.Length * age / walkT; return (guardOut.At(mm), guardOut.Heading(mm), "walking to café"); }
             if (age < walkT + stayT) return (guardOut.End, cafeFace, "at café"); // brief 022: facing her when she has a round
-            long back = guardBack.Length * (age - walkT - stayT) / walkT;
+            long back = guardBack.Length * (age - walkT - stayT) / backT;
             return (guardBack.At(back), guardBack.Heading(back), "returning to door");
         }
         public bool GuardAtDoor => !GuardDown && !GuardHeld && (LureTick < 0 || Tick >= GuardAwayUntil);

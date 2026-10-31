@@ -348,7 +348,7 @@ export const Rulebook = z.strictObject({
   crowd: ground({ staffDirect: z.boolean().optional() /* engine 0.37.0, brief 080: security staff walk a routine leg at the city's walk, not stretched over the stops' minutes */, scatter: Ref, startle: Ref, startleFearful: Ref, run: Ref, walk: Ref.optional() /* engine 0.34.0 (Motive M067-B1): the city's walking pace, split from cell.speed; optional only for runs pinned before it */, fleeMax: Ref, quiet: Ref, occlude: Ref, pace: Ref.optional(), rule: text }), // pace (brief 023, Pulse): optional only so runs pinned before it parse (dialogue r017-r019); rulebook.test.ts holds the live rulebook to it
   // The summons (Motive, motive-lovers.md §1.3): numbers only, every one a ref.
   // together: retired in engine 0.29.0 (brief 054 §9.2); optional only so runs pinned before it parse (rulebook.test.ts holds the live one to none)
-  summon: ground({ stay: Ref, walkMax: Ref, alertMax: Ref, perShift: Ref, together: Ref.optional(), rule: text }),
+  summon: ground({ stay: Ref, walkMax: Ref, alertMax: Ref, perShift: Ref, together: Ref.optional(), pressed: z.object({ act: z.string(), stay: Ref, speed: Ref }).strict().optional() /* engine 0.38.0, brief 085; optional only so runs pinned before it parse */, rule: text }),
   // Cancel (Sky 2026-10-15 playtest): what stopping each verb mid-way costs or keeps; each line one of a closed set.
   cancel: ground({
     move: z.literal('stop'), draw: z.literal('holster'), fire: z.literal('cease'), watch: z.literal('lost'), listen: z.literal('lost'),

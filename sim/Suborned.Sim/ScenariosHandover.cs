@@ -622,7 +622,7 @@ namespace Suborned.Sim
                 r.Is(fp.Refused.Length > 0 || (fp.Walk && fp.WalkS > 0), $"being near Inez does not reach the guard: no shot from here, only a walk into range first ({(fp.Refused.Length > 0 ? fp.Refused : $"walks {fp.WalkS} s")})");
             });
 
-            Add("S23", "402", "Ask cold: refused and remembered (+1 T), can't be repeated; routine alone doesn't unlock Help; after Listen, each Help at +$10,000 and +1 T.", r =>
+            Add("S23", "402", "Ask cold: refused and remembered (+1 T), can't be repeated; routine alone doesn't unlock Help; after Listen, each Help at +$10,000 and +1 T, on the visits' share (worse-help-usd).", r =>
             {
                 var g = r.G;
                 r.To(r.Send(Fixer, "d:Courtyard"));
@@ -639,7 +639,7 @@ namespace Suborned.Sim
                 // Changed (r016 cast, 2026-10-16): the prototype's Inez took one Help ($50,000, T 3). How many Helps she takes is the cast's
                 // (§04: one for an Idealist, two for the Fearful); what this tests is the refusal's line on every one of them.
                 long help = (long)g.R.Num("p:approaches.help.usd"), helpT = (long)g.R.Num("p:approaches.help.trail");
-                long refUsd = (long)g.R.Num("v:refusal-usd"), refT = (long)g.R.Num("v:refusal-trail");
+                long refUsd = (long)g.R.Num("v:refusal-usd"), refT = (long)g.R.Num("v:refusal-trail"), share = (long)g.R.Num("v:worse-help-usd"); // brief 085: a Help of two visits splits its money
                 int helps = 0; long before = g.Cash;
                 r.Eq(before, 100000L, "the cold approach cost no money");
                 while (!g.Inez.Turned && !g.Over && helps < 4)
@@ -649,7 +649,7 @@ namespace Suborned.Sim
                     r.Do(Fixer, "turn", Inez, "help"); r.Done(Fixer); helps++;
                 }
                 r.Is(g.Inez.Turned, $"new information lets the Fixer recover from the refusal ({helps} Help)");
-                r.Eq(g.Cash, before - helps * (help + refUsd), "the cold approach raises the debt relief price, on each Help");
+                r.Eq(g.Cash, before - helps * (help + share + refUsd), "the cold approach raises the debt relief price, on each Help");
                 r.Eq((long)g.Trail, 1 + helps * (helpT + refT), "the refused approach leaves an extra trail, on each Help");
             });
 
@@ -1058,14 +1058,14 @@ namespace Suborned.Sim
             }, purse);
 
             var merc = new Start(); merc.Temperament[Inez] = "mercenary"; merc.Known[Inez] = new List<string> { "routine", "need", "temperament" }; merc.Known[Driver] = new List<string> { "routine", "need", "temperament" };
-            Add("N09b", "—", "The purse the other way (§04): Pay on a Mercenary Inez ($70,000) leaves too little to Help the driver ($40,000): the order can't be given.", r =>
+            Add("N09b", "—", "The purse the other way (§04): Pay on a Mercenary Inez ($70,000) leaves too little to Help the driver twice ($40,000 over two visits, brief 085): the second can't be given.", r =>
             {
                 var g = r.G;
                 r.To(r.Send(Fixer, "d:Courtyard")); r.Do(Fixer, "turn", Inez, "pay"); r.Done(Fixer);
                 r.Is(g.Inez.Turned, "a Mercenary takes the fee");
                 r.Eq(g.Cash, 30000L, "$70,000 spent");
                 r.To(r.Send(Fixer, "d:Boarding pavilion"));
-                r.Refused(Fixer, "turn", Driver, "$110,000 is over the purse: the driver can't be helped", "help");
+                r.Do(Fixer, "turn", Driver, "help"); r.Done(Fixer); r.Eq(g.Cash, 10000L, "the first visit, $20,000"); r.Refused(Fixer, "turn", Driver, "$90,000 spent, $110,000 was asked: the second visit can't be paid", "help");
             }, merc);
 
             // the refused approach and the one-step-worse line are the rules under test: the start state makes Inez an Idealist (Pay refused,
@@ -1091,7 +1091,7 @@ namespace Suborned.Sim
             {
                 var g = r.G;
                 var q = g.Preview("help", Inez);
-                r.Eq(q.Lines.Count, 6, "six line items: base, refused before, one more Help, trust over time, and the mood's ready and ready-at-one (brief 054 §4.2)");
+                r.Eq(q.Lines.Count, 8, "eight line items: base, refused before, one more Help, the visits' share first and later (brief 085), trust over time, and the mood's ready and ready-at-one (brief 054 §4.2)");
                 r.Eq(q.Lines[0].Line, "base", "the first is the base");
                 r.To(r.Send(Fixer, "d:Courtyard")); r.Do(Fixer, "turn", Inez, "help"); r.Done(Fixer);
                 var m = g.Inez.Memory.Find(x => x.Act == "help");
@@ -1125,7 +1125,7 @@ namespace Suborned.Sim
             FinalIntentCases(); // engine 0.20.0 (tuning.md §15.2, PROVISIONAL): the final fight per agent (ScenariosFinalIntent.cs)
             SealCarCases(); // engine 0.30.0 (briefs 057 §2 and §4, 060 #8): FailCause.Car, the debrief true to the run, the seal window, the reroute walk and PatrolLegs (ScenariosSealCar.cs)
             WindowCases(); // engine 0.24.0 (brief 043 §6): Windows(), the window marker's one read, and patrol.returns (ScenariosWindows.cs)
-            SeedCases(); // brief 080: the seed and the rolled shot (ScenariosSeed.cs)
+            PressedCallCases(); SeedCases(); // brief 085: ScenariosPressedCall.cs; brief 080: the seed and the rolled shot (ScenariosSeed.cs)
             FireWhyCases(); // engine 0.25.0 (Sky playing 0.2.56): why a hostile fires on an operative, FireWhyOf and ai.why (ScenariosFireWhy.cs)
             NoticeCases(); // engine 0.28.0 (briefs 054, 055): sight from real heights, civilian notice by cone and Alert, the Watch that shows something (ScenariosNotice.cs)
             CameraLineCases(); // engine 0.31.0 (brief 058 §6, brief 054 §8): Loop v2, Disable, the camera shot's price, a runner remembered from Alert 2 (ScenariosCameraLines.cs)

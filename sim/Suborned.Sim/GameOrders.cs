@@ -562,7 +562,7 @@ namespace Suborned.Sim
                 var line = new Quote.L { Line = l.Id, Usd = l.UsdV, S = l.SV, Trail = l.TrailV, Orders = l.Orders != null ? l.OrdersV : (i == 0 ? 1 : 0), Holds = shown };
                 q.Lines.Add(line);
                 if (truth) { q.Usd += line.Usd; q.S += line.S; q.Trail += line.Trail; }
-                if (truth || shown == "?") q.WorstUsd += line.Usd;
+                if (shown == "?" ? line.Usd > 0 : truth) q.WorstUsd += line.Usd; // brief 085: a "?" line that would lower the price does not lower the worst case
             }
             q.Orders = OrdersFor(ev, x);
             q.Outcome = p.KTemperament ? FirstOutcome(ev, x).Id : Agree(p, t => FirstOutcome(ev, WithTemperament(x, t)).Id);
@@ -706,31 +706,20 @@ namespace Suborned.Sim
         }
 
         /// <summary>The summons (rulebook summon; Motive, motive-lovers.md §1.3): a turned contact's call sends for their lover, read from the
-        /// city's ties. He walks the grid to her at walking pace, stays summon.stay and walks back; refused at no cost, with its code.</summary>
+        /// city's ties. He walks the grid to her at walking pace, stays summon.stay and walks back (a pressed call: GamePressedCall.cs); refused at no cost, with its code.</summary>
         string Summon(Person p)
         {
             SummonRefusal(p, out int walk);
             var lover = p.Lover!;
             var sv = ServerOf(p);
-            var from = GuardPose()!.Value.pos; var to = sv != null ? sv.At : PersonPos(p)!.Value;
-            guardOut = new Path(Walk.Route(Walk.NearestFree(from) ?? from, Walk.NearestFree(to) ?? to)!);
-            walkT = walk; stayT = T(R.SummonStayS); guardRunning = false;
-            if (sv != null) // brief 022: he walks to her post and stops rounds.close from it, at her side (PartnerStop), facing her
-            {
-                var side = PartnerStop(p, lover); // baked free and walkable from his post; a stop his grid cannot reach falls back as no stop does
-                var toSide = side.HasValue ? Walk.Route(Walk.NearestFree(from) ?? from, side.Value) : null;
-                if (toSide != null) guardOut = new Path(toSide);
-                else guardOut = guardOut.Cut(Math.Max(0, guardOut.Length - R.PartnersCloseCm * 10L)); // the file holds no stop: the old stop, on his route
-                walkT = (int)((guardOut.Length + peopleWalk - 1) / peopleWalk); // engine 0.34.0: the city's walk (crowd.walk)
-                cafeFace = to - guardOut.End;
-                RoundCall(p, Tick + walkT, Tick + walkT + stayT, guardOut.End);
-            }
-            else cafeFace = S.CafeFacing;
-            guardBack = new Path(Walk.Route(Walk.NearestFree(guardOut.End) ?? guardOut.End, Walk.NearestFree(from) ?? from)!);
-            LureTick = Tick; GuardAwayUntil = Tick + 2 * walkT + stayT; lover.Summoned++;
+            bool pressed = CallIsPressed(p);
+            var v = VisitRoute(p, lover, walk); guardOut = v.outWalk; guardBack = v.backWalk; walkT = v.walkT; cafeFace = v.face;
+            stayT = T(pressed ? R.SummonPressedStayS : R.SummonStayS); backT = pressed ? RunTicks(guardBack) : walkT; guardRunning = false; GuardCallPressed = pressed;
+            if (sv != null) RoundCall(p, Tick + walkT, Tick + walkT + stayT, guardOut.End); // brief 022: they stand together while he stays
+            LureTick = Tick; GuardAwayUntil = Tick + walkT + stayT + backT; lover.Summoned++;
             AddTrail(R.CallTrail, "call:" + p.Role); Remember(p, "job", "fixer", false);
             Actions.Add("call:" + p.Role); Chain.Add($"{p.Role}-calls-{lover.Role}");
-            Note("call." + p.Role, $"{p.Name} calls {lover.Name}. He leaves his post and walks over to her ({walkT / Hz} s), to stay {R.SummonStayS} s.");
+            Note("call." + p.Role, $"{p.Name} calls {lover.Name}. He leaves his post and walks over to her ({walkT / Hz} s), to stay {stayT / Hz} s.");
             return "";
         }
 

@@ -221,7 +221,7 @@ namespace Suborned.Sim
         /// <summary>Engine 0.34.2 (rulebook cell.enter.seen.patrol): the patrol robot that sees an Enter reports it (a seen act, attention's found fault) instead of failing the mission.</summary>
         public readonly bool EnterPatrolReports;
         // the summons and the secret (Motive, briefs/011/motive-lovers.md)
-        public readonly int SummonStayS, SummonWalkMaxS, SummonAlertMax, SummonsPerShift;
+        public readonly int SummonStayS, SummonWalkMaxS, SummonAlertMax, SummonsPerShift, SummonPressedStayS, SummonPressedSpeed; public readonly string? SummonPressedAct; // brief 085: summon.pressed; absent (a rulebook pinned before 0.38.0) no call is pressed
         public readonly HashSet<string> SecretIds = new HashSet<string>(StringComparer.Ordinal);
         // the fight AI (Pulse, briefs/011/pulse-fight-ai.md)
         public readonly int CoverSnapCm, CoverQFull, CoverQPartial, ModCoverPartial, CoverRetreatCm, CoverStepCloserCm, CoverStepGapS, CoverLeaveS, EngageLapseS, ReacquireS, StopReachPerMille, OverflowCm,
@@ -635,8 +635,8 @@ namespace Suborned.Sim
                 foreach (var hb in Intent.RobotFaceHeat) if (Array.IndexOf(new[] { "unknown", "noticed", "wanted", "infamous" }, hb) < 0) throw new FormatException($"ai.intent.robots.faceHeat: '{hb}' is not a Heat band (attention.bands)");
                 if (Intent.WarnTicks < 1 || Intent.WarnPerWatcher < 1 || Intent.WarnTrail < 0) throw new FormatException("ai.intent.police.warn: ticks and perWatcher at least 1, trail 0 or more");
             }
-            var su = b["summon"]; su.Only("stay", "walkMax", "alertMax", "perShift", "rule", "tag", "src", "proposed", "reason");
-            SummonStayS = RI(su["stay"]); SummonWalkMaxS = RI(su["walkMax"]); SummonAlertMax = RI(su["alertMax"]); SummonsPerShift = RI(su["perShift"]); // brief 054 §9.2 (engine 0.29.0): together retired with the affair Watch
+            var su = b["summon"]; su.Only("stay", "walkMax", "alertMax", "perShift", "pressed", "rule", "tag", "src", "proposed", "reason");
+            SummonStayS = RI(su["stay"]); SummonWalkMaxS = RI(su["walkMax"]); SummonAlertMax = RI(su["alertMax"]); SummonsPerShift = RI(su["perShift"]); if (su.Opt("pressed") is JNode sup) { sup.Only("act", "stay", "speed"); SummonPressedAct = KnownAct(sup["act"]); SummonPressedStayS = RI(sup["stay"]); SummonPressedSpeed = RI(sup["speed"]); if (SummonPressedSpeed < 1) throw new FormatException("summon.pressed.speed is 1 or more"); } // brief 054 §9.2 (engine 0.29.0): together retired with the affair Watch
             if (pp.Opt("secrets") is JNode sec)
             {
                 sec.Only("rule", "perPerson", "list", "src", "proposed", "reason");

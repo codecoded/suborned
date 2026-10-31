@@ -274,7 +274,7 @@ describe('the §09 conditions, each with a failing example', () => {
   });
 });
 
-const KNOWN_RED = ['R-7', 'MC-11', 'B-7 quiet-b', 'B-8 quiet-b', 'B-8 quiet-g', 'B-11 quiet-b', 'B-11 thin-quiet'];
+const KNOWN_RED = ['R-7', 'MC-11', 'B-7 quiet-b', 'B-8 quiet-b', 'B-8 quiet-g', 'B-11 quiet-b', 'B-11 thin-quiet', 'B-7 thin-quiet' /* brief 085: a real 1 s under the floor with the pressed call; Motive's band, let it report */];
 describe.skipIf(!hasDotnet())('the Handover, played headless (Keel\'s engine on the working tree)', () => {
   // What's still red has an owner, named in KNOWN_RED; when an owner fixes one, this test fails until it comes off the list.
   test('across seeds the references win as their bands say, the scripts play as the manifest expects, and the check ships but for its named owners', async () => {

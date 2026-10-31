@@ -100,7 +100,7 @@ public class RulesTests
 
     [Theory]
     [InlineData("mercenary", "pay", 70000, 1, "turned")]
-    [InlineData("mercenary", "help", 40000, 2, "not-yet")]
+    [InlineData("mercenary", "help", 20000, 2, "not-yet")]
     [InlineData("fearful", "pay", 90000, 1, "turned")]
     [InlineData("loyal", "help", 40000, 2, "not-yet")]
     [InlineData("loyal", "pay", 90000, 1, "turned")]
