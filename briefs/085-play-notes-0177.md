@@ -25,4 +25,6 @@ Rule idea, not built (Sky, 2026-10-31, on the call): "if you get inez to call th
 
 Sky's further notes (2026-10-31): "one thing I really liked was the characters bubble that appears when an action occurs off screen....e.g. the guard on a call I think": keep it, don't lose it in this round. "Not seen the vale being taken by the enforcer PIP video play out. That should signifiy Enforcer is about to exit the building so player knows to check": the clip from brief 065 (`paid/065-capture-pip/final/capture_pip_480x270.mp4`, take 3, 10.1 s) was never wired in; it plays as the Enforcer comes to the end of Enter, ending as he comes out. "Would be good keep them walking": anyone not in a conversation keeps walking in the shot.
 
+Camera (Sky, 2026-10-31, with Desperados III and Shadow Tactics shots): "is this the right camera angle that ost games play from? Feels a little too high up". By eye the tilt is about theirs; the lens is the likely cause (ours orthographic, theirs perspective). Latch makes a still board of the same spots (today, lower tilt, closer zoom, perspective) after the build; nothing changes until Sky picks. Brief 086's switch points wait on it.
+
 After this round: the `HandoverHost.cs` split (brief 084), with one full batch.

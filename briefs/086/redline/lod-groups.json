@@ -1,0 +1,2461 @@
+{
+"total": 2192,
+"byRoot": [
+[
+"Ours (Handover zone + network, our pipeline)",
+2192
+]
+],
+"rows": [
+{
+"group": "AlleyWall_4",
+"n": 116,
+"branches": {
+"Ours (Handover zone + network, our pipeline)": 116
+},
+"levels": {
+"3": 116
+},
+"heights": [
+0.4205,
+0.1577,
+0.0573
+],
+"size": 19.7,
+"tris": 4418,
+"lods": [
+190,
+206
+],
+"lodClass": "bay4",
+"lodAtPlay": false,
+"placedTris": 512488
+},
+{
+"group": "CoconutPalm",
+"n": 77,
+"branches": {
+"Ours (Handover zone + network, our pipeline)": 77
+},
+"levels": {
+"3": 77
+},
+"heights": [
+0.1271,
+0.0545,
+0.01
+],
+"size": 7.943894,
+"tris": 6310,
+"lods": [
+1330,
+514
+],
+"lodClass": null,
+"lodAtPlay": false,
+"placedTris": 485870
+},
+{
+"group": "AlleyWall_3",
+"n": 111,
+"branches": {
+"Ours (Handover zone + network, our pipeline)": 111
+},
+"levels": {
+"3": 111
+},
+"heights": [
+0.3479,
+0.1305,
+0.0474
+],
+"size": 16.3,
+"tris": 3776,
+"lods": [
+168,
+168
+],
+"lodClass": "bay3",
+"lodAtPlay": false,
+"placedTris": 419136
+},
+{
+"group": "PhoneBooth",
+"n": 22,
+"branches": {
+"Ours (Handover zone + network, our pipeline)": 22
+},
+"levels": {
+"1": 22
+},
+"heights": [
+0.01
+],
+"size": 2.5837946,
+"tris": 17776,
+"lods": [
+4443,
+1049
+],
+"lodClass": null,
+"lodAtPlay": false,
+"placedTris": 391072
+},
+{
+"group": "PlazaSphereLamp",
+"n": 27,
+"branches": {
+"Ours (Handover zone + network, our pipeline)": 27
+},
+"levels": {
+"1": 27
+},
+"heights": [
+0.01
+],
+"size": 4.632,
+"tris": 7932,
+"lods": [
+1982,
+475
+],
+"lodClass": null,
+"lodAtPlay": false,
+"placedTris": 214164
+},
+{
+"group": "Newsstand",
+"n": 11,
+"branches": {
+"Ours (Handover zone + network, our pipeline)": 11
+},
+"levels": {
+"1": 11
+},
+"heights": [
+0.01
+],
+"size": 2.99,
+"tris": 17964,
+"lods": [
+5748,
+5748
+],
+"lodClass": null,
+"lodAtPlay": false,
+"placedTris": 197604
+},
+{
+"group": "AlleyWall_4D",
+"n": 35,
+"branches": {
+"Ours (Handover zone + network, our pipeline)": 35
+},
+"levels": {
+"3": 35
+},
+"heights": [
+0.4205,
+0.1577,
+0.0573
+],
+"size": 19.7,
+"tris": 5254,
+"lods": [
+200,
+218
+],
+"lodClass": "bay4",
+"lodAtPlay": false,
+"placedTris": 183890
+},
+{
+"group": "Planter_Trough",
+"n": 62,
+"branches": {
+"Ours (Handover zone + network, our pipeline)": 62
+},
+"levels": {
+"1": 62
+},
+"heights": [
+0.01
+],
+"size": 2.04,
+"tris": 2710,
+"lods": [
+675,
+160
+],
+"lodClass": null,
+"lodAtPlay": false,
+"placedTris": 168020
+},
+{
+"group": "AlleyWall_3D",
+"n": 35,
+"branches": {
+"Ours (Handover zone + network, our pipeline)": 35
+},
+"levels": {
+"3": 35
+},
+"heights": [
+0.3479,
+0.1305,
+0.0474
+],
+"size": 16.3,
+"tris": 4614,
+"lods": [
+178,
+180
+],
+"lodClass": "bay3",
+"lodAtPlay": false,
+"placedTris": 161490
+},
+{
+"group": "DomeCamera",
+"n": 20,
+"branches": {
+"Ours (Handover zone + network, our pipeline)": 20
+},
+"levels": {
+"1": 20
+},
+"heights": [
+0.0081
+],
+"size": 0.60249996,
+"tris": 7550,
+"lods": [
+1887,
+452
+],
+"lodClass": null,
+"lodAtPlay": false,
+"placedTris": 151000
+},
+{
+"group": "StreamCorner_4",
+"n": 10,
+"branches": {
+"Ours (Handover zone + network, our pipeline)": 10
+},
+"levels": {
+"3": 10
+},
+"heights": [
+0.2,
+0.07,
+0.004
+],
+"size": 28.038647,
+"tris": 14170,
+"lods": [
+3439,
+823
+],
+"lodClass": null,
+"lodAtPlay": false,
+"placedTris": 141700
+},
+{
+"group": "HangingBasket",
+"n": 65,
+"branches": {
+"Ours (Handover zone + network, our pipeline)": 65
+},
+"levels": {
+"1": 65
+},
+"heights": [
+0.01
+],
+"size": 0.78608304,
+"tris": 2140,
+"lods": [
+533,
+128
+],
+"lodClass": null,
+"lodAtPlay": false,
+"placedTris": 139100
+},
+{
+"group": "CCTVPole",
+"n": 20,
+"branches": {
+"Ours (Handover zone + network, our pipeline)": 20
+},
+"levels": {
+"1": 20
+},
+"heights": [
+0.01
+],
+"size": 3.182216,
+"tris": 6882,
+"lods": [
+1720,
+407
+],
+"lodClass": null,
+"lodAtPlay": false,
+"placedTris": 137640
+},
+{
+"group": "Bench",
+"n": 40,
+"branches": {
+"Ours (Handover zone + network, our pipeline)": 40
+},
+"levels": {
+"1": 40
+},
+"heights": [
+0.01
+],
+"size": 1.88,
+"tris": 3412,
+"lods": [
+852,
+378
+],
+"lodClass": null,
+"lodAtPlay": false,
+"placedTris": 136480
+},
+{
+"group": "TicketKiosk",
+"n": 6,
+"branches": {
+"Ours (Handover zone + network, our pipeline)": 6
+},
+"levels": {
+"1": 6
+},
+"heights": [
+0.01
+],
+"size": 2.7,
+"tris": 21342,
+"lods": [
+5335,
+1266
+],
+"lodClass": null,
+"lodAtPlay": false,
+"placedTris": 128052
+},
+{
+"group": "Bollard",
+"n": 25,
+"branches": {
+"Ours (Handover zone + network, our pipeline)": 25
+},
+"levels": {
+"1": 25
+},
+"heights": [
+0.01
+],
+"size": 0.82,
+"tris": 5116,
+"lods": [
+1278,
+306
+],
+"lodClass": null,
+"lodAtPlay": false,
+"placedTris": 127900
+},
+{
+"group": "FanPalm_Play",
+"n": 30,
+"branches": {
+"Ours (Handover zone + network, our pipeline)": 30
+},
+"levels": {
+"3": 30
+},
+"heights": [
+0.08,
+0.025,
+0.01
+],
+"size": 2.8399673,
+"tris": 4194,
+"lods": [
+1048,
+251
+],
+"lodClass": null,
+"lodAtPlay": false,
+"placedTris": 125820
+},
+{
+"group": "Deckchair",
+"n": 66,
+"branches": {
+"Ours (Handover zone + network, our pipeline)": 66
+},
+"levels": {
+"1": 66
+},
+"heights": [
+0.01
+],
+"size": 0.9952567,
+"tris": 1888,
+"lods": [],
+"lodClass": null,
+"lodAtPlay": false,
+"placedTris": 124608
+},
+{
+"group": "Hydrant",
+"n": 18,
+"branches": {
+"Ours (Handover zone + network, our pipeline)": 18
+},
+"levels": {
+"1": 18
+},
+"heights": [
+0.01
+],
+"size": 0.79,
+"tris": 6840,
+"lods": [
+1710,
+409
+],
+"lodClass": null,
+"lodAtPlay": false,
+"placedTris": 123120
+},
+{
+"group": "RobotWaiter",
+"n": 8,
+"branches": {
+"Ours (Handover zone + network, our pipeline)": 8
+},
+"levels": {
+"1": 8
+},
+"heights": [
+0.01
+],
+"size": 1.516,
+"tris": 15324,
+"lods": [
+3827,
+912
+],
+"lodClass": null,
+"lodAtPlay": false,
+"placedTris": 122592
+},
+{
+"group": "Streetlamp",
+"n": 20,
+"branches": {
+"Ours (Handover zone + network, our pipeline)": 20
+},
+"levels": {
+"1": 20
+},
+"heights": [
+0.01
+],
+"size": 3.93,
+"tris": 5782,
+"lods": [
+1445,
+345
+],
+"lodClass": null,
+"lodAtPlay": false,
+"placedTris": 115640
+},
+{
+"group": "WindowBox",
+"n": 48,
+"branches": {
+"Ours (Handover zone + network, our pipeline)": 48
+},
+"levels": {
+"1": 48
+},
+"heights": [
+0.01
+],
+"size": 1.5389874,
+"tris": 2298,
+"lods": [],
+"lodClass": null,
+"lodAtPlay": false,
+"placedTris": 110304
+},
+{
+"group": "StreamBay_4",
+"n": 60,
+"branches": {
+"Ours (Handover zone + network, our pipeline)": 60
+},
+"levels": {
+"3": 60
+},
+"heights": [
+0.2,
+0.07,
+0.004
+],
+"size": 19.778645,
+"tris": 1706,
+"lods": [
+364,
+132
+],
+"lodClass": null,
+"lodAtPlay": false,
+"placedTris": 102360
+},
+{
+"group": "TicketMachine",
+"n": 10,
+"branches": {
+"Ours (Handover zone + network, our pipeline)": 10
+},
+"levels": {
+"1": 10
+},
+"heights": [
+0.01
+],
+"size": 1.7739999,
+"tris": 9198,
+"lods": [
+2297,
+538
+],
+"lodClass": null,
+"lodAtPlay": false,
+"placedTris": 91980
+},
+{
+"group": "RecyclingBins",
+"n": 54,
+"branches": {
+"Ours (Handover zone + network, our pipeline)": 54
+},
+"levels": {
+"1": 54
+},
+"heights": [
+0.01
+],
+"size": 1.06,
+"tris": 1676,
+"lods": [
+418,
+126
+],
+"lodClass": null,
+"lodAtPlay": false,
+"placedTris": 90504
+},
+{
+"group": "ShopFill_3",
+"n": 82,
+"branches": {
+"Ours (Handover zone + network, our pipeline)": 82
+},
+"levels": {
+"3": 82
+},
+"heights": [
+0.3479,
+0.1305,
+0.0474
+],
+"size": 16.3,
+"tris": 1024,
+"lods": [
+206,
+188
+],
+"lodClass": "bay3",
+"lodAtPlay": false,
+"placedTris": 83968
+},
+{
+"group": "LightDotRow_2",
+"n": 244,
+"branches": {
+"Ours (Handover zone + network, our pipeline)": 244
+},
+"levels": {
+"1": 244
+},
+"heights": [
+0.01
+],
+"size": 2.18,
+"tris": 336,
+"lods": [
+160
+],
+"lodClass": null,
+"lodAtPlay": false,
+"placedTris": 81984
+},
+{
+"group": "BikeRack",
+"n": 10,
+"branches": {
+"Ours (Handover zone + network, our pipeline)": 10
+},
+"levels": {
+"1": 10
+},
+"heights": [
+0.01
+],
+"size": 1.38,
+"tris": 7572,
+"lods": [],
+"lodClass": null,
+"lodAtPlay": false,
+"placedTris": 75720
+},
+{
+"group": "StreamCorner_3",
+"n": 6,
+"branches": {
+"Ours (Handover zone + network, our pipeline)": 6
+},
+"levels": {
+"3": 6
+},
+"heights": [
+0.2,
+0.07,
+0.004
+],
+"size": 24.638647,
+"tris": 12302,
+"lods": [
+2995,
+715
+],
+"lodClass": null,
+"lodAtPlay": false,
+"placedTris": 73812
+},
+{
+"group": "SkyRailStation_Twin",
+"n": 3,
+"branches": {
+"Ours (Handover zone + network, our pipeline)": 3
+},
+"levels": {
+"3": 3
+},
+"heights": [
+0.15,
+0.05,
+0.004
+],
+"size": 54.25,
+"tris": 23048,
+"lods": [
+5477,
+1608
+],
+"lodClass": null,
+"lodAtPlay": false,
+"placedTris": 69144
+},
+{
+"group": "PottedTopiary",
+"n": 14,
+"branches": {
+"Ours (Handover zone + network, our pipeline)": 14
+},
+"levels": {
+"1": 14
+},
+"heights": [
+0.01
+],
+"size": 2.0006638,
+"tris": 4720,
+"lods": [],
+"lodClass": null,
+"lodAtPlay": false,
+"placedTris": 66080
+},
+{
+"group": "RecordsTower_Planting",
+"n": 1,
+"branches": {
+"Ours (Handover zone + network, our pipeline)": 1
+},
+"levels": {
+"4": 1
+},
+"heights": [
+0.6667,
+0.2963,
+0.1667,
+0.01
+],
+"size": 4.0,
+"tris": 65692,
+"lods": [
+50194,
+33462,
+19430
+],
+"lodClass": null,
+"lodAtPlay": true,
+"placedTris": 65692
+},
+{
+"group": "PottedPalm_Small",
+"n": 26,
+"branches": {
+"Ours (Handover zone + network, our pipeline)": 26
+},
+"levels": {
+"1": 26
+},
+"heights": [
+0.01
+],
+"size": 1.7205606,
+"tris": 2396,
+"lods": [
+598,
+143
+],
+"lodClass": null,
+"lodAtPlay": false,
+"placedTris": 62296
+},
+{
+"group": "ShopFill_4",
+"n": 53,
+"branches": {
+"Ours (Handover zone + network, our pipeline)": 53
+},
+"levels": {
+"3": 53
+},
+"heights": [
+0.4205,
+0.1577,
+0.0573
+],
+"size": 19.7,
+"tris": 1174,
+"lods": [
+234,
+212
+],
+"lodClass": "bay4",
+"lodAtPlay": false,
+"placedTris": 62222
+},
+{
+"group": "CoconutPalm_Street",
+"n": 7,
+"branches": {
+"Ours (Handover zone + network, our pipeline)": 7
+},
+"levels": {
+"3": 7
+},
+"heights": [
+0.1705,
+0.0731,
+0.004
+],
+"size": 10.652003,
+"tris": 8230,
+"lods": [
+1330,
+514
+],
+"lodClass": null,
+"lodAtPlay": false,
+"placedTris": 57610
+},
+{
+"group": "PortholeBay_3L",
+"n": 13,
+"branches": {
+"Ours (Handover zone + network, our pipeline)": 13
+},
+"levels": {
+"3": 13
+},
+"heights": [
+0.2,
+0.07,
+0.004
+],
+"size": 16.378643,
+"tris": 4322,
+"lods": [
+1054,
+251
+],
+"lodClass": null,
+"lodAtPlay": false,
+"placedTris": 56186
+},
+{
+"group": "BladeSign_Cafe",
+"n": 16,
+"branches": {
+"Ours (Handover zone + network, our pipeline)": 16
+},
+"levels": {
+"1": 16
+},
+"heights": [
+0.01
+],
+"size": 6.599229,
+"tris": 3508,
+"lods": [
+872,
+204
+],
+"lodClass": null,
+"lodAtPlay": false,
+"placedTris": 56128
+},
+{
+"group": "CivicBedPlanting_office-west",
+"n": 1,
+"branches": {
+"Ours (Handover zone + network, our pipeline)": 1
+},
+"levels": {
+"4": 1
+},
+"heights": [
+0.6667,
+0.2963,
+0.1667,
+0.01
+],
+"size": 4.0,
+"tris": 52252,
+"lods": [
+44962,
+29058,
+17138
+],
+"lodClass": null,
+"lodAtPlay": true,
+"placedTris": 52252
+},
+{
+"group": "PlanterArc_TB",
+"n": 4,
+"branches": {
+"Ours (Handover zone + network, our pipeline)": 4
+},
+"levels": {
+"3": 4
+},
+"heights": [
+0.3442,
+0.1878,
+0.01
+],
+"size": 4.647109,
+"tris": 12284,
+"lods": [
+6236,
+4016
+],
+"lodClass": null,
+"lodAtPlay": true,
+"placedTris": 49136
+},
+{
+"group": "PhoneBooth_Single",
+"n": 5,
+"branches": {
+"Ours (Handover zone + network, our pipeline)": 5
+},
+"levels": {
+"1": 5
+},
+"heights": [
+0.01
+],
+"size": 2.3627095,
+"tris": 9298,
+"lods": [
+2323,
+555
+],
+"lodClass": null,
+"lodAtPlay": false,
+"placedTris": 46490
+},
+{
+"group": "CafeTerrace_Planting",
+"n": 1,
+"branches": {
+"Ours (Handover zone + network, our pipeline)": 1
+},
+"levels": {
+"4": 1
+},
+"heights": [
+0.6667,
+0.2963,
+0.1667,
+0.01
+],
+"size": 4.0,
+"tris": 44694,
+"lods": [
+31194,
+21282,
+12182
+],
+"lodClass": null,
+"lodAtPlay": true,
+"placedTris": 44694
+},
+{
+"group": "RobotNanny",
+"n": 2,
+"branches": {
+"Ours (Handover zone + network, our pipeline)": 2
+},
+"levels": {
+"1": 2
+},
+"heights": [
+0.01
+],
+"size": 1.5797458,
+"tris": 19688,
+"lods": [],
+"lodClass": null,
+"lodAtPlay": false,
+"placedTris": 39376
+},
+{
+"group": "StreamBay_3",
+"n": 27,
+"branches": {
+"Ours (Handover zone + network, our pipeline)": 27
+},
+"levels": {
+"2": 27
+},
+"heights": [
+0.2,
+0.004
+],
+"size": 16.3,
+"tris": 1444,
+"lods": [
+310
+],
+"lodClass": null,
+"lodAtPlay": false,
+"placedTris": 38988
+},
+{
+"group": "SideBay_4",
+"n": 15,
+"branches": {
+"Ours (Handover zone + network, our pipeline)": 15
+},
+"levels": {
+"3": 15
+},
+"heights": [
+0.4205,
+0.1577,
+0.0573
+],
+"size": 19.7,
+"tris": 2496,
+"lods": [
+316,
+332
+],
+"lodClass": "bay4",
+"lodAtPlay": false,
+"placedTris": 37440
+},
+{
+"group": "SideBayStack_Top",
+"n": 75,
+"branches": {
+"Ours (Handover zone + network, our pipeline)": 75
+},
+"levels": {
+"3": 75
+},
+"heights": [
+0.1281,
+0.048,
+0.0175
+],
+"size": 6.0,
+"tris": 494,
+"lods": [
+50,
+68
+],
+"lodClass": "storey",
+"lodAtPlay": false,
+"placedTris": 37050
+},
+{
+"group": "RecordsTower_TB",
+"n": 1,
+"branches": {
+"Ours (Handover zone + network, our pipeline)": 1
+},
+"levels": {
+"3": 1
+},
+"heights": [
+0.2433,
+0.0912,
+0.004
+],
+"size": 38.0,
+"tris": 34895,
+"lods": [
+6831,
+3380
+],
+"lodClass": "landmark",
+"lodAtPlay": true,
+"placedTris": 34895
+},
+{
+"group": "TimetableColumn",
+"n": 10,
+"branches": {
+"Ours (Handover zone + network, our pipeline)": 10
+},
+"levels": {
+"1": 10
+},
+"heights": [
+0.01
+],
+"size": 2.6,
+"tris": 3302,
+"lods": [
+825,
+197
+],
+"lodClass": null,
+"lodAtPlay": false,
+"placedTris": 33020
+},
+{
+"group": "ShrubMound",
+"n": 13,
+"branches": {
+"Ours (Handover zone + network, our pipeline)": 13
+},
+"levels": {
+"1": 13
+},
+"heights": [
+0.01
+],
+"size": 0.9873588,
+"tris": 2526,
+"lods": [],
+"lodClass": null,
+"lodAtPlay": false,
+"placedTris": 32838
+},
+{
+"group": "CafeUpper_3_Planting",
+"n": 1,
+"branches": {
+"Ours (Handover zone + network, our pipeline)": 1
+},
+"levels": {
+"4": 1
+},
+"heights": [
+0.6667,
+0.2963,
+0.1667,
+0.01
+],
+"size": 4.0,
+"tris": 32835,
+"lods": [
+22665,
+15493,
+8911
+],
+"lodClass": null,
+"lodAtPlay": true,
+"placedTris": 32835
+},
+{
+"group": "RobotButler",
+"n": 2,
+"branches": {
+"Ours (Handover zone + network, our pipeline)": 2
+},
+"levels": {
+"1": 2
+},
+"heights": [
+0.01
+],
+"size": 1.8559742,
+"tris": 16216,
+"lods": [],
+"lodClass": null,
+"lodAtPlay": false,
+"placedTris": 32432
+},
+{
+"group": "VendingMachine_Cola",
+"n": 8,
+"branches": {
+"Ours (Handover zone + network, our pipeline)": 8
+},
+"levels": {
+"1": 8
+},
+"heights": [
+0.01
+],
+"size": 1.978,
+"tris": 3958,
+"lods": [],
+"lodClass": null,
+"lodAtPlay": false,
+"placedTris": 31664
+},
+{
+"group": "Cypress_Play",
+"n": 6,
+"branches": {
+"Ours (Handover zone + network, our pipeline)": 6
+},
+"levels": {
+"3": 6
+},
+"heights": [
+0.08,
+0.025,
+0.01
+],
+"size": 6.419554,
+"tris": 5004,
+"lods": [
+1251,
+300
+],
+"lodClass": null,
+"lodAtPlay": false,
+"placedTris": 30024
+},
+{
+"group": "RobotShopkeeper",
+"n": 2,
+"branches": {
+"Ours (Handover zone + network, our pipeline)": 2
+},
+"levels": {
+"1": 2
+},
+"heights": [
+0.01
+],
+"size": 1.7050002,
+"tris": 14642,
+"lods": [
+3603,
+844
+],
+"lodClass": null,
+"lodAtPlay": false,
+"placedTris": 29284
+},
+{
+"group": "SignalLens",
+"n": 35,
+"branches": {
+"Ours (Handover zone + network, our pipeline)": 35
+},
+"levels": {
+"1": 35
+},
+"heights": [
+0.01
+],
+"size": 3.085,
+"tris": 822,
+"lods": [
+234
+],
+"lodClass": null,
+"lodAtPlay": false,
+"placedTris": 28770
+},
+{
+"group": "CornerPier_Out_Top",
+"n": 63,
+"branches": {
+"Ours (Handover zone + network, our pipeline)": 63
+},
+"levels": {
+"3": 63
+},
+"heights": [
+0.0843,
+0.0316,
+0.0115
+],
+"size": 3.9500005,
+"tris": 456,
+"lods": [
+160,
+64
+],
+"lodClass": "cornerStorey",
+"lodAtPlay": false,
+"placedTris": 28728
+},
+{
+"group": "StreamBayStack_Top",
+"n": 69,
+"branches": {
+"Ours (Handover zone + network, our pipeline)": 69
+},
+"levels": {
+"3": 69
+},
+"heights": [
+0.3084,
+0.1157,
+0.0421
+],
+"size": 14.45,
+"tris": 414,
+"lods": [
+158,
+86
+],
+"lodClass": "storey",
+"lodAtPlay": false,
+"placedTris": 28566
+},
+{
+"group": "CivicBedPlanting_facade-southwest",
+"n": 1,
+"branches": {
+"Ours (Handover zone + network, our pipeline)": 1
+},
+"levels": {
+"4": 1
+},
+"heights": [
+0.6667,
+0.2963,
+0.1667,
+0.01
+],
+"size": 4.0,
+"tris": 28285,
+"lods": [
+19033,
+13125,
+7483
+],
+"lodClass": null,
+"lodAtPlay": true,
+"placedTris": 28285
+},
+{
+"group": "PlanterRun_4_A_TB",
+"n": 5,
+"branches": {
+"Ours (Handover zone + network, our pipeline)": 5
+},
+"levels": {
+"4": 5
+},
+"heights": [
+0.6667,
+0.2963,
+0.1667,
+0.01
+],
+"size": 4.0,
+"tris": 5655,
+"lods": [
+3837,
+2657,
+1547
+],
+"lodClass": null,
+"lodAtPlay": true,
+"placedTris": 28275
+},
+{
+"group": "SidePilaster_4",
+"n": 43,
+"branches": {
+"Ours (Handover zone + network, our pipeline)": 43
+},
+"levels": {
+"3": 43
+},
+"heights": [
+0.4205,
+0.1577,
+0.0573
+],
+"size": 19.7,
+"tris": 652,
+"lods": [
+276,
+180
+],
+"lodClass": "bay4",
+"lodAtPlay": false,
+"placedTris": 28036
+},
+{
+"group": "TopiaryCone",
+"n": 11,
+"branches": {
+"Ours (Handover zone + network, our pipeline)": 11
+},
+"levels": {
+"1": 11
+},
+"heights": [
+0.01
+],
+"size": 1.7030443,
+"tris": 2484,
+"lods": [],
+"lodClass": null,
+"lodAtPlay": false,
+"placedTris": 27324
+},
+{
+"group": "CivicBedPlanting_facade-southeast",
+"n": 1,
+"branches": {
+"Ours (Handover zone + network, our pipeline)": 1
+},
+"levels": {
+"4": 1
+},
+"heights": [
+0.6667,
+0.2963,
+0.1667,
+0.01
+],
+"size": 4.0,
+"tris": 26521,
+"lods": [
+19339,
+13023,
+7521
+],
+"lodClass": null,
+"lodAtPlay": true,
+"placedTris": 26521
+},
+{
+"group": "VendingMachine_Snack",
+"n": 8,
+"branches": {
+"Ours (Handover zone + network, our pipeline)": 8
+},
+"levels": {
+"1": 8
+},
+"heights": [
+0.01
+],
+"size": 1.86,
+"tris": 3246,
+"lods": [
+811,
+194
+],
+"lodClass": null,
+"lodAtPlay": false,
+"placedTris": 25968
+},
+{
+"group": "SidePilaster_3",
+"n": 45,
+"branches": {
+"Ours (Handover zone + network, our pipeline)": 45
+},
+"levels": {
+"3": 45
+},
+"heights": [
+0.3479,
+0.1305,
+0.0474
+],
+"size": 16.3,
+"tris": 572,
+"lods": [
+228,
+156
+],
+"lodClass": "bay3",
+"lodAtPlay": false,
+"placedTris": 25740
+},
+{
+"group": "SideBay_3",
+"n": 12,
+"branches": {
+"Ours (Handover zone + network, our pipeline)": 12
+},
+"levels": {
+"3": 12
+},
+"heights": [
+0.3479,
+0.1305,
+0.0474
+],
+"size": 16.3,
+"tris": 2026,
+"lods": [
+254,
+272
+],
+"lodClass": "bay3",
+"lodAtPlay": false,
+"placedTris": 24312
+},
+{
+"group": "CafeSet_Tulip",
+"n": 6,
+"branches": {
+"Ours (Handover zone + network, our pipeline)": 6
+},
+"levels": {
+"1": 6
+},
+"heights": [
+0.01
+],
+"size": 1.87886,
+"tris": 3984,
+"lods": [
+996,
+239
+],
+"lodClass": null,
+"lodAtPlay": false,
+"placedTris": 23904
+},
+{
+"group": "NeonStar_Wall",
+"n": 8,
+"branches": {
+"Ours (Handover zone + network, our pipeline)": 8
+},
+"levels": {
+"1": 8
+},
+"heights": [
+0.01
+],
+"size": 2.6100001,
+"tris": 2928,
+"lods": [
+730,
+171
+],
+"lodClass": null,
+"lodAtPlay": false,
+"placedTris": 23424
+},
+{
+"group": "CivicBedPlanting_dropoff-west",
+"n": 1,
+"branches": {
+"Ours (Handover zone + network, our pipeline)": 1
+},
+"levels": {
+"4": 1
+},
+"heights": [
+0.6667,
+0.2963,
+0.1667,
+0.01
+],
+"size": 4.0,
+"tris": 23303,
+"lods": [
+15617,
+10777,
+6151
+],
+"lodClass": null,
+"lodAtPlay": true,
+"placedTris": 23303
+},
+{
+"group": "StreamEnd_3W",
+"n": 2,
+"branches": {
+"Ours (Handover zone + network, our pipeline)": 2
+},
+"levels": {
+"3": 2
+},
+"heights": [
+0.2,
+0.07,
+0.004
+],
+"size": 16.378647,
+"tris": 10820,
+"lods": [
+2650,
+628
+],
+"lodClass": null,
+"lodAtPlay": false,
+"placedTris": 21640
+},
+{
+"group": "StreamEnd_3",
+"n": 2,
+"branches": {
+"Ours (Handover zone + network, our pipeline)": 2
+},
+"levels": {
+"3": 2
+},
+"heights": [
+0.2,
+0.07,
+0.004
+],
+"size": 16.378647,
+"tris": 10820,
+"lods": [
+2650,
+628
+],
+"lodClass": null,
+"lodAtPlay": false,
+"placedTris": 21640
+},
+{
+"group": "CivicBedPlanting_office-north",
+"n": 1,
+"branches": {
+"Ours (Handover zone + network, our pipeline)": 1
+},
+"levels": {
+"4": 1
+},
+"heights": [
+0.6667,
+0.2963,
+0.1667,
+0.01
+],
+"size": 4.0,
+"tris": 21426,
+"lods": [
+18294,
+11886,
+6946
+],
+"lodClass": null,
+"lodAtPlay": true,
+"placedTris": 21426
+},
+{
+"group": "Lockers",
+"n": 2,
+"branches": {
+"Ours (Handover zone + network, our pipeline)": 2
+},
+"levels": {
+"1": 2
+},
+"heights": [
+0.01
+],
+"size": 2.49,
+"tris": 10712,
+"lods": [],
+"lodClass": null,
+"lodAtPlay": false,
+"placedTris": 21424
+},
+{
+"group": "Roof_Tank",
+"n": 10,
+"branches": {
+"Ours (Handover zone + network, our pipeline)": 10
+},
+"levels": {
+"3": 10
+},
+"heights": [
+0.2,
+0.07,
+0.004
+],
+"size": 10.42564,
+"tris": 2136,
+"lods": [
+534,
+128
+],
+"lodClass": null,
+"lodAtPlay": false,
+"placedTris": 21360
+},
+{
+"group": "SandwichBoard",
+"n": 10,
+"branches": {
+"Ours (Handover zone + network, our pipeline)": 10
+},
+"levels": {
+"1": 10
+},
+"heights": [
+0.01
+],
+"size": 1.1694149,
+"tris": 2116,
+"lods": [
+529,
+114
+],
+"lodClass": null,
+"lodAtPlay": false,
+"placedTris": 21160
+},
+{
+"group": "Parasol_Testbed",
+"n": 7,
+"branches": {
+"Ours (Handover zone + network, our pipeline)": 7
+},
+"levels": {
+"1": 7
+},
+"heights": [
+0.01
+],
+"size": 2.804,
+"tris": 3008,
+"lods": [
+752,
+180
+],
+"lodClass": null,
+"lodAtPlay": false,
+"placedTris": 21056
+},
+{
+"group": "PlanterRun_4_B_TB",
+"n": 4,
+"branches": {
+"Ours (Handover zone + network, our pipeline)": 4
+},
+"levels": {
+"4": 4
+},
+"heights": [
+0.6667,
+0.2963,
+0.1667,
+0.01
+],
+"size": 4.0,
+"tris": 4909,
+"lods": [
+3541,
+2417,
+1415
+],
+"lodClass": null,
+"lodAtPlay": true,
+"placedTris": 19636
+},
+{
+"group": "CafeInterior_Testbed",
+"n": 1,
+"branches": {
+"Ours (Handover zone + network, our pipeline)": 1
+},
+"levels": {
+"2": 1
+},
+"heights": [
+0.008,
+0.004
+],
+"size": 22.52,
+"tris": 18690,
+"lods": [
+4638,
+1087
+],
+"lodClass": null,
+"lodAtPlay": false,
+"placedTris": 18690
+},
+{
+"group": "PlanterRun_4_C_TB",
+"n": 3,
+"branches": {
+"Ours (Handover zone + network, our pipeline)": 3
+},
+"levels": {
+"4": 3
+},
+"heights": [
+0.6667,
+0.2963,
+0.1667,
+0.01
+],
+"size": 4.0,
+"tris": 5976,
+"lods": [
+3906,
+2726,
+1578
+],
+"lodClass": null,
+"lodAtPlay": true,
+"placedTris": 17928
+},
+{
+"group": "CurvedKiosk",
+"n": 1,
+"branches": {
+"Ours (Handover zone + network, our pipeline)": 1
+},
+"levels": {
+"1": 1
+},
+"heights": [
+0.01
+],
+"size": 6.5,
+"tris": 17260,
+"lods": [
+4314,
+1020
+],
+"lodClass": null,
+"lodAtPlay": false,
+"placedTris": 17260
+},
+{
+"group": "StreetClock",
+"n": 5,
+"branches": {
+"Ours (Handover zone + network, our pipeline)": 5
+},
+"levels": {
+"1": 5
+},
+"heights": [
+0.01
+],
+"size": 4.45,
+"tris": 3350,
+"lods": [
+836,
+199
+],
+"lodClass": null,
+"lodAtPlay": false,
+"placedTris": 16750
+},
+{
+"group": "PortholeBay_4L",
+"n": 3,
+"branches": {
+"Ours (Handover zone + network, our pipeline)": 3
+},
+"levels": {
+"3": 3
+},
+"heights": [
+0.2,
+0.07,
+0.004
+],
+"size": 19.778645,
+"tris": 5478,
+"lods": [
+1338,
+319
+],
+"lodClass": null,
+"lodAtPlay": false,
+"placedTris": 16434
+},
+{
+"group": "Automat",
+"n": 4,
+"branches": {
+"Ours (Handover zone + network, our pipeline)": 4
+},
+"levels": {
+"1": 4
+},
+"heights": [
+0.01
+],
+"size": 2.44,
+"tris": 3967,
+"lods": [
+985,
+226
+],
+"lodClass": null,
+"lodAtPlay": false,
+"placedTris": 15868
+},
+{
+"group": "CornerPier_In_4",
+"n": 6,
+"branches": {
+"Ours (Handover zone + network, our pipeline)": 6
+},
+"levels": {
+"3": 6
+},
+"heights": [
+0.4205,
+0.1577,
+0.0573
+],
+"size": 19.700003,
+"tris": 2392,
+"lods": [
+752,
+448
+],
+"lodClass": "bay4",
+"lodAtPlay": false,
+"placedTris": 14352
+},
+{
+"group": "FlowerBed",
+"n": 5,
+"branches": {
+"Ours (Handover zone + network, our pipeline)": 5
+},
+"levels": {
+"1": 5
+},
+"heights": [
+0.01
+],
+"size": 1.9806159,
+"tris": 2718,
+"lods": [],
+"lodClass": null,
+"lodAtPlay": false,
+"placedTris": 13590
+},
+{
+"group": "CafeUpper_3_TB",
+"n": 1,
+"branches": {
+"Ours (Handover zone + network, our pipeline)": 1
+},
+"levels": {
+"2": 1
+},
+"heights": [
+0.008,
+0.004
+],
+"size": 23.169893,
+"tris": 13543,
+"lods": [
+3325,
+1226
+],
+"lodClass": null,
+"lodAtPlay": true,
+"placedTris": 13543
+},
+{
+"group": "RoundBench",
+"n": 5,
+"branches": {
+"Ours (Handover zone + network, our pipeline)": 5
+},
+"levels": {
+"1": 5
+},
+"heights": [
+0.01
+],
+"size": 3.234,
+"tris": 2512,
+"lods": [],
+"lodClass": null,
+"lodAtPlay": false,
+"placedTris": 12560
+},
+{
+"group": "StreamEnd_4",
+"n": 1,
+"branches": {
+"Ours (Handover zone + network, our pipeline)": 1
+},
+"levels": {
+"3": 1
+},
+"heights": [
+0.2,
+0.07,
+0.004
+],
+"size": 19.778648,
+"tris": 12540,
+"lods": [
+3062,
+728
+],
+"lodClass": null,
+"lodAtPlay": false,
+"placedTris": 12540
+},
+{
+"group": "StreamBay_3W",
+"n": 8,
+"branches": {
+"Ours (Handover zone + network, our pipeline)": 8
+},
+"levels": {
+"2": 8
+},
+"heights": [
+0.2,
+0.004
+],
+"size": 16.3,
+"tris": 1444,
+"lods": [
+310
+],
+"lodClass": null,
+"lodAtPlay": false,
+"placedTris": 11552
+},
+{
+"group": "InfoLightbox",
+"n": 2,
+"branches": {
+"Ours (Handover zone + network, our pipeline)": 2
+},
+"levels": {
+"1": 2
+},
+"heights": [
+0.01
+],
+"size": 2.0,
+"tris": 5370,
+"lods": [],
+"lodClass": null,
+"lodAtPlay": false,
+"placedTris": 10740
+},
+{
+"group": "OceanLiner",
+"n": 1,
+"branches": {
+"Ours (Handover zone + network, our pipeline)": 1
+},
+"levels": {
+"3": 1
+},
+"heights": [
+0.15,
+0.05,
+0.004
+],
+"size": 95.52562,
+"tris": 10708,
+"lods": [
+2595,
+1078
+],
+"lodClass": null,
+"lodAtPlay": false,
+"placedTris": 10708
+},
+{
+"group": "BalconyBay_3",
+"n": 3,
+"branches": {
+"Ours (Handover zone + network, our pipeline)": 3
+},
+"levels": {
+"3": 3
+},
+"heights": [
+0.2,
+0.07,
+0.004
+],
+"size": 16.378643,
+"tris": 3340,
+"lods": [
+774,
+202
+],
+"lodClass": null,
+"lodAtPlay": false,
+"placedTris": 10020
+},
+{
+"group": "AdColumn",
+"n": 2,
+"branches": {
+"Ours (Handover zone + network, our pipeline)": 2
+},
+"levels": {
+"1": 2
+},
+"heights": [
+0.01
+],
+"size": 3.34,
+"tris": 4790,
+"lods": [
+1197,
+287
+],
+"lodClass": null,
+"lodAtPlay": false,
+"placedTris": 9580
+},
+{
+"group": "SidePilaster_Top",
+"n": 63,
+"branches": {
+"Ours (Handover zone + network, our pipeline)": 63
+},
+"levels": {
+"3": 63
+},
+"heights": [
+0.0843,
+0.0316,
+0.0115
+],
+"size": 3.95,
+"tris": 152,
+"lods": [
+60,
+48
+],
+"lodClass": "storey",
+"lodAtPlay": false,
+"placedTris": 9576
+},
+{
+"group": "BalconyBay_4",
+"n": 2,
+"branches": {
+"Ours (Handover zone + network, our pipeline)": 2
+},
+"levels": {
+"3": 2
+},
+"heights": [
+0.2,
+0.07,
+0.004
+],
+"size": 19.778645,
+"tris": 4550,
+"lods": [
+1054,
+273
+],
+"lodClass": null,
+"lodAtPlay": false,
+"placedTris": 9100
+},
+{
+"group": "SkyRailStation_Decks",
+"n": 2,
+"branches": {
+"Ours (Handover zone + network, our pipeline)": 2
+},
+"levels": {
+"3": 2
+},
+"heights": [
+0.15,
+0.05,
+0.004
+],
+"size": 50.0,
+"tris": 4140,
+"lods": [
+963,
+239
+],
+"lodClass": null,
+"lodAtPlay": false,
+"placedTris": 8280
+},
+{
+"group": "Billboard_Pylon_A",
+"n": 1,
+"branches": {
+"Ours (Handover zone + network, our pipeline)": 1
+},
+"levels": {
+"2": 1
+},
+"heights": [
+0.008,
+0.004
+],
+"size": 14.033,
+"tris": 7836,
+"lods": [
+1944,
+463
+],
+"lodClass": null,
+"lodAtPlay": false,
+"placedTris": 7836
+},
+{
+"group": "RecordsEntrance",
+"n": 1,
+"branches": {
+"Ours (Handover zone + network, our pipeline)": 1
+},
+"levels": {
+"2": 1
+},
+"heights": [
+0.008,
+0.004
+],
+"size": 13.6,
+"tris": 7348,
+"lods": [
+1815,
+430
+],
+"lodClass": null,
+"lodAtPlay": false,
+"placedTris": 7348
+},
+{
+"group": "Planter_Urn_Play",
+"n": 2,
+"branches": {
+"Ours (Handover zone + network, our pipeline)": 2
+},
+"levels": {
+"1": 2
+},
+"heights": [
+0.01
+],
+"size": 1.2511594,
+"tris": 3642,
+"lods": [
+905,
+214
+],
+"lodClass": null,
+"lodAtPlay": false,
+"placedTris": 7284
+},
+{
+"group": "Roof_Mast",
+"n": 4,
+"branches": {
+"Ours (Handover zone + network, our pipeline)": 4
+},
+"levels": {
+"3": 4
+},
+"heights": [
+0.2,
+0.07,
+0.004
+],
+"size": 20.600641,
+"tris": 1792,
+"lods": [
+448,
+106
+],
+"lodClass": null,
+"lodAtPlay": false,
+"placedTris": 7168
+},
+{
+"group": "LightDotRow_1",
+"n": 30,
+"branches": {
+"Ours (Handover zone + network, our pipeline)": 30
+},
+"levels": {
+"1": 30
+},
+"heights": [
+0.01
+],
+"size": 1.18,
+"tris": 168,
+"lods": [
+80
+],
+"lodClass": null,
+"lodAtPlay": false,
+"placedTris": 5040
+},
+{
+"group": "CafeBay_v2",
+"n": 1,
+"branches": {
+"Ours (Handover zone + network, our pipeline)": 1
+},
+"levels": {
+"2": 1
+},
+"heights": [
+0.008,
+0.004
+],
+"size": 25.403122,
+"tris": 5032,
+"lods": [
+1258,
+314
+],
+"lodClass": null,
+"lodAtPlay": false,
+"placedTris": 5032
+},
+{
+"group": "HaloRing",
+"n": 35,
+"branches": {
+"Ours (Handover zone + network, our pipeline)": 35
+},
+"levels": {
+"1": 35
+},
+"heights": [
+0.01
+],
+"size": 1.24,
+"tris": 130,
+"lods": [
+66
+],
+"lodClass": null,
+"lodAtPlay": false,
+"placedTris": 4550
+},
+{
+"group": "CornerPier_In_3",
+"n": 2,
+"branches": {
+"Ours (Handover zone + network, our pipeline)": 2
+},
+"levels": {
+"3": 2
+},
+"heights": [
+0.3479,
+0.1305,
+0.0474
+],
+"size": 16.300001,
+"tris": 2068,
+"lods": [
+632,
+384
+],
+"lodClass": "bay3",
+"lodAtPlay": false,
+"placedTris": 4136
+},
+{
+"group": "DrinkingFountain",
+"n": 1,
+"branches": {
+"Ours (Handover zone + network, our pipeline)": 1
+},
+"levels": {
+"1": 1
+},
+"heights": [
+0.01
+],
+"size": 0.972997,
+"tris": 3122,
+"lods": [],
+"lodClass": null,
+"lodAtPlay": false,
+"placedTris": 3122
+},
+{
+"group": "Roof_Pool",
+"n": 1,
+"branches": {
+"Ours (Handover zone + network, our pipeline)": 1
+},
+"levels": {
+"3": 1
+},
+"heights": [
+0.2,
+0.07,
+0.004
+],
+"size": 14.8,
+"tris": 2136,
+"lods": [
+502,
+126
+],
+"lodClass": null,
+"lodAtPlay": false,
+"placedTris": 2136
+},
+{
+"group": "RecordsEntrance_Official",
+"n": 1,
+"branches": {
+"Ours (Handover zone + network, our pipeline)": 1
+},
+"levels": {
+"1": 1
+},
+"heights": [
+0.01
+],
+"size": 5.999819,
+"tris": 1988,
+"lods": [
+486,
+118
+],
+"lodClass": null,
+"lodAtPlay": false,
+"placedTris": 1988
+},
+{
+"group": "CafeTerrace_TB",
+"n": 1,
+"branches": {
+"Ours (Handover zone + network, our pipeline)": 1
+},
+"levels": {
+"2": 1
+},
+"heights": [
+0.008,
+0.004
+],
+"size": 34.612427,
+"tris": 312,
+"lods": [
+216,
+64
+],
+"lodClass": null,
+"lodAtPlay": true,
+"placedTris": 312
+},
+{
+"group": "Roof_Cabana",
+"n": 2,
+"branches": {
+"Ours (Handover zone + network, our pipeline)": 2
+},
+"levels": {
+"1": 2
+},
+"heights": [
+0.01
+],
+"size": 3.3,
+"tris": 122,
+"lods": [],
+"lodClass": null,
+"lodAtPlay": false,
+"placedTris": 244
+},
+{
+"group": "civic-restyle/basket-cafe",
+"n": 2,
+"branches": {
+"Ours (Handover zone + network, our pipeline)": 2
+},
+"levels": {
+"1": 2
+},
+"heights": [
+0.01
+],
+"size": 0.78608304,
+"tris": null,
+"lods": [],
+"lodClass": null,
+"lodAtPlay": false,
+"placedTris": null
+}
+]
+}
