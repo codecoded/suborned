@@ -1,0 +1,123 @@
+{
+ "schema": "suborned.tplong.resolved/1",
+ "outDir": "set by the command line",
+ "rows": [
+  {
+   "name": "fsr-base",
+   "view": "overhead",
+   "kind": "play",
+   "agent": "scout",
+   "walk": [
+    0,
+    0
+   ],
+   "faceHeading": -1,
+   "yaw": 30,
+   "zoom": 10,
+   "settleSeconds": 1.5,
+   "seconds": 12,
+   "w": 2880,
+   "h": 1808,
+   "clockRunning": true,
+   "hud": true,
+   "vsync": false,
+   "variant": {}
+  },
+  {
+   "name": "fsr-65-linear",
+   "view": "overhead",
+   "kind": "play",
+   "agent": "scout",
+   "walk": [
+    0,
+    0
+   ],
+   "faceHeading": -1,
+   "yaw": 30,
+   "zoom": 10,
+   "settleSeconds": 1.5,
+   "seconds": 12,
+   "w": 2880,
+   "h": 1808,
+   "clockRunning": true,
+   "hud": true,
+   "vsync": false,
+   "variant": {
+    "upscale": "linear",
+    "renderScalePct": 65
+   }
+  },
+  {
+   "name": "fsr-65",
+   "view": "overhead",
+   "kind": "play",
+   "agent": "scout",
+   "walk": [
+    0,
+    0
+   ],
+   "faceHeading": -1,
+   "yaw": 30,
+   "zoom": 10,
+   "settleSeconds": 1.5,
+   "seconds": 12,
+   "w": 2880,
+   "h": 1808,
+   "clockRunning": true,
+   "hud": true,
+   "vsync": false,
+   "variant": {
+    "upscale": "fsr",
+    "renderScalePct": 65
+   }
+  },
+  {
+   "name": "fsr-65-linear-b",
+   "view": "overhead",
+   "kind": "play",
+   "agent": "scout",
+   "walk": [
+    0,
+    0
+   ],
+   "faceHeading": -1,
+   "yaw": 30,
+   "zoom": 10,
+   "settleSeconds": 1.5,
+   "seconds": 12,
+   "w": 2880,
+   "h": 1808,
+   "clockRunning": true,
+   "hud": true,
+   "vsync": false,
+   "variant": {
+    "upscale": "linear",
+    "renderScalePct": 65
+   }
+  },
+  {
+   "name": "fsr-65-b",
+   "view": "overhead",
+   "kind": "play",
+   "agent": "scout",
+   "walk": [
+    0,
+    0
+   ],
+   "faceHeading": -1,
+   "yaw": 30,
+   "zoom": 10,
+   "settleSeconds": 1.5,
+   "seconds": 12,
+   "w": 2880,
+   "h": 1808,
+   "clockRunning": true,
+   "hud": true,
+   "vsync": false,
+   "variant": {
+    "upscale": "fsr",
+    "renderScalePct": 65
+   }
+  }
+ ]
+}

@@ -52,5 +52,9 @@ launch warm-z8 warm-z8 8 100 150
 launch warm-z14 warm-z14 14 100 120
 launch warm-z18 warm-z18 18.5 100 120
 for k in 100-a 65-a 100-b 65-b; do launch scale-$k scale 10 ${k%-*} 150; done
+launch ceiling ceiling 10 100 480
+launch oldfar oldfar 10 100 180
+# no `gpu` launch: this release player has no GPU recorders (supportsGpuRecorder false, 83 samplers, none a render pass; gpu.rows.json stays for a development build)
+launch fsr fsr 10 100 180
 launch shipped shipped 10 100 240
 launch frames '' 10 100 330

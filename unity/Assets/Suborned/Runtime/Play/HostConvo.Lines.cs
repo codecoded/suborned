@@ -15,8 +15,8 @@ namespace Suborned.Play
         public readonly List<string> ConvoPicks = new();
         /// <summary>A landing whose lines a scene or the card's own bubbles already say: its reply, done and confirm lines stay in the history, not over heads.</summary>
         int convoQuietTick = -1; readonly HashSet<string> convoQuiet = new(StringComparer.Ordinal);
-        bool ConvoQuiet(string speaker) => Game != null && Game.Tick == convoQuietTick && convoQuiet.Contains(speaker);
-        void QuietNow(params string[] who) { convoQuietTick = Game.Tick; convoQuiet.Clear(); foreach (var w in who) convoQuiet.Add(w); Bubbles.RemoveAll(b => b.Tick == Game.Tick && convoQuiet.Contains(b.Speaker)); }
+        bool ConvoQuiet(string speaker) => Game != null && convoQuietTick >= 0 && Game.Tick - convoQuietTick <= 1 && convoQuiet.Contains(speaker); /* the tick after too: an order given just before a step logs on it */
+        void QuietNow(params string[] who) { convoQuietTick = Game.Tick; convoQuiet.Clear(); foreach (var w in who) convoQuiet.Add(w); Bubbles.RemoveAll(b => b.Tick == Game.Tick && convoQuiet.Contains(b.Speaker)); Callouts.RemoveAll(c => c.Speech != null && c.Speech.Tick == Game.Tick && convoQuiet.Contains(c.Speech.Speaker)); /* brief 085: its inset goes with the bubble */ }
 
         static bool ConvoVerb(string v) => v is "listen" or "ask" or "pay" or "help" or "pressure" or "call" or "mislead";
 
@@ -118,10 +118,28 @@ namespace Suborned.Play
         /// <summary>No cutaway for these lines: they play whole as bubbles, a beat every 1.5 s of mission time, from the first; the reply and the Fixer's reaction aren't said a second time over them.</summary>
         void ConvoRelease(Convo c)
         {
-            var card = c.Card; if (card == null || card.Scene == null || c.Verb == "call") return; // a call's scene is already running (FeedCall)
+            var card = c.Card;
+            if (c.Id.Length > 0) { ConvoReleaseAgreed(c); return; }
+            if (card == null || card.Scene == null || c.Verb == "call") return; // a call's scene is already running (FeedCall)
             card.Revealed = 0; card.Bubbled = 0; card.NextBeatAt = Game.Tick;
             if (c.Verb is not "listen" and not "mislead") QuietNow(Op.Name((OpId)c.Agent), c.Target);
         }
+
+        /// <summary>Brief 085: no cutaway, but the act has a conversation: its own agreed words, never the old scene's. The street gets its first three lines as bubbles, each held to read, one after
+        /// another, since ten lines over a head are too many and hold nothing up; the feed card and the history keep the whole scene; the cards show beside the feed (HudToolkit.Convo). The guard's
+        /// call line stays (his inset on any Call), so only the agent's and the person's lines are silenced.</summary>
+        void ConvoReleaseAgreed(Convo c)
+        {
+            QuietNow(Op.Name((OpId)c.Agent), c.Target);
+            var card = c.Card; var conv = Text.Conversations.Find(x => x.Id == c.Id);
+            if (card != null && conv != null) { card.Lines.Clear(); foreach (var b in conv.Beats) card.Lines.Add(new FeedLine { Speaker = b.Speaker, Name = Text.ConvName(b.Speaker), Text = b.Line }); if (conv.Learned.Count > 0) card.Footer = conv.Learned[0]; card.Revealed = card.Bubbled = card.Lines.Count; card.NextBeatAt = -1; }
+            float at = Time.unscaledTime; int n = 0;
+            foreach (var (sp, tx) in c.Lines) { if (n++ >= StreetAgreedLines) break; streetDue.Add((at, sp, tx, false)); at += ReadS(tx); }
+            StreetCards = c; StreetCardsAt = at; StreetCardsUntil = at + Mathf.Max(ConvoCardsMinS, ConvoCardS(c));
+        }
+        public const int StreetAgreedLines = 3;
+        /// <summary>The conversation whose cards stand beside the feed now that no scene played: from the last street line to StreetCardsUntil (real time).</summary>
+        public Convo StreetCards { get; private set; } public float StreetCardsAt { get; private set; } public float StreetCardsUntil { get; private set; }
 
         /// <summary>An act cut short: it says nothing more, and its card is no longer waiting on lines.</summary>
         void ConvoCutShort(FeedCard c) { c.Revealed = c.Bubbled = c.Lines.Count; c.NextBeatAt = -1; }

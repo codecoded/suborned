@@ -104,13 +104,21 @@ namespace Suborned.Play
             for (int i = wu; i < winEls.Count; i++) Show(winEls[i].root, false);
             WindowMarksShown = wu; WindowWords = string.Join(" ", wwords);
             if (on)
+            {
+                // brief 085 (the budget's two chips on screen; r067-drive-parked drew three): only the newest two that can be drawn; DoneChips itself keeps them all
+                bool ChipPlace(HandoverHost.DoneChip ch, out Vector2 q)
+                {
+                    q = default; if (now - ch.Born > HandoverHost.DoneChipS) return false;
+                    var at = h.AnchorWorld(ch.AnchorKey) ?? ch.At; if (!at.HasValue) return false; ch.At = at;
+                    bool person = ch.AnchorKey is "waitress" or "driver" or "guard" or "councillor" || ch.AnchorKey.StartsWith("op/") || ch.AnchorKey == "patrol";
+                    if (!Proj(at.Value + Vector3.up * (person ? 2.3f : ch.AnchorKey.StartsWith("camera/") ? 0.7f : 1.6f), out q)) return false;
+                    return q.y >= 0f; // Glyph's N11: the anchor above the frame: no chip (the feed card carries the beat)
+                }
+                int placeable = 0; foreach (var ch0 in h.DoneChips) if (ChipPlace(ch0, out _)) placeable++;
                 foreach (var ch in h.DoneChips)
                 {
-                    float age = now - ch.Born; if (age > HandoverHost.DoneChipS) continue;
-                    var at = h.AnchorWorld(ch.AnchorKey) ?? ch.At; if (!at.HasValue) continue; ch.At = at;
-                    bool person = ch.AnchorKey is "waitress" or "driver" or "guard" or "councillor" || ch.AnchorKey.StartsWith("op/") || ch.AnchorKey == "patrol";
-                    if (!Proj(at.Value + Vector3.up * (person ? 2.3f : ch.AnchorKey.StartsWith("camera/") ? 0.7f : 1.6f), out var q)) continue;
-                    if (q.y < 0f) continue; // Glyph's N11: the anchor above the frame: no chip (the feed card carries the beat)
+                    if (!ChipPlace(ch, out var q) || placeable-- > ChipsOnScreen) continue;
+                    float age = now - ch.Born;
                     var c = used < chipEls.Count ? chipEls[used] : NewChip(); used++; Show(c.Root, true);
                     if (c.Id != ch.Id)
                     {
@@ -141,10 +149,13 @@ namespace Suborned.Play
                     c.Root.style.left = x; c.Root.style.top = ctop; stackTop[ch.AnchorKey] = ctop + rise; c.Root.style.opacity = Mathf.Min(1f, Mathf.Min(age / 0.12f, (HandoverHost.DoneChipS - age) / 0.5f)); c.Root.BringToFront();
                     var ws = new List<string>(); foreach (var l in ch.Lines) ws.Add(l.Word); foreach (var u in ch.Unlocks) ws.Add((u.Shut ? "~" : "→") + u.Word); words.Add(string.Join("|", ws));
                 }
+            }
             for (int i = used; i < chipEls.Count; i++) { Show(chipEls[i].Root, false); chipEls[i].Id = -1; }
             ChipsShown = used; ChipWords = string.Join(" / ", words);
         }
 
+        /// <summary>The budget's cap (tools/hud-budget CHIP_MAX.onScreen).</summary>
+        const int ChipsOnScreen = 2;
         static float Ease(float t) => 1f - (1f - t) * (1f - t);
 
         /// <summary>The speech bubbles on screen now (panel space): speech is placed first; a chip or a window marker stacks above it.</summary>

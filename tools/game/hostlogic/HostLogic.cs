@@ -332,6 +332,15 @@ public class Conversations
         var h = Host.Fresh(); h.controls.conversations = ConversationScenes.Always; h.GiveWatchScripted(OpId.Scout, "waitress"); Assert.That(Host.Until(h, () => h.Game.Ops[0].Busy != null)); h.CancelAgent(0, null); Host.Tick(h, 5);
         Assert.That(h.ConvoPicks, Is.Empty);
     }
+    [Test] public void NoSceneStillGetsTheAgreedWordsNotTheOldOnes()
+    {
+        var h = Host.Fresh(); h.controls.conversations = ConversationScenes.Never; Host.Set(h, "HintsOn", false);
+        var orders = Script.Parse(File.ReadAllText(System.IO.Path.Combine(Root.Path, "contracts/missions/handover/routes/route-a.json"))).Orders.OrderBy(o => o.Tick).ToList();
+        foreach (var o in orders) { if (o.Tick >= 650) break; if (o.Tick > h.Game.Tick) h.RunTo(o.Tick); if (o.Do is "watch" or "listen") h.GiveScripted(o); else h.Issue(o); Host.Call(h, "Track"); }
+        h.RunTo(650); var card = h.Feed.Concat(h.FeedHistory).First(c => c.Verb == "listen"); var conv = h.Text.Conversations.Find(x => x.Id == "listen-inez");
+        Assert.That(card.Lines.Select(l => l.Text), Is.EqualTo(conv.Beats.Select(b => b.Line)), "the card holds the whole agreed scene"); Assert.That(card.Footer, Is.EqualTo(conv.Learned[0]));
+        Assert.That(h.StreetCards?.Id, Is.EqualTo("listen-inez"), "the cards still show"); Assert.That(h.Talk.Any(t => t.Text.Contains("Yes. Yes")), Is.False);
+    }
     [Test] public void ALineIsHeldToRead()
     {
         Assert.That(HandoverHost.ReadS("Short."), Is.EqualTo(1f)); Assert.That(HandoverHost.ReadS(new string('x', 64)), Is.EqualTo(4f).Within(0.01f));

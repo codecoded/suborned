@@ -39,7 +39,7 @@ namespace Suborned.Play
                 manifest.Add((convoSkip, "image", () => "skip keycap"));
                 // the cards: the kit's panel_dark, one icon and line a card, a brass hairline between what the player now knows and what they can now do
                 convoCards = E(root, "s-panel_dark"); convoCards.style.position = Position.Absolute; convoCards.style.paddingLeft = 22; convoCards.style.paddingRight = 24; convoCards.style.paddingTop = 14; convoCards.style.paddingBottom = 14; convoCards.style.unitySliceScale = 0.5f;
-                manifest.Add((convoCards, "speech", ConvoCardWords));
+                manifest.Add((convoCards, "card", ConvoCardWords));
             }
             var mine = new HashSet<VisualElement> { convoBarTop, convoBarBottom, convoVeil, convoBubble, convoDots, convoSkip, convoCards, pill };
             if (on != convoHid)
@@ -75,7 +75,7 @@ namespace Suborned.Play
             bool cards = shot && c.InCards; Show(convoCards, cards);
             if (cards)
             {
-                ConvoCardsFill(c);
+                ConvoCardsFill(convoCards, ref convoCardKey, c);
                 float cw = convoCards.resolvedStyle.width, ch = convoCards.resolvedStyle.height; if (float.IsNaN(cw) || cw < 1) cw = 420; if (float.IsNaN(ch) || ch < 1) ch = 120;
                 convoCards.style.left = (W - cw) / 2f; convoCards.style.top = Mathf.Max(H * 0.1f, H * 0.94f - ch - 32f); convoCards.style.opacity = Mathf.Clamp01((Time.unscaledTime - c.BeatAt) / 0.15f); convoCards.BringToFront();
             }
@@ -88,15 +88,29 @@ namespace Suborned.Play
             return true;
         }
 
+        VisualElement streetCards; string streetCardKey = "";
+        /// <summary>The proof reads it: the cards of a conversation no scene played stand beside the feed.</summary>
+        public static bool StreetCardsUp => live?.streetCards != null && live.streetCards.resolvedStyle.display != DisplayStyle.None;
+
+        /// <summary>Brief 085: a conversation that couldn't play as a scene still shows its cards, after its street lines, for as long as they take to read, on the feed's top edge. They take no clicks.</summary>
+        void StreetCardsHud(float W, float H)
+        {
+            var c = host.StreetCards; float now = Time.unscaledTime; bool on = c != null && now >= host.StreetCardsAt && now < host.StreetCardsUntil && !m.Ended && !m.BriefingOpen && host.Modal == ModalGate.Modal.None && !host.FailCamOn && !host.ConvoOn;
+            if (streetCards == null) { if (!on) return; streetCards = E(root, "s-panel_dark"); streetCards.style.position = Position.Absolute; streetCards.style.paddingLeft = 18; streetCards.style.paddingRight = 20; streetCards.style.paddingTop = 12; streetCards.style.paddingBottom = 12; streetCards.style.unitySliceScale = 0.5f; streetCards.style.right = 14; streetCards.pickingMode = PickingMode.Ignore; manifest.Add((streetCards, "card", () => host.StreetCards == null ? "" : string.Join(" ", host.StreetCards.Learned) + " " + string.Join(" ", host.StreetCards.Opens))); }
+            Show(streetCards, on); if (!on) return;
+            ConvoCardsFill(streetCards, ref streetCardKey, c); float ch = streetCards.resolvedStyle.height; if (float.IsNaN(ch) || ch < 1f) ch = 120f; float top = feed != null && feed.resolvedStyle.display != DisplayStyle.None && feed.worldBound.height > 1f ? feed.worldBound.yMin : H - 130f;
+            streetCards.style.top = Mathf.Max(120f, top - ch - 10f); streetCards.style.opacity = Mathf.Clamp01(Mathf.Min((now - host.StreetCardsAt) / 0.15f, (host.StreetCardsUntil - now) / 0.3f)); streetCards.BringToFront();
+        }
+
         string ConvoCardWords() { var c = host.ConvoNow; return c == null ? "" : string.Join(" ", c.Learned) + " " + string.Join(" ", c.Opens); }
 
         /// <summary>Fable's cards as written. Learned leads with the Listen ear, Opens with the kit's pointer; no bar, no kind colour.</summary>
-        void ConvoCardsFill(HandoverHost.Convo c)
+        void ConvoCardsFill(VisualElement into, ref string fillKey, HandoverHost.Convo c)
         {
-            string key = c.Id + "|" + ConvoCardWords(); if (key == convoCardKey) return; convoCardKey = key; convoCards.Clear();
-            void Row(string icon, string line) { var r = E(convoCards); r.style.flexDirection = FlexDirection.Row; r.style.alignItems = Align.Center; r.style.marginTop = 3; r.style.marginBottom = 3; var ic = E(r, null, w: 20, h: 20); ic.style.marginRight = 10; ic.style.flexShrink = 0; Icon(ic, icon, Cream); var t = L(r, "verb-name"); t.style.color = Cream; t.style.fontSize = 18; t.text = line; }
+            string key = c.Id + "|" + string.Join(" ", c.Learned) + " " + string.Join(" ", c.Opens); if (key == fillKey) return; fillKey = key; into.Clear();
+            void Row(string icon, string line) { var r = E(into); r.style.flexDirection = FlexDirection.Row; r.style.alignItems = Align.Center; r.style.marginTop = 3; r.style.marginBottom = 3; var ic = E(r, null, w: 20, h: 20); ic.style.marginRight = 10; ic.style.flexShrink = 0; Icon(ic, icon, Cream); var t = L(r, "verb-name"); t.style.color = Cream; t.style.fontSize = 18; t.text = line; }
             foreach (var l in c.Learned) Row("listen", l);
-            if (c.Learned.Count > 0 && c.Opens.Count > 0) { var hr = E(convoCards, h: 1); hr.style.backgroundColor = new Color(0.6f, 0.47f, 0.30f); hr.style.marginTop = 6; hr.style.marginBottom = 6; }
+            if (c.Learned.Count > 0 && c.Opens.Count > 0) { var hr = E(into, h: 1); hr.style.backgroundColor = new Color(0.6f, 0.47f, 0.30f); hr.style.marginTop = 6; hr.style.marginBottom = 6; }
             foreach (var l in c.Opens) Row("pointer", l);
         }
     }

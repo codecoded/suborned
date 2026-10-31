@@ -11,8 +11,8 @@ namespace Suborned.Play
     /// so do the guard's lines on any Call: nothing else new does. Also the Door price field. All view only.</summary>
     public sealed partial class HandoverHost
     {
-        readonly List<(float due, string speaker, string text)> streetDue = new();
-        void ResetStreet() { streetDue.Clear(); doorRead = (-1, "", null); }
+        readonly List<(float due, string speaker, string text, bool inset)> streetDue = new();
+        void ResetStreet() { streetDue.Clear(); doorRead = (-1, "", null); StreetCards = null; }
 
         PlayText.ConvStreet StreetFor(string code)
         {
@@ -29,13 +29,13 @@ namespace Suborned.Play
         bool PressedStreet(LogLine l)
         {
             var g = Game; if (!g.GuardCallPressed) return false;
-            if (l.Code == "guard.recalled") { streetDue.RemoveAll(d => d.speaker == "guard"); return false; }
+            if (l.Code == "guard.recalled") { streetDue.RemoveAll(d => d.speaker == "guard" && d.inset); return false; }
             if (l.Code == "guard.leaves-cafe") { Beat("guard-leaves-cafe", null, "scout", kind: Feedback.Info); return true; } // never "Break's over" on a run
             if (l.Code != "guard.at-cafe" || StreetFor(l.Code) is not PlayText.ConvStreet u || u.Beats.Count == 0) return false;
             var card = NewCard("city", SceneTitles.TryGetValue("guard-at-cafe", out var st) ? st : "The guard is at the café", "·", "café", WorldOf("guard"), "guard"); card.Event = "guard-at-cafe"; card.Footer = u.Beat; lastEvent = card;
             foreach (var b in u.Beats) card.Lines.Add(new FeedLine { Speaker = b.Speaker, Name = Text.ConvName(b.Speaker), Text = b.Line }); card.Revealed = card.Bubbled = card.Lines.Count;
             if (!(g.GuardPose() is { } gp && CellSees(gp.pos))) { var (badge, tinted) = BeatBadge("call"); PushBeat(u.Beat, badge, tinted, null); } // no agent near: the feed says it
-            float at = Time.unscaledTime; foreach (var b in u.Beats) { streetDue.Add((at, b.Speaker, b.Line)); at += ReadS(b.Line); }
+            float at = Time.unscaledTime; foreach (var b in u.Beats) { streetDue.Add((at, b.Speaker, b.Line, true)); at += ReadS(b.Line); }
             StreetFrame(); return true;
         }
 
@@ -45,11 +45,11 @@ namespace Suborned.Play
             float now = Time.unscaledTime;
             for (int i = 0; i < streetDue.Count; i++)
             {
-                var (due, sp, tx) = streetDue[i]; if (due > now) continue;
+                var (due, sp, tx, inset) = streetDue[i]; if (due > now) continue;
                 streetDue.RemoveAt(i--); int k = Array.IndexOf(OpKeys, sp);
                 Talk.Add(new Said { Born = now, Tick = Game.Tick, Speaker = sp, Name = Text?.ConvName(sp) ?? sp, Text = tx, Agent = k, Kind = Feedback.Info });
-                var b = new Bubble { Speaker = sp, Text = tx, Born = now, Life = ReadS(tx), Tick = Game.Tick, Inset = true };
-                Bubbles.Add(b); SpeechInset(b); while (Bubbles.Count > 12) Bubbles.RemoveAt(0);
+                var b = new Bubble { Speaker = sp, Text = tx, Born = now, Life = ReadS(tx), Tick = Game.Tick, Inset = inset || GuardOnACall(sp) };
+                Bubbles.Add(b); if (b.Inset) SpeechInset(b); while (Bubbles.Count > 12) Bubbles.RemoveAt(0);
             }
         }
 

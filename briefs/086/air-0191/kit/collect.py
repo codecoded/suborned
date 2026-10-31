@@ -36,7 +36,8 @@ for k in order:
         p = plan[r['name']]; end = done.get(k, {}).get(i + 1)
         third = p['view'] == 'follow'; first_follow = third and r['name'] == 'tp-street'
         win = window(end - p['seconds'] - 3, end - 1) if end and not first_follow else None
-        rows.append(dict(launch=k, name=r['name'], view='third person' if third else 'play', sizeRequested=[p['w'], p['h']], size=r['screen'], zoom=None if third else PRESET(k), renderScalePct=SCALE(k), variant=p.get('variant') or None,
+        gf = os.path.join(run, k, f"gpu-{r['name']}.json"); gpu_split = json.load(open(gf)) if os.path.exists(gf) else None
+        rows.append(dict(gpuSplit=gpu_split, launch=k, name=r['name'], view='third person' if third else 'play', sizeRequested=[p['w'], p['h']], size=r['screen'], zoom=None if third else p.get('zoom', PRESET(k)), renderScalePct=SCALE(k), variant=p.get('variant') or None,
             warmth='cold' if k in ('check', 'cold-z10') and len(rows) < 3 else 'warm', unixEnd=end, frames=r['frames'], gpuMs=r['gpuMs'], mainMs=r['mainMs'], renderMs=r['renderMs'], counters=r['counters'], drawn=r['drawn'], status=r['status'], macmon=win, **({'error': r['error']} if r.get('error') else {})))
 frames = None
 pf = os.path.join(run, 'frames', 'proof.json')

@@ -73,6 +73,13 @@
         { "name": "r123-body-safe", "what": "the safe fight read on the body (Glyph G7): the clock run until a fighter is pinned behind cover (else cowering, else kneeling), zoom 14, yaw 30, on his cover point" },
         { "name": "r123-body-cover", "what": "the cover read (Keel's cover tick, briefs/039/keel/sq-ra-h3-pin.script.json at 4:06, tick 2461): rival-3 pinned behind the café's west wall, the Tech kneeling at his pier, zoom 14, yaw 30; taken only when the script is in the tree", "optional": true }
       ]
+    },
+    "r083": {
+      "section": "r083",
+      "source": "unity/Assets/Suborned/Runtime/Play/Proof085Scenes.cs",
+      "frames": [
+        { "name": "r085-conv-cards", "what": "the end of a whole conversation (Listen on Inez): its cards as written, in the kit, the clock held" }
+      ]
     }
   }
 }

@@ -215,11 +215,11 @@ namespace Suborned.Play
 
         void Say(string speaker, string text, Feedback kind = Feedback.Info)
         {
-            if (string.IsNullOrEmpty(text)) return;
+            if (string.IsNullOrEmpty(text) || ConvoQuiet(speaker)) return; // brief 085: what a scene at this landing says, or says better; never the old words in the history
             int agent = Array.IndexOf(OpKeys, speaker);
             Talk.Add(new Said { Born = Time.unscaledTime, Tick = Game.Tick, Speaker = speaker, Name = Text?.Speaker(speaker) ?? speaker, Text = text, Agent = agent, Kind = kind });
             FeedSay(speaker, text);
-            if (!ConvoQuiet(speaker)) PushBubble(speaker, text); // brief 014: speech is a bubble at the speaker; brief 085: not what a scene at this landing says
+            PushBubble(speaker, text); // brief 014: speech is a bubble at the speaker
             while (Talk.Count > 200) Talk.RemoveAt(0);
         }
 

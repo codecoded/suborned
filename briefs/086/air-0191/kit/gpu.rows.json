@@ -1,0 +1,52 @@
+{
+ "schema": "suborned.tplong.resolved/1",
+ "outDir": "set by the command line",
+ "rows": [
+  {
+   "name": "gpu-play-z10",
+   "view": "overhead",
+   "kind": "play",
+   "agent": "scout",
+   "walk": [
+    0,
+    0
+   ],
+   "faceHeading": -1,
+   "yaw": 30,
+   "zoom": 10,
+   "settleSeconds": 1.5,
+   "seconds": 8,
+   "w": 1920,
+   "h": 1080,
+   "clockRunning": true,
+   "hud": true,
+   "vsync": false,
+   "variant": {
+    "gpuSplit": "on"
+   }
+  },
+  {
+   "name": "gpu-tp-worst",
+   "view": "follow",
+   "kind": "third",
+   "agent": "scout",
+   "walk": [
+    -10,
+    -25
+   ],
+   "faceHeading": 90,
+   "yaw": 30,
+   "zoom": 10,
+   "settleSeconds": 1.5,
+   "seconds": 8,
+   "w": 1920,
+   "h": 1080,
+   "clockRunning": true,
+   "hud": true,
+   "vsync": false,
+   "variant": {
+    "gpuSplit": "on"
+   }
+  }
+ ]
+}

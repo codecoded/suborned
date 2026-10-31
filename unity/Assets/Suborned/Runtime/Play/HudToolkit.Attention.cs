@@ -122,7 +122,7 @@ namespace Suborned.Play
         List<Rect> HudRects()
         {
             var l = new List<Rect>();
-            foreach (var e in new[] { column, verbPlate, pill, intel, keys, respPill, nextTip, scope, sheet, chip2, goal, history, armedPlate, feed, ticker, hint, clipBlock })
+            foreach (var e in new[] { column, verbPlate, pill, intel, keys, respPill, nextTip, scope, sheet, chip2, goal, history, armedPlate, feed, ticker, hint, clipBlock, streetCards })
             {
                 if (e == null || e.resolvedStyle.display == DisplayStyle.None || e.resolvedStyle.opacity < 0.05f) continue;
                 var r = e.worldBound; if (r.width <= 1 || r.height <= 1 || float.IsNaN(r.width)) continue;
@@ -184,6 +184,7 @@ namespace Suborned.Play
                 if (rf.Gone < 0f && host.DrawnAt(rf.Id) is Vector3 fw && FigureBox(fw, 1.85f) is Rect fr)
                     agents.Add(rf.OnScreen ? Rect.MinMaxRect(Mathf.Min(fr.xMin, rf.At.x - ReticleD / 2f), Mathf.Min(fr.yMin, rf.At.y - ReticleD - 6f), Mathf.Max(fr.xMax, rf.At.x + ReticleD / 2f), fr.yMax) : fr);
             float now = Time.unscaledTime, dt = Mathf.Min(Time.unscaledDeltaTime, 0.1f); int floating = 0;
+            if (host.Views != null) { var wantViews = new string[medals.Length]; for (int i = 0; i < medals.Length; i++) wantViews[i] = live && i < list.Count ? list[i].View : ""; host.Views.InsetViews(wantViews); } // brief 085: all slots at once, or one slot's letting go undoes another's claim
             for (int i = 0; i < medals.Length; i++)
             {
                 var c = live && i < list.Count ? list[i] : null;
@@ -234,7 +235,6 @@ namespace Suborned.Play
                 else if (md.Img.style.backgroundImage.value.renderTexture != rt) md.Img.style.backgroundImage = new StyleBackground(Background.FromRenderTexture(rt));
                 Show(md.Badge, ak >= 0); if (ak >= 0) Bg(md.Badge, $"portraits/cameo_{c.Op}_normal", Color.white);
                 Border(md.Badge, 2f, Chrome); // art bible: a face in the chrome cameo ring, never a stage or role colour (the stage reads by the ring and the ticks)
-                if (md.Speech) SpeechPlate(md, c, W, H, hud);
                 int plus = ak >= 0 ? host.QueuedBehind(c) : 0; Show(md.Plus, plus > 0); if (plus > 0) Text(md.PlusText, $"+{plus}");
                 md.Ring.MarkDirtyRepaint();
                 // the stem: a 14 px notch on the rim, aimed at the head, never longer than 48 px
@@ -249,7 +249,15 @@ namespace Suborned.Play
                     }
                 }
             }
+            // brief 085: the speech plates last, once every callout has its place, so a plate keeps clear of all of them
+            SpeechPlateHits = 0;
+            if (live) foreach (var md in medals) if (md != null && md.Speech && md.For?.Speech != null && md.Root.resolvedStyle.display != DisplayStyle.None && md.Root.style.display != DisplayStyle.None) SpeechPlate(md, md.For, W, H, hud);
         }
+
+        /// <summary>The proof reads it: callouts a speech plate lies on this frame (0: clear of all of them).</summary>
+        public static int SpeechPlateHits { get; private set; }
+        /// <summary>The proof reads it: the picture of the docked speech inset up now, else null.</summary>
+        public static RenderTexture SpeechPicture { get { if (live == null) return null; for (int i = 0; i < live.medals.Length; i++) { var md = live.medals[i]; if (md != null && md.Speech && md.Docked && md.For != null && md.Root.style.display != DisplayStyle.None) return live.host.Views?.InsetPicture(i); } return null; } }
 
         /// <summary>The proof reads it: a docked speech inset is up.</summary>
         public static bool DockedSpeech { get { if (live == null) return false; foreach (var md in live.medals) if (md != null && md.Speech && md.Root.resolvedStyle.display != DisplayStyle.None) return true; return false; } }
@@ -291,14 +299,16 @@ namespace Suborned.Play
             float w = md.Say.resolvedStyle.width, h = md.Say.resolvedStyle.height; if (float.IsNaN(w) || w < 1f) w = 240f; if (float.IsNaN(h) || h < 1f) h = 26f;
             float off = DockD / 2f + 12f + 8f; var a = md.At; bool leftOfCentre = a.x < W / 2f, aboveCentre = a.y < H / 2f;
             var tries = new[] { new Vector2(leftOfCentre ? a.x + off : a.x - off - w, a.y - h / 2f), new Vector2(a.x - w / 2f, aboveCentre ? a.y + off : a.y - off - h), new Vector2(leftOfCentre ? a.x + off : a.x - off - w, aboveCentre ? a.y + off : a.y - off - h), new Vector2(leftOfCentre ? a.x - off - w : a.x + off, a.y - h / 2f) };
-            var best = tries[0]; bool found = false;
-            foreach (var t in tries)
-            {
-                var q = new Rect(Mathf.Clamp(t.x, ScreenPad, W - w - ScreenPad), Mathf.Clamp(t.y, ScreenPad, H - h - ScreenPad), w, h);
-                bool hit = Vector2.Distance(q.center, a) < DockD / 2f; if (hud != null) foreach (var r in hud) if (r.Overlaps(q)) hit = true;
-                if (!hit) { best = q.position; found = true; break; }
-            }
-            if (!found) best = new Vector2(Mathf.Clamp(best.x, ScreenPad, W - w - ScreenPad), Mathf.Clamp(best.y, ScreenPad, H - h - ScreenPad));
+            var others = new List<Rect>(); foreach (var o in medals) if (o != null && o != md && o.Root.style.display != DisplayStyle.None && o.For != null) { float od = (o.Docked ? DockD : MedalD) + 24f; others.Add(new Rect(o.At.x - od / 2f, o.At.y - od / 2f, od, od)); }
+            bool Hit(Rect q) { if (Vector2.Distance(q.center, a) < DockD / 2f) return true; if (hud != null) foreach (var r in hud) if (r.Overlaps(q)) return true; foreach (var r in others) if (r.Overlaps(q)) return true; return false; }
+            Rect Inside(Vector2 t) => new Rect(Mathf.Clamp(t.x, ScreenPad, W - w - ScreenPad), Mathf.Clamp(t.y, ScreenPad, H - h - ScreenPad), w, h);
+            var best = Inside(tries[0]).position; bool found = false;
+            foreach (var t in tries) if (!Hit(Inside(t))) { best = Inside(t).position; found = true; break; }
+            if (!found) // further out along the edge, the nearest clear place; a callout in the way never loses to the first try
+                for (float d = 20f; d < Mathf.Max(W, H) && !found; d += 20f)
+                    foreach (var t0 in tries) foreach (var sh in new[] { new Vector2(d, 0f), new Vector2(-d, 0f), new Vector2(0f, d), new Vector2(0f, -d) })
+                        if (!found && !Hit(Inside(t0 + sh))) { best = Inside(t0 + sh).position; found = true; }
+            foreach (var r in others) if (r.Overlaps(new Rect(best, new Vector2(w, h)))) SpeechPlateHits++;
             md.Say.style.left = best.x; md.Say.style.top = best.y; float age = Time.unscaledTime - c.Speech.Born; md.Say.style.opacity = Mathf.Clamp01((c.Speech.Life - age) / 0.3f);
             var e = new Rect(best, new Vector2(w, h)); var near = new Vector2(Mathf.Clamp(a.x, e.xMin + 8f, e.xMax - 8f), Mathf.Clamp(a.y, e.yMin + 8f, e.yMax - 8f)); bool sides = a.x < e.xMin || a.x > e.xMax;
             md.SayTail.style.left = (sides ? (a.x < e.xMin ? -4.5f : w - 4.5f) : near.x - e.xMin - 4.5f); md.SayTail.style.top = sides ? near.y - e.yMin - 4.5f : (a.y < e.yMin ? -4.5f : h - 4.5f);
@@ -310,7 +320,7 @@ namespace Suborned.Play
             if (host.Game == null) return;
             WatchRing();
             PersonCueMarks();
-            ClipHud(W, H); // brief 085: before the callouts, which keep off it
+            ClipHud(W, H); StreetCardsHud(W, H); // brief 085: before the callouts, which keep off them
             Callouts(W, H);
         }
     }

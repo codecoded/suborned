@@ -263,11 +263,11 @@ describe('pickSets: which sets the command runs on a folder', () => {
   test('every set the folder has a picture of, the others said as an older build\'s; a named set runs even when the folder lacks it (its pictures are then faults)', () => {
     const only67 = folder(must067.slice(0, 2)), both = folder([...must.slice(0, 1), ...must067.slice(0, 1)]), none = folder([]);
     try {
-      expect(pickSets(only67)).toEqual({ run: ['r067'], skipped: ['r059', 'r123'] });
-      expect(pickSets(both)).toEqual({ run: ['r059', 'r067'], skipped: ['r123'] });
-      expect(pickSets(none)).toEqual({ run: [], skipped: ['r059', 'r067', 'r123'] });
+      expect(pickSets(only67)).toEqual({ run: ['r067'], skipped: ['r059', 'r123', 'r083'] });
+      expect(pickSets(both)).toEqual({ run: ['r059', 'r067'], skipped: ['r123', 'r083'] });
+      expect(pickSets(none)).toEqual({ run: [], skipped: ['r059', 'r067', 'r123', 'r083'] });
       expect(pickSets(none, 'r067')).toEqual({ run: ['r067'], skipped: [] });
-      expect(() => pickSets(none, 'r118')).toThrow(/no set r118 in .*proofset\.json \(r059, r067, r123\)/);
+      expect(() => pickSets(none, 'r118')).toThrow(/no set r118 in .*proofset\.json \(r059, r067, r123, r083\)/);
     } finally { for (const d of [only67, both, none]) rmSync(d, { recursive: true, force: true }); }
   });
 });

@@ -1,0 +1,94 @@
+{
+ "schema": "suborned.tplong.resolved/1",
+ "outDir": "set by the command line",
+ "rows": [
+  {
+   "name": "worst-base-a",
+   "view": "follow",
+   "kind": "third",
+   "agent": "scout",
+   "walk": [
+    -10,
+    -25
+   ],
+   "faceHeading": 90,
+   "yaw": 30,
+   "zoom": 10,
+   "settleSeconds": 1.5,
+   "seconds": 12,
+   "w": 1920,
+   "h": 1080,
+   "clockRunning": true,
+   "hud": true,
+   "vsync": false,
+   "variant": {}
+  },
+  {
+   "name": "worst-oldfar-a",
+   "view": "follow",
+   "kind": "third",
+   "agent": "scout",
+   "walk": [
+    -10,
+    -25
+   ],
+   "faceHeading": 90,
+   "yaw": 30,
+   "zoom": 10,
+   "settleSeconds": 1.5,
+   "seconds": 12,
+   "w": 1920,
+   "h": 1080,
+   "clockRunning": true,
+   "hud": true,
+   "vsync": false,
+   "variant": {
+    "oldFar": "off"
+   }
+  },
+  {
+   "name": "worst-base-b",
+   "view": "follow",
+   "kind": "third",
+   "agent": "scout",
+   "walk": [
+    -10,
+    -25
+   ],
+   "faceHeading": 90,
+   "yaw": 30,
+   "zoom": 10,
+   "settleSeconds": 1.5,
+   "seconds": 12,
+   "w": 1920,
+   "h": 1080,
+   "clockRunning": true,
+   "hud": true,
+   "vsync": false,
+   "variant": {}
+  },
+  {
+   "name": "worst-oldfar-b",
+   "view": "follow",
+   "kind": "third",
+   "agent": "scout",
+   "walk": [
+    -10,
+    -25
+   ],
+   "faceHeading": 90,
+   "yaw": 30,
+   "zoom": 10,
+   "settleSeconds": 1.5,
+   "seconds": 12,
+   "w": 1920,
+   "h": 1080,
+   "clockRunning": true,
+   "hud": true,
+   "vsync": false,
+   "variant": {
+    "oldFar": "off"
+   }
+  }
+ ]
+}

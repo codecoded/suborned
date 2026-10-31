@@ -27,7 +27,7 @@ namespace Suborned.Play
         /// <summary>Brief 072-E (Redline's tplong-072.json): the every-face A/B before a row. everyFace "on" | "off" (EveryFace; off needs the
         /// development build's `today` walls), moduleShadows "proxy" | "lod0" (the modules' L2 proxies on, or the modules cast from their own LODs); 072-F surfaceDetail "on" | "off"
         /// (LookLab: the surface-detail fetches skipped by a global float, same materials); "" = as built.</summary>
-        [Serializable] public class RowVariant { public string everyFace = "", moduleShadows = "", surfaceDetail = ""; }
+        [Serializable] public class RowVariant { public string everyFace = "", moduleShadows = "", surfaceDetail = "", softShadows = "", bloom = "", leavesAlpha = "", shadows = "", oldFar = "", planting = "", upscale = "", gpuSplit = ""; public float renderScalePct; /* brief 086: TpLongVariants, TpLongGpu; all default to as built */ }
         [Serializable] public class FileData { public string schema = "", outDir = ""; public Row[] rows; }
 
         sealed class Res
@@ -67,7 +67,7 @@ namespace Suborned.Play
             if (ef == "off" && (!everyFace || !everyFace.HasToday)) throw new InvalidOperationException("row variant everyFace off, but this player has no `today` walls (EveryFace; development builds only)");
             if (everyFace) everyFace.Set(ef == "on");
             for (int i = 0; i < moduleProxies.Length; i++) if (moduleProxies[i]) moduleProxies[i].Use(ms == "" ? moduleProxiesBuilt[i] : ms == "proxy");
-            LookLab.SetSurfaceDetail(sd == "on");
+            LookLab.SetSurfaceDetail(sd == "on"); TpLongVariants.Apply(v);
         }
 
         IEnumerator Start()
@@ -97,11 +97,11 @@ namespace Suborned.Play
                     if (err != null) { Fail(res, err); allOk = false; Write("running"); continue; }
                     yield return FollowAt(k, row.faceHeading);
                 }
-                h.SetPaused(false);
+                if (row.view != "follow") TpLongVariants.PlaceOverhead(h, row.zoom, row.yaw); h.SetPaused(false); /* brief 086: a play row's zoom and yaw, never read before */
                 yield return new WaitForSecondsRealtime(row.settleSeconds);
                 if (row.view == "follow") { var cam = h.View; if (cam) res.Heading = Mathf.Repeat(cam.transform.eulerAngles.y, 360f); }
-                yield return Time_(res, row.seconds);
-                res.W = Screen.width; res.H = Screen.height;
+                TpLongVariants.BeforeWindow(h.View); if (row.variant?.gpuSplit == "on") StartCoroutine(TpLongGpu.Sample(row.name, row.seconds, dir)); yield return Time_(res, row.seconds);
+                TpLongVariants.CheckBloom(h.View); res.W = Screen.width; res.H = Screen.height;
                 err = Guard(() => Census(res));
                 if (err != null) { Fail(res, err); allOk = false; }
                 h.SetPaused(true);

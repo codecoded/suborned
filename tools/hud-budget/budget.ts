@@ -12,10 +12,10 @@ import { checkPage, type PagePart } from './page';
  *  `briefing`: RETIRED with the street overlay (brief 062 B, gone in v0.27.0); kept only so the archived street-briefing fixtures still judge as they were shot. */
 export type State = 'rest' | 'active' | 'alt' | 'log' | 'briefing' | 'page';
 export interface Rect { x: number; y: number; w: number; h: number }
-export type Kind = 'speech' | 'beat' | 'line' | 'pop' | 'marker' | 'image' | 'hud' | 'pill' | 'lock' | 'chip' | 'altline' | 'bar' | 'pin' | 'paper' | 'band'; // pin, paper, band: the page's (page.ts)
+export type Kind = 'speech' | 'beat' | 'line' | 'pop' | 'marker' | 'image' | 'hud' | 'pill' | 'lock' | 'chip' | 'altline' | 'bar' | 'pin' | 'paper' | 'band' | 'card'; // pin, paper, band: the page's (page.ts); card: a conversation's cards
 /** The kinds whose words the reader takes from the manifest and holds to their own caps (never as running text). A `bar`'s figures stay `hud`: they still face the running-text rules. */
-export type TextKind = 'speech' | 'beat' | 'line' | 'pop' | 'marker' | 'pill' | 'lock' | 'chip' | 'altline';
-export const TEXT_KINDS: readonly Kind[] = ['speech', 'beat', 'line', 'pop', 'marker', 'pill', 'lock', 'chip', 'altline'];
+export type TextKind = 'speech' | 'beat' | 'line' | 'pop' | 'marker' | 'pill' | 'lock' | 'chip' | 'altline' | 'card';
+export const TEXT_KINDS: readonly Kind[] = ['speech', 'beat', 'line', 'pop', 'marker', 'pill', 'lock', 'chip', 'altline', 'card'];
 export interface Element extends Rect {
   kind: Kind; text?: string; facts?: string[]; verbs?: string[];
   /** The page's pieces (state `page`, page.ts): its part (read from text and layout when absent), a pin's number or `car`, the rows as wrapped, and an id a child names as its `parent`. */
@@ -69,6 +69,8 @@ export const LOCK_MAX = { lines: 1, words: 7, way: 5, reason: 2 };
 export const PILL_SLOT = 1;
 /** The done chip (kind `chip`): the learn chip (face, facts, ›, verb pills). Facts at most 3 rows of at most 2 words; verbs one row of at most 3 one-word pills; at most 9 words a chip; at most 2 chips
  *  on screen; `rest` and `active`, and in `alt` never over a ring (an element whose text names a ring). Its rows are a list, not running text: inside a chip the sentence and block rules give way to these caps. [S] */
+/** A conversation's cards (kind `card`, brief 085, conversations.schema.ts): what the player now knows and can do, as written: at most 4 rows of at most 6 words, one panel on screen. */
+export const CARD_MAX = { rows: 4, rowWords: 6, words: 24, onScreen: 1 };
 export const CHIP_MAX = { facts: 3, factWords: 2, verbs: 3, verbWords: 1, words: 9, onScreen: 2, states: ['rest', 'active'] as State[] };
 /** A chip the manifest does not spell (`facts`/`verbs`; today's builds name it only in the parts, `gain-chip-N`): the reader counts its rows, at most 4 (3 facts and the verbs). Its words are
  *  not capped by the reader: at 1080 the verb pills' rims and the plate's screws read as letters (a two-pill row of "Help", "Pressure" reads 10 words), so a reader cap would fail every chip.
@@ -337,6 +339,7 @@ export function analyse(shot: Image, o: Options): Report {
   const lines = (rs: Run[]) => rowsOf(rs).length;
   const named = (b: Run[]) => b.some(r => { const t = owner.get(r)?.text; return !!t && speechWords(t) < wordsOf(t) && !/^\s*[^:]*:\s/.test(t); }) ? 1 : 0; // the conversation bubble sets its speaker's name on a row of its own: a label, not a line of speech
   if (speech.length && stack(speech).some(b => b.length > SPEECH_MAX.lines + named(b) || wordsIn(b) > SPEECH_MAX.words)) failures.push(`a speech line is longer than ${SPEECH_MAX.lines} lines or ${SPEECH_MAX.words} words`);
+  { const cards = els.filter(e => e.kind === 'card' && e.text && e.w > 0); if (cards.length > CARD_MAX.onScreen) failures.push(`${cards.length} card panels on screen (at most ${CARD_MAX.onScreen})`); if (cards.some(e => wordsOf(e.text!) > CARD_MAX.words)) failures.push(`the cards run over ${CARD_MAX.words} words`); }
   if (beats.length) {
     const bs = els.filter(e => e.kind === 'beat'); if (bs.length > BEAT_MAX.onScreen) failures.push(`${bs.length} story beats on screen (at most ${BEAT_MAX.onScreen})`);
     if (beats.some(r => r.words > BEAT_MAX.words)) failures.push(`a story beat is longer than ${BEAT_MAX.words} words`);

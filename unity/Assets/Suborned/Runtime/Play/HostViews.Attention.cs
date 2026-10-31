@@ -200,13 +200,30 @@ namespace Suborned.Play
         public const int InsetLayer0 = 24;
         static readonly Color InsetGround = new(0.969f, 0.957f, 0.925f);
 
+        /// <summary>Brief 085 (the white disc on the guard's second line): which view each slot shows this frame, set before any slot frames. A figure sits on one layer at a time and a slot
+        /// keeps the layers it moved a figure from, so when a callout left and the guard's slot moved from 1 to 0, slot 0 moved him to its layer and slot 1, let go in the same pass, put him back
+        /// on his old one: slot 0's camera saw nothing but cream. Any change lets go of every slot first, then claims afresh; two slots showing one person share the first one's layer.</summary>
+        public void InsetViews(string[] want)
+        {
+            bool same = true; for (int k = 0; k < insets.Length; k++) { var cur = insets[k]?.View ?? ""; if (cur != (want[k] ?? "")) same = false; }
+            if (same) return;
+            for (int k = 0; k < insets.Length; k++) { var s = insets[k] ??= NewInset(k); Restore(s); s.View = ""; }
+            for (int k = 0; k < insets.Length; k++)
+            {
+                var s = insets[k]; string v = want[k] ?? ""; s.View = v; int layer = InsetLayer0 + k;
+                for (int j = 0; j < k; j++) if (insets[j].View == v && v.Length > 0) { layer = -1 - j; break; }
+                if (layer < 0) { s.Cam.cullingMask = 1 << (InsetLayer0 + (-1 - layer)); continue; }
+                s.Cam.cullingMask = 1 << layer;
+                if (v.Length > 0 && things.TryGetValue(v, out var th)) { Move(s, th.t, layer); if (camHeads.TryGetValue(v, out var hh)) Move(s, hh.Head, layer); }
+            }
+        }
+
         /// <summary>The close-up of `view` into slot k's texture (128 px, the watcher alone on cream), or none (null view): its camera on only
         /// while a callout is up.</summary>
         public RenderTexture InsetFrame(int k, string view)
         {
             var s = insets[k] ??= NewInset(k);
-            if (view != s.View) { Restore(s); s.View = view ?? ""; if (s.View.Length > 0 && things.TryGetValue(s.View, out var th)) { Move(s, th.t, InsetLayer0 + k); if (camHeads.TryGetValue(s.View, out var hh)) Move(s, hh.Head, InsetLayer0 + k); } }
-            bool on = s.View.Length > 0 && things.TryGetValue(s.View, out var x) && x.shown && x.t.gameObject.activeInHierarchy;
+            bool on = s.View.Length > 0 && s.View == (view ?? "") && things.TryGetValue(s.View, out var x) && x.shown && x.t.gameObject.activeInHierarchy;
             if (s.Cam.enabled != on) s.Cam.enabled = on;
             if (!on) return null;
             // frame the watcher's face: the camera head's lens, a robot's display, a person's head
