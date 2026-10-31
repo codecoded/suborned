@@ -89,7 +89,7 @@ namespace Suborned.Play
             var c = new Vector2(W / 2f + 60f, H / 2f); var d = raw - c; const float Inset = 64f;
             float k = Mathf.Min((W - c.x - Inset) / Mathf.Max(1e-3f, Mathf.Abs(d.x)), (c.y - Inset) / Mathf.Max(1e-3f, Mathf.Abs(d.y))); var p = c + d * k;
             if (column != null && column.resolvedStyle.display != DisplayStyle.None) { var cb = column.worldBound; if (p.x - 40f < cb.xMax && p.y < cb.yMax + 40f) p.x = cb.xMax + 40f; }
-            if (p.y < 152f && p.x > W - 420f) p.y = 152f; // under the clock bar and the speed pills (and room for the shooters' faces above)
+            if (clipBlock != null && clipBlock.resolvedStyle.display != DisplayStyle.None && clipBlock.worldBound.Contains(p)) p.y = clipBlock.worldBound.yMin - 40f; /* brief 085: clear of the capture clip */ if (p.y < 152f && p.x > W - 420f) p.y = 152f; // under the clock bar and the speed pills (and room for the shooters' faces above)
             float toPanel = W / Mathf.Max(1f, Screen.width);
             foreach (var r in RangePanel.Rects())
             {

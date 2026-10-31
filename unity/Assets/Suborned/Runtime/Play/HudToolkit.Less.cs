@@ -539,11 +539,11 @@ namespace Suborned.Play
         void Bubbles(Camera cam)
         {
             if (host.Loud?.Left != null) { foreach (var (br, _, bt) in bubbleEls) { Show(br, false); Show(bt, false); } return; } // Glyph r1: no speech under the Go hold (it clipped "Heads down.")
-            float now = Time.unscaledTime, life = host.Text?.BubbleS ?? 3f; int max = host.Text?.BubbleMax ?? 2;
+            float now = Time.unscaledTime; int max = host.Text?.BubbleMax ?? 2;
             var live = new List<(HandoverHost.Bubble b, Vector2 at, Vector2 head)>(); bubbleLeads.Clear();
             for (int i = host.Bubbles.Count - 1; i >= 0 && live.Count < max; i--)
             {
-                var b = host.Bubbles[i]; if (now - b.Born > life) break;
+                var b = host.Bubbles[i]; if (now - b.Born > b.Life) continue; /* brief 085: a street line is held to read */
                 if (host.BubbleWorld(b) is not Vector3 w || !Proj(w, out var p)) continue;
                 if (!InPlay(p) || !Proj(w - Vector3.up * 0.45f, out var hv) || !InPlay(hv)) continue; // Glyph N7 (0.2.125): a speaker off screen has no bubble (one at x -198 drew behind the roster); the feed carries the line
                 bool dup = false; foreach (var x in live) if (x.b.Speaker == b.Speaker) dup = true; if (dup) continue; // one bubble a speaker: the newest
@@ -579,7 +579,7 @@ namespace Suborned.Play
                 for (int guard = 0; guard < 4; guard++) { bool hit = false; foreach (var pr in bubbleRects) if (pr.Overlaps(new Rect(x - BubbleGap / 2, y - BubbleGap / 2, w + BubbleGap, h + BubbleGap))) { y = pr.y - h - BubbleGap; hit = true; } if (!hit) break; }
                 bubbleRects.Add(new Rect(x, y, w, h));
                 r.style.left = x; r.style.top = y; bubbleLeads.Add((tail, new Rect(x, y, w, h), head));
-                float age = Time.unscaledTime - b.Born; r.style.opacity = tail.style.opacity = Mathf.Clamp01((life - age) / 0.3f);
+                float age = Time.unscaledTime - b.Born; r.style.opacity = tail.style.opacity = Mathf.Clamp01((b.Life - age) / 0.3f);
             }
         }
 
@@ -1696,7 +1696,7 @@ namespace Suborned.Play
             var placed = new List<Rect>();
             // the HUD groups an edge mark slides clear of (panel space), with 6 px air
             var blocks = new List<Rect>();
-            foreach (var e in new[] { column, verbPlate, pill, keys, scope, historyKey2, goal, respPill, intel, chip2, sheet, beatsBox, plateStub, squadBtn, freeBtn, freePlate })
+            foreach (var e in new[] { column, verbPlate, pill, keys, scope, historyKey2, goal, respPill, intel, chip2, sheet, beatsBox, plateStub, squadBtn, freeBtn, freePlate, clipBlock })
                 if (e != null && e.resolvedStyle.display != DisplayStyle.None && e.worldBound.width > 0) { var b = e.worldBound; float air = e == goal ? 12 : e == pill ? 14 : 6; blocks.Add(Rect.MinMaxRect(b.xMin - air, b.yMin - air, b.xMax + air, b.yMax + air)); } // Glyph 016 r2 G: 12 px clear of the goal line; techwatch fix 1: 14 px clear of the status pill, the HUD groups' margin
             // Glyph N7 (0.2.125): the left column's band is no place for an edge mark (the Squad and weapons buttons stand under the roster): edge marks keep x >= the roster's right + 12
             if (column != null && column.resolvedStyle.display != DisplayStyle.None && column.worldBound.width > 0) blocks.Add(Rect.MinMaxRect(-100f, -100f, column.worldBound.xMax + 12f, H + 100f));

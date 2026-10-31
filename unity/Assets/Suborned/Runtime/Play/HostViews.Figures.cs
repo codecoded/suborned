@@ -11,7 +11,7 @@ namespace Suborned.Play
     /// and draws its weapon in a fight. View only: nothing here is read by the engine. Keys with no figure keep their capsule.</summary>
     public sealed partial class HostViews
     {
-        sealed class Fig { public Transform model, tray; public Animator anim; public string id = "", state = ""; public bool female; public float yaw, yawVel; public float phase; public int sitTick = -1; public bool seated; public Dictionary<string, Transform> bones; public Vector3 lastPos; public float ground; /** brief 024 fire placeholder: shots seen, the last one's time, the draw's start, drawn last frame */ public int shots; public float shotAt = -10f, drawAt = -10f; public bool drawn; /** engine 0.35 (brief 039 B): the posture's clip timing, the body events seen, the peek layer's weight, the additive layers (-2 unread) */ public float coverAt = -10f, flinchSeen = -10f, staggerUntil = -10f, peek; public int reactL = -2, peekL = -2; }
+        sealed class Fig { public int sceneId = -1; public Vector3 sceneOff, sceneDir; public bool sceneStop; /* brief 085: HostViews.Scene */ public Transform model, tray; public Animator anim; public string id = "", state = ""; public bool female; public float yaw, yawVel; public float phase; public int sitTick = -1; public bool seated; public Dictionary<string, Transform> bones; public Vector3 lastPos; public float ground; /** brief 024 fire placeholder: shots seen, the last one's time, the draw's start, drawn last frame */ public int shots; public float shotAt = -10f, drawAt = -10f; public bool drawn; /** engine 0.35 (brief 039 B): the posture's clip timing, the body events seen, the peek layer's weight, the additive layers (-2 unread) */ public float coverAt = -10f, flinchSeen = -10f, staggerUntil = -10f, peek; public int reactL = -2, peekL = -2; }
         /// <summary>Engine 0.35 (brief 039 B): each fighter's posture this tick, by view key (HandoverHost.BodyRead; empty without one input).</summary>
         public readonly Dictionary<string, Posture> Postures = new();
         readonly Dictionary<string, (float at, bool stagger)> bodyShot = new();
@@ -104,8 +104,8 @@ namespace Suborned.Play
         void Figures(float alpha)
         {
             if (figs.Count == 0) return;
-            var g = host.Game; float pace = host.Paused || g.Over ? 0f : host.Speed;
-            var convo = host.ConvoViewKeys(); // brief 067 H (Sky on 0.2.122): a conversation scene holds the clock: nobody walks or runs on the spot (no slide), the two speakers stand idle facing each other
+            var g = host.Game; var convo = host.ConvoViewKeys(); // brief 067 H (Sky on 0.2.122): a conversation scene holds the clock: its speakers stand idle facing each other; brief 085: everyone else carries on, at their own pace whatever the speed (HostViews.Scene)
+            float pace = convo != null ? 1f : host.Paused || g.Over ? 0f : host.Speed;
             carrying.Clear(); if (g.Vale == ValeAt.WithEnforcer) carrying.Add("op/enforcer"); // who has someone on the shoulder this frame
             foreach (var kv in carriers) if (lifted.TryGetValue(kv.Key, out var lc) && lc > 0.5f && things.TryGetValue(kv.Key, out var bt) && bt.shown) carrying.Add(kv.Value);
             for (int pass = 0; pass < 2; pass++) // the carried after everyone else: they sit on their carrier's shoulders as he stands this frame
@@ -118,17 +118,16 @@ namespace Suborned.Play
                 if (t.localScale != Vector3.one) t.localScale = Vector3.one;            // the capsule's cower squash: the figure crouches instead
                 bool down = lifted.TryGetValue(key, out var lift); if (down && t.localRotation != Quaternion.identity) t.localRotation = Quaternion.identity; // laid flat is the capsule's: the figure lies
                 var d = to - from; d.y = 0f; float speed = d.magnitude / 0.1f;          // the engine's step is a tenth of a second
-                bool talking = false, frozen = false;
+                bool talking = false;
                 if (convo is (string ca, string cb))
                 {
-                    speed = 0f; // the clock is held: never a walk or run in place
-                    if (key == ca || key == cb)
-                    {   // Glyph 067 H1: each speaker is set (no turn, no cross-fade) to idle, feet planted, facing the other, under the cut's dip
-                        var other = key == ca ? cb : ca;
-                        if (other != null && other != key && things.TryGetValue(other, out var ov) && ov.shown) { var fd = ov.t.position - t.position; fd.y = 0f; if (fd.sqrMagnitude > 0.01f) f.yaw = Mathf.Atan2(fd.x, fd.z) * Mathf.Rad2Deg; }
+                    if (host.ConvoIsSpeaker(key))
+                    {   // Glyph 067 H1: each speaker is set (no turn, no cross-fade) to idle, feet planted, facing the other; a call's three stand as they stood
+                        speed = 0f; var other = key == ca ? cb : key == cb ? ca : null;
+                        if (!host.ConvoNow.Alone && other != null && other != key && things.TryGetValue(other, out var ov) && ov.shown) { var fd = ov.t.position - t.position; fd.y = 0f; if (fd.sqrMagnitude > 0.01f) f.yaw = Mathf.Atan2(fd.x, fd.z) * Mathf.Rad2Deg; }
                         talking = true;
                     }
-                    else frozen = true; // Glyph 067 H2: everyone else is held as the clock holds them (the pose they had)
+                    else speed = SceneWalk(f, t, d, speed);
                     f.lastPos = t.position;
                 }
                 else if (key == DriveKey)
@@ -184,13 +183,12 @@ namespace Suborned.Play
                 // Pulse's seats (HostSeats): a café customer standing on their chair within their span sits on it, facing the table (Forma's sit)
                 var seat = !down && !carried && !startled && speed < 0.15f && Has(f, "sit") ? SeatNow(key, t.position, g) : null;
                 f.seated = seat is { }; /* Suture's triage: the feet checks read this, not sitTick (negative for 2.3 s for those seated at the opening) */ if (seat is { } st) { f.yaw = st.yaw; f.model.SetPositionAndRotation(st.at, Quaternion.Euler(0f, st.yaw, 0f)); } else f.sitTick = -1;
-                if (frozen) { f.anim.speed = 0f; continue; }
                 string state; float natural = 0f;
                 if (carried) state = Has(f, "carried_drape") ? "carried_drape" : "carried"; // Forma: never the flat "carried" when the drape is there
                 else if (carrying.Contains(key) && Has(f, "carry_shoulder")) state = speed > 0.15f ? "carry_shoulder" : "carry_shoulder_idle"; // nobody runs carrying
                 else if (down) state = "lying";
                 else if (startled && speed < 0.3f) state = "crouch";
-                else if (speed > 2.0f) state = armed ? "run_armed" : key.StartsWith("op/") && Has(f, "run_lean") ? "run_lean" : "run"; // Forma: the cell's double-click run leans (run_lean, 2.72 m/s natural); the crowd and its panic keep run
+                else if (speed > 2.0f || key == "guard" && g.GuardRunningBack && speed > 0.15f) state = armed ? "run_armed" : key.StartsWith("op/") && Has(f, "run_lean") ? "run_lean" : "run"; // Forma: the cell's double-click run leans (run_lean, 2.72 m/s natural); the crowd and its panic keep run
                 else if (speed > 0.15f) state = phases.TryGetValue(key, out var pw) && pw is "to table" or "from table" && Has(f, "serve_walk") ? "serve_walk" : f.female && !((speed > WalkFMaxS || f.state == "walk" && speed > WalkFMaxS - 0.3f) && Has(f, "walk")) ? "walk_f" : "walk"; // Forma: walk_armed is a 2.44 m/s clip, slow motion at a walk; round 2: the tray carried to and from the table; engine 0.34.0: walk_f (0.99 m/s) only up to WalkFMaxS
                 else if (phases.TryGetValue(key, out var ph) && ph == "serving") state = Has(f, "serve") ? "serve" : "talk"; // brief 022: at the table she serves (faces it), the tray on her hand
                 else if (phases.TryGetValue(key, out var pt) && pt == "together") state = "talk"; // with the guard they talk

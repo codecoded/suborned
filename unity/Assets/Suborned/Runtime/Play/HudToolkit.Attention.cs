@@ -73,7 +73,7 @@ namespace Suborned.Play
 
         // ---------------------------------------------------------------- the callouts
 
-        sealed class Medal { public VisualElement Root, Disc, Img, Kit, KitIcon, Badge, Plus; public Label PlusText; public Paint Ring; public HandoverHost.Callout For; public Vector2 At; public bool Placed, Docked; public int Spot = -1; public Vector2 Toward; public int Stage; }
+        sealed class Medal { public VisualElement Root, Disc, Img, Kit, KitIcon, Badge, Plus, Say, SayTail; public bool Speech; public Label PlusText, SayText; public Paint Ring; public HandoverHost.Callout For; public Vector2 At; public bool Placed, Docked; public int Spot = -1; public Vector2 Toward; public int Stage; }
         readonly Medal[] medals = new Medal[4];
         const float MedalD = 72f, DockD = 56f, MedalLift = 70f, ScreenPad = 12f;
 
@@ -110,7 +110,7 @@ namespace Suborned.Play
             }
             // the ticks over the badge: 1 noticed, 2 wary, 3 reporting
             var b = new Vector2(8 + MedalD - 12, 8 + MedalD - 10);
-            for (int i = 0; i < md.Stage; i++) { p.fillColor = md.Stage == 3 ? Red : Cream; p.BeginPath(); p.Arc(b + new Vector2(-14 + i * 6, -16), 2.2f, Deg(0), Deg(360)); p.Fill(); }
+            for (int i = 0; i < md.Stage && !md.Speech; i++) { p.fillColor = md.Stage == 3 ? Red : Cream; p.BeginPath(); p.Arc(b + new Vector2(-14 + i * 6, -16), 2.2f, Deg(0), Deg(360)); p.Fill(); }
             if (md.Docked && md.Toward.sqrMagnitude > 0.01f)
             {   // the chevron on the edge side, pointing at the watcher
                 var dir = md.Toward.normalized; var tip = c + dir * (R + 12f); var side = new Vector2(-dir.y, dir.x) * 6f; var bk = c + dir * (R + 5f);
@@ -122,7 +122,7 @@ namespace Suborned.Play
         List<Rect> HudRects()
         {
             var l = new List<Rect>();
-            foreach (var e in new[] { column, verbPlate, pill, intel, keys, respPill, nextTip, scope, sheet, chip2, goal, history, armedPlate, feed, ticker, hint })
+            foreach (var e in new[] { column, verbPlate, pill, intel, keys, respPill, nextTip, scope, sheet, chip2, goal, history, armedPlate, feed, ticker, hint, clipBlock })
             {
                 if (e == null || e.resolvedStyle.display == DisplayStyle.None || e.resolvedStyle.opacity < 0.05f) continue;
                 var r = e.worldBound; if (r.width <= 1 || r.height <= 1 || float.IsNaN(r.width)) continue;
@@ -187,7 +187,7 @@ namespace Suborned.Play
             for (int i = 0; i < medals.Length; i++)
             {
                 var c = live && i < list.Count ? list[i] : null;
-                medals[i] ??= NewMedal(i); var md = medals[i];
+                medals[i] ??= NewMedal(i); var md = medals[i]; if (md.Say != null && (c?.Speech == null)) Show(md.Say, false);
                 var rt = host.Views?.InsetFrame(i, c?.View);
                 if (c == null || rt == null) { Show(md.Root, false); md.For = null; md.Placed = false; continue; }
                 if (md.For != c) { md.For = c; md.Placed = false; md.Spot = -1; }
@@ -198,6 +198,7 @@ namespace Suborned.Play
                 var wbox = seen ? FigureBox(feet, tall, c.View.StartsWith("camera/") ? 10f : 14f) ?? new Rect(head, Vector2.zero) : new Rect();
                 int ak = c.Op.Length > 0 ? (int)Op.Parse(c.Op) : -1; Vector2 agentMid = ak >= 0 && agentAt[ak].HasValue ? agentAt[ak].Value : head;
                 float away = agentMid.x <= head.x ? 1f : -1f;
+                md.Speech = c.Speech != null; if (md.Speech && seen) { Show(md.Root, false); if (md.Say != null) Show(md.Say, false); md.Placed = false; continue; } // brief 085: in view, the ordinary bubble says it
                 Vector2 want = default; bool dock = !seen || floating >= 3;
                 if (!dock)
                 {
@@ -207,7 +208,7 @@ namespace Suborned.Play
                     else { md.Spot = -1; for (int s = 0; s < 8; s++) if (Fits(s, out var at)) { md.Spot = s; want = at; break; } }
                     if (md.Spot < 0) dock = true;
                 }
-                if (dock && !seen && FightCues.Edge) { Show(md.Root, false); md.Placed = false; continue; } /* brief 084: off screen, the one edge list has it */
+                if (dock && !seen && FightCues.Edge && !md.Speech) { Show(md.Root, false); md.Placed = false; continue; } /* brief 084: off screen, the one edge list has it */
                 md.Docked = dock;
                 if (dock)
                 {   // the edge nearest the watcher: from the screen's centre toward it, inset 12 px, clear of the roster column
@@ -217,6 +218,7 @@ namespace Suborned.Play
                     float R = DockD / 2f + ScreenPad, kx = Mathf.Abs(dir.x) < 1e-4f ? float.MaxValue : (W / 2f - R) / Mathf.Abs(dir.x), ky = Mathf.Abs(dir.y) < 1e-4f ? float.MaxValue : (H / 2f - R) / Mathf.Abs(dir.y);
                     want = sc + dir * Mathf.Min(kx, ky);
                     if (column != null && column.resolvedStyle.display != DisplayStyle.None) { var cb = column.worldBound; if (want.x - DockD / 2f < cb.xMax + ScreenPad && want.y > cb.yMin - DockD / 2f && want.y < cb.yMax + DockD / 2f) want.x = cb.xMax + ScreenPad + DockD / 2f; }
+                    want = DockSlide(want, W, H, hud, claimed); // Glyph section 2: a dock never lands under the clock or inside the feed, and never on another dock
                     md.Toward = (seen ? head : sc + dir * 4000f) - want;
                 }
                 else floating++;
@@ -230,9 +232,10 @@ namespace Suborned.Play
                 bool cam = c.View.StartsWith("camera/"); Show(md.Disc, !cam); Show(md.Kit, cam);
                 if (cam) Icon(md.KitIcon, "eye_open", Red);
                 else if (md.Img.style.backgroundImage.value.renderTexture != rt) md.Img.style.backgroundImage = new StyleBackground(Background.FromRenderTexture(rt));
-                if (ak >= 0) Bg(md.Badge, $"portraits/cameo_{c.Op}_normal", Color.white);
+                Show(md.Badge, ak >= 0); if (ak >= 0) Bg(md.Badge, $"portraits/cameo_{c.Op}_normal", Color.white);
                 Border(md.Badge, 2f, Chrome); // art bible: a face in the chrome cameo ring, never a stage or role colour (the stage reads by the ring and the ticks)
-                int plus = host.QueuedBehind(c); Show(md.Plus, plus > 0); if (plus > 0) Text(md.PlusText, $"+{plus}");
+                if (md.Speech) SpeechPlate(md, c, W, H, hud);
+                int plus = ak >= 0 ? host.QueuedBehind(c) : 0; Show(md.Plus, plus > 0); if (plus > 0) Text(md.PlusText, $"+{plus}");
                 md.Ring.MarkDirtyRepaint();
                 // the stem: a 14 px notch on the rim, aimed at the head, never longer than 48 px
                 if (!dock)
@@ -248,12 +251,66 @@ namespace Suborned.Play
             }
         }
 
+        /// <summary>The proof reads it: a docked speech inset is up.</summary>
+        public static bool DockedSpeech { get { if (live == null) return false; foreach (var md in live.medals) if (md != null && md.Speech && md.Root.resolvedStyle.display != DisplayStyle.None) return true; return false; } }
+
+        /// <summary>Glyph section 2: slides a dock along its edge, the least it can, clear of the HUD and of every other callout. Pure, so hostlogic can test it. No clear place on that edge: where it was.</summary>
+        public static Vector2 DockSlide(Vector2 want, float W, float H, List<Rect> hud, List<Vector2> claimed)
+        {
+            float R = DockD / 2f, clear = R + 12f; // the chevron stands 12 px past the rim
+            bool sideEdge = want.x < clear + ScreenPad + 1f || want.x > W - clear - ScreenPad - 1f;
+            bool Fits(Vector2 c)
+            {
+                if (c.x < clear || c.y < clear || c.x > W - clear || c.y > H - clear) return false;
+                if (hud != null) foreach (var r in hud) { float dx = Mathf.Max(r.xMin - c.x, 0f, c.x - r.xMax), dy = Mathf.Max(r.yMin - c.y, 0f, c.y - r.yMax); if (dx * dx + dy * dy < R * R) return false; }
+                foreach (var o in claimed) if (Vector2.Distance(o, c) < DockD + 6f) return false;
+                return true;
+            }
+            if (Fits(want)) return want;
+            float span = sideEdge ? H : W;
+            for (float d = 8f; d < span; d += 8f)
+                foreach (var s in new[] { 1f, -1f })
+                {
+                    var c = sideEdge ? new Vector2(want.x, want.y + s * d) : new Vector2(want.x + s * d, want.y);
+                    if (Fits(c)) return c;
+                }
+            return want;
+        }
+
+        /// <summary>The line beside a docked speech inset: the normal speech plate, its tail to the inset, turned in from the edge and clear of the HUD.</summary>
+        void SpeechPlate(Medal md, HandoverHost.Callout c, float W, float H, List<Rect> hud)
+        {
+            if (md.Say == null)
+            {
+                md.Say = E(marks, "s-plate_light"); md.Say.style.position = Position.Absolute; md.Say.style.paddingLeft = 10; md.Say.style.paddingRight = 10; md.Say.style.paddingTop = 4; md.Say.style.paddingBottom = 5; md.Say.style.maxWidth = 320;
+                md.SayText = L(md.Say, "card-body"); md.SayText.style.whiteSpace = WhiteSpace.Normal; md.SayText.style.color = Ink; md.SayText.style.fontSize = 13;
+                md.SayTail = E(md.Say, null, 0, 0, 9, 9); md.SayTail.style.rotate = new Rotate(45); md.SayTail.style.backgroundColor = new Color(0.98f, 0.95f, 0.89f);
+                var mine = md; manifest.Add((md.Say, "speech", () => mine.SayText.text));
+            }
+            Show(md.Say, true); md.Say.BringToFront(); Text(md.SayText, c.Speech.Text);
+            float w = md.Say.resolvedStyle.width, h = md.Say.resolvedStyle.height; if (float.IsNaN(w) || w < 1f) w = 240f; if (float.IsNaN(h) || h < 1f) h = 26f;
+            float off = DockD / 2f + 12f + 8f; var a = md.At; bool leftOfCentre = a.x < W / 2f, aboveCentre = a.y < H / 2f;
+            var tries = new[] { new Vector2(leftOfCentre ? a.x + off : a.x - off - w, a.y - h / 2f), new Vector2(a.x - w / 2f, aboveCentre ? a.y + off : a.y - off - h), new Vector2(leftOfCentre ? a.x + off : a.x - off - w, aboveCentre ? a.y + off : a.y - off - h), new Vector2(leftOfCentre ? a.x - off - w : a.x + off, a.y - h / 2f) };
+            var best = tries[0]; bool found = false;
+            foreach (var t in tries)
+            {
+                var q = new Rect(Mathf.Clamp(t.x, ScreenPad, W - w - ScreenPad), Mathf.Clamp(t.y, ScreenPad, H - h - ScreenPad), w, h);
+                bool hit = Vector2.Distance(q.center, a) < DockD / 2f; if (hud != null) foreach (var r in hud) if (r.Overlaps(q)) hit = true;
+                if (!hit) { best = q.position; found = true; break; }
+            }
+            if (!found) best = new Vector2(Mathf.Clamp(best.x, ScreenPad, W - w - ScreenPad), Mathf.Clamp(best.y, ScreenPad, H - h - ScreenPad));
+            md.Say.style.left = best.x; md.Say.style.top = best.y; float age = Time.unscaledTime - c.Speech.Born; md.Say.style.opacity = Mathf.Clamp01((c.Speech.Life - age) / 0.3f);
+            var e = new Rect(best, new Vector2(w, h)); var near = new Vector2(Mathf.Clamp(a.x, e.xMin + 8f, e.xMax - 8f), Mathf.Clamp(a.y, e.yMin + 8f, e.yMax - 8f)); bool sides = a.x < e.xMin || a.x > e.xMax;
+            md.SayTail.style.left = (sides ? (a.x < e.xMin ? -4.5f : w - 4.5f) : near.x - e.xMin - 4.5f); md.SayTail.style.top = sides ? near.y - e.yMin - 4.5f : (a.y < e.yMin ? -4.5f : h - 4.5f);
+        }
+
         /// <summary>Per frame, after the street marks: the Watch ring, the person marks, the callouts.</summary>
         void AttentionHud(float W, float H)
         {
             if (host.Game == null) return;
             WatchRing();
             PersonCueMarks();
+            ClipHud(W, H); // brief 085: before the callouts, which keep off it
             Callouts(W, H);
         }
     }

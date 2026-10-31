@@ -306,11 +306,59 @@ public class Words
     [Test] public void TheTextIsFableNotThePlaceholder() => Assert.That(PlayText.Load().Source, Does.StartWith("text.json"));
 }
 
+
+/// <summary>Brief 085: which scene a landing plays, read from the engine (Fable's table), on the routes' real orders; what the read-time, the Door field and the docks do. No views here, so the cutaway itself falls to bubbles: Proof085Scenes plays it.</summary>
+public class Conversations
+{
+    static List<string> Play(string route, int until)
+    {
+        var h = Host.Fresh(); h.controls.conversations = ConversationScenes.Always; Host.Set(h, "HintsOn", false); /* a learned hint writes PlayerPrefs, which has no store here */ var orders = Script.Parse(File.ReadAllText(System.IO.Path.Combine(Root.Path, "contracts/missions/handover/routes", route + ".json"))).Orders.Select((o, i) => (o, i)).OrderBy(p => p.o.Tick).ThenBy(p => p.i).Select(p => p.o).ToList();
+        foreach (var o in orders) { if (o.Tick >= until || h.Game.Over) break; if (o.Tick > h.Game.Tick) h.RunTo(o.Tick); if (o.Do is "watch" or "listen" or "turn" or "call" && o.Op != "cell") h.GiveScripted(o); else h.Issue(o); Host.Call(h, "Track"); }
+        h.RunTo(until); Assert.That(h.Fault, Is.Null, h.Status); return h.ConvoPicks;
+    }
+    [Test] public void TheHelpRoutePlaysEachScene() { var p = Play("route-a", 1300); Assert.That(p, Is.EqualTo(new[] { "listen-inez", "help-inez-1", "help-inez-2", "call-inez" }), string.Join(",", p)); }
+    [Test] public void ThePressureRoutePlaysItsScenes() { var p = Play("route-a-pressure", 1600); Assert.That(p, Does.Contain("listen-inez")); Assert.That(p, Does.Contain("pressure-inez")); Assert.That(p, Does.Contain("call-inez-pressure"), string.Join(",", p)); Assert.That(p, Does.Not.Contain("call-inez")); }
+    [Test] public void ThePayRoutePlaysTheDriver() { var p = Play("route-b", 1600); Assert.That(p, Does.Contain("pay-driver"), string.Join(",", p)); }
+    [Test] public void OtherTemperamentsGetNoConversation()
+    {
+        var t = PlayText.Load(); Assert.That(t.LookupConversation(new PlayText.ConvQuery { Verb = "help", About = "waitress", Temperament = "mercenary", Outcome = "turned", Helped = true }), Is.Null);
+        Assert.That(t.LookupConversation(new PlayText.ConvQuery { Verb = "listen", About = "waitress", Temperament = "fearful", Turned = true }), Is.Null, "a turned Inez's Listen keeps today's lines");
+        Assert.That(t.LookupConversation(new PlayText.ConvQuery { Verb = "ask", About = "waitress", Temperament = "fearful" }), Is.Null);
+        Assert.That(t.LookupConversation(new PlayText.ConvQuery { Verb = "help", About = "waitress", Temperament = "fearful", Outcome = "turned", Helped = true }).Id, Is.EqualTo("help-inez-2"), "the engine's outcome picks the visit");
+        Assert.That(t.ClipService, Is.EqualTo("Service door")); Assert.That(t.DoorField, Is.EqualTo("Door {clock}"));
+    }
+    [Test] public void AnInterruptedActPlaysNoScene()
+    {
+        var h = Host.Fresh(); h.controls.conversations = ConversationScenes.Always; h.GiveWatchScripted(OpId.Scout, "waitress"); Assert.That(Host.Until(h, () => h.Game.Ops[0].Busy != null)); h.CancelAgent(0, null); Host.Tick(h, 5);
+        Assert.That(h.ConvoPicks, Is.Empty);
+    }
+    [Test] public void ALineIsHeldToRead()
+    {
+        Assert.That(HandoverHost.ReadS("Short."), Is.EqualTo(1f)); Assert.That(HandoverHost.ReadS(new string('x', 64)), Is.EqualTo(4f).Within(0.01f));
+    }
+    [Test] public void TheDoorFieldRounds() { Assert.That(HandoverHost.DoorWords(989), Is.EqualTo("1:40")); Assert.That(HandoverHost.DoorWords(1740), Is.EqualTo("2:50")); }
+    [Test] public void TheDoorPriceShowsOnPressureAndAfterItOnTheCall()
+    {
+        var h = Host.Fresh(); h.Select(OpId.Fixer, false); var g = h.Game;
+        var field = HudModel.FieldOrder.ToList(); Assert.That(field.IndexOf("door"), Is.EqualTo(field.IndexOf("trail") + 1));
+        Assert.That(h.DoorClock(new Order { Op = "fixer", Do = "turn", Target = "waitress", Approach = "pressure" }), Does.StartWith("1:").Or.StartWith("2:"), "pressure on Inez");
+        Assert.That(h.DoorClock(new Order { Op = "fixer", Do = "call", Target = "waitress" }), Is.Null, "a Call with no Pressure remembered");
+        Assert.That(h.DoorClock(new Order { Op = "fixer", Do = "turn", Target = "driver", Approach = "pressure" }), Is.Null, "the driver has no lover to call");
+    }
+    [Test] public void ADockSlidesClearOfTheHudAndOfAnotherDock()
+    {
+        var hud = new List<Rect> { new Rect(1500, 900, 420, 180) }; var at = HudToolkit.DockSlide(new Vector2(1600, 1030), 1920, 1080, hud, new List<Vector2>()); Assert.That(new Rect(1500 - 27, 900 - 27, 420 + 54, 180 + 54).Contains(at), Is.False, at.ToString());
+        var free = new Vector2(1000, 40); var a = HudToolkit.DockSlide(free, 1920, 1080, null, new List<Vector2>()); Assert.That(a, Is.EqualTo(free)); var b = HudToolkit.DockSlide(free, 1920, 1080, null, new List<Vector2> { a }); Assert.That(Vector2.Distance(a, b), Is.GreaterThanOrEqualTo(62f), "two docks in the same direction");
+    }
+}
+
+public static class Root { public static string Path = ""; }
+
 public static class Runner
 {
     public static int Main(string[] args)
     {
-        var root = args[0]; var filter = args.Length > 1 ? args[1] : "";
+        var root = args[0]; Root.Path = root; var filter = args.Length > 1 ? args[1] : "";
         HostLogicShim.Streaming = System.IO.Path.Combine(root, "unity/Assets/StreamingAssets"); HostLogicShim.Data = System.IO.Path.Combine(root, "unity/Assets"); HostLogicShim.Persistent = System.IO.Path.Combine(root, "out/batch/hostlogic/persistent"); Directory.CreateDirectory(HostLogicShim.Persistent);
         HostLogicShim.ScreenW = 1920; HostLogicShim.ScreenH = 1080; HostLogicShim.Delta = 0.016f;
         var sw = Stopwatch.StartNew(); int pass = 0, fail = 0, skip = 0;

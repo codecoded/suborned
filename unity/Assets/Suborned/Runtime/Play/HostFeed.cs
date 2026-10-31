@@ -104,13 +104,12 @@ namespace Suborned.Play
                         }
                         if (c.Scene != null) { c.SceneN = Text.SceneUse(c.Scene); Fill(c, Text.PlayScene(c.Scene, c.SceneN)); }
                     }
-                    ConvoAct(k, verb, target, c); // brief 032: the act's first tick (its scene decides at the next frame)
                 }
                 if (c == null || !c.Live) continue;
                 if (d.Phase == "acting")
                 {
                     c.Progress = d.Progress; c.TicksLeft = d.TicksLeft;
-                    if (c.Scene != null) // beats by progress; an approach stops before the reply
+                    if (c.Scene != null && !ConvoVerb(c.Verb)) // a Watch's beats by progress; brief 085: a conversation's words wait for the landing, whole (HostConvo.Lines)
                     {
                         int lead = c.Lines.FindIndex(l => l.Reply); if (lead < 0) lead = Math.Max(0, c.Lines.Count - 1);
                         c.Revealed = Math.Max(c.Revealed, Math.Min(lead, 1 + (int)((long)Math.Max(0, d.Progress) * lead / 1000)));
@@ -139,6 +138,7 @@ namespace Suborned.Play
             c.Footer = c.Scene != null ? Result(c.Scene.Result, c) : FooterOf(c);
             if (c.Verb == "watch" && IsRole(c.Target) && Game.WatcherKind(c.Target).Length == 0) c.Footer = MoodFooter(c.Target); // item 23 (brief 054 §7): a person's Watch reads their mood: "Inez · uneasy · pressure likely"; nothing new, no footer
             if (c.Verb is "watch" or "listen" && c.Footer.Length > 0) c.Tone = Feedback.Ok;
+            if (ConvoVerb(c.Verb)) { if (ActLanded(c)) ConvoLanded(c.Agent, c.Verb, c.Target, c); else ConvoCutShort(c); } // brief 085: when the act lands, its whole scene; interrupted, none
         }
 
         /// <summary>How the last approach on a person went, from the engine's log (turn.&lt;approach&gt;.&lt;outcome&gt;; reported = suspicious).</summary>
@@ -253,7 +253,7 @@ namespace Suborned.Play
             if (sc != null) { c.Scene = sc; c.SceneN = Text.SceneUse(sc); Fill(c, Text.PlayScene(sc, c.SceneN)); c.Footer = Result(sc.Result, c); SceneBeat(sc, "call"); }
             else c.Footer = $"{Cap(Name(role))} acts on the call.";
             c.Revealed = 1; c.NextBeatAt = Game.Tick + 15; c.Tone = Feedback.Ok;
-            ConvoAct((int)OpId.Fixer, "call", role, c); // brief 032
+            ConvoLanded((int)OpId.Fixer, "call", role, c); // brief 085: a call lands at once
         }
 
         /// <summary>A call the contact's lover refuses (the engine's summon-* codes): a call card with Fable's summon-refused lines from both
@@ -297,7 +297,7 @@ namespace Suborned.Play
         /// keeps the same sight rule: an event whose scenes are all in-sight only, or that happens at a place, makes no card when no agent sees it.</summary>
         void FeedEvent(LogLine l)
         {
-            if (l.Code == "fight.safe" && CrewWipedAt(l.Tick)) { quiet = l; return; } // engine 0.33.0: every rival killed or tied, the safe fight is over at its start (rivals.wiped has the card): no "they wait at the car"
+            if (PressedStreet(l)) { quiet = l; return; } /* brief 085: a pressed call's arrival (HostConvo.Street) */ if (l.Code == "fight.safe" && CrewWipedAt(l.Tick)) { quiet = l; return; } // engine 0.33.0: every rival killed or tied, the safe fight is over at its start (rivals.wiped has the card): no "they wait at the car"
             if (CrewBeatCodes.Contains(l.Code)) { bool again = crewCodeAt.TryGetValue(l.Code, out var was) && l.Tick - was < CrewBeatS * Game.Hz; crewCodeAt[l.Code] = l.Tick; if (again) return; } // one card a beat, not one a member
             if (l.Code == "rivals.for-car") HolderPulseAt = Time.unscaledTime; // engine 0.34.0 (M067-K3 a): the held car's holder marks pulse once as the crew goes for Vale (an existing motion cue, no new mark; Glyph's cue to come)
             bool hidden = false;

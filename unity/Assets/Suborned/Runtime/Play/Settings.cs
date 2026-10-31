@@ -26,7 +26,7 @@ namespace Suborned.Play
         [Serializable]
         public sealed class GameplayS
         {
-            public int clickScheme = (int)ControlPreset.HoldActs; public bool planTogether = true; public bool hints = true; public int defaultSpeed = 1; public int conversations = (int)ConversationScenes.FirstTime;
+            public int clickScheme = (int)ControlPreset.HoldActs; public bool planTogether = true; public bool hints = true; public int defaultSpeed = 1; public int conversations = (int)ConversationScenes.FirstEachScene;
             public bool followLock; public bool commanderHoldFire; public bool actionPlate; public bool quickAction; public bool clickActs = true; public int aimMode; public bool tpRightFires = true;
         }
         /// <summary>One changed binding: the action's name, its keys (Key names; keys[0] the primary), its mods.</summary>

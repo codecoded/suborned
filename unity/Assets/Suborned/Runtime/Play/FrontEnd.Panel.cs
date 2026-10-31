@@ -324,7 +324,7 @@ namespace Suborned.Play
                     Switch("Hints", () => g.hints, v => { g.hints = v; Save(); });
                     var speeds = new[] { 1, 2, 4, 8 };
                     Choice("Default game speed", new[] { "×1", "×2", "×4", "×8" }, () => Math.Max(0, Array.IndexOf(speeds, g.defaultSpeed)), i => { g.defaultSpeed = speeds[i]; Save(); });
-                    Choice("Conversations", new[] { "Always", "First time", "Never" }, () => g.conversations, i => { g.conversations = i; Save(); });
+                    Choice("Conversations", new[] { "Always", "First time for each scene", "Never" }, () => g.conversations, i => { g.conversations = i; Save(); });
                     GroupHead("Fights");
                     Choice("Agents near you", new[] { "Fire with you", "Lock your target" }, () => g.followLock ? 1 : 0, i => { g.followLock = i == 1; Save(); });
                     Choice("Map fire", new[] { "Until down", "While held" }, () => g.commanderHoldFire ? 1 : 0, i => { g.commanderHoldFire = i == 1; Save(); }, () => !Hold());

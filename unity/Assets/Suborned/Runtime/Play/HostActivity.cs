@@ -219,7 +219,7 @@ namespace Suborned.Play
             int agent = Array.IndexOf(OpKeys, speaker);
             Talk.Add(new Said { Born = Time.unscaledTime, Tick = Game.Tick, Speaker = speaker, Name = Text?.Speaker(speaker) ?? speaker, Text = text, Agent = agent, Kind = kind });
             FeedSay(speaker, text);
-            PushBubble(speaker, text); // brief 014: speech is a bubble at the speaker
+            if (!ConvoQuiet(speaker)) PushBubble(speaker, text); // brief 014: speech is a bubble at the speaker; brief 085: not what a scene at this landing says
             while (Talk.Count > 200) Talk.RemoveAt(0);
         }
 
@@ -265,7 +265,6 @@ namespace Suborned.Play
             string speaker = Op.Name(by), verb = VerbOf(o);
             if (!Beat("ack", verb, speaker, who: Name(o.Target), kind: Feedback.Ok))
                 Say(speaker, w != null ? $"Heading to {(w.Place.Length > 0 ? PlaceName(w.Place) : Name(o.Target))}." : "On it.", Feedback.Ok);
-            ConvoHeard((int)by, false); // brief 032: the scene shows the same ack
             if (w == null) SayArrive(by, o);
             if (o.Do == "call") FeedCall(o.Target);
         }
@@ -274,7 +273,7 @@ namespace Suborned.Play
         void SayArrive(OpId by, Order o)
         {
             var verb = VerbOf(o);
-            if (Text != null && Text.Exchange.TryGetValue(verb, out var ex) && ex.Contains("arrive")) { arriveSaying = true; try { Beat("arrive", verb, Op.Name(by), who: Name(o.Target)); } finally { arriveSaying = false; } ConvoHeard((int)by, true); } // Fable §6: arrive is history only (brief 032: the scene shows it)
+            if (Text != null && Text.Exchange.TryGetValue(verb, out var ex) && ex.Contains("arrive")) { arriveSaying = true; try { Beat("arrive", verb, Op.Name(by), who: Name(o.Target)); } finally { arriveSaying = false; } } // Fable §6: arrive is history only (brief 032: the scene shows it)
         }
 
         /// <summary>The refusal said for the player: the text's lock line for its code, filled (a port of `fillLock`); else the engine's words.</summary>

@@ -14,7 +14,7 @@ namespace Suborned.Play
     /// `bun tools/sim/unity.ts` validates and copies to StreamingAssets/sim/text.json. Until that file lands the placeholders below stand in
     /// (same shape), and anything the file lacks falls back to them. Nothing is generated at runtime: `Lookup` and `PickIndex` are ports of
     /// the schema's `lookup` and `pickIndex` (fnv1a32 over UTF-16 code units, as JS charCodeAt), so the same run shows the same words.</summary>
-    public sealed class PlayText
+    public sealed partial class PlayText
     {
         public sealed class ActionText
         {
@@ -232,7 +232,7 @@ namespace Suborned.Play
                     Hints2.Add(new Hint { Id = kv.Key, Priority = pr, Line = S(v, "line") ?? "", Short = S(v, "short") ?? "", Agent = S(v, "agent") ?? "", Verb = S(v, "verb") ?? "", Trigger = S(v, "trigger") ?? "", Rings = S(v, "rings") ?? "", GoneWhen = S(v, "goneWhen") ?? "", DoorLine = v.Opt("door") is JNode hdl ? S(hdl, "line") ?? "" : "", DoorShort = v.Opt("door") is JNode hds ? S(hds, "short") ?? "" : "" });
                 }
             Hints2.Sort((a, b) => a.Priority.CompareTo(b.Priority));
-            if (n.Opt("scenes")?.Opt("items") is JNode sci)
+            LoadConversations(n); if (n.Opt("scenes")?.Opt("items") is JNode sci)
                 foreach (var it in sci.Items)
                 {
                     var sc = new Scene { Kind = S(it, "kind") ?? "", Verb = S(it, "verb"), About = S(it, "about"), Outcome = S(it, "outcome"), Temperament = S(it, "temperament"), Event = S(it, "event"), Sight = S(it, "sight"), Result = S(it, "result") ?? "", Beat = S(it, "beat") };

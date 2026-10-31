@@ -35,7 +35,7 @@ namespace Suborned.Play
     public enum ControlPreset { DoubleClick, Built, HoldActs }
 
     /// <summary>Brief 032's setting: the conversation scene plays always, the first time with each person (the default), or never (bubbles only).</summary>
-    public enum ConversationScenes { Always, FirstTime, Never }
+    public enum ConversationScenes { Always, FirstEachScene, Never }
 
     /// <summary>Which HUD draws: Glyph's kit on UI Toolkit (HudToolkit, its pieces as they land) or the IMGUI placeholder (PlayHud).</summary>
     public enum HudView { Kit, Imgui }
@@ -129,7 +129,7 @@ namespace Suborned.Play
         [UnityEngine.Tooltip("Brief 030 (Sky 2026-10-21, option A): the action plate beside the selected portrait. Off by default: the armed verb rides the cursor and the portrait, Tab or Shift shows the strip. On brings the plate back (pause menu, Action plate).")]
         public bool actionPlate = false;
         [UnityEngine.Tooltip("Brief 032: when an act's opening lines play as a close two-shot with the clock held (pause menu, Conversations). Never: bubbles only, as before.")]
-        public ConversationScenes conversations = ConversationScenes.FirstTime;
+        public ConversationScenes conversations = ConversationScenes.FirstEachScene;
         [UnityEngine.Tooltip("Sky 2026-10-21 (after 0.2.19): off (the default), a right click (or E in third person) opens the ring at the target with the likely way lit, and a second click takes it. On: the quick action of brief 030 (a click takes the likely way at once, a hold opens the ring). Pause menu, Right-click.")]
         public bool quickAction = false;
         [UnityEngine.Tooltip("Brief 024 revision (action-game controls): in third person a left click on the prompted target does what E does (tap acts, hold 0.22 s opens the options). Off: E only. Pause menu, Left click acts.")]

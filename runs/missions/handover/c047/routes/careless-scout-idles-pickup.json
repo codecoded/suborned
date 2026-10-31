@@ -1,0 +1,33 @@
+{
+ "schema": "suborned.sim.script/1",
+ "mission": "handover",
+ "note": "Careless loiter (brief 031), the twin of route-b: route-b, but the Scout waits for the 3:10 tip in the pickup camera's view: reported as a loiterer at its desk's next scan (Alert 1, the dial's two robots, no Trail); the route still wins, one Alert dearer than its twin (Alert 0). As route-b: the Reroute at 5:00, the Enforcer at the square until 5:50, the Scout's lock 0.5 s after the Fixer's.",
+ "start": {},
+ "orders": [
+  {"tick":0,"op":"scout","do":"move","to":[7950,-4000]},
+  {"tick":0,"op":"fixer","do":"move","to":[7950,-3850]},
+  {"tick":0,"op":"tech","do":"move","to":"cabinet","run":true},
+  {"tick":620,"op":"scout","do":"move","to":"d:Meet driver"},
+  {"tick":620,"op":"fixer","do":"move","to":"d:Boarding pavilion"},
+  {"tick":620,"op":"fixer","do":"turn","target":"driver","approach":"pay"},
+  {"tick":670,"op":"scout","do":"listen","target":"driver"},
+  {"tick":1800,"op":"scout","do":"move","to":[8600,-3400]},
+  {"tick":1900,"op":"scout","do":"mislead","target":"rivals"},
+  {"tick":2400,"op":"tech","do":"reroute","target":"patrol"},
+  {"tick":2700,"op":"tech","do":"move","to":"d:Getaway bay","run":true},
+  {"tick":2811,"op":"tech","do":"board","target":"car"},
+  {"tick":2900,"op":"enforcer","do":"move","to":"d:Service lane"},
+  {"tick":2950,"op":"scout","do":"move","to":[7300,-1900]},
+  {"tick":2950,"op":"fixer","do":"move","to":[7300,-1100]},
+  {"tick":3259,"op":"tech","do":"drive-car","target":"service-drive"},
+  {"tick":3450,"op":"enforcer","do":"take"},
+  {"tick":3830,"op":"fixer","do":"fire","target":"rival-1"},
+  {"tick":3830,"op":"enforcer","do":"move","to":"service-drive"},
+  {"tick":3835,"op":"scout","do":"fire","target":"rival-1"},
+  {"tick":3853,"op":"enforcer","do":"board","target":"car"},
+  {"tick":3865,"op":"scout","do":"fire","target":"rival-2"},
+  {"tick":3865,"op":"fixer","do":"fire","target":"rival-2"},
+  {"tick":3966,"op":"cell","do":"go"}
+ ],
+ "until": 4500
+}

@@ -1,0 +1,32 @@
+{
+ "schema": "suborned.sim.script/1",
+ "mission": "handover",
+ "note": "Route A with Pressure for Help (Keel S25; Sky Q4), fight it out: Pressure leans on Inez's affair, learned by Listen ($0, +3 T); the cast's Inez is Fearful, so it is also her own approach and one order turns her, and she calls the guard away at about 1:46. No Reroute (brief 067 A). c038 (Waymark, engine 0.34.1): the Enforcer goes to the door from 2:40, not as soon as she calls: Pressure brings no warning from Inez, and Vale out before the rival car posts (2:24 on the call's timing) meant all five coming hot at the Enforcer with no posts (the c037 script lost rivals-reach-vale at 3:17.2; composed fresh it won 3 of 8 jitters). Out at about 3:20, after the crew has posted, he holds Vale at (20.0, -65.0) as route-a does while the three break the crew, then boards; the car leaves at once and the three walk out. Faster than route-a by the Pressure's one turn, at 2 T more and no money.",
+ "start": {},
+ "orders": [
+  {"tick":0,"op":"scout","do":"move","to":"beside-inez","run":true},
+  {"tick":0,"op":"tech","do":"move","to":"cabinet","run":true},
+  {"tick":0,"op":"fixer","do":"move","to":"d:Courtyard","run":true},
+  {"tick":0,"op":"enforcer","do":"move","to":[5650,-4750]},
+  {"tick":90,"op":"scout","do":"watch","target":"waitress"},
+  {"tick":290,"op":"scout","do":"listen","target":"waitress"},
+  {"tick":590,"op":"fixer","do":"turn","target":"waitress","approach":"pressure"},
+  {"tick":840,"op":"fixer","do":"call","target":"waitress"},
+  {"tick":840,"op":"fixer","do":"move","to":[725,-5025]},
+  {"tick":840,"op":"scout","do":"move","to":[725,-4625]},
+  {"tick":850,"op":"tech","do":"loop","target":"entrance"},
+  {"tick":1050,"op":"enforcer","do":"move","to":[6925,-4250]},
+  {"tick":1600,"op":"enforcer","do":"move","to":"d:Office entrance","run":true},
+  {"tick":1619,"op":"enforcer","do":"enter"},
+  {"tick":1619,"op":"tech","do":"move","to":[675,-4625]},
+  {"tick":1999,"op":"enforcer","do":"move","to":[2000,-6500]},
+  {"tick":2301,"op":"scout","do":"draw"},
+  {"tick":2301,"op":"fixer","do":"draw"},
+  {"tick":2301,"op":"tech","do":"draw"},
+  {"tick":2301,"op":"enforcer","do":"draw"},
+  {"tick":2441,"op":"enforcer","do":"move","to":"d:Getaway bay"},
+  {"tick":2545,"op":"enforcer","do":"board","target":"car"},
+  {"tick":2585,"op":"cell","do":"go"}
+ ],
+ "until": 4500
+}

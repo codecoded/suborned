@@ -97,7 +97,7 @@ namespace Suborned.Play
 
         // ---------------------------------------------------------------- speech bubbles
 
-        public sealed class Bubble { public string Speaker = "", Text = ""; public float Born; }
+        public sealed class Bubble { public string Speaker = "", Text = ""; public float Born, Life = 3f; public int Tick; public bool Inset; }
         /// <summary>Lines spoken this run that may show as bubbles (the HUD shows the live ones whose speaker is in view).</summary>
         public readonly List<Bubble> Bubbles = new();
         bool arriveSaying;
@@ -105,7 +105,8 @@ namespace Suborned.Play
         void PushBubble(string speaker, string text)
         {
             if (arriveSaying || string.IsNullOrEmpty(speaker) || string.IsNullOrEmpty(text) || speaker is "crowd" or "watcher" or "cell") return;
-            Bubbles.Add(new Bubble { Speaker = speaker, Text = text, Born = Time.unscaledTime });
+            var bub = new Bubble { Speaker = speaker, Text = text, Born = Time.unscaledTime, Life = Text?.BubbleS ?? 3f, Tick = Game?.Tick ?? 0, Inset = GuardOnACall(speaker) };
+            Bubbles.Add(bub); if (bub.Inset) SpeechInset(bub); // brief 085: the guard's lines on any Call, off screen, in a docked inset (HostConvo.Street)
             while (Bubbles.Count > 12) Bubbles.RemoveAt(0);
         }
 

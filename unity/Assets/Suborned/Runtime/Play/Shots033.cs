@@ -114,7 +114,7 @@ namespace Suborned.Play
                     h.RunTo(g.Tick + 1); if (h.ConvoPending) yield return Scene(h, $"scene-{++shots}");
                 }
                 // 10 · the same orders with scenes Always, First time and Never: the final checkpoint hash and the history, each to 3:00
-                foreach (var mode in scenesOnly ? new ConversationScenes[0] : new[] { ConversationScenes.Always, ConversationScenes.FirstTime, ConversationScenes.Never })
+                foreach (var mode in scenesOnly ? new ConversationScenes[0] : new[] { ConversationScenes.Always, ConversationScenes.FirstEachScene, ConversationScenes.Never })
                 {
                     h.controls.conversations = mode; h.Begin(); yield return null; h.StartClock(); h.SetPaused(true); g = h.Game; int played0 = h.ConvoCount;
                     var orders = Route("route-a"); oi = 0;

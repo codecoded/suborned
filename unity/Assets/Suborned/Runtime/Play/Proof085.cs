@@ -81,6 +81,7 @@ namespace Suborned.Play
             Mouse2(new Vector2(4, 4)); yield return Press(Key.T); yield return new WaitForSecondsRealtime(0.7f); h.SetPaused(true); h.FollowFace(gt.position); yield return Frames(6);
             string fk = $"{h.DriveFocus?.Kind}/{h.DriveFocus?.Key}"; row("r085guardFocus", !(h.DriveFocus?.Kind == "door"), $"driving {h.Driving}, focus {fk}");
             if (h.Driving) h.DriveLetGoToMap(); yield return Frames(2); Keys(); Mouse2(new Vector2(Screen.width * .5f, Screen.height * .5f)); yield return Frames(2);
+            yield return Proof085Scenes.Run(h, dir, log, row); // whole conversations, bystanders, the pressed call, the insets, the capture clip, the Door price
         }
     }
 }

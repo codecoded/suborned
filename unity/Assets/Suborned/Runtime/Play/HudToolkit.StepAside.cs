@@ -52,6 +52,7 @@ namespace Suborned.Play
         {
             var calls = new List<Rect>();
             foreach (var md in medals) if (md != null && md.Root.style.display != DisplayStyle.None) { float d = (md.Docked ? DockD : MedalD) + 16f; calls.Add(new Rect(md.At.x - d / 2f, md.At.y - d / 2f, d, d)); }
+            if (clipBlock != null && clipBlock.resolvedStyle.display != DisplayStyle.None) calls.Add(clipBlock.worldBound); // brief 085: the capture clip, in the same family
             if (calls.Count == 0) return;
             for (int i = 0; i < bubbleLeads.Count; i++)
             {

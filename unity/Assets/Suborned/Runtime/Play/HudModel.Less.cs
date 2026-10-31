@@ -23,7 +23,7 @@ namespace Suborned.Play
         public static string EyeTip(string eye, string seenBy) => eye == "open" ? $"Seen by {(string.IsNullOrEmpty(seenBy) || seenBy == "?" ? "a watcher" : seenBy)}." : eye == "unk" ? "Unknown. Watch first." : "Unseen.";
 
         /// <summary>Fable's field order (less.price.order), the price line's columns.</summary>
-        public static readonly string[] FieldOrder = { "left", "usd", "time", "trail", "alert", "eye", "learns", "pace", "mark", "hits", "walk", "run" }; // "left": the Go row's cameos and fates (brief 018)
+        public static readonly string[] FieldOrder = { "left", "usd", "time", "trail", "door", "alert", "eye", "learns", "pace", "mark", "hits", "walk", "run" }; // "left": the Go row's cameos and fates (brief 018)
 
         /// <summary>Compact money for a price line (Sky 2026-10-16: the line stays short): 100,000 → 100k, 1,500 → 1.5k, under 1,000 as it is;
         /// a range "40,000–60,000" → "40k–60k". The status pill and the debrief keep whole dollars.</summary>
@@ -97,6 +97,9 @@ namespace Suborned.Play
                             if (td && !foundSaid && i.SeenMark != "no") { f.Found = true; foundSaid = true; } // Glyph §2: the found glyph once before the numbers that only happen if the body is found
                             break;
                         }
+                    case "door": // brief 085: how long a pressed call clears the public door (Fable's less.price.fields.door): text only, no icon; the same list drives the wedge, chip, pill and panel
+                        if (h.DoorClock(o) is string door) F("door", "", (h.Text?.DoorField ?? "Door {clock}").Replace("{clock}", door));
+                        break;
                     case "alert":
                         {
                             var a = i.Alert ?? ""; string v = null;
