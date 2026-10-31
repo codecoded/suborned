@@ -9571,6 +9571,10 @@
    {
     "cause": "085: the pressed call live, Glyph's plates and the door price field in text.json",
     "rules": []
+   },
+   {
+    "cause": "085: the lock reason 'Not targetable' in text.json",
+    "rules": []
    }
   ]
  }

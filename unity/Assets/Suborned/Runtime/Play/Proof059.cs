@@ -42,6 +42,7 @@ namespace Suborned.Play
             log.Add($"{name}: rivals [{HudToolkit.RivalsShown}] stands [{HudToolkit.StandsShown}] vale [{HudToolkit.ValeRouteShown}] windows [{HudToolkit.WindowWords}]");
             h.SetPaused(was);
         }
+        static Vector2 OffStreet => new(Screen.width * 0.5f, 4f);
         static IEnumerator Fresh(HandoverHost h) { h.Begin(); h.IntelOpen = false; h.StartClock(); h.SetPaused(true); yield return null; yield return null; }
         static void To(HandoverHost h, int tick) { var g = h.Game; while (g.Tick < tick && !g.Over) h.RunTo(Math.Min(tick, g.Tick + 50)); }
         static IEnumerator Settle(HandoverHost h, float s = 0.35f) { h.SetPaused(false); yield return new WaitForSecondsRealtime(s); h.SetPaused(true); yield return Frames(3); }
@@ -107,9 +108,9 @@ namespace Suborned.Play
                     if (carFirst < 0) foreach (var _ in h.Views.RivalsDrawn()) onFootBefore++;
                 }
                 if (h.CuesPlayed.Count > cues0) cueAt = entry; // the cue's own line names its clock: logged below
-                yield return Settle(h, 0.5f); approach = HudToolkit.RivalsShown.Contains("approach"); loop = h.EngineLoopPlaying;
+                HandoverHost.PointerOverride = OffStreet; /* an earlier section leaves the mouse mid-screen, and these frames centre on a rival: a hover nobody asked for */ yield return Settle(h, 0.5f); approach = HudToolkit.RivalsShown.Contains("approach"); loop = h.EngineLoopPlaying;
                 yield return FrameRivalCar(h, log, "r059-235-turns-in"); yield return Shoot(h, dir, "r059-235-turns-in", log);
-                h.TurnSnap(0); h.LookAt(h.GetawayWorld); yield return Frames(4); edge = HudToolkit.RivalsShown.Contains("edge"); yield return Shoot(h, dir, "r059-235-square", log);
+                h.TurnSnap(0); h.LookAt(h.GetawayWorld); yield return Frames(4); edge = HudToolkit.RivalsShown.Contains("edge"); yield return Shoot(h, dir, "r059-235-square", log); HandoverHost.PointerOverride = null;
                 // the drop: each member's first drawn tick and where (near the car, never at a post)
                 while (g.Tick < drop + 30 * Suborned.Sim.Game.Hz && !g.Over)
                 {
@@ -137,8 +138,8 @@ namespace Suborned.Play
                 h.GiveWatchScripted(OpId.Scout, "car:rivals");
                 for (int i = 0; i < 120 * Suborned.Sim.Game.Hz && !g.RivalsWatched && !g.Over; i += 5) h.RunTo(g.Tick + 5);
                 yield return Settle(h); var wc = h.Views.Find("car/rivals"); if (wc) h.LookAt(wc.position);
-                h.PeekLatch = true; yield return new WaitForSecondsRealtime(0.3f); yield return Frames(6);
-                string pip = HudToolkit.WindowWords, marks = HudToolkit.RivalsShown; yield return Shoot(h, dir, "r059-watch-alt", log, "alt"); h.PeekLatch = false;
+                HandoverHost.PointerOverride = OffStreet; h.PeekLatch = true; yield return new WaitForSecondsRealtime(0.3f); yield return Frames(6);
+                string pip = HudToolkit.WindowWords, marks = HudToolkit.RivalsShown; yield return Shoot(h, dir, "r059-watch-alt", log, "alt"); h.PeekLatch = false; HandoverHost.PointerOverride = null;
                 bool wOk = g.RivalsWatched && pip.Contains("rivals-next") && marks.Contains("spring");
                 ok &= wOk;
                 parts.Add($"\"watch\": {{\"ok\": {B(wOk)}, \"watched\": {B(g.RivalsWatched)}, \"at\": \"{HandoverHost.MissionClock(g.Tick)}\", \"windows\": \"{J(pip)}\", \"marks\": \"{J(marks)}\"}}");

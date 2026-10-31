@@ -205,7 +205,8 @@ namespace Suborned.Play
             var fights = new List<string>(); bool fOk = true;
             foreach (var (name, fixture, tick, shot) in new[] { ("safe", "sq-ra-h3", 2550, "r123-fight-safe"), ("loud", "bal-loud-x4", 2266, "r123-fight-loud") })
             {
-                yield return Fresh(h); var g = h.Game; Feed feed = null; string err = "";
+                var pinKeep = HandoverHost.SeedPin; if (name == "loud") HandoverHost.SeedPin = 3; // Keel: shots roll, and on seed 0 the guard survives the 2:31 shot, so the run stops at 2:37 with no fight; on seed 3 fight.loud lands at tick 2251
+                yield return Fresh(h); HandoverHost.SeedPin = pinKeep; var g = h.Game; Feed feed = null; string err = "";
                 try { feed = Fixture(fixture); } catch (Exception e) { err = e.Message; }
                 if (feed == null) { fights.Add($"\"{name}\": {{\"ok\": false, \"error\": \"{J(err)}\"}}"); log.Add($"r123 fight {name}: FAILED: {fixture} would not read ({err})"); fOk = false; continue; }
                 feed.To(h, tick - 4); h.Select(OpId.Scout, false);

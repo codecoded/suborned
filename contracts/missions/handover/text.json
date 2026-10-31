@@ -540,7 +540,7 @@
   "no-target": {"line":"Nothing to fire at: no hostile in range with a clear line.","short":"No target","verbs":["fire"]},
   "fight-over": {"line":"The fight is over. Nobody is left to fire at.","short":"Fight is over","verbs":["fire"]},
   "fire-on-cell": {"line":"Agents never fire on each other.","short":"Not the cell","verbs":["fire"]},
-  "target-unknown": {"line":"That can't be watched, listened to or fired on.","short":"Not a target","verbs":["fire","watch","listen"]},
+  "target-unknown": {"line":"That can't be watched, listened to or fired on.","short":"Not targetable","verbs":["fire","watch","listen"]},
   "civilian-target": {"line":"A civilian or someone you've turned. Ctrl fires anyway, and the city remembers.","short":"Civilian · Ctrl","verbs":["fire"]},
   "out-of-range": {"line":"Too far to fire. This weapon reaches {m} m.","short":"Too far · {m} m","verbs":["fire"]},
   "no-clear-line": {"line":"No clear line to {who}. Move to where you can see.","short":"No clear line","verbs":["fire","watch"]},

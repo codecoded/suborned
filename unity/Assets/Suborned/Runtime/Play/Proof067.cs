@@ -315,11 +315,11 @@ namespace Suborned.Play
                 h.Select(OpId.Enforcer, false); var r1 = ViewAt(h, "rival-1"); bool set = false, follows = false, edge = false, handoff = false; string words = "";
                 if (r1.HasValue)
                 {
-                    h.TurnSnap(0); h.View.orthographicSize = 14f; h.LookAt(r1.Value); yield return Frames(2);
+                    HandoverHost.PointerOverride = new Vector2(UnityEngine.Screen.width * 0.5f, 4f); /* an earlier section leaves the mouse mid-screen, and this frame centres on a rival: a hover nobody asked for */ h.TurnSnap(0); h.View.orthographicSize = 14f; h.LookAt(r1.Value); yield return new WaitForSecondsRealtime(0.25f);
                     h.Issue(new Order { Op = "enforcer", Do = "fire", Target = "rival-1" }); yield return Frames(4); yield return new WaitForSecondsRealtime(0.1f);
                     set = HudToolkit.ReticlesShown.Contains("rival-1"); yield return Shoot(h, dir, "r067-reticle-set", log, "active");
                     var a0 = ViewAt(h, "rival-1"); h.RunTo(g.Tick + 15); yield return Settle(h, 0.3f); var a1 = ViewAt(h, "rival-1"); if (a1.HasValue) h.LookAt(a1.Value); yield return Frames(3);
-                    follows = HudToolkit.ReticlesShown.Contains("rival-1") && a0.HasValue && a1.HasValue; words = HudToolkit.ReticlesShown; yield return Shoot(h, dir, "r067-reticle-moving", log, "active");
+                    follows = HudToolkit.ReticlesShown.Contains("rival-1") && a0.HasValue && a1.HasValue; words = HudToolkit.ReticlesShown; yield return Shoot(h, dir, "r067-reticle-moving", log, "active"); HandoverHost.PointerOverride = null;
                     log.Add($"r067 reticle: rival-1 moved {(a0.HasValue && a1.HasValue ? F(Flat(a0.Value, a1.Value)) : "?")} m while locked");
                     h.LookAt(h.frame.World(g.S.At(g.S.GuardPost))); yield return Frames(4); edge = HudToolkit.ReticlesShown.Contains(":edge"); yield return Shoot(h, dir, "r067-reticle-edge", log, "active");
                     var r2 = ViewAt(h, "rival-2"); if (r2.HasValue) { h.LookAt(r2.Value); yield return Frames(2); h.Issue(new Order { Op = "enforcer", Do = "fire", Target = "rival-2" }); yield return Frames(3); handoff = HudToolkit.ReticlesShown.Contains("rival-2"); yield return Shoot(h, dir, "r067-reticle-handoff", log, "active"); }
