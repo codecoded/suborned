@@ -12,7 +12,7 @@ export const CONVERSATION_SPEAKERS = ['scout', 'fixer', 'waitress', 'driver', 'g
 export const CONVERSATION_VERBS = ['listen', 'ask', 'pay', 'help', 'pressure', 'call', 'mislead'] as const;
 /** The approaches that can turn a person: how `turnedBy` reads. */
 export const TURNED_BY = ['ask', 'pay', 'help', 'pressure'] as const;
-/** agreed: Sky read these words and agreed them. awaiting-sky: written through the generator, not yet read by him. */
+/** What Sky has read; it gates nothing and the host never reads it. agreed: he read these words and agreed them. awaiting-sky: they play, and he has not read them yet. */
 export const CONVERSATION_STATUS = ['agreed', 'awaiting-sky'] as const;
 export const CONVERSATION_MAX_BEATS = 10;
 export const CARD_WORDS = 6;
@@ -38,11 +38,10 @@ export const Conversation = z.strictObject({
   beats: z.array(z.strictObject({ speaker: z.enum(CONVERSATION_SPEAKERS), line: Spoken })).min(4).max(CONVERSATION_MAX_BEATS),
   street: z.array(z.strictObject({
     on: z.string().regex(/^[a-z][a-z0-9.-]*$/).describe('the engine log code that plays them'),
+    pressed: z.literal(true).optional().describe('only while Game.GuardCallPressed: guard.at-cafe also fires on an unpressed visit'),
     beat: z.string().min(1).max(24).describe('the feed line when no one is near enough to hear: at most four words'),
     beats: z.array(z.strictObject({ speaker: z.enum(CONVERSATION_SPEAKERS), line: Spoken })).min(1).max(3),
   })).optional().describe('what follows the cutaway in play, clock running, as speech bubbles, when the engine logs `on`. It belongs to the route, so it plays whether or not the cutaway did, and in place of that event\'s usual lines'),
-  price: z.strictObject({ on: z.string().min(1).describe('the text.json path the line replaces'), line: Spoken })
-    .optional().describe('a price line that goes live with this scene, not before'),
   learned: z.array(CardLine).min(1).max(2).describe('the cards: what the player now knows'),
   opens: z.array(CardLine).min(1).max(2).describe('the cards: what the player can now do, or where to be'),
 });
@@ -53,6 +52,8 @@ export const Conversations = z.strictObject({
   items: z.array(Conversation).min(1),
 });
 export type Conversations = z.infer<typeof Conversations>;
+/** scenes.clip (Glyph, brief 085): the capture clip's plate, the name of the door the Enforcer comes out by. */
+export const CaptureClip = z.strictObject({ rule: z.string().min(1), service: z.string().min(1).max(16), public: z.string().min(1).max(16), both: z.string().min(1).max(16) });
 
 export type ConversationQuery = { verb: string; about: string; temperament: string; outcome?: string; turned?: boolean; helped?: boolean; turnedBy?: string };
 

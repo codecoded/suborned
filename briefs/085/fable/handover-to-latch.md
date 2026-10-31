@@ -1,11 +1,13 @@
-# 085: conversations, Fable to Latch
+# 085: conversations and the pressed call, Fable to Latch
 
-Inputs: `contracts/missions/handover/text.json`, `conversations.schema.ts` beside it. Next owner: Latch, then Fable reads the first shots.
+Inputs: `contracts/missions/handover/text.json`, `conversations.schema.ts` beside it, engine 0.38.0, GDD v0.35.0. Next owner: Latch, then Fable reads the first shots. Run `bun tools/game/words.ts` to put the words in StreamingAssets; I didn't run it.
 
-**First, a build blocker (not mine to edit):** `text.schema.ts` now imports `./conversations.schema.ts`. `tools/sim/unity.ts` line 148 copies the schema's imports by a fixed list, so add `contracts/missions/handover/conversations.schema.ts` to it, or the engine build stops at the import. Aster has this too. Then `bun tools/game/words.ts` puts the words in StreamingAssets; I didn't run it.
+The look and placing of the clip, insets and field are Glyph's: `briefs/085/glyph/capture-and-cues.md`. This note covers the words and what triggers them.
 
 ## Where scenes live
-`scenes.conversations`: `{ rule, names, items[] }`. Each item: `id`, `title`, `status`, `from`, `when`, `beats[]`, `learned[]`, `opens[]`. `scenes.items` is unchanged and still what `PlayScene` reads. `PlayText` doesn't load conversations yet.
+`scenes.conversations`: `{ rule, names, items[] }`. Each item: `id`, `title`, `status`, `from`, `when`, `beats[]`, `street[]` (optional), `learned[]`, `opens[]`. `scenes.items` is unchanged and still what `PlayScene` reads. `PlayText` doesn't load conversations yet.
+
+`status` is a record of what Sky has read, and nothing is gated on it. Don't read it in the host. `awaiting-sky` on `call-inez-pressure` means it plays and he hasn't read it yet.
 
 ## Picking a scene: at landing, never at the act's start
 Port `lookupConversation(c, query)`. Every field a `when` names must equal the query's. No match means no conversation: the act uses its `scenes.items` scene.
@@ -28,11 +30,9 @@ Port `lookupConversation(c, query)`. Every field a `when` names must equal the q
 | Pressure, Inez, `turned`, not helped | `pressure-inez` |
 | Pay, driver, `turned` | `pay-driver` |
 | Call, Inez, turned by Help | `call-inez` |
-| Call, Inez, turned by Pressure | `call-inez-pressure` (status `awaiting-sky`) |
+| Call, Inez, turned by Pressure | `call-inez-pressure` |
 
 The engine's outcome picks the Help visit, not a count of orders.
-
-`lookupConversation` doesn't filter on `status`. Don't play `call-inez-pressure` before Keel lands the rule: its words say he runs back, and today's engine keeps him at her side. Aster decides when it goes on.
 
 ## A scene's lines, in order
 `beats[]` in file order; port `conversationLines`. `speaker` is where the bubble goes, `names[speaker]` is the name it shows (Inez, Okafor, Zhou, Milena, Scout, Fixer). Everywhere else the game still says Guard and Driver. There are no variants, refs or picks, so don't call `SceneUse`.
@@ -45,7 +45,7 @@ The engine's outcome picks the Help visit, not a count of orders.
 `learned[]` and `opens[]`, at most 6 words each, are shown as written, on or after the last line. Glyph places them. A conversation has no `result`: use `learned` for the feed card's footer and keep the whole scene in the history.
 
 ## When a conversation played
-It holds the reply and the outcome already, so at that landing silence that act's `reply`, `done`, `read` and `confirm` bubbles, and `guard-lured` for the call. The street's later lines still play; see open issues.
+It holds the reply and the outcome already, so at that landing silence that act's `reply`, `done`, `read` and `confirm` bubbles, and `guard-lured` for the call. The street's later lines still play.
 
 First time for each scene counts by conversation `id`, not by person (`convoMet` keys on target today). An act with no conversation counts by `sceneKey`, or by verb and target for Mislead.
 
@@ -61,16 +61,55 @@ Today's `scenes.items` lines stay as bubbles, with no cutaway, for every act abo
 
 An approach's fallback now runs past the reply: `ConvoStart` stops at `l.Reply` and needs to play all of them, or the answer goes missing.
 
-## Second pass: arrival lines, Mislead, price
-- **`street` on `call-inez-pressure`:** when the engine logs `guard.at-cafe` on a visit where Inez was turned by Pressure, play `street[0].beats` as ordinary speech bubbles at the two people, clock running, in place of the `guard-at-cafe` dialogue and city scene. Keel is adding the rule and his report isn't in yet: `guard.at-cafe` is today's code for him reaching her, and if Keel gives this visit its own code, tell me and I'll rename `on`. The stay is 5 s, so hers shows on arrival and his before he leaves; let his bubble follow him as he runs.
-- **Look up the street lines by route, not by whether the cutaway played:** query with `verb: call`, `turnedBy`, so Skip, Never and First time still get them. Motive's "she remembers a Pressure" and `turnedBy: pressure` are the same set: Pressure is refused once she's turned.
-- **Heard off screen:** the city scene plays only in sight, but these should always play. With no agent near, also show `street[0].beat` ("Inez warned him.") in the feed.
-- **Hold it back:** `call-inez-pressure`, its `street` and its `price` stay off until Keel lands the rule and Aster says so. Today's `guard-at-cafe` lines cover every route until then.
-- **Pressure's price line:** the item's `price.line` then replaces `price.on` (`actions.pressure.onTarget.waitress`). The times are written in; Motive wants them from the engine, rounded to 10 s, so add a read if Keel exposes one.
-- **Mislead at landing:** `done` (Scout), then `rivals-misled` (rivals, then Scout's line from the same event if you want a third). Both are in `dialogue`, and no line changed.
+Mislead at landing: `done` (Scout), then `rivals-misled` (rivals, then Scout's line from the same event if you want a third).
+
+## The pressed call: live on engine 0.38.0
+A pressed Inez's call plays `call-inez-pressure`, and today's `guard-at-cafe` lines don't play on that visit. Glyph's section 2 says how the off-screen lines show.
+
+There's no new log code. Both codes below also fire on an unpressed visit, so read `Game.GuardCallPressed` with them.
+
+| Moment | Read | Words |
+|---|---|---|
+| He reaches her | `guard.at-cafe` while `GuardCallPressed` (`street[0].pressed` says so in the data) | `street[0].beats`: hers on arrival, then his, as bubbles with the clock running. They replace the `guard-at-cafe` dialogue and its city scene, the Scout's line included |
+| No agent near | same | also `street[0].beat` ("Inez warned him.") in the feed |
+| He turns back, 5 s later | `guard.leaves-cafe` while `GuardCallPressed` | the Scout's `guard-leaves-cafe` line only. Silence the guard's: "Break's over" is wrong here. His street line may run on and follow him |
+| The run | `Game.GuardRunningBack` | the run clip. Motive: the phase stays "returning to door" |
+| Back | `guard.back` | today's `guard-back` lines |
+
+- **Find the street lines by route, not by whether the cutaway played:** query `verb: call`, `about`, `temperament`, `turnedBy`, so Skip, Never and First time still get them.
+- **Always played:** the city scene plays only in sight, but these play in sight or not.
+- **Pressed, but no scene matches:** only a lab start with another temperament. It keeps today's lines, whose "Stand with me a while" is wrong on a 5 s visit. Not reachable in the shipped game, as the site casts her fearful.
+- **An alarm during the 5 s:** `guard.recalled` fires, `guard.leaves-cafe` doesn't, and `GuardRunningBack` stays false, because he goes at a guard's pace. Drop his street line if it hasn't shown, and play the `guard-recalled` lines.
+- **An alarm on the run back:** nothing happens. `guard.recalled` doesn't fire, so no line changes.
+
+## Pressure's price
+- **The Alt line** is live in the file: `actions.pressure.onTarget.waitress` holds the text. It's written in, not filled: 1:40 and 3:00 need no read. `price` is gone from the scene and from the schema.
+- **The field:** `less.price.fields.door`, text `Door {clock}`, no icon. It sits in `less.price.order` after `trail`, and in `verbs.pressure` and `verbs.call`. Today's `switch` in `HudModel.PriceLine` skips it until you add a case. Add `door` to `HudModel.FieldOrder` after `trail`, or the panel's columns drop it.
+
+How it fills:
+```csharp
+var w = g.GuardCallWindows(o.Target);                     // null: hide the field
+if (o.Do == "call" && !g.PersonByRole(o.Target).Has(g.R.SummonPressedAct)) break; // a Help or Pay route shows nothing
+int s = (w.Value.pressed + 50) / 100 * 10;                // ticks at 10 a second, to the nearest 10 s: 989 reads 100 s
+var clock = $"{s / 60}:{s % 60:00}";                      // 1:40
+```
+- **Null covers the hiding:** any role with no lover, the guard down or busy, a call already made, Alert above the call's limit. Help shows no field, as it isn't on `verbs.help`.
+- **It moves with the walk:** it reads the route from where he stands, so read it for the card and don't cache it across a mission. It hashes nothing.
+- **Check against pill width:** Glyph's done-check, the 2x crop of the Inez ring.
+
+## The alarm's walk back
+On other routes, `guard.recalled` still fires and he walks at 1.4 m/s. The Scout's two lines no longer say he's running: "The guard's going back to his door." and "Alarm called him back. He's on his way."
+
+## The capture clip's plate
+`scenes.clip`: `service` "Service door", `public` "Public door" when the service door is held (`g.DoorHeld(g.ExitDoor)`), `both` "Doors held". Nothing else goes on the clip.
 
 ## Proofs
 `Proof067` (lines 252-254) waits for a scene on the act's first tick (`ConvoPending`), so it moves with this. Proofs that set conversations to Never don't notice. A `text.json` change selects sections `done` and `r083` (`tools/game/proofdelta.test.ts`).
 
 ## Done-check
-Route A shots show `help-inez-1` then `help-inez-2` word for word, cards included. A Pressure route shows `pressure-inez`. A start with `temperament.waitress: mercenary` plays `scenes.items`. The same seed and orders give the same hash with scenes Always, First or Never.
+- Route A shots show `help-inez-1` then `help-inez-2` word for word, cards included.
+- A Pressure route shows `pressure-inez`, then `call-inez-pressure`, then the two arrival lines at `guard.at-cafe`, and the guard's bubble follows him on the run.
+- A Help route at `guard.at-cafe` still shows today's lines.
+- The Inez ring reads `Pressure · 25 s · +3 · Door 1:40`, with the eye and mark after. The Call way shows the field only after a Pressure.
+- A start with `temperament.waitress: mercenary` plays `scenes.items`.
+- The same seed and orders give the same hash with scenes Always, First or Never.

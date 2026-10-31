@@ -38,7 +38,7 @@
 import { z } from 'zod';
 import { TEMPERAMENTS } from '../../people/people.rules.schema.ts';
 import { fnv1a32 } from '../../rules/rulebook.ref.ts';
-import { Conversations } from './conversations.schema.ts';
+import { CaptureClip, Conversations } from './conversations.schema.ts';
 export const AGENTS = ['scout', 'fixer', 'tech', 'enforcer'] as const;
 export const PEOPLE = ['waitress', 'driver', 'guard', 'councillor'] as const;
 export const OTHERS = ['rivals', 'patrol', 'security', 'watcher', 'crowd'] as const;
@@ -79,7 +79,7 @@ export const SHORT_MAX = 24;
 export const BEAT_MAX = 24;
 /** brief 014: the price line's fields, in the order the line shows them (canonical). `learns` = the icons of what a Watch or Listen teaches;
  *  `pace` = a carry's walking pace; `mark` = the outcome mark (works, refuse, half, unknown). */
-export const PRICE_FIELDS = ['name', 'usd', 'time', 'trail', 'alert', 'lasts', 'eye', 'learns', 'pace', 'mark'] as const;
+export const PRICE_FIELDS = ['name', 'usd', 'time', 'trail', 'door', 'alert', 'lasts', 'eye', 'learns', 'pace', 'mark'] as const;
 
 const clock = z.string().regex(/^\d{1,2}:[0-5]\d$/);
 const code = z.string().regex(/^[a-z][a-z0-9-]*$/);
@@ -258,7 +258,7 @@ export const Less = z.strictObject({
   price: z.strictObject({
     rule: z.string().min(1),
     order: z.array(PriceField).describe('the canonical field order; each verb\'s list below is a subsequence of it'),
-    fields: z.record(PriceField, z.strictObject({ shows: z.string().min(1), hiddenWhen: z.string().min(1) })),
+    fields: z.record(PriceField, z.strictObject({ text: Short().optional().describe('the field\'s words, where it has no icon'), shows: z.string().min(1), hiddenWhen: z.string().min(1) })),
     verbs: z.record(Verb, z.array(PriceField).min(1)).describe('the fields each verb\'s one-line price shows, in order; `name` first, always'),
     examples: z.record(code, z.string().min(1).max(60)).describe('worked lines with the engine\'s numbers from the play screenshots; `\u{1F441}` is the eye mark, `\u25B2` the Alert mark'),
   }),
@@ -478,7 +478,7 @@ export const TextFile = z.strictObject({
   silentStates: z.record(z.string(), z.string()).describe('hostile AI states (Gun.St) that speak no line of `ai-state`, with the reason'),
   silentLogs: z.record(z.string(), z.string()).describe('engine log codes (or prefixes ending in .) that speak no line, with the reason'),
   dialogue: z.array(Entry).min(1),
-  scenes: z.strictObject({ rules: z.record(z.string(), z.union([z.string(), z.record(z.string(), z.string())])), items: z.array(Scene).min(1), conversations: Conversations.optional().describe('brief 085: conversations.schema.ts') }),
+  scenes: z.strictObject({ rules: z.record(z.string(), z.union([z.string(), z.record(z.string(), z.string())])), items: z.array(Scene).min(1), conversations: Conversations.optional().describe('brief 085: conversations.schema.ts'), clip: CaptureClip.optional().describe('brief 085: the capture clip\'s plate') }),
   less: Less.describe('brief 014 (less reading): the short forms and grammar the HUD reads at rest; the long lines above are the Alt and debrief text'),
   pending: Pending.optional().describe('briefs 058 and 059: words for engine changes that are approved but not built; nothing here is read by the host until its entry moves to its live place'),
 });

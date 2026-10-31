@@ -245,7 +245,7 @@ describe('times and numbers agree with the mission', () => {
   test('every m:ss in the words is a mark of the mission timeline', () => {
     const marks = new Set(mission.timeline.map((x) => x.at));
     const bad: string[] = [];
-    for (const s of strings) for (const m of s.text.match(/\b\d{1,2}:\d{2}\b/g) ?? []) if (!marks.has(m)) bad.push(`${m}: ${s.path}`);
+    for (const s of strings) for (const m of s.text.match(/\b\d{1,2}:\d{2}\b/g) ?? []) if (!marks.has(m) && s.path !== 'actions.pressure.onTarget.waitress') bad.push(`${m}: ${s.path}`); // Pressure on Inez: how long the door is clear, not a mark on the clock (conversations.test.ts)
     expect(bad).toEqual([]);
   });
   test('the status pill\'s timeline is the mission\'s, and the close is its last mark', () => {
@@ -1298,7 +1298,7 @@ describe('brief 014: the short forms, the price line, the beats', () => {
       expect(at, v).toEqual([...at].sort((a, b) => a - b));
       expect(new Set(fs).size, v).toBe(fs.length);
     }
-    for (const v of ['ask', 'pay', 'help', 'pressure']) expect(L.price.verbs[v as (typeof VERBS)[number]]).toEqual(L.price.verbs.pay);
+    for (const v of ['ask', 'pay', 'help', 'pressure']) expect(L.price.verbs[v as (typeof VERBS)[number]]!.filter((f) => f !== 'door') as string[]).toEqual(L.price.verbs.pay);
     // every field a verb's card prices is on its line: the engine's price is ($, time, Trail, Alert risk); an order that traces, spends or risks shows it
     for (const v of ['pay', 'help', 'ask', 'pressure', 'takedown', 'fire']) { expect(L.price.verbs[v as (typeof VERBS)[number]]).toContain('trail'); expect(L.price.verbs[v as (typeof VERBS)[number]]).toContain('alert'); }
     for (const v of ['pay', 'help']) expect(L.price.verbs[v as (typeof VERBS)[number]]).toContain('usd');
@@ -1309,8 +1309,8 @@ describe('brief 014: the short forms, the price line, the beats', () => {
     for (const a of Object.values(t.actions)) { labels.add(a.label); for (const w of Object.values(a.ways ?? {})) labels.add(w.label); }
     // compact money (brief 014): $90k, $1.5k, under $1,000 as it is, a range $40k–60k; whole dollars are for the status pill and the debrief
     const COMPACT = /^\$(\d{1,3}|\d{1,3}(\.\d)?k)(–\d{1,3}(\.\d)?k?)?$/;
-    const kind = (f: string) => /^\$/.test(f) ? 'usd' : /^\d+ s$/.test(f) ? 'time' : /^\+\d+(\/hit)?$/.test(f) ? 'trail' : /^▲/.test(f) ? 'alert' : /^\d+:\d\d$/.test(f) ? 'lasts' : /^👁/u.test(f) ? 'eye' : /^[✓✗½?]$/u.test(f) ? 'mark' : 'unknown';
-    expect(Object.keys(L.price.examples).sort()).toEqual(['ask', 'board', 'disable', 'drive-car', 'fire', 'fire-camera', 'go', 'help', 'kill', 'knockout', 'loop', 'pay', 'pressure']); // loop and disable: brief 058; fire-camera: a camera's shot is priced once, never per hit
+    const kind = (f: string) => /^\$/.test(f) ? 'usd' : /^\d+ s$/.test(f) ? 'time' : /^\+\d+(\/hit)?$/.test(f) ? 'trail' : /^▲/.test(f) ? 'alert' : /^Door \d+:\d\d$/.test(f) ? 'door' : /^\d+:\d\d$/.test(f) ? 'lasts' : /^👁/u.test(f) ? 'eye' : /^[✓✗½?]$/u.test(f) ? 'mark' : 'unknown';
+    expect(Object.keys(L.price.examples).sort()).toEqual(['ask', 'board', 'disable', 'drive-car', 'fire', 'fire-camera', 'go', 'help', 'kill', 'knockout', 'loop', 'pay', 'pressure', 'pressure-inez']); // loop and disable: brief 058; fire-camera: a camera's shot is priced once, never per hit
     for (const [k, ex] of Object.entries(L.price.examples)) {
       const parts = ex.split(' · ');
       expect(labels.has(parts[0]!), `${k}: ${parts[0]}`).toBe(true);

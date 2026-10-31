@@ -30,13 +30,13 @@ describe('the words', () => {
     }
     expect(approved.scenes.length).toBe(6);
   });
-  test('the one scene he has not read is flagged, ends with the guard coming, and leaves the telling to the street', () => {
+  test('the one scene he has not read is flagged but gated by nothing, ends with the guard coming, and leaves the telling to the street', () => {
     expect(c.items.filter((x) => x.status !== 'agreed').map((x) => x.id)).toEqual(['call-inez-pressure']);
     const run = byId('call-inez-pressure');
     expect(run.status).toBe('awaiting-sky');
     expect(run.beats.at(-1)).toEqual({ speaker: 'guard', line: "It's only a door. All right, I'm coming." });
     expect(run.beats.map((b) => b.line).join(' ')).not.toMatch(/someone knows|suspicious/i);
-    expect(run.street!.map((s) => s.on)).toEqual(['guard.at-cafe']);
+    expect(run.street!.map((s) => [s.on, s.pressed])).toEqual([['guard.at-cafe', true]]);
     const said = run.street![0]!.beats;
     expect(said.map((b) => b.speaker)).toEqual(['waitress', 'guard']);
     expect(said[0]!.line).toMatch(/someone knows/i); expect(said[0]!.line).toMatch(/suspicious/i);
@@ -45,12 +45,31 @@ describe('the words', () => {
     expect(c.items.filter((x) => x.street).map((x) => x.id)).toEqual(['call-inez-pressure']);
     for (const b of said) expect(wordCount(b.line)).toBeLessThanOrEqual(MAX_WORDS);
   });
-  test('Pressure\'s price line waits with that scene, and fits an Alt line', () => {
-    const live = t.actions.pressure!.onTarget!.waitress!, next = byId('call-inez-pressure').price!;
-    expect(live).not.toContain('warn');
-    expect(next.on).toBe('actions.pressure.onTarget.waitress');
-    expect(next.line).toBe("Quick and free, but she'll warn him. The door stays clear about 1:40, not 3:00.");
-    expect(next.line.length).toBeLessThanOrEqual(MAX_LINE);
+  test('Pressure\'s price is live: the Alt line says what it loses, and the door field shows it at rest', () => {
+    const live = t.actions.pressure!.onTarget!.waitress!;
+    expect(live).toBe("Quick and free, but she'll warn him. The door stays clear about 1:40, not 3:00.");
+    expect(live.length).toBeLessThanOrEqual(MAX_LINE);
+    const P = t.less.price, door = P.fields.door!;
+    expect(door.text).toBe('Door {clock}');
+    expect(door.shows).toContain('GuardCallWindows');
+    expect(P.order.indexOf('door')).toBe(P.order.indexOf('trail') + 1);
+    expect(P.verbs.pressure).toContain('door'); expect(P.verbs.call).toContain('door');
+    for (const v of ['ask', 'pay', 'help', 'listen'] as const) expect(P.verbs[v]).not.toContain('door');
+    expect(P.examples['pressure-inez']).toContain('Door 1:40');
+  });
+  test('the alarm\'s walk back never says he runs: he goes at a guard\'s pace, 1.4 m/s', () => {
+    const said = t.dialogue.filter((e) => e.event === 'guard-recalled').flatMap((e) => e.lines);
+    expect(said.length).toBeGreaterThan(0);
+    expect(said.filter((l) => /\brun|\bfast\b|\bsprint/i.test(l))).toEqual([]);
+    expect(t.events['guard-recalled']!.trigger).not.toMatch(/\bruns\b/);
+  });
+  test('the capture clip\'s plate uses the game\'s names for the two doors, and nothing longer', () => {
+    const c = t.scenes.clip!, the = (x: string) => `The ${x.toLowerCase()}`;
+    expect(the(c.service)).toBe(t.targets['stash-door']!.name);
+    expect(the(c.public)).toBe(t.targets.door!.name);
+    expect(c.both).toBe('Doors held');
+    for (const w of [c.service, c.public, c.both]) { expect(wordCount(w)).toBe(2); expect(w).not.toMatch(/[.!?]/); }
+    expect(t.less.fates['scenes.clip']).toBe('label');
   });
   test('no reachable line still has the spill, an envelope, a bonus or an as-promised', () => {
     const reach = t.scenes.items.filter((s) => s.kind !== 'city' && s.verb !== 'watch' && (s.temperament === undefined || s.temperament === (s.about === 'waitress' ? 'fearful' : 'mercenary'))).flatMap((s) => s.variants.flatMap((v) => v.beats.flatMap((b) => ('line' in b ? [b.line] : []))));

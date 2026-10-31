@@ -343,7 +343,7 @@
   "ask": {"label":"Ask","by":["fixer"],"engine":{"do":"turn","approach":"ask"},"does":"Ask outright. Free, but most refuse, and they remember you asked.","onTarget":{"waitress":"Ask Inez outright. Free, but she'll likely refuse and remember.","driver":"Ask the driver outright. Free, but he'll likely refuse and remember.","guard":"Ask the guard outright. Free, but he may report you."},"withTarget":"Ask {target}","then":"asks {target}"},
   "pay": {"label":"Pay","by":["fixer"],"engine":{"do":"turn","approach":"pay"},"does":"Slip cash for a favour. They'll owe you, but cash adds Trail.","onTarget":{"waitress":"Slip Inez cash for a favour. She'll owe you, but cash adds Trail.","driver":"Slip the driver cash to bring Vale round the back. Cash adds Trail.","guard":"Slip the guard cash to look away. Cash adds Trail."},"withTarget":"Pay {target}","then":"pays {target}"},
   "help": {"label":"Help","by":["fixer"],"engine":{"do":"turn","approach":"help"},"does":"Solve their trouble. Slower and costlier, but they remember it kindly.","onTarget":{"waitress":"Clear Inez's debt. She'll remember it kindly, but it costs real money.","driver":"Cover the driver's cash trouble. He'll bring Vale round the back.","guard":"Do the guard a kindness. Slow, but it can win him round."},"withTarget":"Help {target}","then":"helps {target}"},
-  "pressure": {"label":"Pressure","by":["fixer"],"engine":{"do":"turn","approach":"pressure"},"does":"Lean on their trouble. Quick and free, but they'll fear and resent you.","onTarget":{"waitress":"Lean on Inez's trouble. Quick and free; she'll fear and resent you.","driver":"Lean on the driver's trouble. Quick and free, but he'll resent you.","guard":"Lean on the guard. Quick and free, but the guard may report you."},"withTarget":"Pressure {target}","then":"pressures {target}"},
+  "pressure": {"label":"Pressure","by":["fixer"],"engine":{"do":"turn","approach":"pressure"},"does":"Lean on their trouble. Quick and free, but they'll fear and resent you.","onTarget":{"waitress":"Quick and free, but she'll warn him. The door stays clear about 1:40, not 3:00.","driver":"Lean on the driver's trouble. Quick and free, but he'll resent you.","guard":"Lean on the guard. Quick and free, but the guard may report you."},"withTarget":"Pressure {target}","then":"pressures {target}"},
   "call": {"label":"Call","by":["fixer"],"engine":{"do":"call"},"does":"Call Inez to draw the guard off the door. Timing matters.","onTarget":{"waitress":"Inez calls the guard over. He leaves his post to hear what she has to say."},"withTarget":"Call {target}","then":"calls {target}"},
   "loop": {"label":"Loop camera","by":["tech"],"engine":{"do":"loop"},"does":"Loop a camera for two minutes. Once it is set, the Tech is free to go.","onTarget":{"cabinet":"Loop a camera from the cabinet for two minutes. The Tech can then leave.","camera-entrance":"Loop this camera for two minutes. The Tech can leave the cabinet.","camera-pickup":"Loop this camera for two minutes. The Tech can leave the cabinet.","camera-mast-z0":"Loop this camera for two minutes. The Tech can leave the cabinet."},"withTarget":"Loop {target}","then":"loops {target}"},
   "disable": {"label":"Disable camera","by":["tech"],"engine":{"do":"disable"},"does":"Cut a camera for good. The desk soon notices, and that counts as a report.","onTarget":{"cabinet":"Cut a camera's line from the cabinet. The desk will notice.","camera-entrance":"Cut this camera for good. The desk soon sees a dead screen.","camera-pickup":"Cut this camera for good. The desk soon sees a dead screen.","camera-mast-z0":"Cut this camera for good. The desk soon sees a dead screen."},"withTarget":"Disable {target}","then":"disables {target}"},
@@ -766,8 +766,8 @@
   "rivals-retreat": {"kind":"world","trigger":"the rivals are driven back","speakers":["rivals"],"log":["rivals.retreat"]},
   "rivals-drawn": {"kind":"world","trigger":"gunfire draws the rivals","speakers":["rivals","scout"],"log":["rivals.drawn"]},
   "guard-lured": {"kind":"world","trigger":"Inez calls the guard: he leaves the door","speakers":["guard"],"log":["call.waitress"]},
-  "guard-at-cafe": {"kind":"world","trigger":"the guard reaches Inez: she keeps him talking (the payoff cut)","speakers":["waitress","guard","scout"],"log":["guard.at-cafe"]},
-  "guard-leaves-cafe": {"kind":"world","trigger":"the guard starts back to the door","speakers":["guard","scout"],"log":["guard.leaves-cafe"]},
+  "guard-at-cafe": {"kind":"world","trigger":"the guard reaches Inez: she keeps him talking (the payoff cut). On a pressed call the street lines of call-inez-pressure play instead","speakers":["waitress","guard","scout"],"log":["guard.at-cafe"]},
+  "guard-leaves-cafe": {"kind":"world","trigger":"the guard starts back to the door. On a pressed call he runs, and only the scout speaks: his line is in the street lines","speakers":["guard","scout"],"log":["guard.leaves-cafe"]},
   "guard-back": {"kind":"world","trigger":"the guard is back on the door","speakers":["guard","scout"],"log":["guard.back"]},
   "car-burns": {"kind":"world","trigger":"a shot car catches fire and will explode in a few seconds","speakers":["scout","tech"],"log":["car.burning"]},
   "camera-shot": {"kind":"world","trigger":"a camera is shot out and goes dark (engine 0.19: fire.camera-dark; a hit that does not put it out, fire.camera-hit, stays silent and shows as the pop)","speakers":["scout","tech"],"log":["fire.camera-dark"]},
@@ -807,7 +807,7 @@
   "crowd-state": {"kind":"world","trigger":"a passer-by's state changes (the crowd, GameScatter): startled, fleeing, sheltered, returning; `back` when they are on their way again","speakers":["crowd"],"log":["crowd.startled","crowd.sheltered","crowd.back"],"note":"speak one passer-by near the cell per change, not each of the crowd; the cast by role (Inez, the driver, the guard, Vale) do not scatter"},
   "saw-gunfire": {"kind":"world","trigger":"a person with a clear line to a shot remembers it (memory act saw-gunfire, taken at the shot before any startle)","speakers":["crowd","waitress","guard"],"note":"no log code; the host speaks it when the memory is written. A questioned witness gives place and time from this memory (investigator.question)"},
   "questioned": {"kind":"world","trigger":"an investigator questions a contact (rulebook investigator.question): outcome gives (the Talker test), lies (a brave helped contact) or nothing","speakers":["waitress","driver"],"note":"[L] investigators do not run in the Handover; these are the debrief hooks: a pressured Inez may identify the Fixer, a helped one lies"},
-  "guard-recalled": {"kind":"world","trigger":"the alarm is up mid-visit: the guard runs back to his post","speakers":["guard","waitress","scout"],"log":["guard.recalled"]},
+  "guard-recalled": {"kind":"world","trigger":"the alarm is up mid-visit: the guard walks back to his post at a guard's pace, 1.4 m/s. Not logged on a pressed run back, which an alarm leaves alone","speakers":["guard","waitress","scout"],"log":["guard.recalled"]},
   "summon-refused": {"kind":"world","trigger":"the call is refused for a summon-* reason: the contact says why (Inez answers the Fixer; the guard, if he is within earshot)","speakers":["waitress","guard"],"note":"outcome is the refusal code; refused at no cost"},
   "agent-down": {"kind":"world","trigger":"an agent is hit down (not the Enforcer: that is a fail)","speakers":["scout","fixer","tech","enforcer"],"log":["scout.down","fixer.down","tech.down"]},
   "win": {"kind":"end","trigger":"the car leaves with Vale in it (Go)","speakers":["scout","fixer","tech","enforcer","councillor"],"log":["success"]},
@@ -1441,7 +1441,9 @@
    "scenes.items.beats": "speech",
    "scenes.items.result": "alt",
    "scenes.items.title": "alt",
+   "scenes.clip": "label",
    "scenes.conversations.items.beats": "speech",
+   "scenes.conversations.items.street": "speech",
    "scenes.conversations.items.learned": "label",
    "scenes.conversations.items.opens": "label"
   },
@@ -1452,6 +1454,7 @@
     "usd",
     "time",
     "trail",
+    "door",
     "alert",
     "lasts",
     "eye",
@@ -1475,6 +1478,11 @@
     "trail": {
      "shows": "+n Trail the order traces",
      "hiddenWhen": "it traces nothing"
+    },
+    "door": {
+     "text": "Door {clock}",
+     "shows": "how long a pressed call clears the public door, in text only, no icon: {clock} is Game.GuardCallWindows(role).pressed, in ticks, rounded to the nearest 10 s (989 ticks reads 1:40). On the Pressure way on Inez, and on the Call way on Inez once a Pressure is remembered",
+     "hiddenWhen": "GuardCallWindows is null (nobody to call, the guard is down, busy, already called, or will not come), or a Call with no Pressure remembered"
     },
     "alert": {
      "shows": "the Alert mark and the Alert the order raises when it goes wrong (seen, reported, found, fired): 1, 3, or \"≥2\" for gunfire; a Disable adds when the desk will notice it (▲1 in 14 s, from the desk's next scan). A run raises none (engine 0.34.0: it is noticed, never an Alert on its own), so its line has no Alert field",
@@ -1549,6 +1557,7 @@
      "usd",
      "time",
      "trail",
+     "door",
      "alert",
      "eye",
      "mark"
@@ -1556,6 +1565,7 @@
     "call": [
      "name",
      "trail",
+     "door",
      "mark"
     ],
     "loop": [
@@ -1684,6 +1694,7 @@
     "pay": "Pay · $90k · 35 s · +2 · ✓",
     "help": "Help · $40k · 35 s · +1 · ½",
     "pressure": "Pressure · 25 s · +3 · ✓",
+    "pressure-inez": "Pressure · 25 s · +3 · Door 1:40 · ✓",
     "fire": "Fire · +2/hit · ▲≥2",
     "fire-camera": "Fire · +2 · ▲≥2",
     "loop": "Loop · 20 s · +1 · 2:00",
@@ -2551,7 +2562,7 @@
   {"event":"summon-refused","speaker":"guard","outcome":"summon-no-visit","lines":["I have no post to leave for this.","No. That's not my business."]},
   {"event":"guard-recalled","speaker":"guard","lines":["Alarm! Back to my post!","Sorry, Inez. I'm called back."]},
   {"event":"guard-recalled","speaker":"waitress","lines":["Go! Quickly, before anyone sees.","Go on. Go. I'll be fine."]},
-  {"event":"guard-recalled","speaker":"scout","lines":["The guard's running back to his door.","Alarm called him back. He's moving fast."]},
+  {"event":"guard-recalled","speaker":"scout","lines":["The guard's going back to his door.","Alarm called him back. He's on his way."]},
   {"event":"takedown-seen","speaker":"guard","lines":["Stop right there!","Hands where I can see them!","You! Step away!"]},
   {"event":"takedown-seen","speaker":"patrol","lines":["Violence detected. Remain calm.","Alert. Disturbance. Alert.","Please stop. This is reported."]},
   {"event":"takedown-seen","speaker":"watcher","lines":["Camera room. Trouble on screen.","Someone's down on camera. Call it in!","Camera two. Violence at the Office."]},
@@ -2614,8 +2625,9 @@
   {"event":"lockdown","speaker":"scout","lines":["They're sealing it. Doors first.","Lockdown. We're running out of time."]}
  ],
  "scenes": {
+  "clip": {"rule":"Brief 085, GDD v0.35.0 section 10: the capture clip's plate, naming the door the Enforcer comes out by; no other text on the clip. service while the service door is free, public when it is held (g.DoorHeld(g.ExitDoor)), both when both are held.","service":"Service door","public":"Public door","both":"Doors held"},
   "conversations": {
-   "rule": "Brief 085, GDD v0.34.0 section 10: when an act lands the whole conversation plays once, its outcome included. Found by lookupConversation on the act that landed; no match, and the act plays its scenes.items scene as bubbles or in the cutaway. status agreed: Sky read the words. awaiting-sky: not yet read by Sky, and it waits on Keel's rule for a pressured Inez. street: lines that follow the cutaway in play.",
+   "rule": "Brief 085, GDD v0.34.0 section 10: when an act lands the whole conversation plays once, its outcome included. Found by lookupConversation on the act that landed; no match, and the act plays its scenes.items scene as bubbles or in the cutaway. status records Sky's read and gates nothing: agreed, he read and agreed the words; awaiting-sky, they play, and he has not read them yet. street: lines that follow the cutaway in play, on the engine log code `on`; pressed: only while Game.GuardCallPressed.",
    "names": {"scout":"Scout","fixer":"Fixer","waitress":"Inez","driver":"Zhou","guard":"Okafor","milena":"Milena"},
    "items": [
     {"id":"listen-inez","title":"Listen to Inez","status":"agreed","from":"briefs/085/fable/approved.json","when":{"verb":"listen","about":"waitress","temperament":"fearful","turned":false},"beats":[{"speaker":"milena","line":"You've been looking at the Office door all shift, Inez."},{"speaker":"waitress","line":"Who else has noticed? I've got the terrace to see to."},{"speaker":"milena","line":"You jump at everything. Nobody watches a door for nothing."},{"speaker":"waitress","line":"It's the Bureau, that's all. Waiting tables here, I can't keep up."},{"speaker":"milena","line":"I owe them too. I don't keep looking at that guard."},{"speaker":"waitress","line":"Did Okafor say something? Who else has he told?"},{"speaker":"milena","line":"He said nothing. You just did."},{"speaker":"waitress","line":"Yes, I'm seeing him. If the Office hears, it costs us both."},{"speaker":"milena","line":"Then stop looking. You can't afford it."},{"speaker":"scout","line":"Bureau loan, behind, could be cleared. Okafor, Office door, could be used."}],"learned":["Debt: Bureau loan, and she's behind.","Secret: seeing Okafor, the door guard."],"opens":["Help: clear her Bureau loan.","Pressure: threaten to expose the affair."]},
@@ -2624,7 +2636,7 @@
     {"id":"pressure-inez","title":"Pressure Inez","status":"agreed","from":"briefs/085/fable/approved.json","when":{"verb":"pressure","about":"waitress","temperament":"fearful","outcome":"turned","helped":false},"beats":[{"speaker":"waitress","line":"Is it the Bureau? I know I'm behind."},{"speaker":"fixer","line":"Not the Bureau. Softly. The Office could learn about you and Okafor."},{"speaker":"waitress","line":"All right. Yes. Whatever it is, yes. Just not the Office."},{"speaker":"fixer","line":"Hear it first. When I telephone, you call Okafor off the door."},{"speaker":"waitress","line":"He'd come. I'd say it can't go by telephone."},{"speaker":"fixer","line":"Keep Okafor with you a few minutes. That's all we ask."},{"speaker":"waitress","line":"You're very polite about it. Go, before someone sees you."},{"speaker":"fixer","line":"I know what this is. Not a word of us to Okafor."}],"learned":["Threatened, she agreed; knows Fixer's face."],"opens":["Call Inez"]},
     {"id":"pay-driver","title":"Pay the driver","status":"agreed","from":"briefs/085/fable/approved.json","when":{"verb":"pay","about":"driver","temperament":"mercenary","outcome":"turned"},"beats":[{"speaker":"driver","line":"You said money, and it's been a lean month. For what, exactly?"},{"speaker":"fixer","line":"We've paid already. One short drive with the Councillor."},{"speaker":"driver","line":"I won't ask who's we. Driving the Councillor's never paid like that."},{"speaker":"fixer","line":"At the chime he gets in. Not home, the service bay."},{"speaker":"driver","line":"East yard, round the back. And I wait how long, exactly?"},{"speaker":"fixer","line":"Until we've got him. Not long."},{"speaker":"driver","line":"Been paid for 'not long' before. Couple of minutes, then I drive."},{"speaker":"fixer","line":"A couple of minutes, Zhou. We'll be at the service bay."},{"speaker":"driver","line":"I won't look. Anyone watching the service bay, I can send off."}],"learned":["Zhou waits a couple of minutes."],"opens":["Be at the service bay"]},
     {"id":"call-inez","title":"The call, after Help","status":"agreed","from":"briefs/085/fable/approved.json","when":{"verb":"call","about":"waitress","temperament":"fearful","turnedBy":"help"},"beats":[{"speaker":"fixer","line":"It's time, Miss Nikolaou. Call Okafor across now."},{"speaker":"waitress","line":"Now? With the terrace looking? Yes. All right."},{"speaker":"waitress","line":"How's your shift, love? Come across. I've something to tell you."},{"speaker":"guard","line":"Long. I've this door till shift's end. Say it here."},{"speaker":"waitress","line":"Not down a telephone. It can't wait. Please."},{"speaker":"guard","line":"Then the door can wait. I'm leaving it now."},{"speaker":"waitress","line":"Walk, love. Don't run. Let me keep you a while."}],"learned":["Door empty a few minutes"],"opens":["Camera off? Then enter the Office."]},
-    {"id":"call-inez-pressure","title":"The call, after Pressure","status":"awaiting-sky","from":"runs/conversations/085/r003, split by hand on Motive's rule (briefs/085/motive/pressure-guard.md): he walks over, stands 5 s, runs back, so she tells him when he arrives","when":{"verb":"call","about":"waitress","temperament":"fearful","turnedBy":"pressure"},"beats":[{"speaker":"fixer","line":"It's time, Miss Nikolaou. Okafor hears what we agreed, and nothing else."},{"speaker":"waitress","line":"Yes, I'll call him. Did anyone hear you ask for me?"},{"speaker":"waitress","line":"It's me, love. How long till the change?"},{"speaker":"guard","line":"Long enough. That's not your voice. What is it?"},{"speaker":"waitress","line":"I've something to tell you that can't wait. Not on the line."},{"speaker":"guard","line":"It's only a door. All right, I'm coming."}],"street":[{"on":"guard.at-cafe","beat":"Inez warned him.","beats":[{"speaker":"waitress","line":"Someone knows about us, love. Whoever it was looked suspicious."},{"speaker":"guard","line":"And my door's standing empty. Stay here, Inez."}]}],"learned":["She'll warn him when he arrives."],"opens":["Short window. Camera off, then enter."],"price":{"on":"actions.pressure.onTarget.waitress","line":"Quick and free, but she'll warn him. The door stays clear about 1:40, not 3:00."}}
+    {"id":"call-inez-pressure","title":"The call, after Pressure","status":"awaiting-sky","from":"runs/conversations/085/r003, split by hand on Motive's rule (briefs/085/motive/pressure-guard.md): he walks over, stands 5 s, runs back, so she tells him when he arrives","when":{"verb":"call","about":"waitress","temperament":"fearful","turnedBy":"pressure"},"beats":[{"speaker":"fixer","line":"It's time, Miss Nikolaou. Okafor hears what we agreed, and nothing else."},{"speaker":"waitress","line":"Yes, I'll call him. Did anyone hear you ask for me?"},{"speaker":"waitress","line":"It's me, love. How long till the change?"},{"speaker":"guard","line":"Long enough. That's not your voice. What is it?"},{"speaker":"waitress","line":"I've something to tell you that can't wait. Not on the line."},{"speaker":"guard","line":"It's only a door. All right, I'm coming."}],"street":[{"on":"guard.at-cafe","pressed":true,"beat":"Inez warned him.","beats":[{"speaker":"waitress","line":"Someone knows about us, love. Whoever it was looked suspicious."},{"speaker":"guard","line":"And my door's standing empty. Stay here, Inez."}]}],"learned":["She'll warn him when he arrives."],"opens":["Short window. Camera off, then enter."]}
    ]
   },
   "rules": {
