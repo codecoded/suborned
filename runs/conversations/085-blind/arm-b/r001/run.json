@@ -1,0 +1,82 @@
+{
+  "note": "Proposal for Sky to read; nothing here reaches text.json or the game.",
+  "corpusHash": "64aeea6f98869bb73228f1db219c490d3863f90740095faaaf79950124d0d5d1",
+  "git": "3868d04490f12df264e7715d9e831940d4402168",
+  "cardChange": "bubbles ≤ 10 words -> bubbles ≤ 12 words, in the system prompt of this arm's dialogue-designer calls only; the card on disk is untouched",
+  "calls": [
+    {
+      "id": "01-write-listen-inez",
+      "role": "dialogue-designer",
+      "model": "claude-opus-5-5",
+      "modelsUsed": [
+        "claude-haiku-5-5",
+        "claude-opus-5-5"
+      ],
+      "status": "accepted",
+      "seconds": 169,
+      "costUsd": 0.40321,
+      "schemaSha256": "2e7d8034e4e743948fecd07d8bde0c1c46cfc03fac5d14d64ae0a0e7b981edd6",
+      "hits": 8
+    },
+    {
+      "id": "02-edit-listen-inez",
+      "role": "dialogue-designer",
+      "model": "claude-opus-5-5",
+      "modelsUsed": [
+        "claude-haiku-5-5",
+        "claude-opus-5-5"
+      ],
+      "status": "accepted",
+      "seconds": 118,
+      "costUsd": 0.3440828,
+      "schemaSha256": "615ad5e90cb92c2e68f0062d074ab901d3d0bcdc403167a9a549284b105c7a79",
+      "hits": 8
+    },
+    {
+      "id": "01-write-pressure-inez",
+      "role": "dialogue-designer",
+      "model": "claude-opus-5-5",
+      "modelsUsed": [
+        "claude-haiku-5-5",
+        "claude-opus-5-5"
+      ],
+      "status": "accepted",
+      "seconds": 184,
+      "costUsd": 0.45181049999999995,
+      "schemaSha256": "2e7d8034e4e743948fecd07d8bde0c1c46cfc03fac5d14d64ae0a0e7b981edd6",
+      "hits": 8
+    },
+    {
+      "id": "02-edit-pressure-inez",
+      "role": "dialogue-designer",
+      "model": "claude-opus-5-5",
+      "modelsUsed": [
+        "claude-haiku-5-5",
+        "claude-opus-5-5"
+      ],
+      "status": "accepted",
+      "seconds": 123,
+      "costUsd": 0.3197902,
+      "schemaSha256": "615ad5e90cb92c2e68f0062d074ab901d3d0bcdc403167a9a549284b105c7a79",
+      "hits": 8
+    },
+    {
+      "id": "01-review-fit",
+      "role": "systems-designer",
+      "model": "claude-opus-5-5",
+      "modelsUsed": [
+        "claude-haiku-5-5",
+        "claude-opus-5-5"
+      ],
+      "status": "accepted",
+      "seconds": 63,
+      "costUsd": 0.1791717,
+      "schemaSha256": "6057d0005ea0aeafc6bb995f8d5c102b34bd4cb2b4bd7aa94cecbc278c938a11",
+      "hits": 8
+    }
+  ],
+  "callCount": 5,
+  "wallSeconds": 372,
+  "faults": [],
+  "reviewFaults": 2
+}

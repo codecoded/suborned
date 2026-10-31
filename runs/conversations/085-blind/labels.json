@@ -1,0 +1,8 @@
+{
+ "listen-inez|Is that tube for me? Is it from the Office?": true,
+ "listen-inez|The Bureau, your loan. Why would the Office write to a waitress?": false,
+ "listen-inez|Who told you? Has anyone been asking at the Office?": true,
+ "pressure-inez|Who told you that? Who else knows?": true,
+ "pressure-inez|They'd have him off that door. What do you want?": true,
+ "listen-inez|Inside's had no tips tonight. Split yours?": true
+}

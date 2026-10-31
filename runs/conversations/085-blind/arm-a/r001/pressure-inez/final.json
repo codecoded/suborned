@@ -1,0 +1,54 @@
+{
+  "id": "pressure-inez",
+  "title": "Pressure Inez",
+  "kind": "turn",
+  "picked": 1,
+  "why": "Take 1 has the most life. Her wrong guess about the Bureau shows the debt, and \"Smile, people can see\" makes the visible threat something the Fixer has a reason to say [5a29be8544e336060f678471]. Its ending also lands the face fact [3c23187f33c3d2fe2bc9e157].",
+  "changes": [
+    "Removed 'affair' and 'Table six'. The Fixer now says only 'you and Okafor' and 'the Office could learn', which keeps it gentle and adds no invented detail.",
+    "Made each line force the next: 'Who else knows?' gets 'Only us', and 'They'd have him off that door' gets 'About a minute off it', so the ask answers her fear.",
+    "Replaced 'because you've scared me' with 'I'm too scared to say no', which gives agreement, fear and resentment in one line. Added 'I'm sorry' so the Fixer takes no pleasure in it.",
+    "Conflict for Aster, not used in the scene: the GDD says his café stop before his shift is to see her [e1dd761142af169bfd1cc0d3], but the sheet says they're never together unless she calls him. The scene states neither."
+  ],
+  "beats": [
+    {
+      "speaker": "Inez",
+      "line": "If you're from the Bureau, the loan waits on my tips."
+    },
+    {
+      "speaker": "Fixer",
+      "line": "Not the Bureau, I'm sorry. It's about you and Okafor."
+    },
+    {
+      "speaker": "Inez",
+      "line": "Who told you that? Who else knows?"
+    },
+    {
+      "speaker": "Fixer",
+      "line": "Only us. The Office could learn, though. Smile, people can see."
+    },
+    {
+      "speaker": "Inez",
+      "line": "They'd have him off that door. What do you want?"
+    },
+    {
+      "speaker": "Fixer",
+      "line": "About a minute off it. When I telephone, you call him over."
+    },
+    {
+      "speaker": "Inez",
+      "line": "I'm too scared to say no. I won't forget your face."
+    },
+    {
+      "speaker": "Fixer",
+      "line": "No, you won't. If you're ever questioned, you could describe it."
+    }
+  ],
+  "learned": [
+    "Inez knows the Fixer's face now."
+  ],
+  "opens": [
+    "Call Inez"
+  ],
+  "faults": []
+}

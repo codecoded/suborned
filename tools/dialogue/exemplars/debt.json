@@ -1,0 +1,134 @@
+{
+ "job": "debt",
+ "what": "A debt between two people, and what it does to how they talk.",
+ "excerpts": [
+  {
+   "id": "krogstad-only-disagreeable",
+   "source": "dolls-house",
+   "where": "Act 1",
+   "text": "NORA. You don’t mean that you will tell my husband that I owe you money?\nKROGSTAD. Hm!—suppose I were to tell him?\nNORA. It would be perfectly infamous of you. [Sobbing.] To think of his learning my secret, which has been my joy and pride, in such an ugly, clumsy way—that he should learn it from you! And it would put me in a horribly disagreeable position—\nKROGSTAD. Only disagreeable?",
+   "moves": [
+    {
+     "at": "You don’t mean that you will tell my husband",
+     "move": "She says the threat for him. Frightened people finish the sentence they fear."
+    },
+    {
+     "at": "Hm!—suppose I were to tell him?",
+     "move": "He lets her words stand and asks a question. He has now threatened without ever choosing to."
+    },
+    {
+     "at": "my joy and pride",
+     "move": "She talks about how it would feel to hear it from him, and not about what it would cost. The real fear stays under the complaint."
+    },
+    {
+     "at": "Only disagreeable?",
+     "move": "Two words pick up her last adjective and turn it. A short line after a long one does the damage."
+    }
+   ]
+  },
+  {
+   "id": "krogstad-paying-regularly",
+   "source": "dolls-house",
+   "where": "Act 1",
+   "text": "NORA. Well, haven’t I been paying it off regularly?\nKROGSTAD. Fairly so, yes. But—to come back to the matter in hand—that must have been a very trying time for you, Mrs Helmer?\nNORA. It was, indeed.",
+   "moves": [
+    {
+     "at": "haven’t I been paying it off regularly?",
+     "move": "A debtor defends her record unprompted. Her pride is in the payments, not the money."
+    },
+    {
+     "at": "Fairly so, yes.",
+     "move": "The creditor marks her like a clerk. Grudging accuracy is more cutting than a complaint."
+    },
+    {
+     "at": "to come back to the matter in hand",
+     "move": "He brushes the debt aside and turns to something worse. The thing she wanted to talk about is the thing he does not."
+    },
+    {
+     "at": "a very trying time for you",
+     "move": "Sympathy as a set-up. She can only agree, and it walks her closer."
+    }
+   ]
+  },
+  {
+   "id": "pischin-240-roubles",
+   "source": "chekhov-plays-2",
+   "where": "The Cherry Orchard, Act 1",
+   "text": "PISCHIN. [Follows her] Yes, we’ve got to go to bed.... Oh, my gout! I’ll stay the night here. If only, Lubov Andreyevna, my dear, you could get me 240 roubles to-morrow morning--\nGAEV. Still the same story.\nPISCHIN. Two hundred and forty roubles... to pay the interest on the mortgage.\nLUBOV. I haven’t any money, dear man.\nPISCHIN. I’ll give it back... it’s a small sum....\nLUBOV. Well, then, Leonid will give it to you.... Let him have it, Leonid.\nGAEV. By all means; hold out your hand.\nLUBOV. Why not? He wants it; he’ll give it back.",
+   "moves": [
+    {
+     "at": "Oh, my gout!",
+     "move": "He comes at it through something else: bed, then his foot, then the ask."
+    },
+    {
+     "at": "you could get me 240 roubles to-morrow morning--",
+     "move": "The ask has an exact sum and a deadline and is left unfinished. The number makes it real."
+    },
+    {
+     "at": "Still the same story.",
+     "move": "A bystander shows us this is routine. One line of history, no backstory."
+    },
+    {
+     "at": "I haven’t any money, dear man.",
+     "move": "A warm no."
+    },
+    {
+     "at": "I’ll give it back... it’s a small sum....",
+     "move": "He does not hear the no. He answers the objection he prepared for."
+    },
+    {
+     "at": "Well, then, Leonid will give it to you....",
+     "move": "She spends someone else's money to end an awkward moment. Character shown by the way the debt moves, with nobody saying what she is like."
+    }
+   ]
+  },
+  {
+   "id": "wemmick-invest-friend",
+   "source": "great-expectations",
+   "where": "Chapter 36",
+   "text": "“This is very discouraging,” said I.\n“Meant to be so,” said Wemmick.\n“Then is it your opinion,” I inquired, with some little indignation, “that a man should never—”\n“—Invest portable property in a friend?” said Wemmick. “Certainly he should not. Unless he wants to get rid of the friend,—and then it becomes a question how much portable property it may be worth to get rid of him.”\n“And that,” said I, “is your deliberate opinion, Mr. Wemmick?”\n“That,” he returned, “is my deliberate opinion in this office.”",
+   "moves": [
+    {
+     "at": "“Meant to be so,” said Wemmick.",
+     "move": "Agrees cheerfully with the complaint. Nothing to push against."
+    },
+    {
+     "at": "that a man should never—”",
+     "move": "Gets cut off. The other finishes the sentence better than the speaker would have, because he has heard it before."
+    },
+    {
+     "at": "how much portable property it may be worth to get rid of him",
+     "move": "Prices a friendship. A money word where a feeling should be."
+    },
+    {
+     "at": "my deliberate opinion in this office",
+     "move": "Adds a place to his answer. What he says here is not everything he thinks, and the last two words let you see that."
+    }
+   ]
+  },
+  {
+   "id": "crofts-forty-thousand",
+   "source": "mrs-warren",
+   "where": "Act 3",
+   "text": "I was a good friend to your mother: ask her whether I wasn’t. She’d never have make the money that paid for your education if it hadnt been for my advice and help, not to mention the money I advanced her. There are not many men who would have stood by her as I have. I put not less than forty thousand pounds into it, from first to last.\nVIVIE [staring at him] Do you mean to say that you were my mother’s business partner?\nCROFTS. Yes. Now just think of all the trouble and the explanations it would save if we were to keep the whole thing in the family, so to speak. Ask your mother whether she’d like to have to explain all her affairs to a perfect stranger.\nVIVIE. I see no difficulty, since I understand that the business is wound up, and the money invested.\nCROFTS [stopping short, amazed] Wound up! Wind up a business thats paying 35 per cent in the worst years! Not likely. Who told you that?",
+   "moves": [
+    {
+     "at": "I put not less than forty thousand pounds into it",
+     "move": "A claim on someone, stated as generosity. He is listing what is owed to him while he says he is being kind."
+    },
+    {
+     "at": "Do you mean to say that you were my mother’s business partner?",
+     "move": "She takes the one fact out of his boast. A person showing off gives away more than they meant."
+    },
+    {
+     "at": "it would save if we were to keep the whole thing in the family",
+     "move": "A threat folded inside convenience: trouble saved, explanations avoided."
+    },
+    {
+     "at": "Wind up a business thats paying 35 per cent",
+     "move": "Surprise makes him say the true number. The secret comes out as pride in the returns, not as a confession."
+    }
+   ]
+  }
+ ]
+}

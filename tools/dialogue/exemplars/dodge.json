@@ -1,0 +1,130 @@
+{
+ "job": "dodge",
+ "what": "A dodge under a direct question.",
+ "excerpts": [
+  {
+   "id": "gaev-anchovies",
+   "source": "chekhov-plays-2",
+   "where": "The Cherry Orchard, Act 3",
+   "text": "LUBOV. Leon, what’s happened? Leon, well? [Impatiently, in tears] Quick, for the love of God....\nGAEV. [Says nothing to her, only waves his hand; to FIERS, weeping] Here, take this.... Here are anchovies, herrings from Kertch.... I’ve had no food to-day.... I have had a time! [The door from the billiard-room is open; the clicking of the balls is heard, and YASHA’S voice, “Seven, eighteen!” GAEV’S expression changes, he cries no more] I’m awfully tired. Help me change my clothes, Fiers.",
+   "moves": [
+    {
+     "at": "for the love of God....",
+     "move": "A direct, desperate question, put twice."
+    },
+    {
+     "at": "Here, take this.... Here are anchovies",
+     "move": "He answers a different person about something else. The shopping is the answer: nobody would talk about herrings if the news were good."
+    },
+    {
+     "at": "I have had a time!",
+     "move": "He starts toward it and stops."
+    },
+    {
+     "at": "I’m awfully tired. Help me change my clothes",
+     "move": "A sound from the next room changes his face, and he goes back to the body and its needs. Leaves the room without having said it."
+    }
+   ]
+  },
+  {
+   "id": "iago-echo",
+   "source": "othello",
+   "where": "Act 3, scene 3",
+   "text": "OTHELLO. Indeed? Ay, indeed. Discern’st thou aught in that? Is he not honest?\nIAGO. Honest, my lord?\nOTHELLO. Honest? ay, honest.\nIAGO. My lord, for aught I know.\nOTHELLO. What dost thou think?\nIAGO. Think, my lord?",
+   "moves": [
+    {
+     "at": "Is he not honest?",
+     "move": "Direct question, already half in doubt."
+    },
+    {
+     "at": "Honest, my lord?",
+     "move": "Hands the word back. Repeating the question says more than any answer, and the speaker can deny it later."
+    },
+    {
+     "at": "My lord, for aught I know.",
+     "move": "An answer that sounds like yes and commits to nothing."
+    },
+    {
+     "at": "Think, my lord?",
+     "move": "The same move again. Doing it twice makes the other do the work of suspecting."
+    }
+   ]
+  },
+  {
+   "id": "jaggers-informed",
+   "source": "great-expectations",
+   "where": "Chapter 40",
+   "text": "“Don’t commit yourself,” said Mr. Jaggers, “and don’t commit any one. You understand—any one. Don’t tell me anything: I don’t want to know anything; I am not curious.”\nOf course I saw that he knew the man was come.\n“I merely want, Mr. Jaggers,” said I, “to assure myself that what I have been told is true. I have no hope of its being untrue, but at least I may verify it.”\nMr. Jaggers nodded. “But did you say ‘told’ or ‘informed’?” he asked me, with his head on one side, and not looking at me, but looking in a listening way at the floor. “Told would seem to imply verbal communication. You can’t have verbal communication with a man in New South Wales, you know.”\n“I will say, informed, Mr. Jaggers.”\n“Good.”",
+   "moves": [
+    {
+     "at": "Don’t tell me anything: I don’t want to know anything; I am not curious.",
+     "move": "He dodges the question before it is asked, by forbidding it. What he refuses to hear tells us what he already knows."
+    },
+    {
+     "at": "But did you say ‘told’ or ‘informed’?",
+     "move": "He fights about one word so that the fact need never be admitted between them."
+    },
+    {
+     "at": "I will say, informed, Mr. Jaggers.",
+     "move": "The other person learns the rules and plays along. A shared evasion makes a bond."
+    },
+    {
+     "at": "“Good.”",
+     "move": "One word of approval, for the right form and not the truth."
+    }
+   ]
+  },
+  {
+   "id": "verloc-gas",
+   "source": "secret-agent",
+   "where": "Chapter 3",
+   "text": "Mrs Verloc, on her back, and staring at the ceiling, made a remark.\n“Takings very small to-day.”\nMr Verloc, in the same position, cleared his throat as if for an important statement, but merely inquired:\n“Did you turn off the gas downstairs?”\n“Yes; I did,” answered Mrs Verloc conscientiously. “That poor boy is in a very excited state to-night,” she murmured, after a pause which lasted for three ticks of the clock.",
+   "moves": [
+    {
+     "at": "“Takings very small to-day.”",
+     "move": "Marriage conducted through the shop. A money remark holds everything else she could say."
+    },
+    {
+     "at": "as if for an important statement, but merely inquired",
+     "move": "He has a confession ready and asks about a household chore."
+    },
+    {
+     "at": "“Did you turn off the gas downstairs?”",
+     "move": "A question as a way of not speaking. It is also a real question, which is why it works."
+    },
+    {
+     "at": "“Yes; I did,”",
+     "move": "She answers the chore exactly, and then raises the thing she actually cares about. Each is on a separate track."
+    }
+   ]
+  },
+  {
+   "id": "spade-my-business",
+   "source": "maltese-falcon",
+   "where": "Chapter 19",
+   "text": "“You think it’s been so damned easy?” Spade asked, and shrugged. “Well, maybe, but that’s my business.”\n“It certainly is,” the fat man agreed. He screwed up his eyes, moved his head to indicate the kitchen, and lowered his voice. “Are you sharing with her?”\nSpade said: “That’s my business too.”\n“It certainly is,” the fat man agreed once more, “but”—he hesitated—“I’d like to give you a word of advice.”\n“Go ahead.”\n“If you don’t—I dare say you’ll give her some money in any event, but—if you don’t give her as much as she thinks she ought to have, my word of advice is—be careful.”\nSpade’s eyes held a mocking light. He asked: “Bad?”\n“Bad,” the fat man replied.",
+   "moves": [
+    {
+     "at": "“Well, maybe, but that’s my business.”",
+     "move": "Grants the point and shuts the door in the same breath."
+    },
+    {
+     "at": "“Are you sharing with her?”",
+     "move": "A direct, personal question, with a glance at the kitchen and a lowered voice. Staging makes it private."
+    },
+    {
+     "at": "Spade said: “That’s my business too.”",
+     "move": "Same words as before, one more added. Repetition instead of an answer."
+    },
+    {
+     "at": "I’d like to give you a word of advice",
+     "move": "The one refused turns to advice. He gets his warning in anyway, which is what he came to do."
+    },
+    {
+     "at": "He asked: “Bad?”",
+     "move": "One word, mocking, and the real threat is agreed between them in one more."
+    }
+   ]
+  }
+ ]
+}

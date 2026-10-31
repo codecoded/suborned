@@ -1,0 +1,17 @@
+{
+  "faults": [
+    {
+      "scene": "listen-inez",
+      "line": "Scout: \"Inez behind with the Bureau. Seeing Okafor, door guard. Jumps at everything.\"",
+      "problem": "The scene runs 10 beats and ends on the Scout's read, but §10 allows the cutaway at most 3 beats and keeps the read for when the act lands, so as written it gives the result before Listen's 30 s have run.",
+      "fix": "Play only the first 3 beats as the cutaway and deliver the rest, including this line, as bubbles when Listen lands."
+    },
+    {
+      "scene": "pressure-inez",
+      "line": "Inez: \"One call, no letter. I never forget a face that didn't pay.\"",
+      "problem": "The scene runs 8 beats and shows her yes, but §10 allows the cutaway at most 3 beats and keeps the reply and result for when the act lands, so as written it can contradict the outcome if Pressure's 25 s are interrupted.",
+      "fix": "Play only the first 3 beats as the cutaway and deliver the rest, including this yes, as bubbles when Pressure lands."
+    }
+  ],
+  "notes": "Both faults are the same §10 conflict (agent GDD dd77e34fb83021a7c1081a41; human GDD 606e5d36a162a974f82d9889). The scene facts ask for a full scene with a last beat or a yes, while §10 limits the cutaway to the opening. §10 is not Motive's, so I have not resolved this: Aster or Sky should decide whether brief 085 keeps the split above or changes §10.\n\nThe approaches, what Inez and the cell know, the threat, the Fixer's face, and `learned` and `opens` all fit the supplied passages (c407d23e4f6647fe2f4315a1, 5a29be8544e336060f678471, 96030c4c4a1a18523a3fdbbb, 4c8fad65dcc365c5f3afdb7e). I found no line that implies a single right way to win her over.\n\nNot fully checked, because the §04 temperament rules, §07 routes and the partners rule were not in the supplied passages:\n- \"We only want him a minute\" rests only on the scene facts (\"about a minute\").\n- \"One call\" needs checking against the Call rule, in case Inez can be called more than once.\n- Inez's and Milena's fearful and mercenary behaviour was not checked against the temperament rules.\n\nQuestion for Waymark or Fable: the facts place Milena \"just inside\", and §10 does not play a scene if either person is inside. Confirm that the scene's two people are the Scout and Inez, with Milena only a voice through the door; otherwise the scene never plays."
+}

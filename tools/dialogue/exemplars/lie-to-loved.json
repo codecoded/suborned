@@ -1,0 +1,90 @@
+{
+ "job": "lie-to-loved",
+ "what": "A lie told to someone who loves you.",
+ "excerpts": [
+  {
+   "id": "nora-here-no",
+   "source": "dolls-house",
+   "where": "Act 1",
+   "text": "HELMER. Yes. Has anyone been here?\nNORA. Here? No.\nHELMER. That is strange. I saw Krogstad going out of the gate.\nNORA. Did you? Oh yes, I forgot, Krogstad was here for a moment.\nHELMER. Nora, I can see from your manner that he has been here begging you to say a good word for him.\nNORA. Yes.\nHELMER. And you were to appear to do it of your own accord; you were to conceal from me the fact of his having been here; didn’t he beg that of you too?",
+   "moves": [
+    {
+     "at": "Here? No.",
+     "move": "She repeats the word to buy a second, then lies in one syllable. Liars keep it short."
+    },
+    {
+     "at": "That is strange. I saw Krogstad going out of the gate.",
+     "move": "He knows already. The lie is tested with mild interest, which is worse than anger."
+    },
+    {
+     "at": "Did you? Oh yes, I forgot",
+     "move": "A lie mended with a smaller lie, and the tone stays light. The player holds what she is hiding, so the lightness hurts."
+    },
+    {
+     "at": "I can see from your manner",
+     "move": "He reads her wrongly and kindly. Someone who loves you explains away your lie for you."
+    },
+    {
+     "at": "NORA. Yes.",
+     "move": "She accepts his wrong explanation, because it is safer than the truth. The lie gets easier because he helps."
+    }
+   ]
+  },
+  {
+   "id": "jig-i-feel-fine",
+   "source": "men-without-women-pg",
+   "where": "Hills Like White Elephants, ending",
+   "text": "She was sitting at the table and smiled at him.\n“Do you feel better?” he asked.\n“I feel fine,” she said. “There’s nothing wrong with me. I feel fine.”",
+   "moves": [
+    {
+     "at": "smiled at him",
+     "move": "The lie starts as a piece of staging, before any word."
+    },
+    {
+     "at": "“Do you feel better?” he asked.",
+     "move": "A loving question that wants only one answer. He is asking to be let off."
+    },
+    {
+     "at": "“I feel fine,” she said.",
+     "move": "Plain words, nothing to catch hold of. It works because of what the scene already planted."
+    },
+    {
+     "at": "There’s nothing wrong with me. I feel fine.”",
+     "move": "She says it again, unasked. The repeat is the only sign. No closing quip; the scene stops there."
+    }
+   ]
+  },
+  {
+   "id": "desdemona-not-lost",
+   "source": "othello",
+   "where": "Act 3, scene 4",
+   "text": "OTHELLO. Is’t lost? is’t gone? speak, is it out of the way?\nDESDEMONA. Heaven bless us!\nOTHELLO. Say you?\nDESDEMONA. It is not lost, but what and if it were?\nOTHELLO. How?\nDESDEMONA. I say it is not lost.\nOTHELLO. Fetch’t, let me see ’t.\nDESDEMONA. Why, so I can, sir, but I will not now. This is a trick to put me from my suit. Pray you, let Cassio be receiv’d again.\nOTHELLO. Fetch me the handkerchief! My mind misgives.\nDESDEMONA. Come, come. You’ll never meet a more sufficient man.\nOTHELLO. The handkerchief!\nDESDEMONA. I pray, talk me of Cassio.",
+   "moves": [
+    {
+     "at": "Heaven bless us!",
+     "move": "An exclamation in place of an answer."
+    },
+    {
+     "at": "It is not lost, but what and if it were?",
+     "move": "A denial and a dare in one line. Half of it already gives her away."
+    },
+    {
+     "at": "I say it is not lost.",
+     "move": "Firmer the second time, which is how a lie sounds when pressed."
+    },
+    {
+     "at": "but I will not now.",
+     "move": "She can't produce the thing, so she makes not producing it a matter of will."
+    },
+    {
+     "at": "This is a trick to put me from my suit.",
+     "move": "She accuses him and changes the subject to what she came to ask. Attack is the cover."
+    },
+    {
+     "at": "I pray, talk me of Cassio.",
+     "move": "Each is now on their own track, one thing repeated against another."
+    }
+   ]
+  }
+ ]
+}

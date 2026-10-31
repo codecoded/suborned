@@ -1,0 +1,11 @@
+{
+  "faults": [
+    {
+      "scene": "pressure-inez",
+      "line": "Only us. The Office could learn, though. Smile, people can see.",
+      "problem": "Pressure needs the need known, so the player has usually just heard Milena work out the affair in listen-inez, and this line makes the Fixer state a fact the scenes contradict: \"Only us\" is false, and no rule tells the Fixer who else knows [c407d23e4f6647fe2f4315a1].",
+      "fix": "Replace it with \"The Office doesn't, yet. It could learn, though. Smile, people can see.\", which answers her without claiming who knows."
+    }
+  ],
+  "notes": "listen-inez has no faults of its own on the four checks. For Aster, not resolved here: both scenes conflict with the §10 conversation scene rule, which allows at most 3 opening beats and never the reply, the result or the read, those coming as bubbles at landing [dd77e34fb83021a7c1081a41, 606e5d36a162a974f82d9889]. listen-inez runs 10 beats and ends on the Scout's read; pressure-inez runs 8 beats and plays her agreement before the act's seconds run, so an interrupted Pressure could contradict what was shown. Their facts sheets ask for this content, so either the scenes are split into opening and landing bubbles or Brief 085 needs a §10 change. Open question for Aster (§04 knowledge rule not among the passages I had): Milena's \"I owe them too\" lets the player hear her debt, but `learned` and `opens` give nothing on her; if that doesn't count as her need known, the player has heard a lever they can't use. For Fable, outside this rules review: \"I'm too scared to say no\" names the temperament, which the facts sheet says to show and never name. The \"about a minute\" and \"when I telephone\" terms were checked only against the scene facts, since the §07 call rule beyond [96030c4c4a1a18523a3fdbbb] was not in the passages. No files changed. Evidence: read against the supplied passages only; no commands run. Next owner: Fable for the line fix, Aster for the §10 conflict and the Milena question."
+}

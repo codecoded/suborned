@@ -1,0 +1,295 @@
+{
+ "checked": "whitespace, Gutenberg _ marks and word joiners ignored; every other character must match",
+ "sources": [
+  {
+   "slug": "dolls-house",
+   "url": "https://www.gutenberg.org/cache/epub/2542/pg2542.txt",
+   "sha256": "d72a481b08ca7ace73e8ca2087b2baec29fc00e0d6e493f5e877b12116bccf4f"
+  },
+  {
+   "slug": "ideal-husband",
+   "url": "https://www.gutenberg.org/cache/epub/885/pg885.txt",
+   "sha256": "c59b8e04974f62a0bb67fd10dc0555932fc837bd57317ecb34801bd20d29943b"
+  },
+  {
+   "slug": "return-holmes",
+   "url": "https://www.gutenberg.org/cache/epub/108/pg108.txt",
+   "sha256": "8c4de14b3a1952417eca4673fcb1b8aa8f946f8a4164f10ec761368af34d5e5a"
+  },
+  {
+   "slug": "great-expectations",
+   "url": "https://www.gutenberg.org/cache/epub/1400/pg1400.txt",
+   "sha256": "9a637118af8e953e9764ec603d9b0a032883384d465acac2e27966a80cf1c6f8"
+  },
+  {
+   "slug": "bleak-house",
+   "url": "https://www.gutenberg.org/cache/epub/1023/pg1023.txt",
+   "sha256": "27e002dee487817b00ba884f3d5ffd8dbb821f82353e914cdc22bf33c413ba16"
+  },
+  {
+   "slug": "crime-punishment",
+   "url": "https://www.gutenberg.org/cache/epub/2554/pg2554.txt",
+   "sha256": "4a84a709a6e355f5fa555c7276c8a90125eb9d06f63bc8663410c3d1297eb688"
+  },
+  {
+   "slug": "othello",
+   "url": "https://www.gutenberg.org/cache/epub/1531/pg1531.txt",
+   "sha256": "340a08eb95d6404c0834906eb7b899ec6503c609ca76eb5b7430bb100cd1e462"
+  },
+  {
+   "slug": "henry4-1",
+   "url": "https://www.gutenberg.org/cache/epub/1516/pg1516.txt",
+   "sha256": "777f92f80c64e226ece68bbcd0203294ed7b17ab3db31682a8af35ebd251e148"
+  },
+  {
+   "slug": "pride-prejudice",
+   "url": "https://www.gutenberg.org/cache/epub/1342/pg1342.txt",
+   "sha256": "3f6bb9d6f78e0293b56acd4714dd68cb7d6d1d293402031ce9d5a216bcaf9d75"
+  },
+  {
+   "slug": "secret-agent",
+   "url": "https://www.gutenberg.org/cache/epub/974/pg974.txt",
+   "sha256": "0a37c8fc9a62db2efcea487f02c1cdd4d48657c66b54af3ad90f2317e42b7588"
+  },
+  {
+   "slug": "pygmalion",
+   "url": "https://www.gutenberg.org/cache/epub/3825/pg3825.txt",
+   "sha256": "bf2518b5c0f1e46e3190ab2e77a0ecb3e35a1e120b233e6cb27134395dff048a"
+  },
+  {
+   "slug": "mrs-warren",
+   "url": "https://www.gutenberg.org/cache/epub/1097/pg1097.txt",
+   "sha256": "a11110b6b0f40dd28a7ee100de58b653de0d4106c23fb5d8e8bee76065776a5f"
+  },
+  {
+   "slug": "chekhov-plays-2",
+   "url": "https://www.gutenberg.org/cache/epub/7986/pg7986.txt",
+   "sha256": "4c08d7117dcd946cdcfd42c3d56ac79a114f4b55d2e186b19978ede25947351a"
+  },
+  {
+   "slug": "red-harvest",
+   "url": "https://standardebooks.org/ebooks/dashiell-hammett/red-harvest/text/single-page",
+   "sha256": "35d1c8be7b118d4275eb4d1daccfd9324db580fd836d9efa68c09b256dc9a06c"
+  },
+  {
+   "slug": "maltese-falcon",
+   "url": "https://standardebooks.org/ebooks/dashiell-hammett/the-maltese-falcon/text/single-page",
+   "sha256": "d236e246e0c0d2e3e757d96d0e3ea2b3a9cf6773dd5a870af6776bc5ee425b20"
+  },
+  {
+   "slug": "men-without-women-pg",
+   "url": "https://www.gutenberg.org/cache/epub/69683/pg69683.txt",
+   "sha256": "96594608980d184621efb2b4fecc042ba7f67a126b4977e118ec06076d7e1cda"
+  },
+  {
+   "slug": "glaspell-plays",
+   "url": "https://www.gutenberg.org/cache/epub/10623/pg10623.txt",
+   "sha256": "eff88273edf28c22e8f94a6c8b6c14d88a810f31264e4366911cb2c881d9031a"
+  }
+ ],
+ "excerpts": [
+  {
+   "id": "carriers-inn-yard",
+   "job": "overheard-at-work",
+   "source": "henry4-1",
+   "sha256": "2d10c79427eeff77088f25d08989e37433736160c19bdfa0c06a8a7a659c1174",
+   "words": 170
+  },
+  {
+   "id": "lunch-counter-dinner",
+   "job": "overheard-at-work",
+   "source": "men-without-women-pg",
+   "sha256": "f75097ffd979d32e76075910874ee03776bff89b4edb8835267814868867a961",
+   "words": 152
+  },
+  {
+   "id": "kitchen-preserves",
+   "job": "overheard-at-work",
+   "source": "glaspell-plays",
+   "sha256": "41b423da429748aeae9faacb487a2d39d88310a7537d8c881bbc46c206ec2910",
+   "words": 77
+  },
+  {
+   "id": "krogstad-so-good",
+   "job": "pressure",
+   "source": "dolls-house",
+   "sha256": "02960cc0b1ed11c2a9766507f9f3d2dcfa3ccf11790ed9a334449177e2893203",
+   "words": 46
+  },
+  {
+   "id": "milverton-terms",
+   "job": "pressure",
+   "source": "return-holmes",
+   "sha256": "208a2f7757b8650a7f653b1c1729ea8e79f299531d313d97d0a1967cb532bafc",
+   "words": 40
+  },
+  {
+   "id": "cheveley-past",
+   "job": "pressure",
+   "source": "ideal-husband",
+   "sha256": "737f122abed0febf312ac19d0b7fbeef71720a0ed7022fc2e1a6d3b1d8b4b337",
+   "words": 73
+  },
+  {
+   "id": "tulkinghorn-whose-secret",
+   "job": "pressure",
+   "source": "bleak-house",
+   "sha256": "da33593fe2f95bb9bf1a9365cc91ae90135eda5aa16336d5604964a55a2de1c2",
+   "words": 76
+  },
+  {
+   "id": "porfiry-not-to-my-interest",
+   "job": "pressure",
+   "source": "crime-punishment",
+   "sha256": "9958a48e512adea7e2edbea0cd7951297c0b2f9d5ddd0f631fee862db7b631e1",
+   "words": 54
+  },
+  {
+   "id": "krogstad-only-disagreeable",
+   "job": "debt",
+   "source": "dolls-house",
+   "sha256": "88b37c1be98313708923ebe9473a33cd30597af575ada83355e708f887cefa28",
+   "words": 70
+  },
+  {
+   "id": "krogstad-paying-regularly",
+   "job": "debt",
+   "source": "dolls-house",
+   "sha256": "462457a58ff395a59f0857a89e3425adb663ce6a9521e4d2a8bca7e86422a6a5",
+   "words": 36
+  },
+  {
+   "id": "pischin-240-roubles",
+   "job": "debt",
+   "source": "chekhov-plays-2",
+   "sha256": "b53f8fdaec276a3d3f33561334e427e4a7aeb2bf25a8989d17ccc7563a108f37",
+   "words": 98
+  },
+  {
+   "id": "wemmick-invest-friend",
+   "job": "debt",
+   "source": "great-expectations",
+   "sha256": "16b7a3e6be029b15978088e32762b901e4a12e3882b5e40261e98e669b56651a",
+   "words": 87
+  },
+  {
+   "id": "crofts-forty-thousand",
+   "job": "debt",
+   "source": "mrs-warren",
+   "sha256": "d56306268dab50b75090c10a4b804cfc964c30c546f6b9792dffb3987a9302e4",
+   "words": 174
+  },
+  {
+   "id": "dinah-my-language",
+   "job": "bargain",
+   "source": "red-harvest",
+   "sha256": "1b407f4df20413cc6a47ca9d174df4bf1b7be1eda78d16070ab997090c82769b",
+   "words": 52
+  },
+  {
+   "id": "dinah-how-much",
+   "job": "bargain",
+   "source": "red-harvest",
+   "sha256": "3580a4640fba4496e8cb3485f650c0d50bab39642607bff081b35dc2790e114d",
+   "words": 21
+  },
+  {
+   "id": "doolittle-ask-fifty",
+   "job": "bargain",
+   "source": "pygmalion",
+   "sha256": "19afb4c11a519f55466370bc5a25a53a80a7790bbe22470badadcd07358b59d4",
+   "words": 101
+  },
+  {
+   "id": "gutman-fifteen",
+   "job": "bargain",
+   "source": "maltese-falcon",
+   "sha256": "8a6f2a9c4f410eec2b2a002228624179e7e00c09d08d31e17d33be5d142584f3",
+   "words": 160
+  },
+  {
+   "id": "gaev-anchovies",
+   "job": "dodge",
+   "source": "chekhov-plays-2",
+   "sha256": "f1518b22c2a3303a8b54e20b10c56df485b4a0f834bbf6c71e0ea78b64f44394",
+   "words": 81
+  },
+  {
+   "id": "iago-echo",
+   "job": "dodge",
+   "source": "othello",
+   "sha256": "48b5056743640b1277a972457fcbde220beb81519081391deda7452d0776a2ac",
+   "words": 37
+  },
+  {
+   "id": "jaggers-informed",
+   "job": "dodge",
+   "source": "great-expectations",
+   "sha256": "ac3dd21a53e472ab071ed024bfff075037be7a924de49ebb99697aee40dd5cb8",
+   "words": 133
+  },
+  {
+   "id": "verloc-gas",
+   "job": "dodge",
+   "source": "secret-agent",
+   "sha256": "50c556c6fe5a3e9fb31407352cd8494fd10e18cd692bbcc9c9a28ef86987e778",
+   "words": 72
+  },
+  {
+   "id": "spade-my-business",
+   "job": "dodge",
+   "source": "maltese-falcon",
+   "sha256": "25bdcbb7ac0064e35f301c73dc205e4f8d59f373e374231b8a03afbd10b99969",
+   "words": 119
+  },
+  {
+   "id": "nora-here-no",
+   "job": "lie-to-loved",
+   "source": "dolls-house",
+   "sha256": "e955c3cbdc5f6a8669135b05d20e3169978e869089bbf89444c2597873fe92f0",
+   "words": 91
+  },
+  {
+   "id": "jig-i-feel-fine",
+   "job": "lie-to-loved",
+   "source": "men-without-women-pg",
+   "sha256": "43cdbb02bce2d4688e32f5c2a7e9b7d908de1a1e6dc3708207fd0d6331a9ef87",
+   "words": 29
+  },
+  {
+   "id": "desdemona-not-lost",
+   "job": "lie-to-loved",
+   "source": "othello",
+   "sha256": "d497e7514f77231b6897bcc1a55bd3d92e473b07096e43219d9a8d76ba3db251",
+   "words": 101
+  },
+  {
+   "id": "milverton-coat",
+   "job": "yes-or-no",
+   "source": "return-holmes",
+   "sha256": "95d274f46b9b0c7e16eb04fcaea4f960a03b37702a12b6fedbe16fd3c23edfbf",
+   "words": 104
+  },
+  {
+   "id": "jig-then-ill-do-it",
+   "job": "yes-or-no",
+   "source": "men-without-women-pg",
+   "sha256": "e03c057121071f2a8ffdc8863b854908507ea2824ff6ef25efa23bb1308fc445",
+   "words": 111
+  },
+  {
+   "id": "spade-no",
+   "job": "yes-or-no",
+   "source": "maltese-falcon",
+   "sha256": "b0f7f5e82610758b2de3cb852e5e7688e80e5d3cb68f88e9f2e082dcda223b36",
+   "words": 58
+  },
+  {
+   "id": "elizabeth-no-promise",
+   "job": "yes-or-no",
+   "source": "pride-prejudice",
+   "sha256": "3a41d5c358ff4d0017b2f4dd1de5566fe26abcca0160c16b9b6b8660e65e7f8b",
+   "words": 62
+  }
+ ]
+}

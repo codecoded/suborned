@@ -1,0 +1,110 @@
+{
+ "job": "bargain",
+ "what": "A bargain with someone who prices everything.",
+ "excerpts": [
+  {
+   "id": "dinah-my-language",
+   "source": "red-harvest",
+   "where": "Chapter 4",
+   "text": "“If you talked my language,” she drawled, looking narrow-eyed at me, “I might be able to give you some help.”\n“Maybe if I knew what it was.”\n“Money,” she explained, “the more the better. I like it.”\nI became proverbial:\n“Money saved is money earned. I can save you money and grief.”",
+   "moves": [
+    {
+     "at": "If you talked my language",
+     "move": "She offers help as a condition, and leaves the price for the other to ask."
+    },
+    {
+     "at": "“Money,” she explained, “the more the better. I like it.”",
+     "move": "No shame and no story. Someone who prices everything is restful because she says so once and moves on."
+    },
+    {
+     "at": "I can save you money and grief.",
+     "move": "He pays in the wrong coin. A bargain goes wrong in a way that shows both people."
+    }
+   ]
+  },
+  {
+   "id": "dinah-how-much",
+   "source": "red-harvest",
+   "where": "Chapter 10",
+   "text": "“How much?”\n“Whatever you earn. Whatever what you do is worth.”\n“That’s uncertain.”\n“So’s your help, so far as I know.”",
+   "moves": [
+    {
+     "at": "“How much?”",
+     "move": "Her whole answer to an offer. Two words."
+    },
+    {
+     "at": "Whatever you earn. Whatever what you do is worth.",
+     "move": "He answers with a condition, not a number. Each side wants the other to go first."
+    },
+    {
+     "at": "“That’s uncertain.”",
+     "move": "An objection in the language of accounts, with no feeling in it."
+    },
+    {
+     "at": "So’s your help",
+     "move": "He hands her own word back. Respect shows through neither side giving way."
+    }
+   ]
+  },
+  {
+   "id": "doolittle-ask-fifty",
+   "source": "pygmalion",
+   "where": "Act 2",
+   "text": "PICKERING. I think you ought to know, Doolittle, that Mr. Higgins’s intentions are entirely honorable.\nDOOLITTLE. Course they are, Governor. If I thought they wasn’t, I’d ask fifty.\nHIGGINS [revolted] Do you mean to say, you callous rascal, that you would sell your daughter for 50 pounds?\nDOOLITTLE. Not in a general way I wouldn’t; but to oblige a gentleman like you I’d do a good deal, I do assure you.\nPICKERING. Have you no morals, man?\nDOOLITTLE [unabashed] Can’t afford them, Governor. Neither could you if you was as poor as me. Not that I mean any harm, you know.",
+   "moves": [
+    {
+     "at": "Mr. Higgins’s intentions are entirely honorable",
+     "move": "An outsider brings in morals and it misfires."
+    },
+    {
+     "at": "If I thought they wasn’t, I’d ask fifty.",
+     "move": "He takes the moral point and quotes a rate for it. The most shocking thing is said most helpfully."
+    },
+    {
+     "at": "Not in a general way I wouldn’t",
+     "move": "He answers an accusation as if it were an enquiry about terms."
+    },
+    {
+     "at": "Can’t afford them, Governor.",
+     "move": "Morals become one more thing with a price. A short, unashamed answer to a big question."
+    },
+    {
+     "at": "Neither could you if you was as poor as me.",
+     "move": "He says why, once, in a line. The charge lands on the other man."
+    }
+   ]
+  },
+  {
+   "id": "gutman-fifteen",
+   "source": "maltese-falcon",
+   "where": "Chapter 19",
+   "text": "Spade lighted his cigarette and addressed Gutman: “Let’s talk about money.”\n“Willingly, sir, with all my heart,” the fat man replied, “but I might as well tell you frankly right now that ten thousand is every cent I can raise.”\nSpade exhaled smoke. “I ought to have twenty.”\n“I wish you could. I’d give it to you gladly if I had it, but ten thousand dollars is every cent I can manage, on my word of honor. Of course, sir, you understand that is simply the first payment. Later—”\nSpade laughed. “I know you’ll give me millions later,” he said, “but let’s stick to this first payment now. Fifteen thousand?”\nGutman smiled and frowned and shook his head. “Mr. Spade, I’ve told you frankly and candidly and on my word of honor as a gentleman that ten thousand dollars is all the money I’ve got—every penny—and all I can raise.”\n“But you didn’t say positively.”\nGutman laughed and said: “Positively.”",
+   "moves": [
+    {
+     "at": "“Let’s talk about money.”",
+     "move": "Returns to the deal after an interruption. The bargain is the thing that keeps being picked up."
+    },
+    {
+     "at": "Spade exhaled smoke. “I ought to have twenty.”",
+     "move": "A number and no argument, with a bit of business before it."
+    },
+    {
+     "at": "on my word of honor",
+     "move": "A man who keeps swearing to his honesty. Each oath lowers the value of the last, and he is enjoying the talk."
+    },
+    {
+     "at": "Fifteen thousand?",
+     "move": "Splits the difference in one word after a joke at the other's expense."
+    },
+    {
+     "at": "“But you didn’t say positively.”",
+     "move": "Takes the speech apart on one missing word. Bargaining as close reading."
+    },
+    {
+     "at": "“Positively.”",
+     "move": "He gives the word, and laughs. The last price is a single word."
+    }
+   ]
+  }
+ ]
+}

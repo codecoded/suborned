@@ -1,0 +1,126 @@
+{
+ "job": "pressure",
+ "what": "Pressure and blackmail. A threat from someone who never raises their voice.",
+ "excerpts": [
+  {
+   "id": "krogstad-so-good",
+   "source": "dolls-house",
+   "where": "Act 1",
+   "text": "KROGSTAD. [changing his tone]. Mrs Helmer, you will be so good as to use your influence on my behalf.\nNORA. What? What do you mean?\nKROGSTAD. You will be so kind as to see that I am allowed to keep my subordinate position in the Bank.",
+   "moves": [
+    {
+     "at": "you will be so good as to use your influence",
+     "move": "An order in the grammar of a favour. Threatens by courtesy: the politeness is what frightens."
+    },
+    {
+     "at": "What? What do you mean?",
+     "move": "She takes refuge in not understanding. Two short questions, no answer given."
+    },
+    {
+     "at": "You will be so kind as to see",
+     "move": "He does not explain. He repeats the politeness with the exact thing wanted, plainly named."
+    }
+   ]
+  },
+  {
+   "id": "milverton-terms",
+   "source": "return-holmes",
+   "where": "Charles Augustus Milverton",
+   "text": "“What are your terms?”\n“Seven thousand pounds.”\n“And the alternative?”\n“My dear sir, it is painful for me to discuss it, but if the money is not paid on the 14th, there certainly will be no marriage on the 18th.”",
+   "moves": [
+    {
+     "at": "“Seven thousand pounds.”",
+     "move": "A price and nothing else. No defence, no story. Plain where the negotiation forces it."
+    },
+    {
+     "at": "“And the alternative?”",
+     "move": "The other side makes him say it. A threat that has to be asked for costs the asker something."
+    },
+    {
+     "at": "it is painful for me to discuss it",
+     "move": "He mentions his own comfort, and it is plainly false. Regret used as a tool, and no claim that he means it."
+    },
+    {
+     "at": "there certainly will be no marriage on the 18th",
+     "move": "The threat comes as a fact about the calendar. He never says \"I will\"."
+    }
+   ]
+  },
+  {
+   "id": "cheveley-past",
+   "source": "ideal-husband",
+   "where": "Act 1",
+   "text": "SIR ROBERT CHILTERN. [In a low voice.] I will give you any sum of money you want.\nMRS. CHEVELEY. Even you are not rich enough, Sir Robert, to buy back your past. No man is.\nSIR ROBERT CHILTERN. I will not do what you ask me. I will not.\nMRS. CHEVELEY. You have to. If you don’t . . . [Rises from the sofa.]\nSIR ROBERT CHILTERN. [Bewildered and unnerved.] Wait a moment!",
+   "moves": [
+    {
+     "at": "I will give you any sum of money you want.",
+     "move": "The pressed man offers the wrong currency. He is trying to change what is being traded."
+    },
+    {
+     "at": "Even you are not rich enough",
+     "move": "She turns him down with a compliment. The refusal flatters him while it closes the door."
+    },
+    {
+     "at": "I will not do what you ask me. I will not.",
+     "move": "A refusal said twice is a refusal already failing. The repeat carries the feeling, so he need not name it."
+    },
+    {
+     "at": "You have to. If you don’t . . .",
+     "move": "She leaves the sentence unfinished and stands up. The act finishes it."
+    },
+    {
+     "at": "Wait a moment!",
+     "move": "His yes starts because she moved, not because she argued. The cause is on the stage."
+    }
+   ]
+  },
+  {
+   "id": "tulkinghorn-whose-secret",
+   "source": "bleak-house",
+   "where": "Chapter 48",
+   "text": "“If, sir,” she begins, “in my knowledge of my secret—” But he interrupts her.\n“Now, Lady Dedlock, this is a matter of business, and in a matter of business the ground cannot be kept too clear. It is no longer your secret. Excuse me. That is just the mistake. It is my secret, in trust for Sir Leicester and the family. If it were your secret, Lady Dedlock, we should not be here holding this conversation.”",
+   "moves": [
+    {
+     "at": "in my knowledge of my secret—",
+     "move": "She is interrupted on the word that matters. Her sentence is never finished, which shows who runs the room."
+    },
+    {
+     "at": "this is a matter of business",
+     "move": "He calls it business. No feeling is admitted, so there is nothing for her to appeal to."
+    },
+    {
+     "at": "It is no longer your secret.",
+     "move": "He corrects one word of hers. Pressure as an editor: he takes the possessive off her."
+    },
+    {
+     "at": "we should not be here holding this conversation",
+     "move": "He leaves the ground open and lets her work out what follows. It is the only reference to what he could do."
+    }
+   ]
+  },
+  {
+   "id": "porfiry-not-to-my-interest",
+   "source": "crime-punishment",
+   "where": "Part 6, chapter 2",
+   "text": "“If so, what did you come for?” Raskolnikov asked irritably. “I ask you the same question again: if you consider me guilty, why don’t you take me to prison?”\n“Oh, that’s your question! I will answer you, point for point. In the first place, to arrest you so directly is not to my interest.”",
+   "moves": [
+    {
+     "at": "what did you come for?",
+     "move": "The pressed man asks the direct question, from anger. Under pressure people want it over with."
+    },
+    {
+     "at": "why don’t you take me to prison?",
+     "move": "He dares the other to act. A want shown by what he asks for, never by what he says he feels."
+    },
+    {
+     "at": "Oh, that’s your question!",
+     "move": "He treats the outburst as a query to be taken in order. Calm procedure is the weapon."
+    },
+    {
+     "at": "is not to my interest",
+     "move": "The reason he gives is his own convenience. There is no pity and no malice to push against."
+    }
+   ]
+  }
+ ]
+}

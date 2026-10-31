@@ -1,0 +1,195 @@
+{
+  "note": "The key to briefs/085/conversations-blind.html. Hold until Sky has read. Arm A is the control (writer.md, editor.md, specs); arm B is writer-b.md, editor-b.md, blind-arm.ts. Questions are lines that end in a question mark, as in the report. straightByReader is Fable reading the lines, not blind: true when the next line honestly answers what was asked.",
+  "sides": {
+    "listen-inez": {
+      "X": "B",
+      "Y": "A"
+    },
+    "pressure-inez": {
+      "X": "B",
+      "Y": "A"
+    }
+  },
+  "runs": {
+    "A": "runs/conversations/085-blind/arm-a/r001",
+    "B": "runs/conversations/085-blind/arm-b/r001"
+  },
+  "arms": {
+    "A": {
+      "modelCalls": 5,
+      "rejected": 0,
+      "models": [
+        "claude-haiku-5-5",
+        "claude-opus-5-5"
+      ],
+      "schemas": [
+        "2e7d8034e4e743948fecd07d8bde0c1c46cfc03fac5d14d64ae0a0e7b981edd6",
+        "6057d0005ea0aeafc6bb995f8d5c102b34bd4cb2b4bd7aa94cecbc278c938a11",
+        "615ad5e90cb92c2e68f0062d074ab901d3d0bcdc403167a9a549284b105c7a79"
+      ],
+      "faults": [],
+      "reviewFaults": 1,
+      "reportedCostUsd": 1.45,
+      "rhythm": {
+        "lines": 18,
+        "words": 185,
+        "mean": 10.28,
+        "sd": 1.41,
+        "at9or10": 7,
+        "atMost5": 0,
+        "at12": 4,
+        "over12": 0,
+        "perSpeaker": {
+          "Inez": {
+            "lines": 9,
+            "mean": 9.56,
+            "sd": 1.17,
+            "min": 7,
+            "max": 11
+          },
+          "Milena": {
+            "lines": 4,
+            "mean": 10.75,
+            "sd": 1.64,
+            "min": 8,
+            "max": 12
+          },
+          "Scout": {
+            "lines": 1,
+            "mean": 12,
+            "sd": 0,
+            "min": 12,
+            "max": 12
+          },
+          "Fixer": {
+            "lines": 4,
+            "mean": 11,
+            "sd": 0.71,
+            "min": 10,
+            "max": 12
+          }
+        },
+        "questions": 5,
+        "repliesNotAQuestion": 4,
+        "straightAnswersByReader": 4,
+        "questionList": [
+          {
+            "scene": "listen-inez",
+            "line": "Is that tube for me? Is it from the Office?",
+            "next": "The Bureau, your loan. Why would the Office write to a waitress?",
+            "sameSpeakerNext": false,
+            "replyNotAQuestion": false,
+            "straightByReader": true
+          },
+          {
+            "scene": "listen-inez",
+            "line": "The Bureau, your loan. Why would the Office write to a waitress?",
+            "next": "Just coming, thank you. No reason, give that here.",
+            "sameSpeakerNext": false,
+            "replyNotAQuestion": true,
+            "straightByReader": false
+          },
+          {
+            "scene": "listen-inez",
+            "line": "Who told you? Has anyone been asking at the Office?",
+            "next": "You did, just now. So you're seeing Okafor.",
+            "sameSpeakerNext": false,
+            "replyNotAQuestion": true,
+            "straightByReader": true
+          },
+          {
+            "scene": "pressure-inez",
+            "line": "Who told you that? Who else knows?",
+            "next": "Only us. The Office could learn, though. Smile, people can see.",
+            "sameSpeakerNext": false,
+            "replyNotAQuestion": true,
+            "straightByReader": true
+          },
+          {
+            "scene": "pressure-inez",
+            "line": "They'd have him off that door. What do you want?",
+            "next": "About a minute off it. When I telephone, you call him over.",
+            "sameSpeakerNext": false,
+            "replyNotAQuestion": true,
+            "straightByReader": true
+          }
+        ],
+        "brokenOff": 0,
+        "overlap5": [],
+        "wordsChecked": 185
+      }
+    },
+    "B": {
+      "modelCalls": 5,
+      "rejected": 0,
+      "models": [
+        "claude-haiku-5-5",
+        "claude-opus-5-5"
+      ],
+      "schemas": [
+        "2e7d8034e4e743948fecd07d8bde0c1c46cfc03fac5d14d64ae0a0e7b981edd6",
+        "6057d0005ea0aeafc6bb995f8d5c102b34bd4cb2b4bd7aa94cecbc278c938a11",
+        "615ad5e90cb92c2e68f0062d074ab901d3d0bcdc403167a9a549284b105c7a79"
+      ],
+      "faults": [],
+      "reviewFaults": 2,
+      "reportedCostUsd": 1.7,
+      "rhythm": {
+        "lines": 18,
+        "words": 167,
+        "mean": 9.28,
+        "sd": 3.18,
+        "at9or10": 3,
+        "atMost5": 3,
+        "at12": 8,
+        "over12": 0,
+        "perSpeaker": {
+          "Milena": {
+            "lines": 5,
+            "mean": 7.4,
+            "sd": 1.85,
+            "min": 4,
+            "max": 9
+          },
+          "Inez": {
+            "lines": 8,
+            "mean": 9.5,
+            "sd": 3.81,
+            "min": 3,
+            "max": 12
+          },
+          "Scout": {
+            "lines": 1,
+            "mean": 12,
+            "sd": 0,
+            "min": 12,
+            "max": 12
+          },
+          "Fixer": {
+            "lines": 4,
+            "mean": 10.5,
+            "sd": 2.06,
+            "min": 7,
+            "max": 12
+          }
+        },
+        "questions": 1,
+        "repliesNotAQuestion": 1,
+        "straightAnswersByReader": 1,
+        "questionList": [
+          {
+            "scene": "listen-inez",
+            "line": "Inside's had no tips tonight. Split yours?",
+            "next": "Can't, they go on my Bureau card, it's behind, and nine wants—",
+            "sameSpeakerNext": false,
+            "replyNotAQuestion": true,
+            "straightByReader": true
+          }
+        ],
+        "brokenOff": 3,
+        "overlap5": [],
+        "wordsChecked": 167
+      }
+    }
+  }
+}

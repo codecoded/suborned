@@ -1,0 +1,163 @@
+{
+  "takes": [
+    {
+      "situation": "Tips for silence: Milena catches the looks across the square, and Inez pays with the money meant for her Bureau card.",
+      "beats": [
+        {
+          "speaker": "Inez",
+          "line": "Sorry, only the tube, two soups, and nine's waving, and—"
+        },
+        {
+          "speaker": "Milena",
+          "line": "Four looks at Okafor since the soup."
+        },
+        {
+          "speaker": "Inez",
+          "line": "At who? It's the clock, I watch it for the shift."
+        },
+        {
+          "speaker": "Milena",
+          "line": "The clock's behind you."
+        },
+        {
+          "speaker": "Inez",
+          "line": "Nine wants bread."
+        },
+        {
+          "speaker": "Milena",
+          "line": "If the Office hears, that's his post. Your place."
+        },
+        {
+          "speaker": "Inez",
+          "line": "How much?"
+        },
+        {
+          "speaker": "Milena",
+          "line": "Half your terrace tips. Tonight's."
+        },
+        {
+          "speaker": "Inez",
+          "line": "That's the Bureau's, that's for my card, I'm behind and— here."
+        },
+        {
+          "speaker": "Scout",
+          "line": "Inez behind with the Bureau. Seeing Okafor, door guard. Jumps at everything."
+        }
+      ],
+      "learned": [
+        "Inez is behind with the Bureau.",
+        "Inez's lover: Okafor, the door guard."
+      ],
+      "opens": [
+        "Help: clear her Bureau debt.",
+        "Pressure: threaten to expose the affair."
+      ]
+    },
+    {
+      "situation": "A shift haggle first: Inez refuses Milena's late table over money, then panics at the noticing and overpays.",
+      "beats": [
+        {
+          "speaker": "Milena",
+          "line": "Take my late table. I'm gone at the bell."
+        },
+        {
+          "speaker": "Inez",
+          "line": "He sits two hours on a coffee, and my Bureau card's short."
+        },
+        {
+          "speaker": "Milena",
+          "line": "You'd rather keep the terrace."
+        },
+        {
+          "speaker": "Inez",
+          "line": "Would I? It tips, that's all, and the soup's up, and—"
+        },
+        {
+          "speaker": "Milena",
+          "line": "Good view of Okafor from the terrace."
+        },
+        {
+          "speaker": "Inez",
+          "line": "Three wants the bill."
+        },
+        {
+          "speaker": "Milena",
+          "line": "The Office would take his post. Your place too."
+        },
+        {
+          "speaker": "Inez",
+          "line": "I'll take the table, and the chairs, and the floor, I'll—"
+        },
+        {
+          "speaker": "Milena",
+          "line": "Floor as well, since you're offering. Three's waving."
+        },
+        {
+          "speaker": "Scout",
+          "line": "Inez owes the Bureau, behind. Seeing Okafor, door guard. Flinches at everything."
+        }
+      ],
+      "learned": [
+        "Inez is behind with the Bureau.",
+        "Inez's lover: Okafor, the door guard."
+      ],
+      "opens": [
+        "Help: clear her Bureau debt.",
+        "Pressure: threaten to expose the affair."
+      ]
+    },
+    {
+      "situation": "Milena holds Inez's dropped Bureau card, Inez lands one small hit back, and the best table is the price.",
+      "beats": [
+        {
+          "speaker": "Milena",
+          "line": "Inez, your Bureau card. No stamp for weeks."
+        },
+        {
+          "speaker": "Inez",
+          "line": "Give it, give it here, that's nothing, that's an old one, and—"
+        },
+        {
+          "speaker": "Milena",
+          "line": "Table two tips. I'd like table two."
+        },
+        {
+          "speaker": "Inez",
+          "line": "You know just where to look on those cards."
+        },
+        {
+          "speaker": "Milena",
+          "line": "Twice at Okafor since I picked this up."
+        },
+        {
+          "speaker": "Inez",
+          "line": "Twice?"
+        },
+        {
+          "speaker": "Milena",
+          "line": "One word to the Office. His post, your place."
+        },
+        {
+          "speaker": "Inez",
+          "line": "Take two."
+        },
+        {
+          "speaker": "Milena",
+          "line": "Put your card away, five's looking."
+        },
+        {
+          "speaker": "Scout",
+          "line": "Behind with the Bureau. Seeing Okafor, door guard. Shaking before Milena spoke."
+        }
+      ],
+      "learned": [
+        "Inez is behind with the Bureau.",
+        "Inez's lover: Okafor, the door guard."
+      ],
+      "opens": [
+        "Help: clear her Bureau debt.",
+        "Pressure: threaten to expose the affair."
+      ]
+    }
+  ]
+}

@@ -17,4 +17,6 @@ Owner: Aster. Opened 2026-10-31, Sky's hand play of the Handover on the Air, thi
 
 Standing rules: `less-reading`, `plain-copy`, `present-and-adaptive` in the lead's notes: one-line prices, no design jargon, what + why + fix, and a key legend means the controls are wrong. Conversations reveal and set up the next lever, and nothing is hand-authored as a script: everyone can be turned more than one way.
 
+Note 7, Sky's calls on `briefs/085/reports/Writing good game dialogue.md` (2026-10-31): "clearly explain" binds the whole scene, the Scout's line and the cards included. No human writes the voices: "you just need to review famous works of public domain literature for classic conversations". A small live test, two scenes, current brief against the new one, read blind by Sky: yes. That go-ahead covers this test only; the full generator run still needs his yes.
+
 After this round: the `HandoverHost.cs` split (brief 084), with one full batch.
