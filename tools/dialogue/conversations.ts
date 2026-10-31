@@ -33,6 +33,8 @@ What the player sees (the game's scene, §10, brief 085: Sky, "unattached to the
 Only what the game does happens: the cell's money moves as the action's price, away from the shot. Nobody else pays, bribes, trades or bargains for anything, and nobody gains anything the facts here don't give. Don't say evening or tonight.`;
 /** Off his door from the walk over to the walk back (GDD §07: about 57 s, 60 s, 57 s). Players plan on this, so "a minute" is wrong. */
 const GUARD_AWAY = `He leaves the door, walks across the square, stands at her side and walks back: the door is empty about three minutes. In speech say "a few minutes", never "a minute".`;
+/** Sky, 2026-10-31: asking him over "feels unrealistic without a reason", and if she said someone knew, "he runs back to the door". */
+const GUARD_REASON = `He only leaves his post for a reason: she says she has something to give him or tell him that can't wait and can't be said on the line. It's her reason, in her own words, and it's enough to keep him at her side. She never tells him anyone knows about them: he'd run straight back to his door.`;
 const VOICES = (...k: string[]) => k.map(v => `- ${v}: ${text.tone.voices[v]}`).join('\n');
 const INEZ_GUARD = `Inez and the door guard are lovers, in secret. He stands the Office's public door, ${apart} m across the square from her. The two are never together unless she calls him. In speech call him Okafor (never his given name, and no gendered word beyond "he").`;
 
@@ -70,7 +72,7 @@ ${VOICES('waitress', 'fixer')}`,
     query: ['Help clear debt gratitude bravery helped Inez warns rivals', 'Inez call guard walks to her side partners stays 60 s', 'capstone the call that pulls the guard off his door'],
     mustSay: [{ what: 'calling him over', re: /call|come over|fetch|over here|send for/i }, { what: 'the guard', re: /okafor|guard|him/i }],
     sheet: `${WORLD}
-Situation: the Fixer comes back and clears the rest of the Bureau loan. This time she is won over, gratefully and still frightened. Now the Fixer finally says what's wanted, and it is small: when the Fixer telephones, she calls Okafor over from his door. ${GUARD_AWAY}
+Situation: the Fixer comes back and clears the rest of the Bureau loan. This time she is won over, gratefully and still frightened. Now the Fixer finally says what's wanted, and it is small: when the Fixer telephones, she calls Okafor over from his door. ${GUARD_AWAY} ${GUARD_REASON}
 ${INEZ_WHO}
 ${INEZ_GUARD}
 She must work out for herself that the Fixer knows about Okafor, and be frightened by that; the Fixer is kind about it and makes no threat. She asks what happens to him. The honest answer the Fixer can give: nothing happens to him if this goes right, and he never sees us.
@@ -84,7 +86,7 @@ ${VOICES('waitress', 'fixer')}`,
     query: ['Pressure threat fear resentment can identify Fixer seen', 'Inez secret affair Pressure threatens to expose', 'capstone the call that pulls the guard off his door'],
     mustSay: [{ what: 'the affair exposed', re: /office|tell|know|hear/i }, { what: 'calling him over', re: /call|come over|fetch|over here|send for/i }],
     sheet: `${WORLD}
-Situation: the same woman, a different way in. The Fixer comes to Inez at the café door with no money and tells her, gently, that the Office could learn about her and Okafor. She gives in quickly, and hates it. The Fixer is warm in manner, steel underneath, takes no pleasure in it and doesn't pretend otherwise. The Fixer keeps their voice low because a threat can be seen. What's wanted: when the Fixer telephones, she calls Okafor over from his door. ${GUARD_AWAY}
+Situation: the same woman, a different way in. The Fixer comes to Inez at the café door with no money and tells her, gently, that the Office could learn about her and Okafor. She gives in quickly, and hates it. The Fixer is warm in manner, steel underneath, takes no pleasure in it and doesn't pretend otherwise. The Fixer keeps their voice low because a threat can be seen. What's wanted: when the Fixer telephones, she calls Okafor over from his door. ${GUARD_AWAY} ${GUARD_REASON}
 ${INEZ_WHO}
 ${INEZ_GUARD}
 Fact of the game, for learned only, and nobody says it aloud: she will remember the Fixer's face, and could describe it if she's ever questioned. She wouldn't threaten a stranger who frightens her, and the Fixer wouldn't remind her.
@@ -110,11 +112,11 @@ ${VOICES('driver', 'fixer')}`,
     query: ['capstone the call pulls guard off door partners ring side stays 60 s', 'route A front door Call Inez window Enforcer enters', 'calls are voice telephone'],
     mustSay: [{ what: 'he leaves the door', re: /door|post|step/i }],
     sheet: `${WORLD}
-Situation: the moment the whole front-door plan was for. The Fixer telephones the café and says it's time. Inez, whom the cell has helped, then gets Okafor to leave his door: she calls across to him on the Office door's handset. ${GUARD_AWAY} The shot cuts between them, each standing alone; no one is seen holding a telephone.
+Situation: the moment the whole front-door plan was for. The Fixer telephones the café and says it's time. Inez, whom the cell has helped, then gets Okafor to leave his door: she calls across to him on the Office door's handset. ${GUARD_AWAY} ${GUARD_REASON} The shot cuts between them, each standing alone; no one is seen holding a telephone.
 ${INEZ_WHO}
 ${who(GUARD, 'Okafor', 'In speech he is Okafor to the Fixer; Inez may call him "love". He has a shift to finish and likes her more than the job. He says nothing about money here, and doesn\'t say how long the door stands empty.')}
 ${INEZ_GUARD}
-She is scared and must sound ordinary to him. He must not suspect. Tenderness matters: this is two people who love each other, and one of them is using it. Let the player feel that, in a line. No coffee spill and no trick: he comes because she asked.
+She is scared and must sound ordinary to him. He must not suspect. Tenderness matters: this is two people who love each other, and one of them is using it. Let the player feel that, in a line. No coffee spill: he comes because she asked and gave him a reason.
 The scene must make plain: she called him and he is leaving the door now. The card says how long.
 learned: 1 line ("Door empty a few minutes"). opens: 1 line naming what the door allows now, "Enter the Office" (the Enforcer's action).
 ${VOICES('waitress', 'guard', 'fixer')}`,
