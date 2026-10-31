@@ -27,19 +27,23 @@ function who(id: string, role: string, also = ''): string {
 const INEZ = 'p-cafe-14', GUARD = 'p-records-office-01', DRIVER = 'p-records-office-31', MILENA = 'p-cafe-12';
 const apart = metres('cafe-entrance', 'office-entrance');
 /** Who Inez is, past the one word the sim holds (Sky, 2026-10-31: "not something Inez would say"). */
-const INEZ_WHO = who(INEZ, 'Inez', `She looks at who can see her before she looks at you. She talks about her tables, her tips and her Bureau card. She never says she's frightened and never threatens anyone: her fear shows in her questions, and in giving way too fast. She's kind, and tired.`);
-const WORLD = `The place: the café and its terrace face Records Square; the Civic Records Office is across the square. Evening, shift change coming. A polite, orderly city that writes everything down. Records are paper: stamped cards, forms, pneumatic tubes. Calls are voice, by telephone. Robots follow fixed routines. Everyone in the scene is a person of this city except the cell.`;
+const INEZ_WHO = who(INEZ, 'Inez', `She looks at who can see her before she looks at you. She talks about the shift, the terrace and how she can't keep up. She has no money to offer anyone and never offers any. She never says she's frightened and never threatens anyone: her fear shows in her questions, and in giving way too fast. She's kind, and tired.`);
+const WORLD = `The place: the café and its terrace face Records Square; the Civic Records Office is across the square. Daylight, shift change coming. A polite, orderly city that writes everything down. Records are paper: stamped cards, forms, pneumatic tubes. Calls are voice, by telephone. Robots follow fixed routines. Everyone in the scene is a person of this city except the cell.
+What the player sees (the game's scene, §10, brief 085: Sky, "unattached to the reality of the game"): a close shot of the speakers standing idle, facing each other, feet planted. Nobody sits, walks, carries, holds, hands over, points at or touches anything, and nothing arrives. No tray, plate, cup, card, letter, envelope or money is in the shot. They may talk about things that are elsewhere, but no line points at anything in the shot or at something being done now.
+Only what the game does happens: the cell's money moves as the action's price, away from the shot. Nobody else pays, bribes, trades or bargains for anything, and nobody gains anything the facts here don't give. Don't say evening or tonight.`;
+/** Off his door from the walk over to the walk back (GDD §07: about 57 s, 60 s, 57 s). Players plan on this, so "a minute" is wrong. */
+const GUARD_AWAY = `He leaves the door, walks across the square, stands at her side and walks back: the door is empty about three minutes. In speech say "a few minutes", never "a minute".`;
 const VOICES = (...k: string[]) => k.map(v => `- ${v}: ${text.tone.voices[v]}`).join('\n');
 const INEZ_GUARD = `Inez and the door guard are lovers, in secret. He stands the Office's public door, ${apart} m across the square from her. The two are never together unless she calls him. In speech call him Okafor (never his given name, and no gendered word beyond "he").`;
 
-type Spec = { id: string; title: string; kind: 'learn' | 'turn' | 'call'; maxBeats: number; speakers: string[]; query: string[]; sheet: string; mustSay: { what: string; re: RegExp }[] };
+type Spec = { id: string; title: string; after?: string[]; kind: 'learn' | 'turn' | 'call'; maxBeats: number; speakers: string[]; query: string[]; sheet: string; mustSay: { what: string; re: RegExp }[] };
 export const specs: Spec[] = [
   {
     id: 'listen-inez', title: 'Listen to Inez', kind: 'learn', maxBeats: 10, speakers: ['Inez', 'Milena', 'Scout'],
     query: ['Inez door guard lovers debt affair Help Pressure secret', 'Fearful temperament hesitates Listen reveals need secret', 'world records paper calls voice orderly city fears disorder', 'conversation scene overheard Listen'],
     mustSay: [{ what: 'the Bureau loan', re: /bureau/i }, { what: 'the guard', re: /okafor|guard/i }],
     sheet: `${WORLD}
-Situation: the Scout has sat at the next table for half a minute. The player hears what the Scout hears. Inez, at the café door, is working her tables. Milena speaks through the open door from just inside. Neither knows the Scout is listening.
+Situation: the Scout has stood two metres away, between the palms, for half a minute. The player hears what the Scout hears. Inez is standing at the café door between tables. Milena is a voice through the open door, from just inside. Neither knows the Scout is listening.
 ${INEZ_WHO}
 ${who(MILENA, 'Milena', 'Works the same café, inside this shift; she owes the Bureau too. No secret of hers comes up.')}
 ${INEZ_GUARD} Milena has noticed where Inez keeps looking; she doesn't know for sure until this talk.
@@ -50,7 +54,7 @@ learned: 2 lines (the debt; the lover). opens: "Help" and "Pressure" (both are n
 ${VOICES('waitress', 'scout')}`,
   },
   {
-    id: 'help-inez-1', title: 'Help Inez, first visit', kind: 'turn', maxBeats: 8, speakers: ['Inez', 'Fixer'],
+    id: 'help-inez-1', title: 'Help Inez, first visit', after: ['listen-inez'], kind: 'turn', maxBeats: 8, speakers: ['Inez', 'Fixer'],
     query: ['Help clear debt gratitude bravery Fearful needs Help twice', 'Inez capstone call pulls guard off his door', 'approach conversation private no witnesses', 'world paper records optimistic surface coercive underneath'],
     mustSay: [{ what: 'the Bureau', re: /bureau/i }],
     sheet: `${WORLD}
@@ -62,11 +66,11 @@ learned: 1 line (she took it; not ready yet). opens: "Help again" as the action'
 ${VOICES('waitress', 'fixer')}`,
   },
   {
-    id: 'help-inez-2', title: 'Help Inez, second visit', kind: 'turn', maxBeats: 8, speakers: ['Inez', 'Fixer'],
+    id: 'help-inez-2', title: 'Help Inez, second visit', after: ['listen-inez', 'help-inez-1'], kind: 'turn', maxBeats: 8, speakers: ['Inez', 'Fixer'],
     query: ['Help clear debt gratitude bravery helped Inez warns rivals', 'Inez call guard walks to her side partners stays 60 s', 'capstone the call that pulls the guard off his door'],
     mustSay: [{ what: 'calling him over', re: /call|come over|fetch|over here|send for/i }, { what: 'the guard', re: /okafor|guard|him/i }],
     sheet: `${WORLD}
-Situation: the Fixer comes back and clears the rest of the Bureau loan. This time she is won over, gratefully and still frightened. Now the Fixer finally says what's wanted, and it is small: when the Fixer telephones, she calls Okafor over from his door. He'll come to her side and stay about a minute.
+Situation: the Fixer comes back and clears the rest of the Bureau loan. This time she is won over, gratefully and still frightened. Now the Fixer finally says what's wanted, and it is small: when the Fixer telephones, she calls Okafor over from his door. ${GUARD_AWAY}
 ${INEZ_WHO}
 ${INEZ_GUARD}
 She must work out for herself that the Fixer knows about Okafor, and be frightened by that; the Fixer is kind about it and makes no threat. She asks what happens to him. The honest answer the Fixer can give: nothing happens to him if this goes right, and he never sees us.
@@ -76,11 +80,11 @@ learned: 1 line. opens: "Call Inez".
 ${VOICES('waitress', 'fixer')}`,
   },
   {
-    id: 'pressure-inez', title: 'Pressure Inez', kind: 'turn', maxBeats: 8, speakers: ['Inez', 'Fixer'],
+    id: 'pressure-inez', title: 'Pressure Inez', after: ['listen-inez'], kind: 'turn', maxBeats: 8, speakers: ['Inez', 'Fixer'],
     query: ['Pressure threat fear resentment can identify Fixer seen', 'Inez secret affair Pressure threatens to expose', 'capstone the call that pulls the guard off his door'],
     mustSay: [{ what: 'the affair exposed', re: /office|tell|know|hear/i }, { what: 'calling him over', re: /call|come over|fetch|over here|send for/i }],
     sheet: `${WORLD}
-Situation: the same woman, a different way in. The Fixer comes to Inez at the café door with no money and tells her, gently, that the Office could learn about her and Okafor. She gives in quickly, and hates it. The Fixer is warm in manner, steel underneath, takes no pleasure in it and doesn't pretend otherwise. The Fixer keeps their voice low because a threat can be seen. What's wanted: when the Fixer telephones, she calls Okafor over from his door; he comes to her side and stays about a minute.
+Situation: the same woman, a different way in. The Fixer comes to Inez at the café door with no money and tells her, gently, that the Office could learn about her and Okafor. She gives in quickly, and hates it. The Fixer is warm in manner, steel underneath, takes no pleasure in it and doesn't pretend otherwise. The Fixer keeps their voice low because a threat can be seen. What's wanted: when the Fixer telephones, she calls Okafor over from his door. ${GUARD_AWAY}
 ${INEZ_WHO}
 ${INEZ_GUARD}
 Fact of the game, for learned only, and nobody says it aloud: she will remember the Fixer's face, and could describe it if she's ever questioned. She wouldn't threaten a stranger who frightens her, and the Fixer wouldn't remind her.
@@ -93,7 +97,7 @@ ${VOICES('waitress', 'fixer')}`,
     query: ['route B pickup driver turned Pay service bay waits', 'official driver needs cash Mercenary Pay', 'getaway rivals lookout turned driver warns lookout off', 'world paper records voice calls'],
     mustSay: [{ what: 'the service bay', re: /service bay|round the back|service drive|round to the/i }, { what: 'the Councillor', re: /councillor/i }],
     sheet: `${WORLD}
-Situation: the Fixer finds Vale's official driver waiting by the official car in the bay on the Office's south side, on Apron Road, and offers an envelope. It works. The driver has had a lean month and bargains over the terms, and the conversation is about the exact job, because this is someone who's been paid to be vague before and wants it spelled out.
+Situation: the Fixer finds Vale's official driver waiting by the official car in the bay on the Office's south side, on Apron Road, and offers money; the game pays it away from the shot, so no envelope. It works. The driver has had a lean month and bargains over the terms, and the conversation is about the exact job, because this is someone who's been paid to be vague before and wants it spelled out.
 ${who(DRIVER, 'Zhou', 'Call the driver Zhou; no gendered word. Calls Vale "the Councillor", always.')}
 The job, exactly as the game plays it: when the chime goes the Councillor comes out and gets in. A paid Zhou doesn't drive off. Zhou takes the Councillor round to the service bay at the back, the east yard, and waits there with him. Zhou won't wait for ever: a couple of minutes, then drives on. Zhou also says that if someone's hanging about watching the bay, Zhou can send them off; Zhou has noticed nothing specific and names nobody. Getting Vale out of the back seat is the Fixer's people's job; Zhou doesn't want to see it.
 The Fixer says "we" and never explains who "we" are. Zhou doesn't ask, and says why not, in a line.
@@ -102,17 +106,17 @@ learned: 1 line. opens: nothing new to press; instead 1 line naming the place to
 ${VOICES('driver', 'fixer')}`,
   },
   {
-    id: 'call-inez', title: 'The call, after Help', kind: 'call', maxBeats: 8, speakers: ['Fixer', 'Inez', 'Okafor'],
+    id: 'call-inez', title: 'The call, after Help', after: ['listen-inez', 'help-inez-1', 'help-inez-2'], kind: 'call', maxBeats: 8, speakers: ['Fixer', 'Inez', 'Okafor'],
     query: ['capstone the call pulls guard off door partners ring side stays 60 s', 'route A front door Call Inez window Enforcer enters', 'calls are voice telephone'],
     mustSay: [{ what: 'he leaves the door', re: /door|post|step/i }],
     sheet: `${WORLD}
-Situation: the moment the whole front-door plan was for. The Fixer telephones the café and says it's time. Inez, whom the cell has helped, then gets Okafor to leave his door: she calls across to him on the Office door's handset. He comes, walks across the square, stands at her side for a minute, and goes back. The shot cuts between them.
+Situation: the moment the whole front-door plan was for. The Fixer telephones the café and says it's time. Inez, whom the cell has helped, then gets Okafor to leave his door: she calls across to him on the Office door's handset. ${GUARD_AWAY} The shot cuts between them, each standing alone; no one is seen holding a telephone.
 ${INEZ_WHO}
-${who(GUARD, 'Okafor', 'In speech he is Okafor to the Fixer; Inez may call him "love". He has a shift to finish and likes her more than the job.')}
+${who(GUARD, 'Okafor', 'In speech he is Okafor to the Fixer; Inez may call him "love". He has a shift to finish and likes her more than the job. He says nothing about money here, and doesn\'t say how long the door stands empty.')}
 ${INEZ_GUARD}
 She is scared and must sound ordinary to him. He must not suspect. Tenderness matters: this is two people who love each other, and one of them is using it. Let the player feel that, in a line. No coffee spill and no trick: he comes because she asked.
-The scene must make plain: she called him and he is leaving the door now; the door stands empty while he's with her, a few minutes at most counting his walk there and back.
-learned: 1 line ("The door is empty"). opens: 1 line naming what the door allows now, "Enter the Office" (the Enforcer's action).
+The scene must make plain: she called him and he is leaving the door now. The card says how long.
+learned: 1 line ("Door empty a few minutes"). opens: 1 line naming what the door allows now, "Enter the Office" (the Enforcer's action).
 ${VOICES('waitress', 'guard', 'fixer')}`,
   },
 ];
@@ -125,6 +129,9 @@ const Review = z.strictObject({ faults: z.array(z.strictObject({ scene: z.string
 type Final = z.infer<typeof Edited>;
 
 const NAMES_FEAR = /\bI'?m (too |so |very )?(scared|frightened|terrified)\b|\bI'?m (too |so |very )?afraid of\b/i;
+/** Sky on r001: things no one has in the shot, Inez paying her way out, and the guard's "one minute". */
+const NOT_IN_THE_GAME = /\b(saucer|plate|tray|cup|envelope|bonnet|soup|tonight|evening)\b|\b(take|have|keep) (my|your|her) tips\b/i;
+const ONE_MINUTE = /\b(a|one) minute\b/i;
 const JARGON = /\b(alert|trail|standing|heat|turned|temperament|approach|lever|mission|agent|asset|halcyon|lender)\b/i;
 const avoid: string[] = [...text.tone.avoid, ...text.tone.profanity];
 const words = (s: string) => s.trim().split(/\s+/).length;
@@ -137,6 +144,8 @@ export function check(s: Spec, f: Pick<Final, 'beats' | 'learned' | 'opens'>): s
     if (words(b.line) > 12) out.push(`over 12 words: "${b.line}"`);
     if (b.line.includes('!')) out.push(`exclamation mark: "${b.line}"`);
     if (JARGON.test(b.line)) out.push(`design word or "lender": "${b.line}"`);
+    if (NOT_IN_THE_GAME.test(b.line)) out.push(`isn't in the game's shot or acts: "${b.line}"`);
+    if (ONE_MINUTE.test(b.line)) out.push(`the door is empty a few minutes, not one: "${b.line}"`);
     if (NAMES_FEAR.test(b.line)) out.push(`names the fear instead of showing it: "${b.line}"`);
     for (const a of avoid) if (new RegExp(`\\b${a.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\b`, 'i').test(b.line)) out.push(`avoid-list word "${a}": "${b.line}"`);
   }
@@ -159,14 +168,16 @@ if (import.meta.main) {
     process.exit(0);
   }
 
-  const one = async (s: Spec) => {
+  type Scene = { spec: Spec; final: Final; faults: string[]; reviewFix: (found: string[], into: Call[]) => Promise<void> };
+  const one = async (s: Spec, before: Scene[]): Promise<Scene> => {
     const d = `${dir}/${s.id}`, calls: Call[] = [];
+    const story = before.length ? `What the player has already read, in order. Stay true to it, and don't reuse its phrases:\n${before.map(b => `${b.spec.title}:\n${b.final.beats.map(x => `${x.speaker}: ${x.line}`).join('\n')}`).join('\n\n')}\n\n` : '';
     const o: Objective = { id: `write-${s.id}`, role: 'dialogue-designer', brief: 'briefs/085/fable/writer.md', query: s.query, effort: 'high' };
-    const task = `Scene: ${s.title}. At most ${s.maxBeats} beats.\n\nFacts (these win over any passage above):\n${s.sheet}\n\nWrite three takes that differ in situation and shape, not in wording. Each returns beats (speaker, line), learned, opens.`;
+    const task = `Scene: ${s.title}. At most ${s.maxBeats} beats.\n\nFacts (these win over any passage above):\n${s.sheet}\n\n${story}Write three takes that differ in situation and shape, not in wording. Each returns beats (speaker, line), learned, opens.`;
     const takes = await runAgent(o, task, Takes, calls, d);
     await writeJson(`${d}/takes.json`, takes);
     const e: Objective = { id: `edit-${s.id}`, role: 'dialogue-designer', brief: 'briefs/085/fable/editor.md', query: s.query.slice(0, 2), effort: 'high' };
-    const edTask = (extra = '') => `Scene: ${s.title}. At most ${s.maxBeats} beats.\n\nFacts:\n${s.sheet}\n\nThe writer's hard limits: ${(WRITER_LIMITS)}\n\nThe takes:\n${JSON.stringify(takes.takes, null, 1)}\n\n${extra}Return the finished scene.`;
+    const edTask = (extra = '') => `Scene: ${s.title}. At most ${s.maxBeats} beats.\n\nFacts:\n${s.sheet}\n\n${story}The writer's hard limits: ${(WRITER_LIMITS)}\n\nThe takes:\n${JSON.stringify(takes.takes, null, 1)}\n\n${extra}Return the finished scene.`;
     let final = await runAgent(e, edTask(), Edited, calls, d), faults = check(s, final);
     if (faults.length) { final = await runAgent({ ...e, id: `fix-${s.id}` }, edTask(`Your last version:\n${JSON.stringify(final.beats)}\nIt failed these checks; fix them and change nothing else:\n${faults.join('\n')}\n\n`), Edited, calls, d); faults = check(s, final); }
     await writeJson(`${d}/final.json`, { id: s.id, title: s.title, kind: s.kind, ...final, faults });
@@ -182,7 +193,13 @@ if (import.meta.main) {
     return { spec: s, final, faults, reviewFix };
   };
   const WRITER_LIMITS = (await read('briefs/085/fable/writer.md')).split('## Hard limits')[1]!.trim();
-  const done = await Promise.all(chosen.map(one));
+  // In story order, so each scene knows what the player has read; Pressure and the driver don't wait on the Help scenes.
+  const started = new Map<string, Promise<Scene>>();
+  const play = (s: Spec): Promise<Scene> => {
+    if (!started.has(s.id)) started.set(s.id, Promise.all((s.after ?? []).flatMap(id => chosen.filter(c => c.id === id)).map(play)).then(before => one(s, before)));
+    return started.get(s.id)!;
+  };
+  const done = await Promise.all(chosen.map(play));
 
   const reviewCalls: Call[] = [];
   const review = await runAgent(

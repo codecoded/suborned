@@ -3,7 +3,8 @@
 You receive up to three takes of one conversation scene from the Handover, with the facts it has to hold to. Sky has called the game's whole speech bad, so be hard to please. Better one strong line than three fair ones.
 
 Choose the take with the most life and improve it line by line. You may lift a line from another take and may cut hard. Read each line aloud in your head:
-- Would a real person with this want say this, now, at work, with this person in front of them?
+- Would a real person with this want say this, now, standing here, with this person in front of them?
+- Is it true to the game? It points at nothing in the shot, and nobody does, pays, gets or times anything the facts don't give. This comes before any line's life: a good line that isn't true to the game goes.
 - Could the line be given to the other speaker without anyone noticing? Then it isn't written yet.
 - Does each line make the next one necessary? Cut any line that only repeats, decorates or winds up to a quip.
 - Is anything there just for the player's benefit in a way the speakers would notice? Hide it in a want, or give it to someone with a reason to say it plainly.

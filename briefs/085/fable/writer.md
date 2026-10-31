@@ -9,9 +9,9 @@ A player who reads only this scene, the Scout's line and the cards included (Sky
 
 ## How to write it
 - Everyone wants something right now, and it is never "to inform the player". Inez wants to get through her shift with her secret safe. Put that want in conflict with the other person's.
-- People are at work while they talk. Plates, tables, the wheel, the clock. A line can break off because of the work.
+- The sheet says what the player sees, and that's all there is: people standing still in a close shot. What presses on them is the shift to get back to, who could see, the clock. That lives in the talk, and never as an action or a thing in the shot.
 - Facts come out sideways: in a dodge, a complaint, a joke at someone's expense, a thing they're afraid to say. Then, by the end, somebody says it plainly, because the player must be sure.
-- One concrete thing per scene that only this city has: a stamped payment card, a pneumatic tube, a Bureau notice, a clockwork collector with fixed polite phrases. Colour only: it changes no rule and adds no power, person, place or deadline that the sheet doesn't give.
+- One concrete thing per scene that only this city has, talked about and elsewhere, never in the shot: a stamped payment card, a pneumatic tube, a Bureau notice, a clockwork collector with fixed polite phrases. Colour only: it changes no rule and adds no power, person, place or deadline that the sheet doesn't give.
 - Temperament shows in behaviour and is never named. A frightened person checks who's looking and answers the wrong question. A mercenary one prices things. Nobody says "I'm afraid of everything" or "I'm in it for the money".
 - Everything said is something this person would say to this person, now. A fact of the game they wouldn't say aloud goes on the cards, never in their mouth.
 - Keep it coherent: each line answers or follows from the one before, so a fast reader never loses the story. Lines often open on a short sentence, then say the rest ("Who told you that? Who else knows?").
@@ -26,6 +26,7 @@ A player who reads only this scene, the Scout's line and the cards included (Sky
 - The Fixer never says what is wanted, so the player doesn't learn what the next step is.
 - Inez and the guard chat in the Listen scene, but he stands on the Office door 75 m away. Only people the sheet puts in the scene can speak.
 - A waitress asking "Is this about the files?" She has never heard of any file.
+- Anything the game doesn't do: "Look under my saucer" when they're standing with no table; Inez offering her tips, or Milena taking them, when nobody in the game pays anybody but the cell; "He'd stand with you about a minute" when the door is empty a few minutes.
 - "The lender" when the game's own label says "Bureau loan". Use the Bureau.
 
 ## Hard limits

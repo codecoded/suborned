@@ -7,7 +7,7 @@ const scene = (lines: string[], s = spec('pressure-inez')) => ({
   beats: lines.map((line, i) => ({ speaker: s.speakers[i % s.speakers.length]!, line })),
   learned: ['Inez knows the Fixer\'s face.'], opens: ['Call Inez'],
 });
-const plain = ['The Office could hear, you know.', 'What do you want from me?', 'When I telephone, call him over here.', 'One minute, and then you leave us be?'];
+const plain = ['The Office could hear, you know.', 'What do you want from me?', 'When I telephone, call him over here.', 'A few minutes, and then you leave us be?'];
 
 describe('what a person would say', () => {
   test('naming the fear fails the check', () => {
@@ -17,6 +17,20 @@ describe('what a person would say', () => {
   });
   test('a polite "I\'m afraid" passes', () => {
     expect(check(spec('pressure-inez'), scene([...plain.slice(0, 3), "I'm afraid the Office could hear."]))).toEqual([]);
+  });
+  test('what the game does not do fails the check', () => {
+    const s = spec('help-inez-2'), bad = (line: string) => check(s, scene([...plain.slice(0, 3), line], s)).join();
+    expect(bad('Look under my saucer, Inez.')).toContain("isn't in the game");
+    expect(bad('Please, take my tips.')).toContain("isn't in the game");
+    expect(bad("He'd stand with you about a minute.")).toContain('a few minutes');
+  });
+  test('every sheet says what the player sees, and the guard is away a few minutes', () => {
+    for (const s of specs) { expect(s.sheet).toContain('What the player sees'); expect(s.sheet).not.toMatch(/offers an envelope|Evening|about a minute|for a minute/); }
+    for (const id of ['help-inez-2', 'pressure-inez', 'call-inez']) expect(spec(id).sheet).toContain('about three minutes');
+  });
+  test('scenes follow the story: each lists only earlier scenes', () => {
+    specs.forEach((s, i) => { for (const a of s.after ?? []) expect(specs.findIndex(x => x.id === a)).toBeLessThan(i); });
+    expect(spec('call-inez').after).toContain('help-inez-2');
   });
   test('every scene with Inez carries who she is', () => {
     const withInez = specs.filter(s => s.speakers.includes('Inez'));
