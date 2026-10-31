@@ -16,7 +16,9 @@ namespace Suborned.OldTown
     ///   scene, which our play grade is exposed for (the old stage's sun is higher and brighter and its ambient the baked old sky: under our
     ///   grade it burns out, and its short shadows leave the square flat).
     /// Shadows: our TacticalShadows on the same camera fits the shadow distance and cascades to the play view and turns SSAO off at ortho.
-    /// Everything is put back at the end of the camera's render, so no asset or setting is left changed.</summary>
+    /// Everything is put back at the end of the camera's render, so no asset or setting is left changed. The ambient alone stays while this camera is enabled in play mode (HoldAmbient:
+    /// brief 085, the player's shade matched the old ambient, on Glint's reading because the GPU Resident Drawer reads it outside the camera callbacks), goes back on disable, and any other
+    /// camera that renders meanwhile (a presentation or pose camera) gets the old ambient for its own render.</summary>
     [ExecuteAlways, RequireComponent(typeof(Camera))]
     public sealed class OldTownPlayLook : MonoBehaviour
     {
@@ -49,6 +51,7 @@ namespace Suborned.OldTown
         readonly List<(ScriptableRendererFeature f, bool was)> features = new();
         bool applied;
         Volume lensVolume; float lensWeight;
+        bool held, otherHas; AmbientMode heldMode; Color heldSky, heldEq, heldGr; float heldInt; SphericalHarmonicsL2 heldProbe;
 
         void OnEnable()
         {
@@ -57,19 +60,39 @@ namespace Suborned.OldTown
             cam.cullingMask &= ~(1 << CrowdLayer);
             RenderPipelineManager.beginCameraRendering += Begin;
             RenderPipelineManager.endCameraRendering += End;
+            HoldAmbient();
         }
+
+        /// <summary>The play ambient on RenderSettings, outside the render callbacks, the scene's kept for ReleaseAmbient and for other cameras.</summary>
+        void HoldAmbient()
+        {
+            if (!lightSwap || !Application.isPlaying) return;
+            heldMode = RenderSettings.ambientMode; heldSky = RenderSettings.ambientSkyColor; heldEq = RenderSettings.ambientEquatorColor; heldGr = RenderSettings.ambientGroundColor; heldInt = RenderSettings.ambientIntensity; heldProbe = RenderSettings.ambientProbe;
+            PlayAmbient(); held = true;
+        }
+        void PlayAmbient()
+        {
+            RenderSettings.ambientMode = ambientMode; RenderSettings.ambientSkyColor = ambientSky; RenderSettings.ambientEquatorColor = ambientEquator; RenderSettings.ambientGroundColor = ambientGround; RenderSettings.ambientIntensity = ambientIntensity;
+            if (ambientProbe != null && ambientProbe.Length == 27) { var sh = new SphericalHarmonicsL2(); for (int ch = 0; ch < 3; ch++) for (int k = 0; k < 9; k++) sh[ch, k] = ambientProbe[ch * 9 + k]; RenderSettings.ambientProbe = sh; }
+        }
+        void SceneAmbient() { RenderSettings.ambientMode = heldMode; RenderSettings.ambientSkyColor = heldSky; RenderSettings.ambientEquatorColor = heldEq; RenderSettings.ambientGroundColor = heldGr; RenderSettings.ambientIntensity = heldInt; RenderSettings.ambientProbe = heldProbe; }
+        void ReleaseAmbient() { if (held) { held = false; SceneAmbient(); } }
+
+        /// <summary>A scene made active later brings its own RenderSettings: hold again on them.</summary>
+        void Update() { if (held && RenderSettings.ambientSkyColor != ambientSky) HoldAmbient(); }
 
         void OnDisable()
         {
             RenderPipelineManager.beginCameraRendering -= Begin;
             RenderPipelineManager.endCameraRendering -= End;
-            Restore();
+            Restore(); ReleaseAmbient();
             if (lensVolume) { var p = lensVolume.sharedProfile; if (Application.isPlaying) { Destroy(lensVolume.gameObject); Destroy(p); } else { DestroyImmediate(lensVolume.gameObject); DestroyImmediate(p); } lensVolume = null; }
         }
 
         void Begin(ScriptableRenderContext _, Camera c)
         {
-            if (c != cam || applied) return;
+            if (c != cam) { if (held && !otherHas && c.cameraType == CameraType.Game && !(c.TryGetComponent<UniversalAdditionalCameraData>(out var ud) && ud.renderType == CameraRenderType.Overlay)) { otherHas = true; SceneAmbient(); } return; }
+            if (applied) return;
             applied = true;
             fog = RenderSettings.fog; if (fogOff) RenderSettings.fog = false;
             weights.Clear(); foreach (var v in presentationVolumes) { weights.Add(v ? v.weight : 0f); if (v) v.weight = 0f; }
@@ -80,8 +103,7 @@ namespace Suborned.OldTown
             {
                 if (sun) { sunRot0 = sun.transform.rotation; sunCol0 = sun.color; sunInt0 = sun.intensity; sunShadow0 = sun.shadowStrength; sun.transform.rotation = sunRotation; sun.color = sunColour; sun.intensity = sunIntensity; sun.shadowStrength = sunShadowStrength; }
                 amb0 = RenderSettings.ambientMode; sky0 = RenderSettings.ambientSkyColor; eq0 = RenderSettings.ambientEquatorColor; gr0 = RenderSettings.ambientGroundColor; ambInt0 = RenderSettings.ambientIntensity; probe0 = RenderSettings.ambientProbe;
-                RenderSettings.ambientMode = ambientMode; RenderSettings.ambientSkyColor = ambientSky; RenderSettings.ambientEquatorColor = ambientEquator; RenderSettings.ambientGroundColor = ambientGround; RenderSettings.ambientIntensity = ambientIntensity;
-                if (ambientProbe != null && ambientProbe.Length == 27) { var sh = new SphericalHarmonicsL2(); for (int ch = 0; ch < 3; ch++) for (int k = 0; k < 9; k++) sh[ch, k] = ambientProbe[ch * 9 + k]; RenderSettings.ambientProbe = sh; }
+                PlayAmbient();
             }
             features.Clear();
             if (UniversalRenderPipeline.asset is { } urp && urp.rendererDataList.Length > 0 && urp.rendererDataList[0])
@@ -89,7 +111,7 @@ namespace Suborned.OldTown
                     if (f && f.isActive && System.Array.IndexOf(featuresOff, f.name) >= 0) { features.Add((f, true)); f.SetActive(false); }
         }
 
-        void End(ScriptableRenderContext _, Camera c) { if (c == cam) Restore(); }
+        void End(ScriptableRenderContext _, Camera c) { if (c == cam) Restore(); else if (otherHas) { otherHas = false; PlayAmbient(); } }
 
         void Restore()
         {

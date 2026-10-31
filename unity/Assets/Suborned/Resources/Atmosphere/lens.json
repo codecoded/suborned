@@ -51,7 +51,8 @@
   "gradePlay": {
     "saturationPercent": 8,
     "r072": "Glint 072-G (2026-10-27): 14 -> 8 with light.json post.colour.saturation 18 -> 25 (DecoKit's street grade): the play camera's saturation = (1.25 x 1.08 - 1) = 35.0 (was 1.18 x 1.14 = 36.9). The play view already sat above DecoKit's 25, so the scene grade moves to DecoKit's for the follow and long tiers and the play tier holds; contrast 10 adds its own colour (frame mean S 0.245 -> 0.273). Ships with the light.json change and the scene rebuild: alone (scene grade still 18) the play tier would fall to 27.4.",
-    "exposureDelta": 0.083,
+    "exposureDelta": -0.13,
+    "r085": "Glint, brief 085 (2026-10-31; Sky: 'why so bright?'): 0.083 -> -0.13. OldTown.unity has no LightPhase, so AtmosphereLens falls back to base exposure 0.15 and the play view ran at 0.233, not the designed 0.02. If LightPhase is ever added to OldTown.unity, this goes back to 0.083.",
     "r075": "Glint 075-A (2026-10-28): exposureDelta (new key, play tier only, on top of the scene grade's): +0.083, so the play view's post exposure stays 0.02 as before (the old grade's -0.8 at its sun 3 is -0.063 at ours; the 0.08 EV keeps every unlit colour calibrated at the play camera, the crossing heads and the silhouette ink and rim, where 072-G fitted them). Saturation, lift and greens are unchanged: with the old grade's saturation 25 the play view lands at 35 as before (072-G).",
     "liftOffset": 0.04,
     "liftWarmth": 0.25,
