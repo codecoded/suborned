@@ -61,6 +61,14 @@ Today's `scenes.items` lines stay as bubbles, with no cutaway, for every act abo
 
 An approach's fallback now runs past the reply: `ConvoStart` stops at `l.Reply` and needs to play all of them, or the answer goes missing.
 
+## Second pass: arrival lines, Mislead, price
+- **`street` on `call-inez-pressure`:** when the engine logs `guard.at-cafe` on a visit where Inez was turned by Pressure, play `street[0].beats` as ordinary speech bubbles at the two people, clock running, in place of the `guard-at-cafe` dialogue and city scene. Keel is adding the rule and his report isn't in yet: `guard.at-cafe` is today's code for him reaching her, and if Keel gives this visit its own code, tell me and I'll rename `on`. The stay is 5 s, so hers shows on arrival and his before he leaves; let his bubble follow him as he runs.
+- **Look up the street lines by route, not by whether the cutaway played:** query with `verb: call`, `turnedBy`, so Skip, Never and First time still get them. Motive's "she remembers a Pressure" and `turnedBy: pressure` are the same set: Pressure is refused once she's turned.
+- **Heard off screen:** the city scene plays only in sight, but these should always play. With no agent near, also show `street[0].beat` ("Inez warned him.") in the feed.
+- **Hold it back:** `call-inez-pressure`, its `street` and its `price` stay off until Keel lands the rule and Aster says so. Today's `guard-at-cafe` lines cover every route until then.
+- **Pressure's price line:** the item's `price.line` then replaces `price.on` (`actions.pressure.onTarget.waitress`). The times are written in; Motive wants them from the engine, rounded to 10 s, so add a read if Keel exposes one.
+- **Mislead at landing:** `done` (Scout), then `rivals-misled` (rivals, then Scout's line from the same event if you want a third). Both are in `dialogue`, and no line changed.
+
 ## Proofs
 `Proof067` (lines 252-254) waits for a scene on the act's first tick (`ConvoPending`), so it moves with this. Proofs that set conversations to Never don't notice. A `text.json` change selects sections `done` and `r083` (`tools/game/proofdelta.test.ts`).
 

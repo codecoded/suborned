@@ -36,6 +36,13 @@ export const Conversation = z.strictObject({
   from: z.string().min(1).describe('where the words came from'),
   when: ConversationWhen,
   beats: z.array(z.strictObject({ speaker: z.enum(CONVERSATION_SPEAKERS), line: Spoken })).min(4).max(CONVERSATION_MAX_BEATS),
+  street: z.array(z.strictObject({
+    on: z.string().regex(/^[a-z][a-z0-9.-]*$/).describe('the engine log code that plays them'),
+    beat: z.string().min(1).max(24).describe('the feed line when no one is near enough to hear: at most four words'),
+    beats: z.array(z.strictObject({ speaker: z.enum(CONVERSATION_SPEAKERS), line: Spoken })).min(1).max(3),
+  })).optional().describe('what follows the cutaway in play, clock running, as speech bubbles, when the engine logs `on`. It belongs to the route, so it plays whether or not the cutaway did, and in place of that event\'s usual lines'),
+  price: z.strictObject({ on: z.string().min(1).describe('the text.json path the line replaces'), line: Spoken })
+    .optional().describe('a price line that goes live with this scene, not before'),
   learned: z.array(CardLine).min(1).max(2).describe('the cards: what the player now knows'),
   opens: z.array(CardLine).min(1).max(2).describe('the cards: what the player can now do, or where to be'),
 });

@@ -184,7 +184,7 @@ describe('tone and names', () => {
     expect(hits).toEqual([]);
   });
   test('no capitalised word mid-sentence other than the cast, the places, the verbs and the agents', () => {
-    const ok = new Set(['Inez', 'Vale', 'Scout', 'Fixer', 'Tech', 'Enforcer', 'Councillor', 'Council', 'Office', 'Records', 'Civic', 'Police', 'Handover',
+    const ok = new Set(['Inez', 'Vale', 'Bureau', 'Scout', 'Fixer', 'Tech', 'Enforcer', 'Councillor', 'Council', 'Office', 'Records', 'Civic', 'Police', 'Handover',
       'Return', 'Ctrl', 'I', 'F', 'G', 'N', 'Q', 'E', 'X', 'Trail', 'Alert', 'Ask', 'Pay', 'Help', 'Pressure', 'Call', 'Watch', 'Listen', 'Loop', 'Reroute', 'Enter', 'Take', 'Fire', 'Carry', 'Board', 'Go', 'Kill', 'Halcyon', 'Security', 'Disable', 'Drive', 'Orbit', 'Walk']); // Disable and Drive: briefs 058, 059; Orbit Walk: the street the rival car turns in from (brief 059); X: the cease-fire key H21 teaches (brief 067)
     const hits: string[] = [];
     for (const s of strings) {
@@ -1107,7 +1107,7 @@ describe('brief 014: the short forms, the price line, the beats', () => {
     const bad: string[] = [];
     for (const d of rows) for (const l of d.lines) { if (GENDER.test(l)) bad.push(`gendered: ${l}`); if (NARRATION.test(l)) bad.push(`narration: ${l}`); }
     expect(bad).toEqual([]);
-    expect(rows.find((d) => d.outcome === 'refused')!.lines[0]).toBe("They said no. They'll remember me.");
+    expect(rows.find((d) => d.outcome === 'refused')!.lines[0]).toBe("You said no. You'll remember me."); // brief 085: read after her reply, to her face
   });
   test('H12 teaches the run toggle: it names the key the game binds (G), the one place a key is taught', () => {
     const h = t.hints.items.H12!;

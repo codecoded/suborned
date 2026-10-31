@@ -37,15 +37,15 @@ describe('what a person would say', () => {
     expect(withInez.length).toBe(6);
     for (const s of withInez) expect(s.sheet).toContain('never threatens anyone');
   });
-  test('the call after Pressure: she gives a reason, then tells him; only this sheet lets her', () => {
+  test('the call after Pressure ends with him coming; she tells him later, in play', () => {
     const s = spec('call-inez-pressure');
     expect(s.after).toEqual(['listen-inez', 'pressure-inez']);
     expect(s.sheet).not.toContain('She never tells him anyone knows');
-    expect(s.sheet).toContain('someone knows about the two of them');
+    expect(s.sheet).toContain('The scene ends with him coming');
     expect(s.sheet).toContain("can't be said on the line");
-    const lines = ['It is time.', 'He is on the door.', 'The shift is long, love.', 'Come over, it will not wait.'];
-    expect(check(s, scene(lines, s)).join()).toContain('never says: someone knows');
-    expect(check(s, scene([...lines, 'Someone knows, and looked suspicious.', "I'm going back to my door."], s))).toEqual([]);
+    const lines = ['It is time.', 'He is on the door.', 'The shift is long, love.', 'I have nothing for you.'];
+    expect(check(s, scene(lines, s)).join()).toContain('never says: the reason she gives him');
+    expect(check(s, scene([...lines, "I've something to tell you.", "All right, I'm coming."], s))).toEqual([]);
   });
   test('with --only, a scene still knows what the player read: from this run, else what Sky agreed', () => {
     const s = spec('call-inez-pressure'), got = priorScenes(s, []);

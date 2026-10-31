@@ -128,17 +128,15 @@ ${VOICES('waitress', 'guard', 'fixer')}`,
   {
     id: 'call-inez-pressure', title: 'The call, after Pressure', after: ['listen-inez', 'pressure-inez'], kind: 'call', maxBeats: 9, speakers: ['Fixer', 'Inez', 'Okafor'],
     query: ['pressured Inez tells the guard someone knows, they looked suspicious, he runs back to his door, window shorter', 'Pressure leaves fear resentment can identify Fixer', 'route A front door Call Inez window Enforcer enters', 'calls are voice telephone'],
-    mustSay: [{ what: 'someone knows about them', re: /\bknows?\b/i }, { what: 'that they looked suspicious', re: /suspicious|looked wrong|not right|wrong about/i }, { what: 'he goes back', re: /\bback\b/i }, { what: 'the door', re: /door/i }],
+    mustSay: [{ what: 'the reason she gives him', re: /tell you|can't wait/i }, { what: 'that he is coming', re: /coming/i }],
     sheet: `${WORLD}
-Situation: the moment the front-door plan was for, and it goes wrong. The Fixer threatened to tell the Office about Inez and Okafor, and told her not to say a word of it to him. Now the Fixer telephones the café and says it's time. Inez then speaks to Okafor on the Office door's handset. The shot cuts between them, each standing alone; no one is seen holding a telephone. He doesn't arrive in this scene, so all she says to him she says on the line.
+Situation: the moment the front-door plan was for. The Fixer threatened to tell the Office about Inez and Okafor, and told her not to say a word of it to him. Now the Fixer telephones the café and says it's time. Inez then speaks to Okafor on the Office door's handset. The shot cuts between them, each standing alone; no one is seen holding a telephone. He doesn't arrive in this scene.
 ${INEZ_WHO}
 ${who(GUARD, 'Okafor', 'In speech he is Okafor to the Fixer; Inez may call him "love". He has a shift to finish and likes her more than the job. He says nothing about money here, and doesn\'t say how long the door stands empty.')}
 ${INEZ_GUARD}
-It's the same woman the player has just read, and she hates the Fixer. In order: she answers the Fixer as if she's giving way, as she did before. She talks to Okafor the way she always does, an ordinary word about his shift. ${GUARD_REASON_THEN_TELLS} Once he has agreed and stepped off the door, she tells him, on the line, in her own words: someone knows about the two of them, and whoever it was looked suspicious to her. This is the first thing she has done for herself and she never says so; for this one moment she doesn't give way. She only knows she was threatened: she doesn't say who, gives no name or face, says nothing of what the Fixer wants or of anyone going into the Office. The Fixer isn't on this line and doesn't hear it, and no one in the scene remarks on the plan.
-Okafor doesn't argue. He has left his door, and he says he's running back to it, now. He does go back: never have him say he won't leave or never left, because in the game the door does stand empty for a short while.
-The player must feel the plan go wrong from what she says: the Fixer told her not a word, and here is the word. Nobody says how long the door stands empty, and no number of minutes is said.
-The scene must make plain, the cards included: she called him; she told him someone knows; he is running back, so the door is empty for less time than the plan needed.
-learned: 1 line that names it: she told him, so the door's empty for less time. opens: 1 line naming what the door still allows, "Enter the Office" (the Enforcer's action).
+It's the same woman the player has just read, and she hates the Fixer. She answers the Fixer as if she's giving way, as she did before. She talks to Okafor the way she always does, an ordinary word about his shift. ${GUARD_REASON_THEN_TELLS} The scene ends with him coming.
+Fact of the game, for the cards only: when he reaches her, in play, she tells him someone knows about them and that they looked suspicious, and he runs back to his door, so the door is clear for a much shorter time (Motive: he walks over, stands 5 s with her, runs back). Those two lines aren't in this scene and nothing in it says so aloud: she can't tell him here, because he hasn't walked over yet.
+learned: 1 line: she'll warn him. opens: 1 line truthful about the shorter window and the entrance camera, which still stops an Enter until it's looped or off.
 ${VOICES('waitress', 'guard', 'fixer')}`,
   },
 ];

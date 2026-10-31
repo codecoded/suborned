@@ -16,6 +16,8 @@ const approved = json('briefs/085/fable/approved.json') as { scenes: { id: strin
 const byId = (id: string) => c.items.find((x) => x.id === id)!;
 const pick = (q: ConversationQuery) => lookupConversation(c, q)?.id;
 const inez = { about: 'waitress', temperament: 'fearful' };
+/** The one edit to Sky's agreed cards (Aster tells him): the entrance camera still stops an Enter (GameOrders.cs entry-seen-camera), so a bare "Enter the Office" misleads. */
+const CARD_EDITS: Record<string, string[]> = { 'call-inez': ['Camera off? Then enter the Office.'] };
 const shown = (id: string) => conversationLines(c, byId(id)).map((l) => [l.name, l.text]);
 
 describe('the words', () => {
@@ -24,17 +26,39 @@ describe('the words', () => {
       expect(byId(a.id).status, a.id).toBe('agreed');
       expect(shown(a.id), a.id).toEqual(a.beats);
       expect(byId(a.id).learned, a.id).toEqual(a.learned);
-      expect(byId(a.id).opens, a.id).toEqual(a.opens);
+      expect(byId(a.id).opens, a.id).toEqual(CARD_EDITS[a.id] ?? a.opens);
     }
     expect(approved.scenes.length).toBe(6);
   });
-  test('the one scene he has not read is flagged, and is the generator\'s output unedited', () => {
+  test('the one scene he has not read is flagged, ends with the guard coming, and leaves the telling to the street', () => {
     expect(c.items.filter((x) => x.status !== 'agreed').map((x) => x.id)).toEqual(['call-inez-pressure']);
-    const run = byId('call-inez-pressure'), f = json(`${run.from}/call-inez-pressure/final.json`);
+    const run = byId('call-inez-pressure');
     expect(run.status).toBe('awaiting-sky');
-    expect(shown(run.id)).toEqual(f.beats.map((b: { speaker: string; line: string }) => [b.speaker, b.line]));
-    expect(run.learned).toEqual(f.learned); expect(run.opens).toEqual(f.opens);
-    expect(f.faults).toEqual([]);
+    expect(run.beats.at(-1)).toEqual({ speaker: 'guard', line: "It's only a door. All right, I'm coming." });
+    expect(run.beats.map((b) => b.line).join(' ')).not.toMatch(/someone knows|suspicious/i);
+    expect(run.street!.map((s) => s.on)).toEqual(['guard.at-cafe']);
+    const said = run.street![0]!.beats;
+    expect(said.map((b) => b.speaker)).toEqual(['waitress', 'guard']);
+    expect(said[0]!.line).toMatch(/someone knows/i); expect(said[0]!.line).toMatch(/suspicious/i);
+    expect(said[1]!.line).toMatch(/door/); expect(said[1]!.line).not.toMatch(/\brun/i);
+    expect(wordCount(run.street![0]!.beat)).toBeLessThanOrEqual(4);
+    expect(c.items.filter((x) => x.street).map((x) => x.id)).toEqual(['call-inez-pressure']);
+    for (const b of said) expect(wordCount(b.line)).toBeLessThanOrEqual(MAX_WORDS);
+  });
+  test('Pressure\'s price line waits with that scene, and fits an Alt line', () => {
+    const live = t.actions.pressure!.onTarget!.waitress!, next = byId('call-inez-pressure').price!;
+    expect(live).not.toContain('warn');
+    expect(next.on).toBe('actions.pressure.onTarget.waitress');
+    expect(next.line).toBe("Quick and free, but she'll warn him. The door stays clear about 1:40, not 3:00.");
+    expect(next.line.length).toBeLessThanOrEqual(MAX_LINE);
+  });
+  test('no reachable line still has the spill, an envelope, a bonus or an as-promised', () => {
+    const reach = t.scenes.items.filter((s) => s.kind !== 'city' && s.verb !== 'watch' && (s.temperament === undefined || s.temperament === (s.about === 'waitress' ? 'fearful' : 'mercenary'))).flatMap((s) => s.variants.flatMap((v) => v.beats.flatMap((b) => ('line' in b ? [b.line] : []))));
+    const town = t.scenes.items.filter((s) => s.event === 'guard-at-cafe').flatMap((s) => s.variants.flatMap((v) => v.beats.flatMap((b) => ('line' in b ? [b.line] : []))));
+    const said = t.dialogue.filter((e) => e.event === 'guard-at-cafe' || e.event === 'guard-lured' || e.event === 'guard-back' || e.temperament === undefined && ['ack', 'arrive', 'done'].includes(e.event) || e.temperament === 'fearful' && e.event === 'confirm').flatMap((e) => e.lines);
+    const bad = /spill|coffee|clumsy|\bcloth\b|envelope|\bbonus\b|as promised|as agreed|half now|\b(a|one|five) minutes?\b|tonight|evening/i;
+    expect([...reach, ...town, ...said].filter((l) => bad.test(l))).toEqual([]);
+    expect(t.actions.call!.onTarget!.waitress).not.toMatch(/spill/);
   });
   test('each scene passes the generator\'s own checks: the limits, nothing in hand, a few minutes, no lender', () => {
     for (const s of specs) {

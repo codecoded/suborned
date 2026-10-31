@@ -23,4 +23,6 @@ Blind result (Sky, 2026-10-31): he picked Y on both scenes, which the key shows 
 
 Rule idea, not built (Sky, 2026-10-31, on the call): "if you get inez to call the guard, he runs back to the door because she said someone told him about them" "and said they looked supsicious (if she hasn't favoured the cell)". Today every turned Inez calls him and he stays, on all routes. Until Sky decides, the scenes keep to that: she gives him a reason to come and never tells him anyone knows. Owners if yes: Motive (the rule and its price), Keel (the sim), Fable (the scene).
 
+Sky's further notes (2026-10-31): "one thing I really liked was the characters bubble that appears when an action occurs off screen....e.g. the guard on a call I think": keep it, don't lose it in this round. "Not seen the vale being taken by the enforcer PIP video play out. That should signifiy Enforcer is about to exit the building so player knows to check": the clip from brief 065 (`paid/065-capture-pip/final/capture_pip_480x270.mp4`, take 3, 10.1 s) was never wired in; it plays as the Enforcer comes to the end of Enter, ending as he comes out. "Would be good keep them walking": anyone not in a conversation keeps walking in the shot.
+
 After this round: the `HandoverHost.cs` split (brief 084), with one full batch.
