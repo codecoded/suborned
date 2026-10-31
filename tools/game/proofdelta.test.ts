@@ -27,7 +27,7 @@ describe('the table', () => {
     expect(ids.filter(i => !(GATED as readonly string[]).includes(i))).toEqual(['drive', 'r123']);
   });
   test('the engine, its data, the world export and the kit are full, as the brief names them', () => {
-    for (const p of ['sim/data/rulebook.json', 'sim/Suborned.Sim/Game.cs', 'out/world/harbour-district.world.json', 'contracts/world/kit.json', 'tools/kit/cli.ts', 'unity/Assets/Suborned/Kit/a/b.fbx', 'unity/Assets/Suborned/Sim/Plugins/Suborned.Sim.dll', 'unity/Assets/StreamingAssets/sim/x.json', PLAY + 'GameBoot.cs']) expect(classify(m, p)?.run).toBe('full');
+    for (const p of ['sim/data/rulebook.json', 'sim/Suborned.Sim/Game.cs', 'out/world/harbour-district.world.json', 'contracts/world/kit.json', 'tools/kit/catalogue.ts', 'unity/Assets/Suborned/Kit/a/b.fbx', 'unity/Assets/Suborned/Sim/Plugins/Suborned.Sim.dll', 'unity/Assets/StreamingAssets/sim/x.json', PLAY + 'GameBoot.cs']) expect(classify(m, p)?.run).toBe('full');
   });
   test('a path it cannot place has no row: the game\'s other code, assets and settings among them', () => {
     for (const p of ['tools/mystery/x.ts', PLAY + 'HostNew.cs', PLAY + 'SimBundle.cs', 'unity/ProjectSettings/QualitySettings.asset', 'unity/Packages/manifest.json', 'unity/Assets/Settings/PC_RPAsset.asset', 'unity/Assets/Suborned/Shaders/DecoKit/DK_Leaf.hlsl', 'contracts/missions/handover/mission.json', 'sim/cli/Program.cs']) expect(classify(m, p)).toBeUndefined();
@@ -146,6 +146,19 @@ describe('the plan', () => {
     expect(p.reasons.holdActs).toBe(`${HOLD} changed`);
     expect(p.skips.r118).toContain('not run'); expect(p.skips.holdActs).toBeUndefined();
     expect(p.seconds).toBeLessThan(m.sections.reduce((a, s) => a + s.seconds, m.baseSeconds) * 0.6); // on the seconds measured on 0.2.168: this row is one of the dearer deltas, about half the proof
+  });
+  test('a full plan names the edit, not the kit files the batch\'s own steps rewrote', () => {
+    const KIT = 'unity/Assets/Suborned/Kit/Models/a.fbx.meta', EDIT = 'unity/Assets/Suborned/Shaders/x.hlsl';
+    expect(planProof(m, snap({ ...BASE, [KIT]: 'n', [EDIT]: 'n' }), passedAll(BASE)).why).toContain(EDIT);
+    expect(planProof(m, snap({ ...BASE, [KIT]: 'n' }), passedAll(BASE)).why).toContain(KIT); // failing example: a real kit change alone still runs everything
+    expect(planProof(m, snap({ ...BASE, [KIT]: 'n' }), passedAll(BASE)).mode).toBe('full');
+  });
+  test('the look rows: lens.json and the play look run r118 and every picture, and no engine or scene step', () => {
+    for (const p of ['unity/Assets/Suborned/Resources/Atmosphere/lens.json', 'unity/Assets/Suborned/Runtime/OldTown/OldTownPlayLook.cs']) {
+      const r = classify(m, p)!; expect(r.run).toEqual(['r118']); expect(r.shots).toBe('all'); expect(r.steps).toBeUndefined();
+    }
+    expect(classify(m, 'unity/Assets/Suborned/Runtime/OldTown/DKCutaway.cs')).toBeUndefined();
+    expect(classify(m, 'tools/kit/kit.test.ts')?.run).toEqual([]); expect(classify(m, 'tools/kit/kit.test.ts')?.steps).toEqual([]);
   });
   test('fails safe: a changed path the map cannot place runs the whole proof, and says which', () => {
     const p = planProof(m, snap({ ...BASE, 'tools/mystery/x.ts': 'b', [HOLD]: 'b' }), passedAll(BASE));

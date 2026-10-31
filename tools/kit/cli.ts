@@ -3,7 +3,7 @@
 // Generated pieces (tools/decokit, out/decokit or $DECOKIT_OUT) join as adopted, source generated.
 // Env: SUBORNED_OLD (old repo), SUBORNED_STORE (store). Exit 1 on any hash or missing file.
 import { existsSync, readFileSync, writeFileSync } from 'node:fs';
-import { resolve } from 'node:path';
+import { join, resolve } from 'node:path';
 import type { Kit } from '../../contracts/world/kit.schema';
 import { usageGate } from '../gen/flags';
 import { buildCatalogue } from './catalogue';
@@ -34,7 +34,7 @@ for (const a of kit.assets.filter(x => x.extra && x.status !== 'rejected')) {
   if (missing.length) console.log(`WARN ${a.id} (${a.extra}): no .mat in any root for ${missing.join(', ')}`);
 }
 if (process.argv.includes('--catalogue')) process.exit(0);
-const r = copyAdopted(kit, root, dest, GEN_ROOT, repo);
+const r = copyAdopted(kit, root, dest, GEN_ROOT, repo, join(repo, 'out/kit/copied.json'));
 console.log(`adopted ${r.assets.length}: ${r.assets.join(', ')}`);
 console.log(`copied ${r.copied.length} files (${(r.bytes / 1048576).toFixed(2)} MB), skipped ${r.skipped.length} already present and verified → ${dest}`);
 for (const f of r.copied) console.log(`  + ${f}`);

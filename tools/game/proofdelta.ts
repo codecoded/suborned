@@ -120,11 +120,13 @@ export function planProof(m: ProofMap, snap: Snapshot, l: Ledger, o: { force?: s
     const was = l.snapshots[p.snapshot];
     if (!was) { run.set(s, 'the snapshot of its pass is gone'); continue; }
     let hit: string | undefined;
-    for (const f of changedPaths(was, snap.files)) {
-      const row = classify(m, f);
-      if (!row) return fullPlan(m, `${f} changed and the map cannot place it`, snap.id);
-      if (row.run === 'full') return fullPlan(m, `${f} changed: ${row.why}`, snap.id);
-      if (row.run !== 'none' && row.run.includes(s)) { hit = f; break; }
+    const changed = changedPaths(was, snap.files), wide = changed.filter(f => { const r = classify(m, f); return !r || r.run === 'full'; });
+    // names the edit, not what the batch's own kit and scene steps rewrote: Kit/** sorts before the file that set them off (brief 078: lens.json read as "DK_SpaceHQ.fbx.meta changed")
+    const first = wide.find(f => !f.startsWith('unity/Assets/Suborned/Kit/')) ?? wide[0];
+    if (first) { const row = classify(m, first); return fullPlan(m, row ? `${first} changed: ${row.why}` : `${first} changed and the map cannot place it`, snap.id); }
+    for (const f of changed) {
+      const row = classify(m, f)!;
+      if (row.run !== 'none' && row.run !== 'full' && row.run.includes(s)) { hit = f; break; }
     }
     if (hit) run.set(s, `${hit} changed`); else skips[s] = skipText(p);
   }

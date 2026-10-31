@@ -31,6 +31,10 @@
 
     { "match": ["sim/data/**", "sim/Suborned.Sim/**", "unity/Assets/Suborned/Sim/**", "unity/Assets/StreamingAssets/**"], "run": "full", "why": "the engine and its inputs: every section plays on them" },
     { "match": ["out/world/**", "tools/world/**"], "run": "full", "why": "the world export: every section plays in it" },
+    {"match": ["tools/kit/**/*.test.ts", "tools/decokit/**/*.test.ts", "tools/world/**/*.test.ts"], "run": [], "steps": [], "why": "tests of the kit and world tools: nothing the batch builds from (they sit under the full rows below, which would otherwise take them)"},
+    {"match": ["tools/kit/copy.ts", "tools/kit/cli.ts"], "run": [], "steps": ["kit"], "why": "the kit's copier: what it does lands in Kit/**, hashed by the next row, so its own step runs and only a file it really moved runs the rest"},
+    {"match": ["unity/Assets/Suborned/Resources/Atmosphere/lens.json*"], "run": ["r118"], "shots": "all", "why": "the camera tiers' lens and grade, read at run time by AtmosphereLens and at no scene build (only Glint's review tools): every picture changes, r118 reads the frames; no engine, kit, scene or frame-time step"},
+    {"match": ["unity/Assets/Suborned/Runtime/OldTown/OldTownPlayLook.cs*"], "run": ["r118"], "shots": "all", "why": "the old town's play camera: fog, volumes, sun and ambient while it renders, nothing the engine or a click reads; every picture changes, r118 reads the frames. The scene keeps the component, so no rebuild; frame times wait for a full batch"},
     { "match": ["contracts/world/kit.json", "contracts/world/kit.schema.ts", "tools/kit/**", "tools/decokit/**", "unity/Assets/Suborned/Kit/**", "unity/Assets/Suborned/Kit.meta"], "run": "full", "why": "the kit: the pieces every picture is made of" },
     { "match": ["unity/Assets/Suborned/Runtime/Play/GameBoot.cs*", "tools/game/proofgates.ts"], "run": "full", "steps": [], "shots": "all", "why": "the proof's own driver and what its gate means: every section, no engine, scene or frame-time step" },
 

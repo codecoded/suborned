@@ -30,3 +30,9 @@ Tests
 
 Limits of the host logic check: the views and audio are silent, native calls answer defaults, no input devices (it calls BusyClick and the Give methods, not the Update path), no UI Toolkit (the HudToolkit words are not read), no pictures. Three real lines broken on purpose were each caught, 5 s each, and restored.
 Next owner: Aster (commit) -> Sky for the short list.
+
+Follow-up, 2026-10-31: "DK_SpaceHQ.fbx.meta changed" (0.2.180, 0.2.181, about 1465 s). Player 0.2.183 is the current build, on the unprobed tree.
+- Cause: lens.json and OldTownPlayLook.cs had no row, so every gated step ran. `bun run kit` then put back 75 files Unity had rewritten; three carry a guid the old town's art copy already owns (DK_SpaceHQ fbx and prefab, facade_panel_v1), so unity-world re-rolled them at random ("conflicts with ... Assigning a new guid"). The plan named the Kit file because it sorts before the real edit.
+- Fix: tools/kit/copy.ts leaves a .meta or .mat alone until the catalogue's own hash moves (out/kit/copied.json); models, textures and prefabs stay byte-checked. Rows for lens.json and OldTownPlayLook.cs: r118 and every shot. A full plan names the edit before Kit files. Tool tests under tools/kit, decokit and world no longer run full.
+- Measured: this tree 34 s (no rebuild). A 0.2.181-shaped change (lens.json and OldTownPlayLook.cs touched by a blank line and a comment): 96 s; undone 92 s. compile 2 · hostlogic 7 · game-build 62 (proof 22) · shots 22 · budget 2. Against 1465 s.
+- Not exercised: a real kit + unity-world cycle after the fix. The guids stood through kit reruns and three batches; only the unit test covers a moved catalogue hash.

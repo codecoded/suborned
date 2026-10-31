@@ -324,3 +324,18 @@ test('brief 075 remap: the old roof, garden, plaza, seaside and alley pieces ado
   expect(kit.assets.find(x => x.id === 'DecoPavilion')!.lods!.map(l => l.tris).every(t => t < 12000)).toBe(true); // the collapse runs (it stalled at 34k on the NaN vertices)
   expect(kit.assets.find(x => x.id === 'Dumpster')!.status).toBe('candidate'); // the stash piece stays Keel's and Motive's call
 });
+
+test('what Unity rewrites stays until the catalogue moves; a real change, and a damaged model, still copy (brief 078)', () => {
+  const a = kit.assets.find(x => x.id === 'Bollard')!, only = { ...kit, assets: [a], textures: [], colourways: undefined, landmarks: undefined, posters: undefined, carPaints: undefined } as typeof kit;
+  const dest = mkdtempSync(join(tmpdir(), 'kit-')), settled = join(dest + '-settled', 'copied.json'), meta = a.files.find(f => f.path.endsWith('.fbx.meta'))!, model = a.files.find(f => f.path.endsWith('.fbx'))!;
+  try {
+    const first = copyAdopted(only, root, dest, GEN_ROOT, undefined, settled); expect(first.errors).toEqual([]); expect(first.copied).toContain(meta.path); // nothing on disk: it copies
+    writeFileSync(join(dest, meta.path), 'guid: rerolled by Unity\n');
+    expect(copyAdopted(only, root, dest, GEN_ROOT, undefined, settled).copied).toEqual([]); // Unity's rewrite stands
+    expect(readFileSync(join(dest, meta.path), 'utf8')).toBe('guid: rerolled by Unity\n');
+    writeFileSync(join(dest, model.path), 'damaged'); expect(copyAdopted(only, root, dest, GEN_ROOT, undefined, settled).copied).toEqual([model.path]); // a model is still byte-checked
+    const was = JSON.parse(readFileSync(settled, 'utf8')); was[meta.path] = 'an older catalogue hash'; writeFileSync(settled, JSON.stringify(was));
+    expect(copyAdopted(only, root, dest, GEN_ROOT, undefined, settled).copied).toEqual([meta.path]); // failing example: the source's import settings moved, so it copies
+    expect(copyAdopted(only, root, dest, GEN_ROOT).copied).toEqual([]); // no settled file given: byte-checked as ever, and it is back to the source's bytes
+  } finally { rmSync(dest, { recursive: true, force: true }); rmSync(dest + '-settled', { recursive: true, force: true }); }
+});
