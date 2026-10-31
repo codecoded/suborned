@@ -21,6 +21,9 @@ Redline (audit, the plan and the technique picks) · Vela (pieces and their LODs
 2. The Air sitting: "I'm leaving my air unlocked so can install and run it, but might want to clear down processes when that happens as running bit hot right now, or wait an hour or so". So: macmon may be installed and the run started over ssh; no brew there, so the release binary. Check heat and what's running first.
 3. 1080 equivalent with FSR on the Air if zoom 10 at the shipped size misses 13 ms warm: yes.
 
+## State of the Air sitting (2026-10-31, Splice)
+The kit and macmon are on the Air, and no frame is timed: its screen was locked from 19:40, and the game loaded and then sat at 338 MHz. It needs Sky to unlock it and keep it awake for about 35 minutes. Latch adds the switches, the per-pass recorder and `row.zoom` first, so one sitting covers Redline's list. Numbers corrected: tp-worst is 7.9 M at 1080, so the first three pieces only reach about 6.5 M.
+
 ## Depends on
 - The current round (brief 085) lands first; only reading until Latch's build is done, so the player and scenes stay stable.
 - The lens: Sky's camera call (play view orthographic or perspective). An orthographic camera picks a LOD from zoom alone, the same for near and far things; a perspective one picks by distance. Thresholds and what's worth authoring depend on it.
