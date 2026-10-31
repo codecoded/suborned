@@ -1,0 +1,275 @@
+{
+ "note": "Written by Fable in the session from the sheets in tools/dialogue/conversations.ts and the retrieved passages, NOT by a pipeline run: a live model call from an agent session needs Sky's go-ahead. Held to the same check().",
+ "scenes": [
+  {
+   "id": "listen-inez",
+   "beats": [
+    [
+     "Milena",
+     "Tube came for you. Bureau stamp. That's three this month."
+    ],
+    [
+     "Inez",
+     "Not where the tables can see. Give it here."
+    ],
+    [
+     "Milena",
+     "How far behind are you?"
+    ],
+    [
+     "Inez",
+     "Three payments. I'll catch up. I always catch up."
+    ],
+    [
+     "Milena",
+     "On tips? Ask your friend. He's looking again."
+    ],
+    [
+     "Inez",
+     "Who's looking? Nobody's looking. Keep your voice down."
+    ],
+    [
+     "Milena",
+     "He crosses the whole square for one coffee, Inez."
+    ],
+    [
+     "Inez",
+     "If the Office hears about Okafor, we're both finished."
+    ],
+    [
+     "Scout",
+     "Bureau debt. The door guard's her man. Two ways in."
+    ]
+   ],
+   "learned": [
+    "Inez owes the Bureau.",
+    "She's seeing the door guard."
+   ],
+   "opens": [
+    "Help: pay off her loan",
+    "Pressure: threaten to expose them"
+   ]
+  },
+  {
+   "id": "help-inez-1",
+   "beats": [
+    [
+     "Fixer",
+     "Your Bureau card, miss. Half of it's stamped paid."
+    ],
+    [
+     "Inez",
+     "Where did you get that? Who's been through my things?"
+    ],
+    [
+     "Fixer",
+     "Nobody. I went to the window and paid it."
+    ],
+    [
+     "Inez",
+     "People don't do that. Not for nothing."
+    ],
+    [
+     "Fixer",
+     "No. One day we might ask you something small."
+    ],
+    [
+     "Inez",
+     "Then take it back. No. They'd only send another notice."
+    ],
+    [
+     "Fixer",
+     "Keep it. I'll bring the rest."
+    ],
+    [
+     "Inez",
+     "People can see this door. I've said yes to nothing."
+    ]
+   ],
+   "learned": [
+    "She took it. Not ready yet."
+   ],
+   "opens": [
+    "Help again: clear the rest"
+   ]
+  },
+  {
+   "id": "help-inez-2",
+   "beats": [
+    [
+     "Fixer",
+     "The rest of it. Look. You owe them nothing."
+    ],
+    [
+     "Inez",
+     "Six years I've paid them. What do you want?"
+    ],
+    [
+     "Fixer",
+     "When I telephone, you call Okafor over from his door."
+    ],
+    [
+     "Inez",
+     "You know about him? Who told you? Who else knows?"
+    ],
+    [
+     "Fixer",
+     "Nobody who'd say. He stands with you one minute."
+    ],
+    [
+     "Inez",
+     "And then what happens to him?"
+    ],
+    [
+     "Fixer",
+     "If this goes right, nothing. He never even sees us."
+    ],
+    [
+     "Inez",
+     "All right. Any trouble on the square, I'll warn you."
+    ]
+   ],
+   "learned": [
+    "Inez is turned.",
+    "She'll warn you of trouble."
+   ],
+   "opens": [
+    "Call Inez: he leaves the door"
+   ]
+  },
+  {
+   "id": "pressure-inez",
+   "beats": [
+    [
+     "Fixer",
+     "Keep smiling. You and Okafor. The Office doesn't know, yet."
+    ],
+    [
+     "Inez",
+     "Please. That's his post. This is all I've got."
+    ],
+    [
+     "Fixer",
+     "I know. I don't enjoy this. It changes nothing."
+    ],
+    [
+     "Inez",
+     "What do you want? Just say what you want."
+    ],
+    [
+     "Fixer",
+     "When I telephone, you call him over. For one minute."
+    ],
+    [
+     "Inez",
+     "And then you never say his name again?"
+    ],
+    [
+     "Fixer",
+     "Never. We keep our word, whatever you think of us."
+    ],
+    [
+     "Inez",
+     "I've had a good look at your face."
+    ]
+   ],
+   "learned": [
+    "Inez is turned, and resents it.",
+    "She knows the Fixer's face."
+   ],
+   "opens": [
+    "Call Inez: he leaves the door"
+   ]
+  },
+  {
+   "id": "pay-driver",
+   "beats": [
+    [
+     "Zhou",
+     "Official bay. Cabs are round the front."
+    ],
+    [
+     "Fixer",
+     "You drive the Councillor. Lean month, I hear. This helps."
+    ],
+    [
+     "Zhou",
+     "Heavy. Spell it out. I've been paid vague before."
+    ],
+    [
+     "Fixer",
+     "He gets in at the chime. Don't take him home."
+    ],
+    [
+     "Zhou",
+     "Where, then?"
+    ],
+    [
+     "Fixer",
+     "Service bay, round the back, east yard. Park and wait."
+    ],
+    [
+     "Zhou",
+     "Couple of minutes. Then I drive on, whoever's late."
+    ],
+    [
+     "Fixer",
+     "We'll see to the Councillor. You needn't look."
+    ],
+    [
+     "Zhou",
+     "Who's we? Knowing costs extra. I'll shift anyone watching my bay."
+    ]
+   ],
+   "learned": [
+    "Zhou takes Vale's car round back."
+   ],
+   "opens": [
+    "Be at the service bay."
+   ]
+  },
+  {
+   "id": "call-inez",
+   "beats": [
+    [
+     "Fixer",
+     "It's me. Call him over now, please."
+    ],
+    [
+     "Inez",
+     "Now. All right. Let me sound like myself first."
+    ],
+    [
+     "Inez",
+     "Okafor, it's me. Can you come over? Just a minute."
+    ],
+    [
+     "Okafor",
+     "On shift? You've never once asked me that. What's wrong?"
+    ],
+    [
+     "Inez",
+     "Nothing's wrong. I want you here, love. That's all."
+    ],
+    [
+     "Okafor",
+     "Stay there. I'm coming."
+    ],
+    [
+     "Inez",
+     "He's left the door. He's crossing. Don't you hurt him."
+    ],
+    [
+     "Fixer",
+     "He'll walk back and never know. Thank you, Inez."
+    ]
+   ],
+   "learned": [
+    "The door is empty, briefly."
+   ],
+   "opens": [
+    "Enter the Office"
+   ]
+  }
+ ]
+}
