@@ -1,0 +1,54 @@
+{
+  "picked": 2,
+  "why": "Take 2 has the most life: Zhou won't touch the envelope until the job is said aloud, and the read-back closes the deal. The job holds to the sheet and to route B, including the wait in the service bay [c80996fabd6600872368f214].",
+  "changes": [
+    "Rewrote the Fixer's first line. 'This one won't' now answers Zhou's complaint about the last envelope, and Zhou no longer gets told their own job.",
+    "Zhou now says 'I drive the Councillor home at the chime' and accepts the lean month, so who Zhou is and what's short are plain early.",
+    "Cut the 'trip sheet' prop, which the sheet doesn't give. Put 'wait' in the Fixer's instruction, so Zhou's time limit answers it, and added 'East yard' as Zhou's check on the place.",
+    "Tightened the lookout offer to 'Anyone watching this bay' so it means the bay they're in, and kept 'Not in front of me' and the read-back ending."
+  ],
+  "beats": [
+    {
+      "speaker": "driver",
+      "line": "Not on the Councillor's bonnet. Last envelope said \"nothing much\", and lied."
+    },
+    {
+      "speaker": "fixer",
+      "line": "This one won't. We hear it's been a lean month."
+    },
+    {
+      "speaker": "driver",
+      "line": "It has. What for? I drive the Councillor home at the chime."
+    },
+    {
+      "speaker": "fixer",
+      "line": "Not tonight. Take him round to the service bay, and wait."
+    },
+    {
+      "speaker": "driver",
+      "line": "East yard. This buys a couple of minutes, then I drive on."
+    },
+    {
+      "speaker": "fixer",
+      "line": "That'll do nicely. We'll have him out of that back seat."
+    },
+    {
+      "speaker": "driver",
+      "line": "Not in front of me. Anyone watching this bay, I'll send off."
+    },
+    {
+      "speaker": "fixer",
+      "line": "The envelope's yours, then. You haven't asked who we are."
+    },
+    {
+      "speaker": "driver",
+      "line": "Can't repeat what I don't know. Chime, service bay, couple of minutes."
+    }
+  ],
+  "learned": [
+    "Zhou's paid: Vale's car waits briefly."
+  ],
+  "opens": [
+    "Be at the service bay"
+  ]
+}

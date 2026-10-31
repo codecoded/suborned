@@ -1,0 +1,46 @@
+{
+  "picked": 3,
+  "why": "Take 3 has the most life: she tries to pay a stranger from her tips, then says yes too fast and takes it back. Her fear shows in what she does, and she never has to name it. The debt-as-need premise holds to the sheet and [96030c4c4a1a18523a3fdbbb].",
+  "changes": [
+    "Added a new opening line from the Fixer that uses her first name and states the payment, so the tips offer makes sense on a cold read and he is unsettling from the first word.",
+    "Cut the Bureau collector and 'late shifts': neither is on the sheet. Cut 'No, but we know you' as well, because her question about who has been asking does that work.",
+    "Rewrote his reply to the tips so he stops her because the terrace can see. She lifts 'I don't know you' from take 1, which keeps them plainly strangers.",
+    "Made the favour hint his one soft threat ('We'd only want'). Dropped to 7 beats and kept the yes-then-no and his closing line as written."
+  ],
+  "beats": [
+    {
+      "speaker": "Fixer",
+      "line": "Inez? We've just paid part of your Bureau loan."
+    },
+    {
+      "speaker": "Inez",
+      "line": "Here, tonight's tips. I'll pay you back a little every week."
+    },
+    {
+      "speaker": "Fixer",
+      "line": "Put those away, the terrace can see. We don't want paying."
+    },
+    {
+      "speaker": "Inez",
+      "line": "I don't know you. Who's been asking about me?"
+    },
+    {
+      "speaker": "Fixer",
+      "line": "Nobody who'll trouble you. We'd only want a small favour, later."
+    },
+    {
+      "speaker": "Inez",
+      "line": "Thank you, yes, whatever it is. No, wait, I can't, not yet."
+    },
+    {
+      "speaker": "Fixer",
+      "line": "Say yes when you mean it. I'll be back with the rest."
+    }
+  ],
+  "learned": [
+    "Inez took it; not ready yet."
+  ],
+  "opens": [
+    "Help again"
+  ]
+}

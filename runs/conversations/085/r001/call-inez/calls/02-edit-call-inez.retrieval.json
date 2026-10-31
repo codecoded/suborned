@@ -1,0 +1,166 @@
+{
+  "query": "capstone the call pulls guard off door partners ring side stays 60 s ‖ route A front door Call Inez window Enforcer enters",
+  "queries": [
+    "capstone the call pulls guard off door partners ring side stays 60 s",
+    "route A front door Call Inez window Enforcer enters"
+  ],
+  "pinned": [],
+  "method": "HNSW cosine + full-text BM25 per query, reciprocal rank fusion; critic-cited chunks pinned",
+  "corpusHash": "64aeea6f98869bb73228f1db219c490d3863f90740095faaaf79950124d0d5d1",
+  "embeddingModel": "BAAI/bge-small-en-v1.5",
+  "hits": [
+    {
+      "authority": "Human GDD (wins on conflict)",
+      "distance": 0.34351994654655016,
+      "key": "62d54666eaf88ce7b9ee177f",
+      "kind": "gdd-human",
+      "lineEnd": 607,
+      "lineStart": 600,
+      "section": "Handover › A · Through the front door (before 4:50)",
+      "source": "GDD/the-suborned-gdd-v0.33.0-2026-10-30.html",
+      "sourceHash": "83f2fb4873401a08adf018d07463744b1fdf78045209b778c7293afdf02d94b5",
+      "text": "Handover › A · Through the front door (before 4:50)\nScout watches the café and listens to Inez (0:50).\nFixer helps Inez by clearing her debt ($40,000; she may need it twice).\nTech loops the entrance camera (20 s; it runs 2:00, so it is planted to still be running at the Enter), then reroutes the patrol (optional).\nFixer calls Inez. The guard walks to her side (about 57 s), stays 60 s and walks back: about a 2:54 window, set by the walk the street gives him, never by a number written here. Payoff cut (§10).\nEnforcer enters (38 s), leaves with Vale by the service door and walks him to the car (about 36 s), boards, and the cell goes.",
+      "version": "v0.33.0",
+      "score": 0.062060389519405915,
+      "signals": [
+        "semantic:1",
+        "keyword:1",
+        "semantic:2",
+        "keyword:2"
+      ]
+    },
+    {
+      "authority": "Agent GDD (the human GDD wins on conflict)",
+      "distance": 0.3079580252145532,
+      "key": "facd9e661234e1024febb326",
+      "kind": "gdd-agent",
+      "lineEnd": 342,
+      "lineStart": 341,
+      "section": "§10 PRESENTATION › payoff cut",
+      "source": "GDD/the-suborned-agent-gdd-v0.33.0-2026-10-30.md",
+      "sourceHash": "875931fe278a04976ff4e1413c240156675d1851864b72f1c51f644872a1aa9b",
+      "text": "§10 PRESENTATION › payoff cut\npayoff cut: plan lands → brief street-level cut → same state. Capstone has one (Inez's call lands, the guard walks off to her). More cuts + decisive shot [L].\naudio = clock: bell, café door, 4:30 handover chime · surveillance click at sweep edge · patrol sound changes when it breaks route · Alert adds music layers; fight = full score · contacts confirm calls aloud · one voice per weapon · a cue when a watcher notices an agent.",
+      "version": "v0.33.0",
+      "score": 0.06171155517333391,
+      "signals": [
+        "semantic:1",
+        "keyword:1",
+        "semantic:2",
+        "keyword:2"
+      ]
+    },
+    {
+      "authority": "Human GDD (wins on conflict)",
+      "distance": 0.36826731969519266,
+      "key": "022d5813e8fa0457c845c3c5",
+      "kind": "gdd-human",
+      "lineEnd": 634,
+      "lineStart": 618,
+      "section": "Handover › G · Take the guard Spec (1/4)",
+      "source": "GDD/the-suborned-gdd-v0.33.0-2026-10-30.html",
+      "sourceHash": "83f2fb4873401a08adf018d07463744b1fdf78045209b778c7293afdf02d94b5",
+      "text": "Handover › G · Take the guard Spec\nTech loops the entrance camera (and reroutes the patrol, if the guard's body will be carried into the yard).\nScout watches the guard, his cone and his check-in marks, from beyond his 26 m cone.\nEnforcer waits out of the camera's cone and the sweep, more than 3 m from the guard, walks in and knocks him out just after a mark, then leaves him, or carries him out of the door's sight if someone could find him while the cell still needs the door.\nEnforcer enters, leaves with Vale by the service door and heads for the car: $0, 6 Trail, Alert 1, and no guard at your side in the final fight.\nOr kill him and hide him in the yard's bin (before its round) or through the service door: cheaper now, but he becomes a missing person, the case stays open and the Office block hardens.\nDisabling the camera instead of looping it spends the mission's first incident, so the guard's next missed check-in, if the cell is still there for it, becomes the second: Alert 2 and a loud final fight. On route A an early Disable is an honest alternative (+1 Trail over the Loop, Alert 1, no timing).",
+      "version": "v0.33.0",
+      "score": 0.05911166819844694,
+      "signals": [
+        "semantic:1",
+        "keyword:1",
+        "semantic:2",
+        "keyword:2"
+      ]
+    },
+    {
+      "authority": "Agent GDD (the human GDD wins on conflict)",
+      "distance": 0.19556879997252852,
+      "key": "96030c4c4a1a18523a3fdbbb",
+      "kind": "gdd-agent",
+      "lineEnd": 225,
+      "lineStart": 225,
+      "section": "§07 HANDOVER › the capstone",
+      "source": "GDD/the-suborned-agent-gdd-v0.33.0-2026-10-30.md",
+      "sourceHash": "875931fe278a04976ff4e1413c240156675d1851864b72f1c51f644872a1aa9b",
+      "text": "§07 HANDOVER › the capstone\nthe capstone: the call that pulls the guard off his door is Inez's, made because the cell helped, paid or pressured her: he comes to her side and they stand together. Her debt is her need (Help clears it); the affair is her secret (Pressure threatens to expose it).",
+      "version": "v0.33.0",
+      "score": 0.04727963886909005,
+      "signals": [
+        "semantic:1",
+        "keyword:1",
+        "keyword:2"
+      ]
+    },
+    {
+      "authority": "Agent GDD (the human GDD wins on conflict)",
+      "distance": 0.3616819407059494,
+      "key": "d2afe30a71ad4118e3119ea0",
+      "kind": "gdd-agent",
+      "lineEnd": 232,
+      "lineStart": 230,
+      "section": "§07 HANDOVER › close",
+      "source": "GDD/the-suborned-agent-gdd-v0.33.0-2026-10-30.md",
+      "sourceHash": "875931fe278a04976ff4e1413c240156675d1851864b72f1c51f644872a1aa9b",
+      "text": "§07 HANDOVER › close\nclose [S]: with Vale in the cell's hands, on foot or in the car, his absence is noticed at 6:30: a warning, once, for the HUD (at once if he is taken later). At 7:30 a mission still here fails closed-in, and says why: nobody aboard can drive · who holds the car · Vale still on foot · the car free and nobody said Go. A Take under way holds the verdict until it ends.\nroute A, front door (before 4:50): Scout watches café, listens to Inez (0:50) → Fixer helps Inez ($40,000; she may need it twice) → Tech loops the entrance camera (20 s, runs 2:00, planted so it still runs at the Enter), then reroutes the patrol (optional) → Fixer calls Inez: the guard walks to her side (about 57 s), stays 60 s, walks back = about a 2:54 window, the walk the grid's, never written here [payoff cut] → Enforcer enters (38 s), exits service door with Vale, to car (about 36 s), Board, Go.\nroute B, the pickup (from 5:10; built today: the one-car way at the end of this line; the rest, the split, is [D], and §07 the getaway's direction changes its end): Scout listens to the driver: he needs cash (30 s) → Fixer turns the driver before 4:40 (Pay $70,000, or Help $40,000): he warns the rivals' lookout off, and once Vale is in he drives him round to the service bay (13 s) and waits there until 7:30 → Scout gives the rival car a false tip (30 s), or it follows Vale's car and its wheelman reaches him first (the tip is in question, §07 rivals) → Tech reroutes the patrol from the cabinet (by about 4:00), so the yard's sweep is away at the pickup → Enforcer takes Vale from the back seat (38 s); the driver steps out and the Enforcer takes the wheel → Scout, Fixer and Tech gather at the cell's car among the posted three → Go on Vale's car: Vale is out, and the posted three spring on the cell's car → the three down the blocker, board, Go (or break the crew). The cell may instead bring its car round behind Vale's (Drive, 28 s) and carry Vale 3.5 m into it: the one-car way.",
+      "version": "v0.33.0",
+      "score": 0.045799361928394185,
+      "signals": [
+        "semantic:1",
+        "semantic:2",
+        "keyword:2"
+      ]
+    },
+    {
+      "authority": "Agent GDD (the human GDD wins on conflict)",
+      "distance": 0.36672776937484286,
+      "key": "58df93eef58777a1c60eb2a3",
+      "kind": "gdd-agent",
+      "lineEnd": 233,
+      "lineStart": 233,
+      "section": "§07 HANDOVER › route G, the guard",
+      "source": "GDD/the-suborned-agent-gdd-v0.33.0-2026-10-30.md",
+      "sourceHash": "875931fe278a04976ff4e1413c240156675d1851864b72f1c51f644872a1aa9b",
+      "text": "§07 HANDOVER › route G, the guard\nroute G, the guard [S]: Tech loops the entrance camera (and reroutes the patrol if the guard's body will be carried into the yard) → Scout watches the guard (his cone and check-in marks) from beyond his 26 m cone → Enforcer waits out of the camera's cone and the sweep, more than 3 m from the guard, walks in and knocks him out just after a mark, then leaves him, or carries him out of the door's sight if a finder could come while the cell still needs the door → enters, out by the service door with Vale, to the car ($0, 6 T, Alert 1). No guard ally in the final fight. Kill variant: kill, stash in the yard's container or through the service door, beat the container's round; debrief: a missing person, an open case, the Office block hardens. Disable variant: a Disable in place of the Loop spends the mission's first incident, so the guard's next missed mark, if the cell is still there for it, becomes the second (Alert 2, a loud final fight); on route A an early Disable is an honest alternative (+1 T over the Loop, Alert 1, no timing).",
+      "version": "v0.33.0",
+      "score": 0.04519664601000217,
+      "signals": [
+        "semantic:1",
+        "semantic:2",
+        "keyword:2"
+      ]
+    },
+    {
+      "authority": "Human GDD (wins on conflict)",
+      "distance": 0.33473249284818607,
+      "key": "46eefe8aeccc89bdf0676b8f",
+      "kind": "gdd-human",
+      "lineEnd": 344,
+      "lineStart": 337,
+      "section": "Knowledge makes consent cheap. Reputation decides who says yes. › Routines that live Spec (2/2)",
+      "source": "GDD/the-suborned-gdd-v0.33.0-2026-10-30.html",
+      "sourceHash": "83f2fb4873401a08adf018d07463744b1fdf78045209b778c7293afdf02d94b5",
+      "text": "Knowledge makes consent cheap. Reputation decides who says yes. › Routines that live Spec\nPartners. Two people tied as lovers who meet stop, face each other and stand together instead of passing. Summoned by a call (§07), he walks his usual route and stops at her free side: the first point on a 1.2 m ring round her post, sides first, with nobody within a metre of it. They face each other; he stays 60 s, they hold for 2 s, and he goes. By chance, two lovers who are both out on the street and not on a post, and who come within 8 m of each other on a clear line, each walk to the other's side and stand facing for 20 s, once a mission per pair.",
+      "version": "v0.33.0",
+      "score": 0.031746031746031744,
+      "signals": [
+        "semantic:1",
+        "keyword:1"
+      ]
+    },
+    {
+      "authority": "Human GDD (wins on conflict)",
+      "distance": 0.3382526040077163,
+      "key": "f9e1865fe29f002d95f0b450",
+      "kind": "gdd-human",
+      "lineEnd": 746,
+      "lineStart": 731,
+      "section": "Read the street at a glance › Control and time Spec (3/5)",
+      "source": "GDD/the-suborned-gdd-v0.33.0-2026-10-30.html",
+      "sourceHash": "83f2fb4873401a08adf018d07463744b1fdf78045209b778c7293afdf02d94b5",
+      "text": "Read the street at a glance › Control and time Spec\nThe ring. A left click on a thing opens it where you clicked, with the likely way at 12 o'clock: at most five ways plus ⋯, which is the full panel with every locked way and its reason. Each wedge shows an icon and one pill, a word and its one-line price; violent ways come last, dashed, with the loud mark; the same kind of target always gives the same shape. A way whose object isn't the thing the ring is on (Reroute at the cabinet moves the patrol; Loop from the cabinet, a camera; Call, a guard or a car) shows that object's small portrait after the verb. Click a wedge to take it; Esc, empty space or the middle closes it. A way that needs a hold (a seen takedown, a going-loud fire) commits with the card's half-second hold. Opening the ring never commits anything and doesn't stop the clock.\nShift+1–4 pick a slot of the selected agent's actions; Tab and Shift+Tab step through them (none means the contextual default), and never move the camera or the selection. Z and Shift+Z step the target: things overlapping under the cursor, or else the picked action's next target, nearest first. On the map the wheel also steps an overlapping stack.",
+      "version": "v0.33.0",
+      "score": 0.03125,
+      "signals": [
+        "semantic:1",
+        "semantic:2"
+      ]
+    }
+  ]
+}

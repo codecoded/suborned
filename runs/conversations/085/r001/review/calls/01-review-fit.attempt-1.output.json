@@ -1,0 +1,29 @@
+{
+  "faults": [
+    {
+      "scene": "help-inez-1",
+      "line": "Fixer: \"Put those away, the terrace can see. We don't want paying.\"",
+      "problem": "The cell's own Fixer tells the player that onlookers can see a Help, but helping has no witnesses and onlookers learn nothing [5a29be8544e336060f678471]. Inez's watchfulness can stay as her fear; from the Fixer it reads as a rule.",
+      "fix": "Change it to \"Put those away. We don't want paying.\""
+    },
+    {
+      "scene": "help-inez-2",
+      "line": "Inez: \"A minute off that door. What happens to him?\"",
+      "problem": "This states the wrong window. He stands with her for about a minute, but call-inez puts the door's empty time at a few minutes, counting his 75 m walk each way.",
+      "fix": "Change it to \"A minute at my side, and that door empty. What happens to him?\""
+    },
+    {
+      "scene": "pay-driver",
+      "line": "Fixer: \"That'll do nicely. We'll have him out of that back seat.\" / Zhou: \"Not in front of me. Anyone watching this bay, I'll send off.\"",
+      "problem": "The decided Take with a turned driver happens inside the car, with nothing to see, and ends with the Enforcer at the wheel because the driver lends the car [97f56ffa9d3e5a5394af33cc]. These lines promise that Vale is removed from the car and that Zhou stays out of it. The same mismatch is in Fable's facts.",
+      "fix": "Change them to \"That'll do nicely. Leave the back seat to us.\" and \"And I don't look round. Anyone watching this bay, I'll send off.\", then correct the facts."
+    },
+    {
+      "scene": "call-inez",
+      "line": "Inez: \"Is my Bureau card stamped paid? You've seen the stamp?\" / Fixer: \"It's stamped, as we promised. Now ask him across.\"",
+      "problem": "The call can follow Help, Pay or Pressure [96030c4c4a1a18523a3fdbbb], but these lines are true only after Help, because only Help clears the debt. They are also wrong after Help: she already had the card and was told the loan was paid in help-inez-2.",
+      "fix": "Replace them with \"Will he be all right?\" and \"Nothing happens to him if this goes right. Now ask him across.\", which hold on all three routes (\"I know what you owe\" is about Okafor's debt and can stay)."
+    }
+  ],
+  "notes": "Listen-inez and pressure-inez are clean. These open points need Aster or Sky; I have not resolved them.\n\n1. Scene format conflict: §10 allows at most 3 opening beats and never the reply, result or read [dd77e34fb83021a7c1081a41, 606e5d36a162a974f82d9889]. These scenes run 7-10 beats and play outcomes (\\\"I'm with you\\\", \\\"Yes, I'll call\\\", \\\"Coming now\\\"). Every `learned` also depends on a result. Help-inez-1 and call-inez also don't fit the timing: the Help is already paid in the scene's facts, and the call plays Okafor's agreement. Either §10 changes or the scenes split into opening beats and landing bubbles. Fable's brief may intend a change, but none of the passages supplied shows it.\n\n2. Two-visit Help is unverified: the supplied table lists one Help at $40,000, 35 s, +1 T, and the capstone passage says Help clears the debt [c407d23e4f6647fe2f4315a1, 96030c4c4a1a18523a3fdbbb, 4c8fad65dcc365c5f3afdb7e]. Nothing supplied says a first Help fails to win Inez or how the price splits. The driver works out at $40,000 ($110,000 less $70,000). Two full-price visits would therefore total $120,000 against the $100,000 purse, breaking the second route. So the two visits together must cost $40,000, or the purse rule needs revisiting. I didn't log this as a line fault because help-inez-1 and -2 follow the fact Fable was given. Keel or Aster should confirm the price, time and Trail per visit.\n\n3. `opens: Enter the Office` in call-inez is not confirmed: the door being empty is supported, but the passages also mention an entrance camera and an Enforcer waiting for a loop [97f56ffa9d3e5a5394af33cc]. I can't tell from them whether entering after the call also needs that camera dealt with. Waymark should check this against §07. If it does, the label can stay but must not imply the way in is clear.\n\n4. Pay-driver's Take fix rests on a rule marked Decided, not built, so the build may play it differently today. The fix follows the decided rule, and the human GDD's built-today wording was not in the passages beyond that mark.\n\nNo files changed and no commands run; this review used only the passages and scenes supplied. Next owner: Fable for the four line fixes, Aster for points 1-3."
+}

@@ -1,0 +1,43 @@
+{
+  "picked": 3,
+  "why": "Take 3 has the most life: she offers her tips to repay him, then says yes too fast and takes it back. Applied the rules review fix only.",
+  "changes": [
+    "Fixer's third line now reads \"Put those away. We don't want paying.\" Removed \"the terrace can see\", which read as a rule that onlookers can see a Help; helping has no witnesses [5a29be8544e336060f678471]."
+  ],
+  "beats": [
+    {
+      "speaker": "Fixer",
+      "line": "Inez? We've just paid part of your Bureau loan."
+    },
+    {
+      "speaker": "Inez",
+      "line": "Here, tonight's tips. I'll pay you back a little every week."
+    },
+    {
+      "speaker": "Fixer",
+      "line": "Put those away. We don't want paying."
+    },
+    {
+      "speaker": "Inez",
+      "line": "I don't know you. Who's been asking about me?"
+    },
+    {
+      "speaker": "Fixer",
+      "line": "Nobody who'll trouble you. We'd only want a small favour, later."
+    },
+    {
+      "speaker": "Inez",
+      "line": "Thank you, yes, whatever it is. No, wait, I can't, not yet."
+    },
+    {
+      "speaker": "Fixer",
+      "line": "Say yes when you mean it. I'll be back with the rest."
+    }
+  ],
+  "learned": [
+    "Inez took it; not ready yet."
+  ],
+  "opens": [
+    "Help again"
+  ]
+}

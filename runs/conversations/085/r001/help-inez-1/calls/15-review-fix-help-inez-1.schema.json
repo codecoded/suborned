@@ -1,0 +1,61 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "properties": {
+    "picked": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 3
+    },
+    "why": {
+      "type": "string"
+    },
+    "changes": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "what you changed and why, at most 4"
+    },
+    "beats": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "speaker": {
+            "type": "string"
+          },
+          "line": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "speaker",
+          "line"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "learned": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "opens": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  },
+  "required": [
+    "picked",
+    "why",
+    "changes",
+    "beats",
+    "learned",
+    "opens"
+  ],
+  "additionalProperties": false
+}

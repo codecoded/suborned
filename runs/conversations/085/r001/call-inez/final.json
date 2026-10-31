@@ -1,0 +1,53 @@
+{
+  "id": "call-inez",
+  "title": "The call, after Help",
+  "kind": "call",
+  "picked": 2,
+  "why": "Take 2 has the most life: Okafor answers as himself and Inez has to push past his objection. The scene shows she called, that he is leaving the door, and that it stands empty for a few minutes. His coming because she asked holds to [96030c4c4a1a18523a3fdbbb].",
+  "changes": [
+    "Replaced Inez's question about the stamp with \"Will he be all right?\". Her fear now shows as concern for him, and the line holds whether the cell helped, paid or pressured her [96030c4c4a1a18523a3fdbbb].",
+    "Replaced the Fixer's reply about the stamp with \"Nothing happens to him if this goes right. Now ask him across.\". It answers her question, keeps the steel under the kindness and no longer depends on the debt being cleared.",
+    "Kept all other lines as they were, as the review asked. \"I know what you owe\" stays because it is about Okafor's own debt."
+  ],
+  "beats": [
+    {
+      "speaker": "Fixer",
+      "line": "It's time, Inez. Ring Okafor's door, and keep your voice ordinary."
+    },
+    {
+      "speaker": "Inez",
+      "line": "Will he be all right?"
+    },
+    {
+      "speaker": "Fixer",
+      "line": "Nothing happens to him if this goes right. Now ask him across."
+    },
+    {
+      "speaker": "Okafor",
+      "line": "Public door. Inez? I'm on shift."
+    },
+    {
+      "speaker": "Inez",
+      "line": "I know, love. Come across and stand with me a minute?"
+    },
+    {
+      "speaker": "Okafor",
+      "line": "That's off the clock, Inez. I've the Bureau to pay."
+    },
+    {
+      "speaker": "Inez",
+      "line": "I know what you owe. Come anyway."
+    },
+    {
+      "speaker": "Okafor",
+      "line": "Coming now, for you. Door's empty a few minutes, there and back."
+    }
+  ],
+  "learned": [
+    "The door is empty"
+  ],
+  "opens": [
+    "Enter the Office"
+  ],
+  "faults": []
+}

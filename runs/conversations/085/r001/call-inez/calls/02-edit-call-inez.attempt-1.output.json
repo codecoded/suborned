@@ -1,0 +1,50 @@
+{
+  "picked": 2,
+  "why": "Take 2 has the most life: his \"Public door\" voice and her \"Come anyway\" make it two people, not a plot. It also keeps to the sheet: he comes because she asked and stands at her side for a minute [96030c4c4a1a18523a3fdbbb, 46eefe8aeccc89bdf0676b8f].",
+  "changes": [
+    "Added her question about the stamp, with the Fixer's answer. She checks her own debt is cleared before she calls him, which shows the deal and her fear without naming either.",
+    "Changed the shared \"we owe\" to \"I know what you owe\". Only his debt is still open now, and that one line carries the betrayal.",
+    "Cut her closing report to the Fixer. It repeated the point, invented a shared repayment and needed a second call. The scene now ends on his yes.",
+    "Rewrote his last line so he plainly leaves now and the door is empty a few minutes, there and back. Also changed \"You never ring\" to \"I'm on shift\", because the sheet doesn't say she never calls."
+  ],
+  "beats": [
+    {
+      "speaker": "Fixer",
+      "line": "It's time, Inez. Ring Okafor's door, and keep your voice ordinary."
+    },
+    {
+      "speaker": "Inez",
+      "line": "Is my Bureau card stamped paid? You've seen the stamp?"
+    },
+    {
+      "speaker": "Fixer",
+      "line": "It's stamped, as we promised. Now ask him across."
+    },
+    {
+      "speaker": "Okafor",
+      "line": "Public door. Inez? I'm on shift."
+    },
+    {
+      "speaker": "Inez",
+      "line": "I know, love. Come across and stand with me a minute?"
+    },
+    {
+      "speaker": "Okafor",
+      "line": "That's off the clock, Inez. I've the Bureau to pay."
+    },
+    {
+      "speaker": "Inez",
+      "line": "I know what you owe. Come anyway."
+    },
+    {
+      "speaker": "Okafor",
+      "line": "Coming now, for you. Door's empty a few minutes, there and back."
+    }
+  ],
+  "learned": [
+    "The door is empty"
+  ],
+  "opens": [
+    "Enter the Office"
+  ]
+}

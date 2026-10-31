@@ -1,0 +1,50 @@
+{
+  "picked": 3,
+  "why": "Take 3 has the only real turn. Inez says yes too fast, and the Fixer makes her hear the price. Her fear then has somewhere to go.",
+  "changes": [
+    "Replaced the card arriving by tube with Take 1's saucer. A tube delivery at a café table is a stretch, while a card under a saucer is quiet and suits her fear of being seen.",
+    "Removed \"He's never missed a shift\" because the sheet doesn't give it, and replaced \"Only us\" with \"It stays with us\", a promise the Fixer can keep without claiming who else knows.",
+    "Rewrote her realisation as \"Why would he... you know about us\" so the secret is clear without being explicit. \"Who else knows?\" stays as the frightened question.",
+    "Replaced the Fixer's \"You're with us?\" and her \"I call him off\" with her own \"I'm with you\". The first yes is panic and this one is meant; the call itself is already plain in beat 3."
+  ],
+  "beats": [
+    {
+      "speaker": "Fixer",
+      "line": "Look under my saucer, Inez. The rest of your loan's paid."
+    },
+    {
+      "speaker": "Inez",
+      "line": "My Bureau card. Yes, whatever it is, only put it away."
+    },
+    {
+      "speaker": "Fixer",
+      "line": "Hear it first. When I telephone, call Okafor over from his door."
+    },
+    {
+      "speaker": "Inez",
+      "line": "Why would he... you know about us. Who else knows?"
+    },
+    {
+      "speaker": "Fixer",
+      "line": "It stays with us. He'd stand with you about a minute."
+    },
+    {
+      "speaker": "Inez",
+      "line": "A minute off that door. What happens to him?"
+    },
+    {
+      "speaker": "Fixer",
+      "line": "Nothing, if this goes right. He never sees us."
+    },
+    {
+      "speaker": "Inez",
+      "line": "I'm with you. I see trouble on that square, I'll warn you."
+    }
+  ],
+  "learned": [
+    "Loan paid. Inez is with us."
+  ],
+  "opens": [
+    "Call Inez"
+  ]
+}
