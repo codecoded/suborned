@@ -7,7 +7,8 @@ Choose the take with the most life and improve it line by line. You may lift a l
 - Could the line be given to the other speaker without anyone noticing? Then it isn't written yet.
 - Does each line make the next one necessary? Cut any line that only repeats, decorates or winds up to a quip.
 - Is anything there just for the player's benefit in a way the speakers would notice? Hide it in a want, or give it to someone with a reason to say it plainly.
-- The test: read only this scene. Can you say who these two are to each other, what was said, what was just gained or learned, and what can be done next? If any of the four is fuzzy, fix that first. Clarity beats subtlety; Sky said "clearly explain".
+- The test: read only this scene, the Scout's line and the cards included. Can you say who these two are to each other, what was said, what was just gained or learned, and what can be done next? If any of the four is fuzzy, fix that first. Clarity beats subtlety; Sky said "clearly explain".
+- Don't pack facts into one line to save room. If the cards say it, nobody needs to; a line that's there to hold a fact, and that this person wouldn't say, comes out.
 - Cut for length last, but do cut: every line must earn its reading time.
 
 Check each fact against the sheet. Remove any power, person, place, number or deadline it doesn't give. All the writer's hard limits still bind: 12 words a line at most, aim for 10; no exclamation marks; never the listed design words; never cute; no one right way implied.

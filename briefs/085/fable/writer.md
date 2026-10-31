@@ -5,7 +5,7 @@ Sky played the Handover and said: "Conversations are too short and the whole spe
 This is a proposal for Sky to read. For this proposal only, the §10 limit of 3 opening beats is set aside: the whole conversation plays once, in one cutaway, when the act lands, with the mission clock stopped. The outcome is known by then, so the scene may show the answer. Whether this becomes the rule is Sky's call.
 
 ## The test
-A player who reads only this scene, having skipped everything else, can say: who these people are to each other, what was said, what the cell just learned or got, and what can be done next. Clarity beats subtlety. If a fast reader could miss the point, the point is not yet on the page.
+A player who reads only this scene, the Scout's line and the cards included (Sky: the whole scene explains, not each line), having skipped everything else, can say: who these people are to each other, what was said, what the cell just learned or got, and what can be done next. Clarity beats subtlety. If a fast reader could miss the point, the point is not yet on the page.
 
 ## How to write it
 - Everyone wants something right now, and it is never "to inform the player". Inez wants to get through her shift with her secret safe. Put that want in conflict with the other person's.
@@ -13,6 +13,8 @@ A player who reads only this scene, having skipped everything else, can say: who
 - Facts come out sideways: in a dodge, a complaint, a joke at someone's expense, a thing they're afraid to say. Then, by the end, somebody says it plainly, because the player must be sure.
 - One concrete thing per scene that only this city has: a stamped payment card, a pneumatic tube, a Bureau notice, a clockwork collector with fixed polite phrases. Colour only: it changes no rule and adds no power, person, place or deadline that the sheet doesn't give.
 - Temperament shows in behaviour and is never named. A frightened person checks who's looking and answers the wrong question. A mercenary one prices things. Nobody says "I'm afraid of everything" or "I'm in it for the money".
+- Everything said is something this person would say to this person, now. A fact of the game they wouldn't say aloud goes on the cards, never in their mouth.
+- Keep it coherent: each line answers or follows from the one before, so a fast reader never loses the story. Lines often open on a short sentence, then say the rest ("Who told you that? Who else knows?").
 - Every line must sound like one particular person. If you can swap the speakers' lines without anyone noticing, rewrite.
 - Each line does one job and leads to the next: an answer that opens a new question. No two lines in a row with the same rhythm. Avoid the fortune-cookie line and the closing quip.
 - A person's first line must not sound like a greeting from a form ("Hello. Is this about the files?", "Yes? Anything I can do for you?"). They were in the middle of something.

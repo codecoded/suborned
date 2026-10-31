@@ -26,6 +26,8 @@ function who(id: string, role: string, also = ''): string {
 }
 const INEZ = 'p-cafe-14', GUARD = 'p-records-office-01', DRIVER = 'p-records-office-31', MILENA = 'p-cafe-12';
 const apart = metres('cafe-entrance', 'office-entrance');
+/** Who Inez is, past the one word the sim holds (Sky, 2026-10-31: "not something Inez would say"). */
+const INEZ_WHO = who(INEZ, 'Inez', `She looks at who can see her before she looks at you. She talks about her tables, her tips and her Bureau card. She never says she's frightened and never threatens anyone: her fear shows in her questions, and in giving way too fast. She's kind, and tired.`);
 const WORLD = `The place: the café and its terrace face Records Square; the Civic Records Office is across the square. Evening, shift change coming. A polite, orderly city that writes everything down. Records are paper: stamped cards, forms, pneumatic tubes. Calls are voice, by telephone. Robots follow fixed routines. Everyone in the scene is a person of this city except the cell.`;
 const VOICES = (...k: string[]) => k.map(v => `- ${v}: ${text.tone.voices[v]}`).join('\n');
 const INEZ_GUARD = `Inez and the door guard are lovers, in secret. He stands the Office's public door, ${apart} m across the square from her. The two are never together unless she calls him. In speech call him Okafor (never his given name, and no gendered word beyond "he").`;
@@ -38,11 +40,11 @@ export const specs: Spec[] = [
     mustSay: [{ what: 'the Bureau loan', re: /bureau/i }, { what: 'the guard', re: /okafor|guard/i }],
     sheet: `${WORLD}
 Situation: the Scout has sat at the next table for half a minute. The player hears what the Scout hears. Inez, at the café door, is working her tables. Milena speaks through the open door from just inside. Neither knows the Scout is listening.
-${who(INEZ, 'Inez')}
+${INEZ_WHO}
 ${who(MILENA, 'Milena', 'Works the same café, inside this shift; she owes the Bureau too. No secret of hers comes up.')}
 ${INEZ_GUARD} Milena has noticed where Inez keeps looking; she doesn't know for sure until this talk.
 The scene must make plain, by its end: Inez is a waitress at this café; she owes the Bureau and can't keep up; she is seeing the guard on the Office door; if the Office hears of it, it costs them both; she is nervous by nature.
-Last beat: the Scout, very low, to the cell, terse fragments: what was heard, and that it gives two ways to her: clear the loan, or use Okafor. No verdict on which is better.
+Last beat: the Scout, very low, to the cell, terse fragments: what was heard, and what each thing could get you with her: the loan could be cleared, Okafor could be used. Never counts the ways, and gives no verdict on which is better.
 Speakers: Inez, Milena, Scout.
 learned: 2 lines (the debt; the lover). opens: "Help" and "Pressure" (both are now open on Inez; they cost what the ring says).
 ${VOICES('waitress', 'scout')}`,
@@ -53,7 +55,7 @@ ${VOICES('waitress', 'scout')}`,
     mustSay: [{ what: 'the Bureau', re: /bureau/i }],
     sheet: `${WORLD}
 Situation: the Fixer has come to Inez at the café door, and has just paid a first instalment on her Bureau loan. It is a real payment. Fact of the game: this first Help does NOT win her over; she is grateful and scared and not yet willing. One more visit, one more payment, will do it. Nobody calls it a "first Help". The Fixer has not yet said what would be wanted, only hinted.
-${who(INEZ, 'Inez')}
+${INEZ_WHO}
 Speakers: Inez, Fixer. She doesn't know the Fixer. Her fear: nobody pays a stranger's debt for nothing; who has been asking about her?
 The scene must make plain: a stranger just paid part of her Bureau loan; she took it but isn't ready to do anything for it; he will be back with the rest. End in a way that makes it clear coming back is what's next, while not saying it's the only way.
 learned: 1 line (she took it; not ready yet). opens: "Help again" as the action's plain name.
@@ -65,7 +67,7 @@ ${VOICES('waitress', 'fixer')}`,
     mustSay: [{ what: 'calling him over', re: /call|come over|fetch|over here|send for/i }, { what: 'the guard', re: /okafor|guard|him/i }],
     sheet: `${WORLD}
 Situation: the Fixer comes back and clears the rest of the Bureau loan. This time she is won over, gratefully and still frightened. Now the Fixer finally says what's wanted, and it is small: when the Fixer telephones, she calls Okafor over from his door. He'll come to her side and stay about a minute.
-${who(INEZ, 'Inez')}
+${INEZ_WHO}
 ${INEZ_GUARD}
 She must work out for herself that the Fixer knows about Okafor, and be frightened by that; the Fixer is kind about it and makes no threat. She asks what happens to him. The honest answer the Fixer can give: nothing happens to him if this goes right, and he never sees us.
 Fact of the game: because she was helped, she will warn the cell if she sees trouble coming on the square. Let her offer that, in her own frightened way, near the end.
@@ -79,10 +81,10 @@ ${VOICES('waitress', 'fixer')}`,
     mustSay: [{ what: 'the affair exposed', re: /office|tell|know|hear/i }, { what: 'calling him over', re: /call|come over|fetch|over here|send for/i }],
     sheet: `${WORLD}
 Situation: the same woman, a different way in. The Fixer comes to Inez at the café door with no money and tells her, gently, that the Office could learn about her and Okafor. She gives in quickly, and hates it. The Fixer is warm in manner, steel underneath, takes no pleasure in it and doesn't pretend otherwise. The Fixer keeps their voice low because a threat can be seen. What's wanted: when the Fixer telephones, she calls Okafor over from his door; he comes to her side and stays about a minute.
-${who(INEZ, 'Inez')}
+${INEZ_WHO}
 ${INEZ_GUARD}
-Fact of the game: she will remember the Fixer's face, and she could describe it if she's ever questioned. Let it land near the end, as something the player should feel. The Fixer knows it.
-The scene must make plain: we threatened to expose the two of them; she agreed out of fear and resents it; when we say so, she calls Okafor off the door.
+Fact of the game, for learned only, and nobody says it aloud: she will remember the Fixer's face, and could describe it if she's ever questioned. She wouldn't threaten a stranger who frightens her, and the Fixer wouldn't remind her.
+The scene must make plain, the cards included: we threatened to expose the two of them; she agreed, and hates it, and never says she's scared; when we say so, she calls Okafor off the door.
 learned: 1 line, and it mentions she knows the Fixer's face. opens: "Call Inez".
 ${VOICES('waitress', 'fixer')}`,
   },
@@ -105,7 +107,7 @@ ${VOICES('driver', 'fixer')}`,
     mustSay: [{ what: 'he leaves the door', re: /door|post|step/i }],
     sheet: `${WORLD}
 Situation: the moment the whole front-door plan was for. The Fixer telephones the café and says it's time. Inez, whom the cell has helped, then gets Okafor to leave his door: she calls across to him on the Office door's handset. He comes, walks across the square, stands at her side for a minute, and goes back. The shot cuts between them.
-${who(INEZ, 'Inez')}
+${INEZ_WHO}
 ${who(GUARD, 'Okafor', 'In speech he is Okafor to the Fixer; Inez may call him "love". He has a shift to finish and likes her more than the job.')}
 ${INEZ_GUARD}
 She is scared and must sound ordinary to him. He must not suspect. Tenderness matters: this is two people who love each other, and one of them is using it. Let the player feel that, in a line. No coffee spill and no trick: he comes because she asked.
@@ -122,6 +124,7 @@ const Edited = z.strictObject({ picked: z.number().int().min(1).max(3), why: z.s
 const Review = z.strictObject({ faults: z.array(z.strictObject({ scene: z.string(), line: z.string(), problem: z.string(), fix: z.string() })), notes: z.string() });
 type Final = z.infer<typeof Edited>;
 
+const NAMES_FEAR = /\bI'?m (too |so |very )?(scared|frightened|terrified)\b|\bI'?m (too |so |very )?afraid of\b/i;
 const JARGON = /\b(alert|trail|standing|heat|turned|temperament|approach|lever|mission|agent|asset|halcyon|lender)\b/i;
 const avoid: string[] = [...text.tone.avoid, ...text.tone.profanity];
 const words = (s: string) => s.trim().split(/\s+/).length;
@@ -134,6 +137,7 @@ export function check(s: Spec, f: Pick<Final, 'beats' | 'learned' | 'opens'>): s
     if (words(b.line) > 12) out.push(`over 12 words: "${b.line}"`);
     if (b.line.includes('!')) out.push(`exclamation mark: "${b.line}"`);
     if (JARGON.test(b.line)) out.push(`design word or "lender": "${b.line}"`);
+    if (NAMES_FEAR.test(b.line)) out.push(`names the fear instead of showing it: "${b.line}"`);
     for (const a of avoid) if (new RegExp(`\\b${a.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\b`, 'i').test(b.line)) out.push(`avoid-list word "${a}": "${b.line}"`);
   }
   for (const l of [...f.learned, ...f.opens]) if (words(l) > 6) out.push(`game line over 6 words: "${l}"`);
@@ -168,7 +172,14 @@ if (import.meta.main) {
     await writeJson(`${d}/final.json`, { id: s.id, title: s.title, kind: s.kind, ...final, faults });
     allCalls.push(...calls);
     console.log(`${s.id}: ${final.beats.length} beats, ${final.beats.reduce((n, b) => n + words(b.line), 0)} words, ${faults.length} faults`);
-    return { spec: s, final, faults };
+    const reviewFix = async (found: string[], into: Call[]) => { // the rules review's line faults go back to the editor once, then the checks again
+      const next = await runAgent({ ...e, id: `review-fix-${s.id}` }, edTask(`Your last version:\n${JSON.stringify(final.beats)}\nThe rules review found these faults; fix them and change nothing else:\n${found.join('\n')}\n\n`), Edited, into, d);
+      const left = check(s, next);
+      if (left.length) { console.log(`${s.id}: review fix kept out, it fails ${left.join('; ')}`); return; }
+      await writeJson(`${d}/final.json`, { id: s.id, title: s.title, kind: s.kind, ...next, faults: left });
+      console.log(`${s.id}: ${found.length} review faults sent back and fixed`);
+    };
+    return { spec: s, final, faults, reviewFix };
   };
   const WRITER_LIMITS = (await read('briefs/085/fable/writer.md')).split('## Hard limits')[1]!.trim();
   const done = await Promise.all(chosen.map(one));
@@ -181,6 +192,10 @@ if (import.meta.main) {
   );
   await writeJson(`${dir}/review/review.json`, review);
   allCalls.push(...reviewCalls);
+  await Promise.all(done.map(x => {
+    const found = review.faults.filter(f => f.scene === x.spec.id).map(f => `"${f.line}": ${f.problem} Fix: ${f.fix}`);
+    return found.length ? x.reviewFix(found, allCalls) : undefined;
+  }));
 
   const sha = async (p: string) => createHash('sha256').update(await read(p)).digest('hex');
   await writeJson(`${dir}/run.json`, {

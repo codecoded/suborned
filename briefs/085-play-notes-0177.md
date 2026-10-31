@@ -19,4 +19,6 @@ Standing rules: `less-reading`, `plain-copy`, `present-and-adaptive` in the lead
 
 Note 7, Sky's calls on `briefs/085/reports/Writing good game dialogue.md` (2026-10-31): "clearly explain" binds the whole scene, the Scout's line and the cards included. No human writes the voices: "you just need to review famous works of public domain literature for classic conversations". A small live test, two scenes, current brief against the new one, read blind by Sky: yes. That go-ahead covers this test only; the full generator run still needs his yes.
 
+Blind result (Sky, 2026-10-31): he picked Y on both scenes, which the key shows is today's brief, over the brief built on the classics: "that spell out the story, and coherently. starting with a short sentences as well feels more natural". He faulted "I'm too scared to say no. I won't forget your face." / "No, you won't. If you're ever questioned, you could describe it.": it "doesn't make sense - and not something Ines would say". The new brief changed many things at once, so the test doesn't say which part lost. Next run: today's brief, with a fuller Inez, game facts on the cards, a check on named fear and review faults sent back; the excerpts stay out.
+
 After this round: the `HandoverHost.cs` split (brief 084), with one full batch.
