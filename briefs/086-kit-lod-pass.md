@@ -16,6 +16,11 @@ Every key item in the kit has authored LODs that hold the same silhouette and bo
 ## Owners
 Redline (audit, the plan and the technique picks) · Vela (pieces and their LODs, `tools/decokit`) · Splice (the pipeline, catalogue, review page, `tools/kit`) · Latch (LODGroups, crossfade, Unity settings) · Glint (shadows and light on the switch) · Forma (figures, only if the audit says so) · Sky (each piece).
 
+## Sky's calls (2026-10-31)
+1. The pass covers render size and shadows as well as LODs: yes.
+2. The Air sitting: "I'm leaving my air unlocked so can install and run it, but might want to clear down processes when that happens as running bit hot right now, or wait an hour or so". So: macmon may be installed and the run started over ssh; no brew there, so the release binary. Check heat and what's running first.
+3. 1080 equivalent with FSR on the Air if zoom 10 at the shipped size misses 13 ms warm: yes.
+
 ## Depends on
 - The current round (brief 085) lands first; only reading until Latch's build is done, so the player and scenes stay stable.
 - The lens: Sky's camera call (play view orthographic or perspective). An orthographic camera picks a LOD from zoom alone, the same for near and far things; a perspective one picks by distance. Thresholds and what's worth authoring depend on it.
