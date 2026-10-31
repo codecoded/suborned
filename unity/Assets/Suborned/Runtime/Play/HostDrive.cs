@@ -102,7 +102,8 @@ namespace Suborned.Play
             if (Game == null || Game.Over || !cam) return;
             int k = FollowWho(); var op = Game.Ops[k];
             if (op.Down || op.Inside || op.InCar) { PopKey(op.Down ? "agent-down" : op.Inside ? "enforcer-inside" : "in-car", null, SelectedWorld(), Feedback.Refused); return; }
-            Select((OpId)k, false); Speed = 1; DrivePressesClear(); followOnly = false; dBusyAskAt = -9f;
+            TakeInSquad(k); Speed = 1; DrivePressesClear(); // brief 085: T keeps the squad (it was cut to this agent, and stayed cut on the map)
+            followOnly = false; dBusyAskAt = -9f;
             DriveTake(k);
             if (!Following) FollowEnter();
             Driving = true; intentKey = "";
@@ -402,7 +403,7 @@ namespace Suborned.Play
                 var d = p.Anchor - me; d.y = 0f; float dist = d.magnitude; if (dist > 8f || dist < 0.05f) continue;
                 float ang = Vector3.Angle(fwd, d); if (ang > 100f) continue;
                 if (cam) { var vp = cam.WorldToViewportPoint(p.Anchor); if (vp.z <= 0f || vp.x < 0.08f || vp.x > 0.85f || vp.y < 0.08f || vp.y > 0.92f) continue; } // on screen, with room for its chip
-                float score = dist * (1f + ang / 60f);
+                float score = dist * (1f + ang / 60f) + (t.Kind is "door" or "cabinet" or "stash" && RowRank(t) > 0 ? 2f : 0f); // brief 085: the door with no way for this agent never takes the focus from the guard who stands in it
                 cands.Add((t, p.Anchor, score));
             }
             // brief 030 §8: Z / Shift+Z step the focus through what is in front, nearest first (dFocusStep; a lost focus starts again)

@@ -212,6 +212,85 @@ public class Windows
     }
 }
 
+/// <summary>Brief 085, Sky on 0.2.177: a squad order reaches every selected agent, or the one it can't says why; in third person too. The T key, the mouse and the door's box are the player's proof (Proof085: this calls the Give methods, not the input path).</summary>
+public class Squad
+{
+    static readonly int[] Seeds = { 7, 1234, 98765 };
+    static void EachSeed(Action<HandoverHost> c) { foreach (var s in Seeds) { HandoverHost.SeedPin = s; try { c(Host.Fresh()); } finally { HandoverHost.SeedPin = 0; } } }
+    /// <summary>Scout, Fixer, Tech: a panel with the Enforcer in it needs HostViews.KeyOf, silent here (his takedown: Proof085).</summary>
+    static void Three(HandoverHost h) { h.Select(OpId.Scout, false); h.Select(OpId.Fixer, true); h.Select(OpId.Tech, true); }
+    static void Hand(HandoverHost h, int k) { Host.Set(h, "Driving", true); Host.Set(h, "dAgent", k); h.TakeInSquad(k); }
+    static void Fire(HandoverHost h, string how, string id = "guard")
+    {
+        var c = new HandoverHost.HoldCharge { Fire = true, FireId = id, Button = 1, T = new HandoverHost.Target { Kind = "person", Key = id, Id = id, Label = id } };
+        Host.Call(h, how, c, Vector2.zero);
+    }
+    /// <summary>Every agent holds the order and has his gun out, with no F, or says why on his plate.</summary>
+    static void AllFireOrSay(HandoverHost h, string id, string where, params int[] say)
+    {
+        for (int k = 0; k < 4; k++)
+        {
+            var gun = h.Game.Ops[k].Gun;
+            if (Array.IndexOf(say, k) >= 0) { Assert.That(gun.Order, Is.Empty, $"{where}: agent {k}"); Assert.That(h.FireRefusalWord(k), Is.Not.Empty, $"{where}: agent {k} left out with no word"); continue; }
+            Assert.That(gun.Order, Is.EqualTo(id), $"{where}: agent {k} took no fire order: refused '{h.FireRefusalOf(k).code}'"); Assert.That(gun.Drawn, $"{where}: agent {k} needed F");
+        }
+    }
+    [Test] public void AGroundClickWalksEveryFreeAgent() => EachSeed(h =>
+    {
+        h.SelectAll(); int n0 = h.Game.Orders.Count; var (spent, who) = Host.Click(h); Assert.That(spent, Is.False); Assert.That(who, Is.Null, "nobody is busy: the whole selection goes");
+        var at = h.Game.Ops[0].Pos; h.GroupWalk(new Pt(at.X + 200, at.Y + 200), false, null, who);
+        Assert.That(Host.Orders(h, n0), Is.EquivalentTo(new[] { "scout:move", "fixer:move", "tech:move", "enforcer:move" }));
+    });
+    [Test] public void AnAgentASquadClickLeavesBehindSaysWhatHeIsOn()
+    {
+        var h = Host.Fresh(); h.GiveWatchScripted(OpId.Scout, "waitress"); Assert.That(Host.Until(h, () => h.Game.Ops[0].Busy != null)); h.SelectAll(); h.Pops.Clear();
+        var (_, who) = Host.Click(h); Assert.That(who, Is.EquivalentTo(new[] { 1, 2, 3 })); Assert.That(h.Pops.Exists(p => p.Text == "Busy: Watch" && p.World.HasValue), $"pops: {string.Join(" | ", h.Pops.Select(p => p.Text))}"); Host.NoTokens("stays", h.Pops.Select(p => p.Text).ToArray());
+    }
+    [Test] public void ASquadFireOrderStartsAllWithNoF() => EachSeed(h => { h.SelectAll(); Fire(h, "BeginFireLock"); AllFireOrSay(h, "guard", "map"); Assert.That(h.Loud, Is.Null); });
+    [Test] public void ABusyAgentSaysWhyAndTheRestFire()
+    {
+        var h = Host.Fresh(); h.GiveWatchScripted(OpId.Scout, "waitress"); Assert.That(Host.Until(h, () => h.Game.Ops[0].Busy != null)); h.SelectAll(); Fire(h, "BeginFireLock"); AllFireOrSay(h, "guard", "one busy", 0);
+    }
+    [Test] public void InThirdPersonTheSquadFiresWithTheAgentInHand() => EachSeed(h => { h.SelectAll(); Hand(h, 2); Fire(h, "TpFireLock"); AllFireOrSay(h, "guard", "third person"); Assert.That(h.Agent, Is.EqualTo(OpId.Tech)); });
+    [Test] public void InThirdPersonAloneOnlyTheAgentInHandFires()
+    {
+        var h = Host.Fresh(); h.Select(OpId.Fixer, false); Hand(h, 1); Fire(h, "TpFireLock"); Assert.That(h.Game.Ops[1].Gun.Order, Is.EqualTo("guard")); foreach (var k in new[] { 0, 2, 3 }) Assert.That(h.Game.Ops[k].Gun.Order, Is.Empty, $"agent {k} is not in the squad");
+    }
+    [Test] public void AFocusInAFightTakesTheSquadInThirdPerson()
+    {
+        var h = Host.Fresh(); h.SelectAll(); Hand(h, 3); Host.Call(h, "FocusFire", new HandoverHost.Target { Kind = "patrol", Key = "patrol", Id = "patrol", Label = "patrol" }, "patrol", false, Vector2.zero, null);
+        AllFireOrSay(h, "patrol", "focus"); Host.Tick(h, 30); for (int k = 0; k < 4; k++) Assert.That(h.PlateWords(k), Is.Not.Empty, $"agent {k} holds a far focus with nothing on his plate");
+    }
+    [Test] public void ChangingWhoIsInHandKeepsTheSquad()
+    {
+        var h = Host.Fresh(); h.SelectAll(); Hand(h, 0); h.TakeInSquad(2); Assert.That(h.Selected.All(x => x), "1-4 cut the squad"); Assert.That(h.Agent, Is.EqualTo(OpId.Tech)); Host.Set(h, "dAgent", 2); // DriveFrame moves the hand to Agent
+        h.Select(OpId.Scout, true); Assert.That(h.Selected[0], Is.False, "Shift toggles her out"); Assert.That(h.Agent, Is.EqualTo(OpId.Tech)); h.Select(OpId.Scout, true); Assert.That(h.Selected[0]); Assert.That(h.Agent, Is.EqualTo(OpId.Tech), "Shift adds; the one in hand stays in hand");
+        h.Select(OpId.Tech, false); h.TakeInSquad(1); Assert.That(h.Selected.Count(x => x), Is.EqualTo(1), "out of the squad: replaces it, as a key on the map"); Assert.That(h.Agent, Is.EqualTo(OpId.Fixer));
+    }
+    [Test] public void AnActInThirdPersonGoesToTheAgentInHandAndNobodyLeaves()
+    {
+        var h = Host.Fresh(); Three(h); Hand(h, 1); var t = new HandoverHost.Target { Kind = "person", Key = "waitress", Id = "waitress", Label = "Inez" }; var p = h.ContextFor(t, new Vector2(100, 100));
+        int w = p.Rep.FindIndex(i => p.Pn.Rows[i].I.Order.Do == "watch"); Assert.That(w, Is.GreaterThanOrEqualTo(0)); Assert.That(h.DoersOf(p, w), Is.EqualTo(new[] { 1 }), "the one in hand can Watch");
+        Host.Call(h, "HoldGive", p, w, t, Vector2.zero, false, "left", true, null); Assert.That(h.Selected[1], "the agent in hand left the selection: the view would jump"); Assert.That(h.Agent, Is.EqualTo(OpId.Fixer));
+    }
+    [Test] public void AnActOnTheMapStillGoesToTheBestPlacedAndHeLeaves()
+    {
+        var h = Host.Fresh(); Three(h); var t = new HandoverHost.Target { Kind = "person", Key = "waitress", Id = "waitress", Label = "Inez" }; var p = h.ContextFor(t, new Vector2(100, 100));
+        int w = p.Rep.FindIndex(i => p.Pn.Rows[i].I.Order.Do == "watch"); var d = h.DoersOf(p, w); Assert.That(d.Count, Is.EqualTo(1)); int n0 = h.Game.Orders.Count; Host.Call(h, "HoldGive", p, w, t, Vector2.zero, false, "left", true, null); Assert.That(h.Selected[d[0]], Is.False, $"Sky 2026-10-22: an actioned agent leaves the squad: doer {d[0]}, orders [{string.Join(",", Host.Orders(h, n0))}], status {h.Status}, loud {h.Loud != null}, pending {h.PendingOf(d[0]).verb}"); Assert.That(h.Selected.Count(x => x), Is.EqualTo(2));
+    }
+    [Test] public void TheScoutOnTheGuardOnceHeardShowsTheLock()
+    {
+        var h = Host.Fresh(); var g = h.Game; h.GiveWatchScripted(OpId.Scout, "guard"); Assert.That(Host.Until(h, () => h.CastOf("guard")?.KRoutine == true || g.Known("guard") is { Sight: true }, 1500)); h.GiveScripted(new Order { Op = "scout", Do = "listen", Target = "guard" }); Assert.That(Host.Until(h, () => h.CastOf("guard")?.KNeed == true && g.Ops[0].Busy == null, 1500));
+        h.Select(OpId.Scout, false); var t = new HandoverHost.Target { Kind = "person", Key = "guard", Id = "guard", Label = "the guard" }; var i = (HandoverHost.Intent)Host.Call(h, "HoldIntent", t); var p = h.ContextFor(t, new Vector2(100, 100));
+        Assert.That(i?.Locked == true, $"pill '{i?.Label}' actionable {i?.Actionable} rows [{string.Join(",", p.Pn.Rows.Select(r => $"{r.I?.Order?.Do}{(r.Available ? "" : "!")}"))}]");
+    }
+    [Test] public void WhoCanActOnTheDoorGuardOutranksTheDoor()
+    {
+        var h = Host.Fresh(); var guard = new HandoverHost.Target { Kind = "person", Key = "guard", Id = "guard", Label = "the guard" }; var door = new HandoverHost.Target { Kind = "door", Key = "door", Label = "the public door" };
+        foreach (var who in new[] { OpId.Scout, OpId.Fixer, OpId.Tech }) { h.Select(who, false); Assert.That((int)Host.Call(h, "RowRank", guard), Is.LessThan((int)Host.Call(h, "RowRank", door)), $"{who}"); Assert.That(h.ContextFor(guard, new Vector2(100, 100)).Pn.Rows.Count, Is.GreaterThan(0), $"{who} has no way on him"); }
+    }
+}
+
 /// <summary>Every word the host can say for an agent's state (the plate, the doing lines) comes filled.</summary>
 public class Words
 {

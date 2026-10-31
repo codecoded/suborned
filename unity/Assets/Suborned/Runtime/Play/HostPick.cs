@@ -87,6 +87,30 @@ namespace Suborned.Play
             return nearActs != null && da <= dn + tie ? nearActs.T : near?.T;
         }
 
+        /// <summary>Brief 085: the door, the cabinet and a stash are generous boxes, and the door guard stands in the door's. A ray into the box found the box, so the 28 px circle every other
+        /// person has (NearestPick, only when the ray finds nothing) never ran for him: his exact body was the target, and a pixel beside it was the door, which for most agents has no way and so no
+        /// pill. Here a being within the same circle counts as under the ray, and the rows then decide between them as they do on his body. A click on the box away from him stays the door's.</summary>
+        void PickBesideMarker(Vector2 screen, List<(Target t, float score)> found, bool agents)
+        {
+            besideNow = null; if (agents || !cam || !found.Exists(x => x.t.Kind is "door" or "cabinet" or "stash") || !found.TrueForAll(x => x.t.Kind is "door" or "cabinet" or "stash" || Passer(x.t))) return;
+            float best = PickPx * cam.pixelHeight / 1080f; Pickable near = null;
+            foreach (var p in Pickables())
+            {
+                if (!(p.T.Kind is "person" or "hostile" or "patrol" or "rivals" or "security" or "unit" || p.T.Security)) continue;
+                var sp = cam.WorldToScreenPoint(p.Anchor); if (sp.z <= 0f) continue; float d = ((Vector2)sp - screen).magnitude; if (d <= best) { best = d; near = p; }
+            }
+            if (near != null) { besideNow = near.T; found.Add((near.T, PickRank(near.T, false) * 10000f)); BesidePicks++; }
+        }
+        Target besideNow;
+        /// <summary>The rows' rank where things overlap under the pointer. A person whose body the ray hit, standing in a marker's box, is him for anyone with a row on him, even only a harsh one: the Enforcer's pointer on the guard is the guard (his takedown is in the ring), and the box round him stays the door's. Beside his body the rows decide.</summary>
+        int RankOver(Target t, List<(Target t, float score)> found)
+        {
+            int r = RowRank(t);
+            return r == 1 && t.Kind == "person" && !ReferenceEquals(t, besideNow) && found.Exists(x => x.t.Kind is "door" or "cabinet" or "stash") ? 0 : r;
+        }
+        /// <summary>The proof reads it: picks a marker's box would have taken from the person standing in it.</summary>
+        public int BesidePicks { get; private set; }
+
         /// <summary>Set by PointerHover: the hovered thing's anchor and name for the HUD.</summary>
         void HoverFeedback(Target t)
         {

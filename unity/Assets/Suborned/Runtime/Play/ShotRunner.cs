@@ -146,6 +146,7 @@ namespace Suborned.Play
                     res.Frames = ds.Count; res.MeanMs = ds.Average(); res.P99Ms = ds[(int)(ds.Count * 0.99f)]; res.GpuMs = gpu[0]; res.Tick = h.Game.Tick;
                 }
                 yield return new WaitForSecondsRealtime(s.settle); // the camera's ease, the HUD's fades
+                yield return new WaitForEndOfFrame(); LogBloom(h, s); // brief 085 (Glint, note 1): what bloom the frame just drawn resolved to
                 // 3 · the capture
                 var path = System.IO.Path.Combine(Dir, s.name);
                 if (s.clipSeconds > 0) { yield return Clip(h, s, res, path); }
@@ -326,6 +327,15 @@ namespace Suborned.Play
         static Order Copy(Order o) => new() { Tick = o.Tick, Op = o.Op, Do = o.Do, Target = o.Target, Approach = o.Approach, To = o.To, Point = o.Point, How = o.How, Run = o.Run };
 
         string Guard(Action a) { try { a(); return null; } catch (Exception e) { return e.GetType().Name + ": " + e.Message; } }
+        /// <summary>Brief 085 (Glint on "why so bright?"): the play camera's bloom as URP resolved it (its volumeStack, else the shared stack it updates), with every Bloom volume that fed it. Look only.</summary>
+        static void LogBloom(HandoverHost h, ShotSpec s)
+        {
+            var c = h.View; if (!c) return; var ud = c.GetComponent<UnityEngine.Rendering.Universal.UniversalAdditionalCameraData>(); var own = ud != null ? ud.volumeStack : null; var stack = own ?? UnityEngine.Rendering.VolumeManager.instance.stack;
+            var b = stack.GetComponent<UnityEngine.Rendering.Universal.Bloom>(); var feeds = new List<string>();
+            foreach (var v in FindObjectsByType<UnityEngine.Rendering.Volume>(FindObjectsSortMode.None)) if (v.isActiveAndEnabled && v.sharedProfile != null && v.sharedProfile.TryGet<UnityEngine.Rendering.Universal.Bloom>(out var vb)) feeds.Add($"{v.name}(priority {v.priority}, weight {v.weight:0.##}, global {v.isGlobal}, on {vb.active}, threshold {(vb.threshold.overrideState ? vb.threshold.value.ToString("0.###") : "-")}, intensity {(vb.intensity.overrideState ? vb.intensity.value.ToString("0.###") : "-")})");
+            Debug.Log($"ShotRunner bloom {s.name}: tier {DistanceHaze.TierOf(c)}, {(own != null ? "camera stack" : "shared stack")}, post {(ud != null && ud.renderPostProcessing)}, resolved threshold {b.threshold.value:0.###}, intensity {b.intensity.value:0.###}, scatter {b.scatter.value:0.###}, clamp {b.clamp.value:0.###}; volumes: {string.Join("; ", feeds)}");
+        }
+
         void Fail(Result r, string why) { r.Status = "failed"; r.Error = why; Debug.LogError($"ShotRunner: {r.Name}: {why}"); }
 
         static string Esc(string s) => (s ?? "").Replace("\\", "\\\\").Replace("\"", "'").Replace("\n", " ");

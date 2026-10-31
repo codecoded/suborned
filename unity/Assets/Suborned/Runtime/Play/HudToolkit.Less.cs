@@ -1014,7 +1014,7 @@ namespace Suborned.Play
             // the hover ring and the hint's ring at the feet; pulses where an order lands
             void Ground(Vector3 w, float d, Color c, float width, bool dashed = false) { if (!host.Following) GroundRing(w, d * px / 2f * GroundPxM, c, width, dashed); } // the follow view keeps its own two rings only // brief 046: on the ground, depth-tested (HudToolkit.Ground)
             bool carMarked = host.Hover?.Kind == "car" && host.Hover.Key == "getaway" && (carMark?.resolvedStyle.display == DisplayStyle.Flex || heldMark?.resolvedStyle.display == DisplayStyle.Flex);
-            if (m.HoverRing.HasValue && !carMarked && !host.controls.Modern) Ground(m.HoverRing.Value, 64, Cream, 2.2f); // brief 041: the pill alone // Glyph fight r1 B: the car's marker is its one mark
+            if (m.HoverRing.HasValue && !carMarked && (!host.controls.Modern || host.Hover?.Kind is "person" or "patrol" or "security" or "unit" or "rivals" or "hostile" or "crowd" && !(host.HoverIntent is { Actionable: true } or { Locked: true }) && !host.TargetRings.Exists(r => r.Hover))) Ground(m.HoverRing.Value, 64, Cream, 2.2f); // brief 041: the pill alone; brief 085: a person with no pill to show (the Tech on the driver), the ring, so nobody under the pointer is without a cue (Fable A6, A7) // Glyph fight r1 B: the car's marker is its one mark
             // the Next Step's ring: only while its line shows, fading with it, in its noun's colour, with the verb's glyph at the centre ("do this here")
             if (host.HintNow?.Ring is Vector3 hr && !m.Ended && hintAlpha > 0f)
             {

@@ -172,7 +172,7 @@ namespace Suborned.Play
             who = null; if (Game == null || Queueing) return false;
             var sel = SelectedList().FindAll(k => !Game.Ops[k].Inside && !Game.Ops[k].Down); var busy = sel.FindAll(k => ActOn(k) != null);
             if (busy.Count == 0) { busyAskAt = -9f; return false; }
-            if (busy.Count < sel.Count) { who = sel.FindAll(k => !busy.Contains(k)); BusySkips += busy.Count; busyAskAt = -9f; return false; }
+            if (busy.Count < sel.Count) { who = sel.FindAll(k => !busy.Contains(k)); BusySkips += busy.Count; busyAskAt = -9f; SayStaying(busy); return false; }
             float now = Time.unscaledTime, ago = now - busyAskAt; int mask = 0; foreach (var k in busy) mask |= 1 << k;
             if (mask == busyAskMask && ago <= BusyConfirmS)
             {

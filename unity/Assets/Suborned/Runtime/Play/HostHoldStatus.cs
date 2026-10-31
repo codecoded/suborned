@@ -355,8 +355,8 @@ namespace Suborned.Play
         void HoldKeys(Keyboard kb, bool shift)
         {
             if (kb == null) return; var c = controls; bool mod = c.Held(kb, PlayAction.Force) || kb.leftCommandKey.isPressed || kb.rightCommandKey.isPressed;
-            for (int i = 0; i < 4; i++) if (c.Down(kb, PlayAction.Agent1 + i) && Ring == null) { if (Driving) Select((OpId)i, false); else AgentKey(i, shift || mod); }
-            if ((c.Down(kb, PlayAction.SelectAll) || mod && kb.aKey.wasPressedThisFrame) && Ring == null && !Driving) SelectAll();
+            for (int i = 0; i < 4; i++) if (c.Down(kb, PlayAction.Agent1 + i) && Ring == null) { if (Driving) TakeInSquad(i); else AgentKey(i, shift || mod); }
+            if ((c.Down(kb, PlayAction.SelectAll) || mod && kb.aKey.wasPressedThisFrame) && Ring == null) SelectAll(); // brief 085: in third person too (the agent in hand stays in hand)
             if (c.Down(kb, PlayAction.Cancel)) { camFollow = !camFollow; centreGoal = null; Status = camFollow ? "Camera follows" : "Camera free"; }
             if (c.Down(kb, PlayAction.Cease)) HoldStop();
             if (c.Down(kb, PlayAction.CycleAgent) && Ring == null) HoldTab();
@@ -364,7 +364,7 @@ namespace Suborned.Play
             if (kb.escapeKey.wasPressedThisFrame && Charge is { Done: false }) { CancelHold(); escTaken = true; } // Esc cancels a hold (and does nothing else this frame)
         }
 
-        public void SelectAll() { for (int k = 0; k < 4; k++) Selected[k] = !Game.Ops[k].Down; if (Array.IndexOf(Selected, true) < 0) Selected[0] = true; Agent = (OpId)Array.IndexOf(Selected, true); Picked = -1; intentKey = ""; Status = "Squad: all four"; }
+        public void SelectAll() { for (int k = 0; k < 4; k++) Selected[k] = !Game.Ops[k].Down; if (Array.IndexOf(Selected, true) < 0) Selected[0] = true; Agent = Driving && Selected[dAgent] ? (OpId)dAgent : (OpId)Array.IndexOf(Selected, true); Picked = -1; intentKey = ""; Status = "Squad: all four"; }
 
         /// <summary>X: every selected agent's order stops (a walk, an act, a queued ghost) and its fire ceases.</summary>
         public void HoldStop()
@@ -398,7 +398,7 @@ namespace Suborned.Play
         /// <summary>Third person, Shift+T: the next agent (the camera glides to it).</summary>
         void DriveNextAgent()
         {
-            for (int s = 1; s <= 4; s++) { int k = (dAgent + s) % 4; var op = Game.Ops[k]; if (op.Down || op.Inside || op.InCar) continue; Select((OpId)k, false); fSwingFromPos = cam.transform.position; fSwingFromRot = cam.transform.rotation; fSwingStart = Time.unscaledTime; return; }
+            for (int s = 1; s <= 4; s++) { int k = (dAgent + s) % 4; var op = Game.Ops[k]; if (op.Down || op.Inside || op.InCar) continue; TakeInSquad(k); fSwingFromPos = cam.transform.position; fSwingFromRot = cam.transform.rotation; fSwingStart = Time.unscaledTime; return; }
         }
 
         // ---------------------------------------------------------------- the hover: hysteresis, Tab, and the offer
@@ -417,7 +417,7 @@ namespace Suborned.Play
         {
             float now = Time.unscaledTime;
             if (tabT != null) { if ((screen - tabAt).magnitude > 18f * KitScale || !stack.Exists(x => SameTarget(x, tabT))) tabT = null; else return tabT; }
-            bool inStack = stick != null && (SameTarget(t, stick) || stack.Exists(x => SameTarget(x, stick)));
+            if (stick?.Kind is "door" or "cabinet" or "stash" && t != null && t.Kind is not ("door" or "cabinet" or "stash") && !Passer(t)) stick = null; /* brief 085: a marker's box never holds the pill against who stands in it: coming in from the box, the pointer on the door guard stayed the door */ bool inStack = stick != null && (SameTarget(t, stick) || stack.Exists(x => SameTarget(x, stick)));
             if (inStack) stickSeenAt = now;
             if (stick != null && !SameTarget(t, stick) && (inStack || now - stickSeenAt < 0.15f)) return stick;
             stick = t != null && !Passer(t) ? t : null; stickSeenAt = now; return t; // Pulse 067 W2: a shift guard holds the pill like anyone with a name

@@ -521,7 +521,7 @@ namespace Suborned.Play
         {
             if (Game == null || i < 0 || i > 3) return;
             bool twice = !add && lastPortrait == i && Time.unscaledTime - lastPortraitAt < controls.doubleSeconds; lastPortrait = i; lastPortraitAt = Time.unscaledTime;
-            Select((OpId)i, add); lastAgentKey = i; lastAgentKeyAt = Time.unscaledTime;
+            if (Driving && !add) TakeInSquad(i); else Select((OpId)i, add); lastAgentKey = i; lastAgentKeyAt = Time.unscaledTime;
             if (add || Following) return; // Glyph 067 G1: Shift or Ctrl adds or toggles and never moves the camera (a group can't be framed at play zoom)
             if (twice && cam) cam.orthographicSize = Mathf.Clamp(Cam.overhead.zoom, zoomMin, zoomMax); // a double click frames at play zoom
             CentreOn((OpId)i); PortraitFrames++;
@@ -607,7 +607,7 @@ namespace Suborned.Play
             Selected[(int)id] = add ? !Selected[(int)id] : true;
             int first = Array.IndexOf(Selected, true);
             for (int k = 0; k < 4; k++) if (Selected[k] && Able(k)) { first = k; break; } // item 29 (Sky 0.2.99): a downed agent never leads the selection while an able one is selected
-            var agent = first < 0 ? id : (OpId)first;
+            var agent = Driving && Selected[dAgent] ? (OpId)dAgent : first < 0 ? id : (OpId)first; /* brief 085: Shift adds to the squad, the agent in hand stays in hand */
             if (agent != Agent) Picked = -1;
             Agent = agent; intentKey = "";
         }
@@ -758,9 +758,10 @@ namespace Suborned.Play
                 int at = found.FindIndex(x => x.t.Kind == t.Kind && x.t.Key == t.Key);
                 if (at < 0) found.Add((t, score)); else if (score < found[at].score) found[at] = (t, score);
             }
+            PickBesideMarker(screen, found, agents); // brief 085 (Sky: "No visual cue to selecting the guard at the door"): his post stands in the door's box, which took every pick but his exact body
             // the rows decide only where two or more things overlap under the cursor (each asked once a second: ContextFor prices every way)
             if (!agents && found.FindAll(x => !Passer(x.t)).Count >= 2)
-                for (int i = 0; i < found.Count; i++) { var (ft, fs) = found[i]; if (Passer(ft)) continue; found[i] = (ft, fs + RowRank(ft) * 100000f); }
+                for (int i = 0; i < found.Count; i++) { var (ft, fs) = found[i]; if (Passer(ft)) continue; found[i] = (ft, fs + RankOver(ft, found) * 100000f); }
             // brief 016 (Sky: "hard to select areas, like a camera"): nothing under the ray, or only a passer-by: the nearest thing within the pick
             // radius of the cursor wins over the ground (HostPick)
             if (found.Count == 0 || found.TrueForAll(x => Passer(x.t))) { var np = NearestPick(screen, agents); if (np != null) found.Insert(0, (np, -1f)); }
@@ -1053,7 +1054,7 @@ namespace Suborned.Play
         readonly int[] rewalks = new int[4];
         /// <summary>For checks: acts cancelled so a fire order could go (Playable).</summary>
         public int FireCancelledActs { get; private set; }
-        static Order FireCopy(Order o) => new() { Op = o.Op, Do = o.Do, Target = o.Target, Approach = o.Approach, To = o.To, Point = o.Point, How = o.How, Run = o.Run, Stance = o.Stance, Force = o.Force, On = o.On, Release = o.Release, Face = o.Face, Count = o.Count, Shots = o.Shots, Then = o.Then };
+        static Order FireCopy(Order o) => new() { Op = o.Op, Do = o.Do, Target = o.Target, Approach = o.Approach, To = o.To, Point = o.Point, How = o.How, Run = o.Run, Stance = o.Stance, Force = o.Force, On = o.On, Release = o.Release, Face = o.Face, Count = o.Count, Shots = o.Shots, Then = o.Then, Focus = o.Focus };
 
         bool IssueCore(Order o, Vector2? screen, Vector3? target, bool quietRefusal, bool player)
         {

@@ -107,6 +107,7 @@ namespace Suborned.Play
             foreach (var g in plan.Givers[way]) if (Selected[(int)g]) who.Add((int)g);
             if (who.Count == 0) foreach (var g in plan.Givers[way]) who.Add((int)g);
             if (plan.Row(way)?.I?.Order?.Do == "board") return who; // brief 067 C (Sky: "I wanted the whole squad to just get in the car"): Board goes to every selected agent who can, one order each in the same tick
+            if (Driving && who.Contains(dAgent)) return new List<int> { dAgent }; // brief 085: in third person the agent in hand does what he can; the squad does the rest
             var idle = who.FindAll(k => !BusyAgent(k)); if (idle.Count > 0) who = idle; // Sky 2026-10-22: best placed never takes a busy agent while an idle one can
             if (who.Count < 2) return who;
             int best = who[0], bs = int.MaxValue;
@@ -176,9 +177,9 @@ namespace Suborned.Play
             // brief 067 C1.2 (Glyph): whoever boards leaves the selection, even the whole squad (a boarded agent is stepped out by any move order, and
             // a ground click walks the selection); the selection may be empty: the car answers with none (BuildPanel), 1–4 and Squad bring them back
             var sel = SelectedList(); if (!board && (sel.Count < 2 || !sel.Exists(k => !given.Contains(k)))) return; // alone, or the whole squad goes: nobody leaves
-            var left = new List<string>(); foreach (var k in given) if (Selected[k]) { Selected[k] = false; left.Add(Op.Name((OpId)k)); }
+            var left = new List<string>(); foreach (var k in given) if (Selected[k] && !(Driving && k == dAgent)) { Selected[k] = false; left.Add(Op.Name((OpId)k)); } // brief 085: never the agent in hand: the view never moves by itself
             if (left.Count == 0) return;
-            int firstLeft = Array.IndexOf(Selected, true); Agent = firstLeft >= 0 ? (OpId)firstLeft : (OpId)given[0]; Picked = -1; intentKey = ""; SquadLeaves++; // the pill keeps a face: the first aboard
+            int firstLeft = Array.IndexOf(Selected, true); Agent = Driving ? (OpId)dAgent : firstLeft >= 0 ? (OpId)firstLeft : (OpId)given[0]; Picked = -1; intentKey = ""; SquadLeaves++; // the pill keeps a face: the first aboard
             Status = $"{string.Join(", ", left)} {(left.Count > 1 ? "leave" : "leaves")} the squad";
         }
 
@@ -489,15 +490,15 @@ namespace Suborned.Play
 
         /// <summary>Who fires on a right hold or a focus click (briefs/041/next-batch.md item 13, engine 0.26.0): every selected agent the engine
         /// would take the order from (Game.FireQuery: a holstered agent draws, one out of reach or line walks in; a focus never walks); never an
-        /// agent a portrait locked when `unpinned` (a focus click leaves portrait locks alone); in third person the driven agent. With `mark`, each
+        /// agent a portrait locked when `unpinned` (a focus click leaves portrait locks alone); in third person the driven agent and the squad. With `mark`, each
         /// selected agent it refuses gets its two words on the plate (Fable's less.done.fire.&lt;code&gt;) for FireRefusalS. With no target id
         /// (nothing to ask about) the armed selection, as before but without the drawn-first filter that left holstered agents out.</summary>
         List<int> Shooters(bool unpinned, string id = "", bool force = false, bool focus = false, bool mark = false)
         {
             var able = new List<int>();
-            if (Driving && dAgent >= 0) { if (Armed(dAgent)) able.Add(dAgent); return able; } // third person: the driven agent
             for (int k = 0; k < 4; k++)
             {
+                if (Driving && k == dAgent) { if (Armed(k)) able.Add(k); continue; } // brief 085 (Sky: "only one agent would start to shoot ... unless I pressed F"): the agent in hand fires as he always did (a busy one is cancelled: Playable) and the squad with him; it was the driven agent alone
                 if (!Selected[k] || unpinned && FireLocks.Exists(s => s.Pin && s.Agents.Contains(k))) continue;
                 if (id.Length == 0) { if (Armed(k) && !(k == (int)OpId.Enforcer && Game.Vale == ValeAt.WithEnforcer)) able.Add(k); continue; }
                 Answer a = default; bool walk = false;
@@ -509,17 +510,6 @@ namespace Suborned.Play
             }
             return able;
         }
-
-        readonly string[] fireRefused = { "", "", "", "" }; readonly float[] fireRefusedAt = { -99f, -99f, -99f, -99f };
-        public const float FireRefusalS = 3f;
-        /// <summary>The plate's two words for agent k's refused squad fire order, for FireRefusalS after the order ("" none).</summary>
-        public string FireRefusalWord(int k)
-        {
-            if (k < 0 || k > 3 || fireRefused[k].Length == 0 || Time.unscaledTime - fireRefusedAt[k] > FireRefusalS) return "";
-            var c = fireRefused[k]; return Text?.DoneWord("fire." + c, null) ?? c.Replace('-', ' ');
-        }
-        /// <summary>The proof reads it: agent k's last refusal code ("" none) and how long ago.</summary>
-        public (string code, float ago) FireRefusalOf(int k) => (fireRefused[k], Time.unscaledTime - fireRefusedAt[k]);
 
         /// <summary>The faces for the fire pill: who a right hold on `t` would fire with now (FireQuery per selected agent; asked once per target,
         /// selection and second, never every frame: the walk check is a grid search).</summary>
@@ -589,7 +579,7 @@ namespace Suborned.Play
         // ---------------------------------------------------------------- third person (the hold preset)
 
         /// <summary>Third person in the hold preset: a right tap opens the ring; a right hold (the setting "Right hold fires", the default) fills
-        /// and, let go when full, gives the driven agent a lasting fire order (as the map's); in a fight a right click on a hostile focuses at once;
+        /// and, let go when full, gives the driven agent and the squad a lasting fire order (as the map's); in a fight a right click on a hostile focuses at once;
         /// a left hold acts on the thing under the cursor (or the focus), committing on release; a left drag orbits. True when it took the pointer.</summary>
         bool TpHold(UnityEngine.InputSystem.Mouse mouse, Vector2 p, bool onHud)
         {
@@ -603,7 +593,7 @@ namespace Suborned.Play
                     RightClickUsed = true; rp = new Press { On = true, At = p, T0 = now, T = TargetAt(p) };
                     if (lp.On && Charge is { Button: 0, Done: false }) { CancelHold(); rp.Used = true; return true; } // a right click cancels a left hold
                     var ft = rp.T != null && rp.T.Kind != "op" ? rp.T : TpFireFocus() ?? TpHostileAhead(); // item 7: the cursor off a target, the focus the pill names
-                    if (FocusTarget(ft, out var fid, out var fforce) && Driving && dAgent >= 0) { rp.Used = true; FocusFire(ft, fid, fforce, p, new List<int> { dAgent }); }
+                    if (FocusTarget(ft, out var fid, out var fforce) && Driving && dAgent >= 0) { rp.Used = true; FocusFire(ft, fid, fforce, p, null); }
                     return true; // under 0.2 s it is a tap (the ring); the charge begins at 0.2 s
                 }
                 if (rp.On && mouse.rightButton.isPressed && Charge?.Button != 1 && !Aiming && !rp.Used && !rp.Cancelled && now - rp.T0 >= RightTapS)
@@ -632,7 +622,7 @@ namespace Suborned.Play
                 var t = TargetAt(p); if (t == null || t.Kind == "op") t = DriveFocus;
                 var (plan, way) = MainOf(t, p);
                 lp = new Press { On = true, At = p, T0 = now, T = t };
-                if (way >= 0) Charge = new HoldCharge { T = t, Button = 0, Start = now, Plan = plan, Way = way, Run = shift, Verb = plan.Row(way).I.Label, Doers = new List<int> { dAgent } };
+                if (way >= 0) Charge = new HoldCharge { T = t, Button = 0, Start = now, Plan = plan, Way = way, Run = shift, Verb = plan.Row(way).I.Label, Doers = DoersOf(plan, way) };
                 return true;
             }
             if (lp.On)
@@ -651,16 +641,16 @@ namespace Suborned.Play
             return false;
         }
 
-        /// <summary>Third person, a right hold let go when full: the driven agent's lasting fire order (the engine never walks a driven agent in:
+        /// <summary>Third person, a right hold let go when full: the lasting fire order of the driven agent and the squad (the engine never walks a driven agent in:
         /// out of reach, its order holds until it is in range).</summary>
         void TpFireLock(HoldCharge c, Vector2 p)
         {
             if (!Driving || dAgent < 0) return;
-            if (!Armed(dAgent)) { PopKey("unarmed", null, views.DrivePos, Feedback.Info, "Unarmed."); return; }
-            var o = new Order { Op = Op.Name((OpId)dAgent), Do = "fire", Target = c.FireId, Force = c.Force };
-            holdCommits = true; try { Fight(new List<Order> { o }, "right", p, TargetWorld(c.T), $"fire at {Name(c.FireId)}"); } finally { holdCommits = false; }
-            LocksDrop(new[] { dAgent }); FireLocks.Add(new FireSession { Agents = new List<int> { dAgent }, Id = c.FireId, Name = FireName(c.FireId), Force = c.Force, Start = Time.unscaledTime });
-            FireHoldsBegun++; FireLogAdd($"tp-fire\t{dAgent}\t{c.FireId}");
+            var who = Shooters(false, c.FireId, c.Force, mark: true); if (who.Count == 0) { NobodyFires(p, c.T); return; } // brief 085: the squad fires with the agent in hand, each as on the map (holstered draws, far walks in, can't says why)
+            var list = new List<Order>(); foreach (var k in who) list.Add(new Order { Op = Op.Name((OpId)k), Do = "fire", Target = c.FireId, Force = c.Force });
+            holdCommits = true; try { Fight(list, "right", p, TargetWorld(c.T), $"fire at {Name(c.FireId)}"); } finally { holdCommits = false; }
+            LocksDrop(who); FireLocks.Add(new FireSession { Agents = who, Id = c.FireId, Name = FireName(c.FireId), Force = c.Force, Start = Time.unscaledTime });
+            FireHoldsBegun++; FireLogAdd($"tp-fire\t{string.Join(",", who)}\t{c.FireId}");
         }
 
         /// <summary>Third person: the focus when the pill offers fire on it (security, a hostile, a combatant; never a passer-by the pill did not
