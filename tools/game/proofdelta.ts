@@ -80,7 +80,9 @@ export type Retry = { build: string; ran: string[] };
 export type StepPass = { build: string; commit: string; snapshot: string };
 /** A step that ran and failed, on what tree: it does not run again until something it reads changes (or --full, --only), and the screen says it is still open. */
 export type StepFail = StepPass & { problem: string };
-export type Ledger = { schema: 'suborned.proofledger/1'; sections: Record<string, Pass>; retry: Record<string, Retry>; steps: Record<string, StepPass>; stepFails: Record<string, StepFail>; snapshots: Record<string, Record<string, string>> };
+/** A proof set's pictures judged clean by the budget step, on which pass of their section (its snapshot): brief 086, a section's pass says nothing of its pictures, which the budget judges later or never (a run stopped before it). */
+export type Judged = { build: string; commit: string; snapshot: string };
+export type Ledger = { schema: 'suborned.proofledger/1'; pictures?: Record<string, Judged>; sections: Record<string, Pass>; retry: Record<string, Retry>; steps: Record<string, StepPass>; stepFails: Record<string, StepFail>; snapshots: Record<string, Record<string, string>> };
 export const emptyLedger = (): Ledger => ({ schema: 'suborned.proofledger/1', sections: {}, retry: {}, steps: {}, stepFails: {}, snapshots: {} });
 export function readLedger(file: string): Ledger {
   try { const j = JSON.parse(readFileSync(file, 'utf8')); return j.schema === 'suborned.proofledger/1' ? { ...emptyLedger(), ...j } : emptyLedger(); } catch { return emptyLedger(); }
@@ -88,6 +90,14 @@ export function readLedger(file: string): Ledger {
 export function writeLedger(file: string, l: Ledger): void {
   const used = new Set([...Object.values(l.sections), ...Object.values(l.steps), ...Object.values(l.stepFails ?? {})].map(p => p.snapshot));
   writeFileSync(file, JSON.stringify({ ...l, snapshots: Object.fromEntries(Object.entries(l.snapshots).filter(([id]) => used.has(id))) }) + '\n');
+}
+/** Were this set's pictures judged clean on its section's current pass? Only then may "unchanged since" stand for them; else the pictures on disk are judged now, whatever the proof ran. */
+export const picturesJudged = (l: Ledger, set: string, section: string): boolean => { const j = l.pictures?.[set], p = l.sections[section]; return !!j && !!p && j.snapshot === p.snapshot; };
+/** What the budget step said of each set it judged: clean goes on the ledger against its section's pass, anything else takes it off. */
+export function recordPictures(l: Ledger, judged: { name: string; section: string; ok: boolean }[]): Ledger {
+  const pictures = { ...l.pictures };
+  for (const j of judged) { const p = l.sections[j.section]; if (j.ok && p) pictures[j.name] = { build: p.build, commit: p.commit, snapshot: p.snapshot }; else delete pictures[j.name]; }
+  return { ...l, pictures };
 }
 /** The words a gate line and the screen use for a skip. Never "passed": it was not run. */
 export const skipText = (p: Pass) => `not run, unchanged since build ${p.build} (${p.commit})`;

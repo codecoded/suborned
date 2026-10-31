@@ -5,6 +5,7 @@ import { existsSync, mkdirSync, mkdtempSync, readFileSync, writeFileSync, utimes
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { onlyShots, timeLines, appCurrent, frameLines, gateWords, nextCommand, resumeFrom, sessionWords, type LastRun, type ProofGate, installRunner, judgeProofSets, judgeShots, logProblems, matchResult, onlyRows, pick, playerCommand, playerHasTpLong, rotateShots, runSteps, screen, STEPS, type Ctx, type Report, type Step } from './batch';
+import { emptyLedger, picturesJudged, recordPictures } from './proofdelta';
 import { resolveShots, type Resolver } from './shots';
 
 const ctx = (over: Partial<Ctx> = {}): Ctx => ({ dry: false, mode: 'batchmode', shotsFile: '', shotsOut: '', facts: {}, say: () => {}, ...over });
@@ -237,19 +238,19 @@ describe('the proof sets in the budget step', () => {
     const seen: string[][] = [];
     const rows = judgeProofSets({ frames: { r059: { ok: true } } }, '/p/proof', '/o/stage', (dir, name, stage) => { seen.push([dir, name, stage]); return ok(name); });
     expect(seen).toEqual([['/p/proof', 'r059', '/o/stage/r059']]);
-    expect(rows).toMatchObject([{ name: 'r059', ok: true, judged: 13 }, older('r067'), older('r123')]);
+    expect(rows).toMatchObject([{ name: 'r059', ok: true, judged: 13 }, older('r067'), older('r123'), older('r083')]);
   });
   test('a proof with both sections has both judged, r059 then r067, each under its own stage folder', () => {
     const seen: string[][] = [];
     const rows = judgeProofSets({ frames: { r059: { ok: true }, r067: { ok: true } } }, '/p/proof', '/o/stage', (dir, name, stage) => { seen.push([dir, name, stage]); return ok(name); });
     expect(seen).toEqual([['/p/proof', 'r059', '/o/stage/r059'], ['/p/proof', 'r067', '/o/stage/r067']]);
-    expect(rows).toMatchObject([{ name: 'r059', ok: true, judged: 13 }, { name: 'r067', ok: true, judged: 13 }, older('r123')]);
+    expect(rows).toMatchObject([{ name: 'r059', ok: true, judged: 13 }, { name: 'r067', ok: true, judged: 13 }, older('r123'), older('r083')]);
   });
   test('a proof from a build with neither section is an older build: said, not judged, not failed', () => {
     let ran = false;
     const rows = judgeProofSets({ frames: { r118: { ok: true } } }, '/p/proof', '/o/stage', (_d, name) => { ran = true; return ok(name); });
     expect(ran).toBe(false);
-    expect(rows).toMatchObject([older('r059'), older('r067'), older('r123')]);
+    expect(rows).toMatchObject([older('r059'), older('r067'), older('r123'), older('r083')]);
     expect(judgeProofSets(undefined, '/p', '/o', () => ok('x')).every(r => r.ok)).toBe(true);
   });
   test('a set the judge fails fails its row with its problems, and only its row', () => {
@@ -260,6 +261,7 @@ describe('the proof sets in the budget step', () => {
   });
 });
 
+const cleanLedger = (() => { const p = { build: '0.2.146', commit: 'b00cace3', at: '', snapshot: 's', map: 'm' }; return recordPictures({ ...emptyLedger(), sections: { r059: p, r067: p, r123: p } }, ['r059', 'r067', 'r123'].map(n => ({ name: n, section: n, ok: true }))); })();
 describe('one player launch per step (brief 042, Splice 2026-10-26)', () => {
   test('the player opens windowed at the step\'s size from its first frame; --behind goes through open -g and waits', () => {
     const d = playerCommand(['-late', 'f.json', 'out', '-novsync'], [1920, 1080], false, '/a/G.app');
@@ -312,11 +314,23 @@ describe('delta proofs in the batch (brief 078)', () => {
     expect(resumeFrom(last, 's1', '0.2.147')).toBeUndefined();
     expect(resumeFrom(undefined, 's1', '0.2.146')).toBeUndefined();
   });
-  test('the budget step does not judge the old pictures of a proof set the delta did not run', () => {
+  test('the budget step does not judge again the pictures of a proof set the delta did not run, once they were judged clean on that pass', () => {
     let ran = false;
-    const rows = judgeProofSets({ frames: { r059: null, r067: null, r123: null } }, '/p/proof', '/o/stage', (_d, name) => { ran = true; return { ok: false, detail: name, problems: ['stale'], judged: 1, pass: 0 }; }, { r059: 'not run, unchanged since build 0.2.146 (b00cace3)', r067: 'not run, unchanged since build 0.2.146 (b00cace3)', r123: 'not run, unchanged since build 0.2.146 (b00cace3)' });
+    const rows = judgeProofSets({ frames: { r059: null, r067: null, r123: null } }, '/p/proof', '/o/stage', (_d, name) => { ran = true; return { ok: false, detail: name, problems: ['stale'], judged: 1, pass: 0 }; }, { r059: 'not run, unchanged since build 0.2.146 (b00cace3)', r067: 'not run, unchanged since build 0.2.146 (b00cace3)', r123: 'not run, unchanged since build 0.2.146 (b00cace3)' }, cleanLedger);
     expect(ran).toBe(false); expect(rows.every(r => r.ok && r.judged === 0)).toBe(true);
     expect(rows[0]!.detail).toBe('proof set r059: not run, unchanged since build 0.2.146 (b00cace3)');
+  });
+  test('failing example (0.2.193 to 0.2.195): a section passed on a run that stopped before the budget has its pictures judged, red if they are red, and only a clean judgement stands after', () => {
+    const skips = { r067: 'not run, unchanged since build 0.2.192 (5cdf8eee+)' }, pass = { build: '0.2.192', commit: '5cdf8eee+', at: '', snapshot: 's1', map: 'm' }, l = { ...emptyLedger(), sections: { r067: pass } };
+    const red = () => ({ ok: false, detail: 'r067', problems: ['over'], judged: 32, pass: 31 });
+    const rows = judgeProofSets({ frames: { r067: null } }, '/p', '/o', red, skips, l), r067 = rows.find(r => r.name === 'r067')!;
+    expect(r067).toMatchObject({ ok: false, problems: ['over'], section: 'r067' }); expect(picturesJudged(l, 'r067', 'r067')).toBe(false);
+    const after = recordPictures(l, [{ name: 'r067', section: 'r067', ok: false }]); expect(after.pictures).toEqual({});
+    const clean = recordPictures(l, [{ name: 'r067', section: 'r067', ok: true }]); expect(picturesJudged(clean, 'r067', 'r067')).toBe(true);
+    expect(judgeProofSets({ frames: { r067: null } }, '/p', '/o', red, skips, clean).find(r => r.name === 'r067')).toMatchObject({ ok: true, judged: 0, detail: 'proof set r067: not run, unchanged since build 0.2.192 (5cdf8eee+)' });
+    // the section passes again on another tree: the old judgement no longer stands, and a red judgement takes off a clean one
+    expect(picturesJudged({ ...clean, sections: { r067: { ...pass, snapshot: 's2' } } }, 'r067', 'r067')).toBe(false);
+    expect(picturesJudged(recordPictures(clean, [{ name: 'r067', section: 'r067', ok: false }]), 'r067', 'r067')).toBe(false);
   });
   test('failing example: a proof set whose section is null with no skip is judged', () => {
     let ran = 0;

@@ -4,8 +4,8 @@
  "build": "0.2.191 (c047, cbce637a+), committed at c06ae51c",
  "status": "NOT MEASURED: the Air's session is locked; no frame was timed",
  "air": {
-  "copy": "~/Downloads/suborned-air-0191/The Suborned.app",
-  "kit": "~/Downloads/suborned-air-0191/kit (same files as briefs/086/air-0191/kit)",
+  "copy": "~/Downloads/suborned-air-0195/The Suborned.app",
+  "kit": "~/Downloads/suborned-air-0195/kit (same files as briefs/086/air-0191/kit)",
   "macmon": { "path": "~/.local/suborned-air/macmon/macmon", "version": "0.10.0", "sha256": "0ccff60b7bf67bcb9e09cc8f804656a1cafa7eeae7297ee83d10e460ead7d43d", "shaSource": "GitHub release asset digest, checked on the Studio and on the Air" },
   "preflight": { "at": "2026-10-31 21:34 to 22:08 +07", "power": "AC, 100 %, charged", "lowPowerMode": 0, "thermalState": 0, "load1m": "2.0 to 4.1 on 10 cores", "cpuC": "36 to 43 idle; one 59 C sample at 22:03 with cpu 9.6 W, cause not traced", "busy": "spotlightknowledged about 100 %, Storage.appex up to 92 %, signpost_reporter and duetexpertd in bursts" },
   "displayMode": "3840x2410 (the player's log); panel 2880x1864. So the shipped full screen is RenderCap 0.75: 3D about 2880x1808, HUD native",

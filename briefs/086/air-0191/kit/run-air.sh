@@ -1,8 +1,8 @@
 #!/bin/zsh
-# The Air sitting of brief 086 (Redline's plan §1.3), build 0.2.191 in ~/Downloads/suborned-air-0191. Started over ssh, under caffeinate; stops itself. Closes and kills nothing it did not start.
+# The Air sitting of brief 086 (Redline's plan §1.3): the build beside this kit (ROOT, the kit's parent: ~/Downloads/suborned-air-0195 holds 0.2.195). Started over ssh, under caffeinate; stops itself. Closes and kills nothing it did not start.
 # Base: briefs/064/air-0122/soak-air.sh. Its Quit-this-app steps are gone: nothing of Sky's is touched. ./run-air.sh [--check]: --check runs the gate and one short launch only.
 set -u
-HERE=${0:A:h}; ROOT=$HOME/Downloads/suborned-air-0191; APP="$ROOT/The Suborned.app"; EXE="$APP/Contents/MacOS/The Suborned"; MM=$HOME/.local/suborned-air/macmon/macmon
+HERE=${0:A:h}; ROOT=${HERE:h}; APP="$ROOT/The Suborned.app"; EXE="$APP/Contents/MacOS/The Suborned"; MM=$HOME/.local/suborned-air/macmon/macmon
 OUT=$ROOT/run-$(date +%Y%m%d-%H%M); mkdir -p $OUT; LOG=$OUT/machine.log; PRESETS="$ROOT/Suborned Camera Presets"; mkdir -p "$PRESETS"
 for z in 8 10 14 18.5; do print -r -- "{\"name\":\"z${z%.*}\",\"overhead\":{\"zoom\":$z}}" > "$PRESETS/z${z%.*}.json"; done
 print "$OUT" > $ROOT/last-run.txt
@@ -42,7 +42,7 @@ launch() { local name=$1 rows=$2 preset=$3 scale=$4 cap=$5; local dir=$OUT/$name
     if [[ -n $rows && -f $dir/tplong.json ]]; then local n=$(grep -cE '"name": *"' $dir/tplong.json); (( n > seen )) && { seen=$n; print -r -- "row-done $name $n unix $now" >> $LOG; }
       grep -qE "\"name\": *\"$last\"" $dir/tplong.json && { sleep 1; kill $GAMEPID; print -r -- "$name: all rows written, the player's picture extras cut, pid $GAMEPID stopped" >> $LOG; sleep 2; break; }
     elif [[ -n $rows ]] && (( now - t0 > 420 )); then kill $GAMEPID; print "STOP: $name: no row in 420 s (a dialog? see player.log)" | tee -a $LOG; exit 5; fi
-    (( now - t0 > cap )) && { kill $GAMEPID; print -r -- "$name: over its $cap s, stopped" | tee -a $LOG; break; }
+    (( now - t0 > cap + 300 )) && { kill $GAMEPID; print -r -- "$name: over its $cap s + 300 s of load, stopped" | tee -a $LOG; break; }
   done; while kill -0 $GAMEPID 2>/dev/null; do sleep 1; done; GAMEPID=""; stamp "$name-end"; }
 if [[ ${1:-} == --check ]]; then launch check cold-z10 10 100 560; exit 0; fi
 launch cold-z10 cold-z10 10 100 240

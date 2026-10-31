@@ -4,13 +4,13 @@
 
 ## What happened
 - Pre-flight passed: AC, charged, Low Power Mode off, thermal state 0, load 2 to 4 on 10 cores. Spotlight's indexer holds one core; `preflight/` has the logs.
-- macmon 0.10.0 is installed in `~/.local/suborned-air/macmon`, its sha256 matching the release's digest. The build is at `~/Downloads/suborned-air-0191/`.
+- macmon 0.10.0 is installed in `~/.local/suborned-air/macmon`, its sha256 matching the release's digest. The build is at `~/Downloads/suborned-air-0195/`.
 - Two launches (21:53 for 2:31, 21:58 for 7:01): the process started, the log stopped after scene load, the GPU sat at 338 MHz and 0.2 W, and no row was written. I stopped each by its PID.
 - `CGSSessionScreenIsLocked` is true, locked since 19:40. The lock is the likely cause, not a proven one: only an unlocked launch settles it. I didn't try to get past it or change any setting.
 
 ## To run it
-Sky unlocks the Air and keeps it from locking for about 35 minutes, then:
-`ssh sky@skys-macbook-air-1 'cd ~/Downloads/suborned-air-0191; nohup caffeinate -dims kit/run-air.sh > run.out 2>&1 < /dev/null &'`
+Sky unlocks the Air and keeps it from locking for about 45 minutes, then:
+`ssh sky@skys-macbook-air-1 'cd ~/Downloads/suborned-air-0195; nohup caffeinate -dims kit/run-air.sh > run.out 2>&1 < /dev/null &'`
 Then pull the newest `run-*` folder and run `python3 -I kit/collect.py <folder> results.json`.
 
 | launch | rows | zoom, size |
@@ -23,7 +23,7 @@ Then pull the newest `run-*` folder and run `python3 -I kit/collect.py <folder> 
 | shipped | `-perf064 -capture-native`: the real full screen, Redline's cone scene, not the opening | as it comes |
 | frames | `-proofOnly frames`: SSAO off, SMAA off, crowd shadows off, capsules, follow spots | 1080 |
 
-Each launch's first-row wait is untimed on an unlocked Air, so the 30-minute aim isn't proven; 32 to 35 is my estimate.
+Each launch's first-row wait is untimed on an unlocked Air, so this is an estimate: 38 to 45 minutes on 0.2.195 with the ceiling, old-far and FSR launches, over the 30-minute aim.
 
 ## What Redline should correct or note
 1. **The "zoom 14" rows were never zoom 14.** Player 0.2.191 doesn't read a row's `zoom` or `yaw` (`TpLongRun.cs`), so every play row draws the camera's own zoom: 10 since Oct 30. The 1.26 M at play in the plan's §1.1 is zoom 10. The picture bears this out.

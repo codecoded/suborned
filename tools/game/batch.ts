@@ -40,7 +40,7 @@ import { build as buildEngine, engineAt } from '../missions/check/engine';
 import { DEFAULT_FILE, ROOT, expectedFiles, fileResolver, pngFileSize, resolveShots, type ResolvedFile } from './shots';
 import { judgeProofBudget, loadProofSet, type ProofBudget } from './proofset';
 import { walkFileState } from './walkfile';
-import { changedPaths, gateFile, ledgerFile, loadMap, planLines, planProof, readLedger, recordSteps, shotsGate, snapshot, stepGate, writeLedger, writePlan, planFile, type Plan, type Snapshot } from './proofdelta';
+import { changedPaths, gateFile, ledgerFile, loadMap, picturesJudged, planLines, planProof, readLedger, recordPictures, recordSteps, shotsGate, snapshot, stepGate, writeLedger, writePlan, planFile, emptyLedger, type Ledger, type Plan, type Snapshot } from './proofdelta';
 
 const UNITY = join(ROOT, 'unity'), OUT = process.env.SUBORNED_BATCH_OUT ? resolve(process.env.SUBORNED_BATCH_OUT) : join(ROOT, 'out/batch'), /* SUBORNED_BATCH_OUT: the tests' scratch folder */ APP = join(ROOT, 'out/build/play/The Suborned.app'), PROOF = join(ROOT, 'out/build/play/proof/proof.json');
 const BUILD_DIR = dirname(dirname(PROOF));
@@ -329,7 +329,7 @@ export const STEPS: Step[] = [
   },
   {
     id: 'budget', title: 'HUD budget + layout audit',
-    when: c => { if (!c.tree || !c.facts.shotsSkipped) return { run: true, why: c.tree ? 'the shots ran' : 'always' }; const ran = (readJson(gateFile(BUILD_DIR)) as ProofGate | undefined)?.ran ?? [], sets = Object.values(loadProofSet().sets).map(s => s.section).filter(s => ran.includes(s)); return sets.length ? { run: true, why: `the proof took ${sets.join(', ')}` } : { run: false, why: 'no shots or proof pictures were taken' }; },
+    when: c => { if (!c.tree || !c.facts.shotsSkipped) return { run: true, why: c.tree ? 'the shots ran' : 'always' }; const ran = (readJson(gateFile(BUILD_DIR)) as ProofGate | undefined)?.ran ?? [], sets = Object.values(loadProofSet().sets).map(s => s.section).filter(s => ran.includes(s)); const l = readLedger(ledgerFile(BUILD_DIR)), owed = Object.entries(loadProofSet().sets).filter(([n, x]) => !picturesJudged(l, n, x.section)).map(([n]) => n); return sets.length || owed.length ? { run: true, why: sets.length ? `the proof took ${sets.join(', ')}` : `never judged on their pass: ${owed.join(', ')}` } : { run: false, why: 'no shots or proof pictures were taken' }; },
     plan: c => [`bun tools/hud-budget/cli.ts ${rel(c.shotsOut)} --skip-unmasked`, 'the layout audit recorded with each HUD shot (HudToolkit.AuditText)', `the proof's pictures of each set in tools/game/proofset.json whose section the proof has (${Object.keys(loadProofSet().sets).join(', ')}), from ${rel(dirname(PROOF))} at 1920x1080: bun tools/game/proofset.ts budget`],
     async run(c) {
       // `--only budget` / `--from budget` re-judge the last shots without retaking them (Splice, 2026-10-26): the report the shots step left in the shots folder
@@ -338,7 +338,7 @@ export const STEPS: Step[] = [
       const r = c.facts.shotsSkipped ? { code: 0, out: '' } : await sh('budget', ['bun', 'tools/hud-budget/cli.ts', c.shotsOut, '--skip-unmasked']); // a delta with no shots judges only the proof's pictures
       const lines = r.out.split('\n'), pass = lines.filter(l => l.startsWith('PASS')).length, bad = lines.filter(l => l.startsWith('FAIL'));
       const audited = (c.facts.shotsSkipped ? [] : rep?.shots ?? []).filter(s => s.audit), dirty = audited.filter(s => !s.audit!.clean);
-      const sets = judgeProofSets(readJson(PROOF) ?? c.facts.proof, undefined, undefined, undefined, (readJson(gateFile(BUILD_DIR)) as ProofGate | undefined)?.skips);
+      const sets = judgeProofSets(readJson(PROOF) ?? c.facts.proof, undefined, undefined, undefined, (readJson(gateFile(BUILD_DIR)) as ProofGate | undefined)?.skips, readLedger(ledgerFile(BUILD_DIR))); writeLedger(ledgerFile(BUILD_DIR), recordPictures(readLedger(ledgerFile(BUILD_DIR)), sets.filter(x => x.judged !== undefined && x.section).map(x => ({ name: x.name, section: x.section!, ok: x.ok })))); if (!c.facts.shotsSkipped && !bad.length && !dirty.length) c.facts.shotsJudged = true; // brief 086: "unchanged since" counts only a run that judged them
       const problems = [...bad.map(l => l.slice(0, 160)), ...dirty.flatMap(s => s.audit!.issues.slice(0, 3).map(i => `audit ${s.name}: ${i}`)), ...sets.flatMap(x => x.problems.map(p => `${x.name}: ${p}`))];
       const proofText = sets.map(x => x.detail).join('; ');
       return problems.length ? fail(`budget ${pass} pass, ${bad.length} over; audit ${audited.length - dirty.length}/${audited.length} clean${proofText ? `; ${proofText}` : ''}\n${problems.slice(0, 10).join('\n')}`) : { ok: r.code === 0, detail: `budget ${pass} shots within budget; layout audit ${audited.length}/${audited.length} clean${proofText ? `; ${proofText}` : ''}` };
@@ -452,12 +452,12 @@ const readJson = (f: string): any => { try { return JSON.parse(readFileSync(f, '
 
 /** The proof sets (tools/game/proofset.json) the proof has a section for, judged at 1x by the HUD budget; a set whose section the proof lacks is an older build's, said and not failed.
  *  `proof` is proof.json; `dir` the folder its pictures are in. */
-export function judgeProofSets(proof: any, dir = dirname(PROOF), stage = join(OUT, 'proofset'), judge: typeof judgeProofBudget = judgeProofBudget, skips: Record<string, string> = {}): (ProofBudget & { name: string })[] {
+export function judgeProofSets(proof: any, dir = dirname(PROOF), stage = join(OUT, 'proofset'), judge: typeof judgeProofBudget = judgeProofBudget, skips: Record<string, string> = {}, ledger: Ledger = emptyLedger()): (ProofBudget & { name: string; section?: string })[] {
   return Object.entries(loadProofSet().sets).map(([name, s]) => proof?.frames?.[s.section] === undefined
-    ? { name, ok: true, detail: `proof set ${name}: not in this proof (an older build)`, problems: [], judged: 0, pass: 0 }
-    : proof.frames[s.section] === null && skips[s.section] // a delta proof did not run it: its pictures in the folder are an earlier build's, so they are not judged as this one's
-      ? { name, ok: true, detail: `proof set ${name}: ${skips[s.section]}`, problems: [], judged: 0, pass: 0 }
-      : { name, ...judge(dir, name, join(stage, name)) });
+    ? { name, ok: true, detail: `proof set ${name}: not in this proof (an older build)`, problems: [], judged: 0, pass: 0 } as ProofBudget & { name: string }
+    : proof.frames[s.section] === null && skips[s.section] && picturesJudged(ledger, name, s.section) // a delta proof did not run it and its pictures were judged clean on the pass it stands on (brief 086: a pass alone is not that)
+      ? { name, ok: true, detail: `proof set ${name}: ${skips[s.section]}`, problems: [], judged: 0, pass: 0 } as ProofBudget & { name: string }
+      : { name, section: s.section, ...judge(dir, name, join(stage, name)) });
 }
 
 // ---------------------------------------------------------------- delta proofs and going on after a failure (brief 078)
@@ -741,7 +741,7 @@ if (import.meta.main) {
   const failed = rows.find(r => r.status === 'FAILED'), gate = c.facts.gate as ProofGate | undefined;
   mkdirSync(OUT, { recursive: true });
   // what passed goes on the ledger, against the tree the build read; before the build there is no such tree and nothing is recorded
-  const snapOfBuild = c.facts.snap as Snapshot | undefined, passed = rows.filter(r => r.status === 'ok').map(r => r.id).filter(id => ['sim', 'words', 'kit', 'world', 'unity-world', 'unity-match', 'shots', 'late-fight', 'tp-long'].includes(id));
+  const snapOfBuild = c.facts.snap as Snapshot | undefined, passed = rows.filter(r => r.status === 'ok').map(r => r.id).filter(id => ['sim', 'words', 'kit', 'world', 'unity-world', 'unity-match', 'late-fight', 'tp-long'].includes(id) || (id === 'shots' && c.facts.shotsJudged)); // shots: only once the budget judged them
   if (c.facts.scenariosRan && rows.find(r => r.id === 'game-check')?.status === 'ok') passed.push('scenarios');
   const openFail = failed && ['late-fight', 'tp-long'].includes(failed.id) ? { step: failed.id, problem: failed.detail.split('\n').slice(1, 2).join('').slice(0, 160) } : undefined; // the whole-game measures: a finding stays open on the screen, it does not stop every delta after it until the world changes
   if (snapOfBuild && (passed.length || openFail)) { const b = readJson(join(BUILD_DIR, 'build.json')); writeLedger(ledgerFile(BUILD_DIR), recordSteps(readLedger(ledgerFile(BUILD_DIR)), snapOfBuild, passed, { version: b?.version ?? '?', commit: `${b?.sha ?? '?'}${b?.dirty ? '+' : ''}` }, openFail)); }
