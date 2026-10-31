@@ -279,6 +279,11 @@ describe('the snapshot', () => {
 });
 
 describe('the batch\'s steps (delta only)', () => {
+  test('the rules\' source runs the engine\'s steps and every shot, never the kit, world, scene or tp-long; no section by itself, the copy on the full row does that', () => {
+    const f = 'contracts/rules/rulebook.json', base = { ...BASE, [f]: 'a' }, go = (step: string) => stepGate(m, snap({ ...base, [f]: 'b' }), recordSteps(emptyLedger(), snap(base), ['sim', 'kit', 'world', 'unity-world', 'unity-match', 'scenarios', 'late-fight', 'tp-long'], BUILD), step).run;
+    expect(['sim', 'unity-match', 'scenarios', 'late-fight'].filter(go)).toEqual(['sim', 'unity-match', 'scenarios', 'late-fight']); expect(['kit', 'world', 'unity-world', 'tp-long'].filter(go)).toEqual([]);
+    expect(classify(m, f)?.shots).toBe('all'); expect(classify(m, 'unity/Assets/StreamingAssets/sim/rulebook.json')?.run).toBe('full');
+  });
   const seed = (files: Record<string, string>, steps = ['sim', 'unity-match', 'scenarios', 'late-fight', 'shots']) => recordSteps(emptyLedger(), snap(files), steps, BUILD);
   test('a HUD change skips the engine steps and the frame-time steps; they say why', () => {
     for (const step of ['sim', 'unity-match', 'scenarios', 'late-fight']) expect(stepGate(m, snap({ ...BASE, [HOLD]: 'b' }), seed(BASE), step)).toEqual({ run: false, why: 'nothing it reads changed since build 0.2.146' });

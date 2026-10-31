@@ -3,7 +3,7 @@
 import { describe, expect, test } from 'bun:test';
 import { existsSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { isPipRow, ALTLINE_MAX, analyse, BAR_MAX, bands, barFromParts, BRIEFING_READING, CHIP_MAX, chipsFromParts, footprint, fromParts, glyphWords, isClock, LIMIT, LOCK_MAX, MARKER_MAX, maskOf, PILL_MAX, POP_MAX, popsFromParts, recognise, rectMask, stack, type Element, type Manifest, type Rect, type Run, type State } from './budget';
+import { isPipRow, ALTLINE_MAX, analyse, BAR_MAX, bands, barFromParts, BRIEFING_READING, CHIP_MAX, chipsFromParts, footprint, fromParts, glyphWords, isClock, LIMIT, LOCK_MAX, MARKER_MAX, maskOf, PILL_MAX, POP_MAX, popsFromParts, SPEECH_MAX, speechWords, recognise, rectMask, stack, type Element, type Manifest, type Rect, type Run, type State } from './budget';
 import { decodePng, encodePng, type Image } from './png';
 
 const fx = (f: string) => join(import.meta.dir, 'fixtures', f);
@@ -330,5 +330,23 @@ describe('a row of health pips is not running text', () => {
     expect(isPipRow([c(0), c(8, 9), c(19), c(27)], 1)).toBe(false);
     expect(isPipRow([c(0), c(8), c(19), c(27)], 1)).toBe(false);
     expect(isPipRow([0, 8, 16, 24].map(x => c(x, 6, 5, 8)), 1)).toBe(false);
+  });
+});
+
+describe('speech (GDD v0.35.0: bubbles at most 12 words; the name is a label)', () => {
+  const man = json<Manifest>('ground-123.manifest.json'), judge = (text: string) => { const elements = man.elements.map(e => (e.kind === 'speech' ? { ...e, text } : e)); return analyse(png('ground-123.png'), { state: 'rest', hud: png('ground-123.hud.png'), manifest: { ...man, elements } }).failures.join(); };
+  const twelve = 'one two three four five six seven eight nine ten eleven twelve';
+  test('the speaker\'s name is not a word, in both forms the manifest writes; a line with no name counts whole', () => {
+    expect(SPEECH_MAX.words).toBe(12);
+    expect(speechWords('Inez: Hush, and drink it before it cools.')).toBe(7); // the feed
+    expect(speechWords('Miss Nikolaou: Hush now.')).toBe(2);
+    expect(speechWords("Zhou You said money, and it's been a lean month. For what, exactly?")).toBe(12); // the conversation bubble, 2 text rows under the name's row
+    expect(speechWords('Car turning in. Orbit Walk, by the sound.')).toBe(8);
+    expect(speechWords('Hush, and drink it.')).toBe(4);
+  });
+  test('failing example: a thirteenth word fails with a name or without; twelve and a name pass', () => {
+    expect(judge(`Rival: ${twelve}`)).not.toContain('a speech line');
+    expect(judge(`Rival: ${twelve} thirteen`)).toContain('a speech line is longer than 2 lines or 12 words');
+    expect(judge(`${twelve} thirteen`)).toContain('a speech line is longer');
   });
 });

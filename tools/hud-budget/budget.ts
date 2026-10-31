@@ -50,7 +50,7 @@ export const WARN_REST = 10;
 export const HUD_ALPHA = 24, WORLD_DIFF = 10;
 /** A line of three or more words is running text; a block is two or more stacked lines of them. Alt allows fragments of up to ALT_WORDS words. */
 export const SENTENCE_WORDS = 3, SENTENCE_COMPS = 14, ALT_WORDS = 5;
-export const SPEECH_MAX = { lines: 2, words: 10 }, BEAT_MAX = { lines: 1, words: 6, onScreen: 2 }, LINE_MAX = { lines: 1, words: 6, onScreen: 1 }; // line = the objective or the Next Step hint: one imperative, at most six words, one at a time
+export const SPEECH_MAX = { lines: 2, words: 12 }, BEAT_MAX = { lines: 1, words: 6, onScreen: 2 }, LINE_MAX = { lines: 1, words: 6, onScreen: 1 }; // line = the objective or the Next Step hint: one imperative, at most six words, one at a time
 /** A refusal pop (GDD §10 "Refusals: one pop of an icon and ≤ 4 words"): one line, at most four words, never a sentence of running text. The host keeps a pool of three, so three at once is the most a frame can show. [S] */
 export const POP_MAX = { lines: 1, words: 4, onScreen: 3 };
 /** A window marker (the seal clock, GDD §10: "a lock and m:ss under the clock bar"): a clock reading, not a line. At most MARKER_MAX.words words of text; it never counts as a goal or hint line. */
@@ -266,6 +266,9 @@ export function textRuns(shot: Image, mask: Uint8Array): Run[] {
 
 const inside = (r: Run, e: Rect) => { const cx = r.x + r.w / 2, cy = r.y + r.h / 2; return cx >= e.x && cx <= e.x + e.w && cy >= e.y && cy <= e.y + e.h; };
 const wordsOf = (t: string) => t.trim().split(/\s+/).filter(Boolean).length;
+/** The words a speech element says: its speaker's name is a label, not a word of the line (GDD v0.35.0 §10, bubbles at most 12 words). The manifest joins name and line two ways: the feed `Inez: Hush.`, the
+ *  conversation bubble `Inez Hush.` (HudToolkit.Convo). The bare form is told by two capitalised words at the start, so a line that opens so counts one word short; that errs by one word only, never by a name. */
+export const speechWords = (t: string) => wordsOf(t.replace(/^\s*(?:\p{Lu}[\p{L}'’.-]*\s+)?\p{Lu}[\p{L}'’-]*:\s+/u, '').replace(/^\s*\p{Lu}[\p{L}'’-]*\s+(?=\p{Lu})/u, ''));
 /** The words of a hint or goal line as the budget counts them (brief 016): the line as shown, a keycap counting as a word (`Turn twice: Q Q` is four). `short` is text.json's form, with [ringed nouns] and <KeyTokens>; a key token is one word. text.test.ts counts with this, so the two cannot disagree. */
 export const shownWords = (short: string) => wordsOf(short.replace(/\{[a-z]+\}/g, 'them').replace(/<[A-Za-z]+>/g, 'K').replace(/[[\]]/g, ''));
 
@@ -313,7 +316,7 @@ export function analyse(shot: Image, o: Options): Report {
   const owner = new Map<Run, Element>(); // the manifest element a run lies in: a bubble's words are counted once, however many runs it breaks into (a pin's stem crossing it made two)
   const wordsIn = (b: Run[]) => { const seen = new Set<Element>(); let n = 0; for (const r of b) { const e = owner.get(r); if (e) { if (!seen.has(e)) { seen.add(e); n += r.words; } } else n += r.words; } return n; };
   for (const r of all) { const e = els.find(e => TEXT_KINDS.includes(e.kind) && inside(r, e)); if (e) { r.kind = e.kind as TextKind; } }
-  for (const e of els) { if (e.text && (e.kind === 'speech' || e.kind === 'beat' || e.kind === 'line' || e.kind === 'pop' || e.kind === 'marker')) for (const r of all) if (inside(r, e)) { r.words = wordsOf(e.text); owner.set(r, e); } }
+  for (const e of els) { if (e.text && (e.kind === 'speech' || e.kind === 'beat' || e.kind === 'line' || e.kind === 'pop' || e.kind === 'marker')) for (const r of all) if (inside(r, e)) { r.words = e.kind === 'speech' ? speechWords(e.text) : wordsOf(e.text); owner.set(r, e); } }
   for (const e of els) { const n = e.kind === 'chip' ? chipWords(e) : (e.kind === 'pill' || e.kind === 'lock' || e.kind === 'altline') && e.text ? glyphWords(e.text) : undefined; if (n !== undefined) for (const r of all) if (r.kind === e.kind && inside(r, e)) { r.words = n; owner.set(r, e); } } // the new kinds count as Glyph counts (glyph-budget §0)
   const art = els.filter(e => e.kind === 'image'), pillRuns = all.filter(r => r.kind === 'pill'), lockRuns = all.filter(r => r.kind === 'lock'), chipRuns = all.filter(r => r.kind === 'chip'), altRuns = all.filter(r => r.kind === 'altline'), hudRuns = all.filter(r => r.kind === 'hud' && !art.some(e => inside(r, e))), speech = all.filter(r => r.kind === 'speech'), beats = all.filter(r => r.kind === 'beat'), lineRuns = all.filter(r => r.kind === 'line'), popRuns = all.filter(r => r.kind === 'pop'), markerRuns = all.filter(r => r.kind === 'marker');
   const isSentence = (r: Run) => (o.state === 'alt' ? r.words > ALT_WORDS : r.words >= SENTENCE_WORDS && r.comps >= SENTENCE_COMPS);
@@ -332,7 +335,8 @@ export function analyse(shot: Image, o: Options): Report {
   // meeting a busy picture behind it (dark foliage under a bright plate edge breaks into letter-sized strokes), not a second line: it needs a quarter of
   // the strongest row's strokes, and at least three.
   const lines = (rs: Run[]) => rowsOf(rs).length;
-  if (speech.length && stack(speech).some(b => b.length > SPEECH_MAX.lines || wordsIn(b) > SPEECH_MAX.words)) failures.push(`a speech line is longer than ${SPEECH_MAX.lines} lines or ${SPEECH_MAX.words} words`);
+  const named = (b: Run[]) => b.some(r => { const t = owner.get(r)?.text; return !!t && speechWords(t) < wordsOf(t) && !/^\s*[^:]*:\s/.test(t); }) ? 1 : 0; // the conversation bubble sets its speaker's name on a row of its own: a label, not a line of speech
+  if (speech.length && stack(speech).some(b => b.length > SPEECH_MAX.lines + named(b) || wordsIn(b) > SPEECH_MAX.words)) failures.push(`a speech line is longer than ${SPEECH_MAX.lines} lines or ${SPEECH_MAX.words} words`);
   if (beats.length) {
     const bs = els.filter(e => e.kind === 'beat'); if (bs.length > BEAT_MAX.onScreen) failures.push(`${bs.length} story beats on screen (at most ${BEAT_MAX.onScreen})`);
     if (beats.some(r => r.words > BEAT_MAX.words)) failures.push(`a story beat is longer than ${BEAT_MAX.words} words`);

@@ -8,14 +8,14 @@ import { ROOT } from './shots';
 const file = () => JSON.parse(readFileSync(join(ROOT, 'tools/game/tplong.json'), 'utf8'));
 
 describe('tools/game/tplong.json', () => {
-  test('is Redline\'s three views at the Air\'s size, 1.5 s settle and a 6 s window', () => {
+  test('is Redline\'s three views at the bar\'s size (1920 x 1080), 1.5 s settle and a 6 s window', () => {
     const r = resolveTpLong(file(), '/o');
     expect(r.rows.map(x => x.name)).toEqual(['play-opening', 'tp-street', 'tp-worst']);
     expect(r.rows.map(x => x.kind)).toEqual(['play', 'third', 'third']);
-    for (const x of r.rows) expect(x).toMatchObject({ w: 2880, h: 1864, settleSeconds: 1.5, seconds: 6, clockRunning: true, hud: true, vsync: false });
+    for (const x of r.rows) expect(x).toMatchObject({ w: 1920, h: 1080, settleSeconds: 1.5, seconds: 6, clockRunning: true, hud: true, vsync: false });
     expect(r.rows[1]).toMatchObject({ agent: 'scout', walk: [0, -20], faceHeading: 180 });
     expect(r.rows[2]).toMatchObject({ walk: [-10, -25], faceHeading: 90 });
-    expect(r.rows[0]).toMatchObject({ yaw: 30, zoom: 14, faceHeading: -1 });
+    expect(r.rows[0]).toMatchObject({ yaw: 30, zoom: 10, faceHeading: -1 });
     expect(r.rows.reduce((a, x) => a + x.settleSeconds + x.seconds, 0)).toBeLessThan(40);
   });
   test('says which row is wrong and why', () => {
@@ -33,7 +33,7 @@ const resolved: TpLongResolvedFile = resolveTpLong(file(), '/o');
 const good = (name: string): TpLongReportRow => {
   const r = resolved.rows.find(x => x.name === name)!, third = r.kind === 'third';
   return {
-    name, status: 'ok', screen: [2880, 1864], faceHeading: third ? r.faceHeading : undefined, frames: { count: 800, meanMs: third ? 6 : 4.5, p99Ms: third ? 9 : 6, maxMs: 14 },
+    name, status: 'ok', screen: [1920, 1080], faceHeading: third ? r.faceHeading : undefined, frames: { count: 800, meanMs: third ? 6 : 4.5, p99Ms: third ? 9 : 6, maxMs: 14 },
     gpuMs: 4, mainMs: 5, renderMs: 2, counters: { triangles: third ? 5_000_000 : 1_700_000, setPass: third ? 200 : 105, shadowCasters: third ? 1000 : 600 }, drawn: { renderers: third ? 2400 : 370, beyond150: third ? 700 : 226 },
   };
 };
@@ -73,7 +73,7 @@ describe('the gates', () => {
 
 describe('a drive that was not the row\'s', () => {
   test('wrong size, wrong heading (wrapping at 360), too few frames, a row missing, a failed row, no report', () => {
-    const s = good('tp-street'); s.screen = [1920, 1080]; expect(judgeTpLong(resolved, report(good('play-opening'), s, good('tp-worst'))).problems[0]).toContain('not the Air\'s size');
+    const s = good('tp-street'); s.screen = [2880, 1864]; expect(judgeTpLong(resolved, report(good('play-opening'), s, good('tp-worst'))).problems[0]).toContain('not at the size it names');
     const h = good('tp-worst'); h.faceHeading = 100; expect(judgeTpLong(resolved, report(good('play-opening'), good('tp-street'), h)).problems[0]).toContain('faced 100 degrees, the row says 90');
     const n = good('tp-worst'); n.faceHeading = undefined; expect(judgeTpLong(resolved, report(good('play-opening'), good('tp-street'), n)).problems[0]).toContain('no heading reported');
     const w = good('tp-street'); w.faceHeading = 181.5; expect(judgeTpLong(resolved, report(good('play-opening'), w, good('tp-worst'))).ok).toBe(true);

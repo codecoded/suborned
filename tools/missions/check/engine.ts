@@ -34,6 +34,7 @@ export function engineHash(dir = ROOT): string {
   }
   return h.digest('hex');
 }
+const HUMAN_PROFILE = 'tools/qa/human-profile.json';
 const git = (...a: string[]) => { const r = Bun.spawnSync(['git', ...a], { cwd: ROOT, stdout: 'pipe', stderr: 'pipe' }); if (r.exitCode !== 0) { if (a[0] === 'show') return ''; throw new Error(`git ${a.join(' ')}: ${r.stderr}`); } return r.stdout.toString().trim(); };
 /** The files the engine reads, relative to its root (sim/Suborned.Sim/Debrief.cs Engine.Load): the rules and every sim/data file. */
 export function engineInputs(dir: string): string[] {
@@ -51,6 +52,8 @@ export function engineAt(rev = 'HEAD', inputs: 'commit' | 'tree' = 'commit'): En
     const tar = Bun.spawnSync(['sh', '-c', `git archive ${commit} sim/Suborned.Sim sim/cli sim/data contracts/rules contracts/people/people.rules.json | tar -x -C '${dir}'`], { cwd: ROOT, stdout: 'pipe', stderr: 'pipe' });
     if (tar.exitCode !== 0) throw new Error(`git archive ${commit}: ${tar.stderr}`);
   }
+  // the adaptive plans' person (sim/cli/Adaptive.cs reads it from the engine's root): a commit from before brief 080 has none and plays no plan. A folder pinned before this line gets it here.
+  if (!existsSync(join(dir, HUMAN_PROFILE)) && git('show', `${commit}:${HUMAN_PROFILE}`)) { mkdirSync(join(dir, 'tools/qa'), { recursive: true }); writeFileSync(join(dir, HUMAN_PROFILE), git('show', `${commit}:${HUMAN_PROFILE}`)); }
   // the mission's own data from the tree (the site and its people, made from mission.json); the rules stay the commit's
   // (a key the commit's own site lacks is a newer engine's, e.g. `cover`: it is left out, since the commit's engine rejects unknown keys)
   if (inputs === 'tree') for (const f of engineInputs(ROOT).filter(f => f.startsWith('sim/data/'))) {
