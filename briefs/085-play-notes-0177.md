@@ -27,4 +27,6 @@ Sky's further notes (2026-10-31): "one thing I really liked was the characters b
 
 Camera (Sky, 2026-10-31, with Desperados III and Shadow Tactics shots): "is this the right camera angle that ost games play from? Feels a little too high up". By eye the tilt is about theirs; the lens is the likely cause (ours orthographic, theirs perspective). Latch makes a still board of the same spots (today, lower tilt, closer zoom, perspective) after the build; nothing changes until Sky picks. Brief 086's switch points wait on it.
 
+Listening (Sky, 2026-11-01, on the Scout in the Listen shot: "Why is scout talking to the waitress?"): "I think when Scours go listen, they should sit down at cafe, or stand by a wall etc, not walk up to them". Motive sets the rule, Vantage the spots, Keel the sim, Latch and Forma the look.
+
 After this round: the `HandoverHost.cs` split (brief 084), with one full batch.
