@@ -159,6 +159,7 @@ namespace Suborned.Play
                 var bb = new Bounds(p + Vector3.up * 0.9f, new Vector3(0.7f, 1.8f, 0.7f)); if (!OnLine(bb)) continue;
                 foreach (var r in x.GetComponentsInChildren<Renderer>()) if (r.enabled && !r.forceRenderingOff) { r.forceRenderingOff = true; cvHidden.Add(r); }
             }
+            if (c.Solo.Length > 0) foreach (var (k, _) in c.Lines) if (k != c.Solo && ConvoView(k) is Transform o) foreach (var r in o.GetComponentsInChildren<Renderer>()) if (r.enabled && !r.forceRenderingOff) { r.forceRenderingOff = true; cvHidden.Add(r); } // Listen's last line: he is alone
         }
     }
 }

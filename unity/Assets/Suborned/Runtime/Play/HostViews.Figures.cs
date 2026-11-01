@@ -104,7 +104,7 @@ namespace Suborned.Play
         void Figures(float alpha)
         {
             if (figs.Count == 0) return;
-            var g = host.Game; var convo = host.ConvoViewKeys(); // brief 067 H (Sky on 0.2.122): a conversation scene holds the clock: its speakers stand idle facing each other; brief 085: everyone else carries on, at their own pace whatever the speed (HostViews.Scene)
+            SceneStands(host.ConvoNow); var g = host.Game; var convo = host.ConvoViewKeys(); // brief 067 H (Sky on 0.2.122): a conversation scene holds the clock: its speakers stand idle facing each other; brief 085: everyone else carries on, at their own pace whatever the speed (HostViews.Scene)
             float pace = convo != null ? 1f : host.Paused || g.Over ? 0f : host.Speed;
             carrying.Clear(); if (g.Vale == ValeAt.WithEnforcer) carrying.Add("op/enforcer"); // who has someone on the shoulder this frame
             foreach (var kv in carriers) if (lifted.TryGetValue(kv.Key, out var lc) && lc > 0.5f && things.TryGetValue(kv.Key, out var bt) && bt.shown) carrying.Add(kv.Value);

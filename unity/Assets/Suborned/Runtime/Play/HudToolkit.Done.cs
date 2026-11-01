@@ -108,7 +108,7 @@ namespace Suborned.Play
                 // brief 085 (the budget's two chips on screen; r067-drive-parked drew three): only the newest two that can be drawn; DoneChips itself keeps them all
                 bool ChipPlace(HandoverHost.DoneChip ch, out Vector2 q)
                 {
-                    q = default; if (now - ch.Born > HandoverHost.DoneChipS) return false;
+                    q = default; if (now - ch.Born > HandoverHost.DoneChipS || h.CardOver(ch.AnchorKey)) return false; // brief 085: a conversation's card stands in the chip's spot and says more
                     var at = h.AnchorWorld(ch.AnchorKey) ?? ch.At; if (!at.HasValue) return false; ch.At = at;
                     bool person = ch.AnchorKey is "waitress" or "driver" or "guard" or "councillor" || ch.AnchorKey.StartsWith("op/") || ch.AnchorKey == "patrol";
                     if (!Proj(at.Value + Vector3.up * (person ? 2.3f : ch.AnchorKey.StartsWith("camera/") ? 0.7f : 1.6f), out q)) return false;

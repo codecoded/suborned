@@ -910,7 +910,7 @@ namespace Suborned.Play
                             if (speech) { feedSpeech = t; feedTitle = null; } // one line: the speaker and their words
                             else
                             {
-                                if (card.Lines.Count > 0) { var ln = card.Lines[card.Lines.Count - 1]; var sl = L(col, "history-row-result", ellipsis: true); sl.name = "speech"; sl.text = $"{ln.Name}: {ln.Text}"; sl.style.whiteSpace = WhiteSpace.NoWrap; BodyText(sl); sl.style.marginTop = 2; sl.style.flexShrink = 0; feedSpeech = sl; } else feedSpeech = null;
+                                if (card.Lines.Count > 0) { var ln = card.Lines[card.Lines.Count - 1]; var sl = L(col, "history-row-result", ellipsis: true); sl.name = "speech"; sl.text = $"{ln.Name}: {ln.Text}"; sl.style.whiteSpace = WhiteSpace.Normal; /* brief 085: a whole line, on two rows if it needs them (the budget's speech) */ BodyText(sl); sl.style.marginTop = 2; sl.style.flexShrink = 0; feedSpeech = sl; } else feedSpeech = null;
                                 feedTitle = t;
                             }
                             if (card.Lines.Count > 1) { var more = L(top, "feed-clock"); more.text = $"+{card.Lines.Count - 1}"; more.style.marginRight = 8; more.style.flexShrink = 0; more.PlaceBehind(ck); }

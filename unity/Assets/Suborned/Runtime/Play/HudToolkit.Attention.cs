@@ -122,7 +122,7 @@ namespace Suborned.Play
         List<Rect> HudRects()
         {
             var l = new List<Rect>();
-            foreach (var e in new[] { column, verbPlate, pill, intel, keys, respPill, nextTip, scope, sheet, chip2, goal, history, armedPlate, feed, ticker, hint, clipBlock, streetCards })
+            foreach (var e in new[] { column, verbPlate, pill, intel, keys, respPill, nextTip, scope, sheet, chip2, goal, history, armedPlate, feed, ticker, hint, clipBlock, personCard })
             {
                 if (e == null || e.resolvedStyle.display == DisplayStyle.None || e.resolvedStyle.opacity < 0.05f) continue;
                 var r = e.worldBound; if (r.width <= 1 || r.height <= 1 || float.IsNaN(r.width)) continue;
@@ -320,7 +320,7 @@ namespace Suborned.Play
             if (host.Game == null) return;
             WatchRing();
             PersonCueMarks();
-            ClipHud(W, H); StreetCardsHud(W, H); // brief 085: before the callouts, which keep off them
+            ClipHud(W, H); PersonCardHud(W, H); // brief 085: before the callouts, which keep off them
             Callouts(W, H);
         }
     }

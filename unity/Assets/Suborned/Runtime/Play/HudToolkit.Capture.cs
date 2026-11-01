@@ -118,7 +118,7 @@ namespace Suborned.Play
         string Parts(int screenH)
         {
             float k = screenH / Mathf.Max(1f, root.panel.visualTree.layout.height);
-            var list = new System.Collections.Generic.List<(string, VisualElement)> { ("roster", column), ("plate", verbPlate), ("pill", pill), ("keys", keys), ("response", respPill), ("next-tip", nextTip), ("scope", scope), ("sheet", sheet), ("chip", chip2), ("goal", goal), ("end", end), ("briefing", brief), ("intel", intel), ("history", history), ("loud", loud), ("armed", armedPlate), ("strip", strip), ("cursor-armed", cursorArmed), ("cursor-cross", cursorCross), ("target-pill", targetPill), ("stance-fan", fan), ("scene-bubble", convoBubble), ("scene-skip", convoSkip) };
+            var list = new System.Collections.Generic.List<(string, VisualElement)> { ("roster", column), ("plate", verbPlate), ("pill", pill), ("keys", keys), ("response", respPill), ("next-tip", nextTip), ("scope", scope), ("sheet", sheet), ("chip", chip2), ("goal", goal), ("end", end), ("briefing", brief), ("intel", intel), ("history", history), ("loud", loud), ("armed", armedPlate), ("strip", strip), ("cursor-armed", cursorArmed), ("cursor-cross", cursorCross), ("target-pill", targetPill), ("stance-fan", fan), ("scene-bubble", convoLine), ("scene-skip", convoSkip) };
             for (int i = 0; i < 4; i++) list.Add(($"portrait-{i + 1}", colWins[i]?.Clip));
             for (int i = 0; i < 4; i++) { list.Add(($"roster-weapon-{i + 1}", colWins[i]?.Arm)); list.Add(($"roster-status-{i + 1}", colWins[i]?.Status)); list.Add(($"roster-dots-{i + 1}", colWins[i]?.Dots)); } // brief 046: the row under each portrait
             for (int i = 0; i < busy.Count; i++) list.Add(($"timer-{i + 1}", busy[i].root));

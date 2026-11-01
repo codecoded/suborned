@@ -77,7 +77,7 @@ namespace Suborned.Play
             var conv = IsRole(target) ? Text.LookupConversation(ConvoQuery(verb, target)) : null;
             if (conv != null)
             {
-                c.Id = conv.Id; c.MetKey = conv.Id; foreach (var b in conv.Beats) c.Lines.Add((b.Speaker, b.Line)); c.Learned.AddRange(conv.Learned); c.Opens.AddRange(conv.Opens);
+                c.Id = conv.Id; c.MetKey = conv.Id; foreach (var b in conv.Beats) { c.Lines.Add((b.Speaker, b.Line)); c.Fields.Add(b); } c.Learned.AddRange(conv.Learned); c.Opens.AddRange(conv.Opens);
             }
             else { c.MetKey = verb == "mislead" ? $"mislead/{target}" : card?.Scene != null ? PlayText.SceneKey(card.Scene) : $"{verb}/{target}"; ConvoItems(c, card, verb, agent, rival); }
             ConvoPicks.Add(c.MetKey); string why = c.Lines.Count == 0 ? "no lines" : controls.conversations == ConversationScenes.Never ? "never" : controls.conversations == ConversationScenes.FirstEachScene && convoMet.Contains(c.MetKey) ? "met" : ConvoNow != null || convoWant != null ? "another scene" : ConvoBlock(c);
@@ -126,7 +126,7 @@ namespace Suborned.Play
         }
 
         /// <summary>Brief 085: no cutaway, but the act has a conversation: its own agreed words, never the old scene's. The street gets its first three lines as bubbles, each held to read, one after
-        /// another, since ten lines over a head are too many and hold nothing up; the feed card and the history keep the whole scene; the cards show beside the feed (HudToolkit.Convo). The guard's
+        /// another, since ten lines over a head are too many and hold nothing up; the feed card and the history keep the whole scene; the cards follow, on the person (HostConvo.Cards). The guard's
         /// call line stays (his inset on any Call), so only the agent's and the person's lines are silenced.</summary>
         void ConvoReleaseAgreed(Convo c)
         {
@@ -135,11 +135,9 @@ namespace Suborned.Play
             if (card != null && conv != null) { card.Lines.Clear(); foreach (var b in conv.Beats) card.Lines.Add(new FeedLine { Speaker = b.Speaker, Name = Text.ConvName(b.Speaker), Text = b.Line }); if (conv.Learned.Count > 0) card.Footer = conv.Learned[0]; card.Revealed = card.Bubbled = card.Lines.Count; card.NextBeatAt = -1; }
             float at = Time.unscaledTime; int n = 0;
             foreach (var (sp, tx) in c.Lines) { if (n++ >= StreetAgreedLines) break; streetDue.Add((at, sp, tx, false)); at += ReadS(tx); }
-            StreetCards = c; StreetCardsAt = at; StreetCardsUntil = at + Mathf.Max(ConvoCardsMinS, ConvoCardS(c));
+            if (c.HasCards) ConvoCardsAfter(c, at);
         }
         public const int StreetAgreedLines = 3;
-        /// <summary>The conversation whose cards stand beside the feed now that no scene played: from the last street line to StreetCardsUntil (real time).</summary>
-        public Convo StreetCards { get; private set; } public float StreetCardsAt { get; private set; } public float StreetCardsUntil { get; private set; }
 
         /// <summary>An act cut short: it says nothing more, and its card is no longer waiting on lines.</summary>
         void ConvoCutShort(FeedCard c) { c.Revealed = c.Bubbled = c.Lines.Count; c.NextBeatAt = -1; }

@@ -6,10 +6,10 @@ using UnityEngine.InputSystem;
 
 namespace Suborned.Play
 {
-    /// <summary>Brief 032, 085 (GDD v0.35.0 section 10; Glyph's spec, Fable's handover-to-latch.md): the conversation scene. When Listen, Ask, Pay, Help, Pressure, Call or Mislead lands, its whole
-    /// conversation plays in a cutaway, its outcome included, the mission clock held: one bubble at a time, each held as long as it takes to read (about 16 characters a second, floor 1 s), the cards
-    /// (learned, opens) after the last line, then a hard cut back (0.12 s dip each way) to exactly the view the player left. Click or Space advances, Esc or the Skip keycap ends it. What it plays and
-    /// when it doesn't: HostConvo.Lines. Its shots: HostConvo.Shot. Nothing here is an order, a step or a random draw: the clock is held by not stepping, so a replay is identical with scenes Always,
+    /// <summary>Brief 032, 085 (GDD v0.36.0 section 10, look C; Fable's handover-to-latch.md): the conversation scene. When Listen, Ask, Pay, Help, Pressure, Call or Mislead lands, its whole
+    /// conversation plays in a cutaway, its outcome included, the mission clock held: one line at a time, each held as long as it takes to read (about 16 characters a second, floor 1 s), then a hard
+    /// cut back (0.12 s dip each way) to exactly the view the player left, where the cards arrive on the person (HostConvo.Cards). Click or Space advances, Esc or Skip ends it. What it plays and
+    /// when it doesn't: HostConvo.Lines. Its shots: HostConvo.Shot, HostConvo.Listen. Nothing here is an order, a step or a random draw: the clock is held by not stepping, so a replay is identical with scenes Always,
     /// First or Never.</summary>
     public sealed partial class HandoverHost
     {
@@ -17,8 +17,14 @@ namespace Suborned.Play
         {
             public int Agent; public string Verb = "", Target = "", KeyA = "", KeyB = "", Id = "", MetKey = ""; // KeyA: the near speaker's view (the cell member), KeyB: the person; Id: the conversation's, "" for scenes.items lines
             public readonly List<(string speaker, string text)> Lines = new();
-            /// <summary>The cards (scenes.conversations learned, opens), after the last line. InCards: they are up.</summary>
-            public readonly List<string> Learned = new(), Opens = new(); public bool InCards; public bool HasCards => Learned.Count + Opens.Count > 0;
+            /// <summary>Each line's view-only fields (a conversation's), by beat; a scenes.items scene has none.</summary>
+            public readonly List<PlayText.ConvLine> Fields = new();
+            /// <summary>The cards (scenes.conversations learned, opens): after the cut, on the person.</summary>
+            public readonly List<string> Learned = new(), Opens = new(); public bool HasCards => Learned.Count + Opens.Count > 0;
+            /// <summary>A line's holdAfter running: the shot with no line until this time (-1: none).</summary>
+            public float AfterUntil = -1f;
+            /// <summary>Listen: who stands where for the scene, view only (HostConvo.Listen); the last line cuts to the listener alone.</summary>
+            public readonly Dictionary<string, (Vector3 pos, float yaw)> Stands = new(); public string LastAlone = "", Solo = "";
             public int Beat; public float BeatAt, Born, EndAt = -1f, OutAt = -1f; public bool Single;
             public Vector3 Look, From, Side; public float Dist;
             /// <summary>Glyph 067 Rev 2 H1, the shot the ladder took: "profile" (the two-shot from the side), "high" (the play pitch, orthographic, the cut and silhouettes on), "intercut" (each speaker
@@ -28,7 +34,7 @@ namespace Suborned.Play
             internal readonly Dictionary<string, (Vector3 from, Vector3 look)> Cuts = new(); internal readonly HashSet<string> ViewKeys = new();
             internal FeedCard Card;
         }
-        /// <summary>The scene playing now (null: none). The HUD draws its bubble, dots, bars and Skip from it.</summary>
+        /// <summary>The scene playing now (null: none). The HUD draws its line, its speaker's face and Skip from it.</summary>
         public Convo ConvoNow { get; private set; }
         public bool ConvoOn => ConvoNow != null;
         /// <summary>The 0.12 s dip's black at a hard cut (0 clear, 1 black).</summary>
@@ -38,8 +44,8 @@ namespace Suborned.Play
         public int ConvoCount { get; private set; }
 
         public const float ConvoSingleDist = 2.6f, ConvoDist = 3.6f, ConvoHeight = 1.9f, ConvoPitch = 8f, ConvoFov = 35f, ConvoPush = 0.08f, ConvoDipS = 0.12f, ConvoEndBeatS = 0.4f;
-        /// <summary>Each line is held as long as it takes to read (brief 085, GDD section 10): about 16 characters a second, floor 1 s; one 12-word line about 4 s. The cards the same, floor 2.5 s.</summary>
-        public const float ConvoReadCps = 16f, ConvoReadMinS = 1f, ConvoCardsMinS = 2.5f;
+        /// <summary>Each line is held as long as it takes to read (brief 085, GDD section 10): about 16 characters a second, floor 1 s; one 12-word line about 4 s. </summary>
+        public const float ConvoReadCps = 16f, ConvoReadMinS = 1f;
         public static float ReadS(string line) => Mathf.Max(ConvoReadMinS, (line?.Length ?? 0) / ConvoReadCps);
         /// <summary>Glyph 067 Rev 2 H1: the profile two-shot holds a pair up to 6 m apart, at fit = clamp(1.44 × sep, 3.6, 8) m (then 0.8 × fit, never
         /// under 2.8 m); nobody shows more than 115° of back; nothing solid within 1.6 m of the lens. The high two-shot: the play pitch from 7 m.</summary>
@@ -62,7 +68,7 @@ namespace Suborned.Play
             var c = ConvoNow; if (c == null || views == null || c.OutAt >= 0f && !cvCut) return null;
             return (ConvoViewKey(c.KeyA), ConvoViewKey(c.KeyB));
         }
-        string ConvoViewKey(string k) => k switch { "scout" or "fixer" or "tech" or "enforcer" => "op/" + k, "rivals" => views.RivalAnchorKey(), _ => k };
+        string ConvoViewKey(string k) => k switch { "scout" or "fixer" or "tech" or "enforcer" => "op/" + k, "rivals" => views.RivalAnchorKey(), _ => convoVoices.TryGetValue(k, out var vk) ? vk : k };
         /// <summary>Brief 085: is this view a speaker in the scene (stands idle), or anyone else in the shot (keeps walking; HostViews.Scene)?</summary>
         public bool ConvoIsSpeaker(string viewKey) => ConvoNow is Convo c && c.ViewKeys.Contains(viewKey);
         static readonly HashSet<string> NoViews = new();
@@ -72,7 +78,7 @@ namespace Suborned.Play
         {
             "scout" or "fixer" or "tech" or "enforcer" => views.Find("op/" + key),
             "rivals" => views.Find(views.RivalAnchorKey()), // brief 059: the car, else the first member drawn
-            _ => views.Find(key),
+            _ => views.Find(convoVoices.TryGetValue(key, out var vk) ? vk : key),
         };
 
         /// <summary>The scene chosen at the landing starts on the next frame; false when it fell back to bubbles at the last moment.</summary>
@@ -81,10 +87,13 @@ namespace Suborned.Play
             var c = convoWant; convoWant = null;
             string why = ConvoBlock(c);
             if (why != null) { ConvoLast = $"bubbles ({why}): {c.Verb} {c.Target}"; ConvoRelease(c); return false; }
-            if (!ConvoFrameShot(c)) { ConvoLast = $"bubbles (no shot): {c.Verb} {c.Target}"; ConvoRelease(c); return false; }
+            ConvoVoiceFigure(c);
+            if (!ConvoFrameShot(c)) { ConvoStandsEnd(); ConvoLast = $"bubbles (no shot): {c.Verb} {c.Target}"; ConvoRelease(c); return false; }
+            ConvoListener(c);
             foreach (var (sp, _) in c.Lines) if (ConvoView(sp) != null) c.ViewKeys.Add(ConvoViewKey(sp));
             if (ConvoView(c.KeyA) != null) c.ViewKeys.Add(ConvoViewKey(c.KeyA)); if (ConvoView(c.KeyB) != null) c.ViewKeys.Add(ConvoViewKey(c.KeyB));
-            c.Born = Time.unscaledTime; c.BeatAt = c.Born + ConvoDipS; c.Beat = 0;
+            c.Born = Time.unscaledTime; c.Beat = 0; c.BeatAt = c.Born + ConvoDipS + (ConvoField(c)?.HoldBefore ?? 0f);
+            ConvoSilence(c); // what they said before the cut doesn't wait to be said again after it
             ConvoNow = c; cvCut = false; ConvoCount++;
             ClearHover(); if (Panel != null) ClosePanel(); CloseRing();
             ConvoLast = $"playing: {c.Verb} {c.Target}, {c.Lines.Count} beats, {c.Shot}{(c.Id.Length > 0 ? ", " + c.Id : "")}";
@@ -98,16 +107,19 @@ namespace Suborned.Play
             if (ConvoNow == null && convoWant != null && !ConvoStart()) return false;
             var c = ConvoNow; if (c == null) { ConvoDip = 0f; return false; }
             float now = Time.unscaledTime; var kb = Keyboard.current; var mouse = UnityEngine.InputSystem.Mouse.current;
-            ClearHover(); ClipHeld(); ConvoCalloutsWait();
+            ClearHover(); ClipHeld(); ConvoCalloutsWait(); ConvoCardsWait();
             if (c.OutAt < 0f)
             {
                 bool esc = kb != null && kb.escapeKey.wasPressedThisFrame;
                 bool next = controls.Down(kb, PlayAction.Pause) || mouse != null && mouse.leftButton.wasPressedThisFrame && !OverHud(mouse.position.ReadValue());
                 if (esc) ConvoSkip();
-                else if (now >= c.BeatAt)
+                else
                 {
-                    float hold = c.InCards ? ConvoCardS(c) : ReadS(c.Beat < c.Lines.Count ? c.Lines[c.Beat].text : "");
-                    if (c.EndAt < 0f && (next || now - c.BeatAt >= hold)) ConvoStep(c, now, next);
+                    if (c.EndAt < 0f)
+                    {
+                        if (next) ConvoNext(c, now, true);
+                        else if (c.AfterUntil >= 0f ? now >= c.AfterUntil : now >= c.BeatAt && now - c.BeatAt >= ConvoLineS(c)) ConvoNext(c, now, false);
+                    }
                     if (c.EndAt >= 0f && now >= c.EndAt) c.OutAt = now;
                 }
             }
@@ -116,7 +128,7 @@ namespace Suborned.Play
             {
                 float t = (now - c.OutAt) / ConvoDipS; ConvoDip = t < 0.5f ? t * 2f : Mathf.Max(0f, 2f - t * 2f);
                 if (t >= 0.5f && cvCut) ConvoRestore("ended");
-                if (t >= 1f) { ConvoNow = null; ConvoDip = 0f; return false; }
+                if (t >= 1f) { ConvoNow = null; ConvoDip = 0f; if (c.HasCards) ConvoCardsAfter(c, now); return false; }
                 if (!cvCut) return true; // restored: the play view under the last of the dip
             }
             else
@@ -125,8 +137,9 @@ namespace Suborned.Play
                 if (t >= 0.5f && !cvCut) ConvoCut();
             }
             if (cvCut)
-            {   // the shot's one motion: a slow push in of 8 % over the scene; the intercut cuts to whoever speaks (a hard cut, with the bubble)
-                if (c.Shot == "intercut" && c.Beat < c.Lines.Count && !c.InCards && IntercutOn(c, c.Lines[c.Beat].speaker)) { ConvoUnhide(); ConvoHideOccluders(c); }
+            {   // the shot's one motion: a slow push in of 8 % over the scene; the intercut cuts to whoever speaks (a hard cut, with the line), or to a held moment's holdOn; Listen's last line, to the listener alone
+                if (c.LastAlone.Length > 0 && c.Shot != "intercut" && c.Beat == c.Lines.Count - 1) ConvoToAlone(c);
+                if (c.Shot == "intercut" && c.Beat < c.Lines.Count && IntercutOn(c, c.AfterUntil >= 0f && ConvoField(c)?.HoldOn is { Length: > 0 } on ? on : c.Lines[c.Beat].speaker)) { ConvoUnhide(); ConvoHideOccluders(c); }
                 float span = 0f; foreach (var (_, tx) in c.Lines) span += ReadS(tx); span = Mathf.Max(1f, span); float k = Mathf.Clamp01((now - c.Born) / span);
                 if (c.Shot == "high") cam.orthographicSize = c.Ortho * (1f - ConvoPush * k); // the orthographic lens pushes in by its size
                 else { var from = Vector3.Lerp(c.From, c.Look, ConvoPush * k); cam.transform.SetPositionAndRotation(from, Quaternion.LookRotation(c.Look - from, Vector3.up)); }
@@ -138,23 +151,35 @@ namespace Suborned.Play
         /// <summary>For scripted checks: an act has asked for a scene that the next frame decides.</summary>
         public bool ConvoPending => convoWant != null;
         /// <summary>For scripted checks: the scene ends at once, the view restored (no dip).</summary>
-        public void ConvoEndNow() { convoWant = null; if (ConvoNow == null) return; ConvoLast = "skipped"; ConvoRestore("ended now"); ConvoNow = null; ConvoDip = 0f; }
+        public void ConvoEndNow() { convoWant = null; if (ConvoNow is not Convo c) return; ConvoLast = "skipped"; ConvoRestore("ended now"); ConvoStandsEnd(); ConvoNow = null; ConvoDip = 0f; if (c.HasCards) ConvoCardsAfter(c, Time.unscaledTime); }
         /// <summary>For scripted shots: a person's order as a click gives it (the walk, the ack and the arrive said), not the bare engine order.</summary>
         public void GiveScripted(Order o) { if (Game == null || !IsOpName(o.Op)) return; Give(Op.Parse(o.Op), o, new Target { Kind = IsRole(o.Target) ? "person" : "camera", Key = o.Target, Label = Name(o.Target) }, null); }
 
         /// <summary>Esc or the Skip keycap: the scene ends now (the dip back).</summary>
         public void ConvoSkip() { var c = ConvoNow; if (c == null || c.OutAt >= 0f) return; c.OutAt = Time.unscaledTime; ConvoLast = "skipped"; }
-        /// <summary>A click on the scene (Space too): the next bubble at once; on the last, back.</summary>
-        public void ConvoAdvance() { var c = ConvoNow; if (c == null || c.OutAt >= 0f) return; float now = Time.unscaledTime; ConvoStep(c, now, true); if (c.EndAt >= 0f) c.OutAt = now; }
-        /// <summary>The next line; after the last, the cards; after those, the end (a short beat when no one clicked).</summary>
+        /// <summary>A click on the scene (Space too): what the moment calls for (ConvoNext), else the next line at once; on the last, back.</summary>
+        public void ConvoAdvance() { var c = ConvoNow; if (c == null || c.OutAt >= 0f) return; float now = Time.unscaledTime; ConvoNext(c, now, true); if (c.EndAt >= 0f) c.OutAt = now; }
+        /// <summary>The view-only fields of the line up now (null: none).</summary>
+        static PlayText.ConvLine ConvoField(Convo c) => c.Beat < c.Fields.Count ? c.Fields[c.Beat] : null;
+        /// <summary>How long the line up now holds: its read time, and its reveal's wait.</summary>
+        static float ConvoLineS(Convo c) => ReadS(c.Beat < c.Lines.Count ? c.Lines[c.Beat].text : "") + (ConvoField(c) is { RevealAfter: { Length: > 0 } } f ? f.RevealS : 0f);
+        /// <summary>The moment moves on, by a click or its time (Fable's table): a holdBefore's line shows at once; a reveal's first click completes the line, its second advances; after the read a holdAfter
+        /// holds the shot, and a click ends that; then the next line.</summary>
+        void ConvoNext(Convo c, float now, bool clicked)
+        {
+            var f = ConvoField(c);
+            if (c.AfterUntil >= 0f) { c.AfterUntil = -1f; if (c.Beat >= c.Lines.Count - 1) c.EndAt = now; else ConvoStep(c, now, clicked); return; }
+            if (now < c.BeatAt) { c.BeatAt = now; return; }
+            if (f != null && f.RevealAfter.Length > 0 && now - c.BeatAt < f.RevealS) { c.BeatAt = now - f.RevealS; return; }
+            if (f != null && f.HoldAfter > 0f) { c.AfterUntil = now + f.HoldAfter; return; }
+            ConvoStep(c, now, clicked);
+        }
+        /// <summary>The next line; after the last, the end (a short beat when no one clicked).</summary>
         void ConvoStep(Convo c, float now, bool clicked)
         {
-            if (!c.InCards && c.Beat < c.Lines.Count - 1) { c.Beat++; c.BeatAt = now; }
-            else if (!c.InCards && c.HasCards) { c.InCards = true; c.BeatAt = now; }
+            if (c.Beat < c.Lines.Count - 1) { c.Beat++; c.BeatAt = now + (ConvoField(c)?.HoldBefore ?? 0f); }
             else c.EndAt = now + (clicked ? 0f : ConvoEndBeatS);
         }
-        /// <summary>The cards are held as long as they take to read.</summary>
-        static float ConvoCardS(Convo c) { float s = 0f; foreach (var l in c.Learned) s += ReadS(l); foreach (var l in c.Opens) s += ReadS(l); return Mathf.Max(ConvoCardsMinS, s); }
         /// <summary>Glyph section 2: a callout's time is real time, so one up when a scene starts would run out unseen: it waits, and comes back with the time it had.</summary>
         void ConvoCalloutsWait() { float dt = Time.unscaledDeltaTime; foreach (var co in Callouts) co.Until += dt; foreach (var co in CalloutQueue) co.Until += dt; }
 
@@ -194,6 +219,7 @@ namespace Suborned.Play
         /// <summary>Back to the view the player left, exactly (map position, yaw and zoom, or the follow view): every value saved at the cut.</summary>
         void ConvoRestore(string why)
         {
+            ConvoStandsEnd();
             if (!cvCut || !cam) { cvCut = false; return; }
             cam.orthographic = cvOrtho; cam.orthographicSize = cvSize; cam.fieldOfView = cvFov; cam.nearClipPlane = cvNear; cam.farClipPlane = cvFar;
             cam.transform.SetPositionAndRotation(cvPos, cvRot);
@@ -210,14 +236,8 @@ namespace Suborned.Play
         /// <summary>Everything the scene hid is drawn again (the cut back, or the intercut's next shot).</summary>
         void ConvoUnhide() { foreach (var r in cvHidden) if (r) r.forceRenderingOff = false; cvHidden.Clear(); }
 
-        /// <summary>Where a scene's speaker stands (their head, world) under the cutaway camera; null for one with no view in the street.</summary>
-        public Vector3? ConvoHead(string speaker) => speaker == "milena" ? frame.World(Game.S.At(Game.S.GuardCafe)) + Vector3.up * 2.1f /* brief 085: a voice through the café door, with no figure */ : ConvoView(speaker) is Transform t && t.gameObject.activeInHierarchy ? t.position + Vector3.up * 1.8f : null;
-        /// <summary>The pair's feet (for the row of dots under them).</summary>
-        public Vector3? ConvoFeet(Convo c)
-        {
-            var b = ConvoView(c.KeyB); var a = ConvoView(c.KeyA); if (!b) return null;
-            if (c.Shot == "intercut") return ConvoView(c.Cut) is Transform cu && cu ? cu.position : b.position; // the dots under whoever is framed
-            return c.Single || !a ? b.position : (a.position + b.position) / 2f;
-        }
+        /// <summary>The view whose live face stands beside a line (null: a voice with no figure), and the name it shows.</summary>
+        public string ConvoFaceView(string speaker) => ConvoView(speaker) is Transform t && t && t.gameObject.activeInHierarchy ? ConvoViewKey(speaker) : null;
+        public string ConvoSpeakerName(Convo c, string speaker) => Text == null ? speaker : c.Id.Length == 0 ? Text.Speaker(speaker) : !convoVoices.ContainsKey(speaker) && Text.ConvVoices.TryGetValue(speaker, out var v) ? v : Text.ConvName(speaker);
     }
 }

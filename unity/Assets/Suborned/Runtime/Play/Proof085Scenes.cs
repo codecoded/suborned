@@ -12,7 +12,7 @@ namespace Suborned.Play
 {
     /// <summary>Brief 085, the second round: whole conversations at landing, walking bystanders, the pressed guard, the live insets, the capture clip, the Door price, through the Input System's own
     /// devices where it is input (bun run hostlogic can't reach Update), in r083's run. Pictures `r085-*`; each row names what it measured.</summary>
-    public static class Proof085Scenes
+    public static partial class Proof085Scenes
     {
         static void Keys(params Key[] down) { if (Keyboard.current is Keyboard kb) InputSystem.QueueStateEvent(kb, new KeyboardState(down)); }
         static void Btn(Vector2 sp, bool left = false) { if (Mouse.current is Mouse m) { var st = new MouseState { position = sp }; if (left) st = st.WithButton(MouseButton.Left, true); InputSystem.QueueStateEvent(m, st); } }
@@ -105,12 +105,12 @@ namespace Suborned.Play
                 {
                     int b1 = c.Beat; yield return Click(new Vector2(Screen.width * .5f, Screen.height * .5f)); int b2 = c.Beat; yield return Press(Key.Space); int b3 = c.Beat;
                     row("r085advance", b2 == b1 + 1 && b3 == b2 + 1 && g.Orders.Count == ord0, $"line {b1}, click {b2}, Space {b3}; orders {ord0} to {g.Orders.Count}");
-                    while (h.ConvoOn && !c.InCards) { Keys(Key.Space); yield return Frames(2); Keys(); yield return Frames(2); }
-                    yield return new WaitForSecondsRealtime(0.3f); row("r085cards", c.InCards && HudToolkit.ConvoCardsUp, $"cards up {HudToolkit.ConvoCardsUp}: {string.Join(" / ", c.Learned)} > {string.Join(" / ", c.Opens)}"); yield return Shoot(dir, "r085-conv-cards", log);
-                    yield return Press(Key.Space); for (int i = 0; i < 40 && h.ConvoOn; i++) yield return null;
+                    yield return ListenBeats(h, c, dir, log, row);
+                    for (int i = 0; i < 40 && h.ConvoOn; i++) yield return null;
                     h.SetPaused(true); yield return Frames(3);
                     row("r085viewBack", h.ConvoLast.Contains("bit-identical") && cam.transform.position == pos0 && cam.transform.rotation == rot0, h.ConvoLast);
                     row("r085clockHeld", g.Tick == tick0 && g.Orders.Count == ord0, $"tick {tick0} to {g.Tick}; orders {ord0} to {g.Orders.Count}");
+                    yield return CardOnPerson(h, dir, log, row);
                 }
             }
             yield return EndScene(h);
@@ -153,7 +153,7 @@ namespace Suborned.Play
             yield return EndScene(h);
             var callO = new Order { Op = "fixer", Do = "call", Target = "waitress" }; string helpDoor = h.DoorClock(callO); row("r085doorHelpRoute", helpDoor == null, $"the Call way after Help: Door {helpDoor ?? "hidden"}");
             h.Select(OpId.Fixer, false); yield return ToScene(h, ra, 1320, got); string w3 = Words(h, "call-inez"); c = h.ConvoNow; var cuts = new List<string>();
-            if (got[0]) { for (int i = 0; i < 12 && h.ConvoOn && !c.InCards; i++) { cuts.Add(c.Cut); if (c.Cut == "guard" && !cuts.GetRange(0, cuts.Count - 1).Contains("guard")) { yield return new WaitForSecondsRealtime(0.3f); yield return Shoot(dir, "r085-call-guard", log); } yield return Press(Key.Space); yield return Frames(3); } }
+            if (got[0]) yield return CallHolds(h, c, cuts, dir, log, row);
             row("r085callCuts", got[0] && w3.Length == 0 && cuts.Contains("guard") && cuts.Contains("fixer") && cuts.Contains("waitress"), $"{w3}; shots {string.Join(",", cuts)}");
             yield return EndScene(h); Step(h, ra, g.Tick + 2); /* the route's other orders at this tick first: the Enter is timed to them */ yield return Frames(3);
             var staleC = h.Callouts.Find(x => x.Speech != null); row("r085callNoStale", staleC == null && !h.Bubbles.Exists(b => b.Speaker == "guard" && Time.unscaledTime - b.Born < b.Life), $"after the Call's scene: inset line '{staleC?.Speech?.Text ?? "none"}'");
@@ -216,7 +216,7 @@ namespace Suborned.Play
             h.LookAt(h.Views.Find("op/enforcer").position); h.SetPaused(false); { var seenA = new List<string>(); var okA = new[] { true }; var hitsA = new int[1]; yield return EveryInsetLine(h, 8f, seenA, okA, hitsA, true); row("r085insetRouteA", arr && seenA.Count >= 2 && okA[0], $"at café {arr}: {string.Join("; ", seenA)}"); row("r085plateClear", hitsA[0] == 0, $"most callouts under a speech plate in a frame: {hitsA[0]}"); yield return Shoot(dir, "r085-inset-route-a", log); } h.SetPaused(true); yield return Frames(2);
             // ---- Listen with Never: the agreed words as bubbles, the cards beside the feed, no old lines anywhere
             yield return Fresh(h, ConversationScenes.Never); g = h.Game; var rn = new RouteRun { Orders = Route("route-a") }; var inezN = h.Views.Find("waitress"); h.LookAt(inezN.position); for (int i = 0; i < 700 && !h.ConvoPicks.Contains("listen-inez") && !g.Over; i++) Step(h, rn, g.Tick + 1);
-            h.SetPaused(false); var saidN = new List<string>(); bool cardsN = false, shotN = false; for (float wn = Time.unscaledTime; Time.unscaledTime - wn < 18f;) { yield return null; if (h.Bubbles.FindLast(b => b.Speaker is "milena" or "waitress") is HandoverHost.Bubble bn && !saidN.Contains(bn.Text)) { saidN.Add(bn.Text); if (saidN.Count == 2 && !shotN) { shotN = true; yield return new WaitForSecondsRealtime(0.4f); yield return Shoot(dir, "r085-never-bubble", log); } } if (HudToolkit.StreetCardsUp && !cardsN) { cardsN = true; yield return new WaitForSecondsRealtime(0.4f); yield return Shoot(dir, "r085-never-cards", log); } }
+            h.SetPaused(false); var saidN = new List<string>(); bool cardsN = false, shotN = false; for (float wn = Time.unscaledTime; Time.unscaledTime - wn < 18f;) { yield return null; if (h.Bubbles.FindLast(b => b.Speaker is "milena" or "waitress") is HandoverHost.Bubble bn && !saidN.Contains(bn.Text)) { saidN.Add(bn.Text); if (saidN.Count == 2 && !shotN) { shotN = true; yield return new WaitForSecondsRealtime(0.4f); yield return Shoot(dir, "r085-never-bubble", log); } } if (HudToolkit.PersonCardUp && !cardsN) { cardsN = true; yield return new WaitForSecondsRealtime(0.4f); yield return Shoot(dir, "r085-never-cards", log); } }
             { var cv = h.Text.Conversations.Find(x => x.Id == "listen-inez"); bool agreed = saidN.Count > 0 && saidN.TrueForAll(x => cv.Beats.Exists(b => b.Line == x)); var cardN = h.Feed.Find(c0 => c0.Verb == "listen") ?? h.FeedHistory.Find(c0 => c0.Verb == "listen"); bool whole = cardN != null && cardN.Lines.Count == cv.Beats.Count; bool noOld = !h.Talk.Exists(x => x.Text.Contains("Yes. Yes")) && (cardN == null || !cardN.Lines.Exists(l => l.Text.Contains("Yes. Yes")));
               row("r085neverListen", agreed && whole && noOld && cardsN, $"bubbles [{string.Join(" | ", saidN)}]; feed card {cardN?.Lines.Count} lines of {cv.Beats.Count}; cards up {cardsN}; old line gone {noOld}"); } h.SetPaused(true); yield return Frames(2);
 

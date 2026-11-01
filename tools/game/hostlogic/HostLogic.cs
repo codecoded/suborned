@@ -339,7 +339,15 @@ public class Conversations
         foreach (var o in orders) { if (o.Tick >= 650) break; if (o.Tick > h.Game.Tick) h.RunTo(o.Tick); if (o.Do is "watch" or "listen") h.GiveScripted(o); else h.Issue(o); Host.Call(h, "Track"); }
         h.RunTo(650); var card = h.Feed.Concat(h.FeedHistory).First(c => c.Verb == "listen"); var conv = h.Text.Conversations.Find(x => x.Id == "listen-inez");
         Assert.That(card.Lines.Select(l => l.Text), Is.EqualTo(conv.Beats.Select(b => b.Line)), "the card holds the whole agreed scene"); Assert.That(card.Footer, Is.EqualTo(conv.Learned[0]));
-        Assert.That(h.StreetCards?.Id, Is.EqualTo("listen-inez"), "the cards still show"); Assert.That(h.Talk.Any(t => t.Text.Contains("Yes. Yes")), Is.False);
+        Assert.That(h.PersonCards.Exists(c => c.Id == "listen-inez" && c.Who == "waitress"), Is.True, "the cards still show, on her"); Assert.That(h.Talk.Any(t => t.Text.Contains("Yes. Yes")), Is.False);
+    }
+    [Test] public void ALinesHeldMomentsAreReadCutawayOnly()
+    {
+        var h = Host.Fresh(); var c = h.Text.Conversations.Find(x => x.Id == "listen-inez"); var call = h.Text.Conversations.Find(x => x.Id == "call-inez");
+        Assert.That(c.Beats[6].RevealS, Is.EqualTo(0.9f).Within(0.001f)); Assert.That(c.Beats[6].Line.StartsWith(c.Beats[6].RevealAfter), Is.True); Assert.That(c.Beats[4].Lean, Is.Not.Empty); Assert.That(c.Beats[4].Line.Contains(c.Beats[4].Lean), Is.True);
+        Assert.That(call.Beats[2].HoldBefore, Is.GreaterThan(0f)); Assert.That(call.Beats[7].HoldAfter, Is.GreaterThan(0f)); Assert.That(call.Beats[7].HoldOn, Is.EqualTo("waitress"));
+        Assert.That(h.Text.ShortLock("target-unknown"), Is.EqualTo("Can't act on that")); Assert.That(h.Text.ConvNew, Is.Not.Empty); Assert.That(h.Text.ConvVoices.ContainsKey("milena"), Is.True);
+        Assert.That(h.Game.Walkers.Exists(w => w.P.Name.StartsWith(h.Text.ConvName("milena") + " ")), Is.True, "the voice has a person of the street to stand in the doorway");
     }
     [Test] public void ALineIsHeldToRead()
     {

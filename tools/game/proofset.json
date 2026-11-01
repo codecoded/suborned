@@ -76,9 +76,10 @@
     },
     "r083": {
       "section": "r083",
-      "source": "unity/Assets/Suborned/Runtime/Play/Proof085Scenes.cs",
+      "source": "unity/Assets/Suborned/Runtime/Play/Proof085Beats.cs",
       "frames": [
-        { "name": "r085-conv-cards", "what": "the end of a whole conversation (Listen on Inez): its cards as written, in the kit, the clock held" }
+        { "name": "r085-listen-frame", "what": "look C: the line low with its live face, the overheard pair in the shot, the Scout at its edge, turned away" },
+        { "name": "r085-conv-cards", "what": "after the cut from a whole conversation (Listen on Inez): its card on her in play, as written, New beside what it opens" }
       ]
     }
   }

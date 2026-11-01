@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Suborned.Sim;
 using UnityEngine;
 
@@ -21,6 +22,26 @@ namespace Suborned.Play
         /// <summary>For the proof: where the engine has a thing now (its last tick), and an inset's picture.</summary>
         public Vector3? EngineAt(string key) => things.TryGetValue(key, out var x) ? x.to : (Vector3?)null;
         public RenderTexture InsetPicture(int k) => k >= 0 && k < insets.Length && insets[k] != null ? insets[k].Rt : null;
+
+        readonly Dictionary<string, ((Transform t, Vector3 from, Vector3 to, bool shown) was, float yaw)> standWas = new();
+        /// <summary>Brief 085, Listen: who stands where for the scene (Convo.Stands), view only: before the shot is framed and each frame while it plays. Everything they were goes back at the cut.</summary>
+        public void SceneStands(HandoverHost.Convo c)
+        {
+            if (c == null) return;
+            foreach (var kv in c.Stands)
+            {
+                if (!things.TryGetValue(kv.Key, out var x)) continue;
+                figs.TryGetValue(kv.Key, out var f);
+                if (!standWas.ContainsKey(kv.Key)) standWas[kv.Key] = (x, f != null ? f.yaw : 0f);
+                things[kv.Key] = (x.t, kv.Value.pos, kv.Value.pos, true); if (!x.t.gameObject.activeSelf) x.t.gameObject.SetActive(true); x.t.position = kv.Value.pos;
+                if (f != null && !float.IsNaN(kv.Value.yaw)) f.yaw = kv.Value.yaw;
+            }
+        }
+        public void SceneStandsEnd()
+        {
+            foreach (var kv in standWas) { things[kv.Key] = kv.Value.was; var w = kv.Value.was; if (w.t.gameObject.activeSelf != w.shown) w.t.gameObject.SetActive(w.shown); if (w.shown) w.t.position = w.to; if (figs.TryGetValue(kv.Key, out var f)) f.yaw = kv.Value.yaw; }
+            standWas.Clear();
+        }
 
         static readonly float[] SceneTurns = { 35f, -35f, 70f, -70f, 110f, -110f };
 

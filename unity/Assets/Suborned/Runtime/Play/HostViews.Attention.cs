@@ -218,9 +218,9 @@ namespace Suborned.Play
             }
         }
 
-        /// <summary>The close-up of `view` into slot k's texture (128 px, the watcher alone on cream), or none (null view): its camera on only
+        /// <summary>The close-up of `view` into slot k's texture (256 px, so a conversation's face holds at 2x; the watcher alone on cream), or none (null view): its camera on only
         /// while a callout is up.</summary>
-        public RenderTexture InsetFrame(int k, string view)
+        public RenderTexture InsetFrame(int k, string view, float zoom = 1f)
         {
             var s = insets[k] ??= NewInset(k);
             bool on = s.View.Length > 0 && s.View == (view ?? "") && things.TryGetValue(s.View, out var x) && x.shown && x.t.gameObject.activeInHierarchy;
@@ -241,7 +241,7 @@ namespace Suborned.Play
             }
             fwd.y = Mathf.Clamp(fwd.y, -0.3f, 0.3f); if (fwd.sqrMagnitude < 1e-6f) fwd = Vector3.forward; fwd.Normalize();
             var cpos = at + fwd * 2.2f + Vector3.up * 0.25f;
-            s.Cam.transform.SetPositionAndRotation(cpos, Quaternion.LookRotation(at - cpos, Vector3.up)); s.Cam.orthographicSize = size;
+            s.Cam.transform.SetPositionAndRotation(cpos, Quaternion.LookRotation(at - cpos, Vector3.up)); s.Cam.orthographicSize = size * zoom;
             return s.Rt;
         }
 
@@ -250,7 +250,7 @@ namespace Suborned.Play
             var go = new GameObject("inset/" + k); go.transform.SetParent(root, false);
             var c = go.AddComponent<UnityEngine.Camera>(); c.orthographic = true; c.nearClipPlane = 0.05f; c.farClipPlane = 8f; c.cullingMask = 1 << (InsetLayer0 + k);
             c.clearFlags = CameraClearFlags.SolidColor; c.backgroundColor = InsetGround; c.allowHDR = false; c.allowMSAA = false; c.depth = -10;
-            var rt = new RenderTexture(128, 128, 16, RenderTextureFormat.ARGB32) { name = "inset" + k, antiAliasing = 1 }; rt.Create(); c.targetTexture = rt;
+            var rt = new RenderTexture(256, 256, 16, RenderTextureFormat.ARGB32) { name = "inset" + k, antiAliasing = 1 }; rt.Create(); c.targetTexture = rt;
             var d = go.AddComponent<UnityEngine.Rendering.Universal.UniversalAdditionalCameraData>();
             d.renderPostProcessing = false; d.renderShadows = false; d.antialiasing = UnityEngine.Rendering.Universal.AntialiasingMode.None; d.requiresColorOption = UnityEngine.Rendering.Universal.CameraOverrideOption.Off; d.requiresDepthOption = UnityEngine.Rendering.Universal.CameraOverrideOption.Off;
             c.enabled = false;

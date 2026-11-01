@@ -12,7 +12,7 @@ namespace Suborned.Play
     public sealed partial class HandoverHost
     {
         readonly List<(float due, string speaker, string text, bool inset)> streetDue = new();
-        void ResetStreet() { streetDue.Clear(); doorRead = (-1, "", null); StreetCards = null; }
+        void ResetStreet() { streetDue.Clear(); doorRead = (-1, "", null); PersonCards.Clear(); }
 
         PlayText.ConvStreet StreetFor(string code)
         {

@@ -4,114 +4,104 @@ using UnityEngine.UIElements;
 
 namespace Suborned.Play
 {
-    /// <summary>Brief 032, 085: the conversation scene's HUD: its bars and dip, the one bubble with its speaker's name, a dot a line, Skip, the clock, and at the end the cards. Split from HudToolkit.Live.</summary>
+    /// <summary>Brief 032, 085, look C (GDD v0.36.0 section 10; Glyph's mock): the conversation scene's HUD steps away: the whole frame is the shot. On screen: the line low on the left over a soft shadow, the speaker's
+    /// live face in a round inset beside it, the name small above it, a bare Skip, and the dip. A line is a row of word labels, so a leaned-on word takes Barlow SemiBold and a reveal's rest is held open and
+    /// invisible: nothing jumps. Split from HudToolkit.Live.</summary>
     public sealed partial class HudToolkit
     {
-        VisualElement convoBubble, convoTail, convoSkip, convoBarTop, convoBarBottom, convoVeil, convoCards; Label convoText, convoName; Paint convoDots; bool convoHid; string convoCardKey = "";
-        /// <summary>Elements that are not HUD for the budget (the letterbox bars, the dip): the HUD layer of a shot is drawn without them.</summary>
+        const float LineType = 36f, LineNameType = 21f, LineFace = 136f, LineWordGap = 9f, ShadeMax = 0.74f, FaceZoom = 0.8f; const int ShadeBands = 40;
+        VisualElement convoLine, convoFace, convoCol, convoWords, convoSkip, convoVeil, convoShade; Label convoName; bool convoHid; string convoLineKey = "", convoSaid = "";
+        readonly List<Label> convoWordEls = new(); static readonly string[] convoFaces = new string[4]; Font lineFont, leanFont;
+        /// <summary>Elements that are not HUD for the budget (the soft shadow, the dip): the HUD layer of a shot is drawn without them.</summary>
         readonly List<VisualElement> notHud = new();
 
-        /// <summary>The proof reads it: the scene's bubble stands under its speaker's head (flipped) this frame.</summary>
-        public static bool ConvoBubbleFlipped { get; private set; }
-        /// <summary>The proof reads it: what the bubble and the name plate say this frame, and the cards up.</summary>
-        public static string ConvoSaid => live?.convoBubble != null && live.convoBubble.resolvedStyle.display != DisplayStyle.None ? $"{live.convoName.text}: {live.convoText.text}" : "";
-        public static bool ConvoCardsUp => live?.convoCards != null && live.convoCards.resolvedStyle.display != DisplayStyle.None;
+        /// <summary>The proof reads it: the name and the words showing now ("" in a hold; part of the line in a reveal), and the live face's picture.</summary>
+        public static string ConvoSaid => live?.convoSaid ?? "";
+        public static RenderTexture ConvoFacePicture { get; private set; }
+        /// <summary>The proof reads it: the word in the lean font now ("": none).</summary>
+        public static string ConvoLeanNow { get; private set; } = "";
+
+        void ConvoBuild()
+        {
+            lineFont = Resources.Load<Font>("Kit/fonts/Barlow-Medium"); leanFont = Resources.Load<Font>("Kit/fonts/Barlow-SemiBold");
+            // the soft shadow behind the line, not a box: the kit's ink-deep, easing in from a little over a third of the way up the frame, in thin bands of itself
+            convoShade = E(root); convoShade.style.position = Position.Absolute; convoShade.style.left = 0; convoShade.style.right = 0; convoShade.style.top = Length.Percent(62); convoShade.style.bottom = 0; convoShade.pickingMode = PickingMode.Ignore; notHud.Add(convoShade);
+            for (int i = 0; i < ShadeBands; i++) { var band = E(convoShade); band.style.flexGrow = 1; float k = (i + 0.5f) / ShadeBands; band.style.backgroundColor = new Color(InkDeep.r, InkDeep.g, InkDeep.b, ShadeMax * Mathf.SmoothStep(0f, 1f, k)); }
+            convoVeil = E(root); convoVeil.style.position = Position.Absolute; convoVeil.style.left = 0; convoVeil.style.right = 0; convoVeil.style.top = 0; convoVeil.style.bottom = 0; convoVeil.style.backgroundColor = Color.black; convoVeil.pickingMode = PickingMode.Ignore; notHud.Add(convoVeil);
+            convoLine = E(root); convoLine.style.position = Position.Absolute; convoLine.style.flexDirection = FlexDirection.Row; convoLine.style.alignItems = Align.FlexEnd; convoLine.pickingMode = PickingMode.Ignore;
+            convoFace = E(convoLine, null, w: LineFace, h: LineFace); convoFace.style.flexShrink = 0; Round(convoFace, LineFace / 2f); Border(convoFace, 3f, Cream); convoFace.style.marginRight = 24; convoFace.style.backgroundColor = Cream; convoFace.style.overflow = Overflow.Hidden;
+            manifest.Add((convoFace, "image", () => "speaker's face"));
+            convoCol = E(convoLine); convoCol.style.flexShrink = 1; convoCol.style.flexGrow = 1; convoCol.style.paddingBottom = 16;
+            convoName = L(convoCol, "verb-name"); convoName.style.color = Cream; convoName.style.fontSize = LineNameType; convoName.style.marginBottom = 4; convoName.style.textShadow = LineShadow();
+            convoWords = E(convoCol); convoWords.style.flexDirection = FlexDirection.Row; convoWords.style.flexWrap = Wrap.Wrap; convoWords.pickingMode = PickingMode.Ignore;
+            manifest.Add((convoCol, "speech", () => host.ConvoNow is HandoverHost.Convo cc && cc.Beat < cc.Lines.Count ? $"{convoName.text} {cc.Lines[cc.Beat].text}" : ""));
+            convoSkip = E(root, null, pick: true); convoSkip.style.position = Position.Absolute; convoSkip.style.flexDirection = FlexDirection.Row; convoSkip.style.alignItems = Align.Center; convoSkip.style.paddingLeft = 12; convoSkip.style.paddingRight = 6; convoSkip.style.paddingTop = 6; convoSkip.style.paddingBottom = 6;
+            var sk = L(convoSkip, "keycap"); sk.text = "Skip"; sk.style.fontSize = 21; sk.style.color = Cream; sk.style.textShadow = LineShadow(); var chev = E(convoSkip, null, w: 14, h: 14); chev.style.marginLeft = 6; Icon(chev, "chev_down", Cream); chev.style.rotate = new Rotate(new Angle(-90, AngleUnit.Degree));
+            convoSkip.RegisterCallback<PointerDownEvent>(e => { if (e.button == 0) { host.ConvoSkip(); e.StopPropagation(); } });
+            manifest.Add((convoSkip, "image", () => "skip"));
+        }
+        static TextShadow LineShadow() => new() { offset = new Vector2(0f, 2f), blurRadius = 6f, color = new Color(InkDeep.r, InkDeep.g, InkDeep.b, 0.9f) };
 
         bool ConvoHud()
         {
             var c = host.ConvoNow; bool on = c != null;
             if (!on && !convoHid) return false;
-            if (convoBubble == null)
-            {
-                convoBarTop = E(root); convoBarBottom = E(root); convoVeil = E(root);
-                foreach (var b in new[] { convoBarTop, convoBarBottom, convoVeil }) { b.style.position = Position.Absolute; b.style.left = 0; b.style.right = 0; b.style.backgroundColor = Color.black; b.pickingMode = PickingMode.Ignore; notHud.Add(b); }
-                convoBarTop.style.top = 0; convoBarTop.style.height = Length.Percent(6); convoBarBottom.style.bottom = 0; convoBarBottom.style.height = Length.Percent(6); convoVeil.style.top = 0; convoVeil.style.bottom = 0;
-                convoBubble = E(root, "s-plate_light"); convoBubble.style.position = Position.Absolute; convoBubble.style.paddingLeft = 14; convoBubble.style.paddingRight = 14; convoBubble.style.paddingTop = 6; convoBubble.style.paddingBottom = 7; convoBubble.style.maxWidth = 560;
-                convoName = L(convoBubble, "verb-name"); convoName.style.color = Ink; convoName.style.fontSize = 13.5f; convoName.style.marginBottom = 1;
-                convoText = L(convoBubble, "card-body"); convoText.style.color = Ink; convoText.style.fontSize = 20; convoText.style.whiteSpace = WhiteSpace.Normal;
-                convoTail = E(convoBubble, null, 0, 0, 12, 12); convoTail.style.rotate = new Rotate(45); convoTail.style.backgroundColor = new Color(0.98f, 0.95f, 0.89f); convoTail.style.top = Length.Percent(100); convoTail.style.marginTop = -8; convoTail.style.left = Length.Percent(50); convoTail.style.marginLeft = -6;
-                manifest.Add((convoBubble, "speech", () => $"{convoName.text} {convoText.text}"));
-                convoDots = P(root, 0, 0, 60, 14, (p, r) => { var cc = host.ConvoNow; if (cc == null) return; int n = cc.Lines.Count; for (int i = 0; i < n; i++) { var q = new Vector2(r.width / 2 + (i - (n - 1) / 2f) * 14f, 7); p.BeginPath(); p.Arc(q, 4f, Deg(0), Deg(360)); if (i <= cc.Beat) { p.fillColor = Cream; p.Fill(); } p.strokeColor = Cream; p.lineWidth = 1.4f; p.Stroke(); } });
-                manifest.Add((convoDots, "image", () => "scene beats"));
-                convoSkip = E(root, "s-plate_light", pick: true); convoSkip.style.position = Position.Absolute; convoSkip.style.height = 28; convoSkip.style.flexDirection = FlexDirection.Row; convoSkip.style.alignItems = Align.Center; convoSkip.style.paddingLeft = 12; convoSkip.style.paddingRight = 10;
-                var sk = L(convoSkip, "keycap"); sk.text = "Skip"; sk.style.fontSize = 14; var chev = E(convoSkip, null, w: 12, h: 12); chev.style.marginLeft = 6; Icon(chev, "chev_down", Ink); chev.style.rotate = new Rotate(new Angle(-90, AngleUnit.Degree));
-                convoSkip.RegisterCallback<PointerDownEvent>(e => { if (e.button == 0) { host.ConvoSkip(); e.StopPropagation(); } });
-                manifest.Add((convoSkip, "image", () => "skip keycap"));
-                // the cards: the kit's panel_dark, one icon and line a card, a brass hairline between what the player now knows and what they can now do
-                convoCards = E(root, "s-panel_dark"); convoCards.style.position = Position.Absolute; convoCards.style.paddingLeft = 22; convoCards.style.paddingRight = 24; convoCards.style.paddingTop = 14; convoCards.style.paddingBottom = 14; convoCards.style.unitySliceScale = 0.5f;
-                manifest.Add((convoCards, "card", ConvoCardWords));
-            }
-            var mine = new HashSet<VisualElement> { convoBarTop, convoBarBottom, convoVeil, convoBubble, convoDots, convoSkip, convoCards, pill };
+            if (convoLine == null) ConvoBuild();
+            var mine = new HashSet<VisualElement> { convoShade, convoVeil, convoLine, convoSkip };
             if (on != convoHid)
             {
                 convoHid = on;
                 foreach (var ch in root.Children()) if (!mine.Contains(ch)) { ch.style.visibility = on ? Visibility.Hidden : StyleKeyword.Null; ch.style.opacity = on ? 0f : StyleKeyword.Null; } // opacity too: a descendant set visible (the pips, a chip's bar) shows through a hidden parent
-                foreach (var e in mine) if (e != pill) Show(e, on);
-                if (!on) { Show(pauseIcon, host.Paused); pauseIcon.style.opacity = 1f; return false; }
+                foreach (var e in mine) Show(e, on);
+                if (!on) { convoSaid = ""; ConvoFacePicture = null; Show(pauseIcon, host.Paused); pauseIcon.style.opacity = 1f; return false; }
             }
-            var size = root.panel.visualTree.layout.size; float W = float.IsNaN(size.x) ? 1920 : size.x, H = float.IsNaN(size.y) ? 1080 : size.y;
-            // the clock with its paused mark, pulsing (the freeze is explained); the bars and the dip
-            Text(clock, m.Clock); Show(pauseIcon, true); pauseIcon.style.opacity = 0.45f + 0.55f * (0.5f + 0.5f * Mathf.Sin(Time.unscaledTime * Mathf.PI * 2f));
-            convoVeil.style.opacity = host.ConvoDip; Show(convoVeil, host.ConvoDip > 0.001f); convoVeil.BringToFront();
-            bool shot = c.OutAt < 0f || host.ConvoDip > 0f && Time.unscaledTime - c.OutAt < HandoverHost.ConvoDipS * 0.5f;
-            Show(convoBarTop, shot); Show(convoBarBottom, shot);
-            // one bubble at its speaker: the tail says who, the plate's first line names them; a voice with no figure in the frame has no tail; whole, held to read
-            bool speak = shot && !c.InCards && c.Beat < c.Lines.Count && Time.unscaledTime >= c.BeatAt; Show(convoBubble, speak);
+            var size = root.panel.visualTree.layout.size; float W = float.IsNaN(size.x) ? 1920 : size.x, H = float.IsNaN(size.y) ? 1080 : size.y; float now = Time.unscaledTime;
+            convoVeil.style.opacity = host.ConvoDip; Show(convoVeil, host.ConvoDip > 0.001f);
+            bool shot = c.OutAt < 0f || host.ConvoDip > 0f && now - c.OutAt < HandoverHost.ConvoDipS * 0.5f;
+            bool speak = shot && c.AfterUntil < 0f && c.Beat < c.Lines.Count && now >= c.BeatAt; Show(convoLine, speak); Show(convoShade, speak); Show(convoSkip, shot);
+            convoSkip.style.right = 34; convoSkip.style.bottom = Mathf.Max(22f, H * 0.03f);
+            string view = null; convoSaid = "";
             if (speak)
             {
-                var (who, line) = c.Lines[c.Beat]; Text(convoText, line); Text(convoName, c.Id.Length > 0 ? host.Text?.ConvName(who) ?? who : host.Text?.Speaker(who) ?? who);
-                float bw = convoBubble.resolvedStyle.width, bh = convoBubble.resolvedStyle.height; if (float.IsNaN(bw) || bw < 1) bw = 280; if (float.IsNaN(bh) || bh < 1) bh = 36;
-                Vector2 at = default; bool tail = host.ConvoHead(who) is Vector3 hw && Proj(hw, out at) && InView(at);
-                if (!tail) at = new Vector2(W * 0.3f, H * 0.62f);
-                // Glyph 067 H1.2: clamped to the frame less the bars and a 4 % margin; a bubble that would leave the frame above flips under the head, its tail up
-                float mx = Mathf.Max(24f, W * 0.04f), top = Mathf.Max(H * 0.06f + 56, H * 0.10f), bottom = H * 0.94f - Mathf.Max(60f, H * 0.04f);
-                bool flip = tail && at.y - bh - 10 < top;
-                float x = Mathf.Clamp(at.x - bw / 2, mx, W - bw - mx), y = Mathf.Clamp(flip ? at.y + 16 : at.y - bh - 10, top, bottom - bh);
-                convoBubble.style.left = x; convoBubble.style.top = y; Show(convoTail, tail); if (tail) { convoTail.style.left = Mathf.Clamp(at.x - x, 16, bw - 16); convoTail.style.marginLeft = -6; convoTail.style.top = flip ? Length.Percent(0) : Length.Percent(100); convoTail.style.marginTop = flip ? -4 : -8; }
-                ConvoBubbleFlipped = flip;
-                convoBubble.style.opacity = Mathf.Clamp01((Time.unscaledTime - c.BeatAt) / 0.12f);
+                var (who, line) = c.Lines[c.Beat]; var f = c.Beat < c.Fields.Count ? c.Fields[c.Beat] : null;
+                view = host.ConvoFaceView(who); Text(convoName, host.ConvoSpeakerName(c, who));
+                convoLine.style.left = Mathf.Max(36f, W * 0.035f); convoLine.style.bottom = Mathf.Max(30f, H * 0.05f); convoLine.style.width = Mathf.Min(W * 0.66f, 1180f);
+                ConvoWordsFill(c.Id + c.Beat + line, line, f?.Lean ?? "");
+                // a reveal: the start, then the whole line revealS later; the rest stands in its place, unseen
+                int total = 0; foreach (var w in line.Split(' ')) if (w.Length > 0) total++;
+                int showing = total; if (f != null && f.RevealAfter.Length > 0 && now - c.BeatAt < f.RevealS) { showing = 0; foreach (var w in f.RevealAfter.Split(' ')) if (w.Length > 0) showing++; }
+                for (int i = 0; i < convoWordEls.Count; i++) { var el = convoWordEls[i]; if (i < total) el.style.opacity = i < showing ? 1f : 0f; }
+                var said = new List<string>(); int n = 0; foreach (var w in line.Split(' ')) if (w.Length > 0 && n++ < showing) said.Add(w); convoSaid = $"{convoName.text}: {string.Join(" ", said)}";
+                convoLine.style.opacity = Mathf.Clamp01((now - c.BeatAt) / 0.12f);
             }
-            // the cards, on the bottom bar's edge
-            bool cards = shot && c.InCards; Show(convoCards, cards);
-            if (cards)
+            // the live face: the insets' own close camera, one slot, on whoever speaks (no other callout is drawn while the HUD stands away)
+            if (host.Views != null)
             {
-                ConvoCardsFill(convoCards, ref convoCardKey, c);
-                float cw = convoCards.resolvedStyle.width, ch = convoCards.resolvedStyle.height; if (float.IsNaN(cw) || cw < 1) cw = 420; if (float.IsNaN(ch) || ch < 1) ch = 120;
-                convoCards.style.left = (W - cw) / 2f; convoCards.style.top = Mathf.Max(H * 0.1f, H * 0.94f - ch - 32f); convoCards.style.opacity = Mathf.Clamp01((Time.unscaledTime - c.BeatAt) / 0.15f); convoCards.BringToFront();
+                for (int i = 0; i < convoFaces.Length; i++) convoFaces[i] = i == 0 ? view ?? "" : ""; host.Views.InsetViews(convoFaces);
+                var rt = host.Views.InsetFrame(0, view, FaceZoom); for (int i = 1; i < convoFaces.Length; i++) host.Views.InsetFrame(i, null);
+                ConvoFacePicture = rt; Show(convoFace, speak && rt != null);
+                if (rt != null && convoFace.style.backgroundImage.value.renderTexture != rt) { convoFace.style.backgroundImage = new StyleBackground(Background.FromRenderTexture(rt)); }
             }
-            // the row of dots under the pair (the played ones filled)
-            Show(convoDots, shot && !c.InCards && c.Lines.Count > 1);
-            if (shot && host.ConvoFeet(c) is Vector3 fw && Proj(fw, out var fq)) { float dw = c.Lines.Count * 14f + 14f; convoDots.style.left = Mathf.Clamp(fq.x - dw / 2f, 24, W - dw - 24); convoDots.style.top = Mathf.Min(fq.y + 18, H * 0.94f - 30); convoDots.style.width = dw; convoDots.MarkDirtyRepaint(); }
-            // Skip, bottom right over the bar's edge
-            Show(convoSkip, shot); convoSkip.style.right = 40; convoSkip.style.bottom = H * 0.06f + 14;
-            pill.BringToFront(); convoBubble.BringToFront(); convoSkip.BringToFront(); convoVeil.BringToFront(); // the clock over the top bar
+            else Show(convoFace, false);
+            convoShade.SendToBack(); convoVeil.BringToFront();
             return true;
         }
 
-        VisualElement streetCards; string streetCardKey = "";
-        /// <summary>The proof reads it: the cards of a conversation no scene played stand beside the feed.</summary>
-        public static bool StreetCardsUp => live?.streetCards != null && live.streetCards.resolvedStyle.display != DisplayStyle.None;
-
-        /// <summary>Brief 085: a conversation that couldn't play as a scene still shows its cards, after its street lines, for as long as they take to read, on the feed's top edge. They take no clicks.</summary>
-        void StreetCardsHud(float W, float H)
+        void ConvoWordsFill(string key, string line, string lean)
         {
-            var c = host.StreetCards; float now = Time.unscaledTime; bool on = c != null && now >= host.StreetCardsAt && now < host.StreetCardsUntil && !m.Ended && !m.BriefingOpen && host.Modal == ModalGate.Modal.None && !host.FailCamOn && !host.ConvoOn;
-            if (streetCards == null) { if (!on) return; streetCards = E(root, "s-panel_dark"); streetCards.style.position = Position.Absolute; streetCards.style.paddingLeft = 18; streetCards.style.paddingRight = 20; streetCards.style.paddingTop = 12; streetCards.style.paddingBottom = 12; streetCards.style.unitySliceScale = 0.5f; streetCards.style.right = 14; streetCards.pickingMode = PickingMode.Ignore; manifest.Add((streetCards, "card", () => host.StreetCards == null ? "" : string.Join(" ", host.StreetCards.Learned) + " " + string.Join(" ", host.StreetCards.Opens))); }
-            Show(streetCards, on); if (!on) return;
-            ConvoCardsFill(streetCards, ref streetCardKey, c); float ch = streetCards.resolvedStyle.height; if (float.IsNaN(ch) || ch < 1f) ch = 120f; float top = feed != null && feed.resolvedStyle.display != DisplayStyle.None && feed.worldBound.height > 1f ? feed.worldBound.yMin : H - 130f;
-            streetCards.style.top = Mathf.Max(120f, top - ch - 10f); streetCards.style.opacity = Mathf.Clamp01(Mathf.Min((now - host.StreetCardsAt) / 0.15f, (host.StreetCardsUntil - now) / 0.3f)); streetCards.BringToFront();
-        }
-
-        string ConvoCardWords() { var c = host.ConvoNow; return c == null ? "" : string.Join(" ", c.Learned) + " " + string.Join(" ", c.Opens); }
-
-        /// <summary>Fable's cards as written. Learned leads with the Listen ear, Opens with the kit's pointer; no bar, no kind colour.</summary>
-        void ConvoCardsFill(VisualElement into, ref string fillKey, HandoverHost.Convo c)
-        {
-            string key = c.Id + "|" + string.Join(" ", c.Learned) + " " + string.Join(" ", c.Opens); if (key == fillKey) return; fillKey = key; into.Clear();
-            void Row(string icon, string line) { var r = E(into); r.style.flexDirection = FlexDirection.Row; r.style.alignItems = Align.Center; r.style.marginTop = 3; r.style.marginBottom = 3; var ic = E(r, null, w: 20, h: 20); ic.style.marginRight = 10; ic.style.flexShrink = 0; Icon(ic, icon, Cream); var t = L(r, "verb-name"); t.style.color = Cream; t.style.fontSize = 18; t.text = line; }
-            foreach (var l in c.Learned) Row("listen", l);
-            if (c.Learned.Count > 0 && c.Opens.Count > 0) { var hr = E(into, h: 1); hr.style.backgroundColor = new Color(0.6f, 0.47f, 0.30f); hr.style.marginTop = 6; hr.style.marginBottom = 6; }
-            foreach (var l in c.Opens) Row("pointer", l);
+            if (key == convoLineKey) return; convoLineKey = key; var ws = line.Split(' '); int used = 0; bool leaned = false; ConvoLeanNow = "";
+            foreach (var w in ws)
+            {
+                if (w.Length == 0) continue;
+                if (used >= convoWordEls.Count)
+                {
+                    var l = new Label(); l.pickingMode = PickingMode.Ignore; l.style.fontSize = LineType; l.style.color = Cream; l.style.marginLeft = 0; l.style.marginTop = 0; l.style.marginBottom = 0; l.style.paddingLeft = 0; l.style.paddingRight = 0; l.style.paddingTop = 0; l.style.paddingBottom = 0; l.style.marginRight = LineWordGap; l.style.unityFontStyleAndWeight = FontStyle.Normal; l.style.whiteSpace = WhiteSpace.NoWrap; l.style.textShadow = LineShadow();
+                    convoWords.Add(l); convoWordEls.Add(l);
+                }
+                var el = convoWordEls[used++]; bool isLean = !leaned && lean.Length > 0 && w.Trim('.', ',', '?', '!', ';', ':', '’', '\'', '"') == lean; leaned |= isLean; if (isLean) ConvoLeanNow = w;
+                var font = isLean ? leanFont : lineFont; if (font) el.style.unityFontDefinition = FontDefinition.FromFont(font); el.text = w; Show(el, true);
+            }
+            for (int i = used; i < convoWordEls.Count; i++) Show(convoWordEls[i], false);
         }
     }
 }
