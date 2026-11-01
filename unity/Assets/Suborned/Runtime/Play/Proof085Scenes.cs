@@ -220,7 +220,7 @@ namespace Suborned.Play
             { var cv = h.Text.Conversations.Find(x => x.Id == "listen-inez"); bool agreed = saidN.Count > 0 && saidN.TrueForAll(x => cv.Beats.Exists(b => b.Line == x)); var cardN = h.Feed.Find(c0 => c0.Verb == "listen") ?? h.FeedHistory.Find(c0 => c0.Verb == "listen"); bool whole = cardN != null && cardN.Lines.Count == cv.Beats.Count; bool noOld = !h.Talk.Exists(x => x.Text.Contains("Yes. Yes")) && (cardN == null || !cardN.Lines.Exists(l => l.Text.Contains("Yes. Yes")));
               row("r085neverOnce", cardsN && !chipN, $"scenes off: the card {cardsN}, a plain chip with the same facts {chipN}"); row("r085neverListen", agreed && whole && noOld && cardsN, $"bubbles [{string.Join(" | ", saidN)}]; feed card {cardN?.Lines.Count} lines of {cv.Beats.Count}; cards up {cardsN}; old line gone {noOld}"); } h.SetPaused(true); yield return Frames(2);
 
-            yield return ListenApart(h, dir, log, row); yield return ListenOnChair(h, dir, log, row); h.SetPaused(true);
+            yield return SoundChecks(h, dir, log, row); yield return ListenApart(h, dir, log, row); yield return ListenOnChair(h, dir, log, row); h.SetPaused(true);
             // ---- the same seed and orders: the same hash with scenes Always, First and Never, and with the clip off
             var hashes = new List<string>();
             foreach (var (mode, clipOff, route) in new[] { (ConversationScenes.Always, false, "route-a"), (ConversationScenes.FirstEachScene, false, "route-a"), (ConversationScenes.Never, false, "route-a"), (ConversationScenes.Always, true, "route-a"), (ConversationScenes.Always, false, "route-a-pressure"), (ConversationScenes.Never, false, "route-a-pressure") })

@@ -214,6 +214,8 @@ console.log(`headless: ${scenarios.length - bad.length}/${scenarios.length} scen
 for (const r of routes) console.log(`route ${r.id}: ${r.outcome}${r.fail ? ` (${r.fail})` : ''} at tick ${r.tick}, trail ${r.trail}, final ${r.finalHash.slice(0, 12)}${r.error ? `, error ${r.error}` : ''}`);
 console.log(`mission text: ${text}`);
 console.log(`seats: ${seats}`);
+// the sound pack's cues (briefs/087/cues.json, until Chime moves them to contracts/audio): view only, unhashed, for HostAudio.Pack; the fields the player reads
+{ const c = JSON.parse(readFileSync(join(root, 'briefs/087/cues.json'), 'utf8')); const body = JSON.stringify({ schema: c.schema, buses: c.buses, spatial: c.spatial, cues: c.cues.map((q: any) => ({ id: q.id, file: q.file, mix_group: q.mix_group, voices_max: q.voices_max, cooldown_s: q.cooldown_s, loop: q.loop, spatial: q.spatial })) }, null, 1) + '\n'; writeFileSync(join(stream, 'sound.json'), body); console.log(`sound pack: ${c.cues.length} cues`); }
 console.log(`listen partners: ${partners}`);
 console.log(`audio cues: ${cues}`);
 console.log(`→ ${plugin.replace(root + '/', '')}/Suborned.Sim.dll, ${stream.replace(root + '/', '')}/ (engine.json, headless.json, ${Object.keys(INPUTS).length} inputs)`);

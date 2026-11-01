@@ -68,17 +68,17 @@ namespace Suborned.Play
         }
 
         /// <summary>A bus's gain (linear), its parent's multiplied in.</summary>
-        float Bus(string bus) { float db = busDb.TryGetValue(bus, out var d) ? d : 0f; if (bus != "master" && busDb.TryGetValue("master", out var m)) db += m; return Mathf.Pow(10f, db / 20f); }
+        float Bus(string bus) { float db = busDb.TryGetValue(bus, out var d) ? d : 0f; if (duckNow.TryGetValue(bus, out var dk)) db += dk; if (bus != "master" && busDb.TryGetValue("master", out var m)) db += m; return Mathf.Pow(10f, db / 20f) * Settings.Current.audio.effects / 100f; }
 
         /// <summary>A log line in (Drain): its cue, once, if the cue file has one for its code.</summary>
         void AudioLog(LogLine l)
         {
-            if (Game == null || Game.Range) return; AudioInit();
+            if (Game == null) return; AudioInit(); PackLog(l); if (Game.Range) return;
             foreach (var c in cues)
             {
                 if (c.Log != l.Code) continue;
-                float now = Time.unscaledTime; if (cueLast.TryGetValue(c.Id, out var t0) && now - t0 < c.CooldownS) continue; cueLast[c.Id] = now;
-                var clip = Resources.Load<AudioClip>(c.Clip); CuesPlayed.Add($"{c.Id}@{MissionClock(l.Tick)}"); if (!clip) { Debug.LogWarning($"audio cue {c.Id}: no clip {c.Clip}"); continue; }
+                CuesPlayed.Add($"{c.Id}@{MissionClock(l.Tick)}"); if (SoundOff) continue; /* brief 087: what the log asked for, whatever the cooldown did */ float now = Time.unscaledTime; if (cueLast.TryGetValue(c.Id, out var t0) && now - t0 < c.CooldownS) continue; cueLast[c.Id] = now;
+                var clip = Resources.Load<AudioClip>(c.Clip); if (!clip) { Debug.LogWarning($"audio cue {c.Id}: no clip {c.Clip}"); continue; }
                 cueSource.pitch = c.Pitch; cueSource.panStereo = c.Id == "rivals-coming" ? EntryPan() : 0f;
                 cueSource.PlayOneShot(clip, c.Volume * Bus(c.Bus));
                 if (c.Id == "rivals-coming") loopGain = Mathf.Max(loopGain, 0.001f); // the loop starts on the same tick
@@ -96,9 +96,10 @@ namespace Suborned.Play
         /// <summary>Per frame: the listener on the ground focus; the engine loop on the rival car, by its drawn speed.</summary>
         void RivalAudioFrame()
         {
-            if (Game == null || Game.Range || views == null) return; AudioInit();
-            if (listener) listener.position = focus;
-            if (Time.frameCount % 60 == 0) foreach (var l in FindObjectsByType<AudioListener>(FindObjectsInactive.Exclude)) if (l.transform != listener && l.enabled) l.enabled = false; // one listener: the ground focus's (a camera rebuilt by Begin brings its own)
+            if (Game == null || views == null) return; AudioInit();
+            if (listener) { listener.position = focus; if (cam) listener.rotation = Quaternion.Euler(0f, cam.transform.eulerAngles.y, 0f); } // brief 087: 3D left and right turn with the camera (they came out reversed at yaw 210)
+            PackFrame(); if (Game.Range) return;
+            if (SoundOff) { if (loopSource && loopSource.isPlaying) loopSource.Stop(); return; } if (Time.frameCount % 60 == 0) foreach (var l in FindObjectsByType<AudioListener>(FindObjectsInactive.Exclude)) if (l.transform != listener && l.enabled) l.enabled = false; // one listener: the ground focus's (a camera rebuilt by Begin brings its own)
             var car = views.Find("car/rivals"); bool shown = car && car.gameObject.activeInHierarchy;
             if (engineLoop == null) return;
             if (!loopSource && shown)

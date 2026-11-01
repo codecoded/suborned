@@ -107,7 +107,7 @@ namespace Suborned.Play
             if (ConvoNow == null && convoWant != null && !ConvoStart()) return false;
             var c = ConvoNow; if (c == null) { ConvoDip = 0f; return false; }
             float now = Time.unscaledTime; var kb = Keyboard.current; var mouse = UnityEngine.InputSystem.Mouse.current;
-            ClearHover(); ClipHeld(); ConvoCalloutsWait(); ConvoCardsWait();
+            ClearHover(); ClipHeld(); ConvoCalloutsWait(); ConvoCardsWait(); if (Game != null && views != null) { AudioInit(); if (listener) { listener.position = focus; } PackFrame(); } // brief 087: the ducks and room tone run over a held clock
             if (c.OutAt < 0f)
             {
                 bool esc = kb != null && kb.escapeKey.wasPressedThisFrame;
@@ -185,6 +185,7 @@ namespace Suborned.Play
 
         void ConvoCut()
         {
+            PackCut(true);
             cvPos = cam.transform.position; cvRot = cam.transform.rotation; cvOrtho = cam.orthographic; cvSize = cam.orthographicSize; cvFov = cam.fieldOfView; cvNear = cam.nearClipPlane; cvFar = cam.farClipPlane;
             cvShadowDepth = shadows ? shadows.focusDepth : 0f;
             var c = ConvoNow;
@@ -221,6 +222,7 @@ namespace Suborned.Play
         {
             ConvoStandsEnd();
             if (!cvCut || !cam) { cvCut = false; return; }
+            if (why != "restart") PackCut(false);
             cam.orthographic = cvOrtho; cam.orthographicSize = cvSize; cam.fieldOfView = cvFov; cam.nearClipPlane = cvNear; cam.farClipPlane = cvFar;
             cam.transform.SetPositionAndRotation(cvPos, cvRot);
             if (shadows) shadows.focusDepth = cvShadowDepth;

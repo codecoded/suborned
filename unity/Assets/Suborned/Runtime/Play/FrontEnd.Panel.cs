@@ -295,7 +295,7 @@ namespace Suborned.Play
                     var a = S.audio;
                     Slider("Master", 0, 100, 5, () => a.master, v => { a.master = Mathf.RoundToInt(v); Save(); }, v => $"{Mathf.RoundToInt(v)}");
                     Slider("Music", 0, 100, 5, () => a.music, v => { a.music = Mathf.RoundToInt(v); Save(); }, v => $"{Mathf.RoundToInt(v)}");
-                    Slider("Effects", 0, 100, 5, () => a.effects, v => { a.effects = Mathf.RoundToInt(v); Save(); }, v => $"{Mathf.RoundToInt(v)}");
+                    Slider("Effects", 0, 100, 5, () => a.effects, v => { a.effects = Mathf.RoundToInt(v); Save(); }, v => $"{Mathf.RoundToInt(v)}"); Slider("Ambience", 0, 100, 5, () => a.ambience, v => { a.ambience = Mathf.RoundToInt(v); Save(); }, v => $"{Mathf.RoundToInt(v)}");
                     Slider("Voices", 0, 100, 5, () => a.voices, v => { a.voices = Mathf.RoundToInt(v); Save(); }, v => $"{Mathf.RoundToInt(v)}");
                     break;
                 }
