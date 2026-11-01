@@ -121,6 +121,26 @@
     }
    ],
    "whatsNew": ""
+  },
+  {
+   "build": 212,
+   "version": "0.2.212",
+   "date": "2026-11-01T19:41:24.266Z",
+   "builtAt": "2026-11-01T19:19:18.9348520Z",
+   "sha": "80aea1e5",
+   "dirty": true,
+   "engine": "0.39.0",
+   "engineSource": "working tree on a9dc194b2369",
+   "dllSha256": "7c7caa4bd2ddf048c4ddb198f8bcd9446ebcfdc0a16096c219badc00d7061965",
+   "recording": "c048",
+   "zip": "TheSuborned-0.2.212.zip",
+   "sent": [
+    {
+     "device": "skys-macbook-air-1",
+     "at": "2026-11-01T19:41:24.266Z"
+    }
+   ],
+   "whatsNew": ""
   }
  ]
 }
