@@ -146,3 +146,6 @@ On other routes, `guard.recalled` still fires and he walks at 1.4 m/s. The Scout
 - The Inez ring reads `Pressure · 25 s · +3 · Door 1:40`, with the eye and mark after. The Call way shows the field only after a Pressure.
 - A start with `temperament.waitress: mercenary` plays `scenes.items`.
 - The same seed and orders give the same hash with scenes Always, First or Never.
+
+## The waiting Scout's plate
+`less.done.plate.waiting` is "waiting", the key `HostHoldStatus` already reads (`DoneWord("plate.waiting", ...)`), so the fallback no longer shows. One lowercase word, as the other plates. It needs `words.ts`, and no code change.
