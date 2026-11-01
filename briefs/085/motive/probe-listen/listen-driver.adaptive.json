@@ -1,0 +1,1 @@
+{"schema": "suborned.mission.adaptive/1", "mission": "handover", "id": "listen-driver", "style": "careless", "note": "listen probe", "pace": "human", "rules": [{"id": "l", "op": "scout", "do": "listen", "target": "driver", "when": ["t>=:1:10"], "retry": 5, "tries": 30}]}
