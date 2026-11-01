@@ -276,7 +276,7 @@ export const Rulebook = z.strictObject({
     take: z.strictObject({ s: Ref, trailUnturned: Ref, struggle: Ref.optional() }), // struggle: optional only for runs pinned before brief 013
     // engine 0.23.0 (Sky 2026-10-22): a person act out of reach walks in instead of being refused too-far; optional so a rulebook pinned before it parses
     // (absent or walkIn false: too-far as before); rulebook.test.ts holds the live rulebook to having it
-    approach: z.strictObject({ walkIn: z.boolean(), repath: Ref, rule: text, tag: z.string().optional(), src: z.string().optional(), proposed: z.boolean().optional(), reason: z.string().optional() }).optional(),
+    listen: z.strictObject({ nearWalking: Ref, nearStill: Ref, chairGrace: Ref, look: Ref, step: Ref, hold: Ref, chairMargin: Ref, chairGround: Ref, atSpot: Ref, rule: text, tag: z.string().optional(), src: z.string().optional(), proposed: z.boolean().optional(), reason: z.string().optional() }).optional(), /* engine 0.39.0, brief 085; optional only so runs pinned before it parse */ approach: z.strictObject({ walkIn: z.boolean(), repath: Ref, rule: text, tag: z.string().optional(), src: z.string().optional(), proposed: z.boolean().optional(), reason: z.string().optional() }).optional(),
     rule: text,
   }),
   // checkIn (both) and seal: optional only so runs pinned before brief 013 parse; brief 013 retires them (response.checkIn, response.levels[].seal).

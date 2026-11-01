@@ -61,7 +61,7 @@ namespace Suborned.Sim
             return AttnPerson(w) && G.Within(s.At, op.Pos, R.AttnNearCm) && Sees(s.At, op.Pos) && !CrowdBlocks(s.At, op.Pos);
         }
         /// <summary>Is the operative in an act other than a Watch (the clock holds): busy, carrying a body or an operative, holding Vale.</summary>
-        bool AttnInAct(Op op) => (op.Busy != null && op.Busy.Do != "watch") || op.CarryBody.Length > 0 || op.Carrying.HasValue
+        bool AttnInAct(Op op) => ListenWaiting(op) || (op.Busy != null && op.Busy.Do != "watch") || op.CarryBody.Length > 0 || op.Carrying.HasValue
             || (op.Id == OpId.Enforcer && (Vale == ValeAt.WithEnforcer || Vale == ValeAt.Taking));
 
         /// <summary>Once a tick (brief 031 §2): every security watcher's clock on every operative, its stages, and the reports it makes.</summary>

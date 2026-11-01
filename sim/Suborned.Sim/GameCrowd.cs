@@ -86,7 +86,7 @@ namespace Suborned.Sim
         public readonly Dictionary<string, string> FaceRule = new Dictionary<string, string>(StringComparer.Ordinal);
         public readonly Dictionary<string, List<(string place, int from, int to, bool outside)>> Stops = new Dictionary<string, List<(string, int, int, bool)>>(StringComparer.Ordinal);
         /// <summary>Engine 0.34.0 (brief 067 L, Pulse): a post's waiting point and the staffed door it stands beside (the people file's `beside`).</summary>
-        public readonly Dictionary<string, string> Beside = new Dictionary<string, string>(StringComparer.Ordinal);
+        public readonly Dictionary<string, string> Beside = new Dictionary<string, string>(StringComparer.Ordinal); public readonly List<string> Chairs = new List<string>(); // Chairs: engine 0.39.0, in the file's order
         public Crowd(string json, Rules rules, ICollection<string> cast)
         {
             var n = JNode.Parse(json, "people");
@@ -117,7 +117,7 @@ namespace Suborned.Sim
                         if (f != "door" && f != "kerb" && !(f.StartsWith("to:", StringComparison.Ordinal) && Places.ContainsKey(f.Substring(3)))) throw new FormatException($"people faces.{kv.Key}: '{f}' is not door, kerb or to:<place> (unknown = reject)");
                         FaceRule[kv.Key] = f;
                     }
-                    else { var v = Pt.Of(kv.Value); if (v == new Pt(0, 0)) throw new FormatException($"people faces.{kv.Key}: a facing can't be zero"); FaceVec[kv.Key] = v; }
+                    else { var v = Pt.Of(kv.Value); if (v == new Pt(0, 0)) throw new FormatException($"people faces.{kv.Key}: a facing can't be zero"); FaceVec[kv.Key] = v; Chairs.Add(kv.Key); } // a direction is a seat's own (tools/sim/people.ts)
                 }
             if (n.Opt("beside") is JNode bs) // engine 0.34.0 (brief 067 L, Pulse): a post's waiting point and the staffed door it stands beside (Game.PostOf)
                 foreach (var kv in bs.Entries)

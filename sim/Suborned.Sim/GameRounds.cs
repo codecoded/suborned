@@ -134,7 +134,7 @@ namespace Suborned.Sim
         {
             var sv = ServerOf(p); if (sv == null || !R.RoundHolds.Contains(verb)) return;
             var ev = EvOf(sv); var me = RoundPoseAt(sv, ev, Tick).Pos;
-            var f = op.Pos - me; if (f == new Pt(0, 0)) f = sv.Face;
+            var f = op.Pos - me; if (f == new Pt(0, 0) || (verb == "listen" && R.ListenSpotOn)) f = sv.Face; // engine 0.39.0: a discreet Listen: she keeps her own facing
             ev.Holds.Add(new RoundEvents.Hold { From = Tick, To = landsAt, Face = f, By = op.Id }); ev.Version++;
         }
         /// <summary>An operative's order ends early (cancelled, or the operative down): a hold it made ends now (its linger still follows).</summary>

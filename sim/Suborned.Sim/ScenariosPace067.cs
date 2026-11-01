@@ -134,7 +134,7 @@ namespace Suborned.Sim
                 r.To(Math.Max(g.Tick, T(228)));
                 r.Do(Fixer, "call", Inez);
                 var call = g.Log.FindLast(l => l.Code == "call.waitress");
-                r.Is(call.Code == "call.waitress" && call.Text.Contains("walks over to her (57 s)"), $"the guard walks over to her in 57 s, the city's pace (at the cell's 1.8 m/s it would be 44 s): \"{call.Text}\"");
+                r.Is(call.Code == "call.waitress" && call.Text.Contains($"walks over to her ({g.VisitWalkTicks / Game.Hz} s)") && g.VisitWalkTicks / Game.Hz >= 55 && g.VisitWalkTicks / Game.Hz <= 58, $"the guard walks over to her in 55-58 s by her side's free stop, the city's pace (at the cell's 1.8 m/s it would be 44 s): \"{call.Text}\""); // engine 0.39.0: the Scout's spot moves which stop is free
             });
 
             // Motive's run-camera script (briefs/067/motive/plans/run-camera.script.json): the Scout runs 16 legs of 10 m across the entrance camera's view

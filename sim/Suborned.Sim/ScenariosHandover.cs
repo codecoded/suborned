@@ -1125,7 +1125,7 @@ namespace Suborned.Sim
             FinalIntentCases(); // engine 0.20.0 (tuning.md §15.2, PROVISIONAL): the final fight per agent (ScenariosFinalIntent.cs)
             SealCarCases(); // engine 0.30.0 (briefs 057 §2 and §4, 060 #8): FailCause.Car, the debrief true to the run, the seal window, the reroute walk and PatrolLegs (ScenariosSealCar.cs)
             WindowCases(); // engine 0.24.0 (brief 043 §6): Windows(), the window marker's one read, and patrol.returns (ScenariosWindows.cs)
-            PressedCallCases(); SeedCases(); // brief 085: ScenariosPressedCall.cs; brief 080: the seed and the rolled shot (ScenariosSeed.cs)
+            PressedCallCases(); ListenSpotCases(); SeedCases(); // brief 085: ScenariosPressedCall.cs; brief 080: the seed and the rolled shot (ScenariosSeed.cs)
             FireWhyCases(); // engine 0.25.0 (Sky playing 0.2.56): why a hostile fires on an operative, FireWhyOf and ai.why (ScenariosFireWhy.cs)
             NoticeCases(); // engine 0.28.0 (briefs 054, 055): sight from real heights, civilian notice by cone and Alert, the Watch that shows something (ScenariosNotice.cs)
             CameraLineCases(); // engine 0.31.0 (brief 058 §6, brief 054 §8): Loop v2, Disable, the camera shot's price, a runner remembered from Alert 2 (ScenariosCameraLines.cs)

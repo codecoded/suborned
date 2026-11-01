@@ -84,7 +84,7 @@ namespace Suborned.Sim
                 if (op.Driven) h.S("drive").Z(op.DriveTo.HasValue).P(op.DriveTo ?? default).Z(op.DriveRun).Z(op.DriveSpan).Z(op.Running).Z(op.DriveMoved).I(op.Face).I(op.DriveBudget).I(op.DrivePush).Z(op.DriveResume.HasValue).P(op.DriveResume ?? default).Z(op.DriveResumeRun); // brief 025: only a driven operative adds bytes
                 if (op.RanLast != Game.RunsNow(op)) h.S("ran").Z(op.RanLast); // tuning.md §10.2 settle: only a run ended since the last fight tick adds bytes
                 if (op.CloseSpent) h.S("spent"); // engine 0.15.0 (tuning.md §8.2 rule 4): only a spent walk-in adds bytes
-                if (op.Act != null) h.S("act").S(op.Act.ToString()).I(op.ActNext); // engine 0.23.0: only a person act walking in adds bytes
+                if (op.Act != null) h.S("act").S(op.Act.ToString()).I(op.ActNext); /* engine 0.23.0: only a person act walking in adds bytes */ if (op.Spot != null && (ReferenceEquals(op.Spot.For, op.Act) || ReferenceEquals(op.Spot.For, op.Busy))) h.S("spot").P(op.Spot.At).S(op.Spot.Chair).I(op.Spot.Chose); // engine 0.39.0
                 h.S(op.Busy?.ToString() ?? "").I(op.BusyEnd);
                 Gun(h, op.Gun); h.I(op.Carrying.HasValue ? (int)op.Carrying.Value : -1).I(op.CarriedBy.HasValue ? (int)op.CarriedBy.Value : -1).Z(op.RunAlerted).I(op.RunSeen.Count);
             }

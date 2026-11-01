@@ -124,7 +124,7 @@ namespace Suborned.Sim
         public Order? Busy; public int BusyEnd;          // an action in progress, landing at BusyEnd
         /// <summary>Engine 0.23.0 (rulebook cell.approach): a person act taken out of reach, walking in (the act starts in reach); and the tick its walk is
         /// next re-aimed. Hashed only when set.</summary>
-        public Order? Act; public int ActNext;
+        public Order? Act; public int ActNext; public ListenSpot? Spot; // engine 0.39.0: GameListenSpot.cs
         public int BusyStart;                            // when it began (the HUD's progress; derived, so not hashed)
         public Quote? BusyQuote; public long BusyPaid;   // the card's price when the order was given, and the money taken (Redline E2)
         public bool Inside;                              // the Enforcer inside the Office (§01 exteriors only: an off-screen action)
