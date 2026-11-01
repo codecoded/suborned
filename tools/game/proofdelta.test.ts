@@ -6,7 +6,7 @@ import { join } from 'node:path';
 import { GATED } from './proofgates';
 import { comparedWords, proofSources, wordGaps, wordsOf } from './words';
 import { zoneProblem } from './batch';
-import { stillsKeyOf, hostGaps, hostReads, sectionReads, aloneLine, recordSteps, shotsGate, stepGate, changedPaths, classify, coverageGaps, emptyLedger, gateFile, ledgerFile, loadMap, mapHash, planFile, planLines, planProof, recordProof, readLedger, sectionIds, skipText, snapshot, snapshotOf, whatIf, writeLedger, writePlan, ROOT, type Ledger, type ProofMap } from './proofdelta';
+import { MISSION_FILE, missionParts, stillsKeyOf, hostGaps, hostReads, sectionReads, aloneLine, recordSteps, shotsGate, stepGate, changedPaths, classify, coverageGaps, emptyLedger, gateFile, ledgerFile, loadMap, mapHash, planFile, planLines, planProof, recordProof, readLedger, sectionIds, skipText, snapshot, snapshotOf, whatIf, writeLedger, writePlan, ROOT, type Ledger, type ProofMap } from './proofdelta';
 
 const m = loadMap(), ids = sectionIds(m), PLAY = 'unity/Assets/Suborned/Runtime/Play/';
 const snap = (o: Record<string, string>) => snapshotOf(new Map(Object.entries(o)));
@@ -30,7 +30,7 @@ describe('the table', () => {
     for (const p of ['sim/data/rulebook.json', 'sim/Suborned.Sim/Game.cs', 'out/world/harbour-district.world.json', 'contracts/world/kit.json', 'tools/kit/catalogue.ts', 'unity/Assets/Suborned/Kit/a/b.fbx', 'unity/Assets/Suborned/Sim/Plugins/Suborned.Sim.dll', 'unity/Assets/StreamingAssets/sim/x.json', PLAY + 'GameBoot.cs']) expect(classify(m, p)?.run).toBe('full');
   });
   test('a path it cannot place has no row: the game\'s other code, assets and settings among them', () => {
-    for (const p of ['tools/mystery/x.ts', PLAY + 'HostNew.cs', PLAY + 'SimBundle.cs', 'unity/ProjectSettings/QualitySettings.asset', 'unity/Packages/manifest.json', 'unity/Assets/Settings/PC_RPAsset.asset', 'unity/Assets/Suborned/Shaders/DecoKit/DK_Leaf.hlsl', 'contracts/missions/handover/mission.json', 'sim/cli/Program.cs']) expect(classify(m, p)).toBeUndefined();
+    for (const p of ['tools/mystery/x.ts', PLAY + 'HostNew.cs', PLAY + 'SimBundle.cs', 'unity/ProjectSettings/QualitySettings.asset', 'unity/Packages/manifest.json', 'unity/Assets/Settings/PC_RPAsset.asset', 'unity/Assets/Suborned/Shaders/DecoKit/DK_Leaf.hlsl', 'sim/cli/Program.cs']) expect(classify(m, p)).toBeUndefined();
   });
   test('tools no batch step imports are none; the late rows\' pins are that step\'s alone', () => {
     for (const p of ['tools/figures/build.py', 'tools/life/cli.ts', 'tools/dialogue/cli.ts', 'tools/missions/check/cli.ts', 'tools/game/hostlogic/HostLogic.cs', 'tools/game/hostlogic.ts']) expect(classify(m, p)?.run).toBe('none');
@@ -279,6 +279,28 @@ describe('the snapshot', () => {
 });
 
 describe('the batch\'s steps (delta only)', () => {
+  test('mission.json by what reads each field: a listen partner reaches only the sim step and, through its copy, r067 and r083; a destination the world and scene steps; never the kit or tp-long', () => {
+    const M = MISSION_FILE, text = (o: object) => JSON.stringify({ note: 'n', points: [1], listenPartners: [1], destinations: [1], clock: { startsAt: '1' }, ...o }), base = missionParts(text({}));
+    const now = (o: object) => missionParts(text(o)), go = (f: Record<string, string>, step: string) => stepGate(m, snap({ ...f, [M]: 'b' }), recordSteps(emptyLedger(), snap({ ...base, [M]: 'a' }), ['sim', 'kit', 'world', 'unity-world', 'unity-match', 'scenarios', 'late-fight', 'tp-long'], BUILD), step).run;
+    const STEPS = ['sim', 'kit', 'world', 'unity-world', 'unity-match', 'scenarios', 'late-fight', 'tp-long'], ran = (f: Record<string, string>) => STEPS.filter(s => go(f, s));
+    expect(ran(now({ listenPartners: [2] }))).toEqual(['sim']);
+    expect(ran(now({ destinations: [2] }))).toEqual(['world', 'unity-world']); expect(ran(now({ clock: { startsAt: '2' } }))).toEqual(['world', 'unity-world']);
+    expect(ran(now({ points: [2] }))).toEqual([]); expect(ran(now({ note: 'other' }))).toEqual([]);
+    expect(now({ listenPartners: [2] })[`${M}#rest`]).toBe(base[`${M}#rest`]); 
+    // a field outside the parts goes to rest
+    expect(now({ fresh: 1 })[`${M}#rest`]).not.toBe(base[`${M}#rest`]);
+    const copy = 'unity/Assets/StreamingAssets/sim/handover.listen-partners.json'; expect(whatIf(m, [copy]).only).toEqual(['r067', 'r083']); expect(whatIf(m, [`${M}#listenPartners`]).only).toEqual([]);
+    expect(whatIf(m, [`${M}#points`]).only.sort()).toEqual(['cars', 'done', 'r067']);
+    expect(classify(m, 'unity/Assets/StreamingAssets/sim/rulebook.json')?.run).toBe('full'); // failing example: another copy stays on the full row
+  });
+  test('a ledger from before the split: the whole file unchanged is no change, moved it counts', () => {
+    const M = MISSION_FILE, parts = missionParts('{"points":[1]}'); expect(changedPaths({ [M]: 'a' }, { [M]: 'a', ...parts })).toEqual([]);
+    expect(changedPaths({ [M]: 'a' }, { [M]: 'b', ...parts }).length).toBe(5);
+  });
+  test('the engine\'s copier runs its own step only; what it writes is placed by its own rows', () => {
+    expect(classify(m, 'tools/sim/unity.ts')).toMatchObject({ run: [], steps: ['sim'] });
+    expect(classify(m, 'unity/Assets/Suborned/Sim/Plugins/Suborned.Sim.dll')?.run).toBe('full');
+  });
   test('the rules\' source runs the engine\'s steps and every shot, never the kit, world, scene or tp-long; no section by itself, the copy on the full row does that', () => {
     const f = 'contracts/rules/rulebook.json', base = { ...BASE, [f]: 'a' }, go = (step: string) => stepGate(m, snap({ ...base, [f]: 'b' }), recordSteps(emptyLedger(), snap(base), ['sim', 'kit', 'world', 'unity-world', 'unity-match', 'scenarios', 'late-fight', 'tp-long'], BUILD), step).run;
     expect(['sim', 'unity-match', 'scenarios', 'late-fight'].filter(go)).toEqual(['sim', 'unity-match', 'scenarios', 'late-fight']); expect(['kit', 'world', 'unity-world', 'tp-long'].filter(go)).toEqual([]);

@@ -47,6 +47,15 @@ export function mapHash(m: ProofMap, section: string): string {
   return createHash('sha256').update(JSON.stringify(rows)).digest('hex').slice(0, 16);
 }
 
+/** mission.json by field (brief 085): one file, whose fields have different readers, so the map places them apart as `<file>#<part>`. A field that is in no part goes to `rest`. */
+export const MISSION_FILE = 'contracts/missions/handover/mission.json';
+const MISSION_PARTS: Record<string, string> = { listenPartners: 'listenPartners', points: 'points', note: 'note' };
+export function missionParts(text: string): Record<string, string> {
+  const sha = (v: unknown) => 'sha256:' + createHash('sha256').update(JSON.stringify(v) ?? '').digest('hex'), parts: Record<string, Record<string, unknown>> = {};
+  let j: Record<string, unknown>; try { j = JSON.parse(text); } catch { return { [`${MISSION_FILE}#rest`]: sha(text) }; } // unreadable: everything is rest, and the checks say why
+  for (const [k, v] of Object.entries(j)) (parts[MISSION_PARTS[k] ?? 'rest'] ??= {})[k] = v;
+  return Object.fromEntries(['listenPartners', 'points', 'note', 'rest'].map(p => [`${MISSION_FILE}#${p}`, sha(parts[p] ?? null)]));
+}
 export type Snapshot = { id: string; files: Record<string, string> };
 export const snapshotOf = (files: Map<string, string>): Snapshot => ({ id: fingerprint(files).slice(0, 16), files: Object.fromEntries(files) });
 /** The tree by content, leaving out what the table says the player cannot read (so the evidence under briefs/ is not even hashed). */
@@ -65,10 +74,13 @@ export function snapshot(root = ROOT, m = loadMap()): Snapshot {
     if (item.endsWith('.json')) files.set(item, 'sha256:' + createHash('sha256').update(readFileSync(p)).digest('hex'));
     else for (const [f, h] of ignoredFiles(root, [item])) files.set(f, h);
   }
+  if (files.has(MISSION_FILE) && existsSync(join(root, MISSION_FILE))) for (const [f, h] of Object.entries(missionParts(readFileSync(join(root, MISSION_FILE), 'utf8')))) files.set(f, h);
   return snapshotOf(files);
 }
+/** A field path new since `was`, whose whole file has not moved, is the same bytes as before (a ledger written before the file was split): not a change. */
 export function changedPaths(was: Record<string, string>, now: Record<string, string>): string[] {
-  return [...new Set([...Object.keys(was), ...Object.keys(now)])].filter(f => was[f] !== now[f]).sort();
+  const base = (f: string) => f.split('#')[0]!;
+  return [...new Set([...Object.keys(was), ...Object.keys(now)])].filter(f => was[f] !== now[f] && !(f.includes('#') && !(f in was) && was[base(f)] !== undefined && was[base(f)] === now[base(f)])).sort();
 }
 
 // ---------------------------------------------------------------- the ledger

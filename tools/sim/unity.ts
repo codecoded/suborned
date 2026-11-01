@@ -4,7 +4,7 @@
 //   unity/Assets/Suborned/Sim/Plugins/Suborned.Sim.dll   the DLL the CLI ran (same bytes, checked)
 //   unity/Assets/StreamingAssets/sim/                     rulebook.json, people.rules.json, handover.site.json, handover.people.json, handover.provisional.json, handover.takedown.json, handover.rounds.json (the inputs it ran on),
 //                                                         headless.json (every scenario's outcome, checks and checkpoint hashes), engine.json; and the host's own content, never an engine input:
-//                                                         text.json (the mission's words), handover.seats.json (who sits where), cues.json (which sound plays on which event; Chime, brief 059)
+//                                                         text.json (the mission's words), handover.seats.json (who sits where), cues.json (which sound plays on which event; Chime, brief 059), handover.listen-partners.json (who a Listen's person talks to, from mission.json)
 // Unity's Suborned/Sim/Run Scenarios plays the same scenarios with the same DLL and inputs and must give the same hashes (§11).
 // The inputs are validated by bun first, with the schemas of the same commit (Redline E1: Engine.FromTexts lets unknown keys through, and a
 // bad text can throw out of Step() or overflow the stack): the rulebook and people rules parse with their zod schemas and every rulebook ref
@@ -171,6 +171,19 @@ let seats = 'absent (nobody is drawn seated)';
     seats = `handover.seats.json ${sha(body).slice(0, 12)} (${Object.keys(j.seated).length} people, ${Object.keys(j.tables).length} tables; view only, unhashed)`;
   } else rmSync(join(stream, 'handover.seats.json'), { force: true });
 }
+// 4d. who a Listen's person talks to (mission.json listenPartners, brief 085): view-only host content for HostViews.Listen, like the seats: never an engine input, never hashed. Same source as the inputs.
+const MISSION = 'contracts/missions/handover/mission.json';
+let partners = 'absent (a Listen has no one step out)';
+{
+  const body = tree ? (existsSync(join(root, MISSION)) ? readFileSync(join(root, MISSION), 'utf8') : null)
+    : (sh(['git', 'cat-file', '-e', `HEAD:${MISSION}`]).code === 0 ? need(sh(['git', 'show', `HEAD:${MISSION}`]), `git show ${MISSION}`) : null);
+  const list = body ? JSON.parse(body).listenPartners : undefined;
+  if (list !== undefined) {
+    if (!Array.isArray(list) || list.some(p => typeof p?.role !== 'string' || typeof p?.name !== 'string' || typeof p?.from !== 'string')) { console.error(`${MISSION} listenPartners: each needs a role, a name and a from (its schema: contracts/missions/mission.schema.ts)`); process.exit(1); }
+    writeFileSync(join(stream, 'handover.listen-partners.json'), JSON.stringify({ schema: 'suborned.view.listen-partners/1', partners: list }, null, 1) + '\n');
+    partners = `handover.listen-partners.json (${list.length}; view only, unhashed)`;
+  } else rmSync(join(stream, 'handover.listen-partners.json'), { force: true });
+}
 // 4d. the audio cues (Chime, suborned.audio-cues/1, contracts/audio/cues.json; Splice, briefs/067/splice.md item 2): which clip plays on which log code, at what volume, on which
 // bus. Host content like the text and the seats: HostAudio.cs reads StreamingAssets/sim/cues.json first, then the repo's contracts/ folder, then the values copied into its
 // code, so a build that does not ship the file plays the code's copy on any Mac but this one. From the same source as the inputs (the commit, or the tree with --tree),
@@ -201,8 +214,7 @@ console.log(`headless: ${scenarios.length - bad.length}/${scenarios.length} scen
 for (const r of routes) console.log(`route ${r.id}: ${r.outcome}${r.fail ? ` (${r.fail})` : ''} at tick ${r.tick}, trail ${r.trail}, final ${r.finalHash.slice(0, 12)}${r.error ? `, error ${r.error}` : ''}`);
 console.log(`mission text: ${text}`);
 console.log(`seats: ${seats}`);
-// who a Listen's person talks to (mission.json listenPartners; brief 085): view only, unhashed, for HostViews.Listen
-{ const m = JSON.parse(readFileSync(join(root, 'contracts/missions/handover/mission.json'), 'utf8')); const body = JSON.stringify({ schema: 'suborned.view.listen-partners/1', partners: m.listenPartners ?? [] }, null, 1) + '\n'; writeFileSync(join(stream, 'handover.listen-partners.json'), body); console.log(`listen partners: ${(m.listenPartners ?? []).length}`); }
+console.log(`listen partners: ${partners}`);
 console.log(`audio cues: ${cues}`);
 console.log(`→ ${plugin.replace(root + '/', '')}/Suborned.Sim.dll, ${stream.replace(root + '/', '')}/ (engine.json, headless.json, ${Object.keys(INPUTS).length} inputs)`);
 process.exit(bad.length ? 1 : 0);
