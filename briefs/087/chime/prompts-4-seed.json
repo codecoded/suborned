@@ -1,0 +1,218 @@
+[
+ {
+  "id": "cafe_bell",
+  "s": 3,
+  "takes": 2,
+  "model": "bytedance:seed-audio@1.0",
+  "est": 0.08,
+  "base": 20,
+  "prompt": "Sound effect only. One small brass shop-door bell on a spring, a bright little jingle of two or three quick tinkles as a door opens, then silence. Close and dry. No voice, no speech, no music."
+ },
+ {
+  "id": "cafe_door",
+  "s": 3,
+  "takes": 2,
+  "model": "bytedance:seed-audio@1.0",
+  "est": 0.08,
+  "base": 20,
+  "prompt": "Sound effect only. One light glass cafe door with a chrome handle: it opens, swings back on a soft pneumatic closer with a gentle hiss, and clicks shut, then silence. No bell. No voice, no speech, no music."
+ },
+ {
+  "id": "handover_chime",
+  "s": 3,
+  "takes": 3,
+  "model": "bytedance:seed-audio@1.0",
+  "est": 0.08,
+  "base": 20,
+  "prompt": "Sound effect only. A public building's shift-end chime heard over a city square: exactly three soft struck brass tubular bell notes, one second apart, warm and unhurried, then a natural decay of three seconds, then silence. Six seconds in all. No voice, no speech, no music."
+ },
+ {
+  "id": "notice_ting",
+  "s": 3,
+  "takes": 2,
+  "model": "bytedance:seed-audio@1.0",
+  "est": 0.08,
+  "base": 20,
+  "prompt": "Sound effect only. One tiny high brass desk bell ting, a single dry light strike with a very short ring, then silence. No voice, no speech, no music."
+ },
+ {
+  "id": "phone_bell",
+  "s": 3,
+  "takes": 2,
+  "model": "bytedance:seed-audio@1.0",
+  "est": 0.08,
+  "base": 20,
+  "prompt": "Sound effect only. A short burst of an old telephone's mechanical brass ringer, under one second, a quick metallic trill, then silence. One burst only. No voice, no speech, no music."
+ },
+ {
+  "id": "camera_click",
+  "s": 3,
+  "takes": 3,
+  "model": "bytedance:seed-audio@1.0",
+  "est": 0.08,
+  "base": 20,
+  "prompt": "Sound effect only. One small dry mechanical click of a little brass camera mount reaching the end of its turn, with a tiny relay tick, under a quarter of a second, then silence. No voice, no speech, no music."
+ },
+ {
+  "id": "patrol_loop",
+  "s": 3,
+  "takes": 2,
+  "model": "bytedance:seed-audio@1.0",
+  "est": 0.08,
+  "base": 20,
+  "prompt": "Sound effect only. A clockwork robot walking steadily on stone pavement at an even calm pace: soft regular metal footfalls about two a second, a low gentle electric hum and tiny gears ticking. Continuous for fifteen seconds with no change and no ending. No voice, no speech, no music."
+ },
+ {
+  "id": "patrol_break",
+  "s": 3,
+  "takes": 2,
+  "model": "bytedance:seed-audio@1.0",
+  "est": 0.08,
+  "base": 20,
+  "prompt": "Sound effect only. A clockwork robot hurrying on stone pavement: fast heavy metal footfalls about three a second, a tense higher electric whine and ratcheting gears. Continuous for fifteen seconds with no change and no ending. No siren. No voice, no speech, no music."
+ },
+ {
+  "id": "patrol_sting",
+  "s": 3,
+  "takes": 2,
+  "model": "bytedance:seed-audio@1.0",
+  "est": 0.08,
+  "base": 20,
+  "prompt": "Sound effect only. One heavy mechanical relay clunk followed by a short electric motor spinning up in under a second, a machine switching mode, then silence. No beep. No voice, no speech, no music."
+ },
+ {
+  "id": "police_siren",
+  "s": 3,
+  "takes": 2,
+  "model": "bytedance:seed-audio@1.0",
+  "est": 0.08,
+  "base": 20,
+  "prompt": "Sound effect only. A mechanical 1950s police siren far away across a city, slowly rising and falling twice as it comes closer, with an echo off tall buildings, about eight seconds, fading at the end. No modern electronic wail. No voice, no speech, no music."
+ },
+ {
+  "id": "fire_pistol",
+  "s": 3,
+  "takes": 2,
+  "model": "bytedance:seed-audio@1.0",
+  "est": 0.08,
+  "base": 20,
+  "prompt": "Sound effect only. One sharp small pistol gunshot outdoors in a city square, a crisp clean crack and a short echo off stone buildings, then silence. One shot only. No voice, no speech, no music."
+ },
+ {
+  "id": "fire_carbine",
+  "s": 3,
+  "takes": 2,
+  "model": "bytedance:seed-audio@1.0",
+  "est": 0.08,
+  "base": 20,
+  "prompt": "Sound effect only. One powerful carbine rifle gunshot outdoors in a city square, a deep heavy boom with a long low echo rolling off buildings, then silence. One shot only. No voice, no speech, no music."
+ },
+ {
+  "id": "fire_police",
+  "s": 3,
+  "takes": 2,
+  "model": "bytedance:seed-audio@1.0",
+  "est": 0.08,
+  "base": 20,
+  "prompt": "Sound effect only. One old service revolver gunshot outdoors, a round woody bang in the mid range with a short street echo, then silence. One shot only. No voice, no speech, no music."
+ },
+ {
+  "id": "fire_rival",
+  "s": 3,
+  "takes": 2,
+  "model": "bytedance:seed-audio@1.0",
+  "est": 0.08,
+  "base": 20,
+  "prompt": "Sound effect only. One loud snub-nosed handgun shot outdoors, a harsh rough bark with a metallic edge, dry, very little echo, then silence. One shot only. No voice, no speech, no music."
+ },
+ {
+  "id": "fire_robot",
+  "s": 3,
+  "takes": 2,
+  "model": "bytedance:seed-audio@1.0",
+  "est": 0.08,
+  "base": 20,
+  "prompt": "Sound effect only. One shot from a machine-mounted pneumatic bolt gun: a hard compressed-air thump with a metal clack of the mechanism cycling, then silence. One shot only. No laser, no beep. No voice, no speech, no music."
+ },
+ {
+  "id": "hit_body",
+  "s": 3,
+  "takes": 2,
+  "model": "bytedance:seed-audio@1.0",
+  "est": 0.08,
+  "base": 20,
+  "prompt": "Sound effect only. One short hard punch-like impact on a heavy coat, a dull meaty thud, very short, then silence. No voice, no speech, no music."
+ },
+ {
+  "id": "hit_metal",
+  "s": 3,
+  "takes": 2,
+  "model": "bytedance:seed-audio@1.0",
+  "est": 0.08,
+  "base": 20,
+  "prompt": "Sound effect only. One bullet striking a metal robot's chest plate, a bright hard metal clank with a short ring, then silence. No voice, no speech, no music."
+ },
+ {
+  "id": "miss",
+  "s": 3,
+  "takes": 2,
+  "model": "bytedance:seed-audio@1.0",
+  "est": 0.08,
+  "base": 20,
+  "prompt": "Sound effect only. One bullet striking stone pavement nearby: a short dusty stone chip with a small ricochet zip, then silence. No gunshot. No voice, no speech, no music."
+ },
+ {
+  "id": "down_body",
+  "s": 3,
+  "takes": 2,
+  "model": "bytedance:seed-audio@1.0",
+  "est": 0.08,
+  "base": 20,
+  "prompt": "Sound effect only. One person collapsing onto stone pavement: a heavy soft body thud with a short cloth rustle, about one second, then silence. No voice, no speech, no music."
+ },
+ {
+  "id": "down_robot",
+  "s": 3,
+  "takes": 2,
+  "model": "bytedance:seed-audio@1.0",
+  "est": 0.08,
+  "base": 20,
+  "prompt": "Sound effect only. One heavy metal robot falling over onto stone pavement: a loud metal crash, loose parts clattering, a dying electric whir, about two seconds, then silence. No voice, no speech, no music."
+ },
+ {
+  "id": "cut_soft",
+  "s": 3,
+  "takes": 3,
+  "model": "bytedance:seed-audio@1.0",
+  "est": 0.08,
+  "base": 20,
+  "prompt": "Sound effect only. One soft quick puff of compressed air, clearly audible, like a brass pneumatic tube capsule arriving at a desk, a gentle thump and a short hiss, under half a second, then silence. No beep. No voice, no speech, no music."
+ },
+ {
+  "id": "card_new",
+  "s": 3,
+  "takes": 2,
+  "model": "bytedance:seed-audio@1.0",
+  "est": 0.08,
+  "base": 20,
+  "prompt": "Sound effect only. One soft small warm chime, a single gentle brass and glass note with a short pleasant ring of one second, like a little service bell in a quiet office, then silence. No voice, no speech, no music."
+ },
+ {
+  "id": "room_tone",
+  "s": 3,
+  "takes": 2,
+  "model": "bytedance:seed-audio@1.0",
+  "est": 0.08,
+  "base": 20,
+  "prompt": "Sound effect only. Quiet still room tone of a small empty office: a very faint low electric hum and very soft air. Steady and even for fifteen seconds. Nothing happens. No footsteps, no clock ticking. No voice, no speech, no music."
+ },
+ {
+  "id": "street_bed",
+  "s": 3,
+  "takes": 4,
+  "model": "bytedance:seed-audio@1.0",
+  "est": 0.08,
+  "base": 20,
+  "prompt": "Sound effect only. Warm calm daytime ambience of a large city plaza from above: a distant soft hum of traffic, a far-off murmur of many people with no clear words, a light breeze, a faint electric tram far away. Steady and even for twenty seconds with no sudden events. No horns, no birds. No voice, no speech, no music."
+ }
+]

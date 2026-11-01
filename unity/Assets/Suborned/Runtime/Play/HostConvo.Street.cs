@@ -12,6 +12,8 @@ namespace Suborned.Play
     public sealed partial class HandoverHost
     {
         readonly List<(float due, string speaker, string text, bool inset)> streetDue = new();
+        /// <summary>Street lines of a conversation still to come: a Listen\u0027s partner stays for them.</summary>
+        public bool StreetLinesDue => streetDue.Count > 0;
         void ResetStreet() { streetDue.Clear(); doorRead = (-1, "", null); PersonCards.Clear(); }
 
         PlayText.ConvStreet StreetFor(string code)

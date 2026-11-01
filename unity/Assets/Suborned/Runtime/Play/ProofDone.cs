@@ -132,7 +132,7 @@ namespace Suborned.Play
             var chip = h.LastChip; string chipWords = HudToolkit.ChipWords; int shown = HudToolkit.ChipsShown; string donePlate = h.PlateWords(0);
             if (Still) yield return new WaitForSecondsRealtime(0.5f); // Glyph 0.2.65: the pill's fade was caught behind the bubble; the chip lives 4.2 s
             yield return Shoot(h, dir, "done-listen-chip", log);
-            bool chipOk = heard && chip != null && chip.Do == "listen" && chip.Lines.Count >= 2 && chip.Unlocks.Exists(u => u.Word == "Help") && shown >= 1 && h.Feed.Count > rows0;
+            bool chipOk = heard && chip != null && chip.Do == "listen" && chip.Lines.Count >= 2 && chip.Unlocks.Exists(u => u.Word == "Help") && h.Feed.Count > rows0 && h.PersonCards.Exists(pc => pc.Id == "listen-inez" && pc.Who == "waitress") && !chipWords.Contains("Help"); // brief 085: with scenes off the facts show once, on the card after the street lines; the plain chip stands aside
             parts.Add($"\"listenChip\": {{\"ok\": {B(chipOk)}, \"watchChip\": \"{J(watchChip)}\", \"chip\": \"{J(chipWords)}\", \"lines\": \"{J(chip == null ? "" : string.Join(" · ", chip.Lines.Select(x => x.Word)))}\", \"unlocks\": \"{J(chip == null ? "" : string.Join(",", chip.Unlocks.Select(u => u.Word)))}\", \"shown\": {shown}, \"plate\": \"{J(donePlate)}\", \"rows\": {h.Feed.Count - rows0}}}"); ok &= chipOk;
             log.Add($"done listen chip: {(chipOk ? "ok" : "FAILED")}: '{chipWords}' ({shown} shown), plate '{donePlate}', watch chip '{watchChip}'");
             // ---- 4 · Help is the main action now for the Fixer, with the lit pip

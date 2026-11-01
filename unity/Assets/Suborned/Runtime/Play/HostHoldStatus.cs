@@ -207,7 +207,7 @@ namespace Suborned.Play
             if (fid.Length > 0 && op.Busy == null && OneInput && FireOne(k, fid).phase == "fire" && FireDownS(k) is int dn && dn >= 0) { plateFireDown[k] = true; return $"{dn} s"; } // Glyph G1 (0.2.135): the fire line's time to down, on the shooter's portrait chip (the plate's icon: the downed mark)
             if (fid.Length > 0 && op.Busy == null) { var (ph, wd) = FireOne(k, fid); return ph == "blocked" ? (wd == "Too far" ? Text?.DoneWord("fire.out-of-range", "too far") ?? "too far" : Text?.DoneWord("fire.no-clear-line", "no line") ?? "no line") : wd; }
             if (op.Busy != null) return $"{ActLeftS(k)} s";
-            if (op.Act != null) return WalkPlate(op.Act); // engine 0.23 walk-in (Fable less.done.walk.plate): "→ Inez"; the seconds stay on the pill
+            if (op.Act != null && Game.ListenSpotNow(Op.Name((OpId)k)) is { waiting: true }) return Text?.DoneWord("plate.waiting", "waiting") ?? "waiting"; /* brief 085: at the spot, the person not yet in reach */ if (op.Act != null) return WalkPlate(op.Act); // engine 0.23 walk-in (Fable less.done.walk.plate): "→ Inez"; the seconds stay on the pill
             if (op.Walk != null) return $"{WalkLeftS(k)} s";
             if (DonePlate(k) is { Length: > 0 } dw) return dw; // brief 043: done, turned, not yet, refused, reported, cancelled (2.2 s)
             // brief 049 row 10: no "under fire" plate: the portrait's pulse ring, the status slot's cause and the ground arc say it

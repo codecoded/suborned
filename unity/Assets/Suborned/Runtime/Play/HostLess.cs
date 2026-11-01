@@ -126,7 +126,7 @@ namespace Suborned.Play
         /// <summary>Where a speaker's bubble sits: over their head while their view is on the street, else nowhere (the beat speaks for them).</summary>
         public Vector3? BubbleWorld(Bubble b)
         {
-            if (b.Speaker == "milena" && Game != null) return frame.World(Game.S.At(Game.S.GuardCafe)) + Vector3.up * 2.1f; // brief 085: a voice through the café door, with no figure
+            if (b.Speaker == "milena" && Game != null && views?.ListenPartnerHead() is Vector3 lph) return lph; if (b.Speaker == "milena" && Game != null) return frame.World(Game.S.At(Game.S.GuardCafe)) + Vector3.up * 2.1f; // brief 085: a voice through the café door, with no figure
             string key = b.Speaker switch
             {
                 "scout" or "fixer" or "tech" or "enforcer" => "op/" + b.Speaker, "rivals" => views?.RivalAnchorKey() ?? "car/rivals", "security" => "security/0", "patrol" => "patrol",

@@ -38,14 +38,30 @@
    "usd": 0.0
   },
   "2026-10-27": {
-   "calls": 2,
+   "calls": 50,
+   "usd": 5.5
+  },
+  "2026-10-28": {
+   "calls": 44,
    "usd": 0.0
+  },
+  "2026-10-31": {
+   "calls": 1,
+   "usd": 0.0
+  },
+  "2026-11-01": {
+   "calls": 103,
+   "usd": 2.66158
   }
  },
  "by_model": {
   "bfl:5@1": {
    "calls": 1,
    "usd": 0.045
+  },
+  "bytedance:seed-audio@1.0": {
+   "calls": 57,
+   "usd": 0.94158
   },
   "bytedance:seedance@2.0": {
    "calls": 20,
@@ -56,7 +72,7 @@
    "usd": 16.80114
   },
   "codex:image_gen": {
-   "calls": 52,
+   "calls": 133,
    "usd": 0.0
   },
   "google:4@2": {
@@ -79,17 +95,25 @@
    "calls": 1,
    "usd": 0.15
   },
+  "mirelo:1@1": {
+   "calls": 46,
+   "usd": 1.72
+  },
   "openai:gpt-image@2": {
    "calls": 10,
    "usd": 0.37195
   },
   "tencent:hunyuan-3d@3.1-pro": {
-   "calls": 2,
-   "usd": 1.35
+   "calls": 9,
+   "usd": 4.05
+  },
+  "tripo:v3.1@0": {
+   "calls": 5,
+   "usd": 2.8
   }
  },
- "calls": 300,
- "failed": 14,
+ "calls": 496,
+ "failed": 22,
  "jobs": {
   "007-concepts": {
    "blocked": 0,
@@ -630,6 +654,109 @@
    "used": 0,
    "used_usd": 0.0
   },
+  "069-e2e": {
+   "blocked": 0,
+   "by_day": {
+    "2026-10-27": {
+     "calls": 7,
+     "usd": 2.7
+    }
+   },
+   "by_model": {
+    "tencent:hunyuan-3d@3.1-pro": {
+     "calls": 7,
+     "usd": 2.7
+    }
+   },
+   "by_pass": {
+    "meshes": {
+     "budget_usd": 5.4,
+     "calls": 7,
+     "usd": 2.7
+    }
+   },
+   "calls": 7,
+   "cost_per_used": 0.675,
+   "failed": 3,
+   "ok": 4,
+   "total_usd": 2.7,
+   "unknown_cost_calls": 0,
+   "used": 4,
+   "used_usd": 2.7
+  },
+  "069-enforcer": {
+   "blocked": 0,
+   "by_day": {
+    "2026-10-27": {
+     "calls": 8,
+     "usd": 1.2
+    }
+   },
+   "by_model": {
+    "codex:image_gen": {
+     "calls": 6,
+     "usd": 0.0
+    },
+    "tripo:v3.1@0": {
+     "calls": 2,
+     "usd": 1.2
+    }
+   },
+   "by_pass": {
+    "intake": {
+     "calls": 6,
+     "usd": 0.0
+    },
+    "mesh30k": {
+     "budget_usd": 1.2,
+     "calls": 2,
+     "usd": 1.2
+    }
+   },
+   "calls": 8,
+   "cost_per_used": 0.6,
+   "failed": 0,
+   "ok": 8,
+   "total_usd": 1.2,
+   "unknown_cost_calls": 0,
+   "used": 2,
+   "used_usd": 1.2
+  },
+  "069-fixer": {
+   "blocked": 0,
+   "by_day": {
+    "2026-10-27": {
+     "calls": 2,
+     "usd": 1.2
+    }
+   },
+   "by_model": {
+    "tripo:v3.1@0": {
+     "calls": 2,
+     "usd": 1.2
+    }
+   },
+   "by_pass": {
+    "mesh": {
+     "budget_usd": 1.0,
+     "calls": 1,
+     "usd": 0.6
+    },
+    "mesh30k": {
+     "budget_usd": 1.0,
+     "calls": 1,
+     "usd": 0.6
+    }
+   },
+   "calls": 2,
+   "cost_per_used": 0.6,
+   "failed": 0,
+   "ok": 2,
+   "total_usd": 1.2,
+   "unknown_cost_calls": 0,
+   "used": 2,
+   "used_usd": 1.2
+  },
   "069-intake": {
    "blocked": 0,
    "by_day": {
@@ -638,17 +765,25 @@
      "usd": 0.0
     },
     "2026-10-27": {
-     "calls": 2,
+     "calls": 23,
      "usd": 0.0
     }
    },
    "by_model": {
     "codex:image_gen": {
-     "calls": 18,
+     "calls": 39,
      "usd": 0.0
     }
    },
    "by_pass": {
+    "fixer": {
+     "calls": 17,
+     "usd": 0.0
+    },
+    "noman": {
+     "calls": 4,
+     "usd": 0.0
+    },
     "r1": {
      "calls": 8,
      "usd": 0.0
@@ -662,11 +797,196 @@
      "usd": 0.0
     }
    },
-   "calls": 18,
+   "calls": 39,
    "cost_per_used": null,
    "failed": 0,
-   "ok": 18,
+   "ok": 39,
    "total_usd": 0.0,
+   "unknown_cost_calls": 0,
+   "used": 0,
+   "used_usd": 0.0
+  },
+  "069-props": {
+   "blocked": 0,
+   "by_day": {
+    "2026-10-27": {
+     "calls": 10,
+     "usd": 0.4
+    }
+   },
+   "by_model": {
+    "codex:image_gen": {
+     "calls": 9,
+     "usd": 0.0
+    },
+    "tripo:v3.1@0": {
+     "calls": 1,
+     "usd": 0.4
+    }
+   },
+   "by_pass": {
+    "guard-pistol": {
+     "calls": 2,
+     "usd": 0.0
+    },
+    "pistol": {
+     "calls": 7,
+     "usd": 0.0
+    },
+    "pistol-mesh": {
+     "budget_usd": 1.0,
+     "calls": 1,
+     "usd": 0.4
+    }
+   },
+   "calls": 10,
+   "cost_per_used": 0.4,
+   "failed": 3,
+   "ok": 7,
+   "total_usd": 0.4,
+   "unknown_cost_calls": 0,
+   "used": 1,
+   "used_usd": 0.4
+  },
+  "073-atmosphere": {
+   "blocked": 0,
+   "by_day": {
+    "2026-10-28": {
+     "calls": 31,
+     "usd": 0.0
+    }
+   },
+   "by_model": {
+    "codex:image_gen": {
+     "calls": 31,
+     "usd": 0.0
+    }
+   },
+   "by_pass": {
+    "1": {
+     "calls": 20,
+     "usd": 0.0
+    },
+    "2": {
+     "calls": 8,
+     "usd": 0.0
+    },
+    "3": {
+     "calls": 3,
+     "usd": 0.0
+    }
+   },
+   "calls": 31,
+   "cost_per_used": null,
+   "failed": 0,
+   "ok": 31,
+   "total_usd": 0.0,
+   "unknown_cost_calls": 0,
+   "used": 0,
+   "used_usd": 0.0
+  },
+  "075-posters": {
+   "blocked": 0,
+   "by_day": {
+    "2026-10-28": {
+     "calls": 13,
+     "usd": 0.0
+    }
+   },
+   "by_model": {
+    "codex:image_gen": {
+     "calls": 13,
+     "usd": 0.0
+    }
+   },
+   "by_pass": {
+    "ads1": {
+     "calls": 1,
+     "usd": 0.0
+    },
+    "ads2": {
+     "calls": 12,
+     "usd": 0.0
+    }
+   },
+   "calls": 13,
+   "cost_per_used": null,
+   "failed": 0,
+   "ok": 13,
+   "total_usd": 0.0,
+   "unknown_cost_calls": 0,
+   "used": 0,
+   "used_usd": 0.0
+  },
+  "085-convo-ui": {
+   "blocked": 0,
+   "by_day": {
+    "2026-10-31": {
+     "calls": 1,
+     "usd": 0.0
+    }
+   },
+   "by_model": {
+    "codex:image_gen": {
+     "calls": 1,
+     "usd": 0.0
+    }
+   },
+   "by_pass": {
+    "mock": {
+     "calls": 1,
+     "usd": 0.0
+    }
+   },
+   "calls": 1,
+   "cost_per_used": null,
+   "failed": 0,
+   "ok": 1,
+   "total_usd": 0.0,
+   "unknown_cost_calls": 0,
+   "used": 0,
+   "used_usd": 0.0
+  },
+  "087-sound": {
+   "blocked": 0,
+   "by_day": {
+    "2026-11-01": {
+     "calls": 103,
+     "usd": 2.66158
+    }
+   },
+   "by_model": {
+    "bytedance:seed-audio@1.0": {
+     "calls": 57,
+     "usd": 0.94158
+    },
+    "mirelo:1@1": {
+     "calls": 46,
+     "usd": 1.72
+    }
+   },
+   "by_pass": {
+    "1": {
+     "budget_usd": 3.0,
+     "calls": 46,
+     "usd": 1.72
+    },
+    "2": {
+     "budget_usd": 1.0,
+     "calls": 4,
+     "usd": 0.07242
+    },
+    "3": {
+     "budget_usd": 3.0,
+     "calls": 53,
+     "usd": 0.86917
+    }
+   },
+   "calls": 103,
+   "cost_per_used": null,
+   "failed": 2,
+   "ok": 101,
+   "total_usd": 2.66158,
    "unknown_cost_calls": 0,
    "used": 0,
    "used_usd": 0.0
@@ -706,6 +1026,6 @@
   }
  },
  "schema": "suborned.paid-spend/1",
- "total_usd": 66.42433,
- "used": 63
+ "total_usd": 74.58591,
+ "used": 72
 }

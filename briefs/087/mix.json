@@ -1,0 +1,193 @@
+{
+ "note": "Sums only. The running game is measured by Latch and Suture when it is wired (brief 087 done-check). None of this says how anything sounds.",
+ "weapon_voices": {
+  "fire_pistol": {
+   "decay_20db_s": 0.194,
+   "lufs_m": -18.5
+  },
+  "fire_carbine": {
+   "decay_20db_s": 0.474,
+   "lufs_m": -15.0
+  },
+  "fire_police": {
+   "decay_20db_s": 0.118,
+   "lufs_m": -19.2
+  },
+  "fire_rival": {
+   "decay_20db_s": 0.154,
+   "lufs_m": -17.0
+  },
+  "fire_robot": {
+   "decay_20db_s": 0.292,
+   "lufs_m": -18.0
+  }
+ },
+ "weapon_pairs_shape_distance_db": {
+  "fire_pistol / fire_carbine": 8.5,
+  "fire_pistol / fire_police": 7.5,
+  "fire_pistol / fire_rival": 4.8,
+  "fire_pistol / fire_robot": 6.9,
+  "fire_carbine / fire_police": 5.6,
+  "fire_carbine / fire_rival": 8.7,
+  "fire_carbine / fire_robot": 5.3,
+  "fire_police / fire_rival": 7.0,
+  "fire_police / fire_robot": 6.4,
+  "fire_rival / fire_robot": 6.6
+ },
+ "danger_over_bed_and_near_patrol": {
+  "notice_1": {
+   "top_bands_hz": [
+    3200,
+    6400,
+    8064
+   ],
+   "margin_top3_db": 23.6,
+   "bands_clear_6db": 8,
+   "loudness_margin_lu": 5.4
+  },
+  "notice_2": {
+   "top_bands_hz": [
+    4032,
+    8064,
+    12801
+   ],
+   "margin_top3_db": 27.0,
+   "bands_clear_6db": 8,
+   "loudness_margin_lu": 9.4
+  },
+  "notice_3": {
+   "top_bands_hz": [
+    1270,
+    4032,
+    6400
+   ],
+   "margin_top3_db": 18.9,
+   "bands_clear_6db": 14,
+   "loudness_margin_lu": 12.4
+  },
+  "camera_click": {
+   "top_bands_hz": [
+    5080,
+    8064,
+    12801
+   ],
+   "margin_top3_db": 28.9,
+   "bands_clear_6db": 10,
+   "loudness_margin_lu": 1.4
+  },
+  "patrol_break": {
+   "top_bands_hz": [
+    252,
+    318,
+    1600
+   ],
+   "margin_top3_db": 12.4,
+   "bands_clear_6db": 24,
+   "loudness_margin_lu": 9.4
+  },
+  "police_siren": {
+   "top_bands_hz": [
+    800,
+    1600,
+    2540
+   ],
+   "margin_top3_db": 17.4,
+   "bands_clear_6db": 5,
+   "loudness_margin_lu": 10.4
+  },
+  "cafe_bell": {
+   "top_bands_hz": [
+    4032,
+    6400,
+    10160
+   ],
+   "margin_top3_db": 33.7,
+   "bands_clear_6db": 7,
+   "loudness_margin_lu": 5.4
+  },
+  "cafe_door": {
+   "top_bands_hz": [
+    100,
+    159,
+    200
+   ],
+   "margin_top3_db": 8.7,
+   "bands_clear_6db": 18,
+   "loudness_margin_lu": 3.4
+  },
+  "handover_chime": {
+   "top_bands_hz": [
+    800,
+    1008,
+    2016
+   ],
+   "margin_top3_db": 14.1,
+   "bands_clear_6db": 10,
+   "loudness_margin_lu": 11.4
+  },
+  "card_new": {
+   "top_bands_hz": [
+    800,
+    1008,
+    1600
+   ],
+   "margin_top3_db": 8.1,
+   "bands_clear_6db": 10,
+   "loudness_margin_lu": 3.4
+  }
+ },
+ "danger_over_gunfire": {
+  "notice_1": {
+   "top_bands_hz": [
+    3200,
+    6400,
+    8064
+   ],
+   "margin_top3_db": 5.3,
+   "bands_clear_6db": 3,
+   "loudness_margin_lu": null
+  },
+  "notice_3": {
+   "top_bands_hz": [
+    1270,
+    4032,
+    6400
+   ],
+   "margin_top3_db": 9.7,
+   "bands_clear_6db": 10,
+   "loudness_margin_lu": null
+  },
+  "police_siren": {
+   "top_bands_hz": [
+    800,
+    1600,
+    2540
+   ],
+   "margin_top3_db": -0.0,
+   "bands_clear_6db": 2,
+   "loudness_margin_lu": null
+  },
+  "handover_chime": {
+   "top_bands_hz": [
+    800,
+    1008,
+    2016
+   ],
+   "margin_top3_db": 8.4,
+   "bands_clear_6db": 3,
+   "loudness_margin_lu": null
+  }
+ },
+ "worst_stack_linear_peak": 12.62,
+ "worst_stack_dbfs": 22.0,
+ "scripted_minute": {
+  "seconds": 66.0,
+  "lufs_integrated": -21.4,
+  "true_peak_db": -2.6,
+  "clipped_samples_before_limit": 0,
+  "calm_0_15s_lufs": -30.4,
+  "fight_34_46s_lufs": -18.7,
+  "cutaway_50_54s_lufs": -41.7,
+  "chime_58_63s_lufs_m": -16.9
+ }
+}

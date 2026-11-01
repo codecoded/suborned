@@ -44,12 +44,13 @@ namespace Suborned.Play
                 var here = cam.transform.position - mid; here.y = 0f; float sd = Vector3.Dot(perp, here);
                 if (Mathf.Abs(sd) < 0.05f * Mathf.Max(0.01f, here.magnitude) && FigureFacing(c.KeyB) is Vector3 fb) sd = Vector3.Dot(perp, fb); // the camera on the pair's line: the side the subject's face is toward
                 var sides = sd >= 0f ? new[] { perp, -perp } : new[] { -perp, perp };
+                foreach (bool avoid in c.LivePartner ? new[] { true, false } : new[] { false })
                 foreach (float dist in new[] { fit, Mathf.Max(0.8f * fit, ConvoNearM) })
                     foreach (int deg in ConvoAngles)
                         foreach (var s0 in sides)
                         {
                             var s = Quaternion.Euler(0f, deg, 0f) * s0; var from = mid + s * dist; from.y = mid.y + ConvoHeight;
-                            if (!TwoShotClear(a, b, dir, from)) continue;
+                            if (!TwoShotClear(a, b, dir, from) || avoid && ListenerInWay(c, from, a, b)) continue;
                             c.Shot = "profile"; c.Side = s; c.Dist = dist; c.From = from; c.Look = mid + Vector3.up * ConvoHeight + Vector3.down * Mathf.Tan(ConvoPitch * Mathf.Deg2Rad) * dist; return true;
                         }
             }

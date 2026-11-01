@@ -24,7 +24,7 @@ namespace Suborned.Play
             /// <summary>A line's holdAfter running: the shot with no line until this time (-1: none).</summary>
             public float AfterUntil = -1f;
             /// <summary>Listen: who stands where for the scene, view only (HostConvo.Listen); the last line cuts to the listener alone.</summary>
-            public readonly Dictionary<string, (Vector3 pos, float yaw)> Stands = new(); public string LastAlone = "", Solo = "";
+            public readonly Dictionary<string, (Vector3 pos, float yaw)> Stands = new(); public string LastAlone = "", Solo = ""; public bool LivePartner;
             public int Beat; public float BeatAt, Born, EndAt = -1f, OutAt = -1f; public bool Single;
             public Vector3 Look, From, Side; public float Dist;
             /// <summary>Glyph 067 Rev 2 H1, the shot the ladder took: "profile" (the two-shot from the side), "high" (the play pitch, orthographic, the cut and silhouettes on), "intercut" (each speaker

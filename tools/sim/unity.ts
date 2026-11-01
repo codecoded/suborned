@@ -201,6 +201,8 @@ console.log(`headless: ${scenarios.length - bad.length}/${scenarios.length} scen
 for (const r of routes) console.log(`route ${r.id}: ${r.outcome}${r.fail ? ` (${r.fail})` : ''} at tick ${r.tick}, trail ${r.trail}, final ${r.finalHash.slice(0, 12)}${r.error ? `, error ${r.error}` : ''}`);
 console.log(`mission text: ${text}`);
 console.log(`seats: ${seats}`);
+// who a Listen's person talks to (mission.json listenPartners; brief 085): view only, unhashed, for HostViews.Listen
+{ const m = JSON.parse(readFileSync(join(root, 'contracts/missions/handover/mission.json'), 'utf8')); const body = JSON.stringify({ schema: 'suborned.view.listen-partners/1', partners: m.listenPartners ?? [] }, null, 1) + '\n'; writeFileSync(join(stream, 'handover.listen-partners.json'), body); console.log(`listen partners: ${(m.listenPartners ?? []).length}`); }
 console.log(`audio cues: ${cues}`);
 console.log(`→ ${plugin.replace(root + '/', '')}/Suborned.Sim.dll, ${stream.replace(root + '/', '')}/ (engine.json, headless.json, ${Object.keys(INPUTS).length} inputs)`);
 process.exit(bad.length ? 1 : 0);

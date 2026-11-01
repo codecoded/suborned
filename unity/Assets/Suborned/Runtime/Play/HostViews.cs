@@ -171,7 +171,7 @@ namespace Suborned.Play
             Spread(g);
             for (int i = 0; i < g.Walkers.Count; i++)
             {
-                if (!atNow[i].HasValue) { Set(crowdKeys[i], null); continue; }
+                if (ListenOwns(crowdKeys[i])) continue; /* brief 085: a Listen's partner, drawn by the view alone */ if (!atNow[i].HasValue) { Set(crowdKeys[i], null); continue; }
                 Set(crowdKeys[i], GiveWay(g, SpreadAt(i), i));
                 if (SpreadFace(i) is { } sf) faces[crowdKeys[i]] = sf;
                 else if (StillFacing(g, i) is { } ef) faces[crowdKeys[i]] = ef; // engine 0.34.0 (Pulse 067 L): one standing alone faces the way the engine reads him (Game.FacingNow: the Office's door guards face out, toward the kerb), so the figure and its cone agree

@@ -1,0 +1,1661 @@
+{
+ "schema": "suborned.audio-pack/1",
+ "brief": "087",
+ "note": "Made by briefs/087/chime/build.py from paid/087-sound/takes and the Kenney packs. Measured numbers are not a judgement of how anything sounds: Chime cannot hear. Levels are per clip at gain 1; the buses and Options sit above them.",
+ "buses": {
+  "master": {
+   "db": 0,
+   "options": "Master"
+  },
+  "clock": {
+   "parent": "master",
+   "db": 0,
+   "options": "Effects",
+   "duck_convo_db": 0
+  },
+  "danger": {
+   "parent": "master",
+   "db": 0,
+   "options": "Effects",
+   "duck_convo_db": -18
+  },
+  "fight": {
+   "parent": "master",
+   "db": -3,
+   "options": "Effects",
+   "duck_convo_db": -18
+  },
+  "convo": {
+   "parent": "master",
+   "db": 0,
+   "options": "Effects",
+   "duck_convo_db": 0
+  },
+  "ambience": {
+   "parent": "master",
+   "db": 0,
+   "options": "Ambience (new)",
+   "duck_convo_db": -14
+  },
+  "vehicles": {
+   "parent": "master",
+   "db": -3,
+   "options": "Effects",
+   "duck_convo_db": -18
+  }
+ },
+ "spatial": {
+  "2d": {
+   "blend": 0
+  },
+  "2d-pan": {
+   "blend": 0,
+   "pan": "clamp(dot(cameraRight, entry - focus) / 40 m, -0.8, 0.8), recomputed each frame while it rings"
+  },
+  "3d": {
+   "blend": 1,
+   "rolloff": "logarithmic",
+   "minDistanceM": 12,
+   "maxDistanceM": 90
+  },
+  "3d-near": {
+   "blend": 1,
+   "rolloff": "logarithmic",
+   "minDistanceM": 8,
+   "maxDistanceM": 45
+  },
+  "3d-far": {
+   "blend": 0.7,
+   "rolloff": "logarithmic",
+   "minDistanceM": 20,
+   "maxDistanceM": 150
+  },
+  "3d-fight": {
+   "blend": 0.7,
+   "rolloff": "logarithmic",
+   "minDistanceM": 18,
+   "maxDistanceM": 140
+  }
+ },
+ "cues": [
+  {
+   "id": "cafe_bell",
+   "label": "Cafe bell",
+   "trigger": "The guard reaches the cafe: the door is open for you.",
+   "on_log": [
+    "guard.at-cafe"
+   ],
+   "file": "Audio/087/cafe_bell",
+   "path": "unity/Assets/Suborned/Resources/Audio/087/cafe_bell.wav",
+   "sha256": "65103f2b2b93d6dc4db68da15c8846bea8a288c2ecbbf96ff772ea040d71f3da",
+   "source": {
+    "kind": "generated",
+    "by": "Seed Audio 1.0 via Runware (bytedance:seed-audio@1.0)",
+    "files": [
+     "cafe_bell_t22.wav"
+    ],
+    "prompt": "Sound effect only. One small brass shop-door bell on a spring, a bright little jingle of two or three quick tinkles as a door opens, then silence. Close and dry. No voice, no speech, no music.",
+    "seed": null,
+    "ledger_ids": [
+     52
+    ]
+   },
+   "licence": "Runware terms: Partner Model outputs may be used commercially; briefs/087/licences/generated.md",
+   "cost_usd": 0.00658,
+   "measured": {
+    "seconds": 1.62,
+    "sample_rate": 48000,
+    "channels": 1,
+    "bytes": 155564,
+    "sample_peak_dbfs": -15.5,
+    "true_peak_dbtp": -15.5,
+    "lufs_momentary_max": -26.0,
+    "clipped_samples": 0,
+    "bands_db_lt200_lt1k_lt4k_hi": [
+     -79.5,
+     -47.4,
+     -14.6,
+     -0.2
+    ],
+    "centroid_hz": 7014,
+    "onset_s": 0.022,
+    "peak_at_s": 0.688,
+    "small_speaker_lufs_m": -26.0,
+    "clear_of_street_bed": {
+     "top_bands_hz": [
+      4032,
+      6400,
+      10160
+     ],
+     "margin_top3_db": 39.6,
+     "bands_clear_6db": 8,
+     "loudness_margin_lu": 12.0
+    }
+   },
+   "mix_group": "clock",
+   "voices_max": 1,
+   "cooldown_s": 2,
+   "loop": false,
+   "spatial": "2d",
+   "priority": 40,
+   "optional": false,
+   "import": "decompress"
+  },
+  {
+   "id": "cafe_door",
+   "label": "Cafe door",
+   "trigger": "The guard leaves the cafe: the window is closing.",
+   "on_log": [
+    "guard.leaves-cafe"
+   ],
+   "file": "Audio/087/cafe_door",
+   "path": "unity/Assets/Suborned/Resources/Audio/087/cafe_door.wav",
+   "sha256": "3f1591949c217b6f42d82fe8b505ceb2314081ac000e7d217f4a2830d8e6b502",
+   "source": {
+    "kind": "generated",
+    "by": "Seed Audio 1.0 via Runware (bytedance:seed-audio@1.0)",
+    "files": [
+     "cafe_door_t21.wav"
+    ],
+    "prompt": "Sound effect only. One light glass cafe door with a chrome handle: it opens, swings back on a soft pneumatic closer with a gentle hiss, and clicks shut, then silence. No bell. No voice, no speech, no music.",
+    "seed": null,
+    "ledger_ids": [
+     53
+    ]
+   },
+   "licence": "Runware terms: Partner Model outputs may be used commercially; briefs/087/licences/generated.md",
+   "cost_usd": 0.01712,
+   "measured": {
+    "seconds": 2.71,
+    "sample_rate": 48000,
+    "channels": 1,
+    "bytes": 260204,
+    "sample_peak_dbfs": -10.7,
+    "true_peak_dbtp": -10.7,
+    "lufs_momentary_max": -28.0,
+    "clipped_samples": 0,
+    "bands_db_lt200_lt1k_lt4k_hi": [
+     -2.7,
+     -5.9,
+     -9.1,
+     -10.7
+    ],
+    "centroid_hz": 1066,
+    "onset_s": 0.51,
+    "peak_at_s": 2.121,
+    "small_speaker_lufs_m": -31.3,
+    "clear_of_street_bed": {
+     "top_bands_hz": [
+      100,
+      159,
+      200
+     ],
+     "margin_top3_db": 19.9,
+     "bands_clear_6db": 23,
+     "loudness_margin_lu": 10.0
+    }
+   },
+   "mix_group": "clock",
+   "voices_max": 1,
+   "cooldown_s": 2,
+   "loop": false,
+   "spatial": "2d",
+   "priority": 40,
+   "optional": false,
+   "import": "decompress"
+  },
+  {
+   "id": "handover_chime",
+   "label": "Handover chime, four thirty",
+   "trigger": "The Office shift ends: Site.Chime, 4:30 on the Handover.",
+   "on_log": null,
+   "file": "Audio/087/handover_chime",
+   "path": "unity/Assets/Suborned/Resources/Audio/087/handover_chime.wav",
+   "sha256": "652fe00255b3384c2bf58f1f7727f352a0b3bd7f990f559e3c9f5637c5f7e0c3",
+   "source": {
+    "kind": "generated",
+    "by": "Seed Audio 1.0 via Runware (bytedance:seed-audio@1.0)",
+    "files": [
+     "handover_chime_t23.wav"
+    ],
+    "prompt": "Sound effect only. A public building's shift-end chime heard over a city square: exactly three soft struck brass tubular bell notes, one second apart, warm and unhurried, then a natural decay of three seconds, then silence. Six seconds in all. No voice, no speech, no music.",
+    "seed": null,
+    "ledger_ids": [
+     57
+    ]
+   },
+   "licence": "Runware terms: Partner Model outputs may be used commercially; briefs/087/licences/generated.md",
+   "cost_usd": 0.0158,
+   "measured": {
+    "seconds": 5.9,
+    "sample_rate": 48000,
+    "channels": 1,
+    "bytes": 566444,
+    "sample_peak_dbfs": -12.3,
+    "true_peak_dbtp": -12.3,
+    "lufs_momentary_max": -20.0,
+    "clipped_samples": 0,
+    "bands_db_lt200_lt1k_lt4k_hi": [
+     -27.7,
+     -6.7,
+     -1.1,
+     -35.0
+    ],
+    "centroid_hz": 1043,
+    "onset_s": 0.113,
+    "peak_at_s": 1.764,
+    "small_speaker_lufs_m": -20.0,
+    "clear_of_street_bed": {
+     "top_bands_hz": [
+      800,
+      1008,
+      2016
+     ],
+     "margin_top3_db": 20.9,
+     "bands_clear_6db": 14,
+     "loudness_margin_lu": 18.0
+    }
+   },
+   "mix_group": "clock",
+   "voices_max": 1,
+   "cooldown_s": 30,
+   "loop": false,
+   "spatial": "2d",
+   "priority": 20,
+   "optional": false,
+   "import": "memory"
+  },
+  {
+   "id": "notice_1",
+   "label": "Watcher notices, stage one",
+   "trigger": "A watcher notices an agent.",
+   "on_log": [
+    "attention.noticed"
+   ],
+   "file": "Audio/087/notice_1",
+   "path": "unity/Assets/Suborned/Resources/Audio/087/notice_1.wav",
+   "sha256": "4a9a4a07060d7f47e602e1ebd5807ea65acfaea29ab4c42d7bc76f3223ea280d",
+   "source": {
+    "kind": "generated",
+    "by": "Seed Audio 1.0 via Runware (bytedance:seed-audio@1.0)",
+    "files": [
+     "notice_ting_t21.wav"
+    ],
+    "prompt": "Sound effect only. One tiny high brass desk bell ting, a single dry light strike with a very short ring, then silence. No voice, no speech, no music.",
+    "seed": null,
+    "ledger_ids": [
+     59
+    ]
+   },
+   "licence": "Runware terms: Partner Model outputs may be used commercially; briefs/087/licences/generated.md",
+   "cost_usd": 0.00658,
+   "measured": {
+    "seconds": 0.447,
+    "sample_rate": 48000,
+    "channels": 1,
+    "bytes": 42998,
+    "sample_peak_dbfs": -7.1,
+    "true_peak_dbtp": -6.7,
+    "lufs_momentary_max": -26.0,
+    "clipped_samples": 0,
+    "bands_db_lt200_lt1k_lt4k_hi": [
+     -76.9,
+     -55.0,
+     -7.8,
+     -0.8
+    ],
+    "centroid_hz": 6170,
+    "onset_s": 0.003,
+    "peak_at_s": 0.01,
+    "small_speaker_lufs_m": -26.0,
+    "clear_of_street_bed": {
+     "top_bands_hz": [
+      3200,
+      6400,
+      8064
+     ],
+     "margin_top3_db": 36.7,
+     "bands_clear_6db": 8,
+     "loudness_margin_lu": 12.0
+    }
+   },
+   "mix_group": "danger",
+   "voices_max": 1,
+   "cooldown_s": 0.5,
+   "loop": false,
+   "spatial": "2d",
+   "priority": 30,
+   "optional": false,
+   "import": "decompress"
+  },
+  {
+   "id": "notice_2",
+   "label": "Watcher wary, stage two",
+   "trigger": "That watcher is wary of him for the rest of the mission.",
+   "on_log": [
+    "attention.wary"
+   ],
+   "file": "Audio/087/notice_2",
+   "path": "unity/Assets/Suborned/Resources/Audio/087/notice_2.wav",
+   "sha256": "41aef68a2faf6b4d8def6ae0ac616699acb5b940e9670c076fb8c29f48aadb22",
+   "source": {
+    "kind": "generated",
+    "by": "Seed Audio 1.0 via Runware (bytedance:seed-audio@1.0)",
+    "files": [
+     "notice_ting_t21.wav"
+    ],
+    "prompt": "Sound effect only. One tiny high brass desk bell ting, a single dry light strike with a very short ring, then silence. No voice, no speech, no music.",
+    "seed": null,
+    "ledger_ids": [
+     59
+    ]
+   },
+   "licence": "Runware terms: Partner Model outputs may be used commercially; briefs/087/licences/generated.md",
+   "cost_usd": 0.00658,
+   "measured": {
+    "seconds": 0.507,
+    "sample_rate": 48000,
+    "channels": 1,
+    "bytes": 48706,
+    "sample_peak_dbfs": -5.6,
+    "true_peak_dbtp": -4.9,
+    "lufs_momentary_max": -22.0,
+    "clipped_samples": 0,
+    "bands_db_lt200_lt1k_lt4k_hi": [
+     -75.5,
+     -56.3,
+     -15.2,
+     -0.1
+    ],
+    "centroid_hz": 7285,
+    "onset_s": 0.003,
+    "peak_at_s": 0.009,
+    "small_speaker_lufs_m": -22.0,
+    "clear_of_street_bed": {
+     "top_bands_hz": [
+      4032,
+      8064,
+      12801
+     ],
+     "margin_top3_db": 40.5,
+     "bands_clear_6db": 8,
+     "loudness_margin_lu": 16.0
+    }
+   },
+   "mix_group": "danger",
+   "voices_max": 1,
+   "cooldown_s": 0.5,
+   "loop": false,
+   "spatial": "2d",
+   "priority": 30,
+   "optional": false,
+   "import": "decompress"
+  },
+  {
+   "id": "notice_3",
+   "label": "Watcher reports, stage three",
+   "trigger": "That watcher calls it in: a report is on its way.",
+   "on_log": [
+    "attention.reporting"
+   ],
+   "file": "Audio/087/notice_3",
+   "path": "unity/Assets/Suborned/Resources/Audio/087/notice_3.wav",
+   "sha256": "d4ee0a446279ebe73a16abfe3f3410d5a1f5ce9894ff56c398f44ec38a8da3ef",
+   "source": {
+    "kind": "generated",
+    "by": "Seed Audio 1.0 via Runware (bytedance:seed-audio@1.0)",
+    "files": [
+     "phone_bell_t21.wav"
+    ],
+    "prompt": "Sound effect only. A short burst of an old telephone's mechanical brass ringer, under one second, a quick metallic trill, then silence. One burst only. No voice, no speech, no music.",
+    "seed": null,
+    "ledger_ids": [
+     61
+    ]
+   },
+   "licence": "Runware terms: Partner Model outputs may be used commercially; briefs/087/licences/generated.md",
+   "cost_usd": 0.00658,
+   "measured": {
+    "seconds": 1.253,
+    "sample_rate": 48000,
+    "channels": 1,
+    "bytes": 120292,
+    "sample_peak_dbfs": -6.1,
+    "true_peak_dbtp": -5.5,
+    "lufs_momentary_max": -19.0,
+    "clipped_samples": 0,
+    "bands_db_lt200_lt1k_lt4k_hi": [
+     -50.9,
+     -14.8,
+     -2.3,
+     -4.2
+    ],
+    "centroid_hz": 4936,
+    "onset_s": 0.003,
+    "peak_at_s": 0.396,
+    "small_speaker_lufs_m": -19.0,
+    "clear_of_street_bed": {
+     "top_bands_hz": [
+      1270,
+      4032,
+      6400
+     ],
+     "margin_top3_db": 24.0,
+     "bands_clear_6db": 16,
+     "loudness_margin_lu": 19.0
+    }
+   },
+   "mix_group": "danger",
+   "voices_max": 1,
+   "cooldown_s": 0.5,
+   "loop": false,
+   "spatial": "2d",
+   "priority": 25,
+   "optional": false,
+   "import": "decompress"
+  },
+  {
+   "id": "camera_click",
+   "label": "Surveillance click",
+   "trigger": "The patrol's sweep turns; a live camera's scan comes round. Only for a watcher whose cone the player can see.",
+   "on_log": null,
+   "file": "Audio/087/camera_click",
+   "path": "unity/Assets/Suborned/Resources/Audio/087/camera_click.wav",
+   "sha256": "d573841c135a2a8c522aa91f7219589e2dce8ddca0fc3ca64dcbf82c7f56c2e5",
+   "source": {
+    "kind": "library",
+    "by": "Kenney",
+    "files": [
+     "metalLatch.ogg"
+    ],
+    "prompt": null,
+    "seed": null,
+    "ledger_ids": []
+   },
+   "licence": "CC0-1.0, Kenney; briefs/087/licences/kenney-*.txt",
+   "cost_usd": 0.0,
+   "measured": {
+    "seconds": 0.222,
+    "sample_rate": 48000,
+    "channels": 1,
+    "bytes": 21354,
+    "sample_peak_dbfs": -8.8,
+    "true_peak_dbtp": -8.4,
+    "lufs_momentary_max": -30.0,
+    "clipped_samples": 0,
+    "bands_db_lt200_lt1k_lt4k_hi": [
+     -51.1,
+     -19.8,
+     -9.8,
+     -0.5
+    ],
+    "centroid_hz": 7124,
+    "onset_s": 0.003,
+    "peak_at_s": 0.005,
+    "small_speaker_lufs_m": -30.0,
+    "clear_of_street_bed": {
+     "top_bands_hz": [
+      5080,
+      8064,
+      12801
+     ],
+     "margin_top3_db": 43.7,
+     "bands_clear_6db": 10,
+     "loudness_margin_lu": 8.0
+    }
+   },
+   "mix_group": "danger",
+   "voices_max": 2,
+   "cooldown_s": 1,
+   "loop": false,
+   "spatial": "3d-near",
+   "priority": 120,
+   "optional": false,
+   "import": "decompress"
+  },
+  {
+   "id": "patrol_loop",
+   "label": "Patrol on its route",
+   "trigger": "While the patrol walks its sweep.",
+   "on_log": null,
+   "file": "Audio/087/patrol_loop",
+   "path": "unity/Assets/Suborned/Resources/Audio/087/patrol_loop.wav",
+   "sha256": "ce2004cdd95825c7a54aeb6873f2eece34b772f7fd050d7a09a79c40e7e36c41",
+   "source": {
+    "kind": "generated",
+    "by": "Seed Audio 1.0 via Runware (bytedance:seed-audio@1.0)",
+    "files": [
+     "patrol_loop_t22.wav"
+    ],
+    "prompt": "Sound effect only. A clockwork robot walking steadily on stone pavement at an even calm pace: soft regular metal footfalls about two a second, a low gentle electric hum and tiny gears ticking. Continuous for fifteen seconds with no change and no ending. No voice, no speech, no music.",
+    "seed": null,
+    "ledger_ids": [
+     66
+    ]
+   },
+   "licence": "Runware terms: Partner Model outputs may be used commercially; briefs/087/licences/generated.md",
+   "cost_usd": 0.0395,
+   "measured": {
+    "seconds": 13.25,
+    "sample_rate": 48000,
+    "channels": 1,
+    "bytes": 1272044,
+    "sample_peak_dbfs": -18.2,
+    "true_peak_dbtp": -18.2,
+    "lufs_momentary_max": -28.2,
+    "clipped_samples": 0,
+    "bands_db_lt200_lt1k_lt4k_hi": [
+     -1.2,
+     -6.4,
+     -22.8,
+     -26.8
+    ],
+    "centroid_hz": 203,
+    "lufs_integrated": -33.0,
+    "seam": {
+     "step_percentile": 45.8,
+     "step_ratio": 0.9,
+     "level_jump_db": 1.7,
+     "typical_jump_db_p95": 4.53
+    },
+    "small_speaker_lufs_m": -35.8,
+    "step_period_s": 0.53,
+    "step_confidence": 0.14,
+    "steps_in_loop": 25,
+    "clear_of_street_bed": {
+     "top_bands_hz": [
+      100,
+      126,
+      159
+     ],
+     "margin_top3_db": 12.0,
+     "bands_clear_6db": 12,
+     "loudness_margin_lu": 9.8
+    }
+   },
+   "mix_group": "danger",
+   "voices_max": 1,
+   "cooldown_s": 0.0,
+   "loop": true,
+   "spatial": "3d",
+   "priority": 100,
+   "optional": false,
+   "import": "memory"
+  },
+  {
+   "id": "patrol_chase",
+   "label": "Patrol off its route",
+   "trigger": "While the patrol has broken route: it chases, or answers an alarm.",
+   "on_log": null,
+   "file": "Audio/087/patrol_chase",
+   "path": "unity/Assets/Suborned/Resources/Audio/087/patrol_chase.wav",
+   "sha256": "05fd209d70b683f38560a290672c82eaea2e5bc30ed6940c04408b377a26e371",
+   "source": {
+    "kind": "generated",
+    "by": "Seed Audio 1.0 via Runware (bytedance:seed-audio@1.0)",
+    "files": [
+     "patrol_break_t22.wav"
+    ],
+    "prompt": "Sound effect only. A clockwork robot hurrying on stone pavement: fast heavy metal footfalls about three a second, a tense higher electric whine and ratcheting gears. Continuous for fifteen seconds with no change and no ending. No siren. No voice, no speech, no music.",
+    "seed": null,
+    "ledger_ids": [
+     68
+    ]
+   },
+   "licence": "Runware terms: Partner Model outputs may be used commercially; briefs/087/licences/generated.md",
+   "cost_usd": 0.0395,
+   "measured": {
+    "seconds": 13.125,
+    "sample_rate": 48000,
+    "channels": 1,
+    "bytes": 1260044,
+    "sample_peak_dbfs": -8.4,
+    "true_peak_dbtp": -7.1,
+    "lufs_momentary_max": -25.1,
+    "clipped_samples": 0,
+    "bands_db_lt200_lt1k_lt4k_hi": [
+     -8.7,
+     -2.9,
+     -6.6,
+     -8.8
+    ],
+    "centroid_hz": 1652,
+    "lufs_integrated": -27.0,
+    "seam": {
+     "step_percentile": 97.9,
+     "step_ratio": 7.39,
+     "level_jump_db": 1.93,
+     "typical_jump_db_p95": 3.94
+    },
+    "small_speaker_lufs_m": -25.2,
+    "step_period_s": 0.375,
+    "step_confidence": 0.19,
+    "steps_in_loop": 35,
+    "clear_of_street_bed": {
+     "top_bands_hz": [
+      159,
+      200,
+      318
+     ],
+     "margin_top3_db": 22.5,
+     "bands_clear_6db": 23,
+     "loudness_margin_lu": 12.9
+    }
+   },
+   "mix_group": "danger",
+   "voices_max": 1,
+   "cooldown_s": 0.0,
+   "loop": true,
+   "spatial": "3d",
+   "priority": 80,
+   "optional": false,
+   "import": "memory"
+  },
+  {
+   "id": "patrol_break",
+   "label": "Patrol breaks route",
+   "trigger": "The tick the patrol breaks route.",
+   "on_log": [
+    "patrol.breaks",
+    "patrol.alarm"
+   ],
+   "file": "Audio/087/patrol_break",
+   "path": "unity/Assets/Suborned/Resources/Audio/087/patrol_break.wav",
+   "sha256": "93f6e66b5b03d049e2c44b2a4588da35a1b3efabe1727f0661c03529ba168ece",
+   "source": {
+    "kind": "generated",
+    "by": "Seed Audio 1.0 via Runware (bytedance:seed-audio@1.0)",
+    "files": [
+     "patrol_sting_t22.wav"
+    ],
+    "prompt": "Sound effect only. One heavy mechanical relay clunk followed by a short electric motor spinning up in under a second, a machine switching mode, then silence. No beep. No voice, no speech, no music.",
+    "seed": null,
+    "ledger_ids": [
+     70
+    ]
+   },
+   "licence": "Runware terms: Partner Model outputs may be used commercially; briefs/087/licences/generated.md",
+   "cost_usd": 0.00658,
+   "measured": {
+    "seconds": 1.25,
+    "sample_rate": 48000,
+    "channels": 1,
+    "bytes": 120022,
+    "sample_peak_dbfs": -5.3,
+    "true_peak_dbtp": -5.0,
+    "lufs_momentary_max": -22.0,
+    "clipped_samples": 0,
+    "bands_db_lt200_lt1k_lt4k_hi": [
+     -8.1,
+     -4.4,
+     -5.7,
+     -6.8
+    ],
+    "centroid_hz": 2380,
+    "onset_s": 0.003,
+    "peak_at_s": 0.025,
+    "small_speaker_lufs_m": -22.5,
+    "clear_of_street_bed": {
+     "top_bands_hz": [
+      252,
+      318,
+      1600
+     ],
+     "margin_top3_db": 23.1,
+     "bands_clear_6db": 24,
+     "loudness_margin_lu": 16.0
+    }
+   },
+   "mix_group": "danger",
+   "voices_max": 1,
+   "cooldown_s": 3,
+   "loop": false,
+   "spatial": "3d-far",
+   "priority": 30,
+   "optional": false,
+   "import": "decompress"
+  },
+  {
+   "id": "police_siren",
+   "label": "Police, from their direction",
+   "trigger": "The desk sends the response: panned to where they enter.",
+   "on_log": [
+    "alarm.dispatches"
+   ],
+   "file": "Audio/087/police_siren",
+   "path": "unity/Assets/Suborned/Resources/Audio/087/police_siren.wav",
+   "sha256": "8b58855554c7413ff7fcf8ec02f635413af8d8e0ffe61207ae3e0472a53a8cf3",
+   "source": {
+    "kind": "generated",
+    "by": "Seed Audio 1.0 via Runware (bytedance:seed-audio@1.0)",
+    "files": [
+     "police_siren_t21.wav"
+    ],
+    "prompt": "Sound effect only. A mechanical 1950s police siren far away across a city, slowly rising and falling twice as it comes closer, with an echo off tall buildings, about eight seconds, fading at the end. No modern electronic wail. No voice, no speech, no music.",
+    "seed": null,
+    "ledger_ids": [
+     71
+    ]
+   },
+   "licence": "Runware terms: Partner Model outputs may be used commercially; briefs/087/licences/generated.md",
+   "cost_usd": 0.02107,
+   "measured": {
+    "seconds": 6.8,
+    "sample_rate": 48000,
+    "channels": 1,
+    "bytes": 652844,
+    "sample_peak_dbfs": -12.0,
+    "true_peak_dbtp": -12.0,
+    "lufs_momentary_max": -21.0,
+    "clipped_samples": 0,
+    "bands_db_lt200_lt1k_lt4k_hi": [
+     -52.1,
+     -0.4,
+     -10.9,
+     -38.1
+    ],
+    "centroid_hz": 783,
+    "onset_s": 0.276,
+    "peak_at_s": 1.749,
+    "small_speaker_lufs_m": -21.0,
+    "clear_of_street_bed": {
+     "top_bands_hz": [
+      800,
+      1600,
+      2540
+     ],
+     "margin_top3_db": 21.1,
+     "bands_clear_6db": 8,
+     "loudness_margin_lu": 17.0
+    }
+   },
+   "mix_group": "danger",
+   "voices_max": 1,
+   "cooldown_s": 20,
+   "loop": false,
+   "spatial": "2d-pan",
+   "priority": 35,
+   "optional": false,
+   "import": "memory"
+  },
+  {
+   "id": "fire_pistol",
+   "label": "Cell pistol: Scout, Fixer, Tech",
+   "trigger": "A shot by the Scout, Fixer or Tech.",
+   "on_log": null,
+   "file": "Audio/087/fire_pistol",
+   "path": "unity/Assets/Suborned/Resources/Audio/087/fire_pistol.wav",
+   "sha256": "8987ffe0938e9e1b2ac0a33c15cf0154dcbc5657ef62a7f388e3ee0c7370a420",
+   "source": {
+    "kind": "generated",
+    "by": "Seed Audio 1.0 via Runware (bytedance:seed-audio@1.0)",
+    "files": [
+     "fire_pistol_t21.wav"
+    ],
+    "prompt": "Sound effect only. One sharp small pistol gunshot outdoors in a city square, a crisp clean crack and a short echo off stone buildings, then silence. One shot only. No voice, no speech, no music.",
+    "seed": null,
+    "ledger_ids": [
+     72
+    ]
+   },
+   "licence": "Runware terms: Partner Model outputs may be used commercially; briefs/087/licences/generated.md",
+   "cost_usd": 0.01185,
+   "measured": {
+    "seconds": 1.306,
+    "sample_rate": 48000,
+    "channels": 1,
+    "bytes": 125396,
+    "sample_peak_dbfs": -1.1,
+    "true_peak_dbtp": -1.0,
+    "lufs_momentary_max": -18.5,
+    "clipped_samples": 0,
+    "bands_db_lt200_lt1k_lt4k_hi": [
+     -19.0,
+     -4.0,
+     -4.1,
+     -7.0
+    ],
+    "centroid_hz": 2321,
+    "onset_s": 0.003,
+    "peak_at_s": 0.005,
+    "small_speaker_lufs_m": -18.5
+   },
+   "mix_group": "fight",
+   "voices_max": 3,
+   "cooldown_s": 0.0,
+   "loop": false,
+   "spatial": "3d-fight",
+   "priority": 60,
+   "optional": false,
+   "import": "decompress"
+  },
+  {
+   "id": "fire_carbine",
+   "label": "Enforcer carbine",
+   "trigger": "A shot by the Enforcer.",
+   "on_log": null,
+   "file": "Audio/087/fire_carbine",
+   "path": "unity/Assets/Suborned/Resources/Audio/087/fire_carbine.wav",
+   "sha256": "da80f11d6ae2c0ed36f0a2e613697a7f8c5905d6424e3d915daef0efce2589ff",
+   "source": {
+    "kind": "generated",
+    "by": "Seed Audio 1.0 via Runware (bytedance:seed-audio@1.0)",
+    "files": [
+     "fire_carbine_t21.wav"
+    ],
+    "prompt": "Sound effect only. One powerful carbine rifle gunshot outdoors in a city square, a deep heavy boom with a long low echo rolling off buildings, then silence. One shot only. No voice, no speech, no music.",
+    "seed": null,
+    "ledger_ids": [
+     75
+    ]
+   },
+   "licence": "Runware terms: Partner Model outputs may be used commercially; briefs/087/licences/generated.md",
+   "cost_usd": 0.02238,
+   "measured": {
+    "seconds": 1.89,
+    "sample_rate": 48000,
+    "channels": 1,
+    "bytes": 181484,
+    "sample_peak_dbfs": -4.0,
+    "true_peak_dbtp": -3.8,
+    "lufs_momentary_max": -15.0,
+    "clipped_samples": 0,
+    "bands_db_lt200_lt1k_lt4k_hi": [
+     -3.7,
+     -4.5,
+     -7.7,
+     -13.5
+    ],
+    "centroid_hz": 833,
+    "onset_s": 0.0,
+    "peak_at_s": 0.032,
+    "small_speaker_lufs_m": -16.3
+   },
+   "mix_group": "fight",
+   "voices_max": 2,
+   "cooldown_s": 0.0,
+   "loop": false,
+   "spatial": "3d-fight",
+   "priority": 55,
+   "optional": false,
+   "import": "decompress"
+  },
+  {
+   "id": "fire_police",
+   "label": "Police and guard sidearm",
+   "trigger": "A shot by a guard, an officer or an armed civilian.",
+   "on_log": null,
+   "file": "Audio/087/fire_police",
+   "path": "unity/Assets/Suborned/Resources/Audio/087/fire_police.wav",
+   "sha256": "fd0cc21a9d491416ee77f7a2bdec16f8c04a27f9d35dda2caa6735e0facca006",
+   "source": {
+    "kind": "generated",
+    "by": "Seed Audio 1.0 via Runware (bytedance:seed-audio@1.0)",
+    "files": [
+     "fire_police_t22.wav"
+    ],
+    "prompt": "Sound effect only. One old service revolver gunshot outdoors, a round woody bang in the mid range with a short street echo, then silence. One shot only. No voice, no speech, no music.",
+    "seed": null,
+    "ledger_ids": [
+     78
+    ]
+   },
+   "licence": "Runware terms: Partner Model outputs may be used commercially; briefs/087/licences/generated.md",
+   "cost_usd": 0.0067,
+   "measured": {
+    "seconds": 0.952,
+    "sample_rate": 48000,
+    "channels": 1,
+    "bytes": 91460,
+    "sample_peak_dbfs": -1.0,
+    "true_peak_dbtp": -1.0,
+    "lufs_momentary_max": -19.2,
+    "clipped_samples": 0,
+    "bands_db_lt200_lt1k_lt4k_hi": [
+     -5.3,
+     -3.2,
+     -7.4,
+     -14.4
+    ],
+    "centroid_hz": 847,
+    "onset_s": 0.003,
+    "peak_at_s": 0.019,
+    "small_speaker_lufs_m": -20.2
+   },
+   "mix_group": "fight",
+   "voices_max": 3,
+   "cooldown_s": 0.0,
+   "loop": false,
+   "spatial": "3d-fight",
+   "priority": 65,
+   "optional": false,
+   "import": "decompress"
+  },
+  {
+   "id": "fire_rival",
+   "label": "Rival handgun",
+   "trigger": "A shot by a rival.",
+   "on_log": null,
+   "file": "Audio/087/fire_rival",
+   "path": "unity/Assets/Suborned/Resources/Audio/087/fire_rival.wav",
+   "sha256": "1444629db1cc16bf68d19e58eb02482cacc0b55a020bad8357f36e3e549cd1d4",
+   "source": {
+    "kind": "generated",
+    "by": "Seed Audio 1.0 via Runware (bytedance:seed-audio@1.0)",
+    "files": [
+     "fire_rival_t22.wav"
+    ],
+    "prompt": "Sound effect only. One loud snub-nosed handgun shot outdoors, a harsh rough bark with a metallic edge, dry, very little echo, then silence. One shot only. No voice, no speech, no music.",
+    "seed": null,
+    "ledger_ids": [
+     81
+    ]
+   },
+   "licence": "Runware terms: Partner Model outputs may be used commercially; briefs/087/licences/generated.md",
+   "cost_usd": 0.00444,
+   "measured": {
+    "seconds": 0.849,
+    "sample_rate": 48000,
+    "channels": 1,
+    "bytes": 81574,
+    "sample_peak_dbfs": -3.0,
+    "true_peak_dbtp": -3.0,
+    "lufs_momentary_max": -17.0,
+    "clipped_samples": 0,
+    "bands_db_lt200_lt1k_lt4k_hi": [
+     -11.9,
+     -2.3,
+     -6.4,
+     -9.6
+    ],
+    "centroid_hz": 1625,
+    "onset_s": 0.003,
+    "peak_at_s": 0.012,
+    "small_speaker_lufs_m": -17.2
+   },
+   "mix_group": "fight",
+   "voices_max": 3,
+   "cooldown_s": 0.0,
+   "loop": false,
+   "spatial": "3d-fight",
+   "priority": 65,
+   "optional": false,
+   "import": "decompress"
+  },
+  {
+   "id": "fire_robot",
+   "label": "Robot bolt gun",
+   "trigger": "A shot by the patrol or a response robot.",
+   "on_log": null,
+   "file": "Audio/087/fire_robot",
+   "path": "unity/Assets/Suborned/Resources/Audio/087/fire_robot.wav",
+   "sha256": "6f631d0ce175f83c67bc710b03b070f209eddbd9b4d868628322c3ce0235def5",
+   "source": {
+    "kind": "generated",
+    "by": "Seed Audio 1.0 via Runware (bytedance:seed-audio@1.0)",
+    "files": [
+     "fire_robot_t22.wav"
+    ],
+    "prompt": "Sound effect only. One shot from a machine-mounted pneumatic bolt gun: a hard compressed-air thump with a metal clack of the mechanism cycling, then silence. One shot only. No laser, no beep. No voice, no speech, no music.",
+    "seed": null,
+    "ledger_ids": [
+     82
+    ]
+   },
+   "licence": "Runware terms: Partner Model outputs may be used commercially; briefs/087/licences/generated.md",
+   "cost_usd": 0.00922,
+   "measured": {
+    "seconds": 0.805,
+    "sample_rate": 48000,
+    "channels": 1,
+    "bytes": 77324,
+    "sample_peak_dbfs": -1.9,
+    "true_peak_dbtp": -1.9,
+    "lufs_momentary_max": -18.0,
+    "clipped_samples": 0,
+    "bands_db_lt200_lt1k_lt4k_hi": [
+     -6.2,
+     -6.3,
+     -7.2,
+     -4.8
+    ],
+    "centroid_hz": 2922,
+    "onset_s": 0.0,
+    "peak_at_s": 0.096,
+    "small_speaker_lufs_m": -18.6
+   },
+   "mix_group": "fight",
+   "voices_max": 2,
+   "cooldown_s": 0.0,
+   "loop": false,
+   "spatial": "3d-fight",
+   "priority": 65,
+   "optional": false,
+   "import": "decompress"
+  },
+  {
+   "id": "hit_body",
+   "label": "Hit on a person",
+   "trigger": "A shot lands on a person.",
+   "on_log": [
+    "shot.hit"
+   ],
+   "file": "Audio/087/hit_body",
+   "path": "unity/Assets/Suborned/Resources/Audio/087/hit_body.wav",
+   "sha256": "2a556870aeec410021268f8e19833d66e1af71c483bc9b642261aa9012840c26",
+   "source": {
+    "kind": "generated",
+    "by": "Seed Audio 1.0 via Runware (bytedance:seed-audio@1.0)",
+    "files": [
+     "hit_body_t22.wav"
+    ],
+    "prompt": "Sound effect only. One short hard punch-like impact on a heavy coat, a dull meaty thud, very short, then silence. No voice, no speech, no music.",
+    "seed": null,
+    "ledger_ids": [
+     84
+    ]
+   },
+   "licence": "Runware terms: Partner Model outputs may be used commercially; briefs/087/licences/generated.md",
+   "cost_usd": 0.00658,
+   "measured": {
+    "seconds": 0.405,
+    "sample_rate": 48000,
+    "channels": 1,
+    "bytes": 38964,
+    "sample_peak_dbfs": -1.7,
+    "true_peak_dbtp": -1.6,
+    "lufs_momentary_max": -21.0,
+    "clipped_samples": 0,
+    "bands_db_lt200_lt1k_lt4k_hi": [
+     -3.3,
+     -4.4,
+     -8.1,
+     -16.4
+    ],
+    "centroid_hz": 635,
+    "onset_s": 0.003,
+    "peak_at_s": 0.082,
+    "small_speaker_lufs_m": -22.8
+   },
+   "mix_group": "fight",
+   "voices_max": 3,
+   "cooldown_s": 0.0,
+   "loop": false,
+   "spatial": "3d-fight",
+   "priority": 70,
+   "optional": false,
+   "import": "decompress"
+  },
+  {
+   "id": "hit_metal",
+   "label": "Hit on a robot or a camera",
+   "trigger": "A shot lands on a robot, a camera or a car.",
+   "on_log": null,
+   "file": "Audio/087/hit_metal",
+   "path": "unity/Assets/Suborned/Resources/Audio/087/hit_metal.wav",
+   "sha256": "a73b6e3ca396e03b521ec0bb74f4527d157cf10fe8c53ce77e387405ab803c86",
+   "source": {
+    "kind": "generated",
+    "by": "Seed Audio 1.0 via Runware (bytedance:seed-audio@1.0)",
+    "files": [
+     "hit_metal_t22.wav"
+    ],
+    "prompt": "Sound effect only. One bullet striking a metal robot's chest plate, a bright hard metal clank with a short ring, then silence. No voice, no speech, no music.",
+    "seed": null,
+    "ledger_ids": [
+     86
+    ]
+   },
+   "licence": "Runware terms: Partner Model outputs may be used commercially; briefs/087/licences/generated.md",
+   "cost_usd": 0.00922,
+   "measured": {
+    "seconds": 0.734,
+    "sample_rate": 48000,
+    "channels": 1,
+    "bytes": 70516,
+    "sample_peak_dbfs": -7.3,
+    "true_peak_dbtp": -7.3,
+    "lufs_momentary_max": -21.0,
+    "clipped_samples": 0,
+    "bands_db_lt200_lt1k_lt4k_hi": [
+     -13.1,
+     -7.2,
+     -2.7,
+     -6.6
+    ],
+    "centroid_hz": 2949,
+    "onset_s": 0.003,
+    "peak_at_s": 0.02,
+    "small_speaker_lufs_m": -21.1
+   },
+   "mix_group": "fight",
+   "voices_max": 2,
+   "cooldown_s": 0.0,
+   "loop": false,
+   "spatial": "3d-fight",
+   "priority": 70,
+   "optional": false,
+   "import": "decompress"
+  },
+  {
+   "id": "miss",
+   "label": "Miss, on the stone",
+   "trigger": "A shot misses: on the puff.",
+   "on_log": [
+    "shot.miss"
+   ],
+   "file": "Audio/087/miss",
+   "path": "unity/Assets/Suborned/Resources/Audio/087/miss.wav",
+   "sha256": "1e80d22629755ec3f80df8f15ee3bef528221b1257c9b92404adeebf2cd55464",
+   "source": {
+    "kind": "generated",
+    "by": "Seed Audio 1.0 via Runware (bytedance:seed-audio@1.0)",
+    "files": [
+     "miss_t22.wav"
+    ],
+    "prompt": "Sound effect only. One bullet striking stone pavement nearby: a short dusty stone chip with a small ricochet zip, then silence. No gunshot. No voice, no speech, no music.",
+    "seed": null,
+    "ledger_ids": [
+     88
+    ]
+   },
+   "licence": "Runware terms: Partner Model outputs may be used commercially; briefs/087/licences/generated.md",
+   "cost_usd": 0.00922,
+   "measured": {
+    "seconds": 1.4,
+    "sample_rate": 48000,
+    "channels": 1,
+    "bytes": 134440,
+    "sample_peak_dbfs": -4.4,
+    "true_peak_dbtp": -4.4,
+    "lufs_momentary_max": -26.0,
+    "clipped_samples": 0,
+    "bands_db_lt200_lt1k_lt4k_hi": [
+     -31.2,
+     -2.9,
+     -3.7,
+     -12.3
+    ],
+    "centroid_hz": 1528,
+    "onset_s": 0.003,
+    "peak_at_s": 0.028,
+    "small_speaker_lufs_m": -26.0
+   },
+   "mix_group": "fight",
+   "voices_max": 3,
+   "cooldown_s": 0.0,
+   "loop": false,
+   "spatial": "3d-fight",
+   "priority": 90,
+   "optional": false,
+   "import": "decompress"
+  },
+  {
+   "id": "down_body",
+   "label": "A person goes down",
+   "trigger": "Anyone goes down, the cell or a hostile.",
+   "on_log": null,
+   "file": "Audio/087/down_body",
+   "path": "unity/Assets/Suborned/Resources/Audio/087/down_body.wav",
+   "sha256": "8a905c9448f6b1d116f7e634b1ebd904971155577ebec1ca4f865b39802651d6",
+   "source": {
+    "kind": "generated",
+    "by": "Seed Audio 1.0 via Runware (bytedance:seed-audio@1.0)",
+    "files": [
+     "down_body_t22.wav"
+    ],
+    "prompt": "Sound effect only. One person collapsing onto stone pavement: a heavy soft body thud with a short cloth rustle, about one second, then silence. No voice, no speech, no music.",
+    "seed": null,
+    "ledger_ids": [
+     91
+    ]
+   },
+   "licence": "Runware terms: Partner Model outputs may be used commercially; briefs/087/licences/generated.md",
+   "cost_usd": 0.00658,
+   "measured": {
+    "seconds": 1.28,
+    "sample_rate": 48000,
+    "channels": 1,
+    "bytes": 122924,
+    "sample_peak_dbfs": -4.9,
+    "true_peak_dbtp": -4.9,
+    "lufs_momentary_max": -20.0,
+    "clipped_samples": 0,
+    "bands_db_lt200_lt1k_lt4k_hi": [
+     -1.2,
+     -6.5,
+     -17.4,
+     -26.9
+    ],
+    "centroid_hz": 206,
+    "onset_s": 0.372,
+    "peak_at_s": 0.518,
+    "small_speaker_lufs_m": -24.6
+   },
+   "mix_group": "fight",
+   "voices_max": 2,
+   "cooldown_s": 0.0,
+   "loop": false,
+   "spatial": "3d-fight",
+   "priority": 45,
+   "optional": false,
+   "import": "decompress"
+  },
+  {
+   "id": "down_robot",
+   "label": "A robot goes down",
+   "trigger": "A robot goes down.",
+   "on_log": null,
+   "file": "Audio/087/down_robot",
+   "path": "unity/Assets/Suborned/Resources/Audio/087/down_robot.wav",
+   "sha256": "88f6ff411a54adc9f5ece32d442f36f12b17e7d3b6c7307be1e4a20d6f858c2e",
+   "source": {
+    "kind": "generated",
+    "by": "Seed Audio 1.0 via Runware (bytedance:seed-audio@1.0)",
+    "files": [
+     "down_robot_t21.wav"
+    ],
+    "prompt": "Sound effect only. One heavy metal robot falling over onto stone pavement: a loud metal crash, loose parts clattering, a dying electric whir, about two seconds, then silence. No voice, no speech, no music.",
+    "seed": null,
+    "ledger_ids": [
+     90
+    ]
+   },
+   "licence": "Runware terms: Partner Model outputs may be used commercially; briefs/087/licences/generated.md",
+   "cost_usd": 0.00922,
+   "measured": {
+    "seconds": 2.54,
+    "sample_rate": 48000,
+    "channels": 1,
+    "bytes": 243884,
+    "sample_peak_dbfs": -5.2,
+    "true_peak_dbtp": -5.2,
+    "lufs_momentary_max": -19.0,
+    "clipped_samples": 0,
+    "bands_db_lt200_lt1k_lt4k_hi": [
+     -2.1,
+     -5.8,
+     -10.0,
+     -16.5
+    ],
+    "centroid_hz": 514,
+    "onset_s": 0.045,
+    "peak_at_s": 0.256,
+    "small_speaker_lufs_m": -21.0
+   },
+   "mix_group": "fight",
+   "voices_max": 1,
+   "cooldown_s": 0.0,
+   "loop": false,
+   "spatial": "3d-fight",
+   "priority": 45,
+   "optional": false,
+   "import": "decompress"
+  },
+  {
+   "id": "cut_in",
+   "label": "Conversation, cut in",
+   "trigger": "The cut to a conversation: on the dip.",
+   "on_log": null,
+   "file": "Audio/087/cut_in",
+   "path": "unity/Assets/Suborned/Resources/Audio/087/cut_in.wav",
+   "sha256": "33829768f033ec964eb0ca4464f68a158c9bfcb87db622f4fa4e5b0a1759f61d",
+   "source": {
+    "kind": "generated",
+    "by": "Seed Audio 1.0 via Runware (bytedance:seed-audio@1.0)",
+    "files": [
+     "cut_soft_t22.wav"
+    ],
+    "prompt": "Sound effect only. One soft quick puff of compressed air, clearly audible, like a brass pneumatic tube capsule arriving at a desk, a gentle thump and a short hiss, under half a second, then silence. No beep. No voice, no speech, no music.",
+    "seed": null,
+    "ledger_ids": [
+     95
+    ]
+   },
+   "licence": "Runware terms: Partner Model outputs may be used commercially; briefs/087/licences/generated.md",
+   "cost_usd": 0.00658,
+   "measured": {
+    "seconds": 0.397,
+    "sample_rate": 48000,
+    "channels": 1,
+    "bytes": 38202,
+    "sample_peak_dbfs": -9.5,
+    "true_peak_dbtp": -9.5,
+    "lufs_momentary_max": -32.0,
+    "clipped_samples": 0,
+    "bands_db_lt200_lt1k_lt4k_hi": [
+     -0.8,
+     -7.7,
+     -26.0,
+     -41.8
+    ],
+    "centroid_hz": 138,
+    "onset_s": 0.003,
+    "peak_at_s": 0.009,
+    "small_speaker_lufs_m": -38.3
+   },
+   "mix_group": "convo",
+   "voices_max": 1,
+   "cooldown_s": 0.0,
+   "loop": false,
+   "spatial": "2d",
+   "priority": 60,
+   "optional": false,
+   "import": "decompress"
+  },
+  {
+   "id": "cut_out",
+   "label": "Conversation, cut out",
+   "trigger": "The cut back to the street: on the dip.",
+   "on_log": null,
+   "file": "Audio/087/cut_out",
+   "path": "unity/Assets/Suborned/Resources/Audio/087/cut_out.wav",
+   "sha256": "c62d15e4d6da4091e78c0d8d51d3d48a7cccc484084eb8f77e26a28dbe4ebbf0",
+   "source": {
+    "kind": "generated",
+    "by": "Seed Audio 1.0 via Runware (bytedance:seed-audio@1.0)",
+    "files": [
+     "cut_soft_t22.wav"
+    ],
+    "prompt": "Sound effect only. One soft quick puff of compressed air, clearly audible, like a brass pneumatic tube capsule arriving at a desk, a gentle thump and a short hiss, under half a second, then silence. No beep. No voice, no speech, no music.",
+    "seed": null,
+    "ledger_ids": [
+     95
+    ]
+   },
+   "licence": "Runware terms: Partner Model outputs may be used commercially; briefs/087/licences/generated.md",
+   "cost_usd": 0.00658,
+   "measured": {
+    "seconds": 0.34,
+    "sample_rate": 48000,
+    "channels": 1,
+    "bytes": 32684,
+    "sample_peak_dbfs": -21.1,
+    "true_peak_dbtp": -20.6,
+    "lufs_momentary_max": -34.0,
+    "clipped_samples": 0,
+    "bands_db_lt200_lt1k_lt4k_hi": [
+     -49.1,
+     -18.5,
+     -8.4,
+     -0.8
+    ],
+    "centroid_hz": 7019,
+    "onset_s": 0.023,
+    "peak_at_s": 0.133,
+    "small_speaker_lufs_m": -34.0
+   },
+   "mix_group": "convo",
+   "voices_max": 1,
+   "cooldown_s": 0.0,
+   "loop": false,
+   "spatial": "2d",
+   "priority": 60,
+   "optional": false,
+   "import": "decompress"
+  },
+  {
+   "id": "room_tone",
+   "label": "Room tone under the cutaway",
+   "trigger": "Under the whole cutaway.",
+   "on_log": null,
+   "file": "Audio/087/room_tone",
+   "path": "unity/Assets/Suborned/Resources/Audio/087/room_tone.wav",
+   "sha256": "3550e6f697cb2e3ccf1f0ab905dcc17b290d60ec2f4547658b422d695ec7c0ad",
+   "source": {
+    "kind": "generated",
+    "by": "Seed Audio 1.0 via Runware (bytedance:seed-audio@1.0)",
+    "files": [
+     "room_tone_t21.wav"
+    ],
+    "prompt": "Sound effect only. Quiet still room tone of a small empty office: a very faint low electric hum and very soft air. Steady and even for fifteen seconds. Nothing happens. No footsteps, no clock ticking. No voice, no speech, no music.",
+    "seed": null,
+    "ledger_ids": [
+     99
+    ]
+   },
+   "licence": "Runware terms: Partner Model outputs may be used commercially; briefs/087/licences/generated.md",
+   "cost_usd": 0.04345,
+   "measured": {
+    "seconds": 14.4,
+    "sample_rate": 32000,
+    "channels": 1,
+    "bytes": 921644,
+    "sample_peak_dbfs": -31.7,
+    "true_peak_dbtp": -31.7,
+    "lufs_momentary_max": -43.3,
+    "clipped_samples": 0,
+    "bands_db_lt200_lt1k_lt4k_hi": [
+     -2.8,
+     -3.4,
+     -18.9,
+     -26.8
+    ],
+    "centroid_hz": 248,
+    "lufs_integrated": -46.0,
+    "seam": {
+     "step_percentile": 30.2,
+     "step_ratio": 0.57,
+     "level_jump_db": 1.95,
+     "typical_jump_db_p95": 4.24
+    },
+    "small_speaker_lufs_m": -46.2
+   },
+   "mix_group": "convo",
+   "voices_max": 1,
+   "cooldown_s": 0.0,
+   "loop": true,
+   "spatial": "2d",
+   "priority": 20,
+   "optional": false,
+   "import": "stream"
+  },
+  {
+   "id": "card_new",
+   "label": "New card chime",
+   "trigger": "A card with New arrives on the person.",
+   "on_log": null,
+   "file": "Audio/087/card_new",
+   "path": "unity/Assets/Suborned/Resources/Audio/087/card_new.wav",
+   "sha256": "4a8ec24bff95aa540aa67a1ffeea8f303d61b99d8ef4d47b71a6c6c0b0580082",
+   "source": {
+    "kind": "generated",
+    "by": "Seed Audio 1.0 via Runware (bytedance:seed-audio@1.0)",
+    "files": [
+     "card_new_t22.wav"
+    ],
+    "prompt": "Sound effect only. One soft small warm chime, a single gentle brass and glass note with a short pleasant ring of one second, like a little service bell in a quiet office, then silence. No voice, no speech, no music.",
+    "seed": null,
+    "ledger_ids": [
+     96
+    ]
+   },
+   "licence": "Runware terms: Partner Model outputs may be used commercially; briefs/087/licences/generated.md",
+   "cost_usd": 0.00658,
+   "measured": {
+    "seconds": 1.081,
+    "sample_rate": 48000,
+    "channels": 1,
+    "bytes": 103844,
+    "sample_peak_dbfs": -17.7,
+    "true_peak_dbtp": -17.7,
+    "lufs_momentary_max": -28.0,
+    "clipped_samples": 0,
+    "bands_db_lt200_lt1k_lt4k_hi": [
+     -40.4,
+     -1.8,
+     -4.8,
+     -26.9
+    ],
+    "centroid_hz": 1213,
+    "onset_s": 0.013,
+    "peak_at_s": 0.015,
+    "small_speaker_lufs_m": -28.0
+   },
+   "mix_group": "convo",
+   "voices_max": 1,
+   "cooldown_s": 0.5,
+   "loop": false,
+   "spatial": "2d",
+   "priority": 50,
+   "optional": false,
+   "import": "decompress"
+  },
+  {
+   "id": "street_bed",
+   "label": "Street ambience",
+   "trigger": "All through play: the warm floor under everything.",
+   "on_log": null,
+   "file": "Audio/087/street_bed",
+   "path": "unity/Assets/Suborned/Resources/Audio/087/street_bed.wav",
+   "sha256": "132e57ea352ed2b059883b3553792cb16420bfc84b035d8bb88c26c4a6a311a5",
+   "source": {
+    "kind": "generated",
+    "by": "Seed Audio 1.0 via Runware (bytedance:seed-audio@1.0)",
+    "files": [
+     "street_bed_t21.wav",
+     "street_bed_t23.wav"
+    ],
+    "prompt": "Sound effect only. Warm calm daytime ambience of a large city plaza from above: a distant soft hum of traffic, a far-off murmur of many people with no clear words, a light breeze, a faint electric tram far away. Steady and even for twenty seconds with no sudden events. No horns, no birds. No voice, no speech, no music.",
+    "seed": null,
+    "ledger_ids": [
+     100,
+     103
+    ]
+   },
+   "licence": "Runware terms: Partner Model outputs may be used commercially; briefs/087/licences/generated.md",
+   "cost_usd": 0.1106,
+   "measured": {
+    "seconds": 35.6,
+    "sample_rate": 32000,
+    "channels": 2,
+    "bytes": 4556844,
+    "sample_peak_dbfs": -21.4,
+    "true_peak_dbtp": -21.4,
+    "lufs_momentary_max": -33.2,
+    "clipped_samples": 0,
+    "bands_db_lt200_lt1k_lt4k_hi": [
+     -4.4,
+     -2.5,
+     -11.1,
+     -30.2
+    ],
+    "centroid_hz": 406,
+    "lufs_integrated": -38.0,
+    "seam": {
+     "step_percentile": 26.1,
+     "step_ratio": 0.48,
+     "level_jump_db": 1.06,
+     "typical_jump_db_p95": 3.05
+    },
+    "small_speaker_lufs_m": -34.3
+   },
+   "mix_group": "ambience",
+   "voices_max": 1,
+   "cooldown_s": 0.0,
+   "loop": true,
+   "spatial": "2d",
+   "priority": 10,
+   "optional": false,
+   "import": "stream"
+  },
+  {
+   "id": "foot_concrete_1",
+   "label": "Footstep one (optional)",
+   "trigger": "Optional: a selected agent walking at play zoom.",
+   "on_log": null,
+   "file": "Audio/087/foot_concrete_1",
+   "path": "unity/Assets/Suborned/Resources/Audio/087/foot_concrete_1.wav",
+   "sha256": "177f03034915740394140895a05914bd48585dd7dc18d13ded70496fe52130b3",
+   "source": {
+    "kind": "library",
+    "by": "Kenney",
+    "files": [
+     "footstep_concrete_000.ogg"
+    ],
+    "prompt": null,
+    "seed": null,
+    "ledger_ids": []
+   },
+   "licence": "CC0-1.0, Kenney; briefs/087/licences/kenney-*.txt",
+   "cost_usd": 0.0,
+   "measured": {
+    "seconds": 0.103,
+    "sample_rate": 48000,
+    "channels": 1,
+    "bytes": 9934,
+    "sample_peak_dbfs": -11.1,
+    "true_peak_dbtp": -11.1,
+    "lufs_momentary_max": -37.0,
+    "clipped_samples": 0,
+    "bands_db_lt200_lt1k_lt4k_hi": [
+     -4.3,
+     -2.0,
+     -36.0,
+     -41.5
+    ],
+    "centroid_hz": 251,
+    "onset_s": 0.0,
+    "peak_at_s": 0.002,
+    "small_speaker_lufs_m": -38.7
+   },
+   "mix_group": "ambience",
+   "voices_max": 2,
+   "cooldown_s": 0.0,
+   "loop": false,
+   "spatial": "3d-near",
+   "priority": 200,
+   "optional": true,
+   "import": "decompress"
+  },
+  {
+   "id": "foot_concrete_2",
+   "label": "Footstep two (optional)",
+   "trigger": "Optional: the other foot.",
+   "on_log": null,
+   "file": "Audio/087/foot_concrete_2",
+   "path": "unity/Assets/Suborned/Resources/Audio/087/foot_concrete_2.wav",
+   "sha256": "2bada2534e326e85d8afd7ad3bfa65f953857c076ee5d791d7e62d0e86d61a75",
+   "source": {
+    "kind": "library",
+    "by": "Kenney",
+    "files": [
+     "footstep_concrete_001.ogg"
+    ],
+    "prompt": null,
+    "seed": null,
+    "ledger_ids": []
+   },
+   "licence": "CC0-1.0, Kenney; briefs/087/licences/kenney-*.txt",
+   "cost_usd": 0.0,
+   "measured": {
+    "seconds": 0.105,
+    "sample_rate": 48000,
+    "channels": 1,
+    "bytes": 10100,
+    "sample_peak_dbfs": -10.4,
+    "true_peak_dbtp": -10.4,
+    "lufs_momentary_max": -37.0,
+    "clipped_samples": 0,
+    "bands_db_lt200_lt1k_lt4k_hi": [
+     -4.5,
+     -2.0,
+     -21.1,
+     -25.4
+    ],
+    "centroid_hz": 318,
+    "onset_s": 0.0,
+    "peak_at_s": 0.002,
+    "small_speaker_lufs_m": -38.4
+   },
+   "mix_group": "ambience",
+   "voices_max": 2,
+   "cooldown_s": 0.0,
+   "loop": false,
+   "spatial": "3d-near",
+   "priority": 200,
+   "optional": true,
+   "import": "decompress"
+  }
+ ]
+}

@@ -7,19 +7,19 @@ namespace Suborned.Play
     /// not. One at a time, held as long as it takes to read, in real time; a scene that starts meanwhile holds them back. View only.</summary>
     public sealed partial class HandoverHost
     {
-        public sealed class PersonCard { public string Id = "", Who = ""; public readonly List<string> Learned = new(), Opens = new(); public float At, Until; }
+        public sealed class PersonCard { public string Id = "", Who = ""; public readonly List<string> Learned = new(), Opens = new(); public float At, Until, Made; }
         /// <summary>The cards to come, the first up once its time arrives.</summary>
         public readonly List<PersonCard> PersonCards = new();
         /// <summary>A card never goes sooner than a done chip does.</summary>
         public const float ConvoCardMinS = DoneChipS;
         public PersonCard PersonCardNow { get { float now = Time.unscaledTime; PersonCards.RemoveAll(x => now >= x.Until); return PersonCards.Count > 0 && now >= PersonCards[0].At ? PersonCards[0] : null; } }
-        /// <summary>A card stands on this thing now: the plain chip for the same act steps aside.</summary>
-        public bool CardOver(string anchor) => PersonCardNow is PersonCard c && c.Who == anchor;
+        /// <summary>A card stands on this thing now, or is waiting for its street lines with this chip's act: the plain chip steps aside, so its facts show once.</summary>
+        public bool CardOver(string anchor, float chipBorn) { _ = PersonCardNow; foreach (var c in PersonCards) if (c.Who == anchor && (Time.unscaledTime >= c.At || chipBorn >= c.Made - 1f)) return true; return false; }
         public static float CardReadS(PersonCard c) { float s = 0f; foreach (var l in c.Learned) s += ReadS(l); foreach (var l in c.Opens) s += ReadS(l); return Mathf.Max(ConvoCardMinS, s); }
 
         void ConvoCardsAfter(Convo c, float at)
         {
-            var p = new PersonCard { Id = c.Id, Who = c.Target }; p.Learned.AddRange(c.Learned); p.Opens.AddRange(c.Opens);
+            var p = new PersonCard { Id = c.Id, Who = c.Target, Made = Time.unscaledTime }; p.Learned.AddRange(c.Learned); p.Opens.AddRange(c.Opens);
             p.At = PersonCards.Count > 0 ? Mathf.Max(at, PersonCards[^1].Until) : at; p.Until = p.At + CardReadS(p); PersonCards.Add(p);
         }
         void ConvoCardsWait() { float dt = Time.unscaledDeltaTime; foreach (var p in PersonCards) { p.At += dt; p.Until += dt; } }

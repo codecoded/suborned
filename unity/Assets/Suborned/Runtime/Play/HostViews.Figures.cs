@@ -104,7 +104,7 @@ namespace Suborned.Play
         void Figures(float alpha)
         {
             if (figs.Count == 0) return;
-            SceneStands(host.ConvoNow); var g = host.Game; var convo = host.ConvoViewKeys(); // brief 067 H (Sky on 0.2.122): a conversation scene holds the clock: its speakers stand idle facing each other; brief 085: everyone else carries on, at their own pace whatever the speed (HostViews.Scene)
+            SceneStands(host.ConvoNow); var g = host.Game; ListenView(g); var convo = host.ConvoViewKeys(); // brief 067 H (Sky on 0.2.122): a conversation scene holds the clock: its speakers stand idle facing each other; brief 085: everyone else carries on, at their own pace whatever the speed (HostViews.Scene)
             float pace = convo != null ? 1f : host.Paused || g.Over ? 0f : host.Speed;
             carrying.Clear(); if (g.Vale == ValeAt.WithEnforcer) carrying.Add("op/enforcer"); // who has someone on the shoulder this frame
             foreach (var kv in carriers) if (lifted.TryGetValue(kv.Key, out var lc) && lc > 0.5f && things.TryGetValue(kv.Key, out var bt) && bt.shown) carrying.Add(kv.Value);
@@ -181,7 +181,7 @@ namespace Suborned.Play
                 bool aimPose = opIdx >= 0 && armed && (key == DriveKey && host.Aiming || host.FireNow[opIdx].Mode.Length > 0 && host.FireNow[opIdx].Target.Length > 0);
                 if (opIdx >= 0 && aimPose && key == DriveKey && host.Aiming && host.AimFaceOn && speed < 0.15f) f.yaw = Mathf.MoveTowardsAngle(f.yaw, host.AimFace, 900f * Time.unscaledDeltaTime); // the driven agent faces the reticle
                 // Pulse's seats (HostSeats): a café customer standing on their chair within their span sits on it, facing the table (Forma's sit)
-                var seat = !down && !carried && !startled && speed < 0.15f && Has(f, "sit") ? SeatNow(key, t.position, g) : null;
+                var seat = !down && !carried && !startled && speed < 0.15f && Has(f, "sit") ? SeatNow(key, t.position, g) : null; ListenSeat(key, f, t, g, ref speed, ref seat); // brief 085: the Scout on a chair (HostViews.Listen)
                 f.seated = seat is { }; /* Suture's triage: the feet checks read this, not sitTick (negative for 2.3 s for those seated at the opening) */ if (seat is { } st) { f.yaw = st.yaw; f.model.SetPositionAndRotation(st.at, Quaternion.Euler(0f, st.yaw, 0f)); } else f.sitTick = -1;
                 string state; float natural = 0f;
                 if (carried) state = Has(f, "carried_drape") ? "carried_drape" : "carried"; // Forma: never the flat "carried" when the drape is there
@@ -197,7 +197,7 @@ namespace Suborned.Play
                 else if (opIdx >= 0 && drawing && Has(f, "draw")) state = "draw"; // the raise: the draw clip over the rulebook's draw time
                 else if (aiming || aimPose) state = shotRecent && Has(f, "shoot") ? "shoot" : AimClip(f, key, g); // standing on a target: the aim, the shot when one was fired
                 else state = armed && g.FightOn ? "aim_pistol" : f.phase > 0.5f ? "idle_alt" : "idle";
-                if (talking && !down && !carried && state is not ("idle" or "idle_alt")) state = f.phase > 0.5f && Has(f, "idle_alt") ? "idle_alt" : "idle"; // brief 067 H: a speaker stands idle (not serving, not seated at the wheel)
+                if (talking && !down && !carried && !f.seated && state is not ("idle" or "idle_alt")) state = f.phase > 0.5f && Has(f, "idle_alt") ? "idle_alt" : "idle"; // brief 067 H: a speaker stands idle (not serving, not seated at the wheel)
                 float fadeOv = -1f, strideOv = -1f; Posture pz = default;
                 if (!down && !carried && !talking && Postures.TryGetValue(key, out pz) && Has(f, "cover_kneel")) (state, fadeOv, strideOv) = BodyState(f, key, state, pz, speed, shotRecent, nowU); // engine 0.35: the fight on the body
                 else if (CoverState(f.state) && !down && !carried && speed < 0.15f && Has(f, "cover_out")) { state = "cover_out"; fadeOv = 0.1f; f.coverAt = nowU; } // no posture left (the fight over): he stands up

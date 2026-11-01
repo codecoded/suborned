@@ -1,0 +1,6 @@
+[
+ {"id":"seed_pistol","s":2,"takes":1,"model":"bytedance:seed-audio@1.0","est":0.09,"prompt":"Sound effect only. A single sharp pistol gunshot outdoors, one shot, a crisp crack and a short echo off stone buildings, then silence. No voice, no speech, no music."},
+ {"id":"seed_chime","s":5,"takes":1,"model":"bytedance:seed-audio@1.0","est":0.09,"prompt":"Sound effect only. Three soft struck brass tubular bell notes from a public building's shift-end chime, unhurried, ringing over a city square, long natural decay, then silence. No voice, no speech, no music bed."},
+ {"id":"seed_bell","s":2,"takes":1,"model":"bytedance:seed-audio@1.0","est":0.09,"prompt":"Sound effect only. One small brass shop-door bell on a spring, one bright jingle, then silence. Close and dry. No voice, no speech, no music."},
+ {"id":"seed_puff","s":1,"takes":1,"model":"bytedance:seed-audio@1.0","est":0.09,"prompt":"Sound effect only. One very soft quick puff of compressed air, like a pneumatic tube capsule arriving gently, then silence. No voice, no speech, no music, no beep."}
+]

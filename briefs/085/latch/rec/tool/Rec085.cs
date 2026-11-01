@@ -88,10 +88,11 @@ public sealed class Rec085 : MonoBehaviour
         RecOn(); h.SetPaused(false); float w = Time.unscaledTime; atRecord?.Invoke();
         while (!h.ConvoOn && Time.unscaledTime - w < 12f) yield return null;
         if (!h.ConvoOn) { Note($"{name}: no scene came: {h.ConvoLast}"); yield break; }
-        var c = h.ConvoNow; Note($"{name}: {h.ConvoLast}; {c.Lines.Count} lines, walkers {h.Views.SceneWalkers}"); w = Time.unscaledTime; float s0 = w; int beat = -1; bool cards = false;
-        while (h.ConvoOn && Time.unscaledTime - w < 120f) { if (c.Beat != beat) { beat = c.Beat; Note($"  line {beat}: {HudToolkit.ConvoSaid}"); } if (c.InCards && !cards) { cards = true; Note("  cards up"); } yield return null; }
+        var c = h.ConvoNow; Note($"{name}: {h.ConvoLast}; {c.Lines.Count} lines, walkers {h.Views.SceneWalkers}"); w = Time.unscaledTime; float s0 = w; int beat = -1;
+        while (h.ConvoOn && Time.unscaledTime - w < 120f) { if (c.Beat != beat) { beat = c.Beat; Note($"  line {beat}: {HudToolkit.ConvoSaid}"); } yield return null; }
         Note($"{name}: {Time.unscaledTime - s0:0.0} s; walkers {h.Views.SceneWalkers}, turned {h.Views.SceneTurned}, stopped {h.Views.SceneStopped}");
-        yield return new WaitForSecondsRealtime(tail);
+        if (tail >= 1f) yield return new WaitForSecondsRealtime(0.3f); Note($"  card: {HudToolkit.PersonCardWords}, docked {HudToolkit.PersonCardDocked}");
+        float tw = Time.unscaledTime; while (Time.unscaledTime - tw < tail || tail >= 1f && h.PersonCardNow != null) yield return null;
     }
     static void Mouse2(Vector2 sp, bool left = false) { if (Mouse.current is Mouse m) { var st = new MouseState { position = sp }; if (left) st = st.WithButton(MouseButton.Left, true); InputSystem.QueueStateEvent(m, st); } }
     IEnumerator RingOn(Transform t, float seconds, string name)
@@ -106,14 +107,15 @@ public sealed class Rec085 : MonoBehaviour
     // ---- 1
     IEnumerator RouteA()
     {
-        yield return Fresh("route-a", o => !(o.Tick == 1290 && o.Op == "scout")); /* the Scout stays by Inez, so the guard's arrival is seen and spoken */ foreach (var o in orders) if (o.Tick > 1290) o.Tick += 5; /* the Call's scene takes the 1290 orders a tick late here, so the Enter comes a moment later */ h.TurnSnap(0); var inez = h.Views.Find("waitress"); h.LookAt(inez.position); h.Select(OpId.Scout, false);
-        yield return Jump(() => Near(0, "listen", 30)); h.LookAt(inez.position); yield return Scene("listen-inez", 3f); RecOff();
+        yield return Fresh("route-a", o => !(o.Tick == 1296 && o.Op == "scout") && !(o.Tick == 0 && o.Op == "scout")); /* the Scout stays by Inez, so the guard's arrival is seen and spoken */ foreach (var o in orders) if (o.Tick > 1296) o.Tick += 5; /* the Call's scene takes the 1290 orders a tick late here, so the Enter comes a moment later */ h.TurnSnap(0); var inez = h.Views.Find("waitress"); h.LookAt(inez.position); h.Select(OpId.Scout, false);
+        foreach (var o in orders) if (o.Tick >= 596) o.Tick += 20; /* heard at 1:00 from 4 m rather than 0:59: the Help comes just after */ { var door0 = G.S.At(G.S.GuardCafe); var pt = new Pt(door0.X + 450, door0.Y + 250); orders.Insert(0, new Order { Tick = 0, Op = "scout", Do = "move", Point = G.Walk.NearestFree(pt) ?? pt }); Note("mine, not the route's: the Scout goes 4 m off rather than to beside-inez"); }
+        yield return Jump(() => G.Ops[0].Act?.Do == "listen" || G.Ops[0].Busy?.Do == "listen"); h.LookAt(inez.position); h.SetPaused(false); RecOn(); Note($"Listen given; spot {G.ListenSpotNow("scout")}"); while (G.Ops[0].Busy?.Do != "listen") yield return null; Note($"under way, Scout {Vector3.Distance(h.Views.Find("op/scout").position, inez.position):0.0} m from Inez"); yield return new WaitForSecondsRealtime(12f); RecOff(); Note("cut: most of the 30 s"); yield return Jump(() => Near(0, "listen", 40)); h.LookAt(inez.position); yield return Scene("listen-inez", 3f); RecOff();
         h.Select(OpId.Fixer, false); yield return Jump(() => Near(1, "help", 30)); h.LookAt(inez.position); yield return Scene("help-1", 2.5f); RecOff();
         yield return Jump(() => Near(1, "help", 30)); h.LookAt(inez.position); h.SetPaused(false);
         RecOn(); while (!Near(1, "help", 8)) yield return null;
         { var ip = G.PersonPos(G.Inez).Value; var fx = G.Ops[1].Pos; var sp0 = G.Ops[0].Pos; float a0 = Mathf.Atan2(fx.Y - ip.Y, fx.X - ip.X) + Mathf.PI / 2f; var to = new Pt(sp0.X + (int)(Mathf.Cos(a0) * 900f), sp0.Y + (int)(Mathf.Sin(a0) * 900f)); h.Issue(new Order { Op = "scout", Do = "move", Point = G.Walk.NearestFree(to) ?? to }); Note("the Scout walks across the shot (mine, not the route's)"); }
-        yield return Scene("help-2", 2.5f); RecOff();
-        yield return Jump(() => G.Tick >= 1275); h.LookAt(inez.position); int nLog = G.Log.Count; yield return Scene("call-inez", 0.5f);
+        yield return Scene("help-2", 0f); h.SetPaused(true); Note("  recording only: the clock paused while the Help's card shows; the route's Call lands a tick after this scene"); { float tc = Time.unscaledTime; while (h.PersonCardNow != null && Time.unscaledTime - tc < 6f) yield return null; } h.SetPaused(false); RecOff();
+        h.LookAt(inez.position); int nLog = G.Log.Count; yield return Scene("call-inez", 0.5f);
         var door = h.ClipLookAt(); var gt = h.Views.Find("guard"); h.LookAt(G.Ops[3].Pos.Equals(default(Pt)) ? gt.position : h.Views.Find("op/enforcer").position); Note("after the call: on the Enforcer at the door");
         float w = Time.unscaledTime; string said = ""; while (Time.unscaledTime - w < 8f) { var en = h.Views.Find("op/enforcer"); if (en && en.gameObject.activeInHierarchy) h.LookAt(en.position); var co = h.Callouts.Find(x => x.Speech != null); if (co != null && said != co.Speech.Text) { said = co.Speech.Text; Note($"line by inset: {co.View}: {said}, docked {HudToolkit.DockedSpeech}"); } yield return null; }
         RecOff();
@@ -128,7 +130,7 @@ public sealed class Rec085 : MonoBehaviour
     // ---- 2
     IEnumerator Pressure()
     {
-        yield return Fresh("route-a-pressure", o => o.Approach != "pressure" && o.Tick != 840); h.TurnSnap(0); var inez = h.Views.Find("waitress"); h.LookAt(inez.position); h.Select(OpId.Scout, false);
+        yield return Fresh("route-a-pressure", o => o.Approach != "pressure" && o.Tick != 846); h.TurnSnap(0); var inez = h.Views.Find("waitress"); h.LookAt(inez.position); h.Select(OpId.Scout, false);
         yield return Jump(() => h.ConvoPicks.Contains("listen-inez")); yield return Jump(() => G.Ops[0].Busy == null); h.Select(OpId.Fixer, false); h.LookAt(inez.position); yield return null; RecOn(); yield return new WaitForSecondsRealtime(0.6f); yield return RingOn(inez, 5f, "ring, Pressure way");
         h.GiveScripted(new Order { Tick = G.Tick, Op = "fixer", Do = "turn", Target = "waitress", Approach = "pressure" }); yield return new WaitForSecondsRealtime(0.5f); RecOff();
         yield return Jump(() => Near(1, "pressure", 30)); h.LookAt(inez.position); yield return Scene("pressure-inez", 2f); RecOff();
