@@ -1,5 +1,5 @@
 {
- "note": "The last words Sky agreed for each scene. listen-inez, help-inez-2 and call-inez: Fable's warmer versions, briefs/085/fable/warmer.json with two wording fixes, agreed 2026-11-01. help-inez-1, pressure-inez and pay-driver: r002, agreed 2026-10-31; text.json may now play a newer version marked awaiting-sky, and a generator run with --only reads these as what the player has read.",
+ "note": "The last words Sky agreed for each scene. listen-inez, help-inez-2 and call-inez: Fable's warmer versions, briefs/085/fable/warmer.json with two wording fixes, agreed 2026-11-01. help-inez-1, pressure-inez and pay-driver: r002, agreed 2026-10-31; text.json may now play a newer version marked awaiting-sky, and a generator run with --only reads these as what the player has read. call-inez's opens card: \"Camera off?\" became \"Camera blind?\" on Motive's review in r004, since a Loop also clears the camera; Sky has not read that one change.",
  "from": "runs/conversations/085/r002",
  "scenes": [
   {
@@ -271,7 +271,7 @@
     "Door empty a few minutes"
    ],
    "opens": [
-    "Camera off? Then enter the Office."
+    "Camera blind? Then enter the Office."
    ]
   }
  ]

@@ -9,7 +9,7 @@ The look and placing of the clip, insets and field are Glyph's: `briefs/085/glyp
 
 `status` is a record of what Sky has read, and nothing is gated on it. Don't read it in the host. `awaiting-sky` means it plays and he hasn't read it yet.
 
-**New words this round:** `listen-inez`, `help-inez-2` and `call-inez` are Sky's agreed warmer versions, and `help-inez-2` now has 9 beats. A live run for the other four scenes is still to come, so those words will change too. Don't pin any scene's lines in a proof.
+**New words this round:** `listen-inez`, `help-inez-2` and `call-inez` are Sky's agreed warmer versions, and `help-inez-2` now has 9 beats. `help-inez-1`, `pressure-inez`, `pay-driver` and `call-inez-pressure` are new from run r004, and they play, marked `awaiting-sky`. Sky hasn't read them, so their words may change. Don't pin any scene's lines in a proof. Two cards changed: `call-inez` opens "Camera blind? Then enter the Office.", `call-inez-pressure` opens "Door 1:40. Camera blind? Then enter."
 
 ## Picking a scene: at landing, never at the act's start
 Port `lookupConversation(c, query)`. Every field a `when` names must equal the query's. No match means no conversation: the act uses its `scenes.items` scene.

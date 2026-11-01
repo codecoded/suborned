@@ -26,7 +26,9 @@ describe('what a person would say', () => {
   });
   test('every sheet says what the player sees, and the guard is away a few minutes', () => {
     for (const s of specs) { expect(s.sheet).toContain('What the player sees'); expect(s.sheet).not.toMatch(/offers an envelope|Evening|about a minute|for a minute/); }
-    for (const id of ['help-inez-2', 'pressure-inez', 'call-inez']) { expect(spec(id).sheet).toContain('about three minutes'); expect(spec(id).sheet).toContain('She never tells him anyone knows'); }
+    for (const id of ['help-inez-2', 'call-inez']) { expect(spec(id).sheet).toContain('about three minutes'); expect(spec(id).sheet).toContain('She never tells him anyone knows'); }
+    expect(spec('pressure-inez').sheet).not.toContain('about three minutes'); expect(spec('pressure-inez').sheet).toContain('She will warn him'); expect(spec('pressure-inez').sheet).not.toContain('She never tells him'); // Motive, r004: a pressed Inez, the door about 1:40
+    expect(spec('pay-driver').sheet).not.toMatch(/back seat/); // Motive, r004: nothing says how the Take goes
   });
   test('scenes follow the story: each lists only earlier scenes', () => {
     specs.forEach((s, i) => { for (const a of s.after ?? []) expect(specs.findIndex(x => x.id === a)).toBeLessThan(i); });

@@ -16,11 +16,13 @@ const approved = json('briefs/085/fable/approved.json') as { scenes: { id: strin
 const byId = (id: string) => c.items.find((x) => x.id === id)!;
 const pick = (q: ConversationQuery) => lookupConversation(c, q)?.id;
 const inez = { about: 'waitress', temperament: 'fearful' };
+/** The scenes Sky has read as they play. The rest play too, awaiting his read; approved.json keeps the last words he agreed for them. */
+const AGREED = ['listen-inez', 'help-inez-2', 'call-inez'], AWAITING = ['help-inez-1', 'pressure-inez', 'pay-driver', 'call-inez-pressure'];
 const shown = (id: string) => conversationLines(c, byId(id)).map((l) => [l.name, l.text]);
 
 describe('the words', () => {
   test('every scene Sky agreed is word for word what he agreed, in order, cards included', () => {
-    for (const a of approved.scenes) {
+    for (const a of approved.scenes.filter((x) => AGREED.includes(x.id))) {
       expect(byId(a.id).status, a.id).toBe('agreed');
       expect(shown(a.id), a.id).toEqual(a.beats);
       expect(byId(a.id).learned, a.id).toEqual(a.learned);
@@ -28,11 +30,12 @@ describe('the words', () => {
     }
     expect(approved.scenes.length).toBe(6);
   });
-  test('the one scene he has not read is flagged but gated by nothing, ends with the guard coming, and leaves the telling to the street', () => {
-    expect(c.items.filter((x) => x.status !== 'agreed').map((x) => x.id)).toEqual(['call-inez-pressure']);
+  test('the scenes he has not read are flagged but gated by nothing; the pressed call ends with the guard coming, and leaves the telling to the street', () => {
+    expect(c.items.filter((x) => x.status !== 'agreed').map((x) => x.id).sort()).toEqual([...AWAITING].sort());
+    for (const id of AWAITING) expect(lookupConversation(c, { ...byId(id).when, turned: false, helped: id === 'help-inez-2', outcome: byId(id).when.outcome })?.id, id).toBe(id);
     const run = byId('call-inez-pressure');
     expect(run.status).toBe('awaiting-sky');
-    expect(run.beats.at(-1)).toEqual({ speaker: 'guard', line: "It's only a door. All right, I'm coming." });
+    expect(run.beats.at(-1)!.speaker).toBe('guard'); expect(run.beats.at(-1)!.line).toMatch(/I'm coming/);
     expect(run.beats.map((b) => b.line).join(' ')).not.toMatch(/someone knows|suspicious/i);
     expect(run.street!.map((s) => [s.on, s.pressed])).toEqual([['guard.at-cafe', true]]);
     const said = run.street![0]!.beats;
@@ -77,6 +80,11 @@ describe('the words', () => {
   test('look C\'s words and the plain lock reason', () => {
     expect(c.ui).toEqual({ new: 'New', voice: { milena: 'Milena, inside' } });
     expect(t.locks['target-unknown']!.short).toBe("Can't act on that");
+  });
+  test('a pressed Inez is never told how long the door stays clear in speech, and a card can\'t point at one way of blinding the camera', () => {
+    for (const id of ['pressure-inez', 'call-inez-pressure']) expect(byId(id).beats.map((b) => b.line).join(' '), id).not.toMatch(/few minutes|a while|three minutes/i);
+    for (const id of ['call-inez', 'call-inez-pressure']) { expect(byId(id).opens[0], id).toMatch(/Camera blind\?/); expect(wordCount(byId(id).opens[0]!)).toBeLessThanOrEqual(6); }
+    expect(byId('help-inez-1').beats.at(-1)!.line).toMatch(/the rest/); // help-inez-2 answers it: "You did bring the rest."
   });
   test('the alarm\'s walk back never says he runs: he goes at a guard\'s pace, 1.4 m/s', () => {
     const said = t.dialogue.filter((e) => e.event === 'guard-recalled').flatMap((e) => e.lines);
