@@ -54,6 +54,10 @@ CUES = [
     c('car_burnout', 'Wreck, the fire dying', 'fight', 'car_burnout_t32.wav', (0.3, 8.0), -29, 'After the blast: the fire dies back and the metal ticks as it cools.', hp=70, fin=0.25, fade=3.0, spatial='3d', voices=2, load='memory', rate=32000, priority=120),
     # ---- a level-matched bed, for Sky's call: see wiring.md. street_bed swings 9.5 LU, because its two takes were not matched
     c('street_bed_even', 'Street ambience, evened', 'ambience', ['street_bed_t22.wav', 'street_bed_t21.wav'], None, -38, 'Would replace street_bed, if Sky keeps it: same place in the mix, no swing.', hp=45, loop=True, xf=3.0, rate=32000, stereo=True, load='stream', priority=10, even=True, optional=True),
+    # ---- car_warn's replacements, for Sky's pick (he: "sounds like a duck quack"): single transients, no buzz, no glide. car_warn stays until he picks
+    c('car_warn_relay', 'Tick option 1: metal relay', 'danger', 'warn_relay_t42.wav', (0.0, 0.6), -20, 'Would replace car_warn.', hp=250, fade=0.25, spatial='3d-far', voices=2, priority=25, optional=True),
+    c('car_warn_escape', 'Tick option 2: clock escapement', 'danger', 'warn_escape_t42.wav', (0.0, 0.6), -20, 'Would replace car_warn.', hp=200, fade=0.25, spatial='3d-far', voices=2, priority=25, optional=True),
+    c('car_warn_bell', 'Tick option 3: brass ping', 'danger', 'warn_bell_t43.wav', (0.0, 0.9), -20, 'Would replace car_warn.', hp=180, fade=0.5, spatial='3d-far', voices=2, priority=25, optional=True),
 ]
 
 # Who holds what: bus → Options slider. Master is applied today; the rest must be wired (wiring.md).

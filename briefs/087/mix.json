@@ -369,5 +369,189 @@
   },
   "inference": "The capture ran paused (PackLoops halves the bed when paused and sets its volume every frame, over PackSoloLoop's 1.0). If -48 came from this capture, the bed in play is about -42 at the loop point, about -44.3 overall at defaults, and about -50 in the quiet half of street_bed.",
   "seam_note": "r087-seam-room_tone.wav has the bed's spectrum, not room tone's (share below 200 Hz -4.4 dB against the clip's -2.2; 1-4 kHz -10.9 against -18.6): PackLoops seems to have restarted the bed during the solo. So room_tone's seam has not been checked after Vorbis."
+ },
+ "car_warn_options": {
+  "old_car_warn": {
+   "name": "car_warn",
+   "active_s": 0.116,
+   "decay20_ms": 19.8,
+   "attack_ms": 37.2,
+   "pulse_strength": 0.16,
+   "pulse_hz": 118,
+   "voiced_windows": 4,
+   "glide_semitones": 0.0,
+   "mid_500_3k_share_db": -1.0,
+   "mid_top_hz": 2152,
+   "centroid_hz": 1828,
+   "bands": [
+    -32.5,
+    -6.6,
+    -1.3,
+    -13.6
+   ],
+   "peak_db": -1.0
+  },
+  "options": {
+   "car_warn_relay": {
+    "name": "car_warn_relay",
+    "active_s": 0.049,
+    "decay20_ms": 45.3,
+    "attack_ms": 3.3,
+    "pulse_strength": 0.26,
+    "pulse_hz": 340,
+    "voiced_windows": 0,
+    "glide_semitones": 0.0,
+    "mid_500_3k_share_db": -6.5,
+    "mid_top_hz": 687,
+    "centroid_hz": 4396,
+    "bands": [
+     -26.2,
+     -10.2,
+     -5.5,
+     -2.1
+    ],
+    "peak_db": -1.1,
+    "over_bed": {
+     "top_bands_hz": [
+      4032,
+      5080,
+      6400
+     ],
+     "margin_top3_db": 44.6,
+     "bands_clear_6db": 19,
+     "loudness_margin_lu": null
+    },
+    "over_steady_pistols": {
+     "top_bands_hz": [
+      4032,
+      5080,
+      6400
+     ],
+     "margin_top3_db": 14.3,
+     "bands_clear_6db": 18,
+     "loudness_margin_lu": null
+    },
+    "over_burn_last_2s": {
+     "top_bands_hz": [
+      4032,
+      5080,
+      6400
+     ],
+     "margin_top3_db": 14.3,
+     "bands_clear_6db": 13,
+     "loudness_margin_lu": null
+    },
+    "lufs_m": -20.4,
+    "true_peak": -1.0,
+    "seconds": 0.44
+   },
+   "car_warn_escape": {
+    "name": "car_warn_escape",
+    "active_s": 0.027,
+    "decay20_ms": 24.3,
+    "attack_ms": 2.7,
+    "pulse_strength": 0.46,
+    "pulse_hz": 329,
+    "voiced_windows": 1,
+    "glide_semitones": 0.0,
+    "mid_500_3k_share_db": -0.6,
+    "mid_top_hz": 1321,
+    "centroid_hz": 1766,
+    "bands": [
+     -32.2,
+     -7.2,
+     -1.0,
+     -16.4
+    ],
+    "peak_db": -1.0,
+    "over_bed": {
+     "top_bands_hz": [
+      1270,
+      1600,
+      3200
+     ],
+     "margin_top3_db": 32.1,
+     "bands_clear_6db": 17,
+     "loudness_margin_lu": null
+    },
+    "over_steady_pistols": {
+     "top_bands_hz": [
+      1270,
+      1600,
+      3200
+     ],
+     "margin_top3_db": 14.6,
+     "bands_clear_6db": 9,
+     "loudness_margin_lu": null
+    },
+    "over_burn_last_2s": {
+     "top_bands_hz": [
+      1270,
+      1600,
+      3200
+     ],
+     "margin_top3_db": 13.4,
+     "bands_clear_6db": 9,
+     "loudness_margin_lu": null
+    },
+    "lufs_m": -22.2,
+    "true_peak": -1.0,
+    "seconds": 0.47
+   },
+   "car_warn_bell": {
+    "name": "car_warn_bell",
+    "active_s": 0.161,
+    "decay20_ms": 116.9,
+    "attack_ms": 7.0,
+    "pulse_strength": 0.73,
+    "pulse_hz": 137,
+    "voiced_windows": 9,
+    "glide_semitones": -0.5,
+    "mid_500_3k_share_db": -3.7,
+    "mid_top_hz": 968,
+    "centroid_hz": 722,
+    "bands": [
+     -29.7,
+     -0.6,
+     -8.9,
+     -21.2
+    ],
+    "peak_db": -2.0,
+    "over_bed": {
+     "top_bands_hz": [
+      400,
+      504,
+      1008
+     ],
+     "margin_top3_db": 28.7,
+     "bands_clear_6db": 19,
+     "loudness_margin_lu": null
+    },
+    "over_steady_pistols": {
+     "top_bands_hz": [
+      400,
+      504,
+      1008
+     ],
+     "margin_top3_db": 16.5,
+     "bands_clear_6db": 13,
+     "loudness_margin_lu": null
+    },
+    "over_burn_last_2s": {
+     "top_bands_hz": [
+      400,
+      504,
+      1008
+     ],
+     "margin_top3_db": 15.0,
+     "bands_clear_6db": 8,
+     "loudness_margin_lu": null
+    },
+    "lufs_m": -20.0,
+    "true_peak": -1.9,
+    "seconds": 0.9
+   }
+  },
+  "diagnosis": "car_warn is about ten sharp pulses 8 to 12 ms apart (a weak 118 Hz buzz, pulse strength 0.16), rising over 37 ms, its energy a broad hump from 500 Hz to 3 kHz (-1.0 dB of the clip). A buzz through a mid-band hump is how a voice or a quack is built. No downward pitch measured: glide 0."
  }
 }

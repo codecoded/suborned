@@ -2067,6 +2067,189 @@
    "priority": 10,
    "optional": true,
    "import": "stream"
+  },
+  {
+   "id": "car_warn_relay",
+   "label": "Tick option 1: metal relay",
+   "trigger": "Would replace car_warn.",
+   "on_log": null,
+   "file": "Audio/087/car_warn_relay",
+   "path": "unity/Assets/Suborned/Resources/Audio/087/car_warn_relay.wav",
+   "sha256": "c86da9629d8ae1a7fa2c46c14fa7d469294611af40d534cf8bf7d96daf878f25",
+   "source": {
+    "kind": "generated",
+    "by": "Seed Audio 1.0 via Runware (bytedance:seed-audio@1.0)",
+    "files": [
+     "warn_relay_t42.wav"
+    ],
+    "prompt": "Sound effect only. One dry metal relay tick: a tiny steel armature snapping shut inside a heavy machine, a single very short hard click with no ring and no buzz, under a tenth of a second, then silence. No voice, no speech, no music, no animal.",
+    "seed": null,
+    "ledger_ids": [
+     121
+    ]
+   },
+   "licence": "Runware terms: Partner Model outputs may be used commercially; briefs/087/licences/generated.md",
+   "cost_usd": 0.00658,
+   "measured": {
+    "seconds": 0.437,
+    "sample_rate": 48000,
+    "channels": 1,
+    "bytes": 41980,
+    "sample_peak_dbfs": -1.1,
+    "true_peak_dbtp": -1.0,
+    "lufs_momentary_max": -20.4,
+    "clipped_samples": 0,
+    "bands_db_lt200_lt1k_lt4k_hi": [
+     -26.2,
+     -10.2,
+     -5.5,
+     -2.1
+    ],
+    "centroid_hz": 4396,
+    "onset_s": 0.003,
+    "peak_at_s": 0.006,
+    "small_speaker_lufs_m": -20.4,
+    "clear_of_street_bed": {
+     "top_bands_hz": [
+      4032,
+      5080,
+      6400
+     ],
+     "margin_top3_db": 47.3,
+     "bands_clear_6db": 19,
+     "loudness_margin_lu": 17.6
+    }
+   },
+   "mix_group": "danger",
+   "voices_max": 2,
+   "cooldown_s": 0.0,
+   "loop": false,
+   "spatial": "3d-far",
+   "priority": 25,
+   "optional": true,
+   "import": "decompress"
+  },
+  {
+   "id": "car_warn_escape",
+   "label": "Tick option 2: clock escapement",
+   "trigger": "Would replace car_warn.",
+   "on_log": null,
+   "file": "Audio/087/car_warn_escape",
+   "path": "unity/Assets/Suborned/Resources/Audio/087/car_warn_escape.wav",
+   "sha256": "34bd4fb9c2d46b9879e7657b64ad3edddfcb0fa331666c7853f96cec9fc37f2f",
+   "source": {
+    "kind": "generated",
+    "by": "Seed Audio 1.0 via Runware (bytedance:seed-audio@1.0)",
+    "files": [
+     "warn_escape_t42.wav"
+    ],
+    "prompt": "Sound effect only. One single tick of a big brass clock's escapement: a crisp dry wooden and metal knock, one tick only, under a tenth of a second, then silence. No tock, no ring. No voice, no speech, no music, no animal.",
+    "seed": null,
+    "ledger_ids": [
+     131
+    ]
+   },
+   "licence": "Runware terms: Partner Model outputs may be used commercially; briefs/087/licences/generated.md",
+   "cost_usd": 0.00658,
+   "measured": {
+    "seconds": 0.472,
+    "sample_rate": 48000,
+    "channels": 1,
+    "bytes": 45358,
+    "sample_peak_dbfs": -1.0,
+    "true_peak_dbtp": -1.0,
+    "lufs_momentary_max": -22.2,
+    "clipped_samples": 0,
+    "bands_db_lt200_lt1k_lt4k_hi": [
+     -32.2,
+     -7.2,
+     -1.0,
+     -16.4
+    ],
+    "centroid_hz": 1766,
+    "onset_s": 0.003,
+    "peak_at_s": 0.006,
+    "small_speaker_lufs_m": -22.2,
+    "clear_of_street_bed": {
+     "top_bands_hz": [
+      1270,
+      1600,
+      3200
+     ],
+     "margin_top3_db": 32.7,
+     "bands_clear_6db": 17,
+     "loudness_margin_lu": 15.8
+    }
+   },
+   "mix_group": "danger",
+   "voices_max": 2,
+   "cooldown_s": 0.0,
+   "loop": false,
+   "spatial": "3d-far",
+   "priority": 25,
+   "optional": true,
+   "import": "decompress"
+  },
+  {
+   "id": "car_warn_bell",
+   "label": "Tick option 3: brass ping",
+   "trigger": "Would replace car_warn.",
+   "on_log": null,
+   "file": "Audio/087/car_warn_bell",
+   "path": "unity/Assets/Suborned/Resources/Audio/087/car_warn_bell.wav",
+   "sha256": "aec845a8d1c8382747727914aafb8b98659fb5ebf518c9706ec5b1670d4e8982",
+   "source": {
+    "kind": "generated",
+    "by": "Seed Audio 1.0 via Runware (bytedance:seed-audio@1.0)",
+    "files": [
+     "warn_bell_t43.wav"
+    ],
+    "prompt": "Sound effect only. One short struck brass plate, like a small ship's bell hit once with a steel hammer: a hard clean strike with one steady high ringing tone that stays on pitch and stops within a quarter of a second, then silence. No jingle. No voice, no speech, no music, no animal.",
+    "seed": null,
+    "ledger_ids": [
+     129
+    ]
+   },
+   "licence": "Runware terms: Partner Model outputs may be used commercially; briefs/087/licences/generated.md",
+   "cost_usd": 0.00263,
+   "measured": {
+    "seconds": 0.9,
+    "sample_rate": 48000,
+    "channels": 1,
+    "bytes": 86444,
+    "sample_peak_dbfs": -2.0,
+    "true_peak_dbtp": -1.9,
+    "lufs_momentary_max": -20.0,
+    "clipped_samples": 0,
+    "bands_db_lt200_lt1k_lt4k_hi": [
+     -29.7,
+     -0.6,
+     -8.9,
+     -21.2
+    ],
+    "centroid_hz": 722,
+    "onset_s": 0.0,
+    "peak_at_s": 0.007,
+    "small_speaker_lufs_m": -20.0,
+    "clear_of_street_bed": {
+     "top_bands_hz": [
+      400,
+      504,
+      1008
+     ],
+     "margin_top3_db": 28.2,
+     "bands_clear_6db": 18,
+     "loudness_margin_lu": 18.0
+    }
+   },
+   "mix_group": "danger",
+   "voices_max": 2,
+   "cooldown_s": 0.0,
+   "loop": false,
+   "spatial": "3d-far",
+   "priority": 25,
+   "optional": true,
+   "import": "decompress"
   }
  ]
 }

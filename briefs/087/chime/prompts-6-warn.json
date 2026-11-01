@@ -1,0 +1,38 @@
+[
+ {
+  "id": "warn_relay",
+  "s": 1,
+  "takes": 3,
+  "model": "bytedance:seed-audio@1.0",
+  "est": 0.02,
+  "base": 40,
+  "prompt": "Sound effect only. One dry metal relay tick: a tiny steel armature snapping shut inside a heavy machine, a single very short hard click with no ring and no buzz, under a tenth of a second, then silence. No voice, no speech, no music, no animal."
+ },
+ {
+  "id": "warn_contact",
+  "s": 1,
+  "takes": 3,
+  "model": "bytedance:seed-audio@1.0",
+  "est": 0.02,
+  "base": 40,
+  "prompt": "Sound effect only. One hard electric contact click: a heavy brass switch closing with a sharp dry snap and a tiny spark, a single click with no hum and no buzz, under a tenth of a second, then silence. No voice, no speech, no music, no animal."
+ },
+ {
+  "id": "warn_bell",
+  "s": 1,
+  "takes": 3,
+  "model": "bytedance:seed-audio@1.0",
+  "est": 0.02,
+  "base": 40,
+  "prompt": "Sound effect only. One short struck brass plate, like a small ship's bell hit once with a steel hammer: a hard clean strike with one steady high ringing tone that stays on pitch and stops within a quarter of a second, then silence. No jingle. No voice, no speech, no music, no animal."
+ },
+ {
+  "id": "warn_escape",
+  "s": 1,
+  "takes": 3,
+  "model": "bytedance:seed-audio@1.0",
+  "est": 0.02,
+  "base": 40,
+  "prompt": "Sound effect only. One single tick of a big brass clock's escapement: a crisp dry wooden and metal knock, one tick only, under a tenth of a second, then silence. No tock, no ring. No voice, no speech, no music, no animal."
+ }
+]

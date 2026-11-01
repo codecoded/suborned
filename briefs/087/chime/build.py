@@ -57,7 +57,7 @@ def make(c):
         x = A.loop(x, sr, c['xf'])
     else:
         x = A.fade(x, sr, c['fin'] or 0.002, c['fade'] or 0.005)
-    if c['group'] == 'fight' and not c['id'].startswith('down') or c['id'] in ('camera_click', 'notice_1', 'notice_2', 'notice_3', 'cut_in', 'patrol_break'):
+    if c['group'] == 'fight' and not c['id'].startswith('down') or c['id'] in ('camera_click', 'notice_1', 'notice_2', 'notice_3', 'cut_in', 'patrol_break', 'car_warn_relay', 'car_warn_escape', 'car_warn_bell'):
         # on the frame: a cue that goes with a flash or a mark starts at its attack, 3 ms of lead kept and faded
         m = x.reshape(len(x), -1).mean(axis=1); h = max(1, int(0.002 * sr)); e = np.sqrt(np.convolve(m ** 2, np.ones(h) / h, 'same')); on = int(np.argmax(e > e.max() * 0.1)); x = A.fade(x[max(0, on - int(0.003 * sr)):], sr, 0.002, 0)
     # master: to the level, then to the ceiling if the level would pass it (the shortfall is recorded)
