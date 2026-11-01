@@ -8,7 +8,7 @@ This is a proposal for Sky to read. For this proposal only, the §10 limit of 3 
 A player who reads only this scene, the Scout's line and the cards included (Sky: the whole scene explains, not each line), having skipped everything else, can say: who these people are to each other, what was said, what the cell just learned or got, and what can be done next. Clarity beats subtlety. If a fast reader could miss the point, the point is not yet on the page.
 
 ## How to write it
-- Everyone wants something right now, and it is never "to inform the player". Inez wants to get through her shift with her secret safe. Put that want in conflict with the other person's.
+- Everyone wants something right now, and it is never "to inform the player". Sometimes it's to make the other person laugh, or to see they've eaten. Inez wants to get through her shift with her secret safe. Put that want in conflict with the other person's.
 - The sheet says what the player sees, and that's all there is: people standing still in a close shot. What presses on them is the shift to get back to, who could see, the clock. That lives in the talk, and never as an action or a thing in the shot.
 - Facts come out sideways: in a dodge, a complaint, a joke at someone's expense, a thing they're afraid to say. Then, by the end, somebody says it plainly, because the player must be sure.
 - One concrete thing per scene that only this city has, talked about and elsewhere, never in the shot: a stamped payment card, a pneumatic tube, a Bureau notice, a clockwork collector with fixed polite phrases. Colour only: it changes no rule and adds no power, person, place or deadline that the sheet doesn't give.
@@ -16,9 +16,13 @@ A player who reads only this scene, the Scout's line and the cards included (Sky
 - Everything said is something this person would say to this person, now. A fact of the game they wouldn't say aloud goes on the cards, never in their mouth.
 - Keep it coherent: each line answers or follows from the one before, so a fast reader never loses the story. Lines often open on a short sentence, then say the rest ("Who told you that? Who else knows?").
 - Every line must sound like one particular person. If you can swap the speakers' lines without anyone noticing, rewrite.
-- Each line does one job and leads to the next: an answer that opens a new question. No two lines in a row with the same rhythm. Avoid the fortune-cookie line and the closing quip.
+- Each line follows from the last. A line may be there only because this person likes that one, once a scene. No two lines in a row with the same rhythm. Avoid the fortune-cookie line and the closing quip.
 - A person's first line must not sound like a greeting from a form ("Hello. Is this about the files?", "Yes? Anything I can do for you?"). They were in the middle of something.
 - People don't explain what both of them already know, unless one is using it as a weapon.
+- These people have lives past this talk. Warmth is a kindness, a tease, a shared joke or a fond word, and it never takes back the fear or the price.
+- In each scene, give one line that's said for its own sake: nobody needs it for the plot, and this person would say it anyway. Have you eaten. It stays true to the shot and the game.
+- Let warmth carry a fact where it can: the tease is what makes her give herself away. Warmth makes the betrayal land, so write the fondness before the lie.
+- Colleagues mock each other and worry about each other. Lovers are glad of each other's voices, and a little clumsy about it. The Fixer is good company, and that's why he's frightening.
 
 ## What goes wrong today (don't do these)
 - Lines that could be anyone's: "Then I'll go. After the shift." "Yes. Yes. And thank you."

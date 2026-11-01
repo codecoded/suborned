@@ -1,0 +1,157 @@
+{
+  "query": "pressured Inez tells the guard someone knows, they looked suspicious, he runs back to his door, window shorter ‖ Pressure leaves fear resentment can identify Fixer",
+  "queries": [
+    "pressured Inez tells the guard someone knows, they looked suspicious, he runs back to his door, window shorter",
+    "Pressure leaves fear resentment can identify Fixer"
+  ],
+  "pinned": [],
+  "method": "HNSW cosine + full-text BM25 per query, reciprocal rank fusion; critic-cited chunks pinned",
+  "corpusHash": "3836c9caed3320e1e1a14d6c0f7647322f364e38b9054a7a17abb7d1571c4864",
+  "embeddingModel": "BAAI/bge-small-en-v1.5",
+  "hits": [
+    {
+      "authority": "Agent GDD (the human GDD wins on conflict)",
+      "distance": 0.3869410657392016,
+      "key": "c2f50e911d9850c901298a11",
+      "kind": "gdd-agent",
+      "lineEnd": 225,
+      "lineStart": 225,
+      "section": "§07 HANDOVER › the capstone",
+      "source": "GDD/the-suborned-agent-gdd-v0.36.0-2026-11-01.md",
+      "sourceHash": "c89c2adcf09b3b32f523afc71ec0d0c1d8815620b760c727d7d14e7c116ee123",
+      "text": "§07 HANDOVER › the capstone\nthe capstone: the call that pulls the guard off his door is Inez's, made because the cell helped, paid or pressured her: he comes to her side and they stand together. Her debt is her need (Help clears it); the affair is her secret (Pressure threatens to expose it). A pressured Inez hasn't favoured the cell (helped then pressured counts): when he reaches her she tells him someone knows about them and that they looked suspicious, he stays 5 s and runs back at 2.2 m/s, and an alarm doesn't slow the run. The door is clear about 1:39 against 2:54. Pressure's price shows it first (\"Door 1:40\").",
+      "version": "v0.36.0",
+      "score": 0.03252247488101534,
+      "signals": [
+        "semantic:1",
+        "keyword:1"
+      ]
+    },
+    {
+      "authority": "Human GDD (wins on conflict)",
+      "distance": 0.36455106177012897,
+      "key": "4a5319d9eec9dabe36d9f144",
+      "kind": "gdd-human",
+      "lineEnd": 607,
+      "lineStart": 600,
+      "section": "Handover › A · Through the front door (before 4:50)",
+      "source": "GDD/the-suborned-gdd-v0.36.0-2026-11-01.html",
+      "sourceHash": "39a77bf239f59f326950814f2fa4e66bb3d95b1c801575172286e8ed11e726a9",
+      "text": "Handover › A · Through the front door (before 4:50)\nScout watches the café and listens to Inez (0:50).\nFixer helps Inez by clearing her debt ($40,000; a fearful Inez takes two visits at $20,000).\nTech loops the entrance camera (20 s; it runs 2:00, so it is planted to still be running at the Enter), then reroutes the patrol (optional).\nFixer calls Inez. The guard walks to her side (about 57 s), stays 60 s and walks back: about a 2:54 window, set by the walk the street gives him, never by a number written here. Payoff cut (§10).\nEnforcer enters (38 s), leaves with Vale by the service door and walks him to the car (about 36 s), boards, and the cell goes.",
+      "version": "v0.36.0",
+      "score": 0.032266458495966696,
+      "signals": [
+        "semantic:1",
+        "keyword:1"
+      ]
+    },
+    {
+      "authority": "People rules (suborned.people.rules/1); Motive owns them, the checker enforces them",
+      "distance": 0.30769413709640503,
+      "key": "b244071a6c0c49c5b980debe",
+      "kind": "people-rules",
+      "lineEnd": 0,
+      "lineStart": 0,
+      "section": "people rules › scales",
+      "source": "contracts/people/people.rules.json",
+      "sourceHash": "38f1cfeb2f5fb875f72b488396ec5748fc574db3b18b4607ae11b03b3aa94bb7",
+      "text": "people rules › scales\nbravery: 0-3 (informant, helper, accomplice, fighter); §04 bravery [S]: Informant → Helper → Accomplice → Fighter, +1 step per job completed unexposed\nresentment: 0-2 (compliant, resentful, informer); §04 resentment [S]: Compliant → Resentful → Informer, +1 step per pressure or exposure\nfear: 0-3 (calm, uneasy, afraid, terrified); §04 talker test names fear; §04 Pressure leaves fear; §05 a threat adds fear\nloyalty: 0-3 (none, obliged, trusting, sworn); §04 talker test names loyalty; §04 standing: Hero turning is slower, dearer, loyal",
+      "version": "suborned.people.rules/1",
+      "score": 0.032018442622950824,
+      "signals": [
+        "semantic:2",
+        "keyword:2"
+      ]
+    },
+    {
+      "authority": "Human GDD (wins on conflict)",
+      "distance": 0.4142165039390606,
+      "key": "8664d78e25f965957c631193",
+      "kind": "gdd-human",
+      "lineEnd": 581,
+      "lineStart": 570,
+      "section": "Handover (2/2)",
+      "source": "GDD/the-suborned-gdd-v0.36.0-2026-11-01.html",
+      "sourceHash": "39a77bf239f59f326950814f2fa4e66bb3d95b1c801575172286e8ed11e726a9",
+      "text": "Handover\nThe heart of it: Inez and the guard are lovers. His café stop before his shift is to see her. Inez works the café's terrace tables on her rounds (§04). The call that pulls the guard off his door is Inez's, made because the cell helped, paid or pressured her: he comes to her side and they stand together. Her debt is her need, which Help clears; the affair is her secret, which Pressure threatens to expose. A pressured Inez hasn't favoured the cell (helped then pressured counts): when he reaches her she tells him someone knows about them and that they looked suspicious, he stays 5 s and runs back at 2.2 m/s, and an alarm doesn't slow the run. The door is clear about 1:39 against 2:54. Pressure's price shows it first (\"Door 1:40\").\nThe places. The café and its terrace face Records Square. The Office's public door, its landing, steps and forecourt are on the west face of its wing, over Rocket Lane, in view from the opening camera, with the entrance camera's pole at the forecourt's north end and the Tech's control cabinet behind it. The service door is round the back on the east face, onto the service yard: the back way, out of sight of the public door, the camera and the guard's cone. The patrol robot sweeps a line across the yard beside the door, and the Tech's Reroute takes it away. The official entrance and Vale's car are on the south face, on Apron Road. A turned driver brings Vale round in his car to the east yard's service bay, by the service drive. The getaway car stands at the square's boarding pavilion; its second stand is on the service drive, nose out, behind Vale's car, where a car boxes Vale's car in.",
+      "version": "v0.36.0",
+      "score": 0.03200204813108039,
+      "signals": [
+        "semantic:1",
+        "keyword:1"
+      ]
+    },
+    {
+      "authority": "People rules (suborned.people.rules/1); Motive owns them, the checker enforces them",
+      "distance": 0.37383270263671875,
+      "key": "4c8fad65dcc365c5f3afdb7e",
+      "kind": "people-rules",
+      "lineEnd": 0,
+      "lineStart": 0,
+      "section": "people rules › approaches",
+      "source": "contracts/people/people.rules.json",
+      "sourceHash": "38f1cfeb2f5fb875f72b488396ec5748fc574db3b18b4607ae11b03b3aa94bb7",
+      "text": "people rules › approaches\nask: requires nothing, $0, 20 s, Trail +1; remembered refusal: later offers +$10,000, +1 T\npay: requires routine, $70000, 35 s, Trail +2; traceable payment; neutral\nhelp: requires need, $40000, 35 s, Trail +1; gratitude; bravery can grow\npressure: requires need, $0, 25 s, Trail +3; fear; resentment grows; can identify Fixer",
+      "version": "suborned.people.rules/1",
+      "score": 0.031054405392392875,
+      "signals": [
+        "semantic:2",
+        "keyword:2"
+      ]
+    },
+    {
+      "authority": "People rules (suborned.people.rules/1); Motive owns them, the checker enforces them",
+      "distance": 0.36738256714888085,
+      "key": "7f89ccc5ec83f6e40f1fef0f",
+      "kind": "people-rules",
+      "lineEnd": 0,
+      "lineStart": 0,
+      "section": "people rules › talker",
+      "source": "contracts/people/people.rules.json",
+      "sourceHash": "38f1cfeb2f5fb875f72b488396ec5748fc574db3b18b4607ae11b03b3aa94bb7",
+      "text": "people rules › talker\n{\"left\":[\"fear\",\"resentment\"],\"op\":\">\",\"right\":[\"bravery\",\"loyalty\"]}; facts given: fixer-face, enforcer-face, cell-car, place-time, cell-face, contact",
+      "version": "suborned.people.rules/1",
+      "score": 0.030536130536130537,
+      "signals": [
+        "semantic:2",
+        "keyword:2"
+      ]
+    },
+    {
+      "authority": "Agent GDD (the human GDD wins on conflict)",
+      "distance": 0.31505415782493795,
+      "key": "a43f3288857e1f6dce30a3cc",
+      "kind": "gdd-agent",
+      "lineEnd": 82,
+      "lineStart": 82,
+      "section": "§04 PEOPLE › resentment",
+      "source": "GDD/the-suborned-agent-gdd-v0.36.0-2026-11-01.md",
+      "sourceHash": "c89c2adcf09b3b32f523afc71ec0d0c1d8815620b760c727d7d14e7c116ee123",
+      "text": "§04 PEOPLE › resentment\nresentment [S]: Compliant → Resentful → Informer (sells a route → ambush scheduled later). +1 step per pressure or exposure.",
+      "version": "v0.36.0",
+      "score": 0.03021353930031804,
+      "signals": [
+        "semantic:2",
+        "keyword:2"
+      ]
+    },
+    {
+      "authority": "Agent GDD (the human GDD wins on conflict)",
+      "distance": 0.3867185115814209,
+      "key": "0ea73f060cd8775217b8a2af",
+      "kind": "gdd-agent",
+      "lineEnd": 71,
+      "lineStart": 66,
+      "section": "§04 PEOPLE › approaches",
+      "source": "GDD/the-suborned-agent-gdd-v0.36.0-2026-11-01.md",
+      "sourceHash": "c89c2adcf09b3b32f523afc71ec0d0c1d8815620b760c727d7d14e7c116ee123",
+      "text": "§04 PEOPLE › approaches\napproaches (Inez, training) [B]:\n| approach | requires | $ | time | T | leaves |\n| Ask cold | — | 0 | 20 s | +1 | remembered refusal: later offers +$10,000, +1 T |\n| Pay | a Watch first, where one is offered (20 s [S], any agent) | 70,000 | 35 s | +2 | traceable payment; neutral |\n| Help (clear debt) | need known (Listen 30 s) | 40,000 (a person it takes twice: 20,000 a visit) | 35 s | +1 | gratitude; bravery can grow |\n| Pressure | need known | 0 | 25 s | +3 | fear; resentment grows; can identify Fixer |",
+      "version": "v0.36.0",
+      "score": 0.03009207275993712,
+      "signals": [
+        "semantic:2",
+        "keyword:2"
+      ]
+    }
+  ]
+}

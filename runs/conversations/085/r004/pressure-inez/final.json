@@ -1,0 +1,52 @@
+{
+  "id": "pressure-inez",
+  "title": "Pressure Inez",
+  "kind": "turn",
+  "picked": 2,
+  "why": "Take 2 has the most life: she says yes before she knows to what, and his gentleness slows her down. Only the rules fault is fixed. For Aster, one conflict stays open. The sheet says the door is empty about three minutes and she never tells Okafor anyone knows. §07 and the human GDD [c2f50e911d9850c901298a11, 8664d78e25f965957c631193] say a pressured Inez tells him someone knows, he stays 5 s and runs back, and the door is clear about 1:39. The scene now states no duration. Her line gives only \"it can't wait, not on the line\", so it doesn't contradict §07, but nothing here settles which source holds.",
+  "changes": [
+    "Cut \"a few minutes\" from the Fixer's telephone line, because the door is clear about 1:39 and Pressure's price shows \"Door 1:40\". The line now reads \"When I telephone, call Okafor over from his door.\"",
+    "No other line changed."
+  ],
+  "beats": [
+    {
+      "speaker": "Inez",
+      "line": "Bureau sent you? Worst table I've got. Never leaves, never tips."
+    },
+    {
+      "speaker": "Fixer",
+      "line": "Not the Bureau, no. The Office could learn about you and Okafor."
+    },
+    {
+      "speaker": "Inez",
+      "line": "Who told you? Who can see us? Whatever it is, yes."
+    },
+    {
+      "speaker": "Fixer",
+      "line": "Softly. You've been on your feet all shift. Hear it first."
+    },
+    {
+      "speaker": "Inez",
+      "line": "Say it, then. Nobody's on my tables."
+    },
+    {
+      "speaker": "Fixer",
+      "line": "When I telephone, call Okafor over from his door."
+    },
+    {
+      "speaker": "Inez",
+      "line": "I'll say it can't wait, not on the line. He'll be pleased."
+    },
+    {
+      "speaker": "Fixer",
+      "line": "He will. Don't call, and the Office learns. I'd rather it didn't."
+    }
+  ],
+  "learned": [
+    "Inez will remember the Fixer's face."
+  ],
+  "opens": [
+    "Call Inez"
+  ],
+  "faults": []
+}

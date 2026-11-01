@@ -1,5 +1,5 @@
 {
- "note": "Run r002 with four lines changed after Sky's read, 2026-10-31 (\"be more hows your shift?\"): the call's opening and its reply, and Pressure's opening and \"that's the pity\". Sky has agreed these go in the game; not yet in text.json.",
+ "note": "The last words Sky agreed for each scene. listen-inez, help-inez-2 and call-inez: Fable's warmer versions, briefs/085/fable/warmer.json with two wording fixes, agreed 2026-11-01. help-inez-1, pressure-inez and pay-driver: r002, agreed 2026-10-31; text.json may now play a newer version marked awaiting-sky, and a generator run with --only reads these as what the player has read.",
  "from": "runs/conversations/085/r002",
  "scenes": [
   {
@@ -7,31 +7,31 @@
    "beats": [
     [
      "Milena",
-     "You've been looking at the Office door all shift, Inez."
+     "Have you eaten? You've looked at that Office door all shift."
     ],
     [
      "Inez",
-     "Who else has noticed? I've got the terrace to see to."
+     "Eat? With the Bureau after me? Waiting tables, I can't keep up."
     ],
     [
      "Milena",
-     "You jump at everything. Nobody watches a door for nothing."
+     "I owe them too. We'll be buried with those cards half stamped."
     ],
     [
      "Inez",
-     "It's the Bureau, that's all. Waiting tables here, I can't keep up."
+     "Then bury me somewhere I can sit down."
     ],
     [
      "Milena",
-     "I owe them too. I don't keep looking at that guard."
+     "You'd get up to look at that door. Is it so handsome?"
     ],
     [
      "Inez",
-     "Did Okafor say something? Who else has he told?"
+     "Who says? Did Okafor say something? Who else has he told?"
     ],
     [
      "Milena",
-     "He said nothing. You just did."
+     "He said nothing, you goose. You just did."
     ],
     [
      "Inez",
@@ -39,7 +39,7 @@
     ],
     [
      "Milena",
-     "Then stop looking. You can't afford it."
+     "Not from me, they won't. Stop looking, though. You can't afford it."
     ],
     [
      "Scout",
@@ -103,7 +103,15 @@
     ],
     [
      "Inez",
-     "Not so loud. Thank you. Now what do I owe you?"
+     "Not so loud. I've owed them since my last good shoes."
+    ],
+    [
+     "Fixer",
+     "Then buy shoes first, Miss Nikolaou. We'll wait our turn."
+    ],
+    [
+     "Inez",
+     "Thank you, I mean that. Your turn. What do I owe?"
     ],
     [
      "Fixer",
@@ -119,15 +127,11 @@
     ],
     [
      "Inez",
-     "I'll say I've news that won't wait. Not on the line."
-    ],
-    [
-     "Fixer",
-     "Not a word that anyone knows. You're with us now."
+     "You did bring the rest. I'll say it won't go by telephone."
     ],
     [
      "Inez",
-     "I can't stop watching that square. If trouble comes, I'll warn you."
+     "I'm with you. I watch that square anyway. Trouble, I'll warn you."
     ]
    ],
    "learned": [
@@ -232,7 +236,7 @@
    "beats": [
     [
      "Fixer",
-     "It's time, Miss Nikolaou. Call Okafor across now."
+     "It's time, Miss Nikolaou. Call Okafor across now. You'll do fine."
     ],
     [
      "Inez",
@@ -240,30 +244,34 @@
     ],
     [
      "Inez",
-     "How's your shift, love? Come across. I've something to tell you."
+     "How's your shift, love?"
     ],
     [
      "Okafor",
-     "Long. I've this door till shift's end. Say it here."
+     "Long. This door's said nothing all day. It's good to hear you."
     ],
     [
      "Inez",
-     "Not down a telephone. It can't wait. Please."
+     "Come across. I've something to tell you, and not down a telephone."
     ],
     [
      "Okafor",
-     "Then the door can wait. I'm leaving it now."
+     "I've this door till shift's end. For you, it can wait."
     ],
     [
      "Inez",
      "Walk, love. Don't run. Let me keep you a while."
+    ],
+    [
+     "Okafor",
+     "Keep me as long as you like."
     ]
    ],
    "learned": [
     "Door empty a few minutes"
    ],
    "opens": [
-    "Enter the Office"
+    "Camera off? Then enter the Office."
    ]
   }
  ]

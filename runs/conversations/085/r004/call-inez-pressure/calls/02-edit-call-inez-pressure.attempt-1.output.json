@@ -1,0 +1,54 @@
+{
+  "picked": 2,
+  "why": "Take 2 has the only real turn: Okafor would rather finish his shift, so Inez has to push, and his fondness decides it. Its Fixer half stalled against her giving way, so that half comes from take 1.",
+  "changes": [
+    "Replaced take 2's Fixer exchange with take 1's. Inez now gives way at once and asks who picked up, and the Fixer is kind before the steel.",
+    "Cut her promise of silence. The Fixer's 'not a word' goes unanswered, then she tells Okafor she has something to tell him, so the scene shows her intent without saying it.",
+    "Lifted her door joke from take 1 and made his reply a warm greeting. Her reason became 'not for the telephone', which avoids reusing 'not on the line'.",
+    "Replaced the closing lines' door quips with a plain 'I'm leaving the door'. Cards now say only what the sheet gives; take 3's 'Disable' is not a named action there, so it's out."
+  ],
+  "beats": [
+    {
+      "speaker": "Fixer",
+      "line": "It's time, Inez. Call Okafor over, and the Office never hears."
+    },
+    {
+      "speaker": "Inez",
+      "line": "Yes, I'll call. Who picked up? Did they hear you?"
+    },
+    {
+      "speaker": "Fixer",
+      "line": "You're all right. Nobody heard. Not a word of me to him."
+    },
+    {
+      "speaker": "Inez",
+      "line": "It's me, love. Still guarding that door from the public?"
+    },
+    {
+      "speaker": "Okafor",
+      "line": "Inez, you'll have me written up in triplicate. Hello, you."
+    },
+    {
+      "speaker": "Inez",
+      "line": "I've something to tell you. It's not for the telephone."
+    },
+    {
+      "speaker": "Okafor",
+      "line": "Can it keep till I'm off? This door's mine till then."
+    },
+    {
+      "speaker": "Inez",
+      "line": "It won't keep, love. I wouldn't ring the door if it would."
+    },
+    {
+      "speaker": "Okafor",
+      "line": "You never would. I'm leaving the door. Stay put, I'm coming."
+    }
+  ],
+  "learned": [
+    "She'll warn him when he arrives."
+  ],
+  "opens": [
+    "Door 1:40; camera still stops Enter."
+  ]
+}

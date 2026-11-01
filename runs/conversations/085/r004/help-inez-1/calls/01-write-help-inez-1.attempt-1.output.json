@@ -1,0 +1,133 @@
+{
+  "takes": [
+    {
+      "situation": "She has already heard from the Bureau and challenges him; a joke slips out before she refuses.",
+      "beats": [
+        {
+          "speaker": "Inez",
+          "line": "My loan's half paid, the Bureau says. Was that you?"
+        },
+        {
+          "speaker": "Fixer",
+          "line": "That was me. Their clockwork collector thanked me twice, same words."
+        },
+        {
+          "speaker": "Inez",
+          "line": "I don't know you. Who's been asking about me, and who saw?"
+        },
+        {
+          "speaker": "Fixer",
+          "line": "Nobody saw. People say you're the kind one on the terrace."
+        },
+        {
+          "speaker": "Inez",
+          "line": "Kind to my worst customer: the Bureau. Stays all day, never tips."
+        },
+        {
+          "speaker": "Fixer",
+          "line": "Half of him's gone, then. Later, we'll ask one small thing."
+        },
+        {
+          "speaker": "Inez",
+          "line": "Don't make me laugh. I took it, but I'll do nothing yet."
+        },
+        {
+          "speaker": "Fixer",
+          "line": "Not on half, no. I'll bring the rest."
+        }
+      ],
+      "learned": [
+        "She took it; not ready yet."
+      ],
+      "opens": [
+        "Help again"
+      ]
+    },
+    {
+      "situation": "She takes him for a Bureau man and brushes him off; he breaks the news.",
+      "beats": [
+        {
+          "speaker": "Inez",
+          "line": "If you're from the Bureau, you're early. Ask me after the shift."
+        },
+        {
+          "speaker": "Fixer",
+          "line": "I'm the opposite of the Bureau. I've just paid half your loan."
+        },
+        {
+          "speaker": "Inez",
+          "line": "Did anyone see you come over? I've never laid eyes on you."
+        },
+        {
+          "speaker": "Fixer",
+          "line": "Not a soul. Your Bureau card's freshly stamped, and it's real."
+        },
+        {
+          "speaker": "Inez",
+          "line": "Nobody pays a stranger's debt for nothing. Who's been asking about me?"
+        },
+        {
+          "speaker": "Fixer",
+          "line": "Nobody unkind. We'll want a small thing, one day, that's all."
+        },
+        {
+          "speaker": "Inez",
+          "line": "Forty small things already. I'll keep your stamp and do nothing yet."
+        },
+        {
+          "speaker": "Fixer",
+          "line": "Get some sleep, when they let you. I'll bring the rest."
+        }
+      ],
+      "learned": [
+        "She took it; not ready yet."
+      ],
+      "opens": [
+        "Help again"
+      ]
+    },
+    {
+      "situation": "She tries to have the payment undone, gives way too fast, then stops him asking.",
+      "beats": [
+        {
+          "speaker": "Inez",
+          "line": "Half my loan, paid by a stranger. Tell them it's a mistake."
+        },
+        {
+          "speaker": "Fixer",
+          "line": "It went up the Bureau's tube already. Nothing's ever come back down."
+        },
+        {
+          "speaker": "Inez",
+          "line": "Who's been talking about me? Did anyone on the terrace see you?"
+        },
+        {
+          "speaker": "Fixer",
+          "line": "No one saw. I hear good things, even about the soup."
+        },
+        {
+          "speaker": "Inez",
+          "line": "Don't have the soup. All right, what do I have to do?"
+        },
+        {
+          "speaker": "Fixer",
+          "line": "Nothing yet. One small thing later, once we've seen off the Bureau."
+        },
+        {
+          "speaker": "Inez",
+          "line": "I took it, I can't undo it. Don't ask me yet."
+        },
+        {
+          "speaker": "Fixer",
+          "line": "I won't. Back to your shift, and I'll bring the rest."
+        }
+      ],
+      "learned": [
+        "She took it; not ready yet."
+      ],
+      "opens": [
+        "Help again"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,51 @@
+{
+  "picked": 3,
+  "why": "Take 3 has the most life: money paid before the job makes a wary Zhou demand exact terms. The job holds to the route B and driver facts [824dc977c7edf50d72a1db3e] [73d2d589f399563702ecafbe].",
+  "changes": [
+    "Renamed the speakers to the scene's names, Zhou and Fixer, to pass the check; every line is unchanged from the last version."
+  ],
+  "beats": [
+    {
+      "speaker": "Zhou",
+      "line": "Seventy thousand, paid, and I haven't heard the job. Nobody pays first."
+    },
+    {
+      "speaker": "Fixer",
+      "line": "We do. We hear the Councillor's driver has had a lean month."
+    },
+    {
+      "speaker": "Zhou",
+      "line": "I don't ask who \"we\" is. Last time, the money stopped."
+    },
+    {
+      "speaker": "Fixer",
+      "line": "Then you're the only honest person on Apron Road, Zhou."
+    },
+    {
+      "speaker": "Zhou",
+      "line": "Honest is extra. I've been paid for \"small favours\", so what, exactly?"
+    },
+    {
+      "speaker": "Fixer",
+      "line": "At the chime, take the Councillor to the service bay. Not home."
+    },
+    {
+      "speaker": "Zhou",
+      "line": "East yard. A couple of minutes, then I drive on."
+    },
+    {
+      "speaker": "Fixer",
+      "line": "Long enough. We get him out of the back seat."
+    },
+    {
+      "speaker": "Zhou",
+      "line": "I don't see that. Anyone watching my bay, I'll send off, free."
+    }
+  ],
+  "learned": [
+    "Paid: Vale's car waits out back."
+  ],
+  "opens": [
+    "Be at the service bay"
+  ]
+}

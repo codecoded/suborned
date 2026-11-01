@@ -1,7 +1,7 @@
 // Brief 085: full conversation scenes, written through the RAG core at build time. A proposal for Sky to read: nothing here reaches the game; what he agrees is moved by hand into text.json scenes.conversations.
 // Each scene: facts bound by code from the sim's people (sheet) + retrieved world and rules + the writer brief -> Fable writes takes -> a script-editor pass ->
 // this file's checks (a fault goes back to the editor once) -> Motive reviews the set for fit with the rules. Every call is saved by runAgent under the run.
-//   bun tools/dialogue/conversations.ts [--only id,id] [--run r002] [--base dir] [--retrieve-only]   then: bun tools/dialogue/conversations-page.ts
+//   bun tools/dialogue/conversations.ts [--only id,id] [--review-also id,id] [--run r002] [--base dir] [--retrieve-only]   then: bun tools/dialogue/conversations-page.ts
 // With --only, a scene's `after` scenes outside the list come from what Sky agreed (briefs/085/fable/approved.json), so the writer still knows what the player has read.
 import { createHash } from 'node:crypto';
 import { existsSync, mkdirSync, readdirSync } from 'node:fs';
@@ -29,7 +29,7 @@ function who(id: string, role: string, also = ''): string {
 const INEZ = 'p-cafe-14', GUARD = 'p-records-office-01', DRIVER = 'p-records-office-31', MILENA = 'p-cafe-12';
 const apart = metres('cafe-entrance', 'office-entrance');
 /** Who Inez is, past the one word the sim holds (Sky, 2026-10-31: "not something Inez would say"). */
-const INEZ_WHO = who(INEZ, 'Inez', `She looks at who can see her before she looks at you. She talks about the shift, the terrace and how she can't keep up. She has no money to offer anyone and never offers any. She never says she's frightened and never threatens anyone: her fear shows in her questions, and in giving way too fast. She's kind, and tired.`);
+const INEZ_WHO = who(INEZ, 'Inez', `She looks at who can see her before she looks at you. She talks about the shift, the terrace and how she can't keep up. She has no money to offer anyone and never offers any. She never says she's frightened and never threatens anyone: her fear shows in her questions, and in giving way too fast. She's kind, and tired. With people she likes she's quick and funny about being tired, and jokes about the Bureau as if it were a bad customer.`);
 const WORLD = `The place: the café and its terrace face Records Square; the Civic Records Office is across the square. Daylight, shift change coming. A polite, orderly city that writes everything down. Records are paper: stamped cards, forms, pneumatic tubes. Calls are voice, by telephone. Robots follow fixed routines. Everyone in the scene is a person of this city except the cell.
 What the player sees (the game's scene, §10, brief 085: Sky, "unattached to the reality of the game"): a close shot of the speakers standing idle, facing each other, feet planted. Nobody sits, walks, carries, holds, hands over, points at or touches anything, and nothing arrives. No tray, plate, cup, card, letter, envelope or money is in the shot. They may talk about things that are elsewhere, but no line points at anything in the shot or at something being done now.
 Only what the game does happens: the cell's money moves as the action's price, away from the shot. Nobody else pays, bribes, trades or bargains for anything, and nobody gains anything the facts here don't give. Don't say evening or tonight.`;
@@ -51,7 +51,7 @@ export const specs: Spec[] = [
     sheet: `${WORLD}
 Situation: the Scout has stood two metres away, between the palms, for half a minute. The player hears what the Scout hears. Inez is standing at the café door between tables. Milena is a voice through the open door, from just inside. Neither knows the Scout is listening.
 ${INEZ_WHO}
-${who(MILENA, 'Milena', 'Works the same café, inside this shift; she owes the Bureau too. No secret of hers comes up.')}
+${who(MILENA, 'Milena', 'Works the same café, inside this shift; she owes the Bureau too. No secret of hers comes up. She\'s fond of Inez: she teases her, worries whether she\'s eaten, and won\'t tell.')}
 ${INEZ_GUARD} Milena has noticed where Inez keeps looking; she doesn't know for sure until this talk.
 The scene must make plain, by its end: Inez is a waitress at this café; she owes the Bureau and can't keep up; she is seeing the guard on the Office door; if the Office hears of it, it costs them both; she is nervous by nature.
 Last beat: the Scout, very low, to the cell, terse fragments: what was heard, and what each thing could get you with her: the loan could be cleared, Okafor could be used. Never counts the ways, and gives no verdict on which is better.
@@ -62,17 +62,18 @@ ${VOICES('waitress', 'scout')}`,
   {
     id: 'help-inez-1', title: 'Help Inez, first visit', after: ['listen-inez'], kind: 'turn', maxBeats: 8, speakers: ['Inez', 'Fixer'],
     query: ['Help clear debt gratitude bravery Fearful needs Help twice', 'Inez capstone call pulls guard off his door', 'approach conversation private no witnesses', 'world paper records optimistic surface coercive underneath'],
-    mustSay: [{ what: 'the Bureau', re: /bureau/i }],
+    mustSay: [{ what: 'the Bureau', re: /bureau/i }, { what: 'that he will bring the rest', re: /the rest/i }],
     sheet: `${WORLD}
 Situation: the Fixer has come to Inez at the café door, and has just paid a first instalment on her Bureau loan. It is a real payment. Fact of the game: this first Help does NOT win her over; she is grateful and scared and not yet willing. One more visit, one more payment, will do it. Nobody calls it a "first Help". The Fixer has not yet said what would be wanted, only hinted.
 ${INEZ_WHO}
 Speakers: Inez, Fixer. She doesn't know the Fixer. Her fear: nobody pays a stranger's debt for nothing; who has been asking about her?
-The scene must make plain: a stranger just paid part of her Bureau loan; she took it but isn't ready to do anything for it; he will be back with the rest. End in a way that makes it clear coming back is what's next, while not saying it's the only way.
+The scene must make plain: a stranger just paid part of her Bureau loan; she took it but isn't ready to do anything for it; he will be back with the rest. End in a way that makes it clear coming back is what's next, while not saying it's the only way. In the next scene she says "You did bring the rest", so he says he'll bring the rest, in those words.
+He's good company and easy with her, and a little funny about it. She's suspicious and still can't help liking him a bit, which frightens her more. Nobody's cruel here.
 learned: 1 line (she took it; not ready yet). opens: "Help again" as the action's plain name.
 ${VOICES('waitress', 'fixer')}`,
   },
   {
-    id: 'help-inez-2', title: 'Help Inez, second visit', after: ['listen-inez', 'help-inez-1'], kind: 'turn', maxBeats: 8, speakers: ['Inez', 'Fixer'],
+    id: 'help-inez-2', title: 'Help Inez, second visit', after: ['listen-inez', 'help-inez-1'], kind: 'turn', maxBeats: 9, speakers: ['Inez', 'Fixer'],
     query: ['Help clear debt gratitude bravery helped Inez warns rivals', 'Inez call guard walks to her side partners stays 60 s', 'capstone the call that pulls the guard off his door'],
     mustSay: [{ what: 'calling him over', re: /call|come over|fetch|over here|send for/i }, { what: 'the guard', re: /okafor|guard|him/i }],
     sheet: `${WORLD}
@@ -81,6 +82,7 @@ ${INEZ_WHO}
 ${INEZ_GUARD}
 She must work out for herself that the Fixer knows about Okafor, and be frightened by that; the Fixer is kind about it and makes no threat. She asks what happens to him. The honest answer the Fixer can give: nothing happens to him if this goes right, and he never sees us.
 Fact of the game: because she was helped, she will warn the cell if she sees trouble coming on the square. Let her offer that, in her own frightened way, near the end.
+He's good company and she starts to believe him, because he did come back with the rest. Let her say so in her own way.
 The scene must make plain: the loan is paid; she's with us now; when we say so, she calls Okafor off the door.
 learned: 1 line. opens: "Call Inez".
 ${VOICES('waitress', 'fixer')}`,
@@ -94,6 +96,7 @@ Situation: the same woman, a different way in. The Fixer comes to Inez at the ca
 ${INEZ_WHO}
 ${INEZ_GUARD}
 Fact of the game, for learned only, and nobody says it aloud: she will remember the Fixer's face, and could describe it if she's ever questioned. She wouldn't threaten a stranger who frightens her, and the Fixer wouldn't remind her.
+He stays good company all through: gentle, unhurried, kind about her shift in the same breath as the threat. No raised voice and no cruelty, and that's what frightens. She tries to be quick and funny at first, and it dies on her. By the end the threat is plain.
 The scene must make plain, the cards included: we threatened to expose the two of them; she agreed, and hates it, and never says she's scared; when we say so, she calls Okafor off the door.
 learned: 1 line, and it mentions she knows the Fixer's face. opens: "Call Inez".
 ${VOICES('waitress', 'fixer')}`,
@@ -107,6 +110,7 @@ Situation: the Fixer finds Vale's official driver waiting by the official car in
 ${who(DRIVER, 'Zhou', 'Call the driver Zhou; no gendered word. Calls Vale "the Councillor", always.')}
 The job, exactly as the game plays it: when the chime goes the Councillor comes out and gets in. A paid Zhou doesn't drive off. Zhou takes the Councillor round to the service bay at the back, the east yard, and waits there with him. Zhou won't wait for ever: a couple of minutes, then drives on. Zhou also says that if someone's hanging about watching the bay, Zhou can send them off; Zhou has noticed nothing specific and names nobody. Getting Vale out of the back seat is the Fixer's people's job; Zhou doesn't want to see it.
 The Fixer says "we" and never explains who "we" are. Zhou doesn't ask, and says why not, in a line.
+They enjoy this a little: Zhou is gruff and dry about money, and the Fixer likes Zhou for it. Bargaining is the fun Zhou gets on a lean month.
 The scene must make plain: Zhou is the Councillor's driver and is short of money; we paid; at the chime the Councillor's car goes to the service bay, not home, and waits a short while; that's where to be.
 learned: 1 line. opens: nothing new to press; instead 1 line naming the place to be ("Be at the service bay").
 ${VOICES('driver', 'fixer')}`,
@@ -120,6 +124,7 @@ Situation: the moment the whole front-door plan was for. The Fixer telephones th
 ${INEZ_WHO}
 ${who(GUARD, 'Okafor', 'In speech he is Okafor to the Fixer; Inez may call him "love". He has a shift to finish and likes her more than the job. He says nothing about money here, and doesn\'t say how long the door stands empty.')}
 ${INEZ_GUARD}
+They're glad of each other. He's fond, a little clumsy, and pleased to be asked. He ends the scene happy to come, knowing nothing.
 She is scared and must sound ordinary to him. He must not suspect. Tenderness matters: this is two people who love each other, and one of them is using it. Let the player feel that, in a line. No coffee spill: he comes because she asked and gave him a reason.
 The scene must make plain: she called him and he is leaving the door now. The card says how long.
 learned: 1 line ("Door empty a few minutes"). opens: 1 line naming what the door allows now, "Enter the Office" (the Enforcer's action).
@@ -135,6 +140,7 @@ ${INEZ_WHO}
 ${who(GUARD, 'Okafor', 'In speech he is Okafor to the Fixer; Inez may call him "love". He has a shift to finish and likes her more than the job. He says nothing about money here, and doesn\'t say how long the door stands empty.')}
 ${INEZ_GUARD}
 It's the same woman the player has just read, and she hates the Fixer. She answers the Fixer as if she's giving way, as she did before. She talks to Okafor the way she always does, an ordinary word about his shift. ${GUARD_REASON_THEN_TELLS} The scene ends with him coming.
+They're glad of each other, here too: he's fond, a little clumsy, pleased to hear her, and she's fond of him and sick about it. With the Fixer she has no warmth left, and he's as kind as ever.
 Fact of the game, for the cards only: when he reaches her, in play, she tells him someone knows about them and that they looked suspicious, and he runs back to his door, so the door is clear for a much shorter time (Motive: he walks over, stands 5 s with her, runs back). Those two lines aren't in this scene and nothing in it says so aloud: she can't tell him here, because he hasn't walked over yet.
 learned: 1 line: she'll warn him. opens: 1 line truthful about the shorter window and the entrance camera, which still stops an Enter until it's looped or off.
 ${VOICES('waitress', 'guard', 'fixer')}`,
@@ -186,7 +192,7 @@ export function priorScenes(s: Pick<Spec, 'after'>, written: Read[]): Read[] {
 
 const args = Bun.argv.slice(2), arg = (k: string) => { const i = args.indexOf(k); return i >= 0 ? args[i + 1] : undefined; };
 if (import.meta.main) {
-  const only = arg('--only')?.split(','), base = arg('--base') ?? 'runs/conversations/085';
+  const only = arg('--only')?.split(','), also = arg('--review-also')?.split(',') ?? [], base = arg('--base') ?? 'runs/conversations/085';
   mkdirSync(resolve(root, base), { recursive: true });
   const taken = readdirSync(resolve(root, base)).filter(n => /^r\d+$/.test(n)).length;
   const run = arg('--run') ?? `r${String(taken + 1).padStart(3, '0')}`, dir = `${base}/${run}`, start = Date.now();
@@ -235,7 +241,7 @@ if (import.meta.main) {
   const reviewCalls: Call[] = [];
   const review = await runAgent(
     { id: 'review-fit', role: 'systems-designer', brief: 'briefs/085/fable/review.md', query: ['Inez Fearful Help Pressure Pay approaches', 'route B driver turned service bay rivals lookout', 'capstone partners call guard stays', 'conversation scene clock pauses'], effort: 'medium' },
-    `The scenes:\n${JSON.stringify(done.map(x => ({ scene: x.spec.id, facts: x.spec.sheet, beats: x.final.beats, learned: x.final.learned, opens: x.final.opens })), null, 1)}`,
+    `The scenes:\n${JSON.stringify([...done.map(x => ({ scene: x.spec.id, facts: x.spec.sheet, beats: x.final.beats, learned: x.final.learned, opens: x.final.opens })), ...also.map(id => { const sc = text.scenes.conversations.items.find((i: { id: string }) => i.id === id); return { scene: id, facts: specs.find(s => s.id === id)!.sheet, beats: sc.beats.map((b: { speaker: string; line: string }) => ({ speaker: b.speaker, line: b.line })), learned: sc.learned, opens: sc.opens }; })], null, 1)}`,
     Review, reviewCalls, `${dir}/review`,
   );
   await writeJson(`${dir}/review/review.json`, review);

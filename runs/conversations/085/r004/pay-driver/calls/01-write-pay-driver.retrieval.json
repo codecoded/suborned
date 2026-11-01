@@ -1,0 +1,180 @@
+{
+  "query": "route B pickup driver turned Pay service bay waits ‖ official driver needs cash Mercenary Pay ‖ getaway rivals lookout turned driver warns lookout off ‖ world paper records voice calls",
+  "queries": [
+    "route B pickup driver turned Pay service bay waits",
+    "official driver needs cash Mercenary Pay",
+    "getaway rivals lookout turned driver warns lookout off",
+    "world paper records voice calls"
+  ],
+  "pinned": [],
+  "method": "HNSW cosine + full-text BM25 per query, reciprocal rank fusion; critic-cited chunks pinned",
+  "corpusHash": "3836c9caed3320e1e1a14d6c0f7647322f364e38b9054a7a17abb7d1571c4864",
+  "embeddingModel": "BAAI/bge-small-en-v1.5",
+  "hits": [
+    {
+      "authority": "Human GDD (wins on conflict)",
+      "distance": 0.30085591668749223,
+      "key": "dd8b9b4144cb97176295edbd",
+      "kind": "gdd-human",
+      "lineEnd": 618,
+      "lineStart": 607,
+      "section": "Handover › B · Take the pickup (from 5:10)",
+      "source": "GDD/the-suborned-gdd-v0.36.0-2026-11-01.html",
+      "sourceHash": "39a77bf239f59f326950814f2fa4e66bb3d95b1c801575172286e8ed11e726a9",
+      "text": "Handover › B · Take the pickup (from 5:10)\nScout listens to the driver: he needs cash (30 s).\nFixer turns the driver before 4:40 (pay $70,000, or help $40,000). He warns the rivals' lookout off, and once Vale is in he drives him round to the service bay (13 s) and waits there until 7:30.\nScout gives the rival car a false tip (30 s), or it follows Vale's car and its wheelman reaches him first. The tip is in question (below).\nTech reroutes the patrol from the cabinet (by about 4:00), so the yard's sweep is away at the pickup.\nEnforcer takes Vale from the back seat (38 s); the driver steps out and the Enforcer takes the wheel. Decided, not built From here on, the split; built today is the one-car way below.\nScout, Fixer and Tech gather at the cell's car among the posted three.\nGo on Vale's car: Vale is out, and the posted three spring on the cell's car.\nThe three down the blocker, board and go (or break the crew).\nThe one-car way: the cell may instead bring its car round behind Vale's (Drive, 28 s) and carry Vale 3.5 m into it.",
+      "version": "v0.36.0",
+      "score": 0.09527812201166247,
+      "signals": [
+        "semantic:1",
+        "keyword:1",
+        "semantic:2",
+        "keyword:2",
+        "semantic:3",
+        "keyword:3"
+      ]
+    },
+    {
+      "authority": "Agent GDD (the human GDD wins on conflict)",
+      "distance": 0.3695198673296043,
+      "key": "824dc977c7edf50d72a1db3e",
+      "kind": "gdd-agent",
+      "lineEnd": 232,
+      "lineStart": 230,
+      "section": "§07 HANDOVER › close",
+      "source": "GDD/the-suborned-agent-gdd-v0.36.0-2026-11-01.md",
+      "sourceHash": "c89c2adcf09b3b32f523afc71ec0d0c1d8815620b760c727d7d14e7c116ee123",
+      "text": "§07 HANDOVER › close\nclose [S]: with Vale in the cell's hands, on foot or in the car, his absence is noticed at 6:30: a warning, once, for the HUD (at once if he is taken later). At 7:30 a mission still here fails closed-in, and says why: nobody aboard can drive · who holds the car · Vale still on foot · the car free and nobody said Go. A Take under way holds the verdict until it ends.\nroute A, front door (before 4:50): Scout watches café, listens to Inez (0:50) → Fixer helps Inez ($40,000; a fearful Inez takes two visits at $20,000) → Tech loops the entrance camera (20 s, runs 2:00, planted so it still runs at the Enter), then reroutes the patrol (optional) → Fixer calls Inez: the guard walks to her side (about 57 s), stays 60 s, walks back = about a 2:54 window, the walk the grid's, never written here [payoff cut] → Enforcer enters (38 s), exits service door with Vale, to car (about 36 s), Board, Go.\nroute B, the pickup (from 5:10; built today: the one-car way at the end of this line; the rest, the split, is [D], and §07 the getaway's direction changes its end): Scout listens to the driver: he needs cash (30 s) → Fixer turns the driver before 4:40 (Pay $70,000, or Help $40,000): he warns the rivals' lookout off, and once Vale is in he drives him round to the service bay (13 s) and waits there until 7:30 → Scout gives the rival car a false tip (30 s), or it follows Vale's car and its wheelman reaches him first (the tip is in question, §07 rivals) → Tech reroutes the patrol from the cabinet (by about 4:00), so the yard's sweep is away at the pickup → Enforcer takes Vale from the back seat (38 s); the driver steps out and the Enforcer takes the wheel → Scout, Fixer and Tech gather at the cell's car among the posted three → Go on Vale's car: Vale is out, and the posted three spring on the cell's car → the three down the blocker, board, Go (or break the crew). The cell may instead bring its car round behind Vale's (Drive, 28 s) and carry Vale 3.5 m into it: the one-car way.",
+      "version": "v0.36.0",
+      "score": 0.08840632049450176,
+      "signals": [
+        "semantic:1",
+        "keyword:1",
+        "semantic:2",
+        "keyword:2",
+        "semantic:3",
+        "keyword:3"
+      ]
+    },
+    {
+      "authority": "Human GDD (wins on conflict)",
+      "distance": 0.35150215914832483,
+      "key": "784d95fe1701a3acd7805808",
+      "kind": "gdd-human",
+      "lineEnd": 634,
+      "lineStart": 618,
+      "section": "Handover › G · Take the guard Spec (2/4)",
+      "source": "GDD/the-suborned-gdd-v0.36.0-2026-11-01.html",
+      "sourceHash": "39a77bf239f59f326950814f2fa4e66bb3d95b1c801575172286e8ed11e726a9",
+      "text": "Handover › G · Take the guard Spec\nDon't loiter. The routes are laid out so no agent idles in a watcher's sight long enough to be reported (§05): the Enforcer waits out of the entrance camera's cone until the loop lands, the Scout waits out of the pickup camera's cone after listening, and nobody lingers within 3 m of the posted guard. Two careless versions show the price: the Enforcer watching the guard from 3 m (the guard grows wary, the knockout fails and the run goes loud), and the Scout idling in the pickup camera's view (reported, Alert 1). Spec\nThe driver can be taken too, by the same rules, but on the generated cast every chance is closed: by check-ins, by the shift change, or by Vale himself. Turn him instead (route B). The official car needs its driver; without one it waits. Unturned, he drives Vale away at 5:13 and the mission is over. The Take: at Vale's own car with his driver turned, in the service bay, it happens inside the car, with nothing to see, and ends with the Enforcer at the wheel: the driver lends him the car (§06) Decided, not built . A Take begun before 7:30 holds the driver until it ends. Any other Take has a 5 s struggle onlookers can see, and Vale walked away on foot looks wrong only to his family, or to anyone within 3 m who sees the grip. Spec",
+      "version": "v0.36.0",
+      "score": 0.07712748068973538,
+      "signals": [
+        "semantic:1",
+        "keyword:1",
+        "semantic:2",
+        "keyword:2",
+        "semantic:3"
+      ]
+    },
+    {
+      "authority": "Agent GDD (the human GDD wins on conflict)",
+      "distance": 0.35206578063572647,
+      "key": "12f568e600e22c6cfd665124",
+      "kind": "gdd-agent",
+      "lineEnd": 236,
+      "lineStart": 236,
+      "section": "§07 HANDOVER › the Take",
+      "source": "GDD/the-suborned-agent-gdd-v0.36.0-2026-11-01.md",
+      "sourceHash": "c89c2adcf09b3b32f523afc71ec0d0c1d8815620b760c727d7d14e7c116ee123",
+      "text": "§07 HANDOVER › the Take\nthe Take [S]: at Vale's own car with his driver turned, in the service bay, the Take happens inside the car, off-screen, with nothing to witness, and ends with the Enforcer at the wheel: the driver lends the car (§06) [D; built today, the Take ends with Vale still to be carried to the cell's car]. A Take begun before 7:30 holds the driver until it ends. Any other Take has a 5 s struggle onlookers can see. Escorted on foot, Vale looks wrong only to his kin, or to anyone within 3 m who sees the grip.",
+      "version": "v0.36.0",
+      "score": 0.07055210784647806,
+      "signals": [
+        "semantic:1",
+        "keyword:1",
+        "semantic:2",
+        "semantic:3",
+        "keyword:3"
+      ]
+    },
+    {
+      "authority": "Agent GDD (the human GDD wins on conflict)",
+      "distance": 0.3646241209134973,
+      "key": "73d2d589f399563702ecafbe",
+      "kind": "gdd-agent",
+      "lineEnd": 235,
+      "lineStart": 235,
+      "section": "§07 HANDOVER › the driver",
+      "source": "GDD/the-suborned-agent-gdd-v0.36.0-2026-11-01.md",
+      "sourceHash": "c89c2adcf09b3b32f523afc71ec0d0c1d8815620b760c727d7d14e7c116ee123",
+      "text": "§07 HANDOVER › the driver\nthe driver [S]: takeable by the rules, but not viable on the generated cast: every time he could be taken is closed by check-ins, the shift change or Vale himself. Turn him instead (route B). The official car needs its driver: with no driver it waits. Unturned, he drives Vale away at 5:13 and the mission is over.",
+      "version": "v0.36.0",
+      "score": 0.06054442165325921,
+      "signals": [
+        "semantic:1",
+        "keyword:1",
+        "semantic:2",
+        "keyword:2"
+      ]
+    },
+    {
+      "authority": "Agent GDD (the human GDD wins on conflict)",
+      "distance": 0.3736653478544536,
+      "key": "cd8c0574c7d27811e99467f1",
+      "kind": "gdd-agent",
+      "lineEnd": 72,
+      "lineStart": 72,
+      "section": "§04 PEOPLE › purse",
+      "source": "GDD/the-suborned-agent-gdd-v0.36.0-2026-11-01.md",
+      "sourceHash": "c89c2adcf09b3b32f523afc71ec0d0c1d8815620b760c727d7d14e7c116ee123",
+      "text": "§04 PEOPLE › purse\npurse: pay + driver = 110,000 > 100,000; help + driver = 80,000 fits → learning buys the second route.",
+      "version": "v0.36.0",
+      "score": 0.05909659353505695,
+      "signals": [
+        "semantic:1",
+        "keyword:1",
+        "semantic:2",
+        "keyword:2"
+      ]
+    },
+    {
+      "authority": "Agent GDD (the human GDD wins on conflict)",
+      "distance": 0.3648344278335526,
+      "key": "d7d67f4d7ca139542c1f8120",
+      "kind": "gdd-agent",
+      "lineEnd": 237,
+      "lineStart": 237,
+      "section": "§07 HANDOVER › getaway",
+      "source": "GDD/the-suborned-agent-gdd-v0.36.0-2026-11-01.md",
+      "sourceHash": "c89c2adcf09b3b32f523afc71ec0d0c1d8815620b760c727d7d14e7c116ee123",
+      "text": "§07 HANDOVER › getaway\ngetaway [S]: the getaway car starts in the square's bay. An agent in it can Drive it to one of the mission's car stands: the square's bay, or the service drive behind Vale's car (nose out, once Vale's car is in; on the drive first, it blocks his way and he stops in the road). [D] Vale's car, lent by a turned driver, leaves the service bay down the drive and east along Apron Road. Each stand has its own exit lane, ambush spots and police stands.",
+      "version": "v0.36.0",
+      "score": 0.058083155422545434,
+      "signals": [
+        "semantic:1",
+        "keyword:1",
+        "semantic:3",
+        "keyword:3"
+      ]
+    },
+    {
+      "authority": "Agent GDD (the human GDD wins on conflict)",
+      "distance": 0.3721552082253905,
+      "key": "c7485809550c3565b8fdad21",
+      "kind": "gdd-agent",
+      "lineEnd": 228,
+      "lineStart": 228,
+      "section": "§07 HANDOVER › schedule",
+      "source": "GDD/the-suborned-agent-gdd-v0.36.0-2026-11-01.md",
+      "sourceHash": "c89c2adcf09b3b32f523afc71ec0d0c1d8815620b760c727d7d14e7c116ee123",
+      "text": "§07 HANDOVER › schedule\nschedule: 0:00 Vale inside; routines run; the cell stands loosely by the getaway car at the square's boarding pavilion, in view, and the camera opens on them · the door guard checks in at 1:00, 2:30, 4:00 and 4:30 (shift end; other staff posts keep 90 s marks from their own shift start) · 2:35 the rival car turns in from Orbit Walk · 2:46 it drops three by the cell's car, who post round it · 3:10 the rival car parks across from Vale's car; its lookout watches the official bay · 4:30 handover chime · 4:40 last chance to turn the driver · 4:50 Vale comes out of the official door · 5:10 Vale at his car, in by 5:13: his own driver drives him away (over); a turned driver drives him round to the service bay (5:25) and waits there · 7:30 the turned driver gives up and drives Vale on (over).",
+      "version": "v0.36.0",
+      "score": 0.04462063757838406,
+      "signals": [
+        "semantic:1",
+        "keyword:1",
+        "keyword:3"
+      ]
+    }
+  ]
+}

@@ -5,7 +5,7 @@ import { existsSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { check, specs } from '../../../tools/dialogue/conversations.ts';
 import { TEMPERAMENTS } from '../../people/people.rules.schema.ts';
-import { CONVERSATION_MAX_BEATS, Conversation, conversationLines, lookupConversation, type ConversationQuery } from './conversations.schema.ts';
+import { CONVERSATION_MAX_BEATS, Conversation, ConversationBeat, conversationLines, lookupConversation, type ConversationQuery } from './conversations.schema.ts';
 import { MAX_LINE, MAX_WORDS, TextFile, lookupScene, wordCount } from './text.schema.ts';
 
 const root = join(import.meta.dir, '..', '..', '..');
@@ -16,8 +16,6 @@ const approved = json('briefs/085/fable/approved.json') as { scenes: { id: strin
 const byId = (id: string) => c.items.find((x) => x.id === id)!;
 const pick = (q: ConversationQuery) => lookupConversation(c, q)?.id;
 const inez = { about: 'waitress', temperament: 'fearful' };
-/** The one edit to Sky's agreed cards (Aster tells him): the entrance camera still stops an Enter (GameOrders.cs entry-seen-camera), so a bare "Enter the Office" misleads. */
-const CARD_EDITS: Record<string, string[]> = { 'call-inez': ['Camera off? Then enter the Office.'] };
 const shown = (id: string) => conversationLines(c, byId(id)).map((l) => [l.name, l.text]);
 
 describe('the words', () => {
@@ -26,7 +24,7 @@ describe('the words', () => {
       expect(byId(a.id).status, a.id).toBe('agreed');
       expect(shown(a.id), a.id).toEqual(a.beats);
       expect(byId(a.id).learned, a.id).toEqual(a.learned);
-      expect(byId(a.id).opens, a.id).toEqual(CARD_EDITS[a.id] ?? a.opens);
+      expect(byId(a.id).opens, a.id).toEqual(a.opens);
     }
     expect(approved.scenes.length).toBe(6);
   });
@@ -56,6 +54,29 @@ describe('the words', () => {
     expect(P.verbs.pressure).toContain('door'); expect(P.verbs.call).toContain('door');
     for (const v of ['ask', 'pay', 'help', 'listen'] as const) expect(P.verbs[v]).not.toContain('door');
     expect(P.examples['pressure-inez']).toContain('Door 1:40');
+  });
+  test('the three held moments and the leaned-on words, as Sky agreed; every field is on the line it names', () => {
+    const fields = c.items.flatMap((sc) => sc.beats.flatMap((b, i) => { const { speaker: _s, line: _l, ...view } = b; return Object.keys(view).length ? [[sc.id, i + 1, view]] : []; }));
+    expect(fields).toEqual([
+      ['listen-inez', 5, { lean: 'handsome' }],
+      ['listen-inez', 7, { lean: 'did', revealAfter: 'He said nothing, you goose.', revealS: 0.9 }],
+      ['help-inez-2', 6, { lean: 'Okafor' }],
+      ['help-inez-2', 8, { lean: 'did' }],
+      ['call-inez', 3, { holdBefore: 1.2 }],
+      ['call-inez', 6, { lean: 'you' }],
+      ['call-inez', 8, { holdAfter: 1.5, holdOn: 'waitress' }],
+    ]);
+    const beat = byId('listen-inez').beats[6]!, bad = (x: object) => ConversationBeat.safeParse({ ...beat, ...x }).success;
+    expect(ConversationBeat.safeParse(beat).success).toBe(true);
+    expect(bad({ lean: 'di' })).toBe(false); // not a whole word
+    expect(bad({ revealAfter: 'You just did.' })).toBe(false); // not the line's start
+    expect(bad({ revealS: undefined })).toBe(false);
+    expect(bad({ holdOn: 'waitress' })).toBe(false); // no holdAfter to be on
+    expect(conversationLines(c, byId('call-inez'))[2]).toEqual({ speaker: 'waitress', name: 'Inez', text: "How's your shift, love?", holdBefore: 1.2 });
+  });
+  test('look C\'s words and the plain lock reason', () => {
+    expect(c.ui).toEqual({ new: 'New', voice: { milena: 'Milena, inside' } });
+    expect(t.locks['target-unknown']!.short).toBe("Can't act on that");
   });
   test('the alarm\'s walk back never says he runs: he goes at a guard\'s pace, 1.4 m/s', () => {
     const said = t.dialogue.filter((e) => e.event === 'guard-recalled').flatMap((e) => e.lines);

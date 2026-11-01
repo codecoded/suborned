@@ -1,0 +1,51 @@
+{
+  "id": "help-inez-1",
+  "title": "Help Inez, first visit",
+  "kind": "turn",
+  "picked": 2,
+  "why": "Take 2 opened with the most life, mistaking him for a Bureau man. Kept the last version; only the flagged closing line changed.",
+  "changes": [
+    "Final Fixer line: replaced \"Get some sleep\" with \"Mind your tables\", because the return can come during this shift, on the same mission clock."
+  ],
+  "beats": [
+    {
+      "speaker": "Inez",
+      "line": "If you're from the Bureau, you're early. I'm still on shift."
+    },
+    {
+      "speaker": "Fixer",
+      "line": "I'm not. I've just paid them part of your loan."
+    },
+    {
+      "speaker": "Inez",
+      "line": "Who saw you? I don't know you. Who's been asking about me?"
+    },
+    {
+      "speaker": "Fixer",
+      "line": "Nobody saw. People say you're the kind one on the terrace."
+    },
+    {
+      "speaker": "Inez",
+      "line": "Kind? The Bureau's my worst customer. Stays all day, never tips."
+    },
+    {
+      "speaker": "Fixer",
+      "line": "Part of him's gone home, then. We'll want one small thing."
+    },
+    {
+      "speaker": "Inez",
+      "line": "What thing? Don't tell me. I took it, but not yet."
+    },
+    {
+      "speaker": "Fixer",
+      "line": "Not yet, then. Mind your tables. I'll bring the rest."
+    }
+  ],
+  "learned": [
+    "She took it; not ready yet."
+  ],
+  "opens": [
+    "Help again"
+  ],
+  "faults": []
+}

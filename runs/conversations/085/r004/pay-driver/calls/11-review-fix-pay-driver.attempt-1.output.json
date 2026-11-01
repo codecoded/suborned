@@ -1,0 +1,53 @@
+{
+  "picked": 3,
+  "why": "Take 3 has the most life: money arriving first makes a much-burned driver suspicious, and that drives the demand for exact terms. I applied the review's fixes except its cut of the send-off. Route B has the turned driver warn the rivals' lookout off [dd8b9b4144cb97176295edbd, 824dc977c7edf50d72a1db3e], and the scene sheet requires the offer. For Aster: the review treats this send-off as the Scout's false tip, and that needs correcting or a ruling from Sky.",
+  "changes": [
+    "Line 1: dropped the figure as the review asked, because the scene sheet gives no price. The review's reason is off: §07 prices the driver at Pay $70,000 or Help $40,000 [dd8b9b4144cb97176295edbd, 824dc977c7edf50d72a1db3e], while the purse and people rules use $40,000 [cd8c0574c7d27811e99467f1, ab8f73121466f6e810b67979], apparently the Help price. Aster should confirm.",
+    "Line 8: now \"The back seat's our business\", as the review asked. It says nothing about how the Take goes, so it holds for both the built and the decided versions [12f568e600e22c6cfd665124]. The review's reason is only partly right: the human GDD still has the Enforcer taking Vale from the back seat [dd8b9b4144cb97176295edbd].",
+    "Line 9: dropped \"free\", since nothing sets that price, but did not make the requested cut to \"I don't see that.\" The send-off is the driver warning the rivals' lookout off, which is in route B and separate from the Scout's false tip, the part in question [dd8b9b4144cb97176295edbd]. Cutting it would also drop a line the sheet requires."
+  ],
+  "beats": [
+    {
+      "speaker": "Zhou",
+      "line": "Paid, and I haven't heard the job. Nobody pays first."
+    },
+    {
+      "speaker": "Fixer",
+      "line": "We do. We hear the Councillor's driver has had a lean month."
+    },
+    {
+      "speaker": "Zhou",
+      "line": "I don't ask who \"we\" is. Last time, the money stopped."
+    },
+    {
+      "speaker": "Fixer",
+      "line": "Then you're the only honest person on Apron Road, Zhou."
+    },
+    {
+      "speaker": "Zhou",
+      "line": "Honest is extra. I've been paid for \"small favours\", so what, exactly?"
+    },
+    {
+      "speaker": "Fixer",
+      "line": "At the chime, take the Councillor to the service bay. Not home."
+    },
+    {
+      "speaker": "Zhou",
+      "line": "East yard. A couple of minutes, then I drive on."
+    },
+    {
+      "speaker": "Fixer",
+      "line": "Long enough. The back seat's our business."
+    },
+    {
+      "speaker": "Zhou",
+      "line": "I don't see that. Anyone watching my bay, I'll send off."
+    }
+  ],
+  "learned": [
+    "Paid: Vale's car waits out back."
+  ],
+  "opens": [
+    "Be at the service bay"
+  ]
+}

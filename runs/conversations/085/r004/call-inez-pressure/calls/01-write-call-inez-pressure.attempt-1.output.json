@@ -1,0 +1,145 @@
+{
+  "takes": [
+    {
+      "situation": "He's simply glad she rang; she can't bear his kindness and skips it.",
+      "beats": [
+        {
+          "speaker": "Fixer",
+          "line": "It's time, Inez. Call Okafor over, and the Office never hears."
+        },
+        {
+          "speaker": "Inez",
+          "line": "Who picked up? Did they hear you ask for me?"
+        },
+        {
+          "speaker": "Fixer",
+          "line": "You're all right, nobody heard. Not a word of me to him."
+        },
+        {
+          "speaker": "Inez",
+          "line": "Not a word, no. And then you're finished with me?"
+        },
+        {
+          "speaker": "Okafor",
+          "line": "Public door. If it's the tube room, I've signed for it."
+        },
+        {
+          "speaker": "Inez",
+          "line": "It's me, love. Still guarding that door from the public?"
+        },
+        {
+          "speaker": "Okafor",
+          "line": "Well, it's you. Did they ever give you that break?"
+        },
+        {
+          "speaker": "Inez",
+          "line": "I've something to tell you, love. It won't keep, not by telephone."
+        },
+        {
+          "speaker": "Okafor",
+          "line": "Then the door can mind itself. I'm coming over to you."
+        }
+      ],
+      "learned": [
+        "She'll warn him; he'll run back."
+      ],
+      "opens": [
+        "Door 1:40; camera still stops Enter."
+      ]
+    },
+    {
+      "situation": "She stalls the Fixer and loses; then Okafor stalls her, and she must push.",
+      "beats": [
+        {
+          "speaker": "Fixer",
+          "line": "It's time, Inez. Call Okafor, and not a word of me."
+        },
+        {
+          "speaker": "Inez",
+          "line": "Now, with the terrace full? Let me call after the shift."
+        },
+        {
+          "speaker": "Fixer",
+          "line": "You'd run that terrace asleep. It's now, or the Office hears."
+        },
+        {
+          "speaker": "Inez",
+          "line": "I'm calling him, yes. Who else is on this line?"
+        },
+        {
+          "speaker": "Okafor",
+          "line": "Inez, you'll have me written up in triplicate. Hello, you."
+        },
+        {
+          "speaker": "Inez",
+          "line": "Door behaving, love? I've something to tell you, not by telephone."
+        },
+        {
+          "speaker": "Okafor",
+          "line": "Can it keep till I'm off? This door's mine till then."
+        },
+        {
+          "speaker": "Inez",
+          "line": "It won't keep, love. I wouldn't ring the door if it would."
+        },
+        {
+          "speaker": "Okafor",
+          "line": "You never would. I'm off the door and coming over."
+        }
+      ],
+      "learned": [
+        "She'll warn him when he arrives."
+      ],
+      "opens": [
+        "Door clear 1:40; camera blocks Enter."
+      ]
+    },
+    {
+      "situation": "The Fixer is over fast; she hides in jokes until Okafor sees through them.",
+      "beats": [
+        {
+          "speaker": "Fixer",
+          "line": "It's time, Inez. Okafor off his door, and you've never met me."
+        },
+        {
+          "speaker": "Inez",
+          "line": "Yes, I'll call. And the Office hears nothing, you promise?"
+        },
+        {
+          "speaker": "Okafor",
+          "line": "Okafor, door. Yes, I've logged it, whatever it is."
+        },
+        {
+          "speaker": "Inez",
+          "line": "Log this, love. The Bureau's clockwork thanked me for my patience again."
+        },
+        {
+          "speaker": "Okafor",
+          "line": "Tell it you've none left, Inez. You sound done in."
+        },
+        {
+          "speaker": "Inez",
+          "line": "Never mind me. Are they working you to the bell?"
+        },
+        {
+          "speaker": "Okafor",
+          "line": "To the bell and a form after. You didn't ring for that."
+        },
+        {
+          "speaker": "Inez",
+          "line": "No. I've something to tell you, not by telephone and not later."
+        },
+        {
+          "speaker": "Okafor",
+          "line": "Then I'm off this door. Stay put, Inez, I'm coming across."
+        }
+      ],
+      "learned": [
+        "Inez will warn him in person."
+      ],
+      "opens": [
+        "Door 1:40: Loop or Disable camera."
+      ]
+    }
+  ]
+}

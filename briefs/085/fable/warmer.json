@@ -5,52 +5,147 @@
    "id": "listen-inez",
    "changed": "Milena fusses and teases and they share one joke about the debt, and the tease is what makes Inez give herself away.",
    "beats": [
-    ["Milena", "Have you eaten? You've looked at that Office door all shift."],
-    ["Inez", "Eat? With the Bureau after me? Waiting tables, I can't keep up."],
-    ["Milena", "I owe them too. We'll be buried with those cards half stamped."],
-    ["Inez", "Then bury me somewhere I can sit down."],
-    ["Milena", "You'd get up to look at that door. Is it so handsome?"],
-    ["Inez", "Who's been counting? Did Okafor say something? Who else has he told?"],
-    ["Milena", "He said nothing, you goose. You just did."],
-    ["Inez", "Yes, I'm seeing him. If the Office hears, it costs us both."],
-    ["Milena", "Not from me, they won't. Stop looking, though. You can't afford it."],
-    ["Scout", "Bureau loan, behind, could be cleared. Okafor, Office door, could be used."]
+    [
+     "Milena",
+     "Have you eaten? You've looked at that Office door all shift."
+    ],
+    [
+     "Inez",
+     "Eat? With the Bureau after me? Waiting tables, I can't keep up."
+    ],
+    [
+     "Milena",
+     "I owe them too. We'll be buried with those cards half stamped."
+    ],
+    [
+     "Inez",
+     "Then bury me somewhere I can sit down."
+    ],
+    [
+     "Milena",
+     "You'd get up to look at that door. Is it so handsome?"
+    ],
+    [
+     "Inez",
+     "Who says? Did Okafor say something? Who else has he told?"
+    ],
+    [
+     "Milena",
+     "He said nothing, you goose. You just did."
+    ],
+    [
+     "Inez",
+     "Yes, I'm seeing him. If the Office hears, it costs us both."
+    ],
+    [
+     "Milena",
+     "Not from me, they won't. Stop looking, though. You can't afford it."
+    ],
+    [
+     "Scout",
+     "Bureau loan, behind, could be cleared. Okafor, Office door, could be used."
+    ]
    ],
-   "learned": ["Debt: Bureau loan, and she's behind.", "Secret: seeing Okafor, the door guard."],
-   "opens": ["Help: clear her Bureau loan.", "Pressure: threaten to expose the affair."]
+   "learned": [
+    "Debt: Bureau loan, and she's behind.",
+    "Secret: seeing Okafor, the door guard."
+   ],
+   "opens": [
+    "Help: clear her Bureau loan.",
+    "Pressure: threaten to expose the affair."
+   ]
   },
   {
    "id": "help-inez-2",
    "changed": "He answers her joke about shoes with kindness, and she believes him because he did bring the rest; one beat longer, and \"Not a word that anyone knows\" is cut to make room.",
    "beats": [
-    ["Fixer", "That's the rest paid. You owe the Bureau nothing, Miss Nikolaou."],
-    ["Inez", "Not so loud. I've owed them since my last good shoes."],
-    ["Fixer", "Then buy shoes first, Miss Nikolaou. We'll wait our turn."],
-    ["Inez", "Thank you, I mean that. Your turn. What do I owe?"],
-    ["Fixer", "A few minutes. When I telephone, call Okafor off the Office door."],
-    ["Inez", "Okafor. You know about us, then. What happens to him?"],
-    ["Fixer", "Easy, now. Nothing, if this goes right. And he never sees us."],
-    ["Inez", "You did bring the rest. I'll say it won't go by telephone."],
-    ["Inez", "I'm with you. I watch that square anyway. Trouble, I'll warn you."]
+    [
+     "Fixer",
+     "That's the rest paid. You owe the Bureau nothing, Miss Nikolaou."
+    ],
+    [
+     "Inez",
+     "Not so loud. I've owed them since my last good shoes."
+    ],
+    [
+     "Fixer",
+     "Then buy shoes first, Miss Nikolaou. We'll wait our turn."
+    ],
+    [
+     "Inez",
+     "Thank you, I mean that. Your turn. What do I owe?"
+    ],
+    [
+     "Fixer",
+     "A few minutes. When I telephone, call Okafor off the Office door."
+    ],
+    [
+     "Inez",
+     "Okafor. You know about us, then. What happens to him?"
+    ],
+    [
+     "Fixer",
+     "Easy, now. Nothing, if this goes right. And he never sees us."
+    ],
+    [
+     "Inez",
+     "You did bring the rest. I'll say it won't go by telephone."
+    ],
+    [
+     "Inez",
+     "I'm with you. I watch that square anyway. Trouble, I'll warn you."
+    ]
    ],
-   "learned": ["Loan paid. Inez is with us."],
-   "opens": ["Call Inez"]
+   "learned": [
+    "Loan paid. Inez is with us."
+   ],
+   "opens": [
+    "Call Inez"
+   ]
   },
   {
    "id": "call-inez",
    "changed": "Sky's \"How's your shift, love?\" gets its own beat and a fond answer, and he ends glad to be kept, so her lie hurts; one beat longer.",
    "beats": [
-    ["Fixer", "It's time, Miss Nikolaou. Call Okafor across now. You'll do fine."],
-    ["Inez", "Now? With the terrace looking? Yes. All right."],
-    ["Inez", "How's your shift, love?"],
-    ["Okafor", "Long. This door's said nothing all day. It's good to hear you."],
-    ["Inez", "Come across. I've something to tell you, not down a telephone."],
-    ["Okafor", "I've this door till shift's end. For you, it can wait."],
-    ["Inez", "Walk, love. Don't run. Let me keep you a while."],
-    ["Okafor", "Keep me as long as you like."]
+    [
+     "Fixer",
+     "It's time, Miss Nikolaou. Call Okafor across now. You'll do fine."
+    ],
+    [
+     "Inez",
+     "Now? With the terrace looking? Yes. All right."
+    ],
+    [
+     "Inez",
+     "How's your shift, love?"
+    ],
+    [
+     "Okafor",
+     "Long. This door's said nothing all day. It's good to hear you."
+    ],
+    [
+     "Inez",
+     "Come across. I've something to tell you, and not down a telephone."
+    ],
+    [
+     "Okafor",
+     "I've this door till shift's end. For you, it can wait."
+    ],
+    [
+     "Inez",
+     "Walk, love. Don't run. Let me keep you a while."
+    ],
+    [
+     "Okafor",
+     "Keep me as long as you like."
+    ]
    ],
-   "learned": ["Door empty a few minutes"],
-   "opens": ["Camera off? Then enter the Office."]
+   "learned": [
+    "Door empty a few minutes"
+   ],
+   "opens": [
+    "Camera off? Then enter the Office."
+   ]
   }
  ],
  "briefLines": {
@@ -85,5 +180,6 @@
    "Inez.talksAbout, added": "Jokes about her own feet and the Bureau, with people she likes.",
    "Okafor.refusesToSay, replacing \"Anything soft in the hearing of the Office.\"": "Anything soft where the Office could hear. On her line he's glad to hear her, and says so badly."
   }
- }
+ },
+ "applied": "Applied 2026-11-01 with the two wording fixes; text.json and approved.json are the current copies."
 }

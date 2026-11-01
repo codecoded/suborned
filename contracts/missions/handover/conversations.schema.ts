@@ -18,6 +18,20 @@ export const CONVERSATION_MAX_BEATS = 10;
 export const CARD_WORDS = 6;
 
 const Spoken = z.string().min(1).max(80).regex(/^[^\n<>{}!]+$/);
+const Seconds = z.number().min(0.1).max(3);
+/** One line of a scene. Its optional fields are view only (GDD §10, look C): nothing the engine records reads them. lean: the one word in SemiBold, whole and once in the line.
+ *  holdBefore, holdAfter: seconds of the shot with no line. holdOn: who the camera is on during holdAfter. revealAfter: the part shown first, the line's start; the rest joins it revealS later. */
+export const ConversationBeat = z.strictObject({
+  speaker: z.enum(CONVERSATION_SPEAKERS), line: Spoken,
+  lean: z.string().regex(/^[\p{L}'-]+$/u).optional(), holdBefore: Seconds.optional(), holdAfter: Seconds.optional(), holdOn: z.enum(CONVERSATION_SPEAKERS).optional(),
+  revealAfter: z.string().min(1).optional(), revealS: Seconds.optional(),
+}).superRefine((b, ctx) => {
+  const no = (message: string) => ctx.addIssue({ code: 'custom', message });
+  if (b.lean && b.line.split(new RegExp(`(?<![\\p{L}'-])${b.lean}(?![\\p{L}'-])`, 'u')).length !== 2) no(`lean "${b.lean}" must be a whole word, once in the line`);
+  if ((b.revealAfter === undefined) !== (b.revealS === undefined)) no('revealAfter and revealS go together');
+  if (b.revealAfter && (!b.line.startsWith(b.revealAfter) || b.revealAfter === b.line)) no('revealAfter must be the start of the line, not all of it');
+  if (b.holdOn && b.holdAfter === undefined) no('holdOn needs holdAfter');
+});
 const CardLine = z.string().min(1).max(44).regex(/^[^\n<>{}!]+$/).refine((x) => x.trim().split(/\s+/).length <= CARD_WORDS, `a card is at most ${CARD_WORDS} words`);
 
 export const ConversationWhen = z.strictObject({
@@ -35,7 +49,7 @@ export const Conversation = z.strictObject({
   status: z.enum(CONVERSATION_STATUS),
   from: z.string().min(1).describe('where the words came from'),
   when: ConversationWhen,
-  beats: z.array(z.strictObject({ speaker: z.enum(CONVERSATION_SPEAKERS), line: Spoken })).min(4).max(CONVERSATION_MAX_BEATS),
+  beats: z.array(ConversationBeat).min(4).max(CONVERSATION_MAX_BEATS),
   street: z.array(z.strictObject({
     on: z.string().regex(/^[a-z][a-z0-9.-]*$/).describe('the engine log code that plays them'),
     pressed: z.literal(true).optional().describe('only while Game.GuardCallPressed: guard.at-cafe also fires on an unpressed visit'),
@@ -48,6 +62,7 @@ export const Conversation = z.strictObject({
 export type Conversation = z.infer<typeof Conversation>;
 export const Conversations = z.strictObject({
   rule: z.string().min(1),
+  ui: z.strictObject({ new: z.string().min(1).max(8), voice: z.strictObject({ milena: z.string().min(1).max(16) }) }).describe('look C\'s words: the mark beside an action a scene opens; the name a voice with no figure shows in place of names'),
   names: z.record(z.enum(CONVERSATION_SPEAKERS), z.string().min(1).max(12)).describe('the speaker label a conversation shows. The rest of the game still says Guard and Driver (names.speakers)'),
   items: z.array(Conversation).min(1),
 });
@@ -65,5 +80,5 @@ export function lookupConversation(c: Conversations | undefined, q: Conversation
 }
 
 /** A conversation's lines in order, each with its speaker key (where the bubble goes) and the name it shows. */
-export const conversationLines = (c: Conversations, sc: Conversation): { speaker: string; name: string; text: string }[] =>
-  sc.beats.map((b) => ({ speaker: b.speaker, name: c.names[b.speaker] ?? b.speaker, text: b.line }));
+export const conversationLines = (c: Conversations, sc: Conversation) =>
+  sc.beats.map(({ speaker, line, ...view }) => ({ speaker, name: c.names[speaker] ?? speaker, text: line, ...view }));

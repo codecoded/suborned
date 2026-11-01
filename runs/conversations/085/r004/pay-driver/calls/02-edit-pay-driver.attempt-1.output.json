@@ -1,0 +1,54 @@
+{
+  "picked": 3,
+  "why": "Take 3 has the most life: money paid first makes Zhou suspicious, and \"Honest is extra\" is the best exchange. It also keeps price and job as the sheet gives them ($70,000, chime, service bay, wait, lookout: dd8b9b4144cb97176295edbd, 824dc977c7edf50d72a1db3e). Take 2 invents a higher price and a robot collector. Take 1's meal line goes nowhere.",
+  "changes": [
+    "Zhou now opens on being paid first. The Fixer's reply states the Councillor's driver and the lean month, which the take never made plain.",
+    "Moved the \"we\" line up to answer \"We do\", and cut it to two sentences, so Zhou's reason for not asking follows from what was just said.",
+    "Removed invented detail: the wages tube and late wages. Also fixed the two Zhou lines in a row at the end and the lines over two sentences.",
+    "The close merges not seeing it with sending off watchers, and \"free\" answers \"Honest is extra\". That is Zhou's one fond line, so the scene isn't cold."
+  ],
+  "beats": [
+    {
+      "speaker": "driver",
+      "line": "Seventy thousand, paid, and I haven't heard the job. Nobody pays first."
+    },
+    {
+      "speaker": "fixer",
+      "line": "We do. We hear the Councillor's driver has had a lean month."
+    },
+    {
+      "speaker": "driver",
+      "line": "I don't ask who \"we\" is. Last time, the money stopped."
+    },
+    {
+      "speaker": "fixer",
+      "line": "Then you're the only honest person on Apron Road, Zhou."
+    },
+    {
+      "speaker": "driver",
+      "line": "Honest is extra. I've been paid for \"small favours\", so what, exactly?"
+    },
+    {
+      "speaker": "fixer",
+      "line": "At the chime, take the Councillor to the service bay. Not home."
+    },
+    {
+      "speaker": "driver",
+      "line": "East yard. A couple of minutes, then I drive on."
+    },
+    {
+      "speaker": "fixer",
+      "line": "Long enough. We get him out of the back seat."
+    },
+    {
+      "speaker": "driver",
+      "line": "I don't see that. Anyone watching my bay, I'll send off, free."
+    }
+  ],
+  "learned": [
+    "Zhou takes Vale to service bay."
+  ],
+  "opens": [
+    "Be at the service bay"
+  ]
+}
