@@ -19,7 +19,8 @@ A player who reads only this scene, the Scout's line and the cards included (Sky
 - Each line follows from the last. A line may be there only because this person likes that one, once a scene. No two lines in a row with the same rhythm. Avoid the fortune-cookie line and the closing quip.
 - A person's first line must not sound like a greeting from a form ("Hello. Is this about the files?", "Yes? Anything I can do for you?"). They were in the middle of something.
 - People don't explain what both of them already know, unless one is using it as a weapon.
-- These people have lives past this talk. Warmth is a kindness, a tease, a shared joke or a fond word, and it never takes back the fear or the price.
+- These people have lives past this talk. Warmth is a kindness, a tease, a shared joke or a fond word, and it never takes back the fear or the price. One bit of real warmth a scene, not one a line. Most lines are plain.
+- A reader understands every line the first time. If a line has to be decoded, or doesn't follow from the one before, rewrite it, however good it sounds.
 - In each scene, give one line that's said for its own sake: nobody needs it for the plot, and this person would say it anyway. Have you eaten. It stays true to the shot and the game.
 - Let warmth carry a fact where it can: the tease is what makes her give herself away. Warmth makes the betrayal land, so write the fondness before the lie.
 - Colleagues mock each other and worry about each other. Lovers are glad of each other's voices, and a little clumsy about it. The Fixer is good company, and that's why he's frightening.

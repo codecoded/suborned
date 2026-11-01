@@ -84,7 +84,7 @@ describe('the words', () => {
   test('a pressed Inez is never told how long the door stays clear in speech, and a card can\'t point at one way of blinding the camera', () => {
     for (const id of ['pressure-inez', 'call-inez-pressure']) expect(byId(id).beats.map((b) => b.line).join(' '), id).not.toMatch(/few minutes|a while|three minutes/i);
     for (const id of ['call-inez', 'call-inez-pressure']) { expect(byId(id).opens[0], id).toMatch(/Camera blind\?/); expect(wordCount(byId(id).opens[0]!)).toBeLessThanOrEqual(6); }
-    expect(byId('help-inez-1').beats.at(-1)!.line).toMatch(/the rest/); // help-inez-2 answers it: "You did bring the rest."
+    expect(byId('help-inez-1').beats.map((b) => b.line).join(' ')).toMatch(/I'll bring the rest/); // help-inez-2 answers it: "You did bring the rest."
   });
   test('the alarm\'s walk back never says he runs: he goes at a guard\'s pace, 1.4 m/s', () => {
     const said = t.dialogue.filter((e) => e.event === 'guard-recalled').flatMap((e) => e.lines);

@@ -29,7 +29,7 @@ function who(id: string, role: string, also = ''): string {
 const INEZ = 'p-cafe-14', GUARD = 'p-records-office-01', DRIVER = 'p-records-office-31', MILENA = 'p-cafe-12';
 const apart = metres('cafe-entrance', 'office-entrance');
 /** Who Inez is, past the one word the sim holds (Sky, 2026-10-31: "not something Inez would say"). */
-const INEZ_WHO = who(INEZ, 'Inez', `She looks at who can see her before she looks at you. She talks about the shift, the terrace and how she can't keep up. She has no money to offer anyone and never offers any. She never says she's frightened and never threatens anyone: her fear shows in her questions, and in giving way too fast. She's kind, and tired. With people she likes she's quick and funny about being tired, and jokes about the Bureau as if it were a bad customer.`);
+const INEZ_WHO = who(INEZ, 'Inez', `She looks at who can see her before she looks at you. She talks about the shift, the terrace and how she can't keep up. She has no money to offer anyone and never offers any. She never says she's frightened and never threatens anyone: her fear shows in her questions, and in giving way too fast. She's kind, and tired. With people she likes she's quick and a little funny about being tired.`);
 const WORLD = `The place: the café and its terrace face Records Square; the Civic Records Office is across the square. Daylight, shift change coming. A polite, orderly city that writes everything down. Records are paper: stamped cards, forms, pneumatic tubes. Calls are voice, by telephone. Robots follow fixed routines. Everyone in the scene is a person of this city except the cell.
 What the player sees (the game's scene, §10, brief 085: Sky, "unattached to the reality of the game"): a close shot of the speakers standing idle, facing each other, feet planted. Nobody sits, walks, carries, holds, hands over, points at or touches anything, and nothing arrives. No tray, plate, cup, card, letter, envelope or money is in the shot. They may talk about things that are elsewhere, but no line points at anything in the shot or at something being done now.
 Only what the game does happens: the cell's money moves as the action's price, away from the shot. Nobody else pays, bribes, trades or bargains for anything, and nobody gains anything the facts here don't give. Don't say evening or tonight.`;
@@ -68,7 +68,7 @@ Situation: the Fixer has come to Inez at the café door, and has just paid a fir
 ${INEZ_WHO}
 Speakers: Inez, Fixer. She doesn't know the Fixer. Her fear: nobody pays a stranger's debt for nothing; who has been asking about her?
 The scene must make plain: a stranger just paid part of her Bureau loan; she took it but isn't ready to do anything for it; he will be back with the rest. End in a way that makes it clear coming back is what's next, while not saying it's the only way. In the next scene she says "You did bring the rest", so he says he'll bring the rest, in those words.
-He's good company and easy with her, and a little funny about it. She's suspicious and still can't help liking him a bit, which frightens her more. Nobody's cruel here.
+He's easy with her. She's suspicious and still can't help liking him a bit, which frightens her more. Nobody's cruel here.
 learned: 1 line (she took it; not ready yet). opens: "Help again" as the action's plain name.
 ${VOICES('waitress', 'fixer')}`,
   },
@@ -96,7 +96,7 @@ Situation: the same woman, a different way in. The Fixer comes to Inez at the ca
 ${INEZ_WHO}
 ${INEZ_GUARD}
 Fact of the game, for learned only, and nobody says it aloud: she will remember the Fixer's face, and could describe it if she's ever questioned. She wouldn't threaten a stranger who frightens her, and the Fixer wouldn't remind her.
-He stays good company all through: gentle, unhurried, kind about her shift in the same breath as the threat. No raised voice and no cruelty, and that's what frightens. She tries to be quick and funny at first, and it dies on her. By the end the threat is plain.
+He stays good company all through: gentle, unhurried, kind about her shift in the same breath as the threat. No raised voice and no cruelty, and that's what frightens. By the end the threat is plain.
 The scene must make plain, the cards included: we threatened to expose the two of them; she agreed, and hates it, and never says she's scared; when we say so, she calls Okafor off the door.
 learned: 1 line, and it mentions she knows the Fixer's face. opens: "Call Inez".
 ${VOICES('waitress', 'fixer')}`,
@@ -110,7 +110,7 @@ Situation: the Fixer finds Vale's official driver waiting by the official car in
 ${who(DRIVER, 'Zhou', 'Call the driver Zhou; no gendered word. Calls Vale "the Councillor", always.')}
 The job, exactly as the game plays it: when the chime goes the Councillor comes out and gets in. A paid Zhou doesn't drive off. Zhou takes the Councillor round to the service bay at the back, the east yard, and waits there with him. Zhou won't wait for ever: a couple of minutes, then drives on. Zhou also says that if someone's hanging about watching the bay, Zhou can send them off; Zhou has noticed nothing specific and names nobody. What happens to the Councillor at the bay is the Fixer's people's business; Zhou doesn't want to see it.
 The Fixer says "we" and never explains who "we" are. Zhou doesn't ask, and says why not, in a line.
-They enjoy this a little: Zhou is gruff and dry about money, and the Fixer likes Zhou for it.
+The Fixer likes Zhou, and it shows once.
 The scene must make plain: Zhou is the Councillor's driver and is short of money; we paid; at the chime the Councillor's car goes to the service bay, not home, and waits a short while; that's where to be.
 learned: 1 line. opens: nothing new to press; instead 1 line naming the place to be ("Be at the service bay").
 ${VOICES('driver', 'fixer')}`,
