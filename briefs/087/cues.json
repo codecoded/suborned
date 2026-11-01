@@ -25,6 +25,12 @@
    "options": "Effects",
    "duck_convo_db": -18
   },
+  "blast": {
+   "parent": "master",
+   "db": -2,
+   "options": "Effects",
+   "duck_convo_db": -18
+  },
   "convo": {
    "parent": "master",
    "db": 0,
@@ -69,6 +75,12 @@
    "rolloff": "logarithmic",
    "minDistanceM": 20,
    "maxDistanceM": 150
+  },
+  "3d-blast": {
+   "blend": 0.5,
+   "rolloff": "logarithmic",
+   "minDistanceM": 40,
+   "maxDistanceM": 220
   },
   "3d-fight": {
    "blend": 0.7,
@@ -1656,6 +1668,405 @@
    "priority": 200,
    "optional": true,
    "import": "decompress"
+  },
+  {
+   "id": "car_disabled",
+   "label": "Car disabled, its engine dies",
+   "trigger": "A car takes its fifth damage: it stops for good.",
+   "on_log": [
+    "car.disabled"
+   ],
+   "file": "Audio/087/car_disabled",
+   "path": "unity/Assets/Suborned/Resources/Audio/087/car_disabled.wav",
+   "sha256": "2565901e2c367008383d0ee2170e946bbf8fe468e7c49f3ecd598c794daee779",
+   "source": {
+    "kind": "generated",
+    "by": "Seed Audio 1.0 via Runware (bytedance:seed-audio@1.0)",
+    "files": [
+     "car_disabled_t32.wav"
+    ],
+    "prompt": "Sound effect only. A heavy 1950s chrome car's atomic turbine engine dying: a high electric turbine whine winding down over about two seconds, a deep metal clunk as it seizes, a last hiss of pressure, then silence. No gasoline engine sputter, no horn. No voice, no speech, no music.",
+    "seed": null,
+    "ledger_ids": [
+     105
+    ]
+   },
+   "licence": "Runware terms: Partner Model outputs may be used commercially; briefs/087/licences/generated.md",
+   "cost_usd": 0.01264,
+   "measured": {
+    "seconds": 3.533,
+    "sample_rate": 48000,
+    "channels": 1,
+    "bytes": 339218,
+    "sample_peak_dbfs": -9.0,
+    "true_peak_dbtp": -9.0,
+    "lufs_momentary_max": -19.0,
+    "clipped_samples": 0,
+    "bands_db_lt200_lt1k_lt4k_hi": [
+     -20.5,
+     -10.1,
+     -1.4,
+     -7.8
+    ],
+    "centroid_hz": 2552,
+    "onset_s": 0.003,
+    "peak_at_s": 2.781,
+    "small_speaker_lufs_m": -19.0
+   },
+   "mix_group": "fight",
+   "voices_max": 2,
+   "cooldown_s": 0.5,
+   "loop": false,
+   "spatial": "3d-far",
+   "priority": 40,
+   "optional": false,
+   "import": "memory"
+  },
+  {
+   "id": "car_ignite",
+   "label": "Car catches fire",
+   "trigger": "The car reaches 0: it burns, and blows in 6 s.",
+   "on_log": [
+    "car.burning"
+   ],
+   "file": "Audio/087/car_ignite",
+   "path": "unity/Assets/Suborned/Resources/Audio/087/car_ignite.wav",
+   "sha256": "209d9b69dcb68fadbe718c64eef1c96ab063e1251b0adfcce95fb13dc7cd88fe",
+   "source": {
+    "kind": "generated",
+    "by": "Seed Audio 1.0 via Runware (bytedance:seed-audio@1.0)",
+    "files": [
+     "car_ignite_t32.wav"
+    ],
+    "prompt": "Sound effect only. One sudden whoomp of a heavy car catching fire: a deep soft burst of flame and a rush of air around hot metal, about one second, then silence. No explosion, no glass. No voice, no speech, no music.",
+    "seed": null,
+    "ledger_ids": [
+     108
+    ]
+   },
+   "licence": "Runware terms: Partner Model outputs may be used commercially; briefs/087/licences/generated.md",
+   "cost_usd": 0.00922,
+   "measured": {
+    "seconds": 2.199,
+    "sample_rate": 48000,
+    "channels": 1,
+    "bytes": 211150,
+    "sample_peak_dbfs": -5.1,
+    "true_peak_dbtp": -5.0,
+    "lufs_momentary_max": -18.0,
+    "clipped_samples": 0,
+    "bands_db_lt200_lt1k_lt4k_hi": [
+     -1.3,
+     -6.6,
+     -15.0,
+     -20.1
+    ],
+    "centroid_hz": 294,
+    "onset_s": 0.003,
+    "peak_at_s": 0.435,
+    "small_speaker_lufs_m": -21.9
+   },
+   "mix_group": "fight",
+   "voices_max": 2,
+   "cooldown_s": 0.0,
+   "loop": false,
+   "spatial": "3d-far",
+   "priority": 30,
+   "optional": false,
+   "import": "memory"
+  },
+  {
+   "id": "car_burn",
+   "label": "Car burning, the countdown",
+   "trigger": "From car.burning until it blows. The host raises its pitch and level over the burn (wiring.md), so it can be read as a countdown.",
+   "on_log": null,
+   "file": "Audio/087/car_burn",
+   "path": "unity/Assets/Suborned/Resources/Audio/087/car_burn.wav",
+   "sha256": "5d5f556d52bec19654a33a5d122cf42b6da3ffca91aed67d0ed218aed8119fc3",
+   "source": {
+    "kind": "generated",
+    "by": "Seed Audio 1.0 via Runware (bytedance:seed-audio@1.0)",
+    "files": [
+     "car_burn_t31.wav",
+     "car_burn_t33.wav"
+    ],
+    "prompt": "Sound effect only. A heavy metal car on fire, burning steadily: low roaring flames, crackle and small pops, hot metal ticking, and under it a tense low electric hum of an overheating atomic engine. Continuous for fifteen seconds with no change and no ending. No explosion, no sirens. No voice, no speech, no music.",
+    "seed": null,
+    "ledger_ids": [
+     110,
+     112
+    ]
+   },
+   "licence": "Runware terms: Partner Model outputs may be used commercially; briefs/087/licences/generated.md",
+   "cost_usd": 0.079,
+   "measured": {
+    "seconds": 13.4,
+    "sample_rate": 48000,
+    "channels": 1,
+    "bytes": 1286444,
+    "sample_peak_dbfs": -10.3,
+    "true_peak_dbtp": -10.3,
+    "lufs_momentary_max": -22.8,
+    "clipped_samples": 0,
+    "bands_db_lt200_lt1k_lt4k_hi": [
+     -1.0,
+     -8.1,
+     -14.5,
+     -18.6
+    ],
+    "centroid_hz": 296,
+    "lufs_integrated": -26.0,
+    "seam": {
+     "step_percentile": 11.4,
+     "step_ratio": 0.2,
+     "level_jump_db": 1.47,
+     "typical_jump_db_p95": 4.94
+    },
+    "small_speaker_lufs_m": -26.2,
+    "clear_of_street_bed": {
+     "top_bands_hz": [
+      63,
+      126,
+      159
+     ],
+     "margin_top3_db": 23.9,
+     "bands_clear_6db": 24,
+     "loudness_margin_lu": 15.2
+    }
+   },
+   "mix_group": "danger",
+   "voices_max": 2,
+   "cooldown_s": 0.0,
+   "loop": true,
+   "spatial": "3d",
+   "priority": 25,
+   "optional": false,
+   "import": "memory"
+  },
+  {
+   "id": "car_warn",
+   "label": "Car about to blow: tick",
+   "trigger": "At 3, 2, 1 and 0.5 s before the blast, rising by pitch.",
+   "on_log": null,
+   "file": "Audio/087/car_warn",
+   "path": "unity/Assets/Suborned/Resources/Audio/087/car_warn.wav",
+   "sha256": "d42a978d7d3c0326931c1ee55b8d48c8a72fc2f7b6e1535e7822ef4435ce564f",
+   "source": {
+    "kind": "generated",
+    "by": "Seed Audio 1.0 via Runware (bytedance:seed-audio@1.0)",
+    "files": [
+     "car_warn_t31.wav"
+    ],
+    "prompt": "Sound effect only. One short dry metal tick of an overheating pressure gauge on a heavy machine, a small hard high ping, under a quarter of a second, then silence. No voice, no speech, no music.",
+    "seed": null,
+    "ledger_ids": [
+     113
+    ]
+   },
+   "licence": "Runware terms: Partner Model outputs may be used commercially; briefs/087/licences/generated.md",
+   "cost_usd": 0.00165,
+   "measured": {
+    "seconds": 0.33,
+    "sample_rate": 48000,
+    "channels": 1,
+    "bytes": 31724,
+    "sample_peak_dbfs": -1.0,
+    "true_peak_dbtp": -1.0,
+    "lufs_momentary_max": -23.8,
+    "clipped_samples": 0,
+    "bands_db_lt200_lt1k_lt4k_hi": [
+     -32.5,
+     -6.6,
+     -1.3,
+     -13.6
+    ],
+    "centroid_hz": 1828,
+    "onset_s": 0.023,
+    "peak_at_s": 0.06,
+    "small_speaker_lufs_m": -23.8,
+    "clear_of_street_bed": {
+     "top_bands_hz": [
+      1270,
+      2016,
+      2540
+     ],
+     "margin_top3_db": 26.4,
+     "bands_clear_6db": 18,
+     "loudness_margin_lu": 14.2
+    }
+   },
+   "mix_group": "danger",
+   "voices_max": 2,
+   "cooldown_s": 0.0,
+   "loop": false,
+   "spatial": "3d-far",
+   "priority": 25,
+   "optional": false,
+   "import": "decompress"
+  },
+  {
+   "id": "car_explode",
+   "label": "Car explodes",
+   "trigger": "The blast: 3 damage within 5 m, the cell included.",
+   "on_log": [
+    "car.exploded"
+   ],
+   "file": "Audio/087/car_explode",
+   "path": "unity/Assets/Suborned/Resources/Audio/087/car_explode.wav",
+   "sha256": "40edba3d5fdd526e978d9752638f2a472645c8766d693a073a00252564010fab",
+   "source": {
+    "kind": "generated",
+    "by": "Seed Audio 1.0 via Runware (bytedance:seed-audio@1.0)",
+    "files": [
+     "car_explode_t33.wav",
+     "car_explode_t32.wav"
+    ],
+    "prompt": "Sound effect only. One huge explosion of a heavy steel 1950s car with an atomic engine in a stone city square: an instant deep concussive blast with a bright electric crack at its front, then heavy metal panels and chrome parts raining down and clattering on stone, about four seconds, then silence. One blast only. Not a movie gasoline fireball, no sci-fi laser. No voice, no speech, no music.",
+    "seed": null,
+    "ledger_ids": [
+     117,
+     116
+    ]
+   },
+   "licence": "Runware terms: Partner Model outputs may be used commercially; briefs/087/licences/generated.md",
+   "cost_usd": 0.02765,
+   "measured": {
+    "seconds": 4.2,
+    "sample_rate": 48000,
+    "channels": 1,
+    "bytes": 403244,
+    "sample_peak_dbfs": -2.0,
+    "true_peak_dbtp": -2.0,
+    "lufs_momentary_max": -11.0,
+    "clipped_samples": 0,
+    "bands_db_lt200_lt1k_lt4k_hi": [
+     -0.7,
+     -9.7,
+     -14.3,
+     -19.2
+    ],
+    "centroid_hz": 257,
+    "onset_s": 0.0,
+    "peak_at_s": 0.064,
+    "small_speaker_lufs_m": -15.1
+   },
+   "mix_group": "blast",
+   "voices_max": 2,
+   "cooldown_s": 0.0,
+   "loop": false,
+   "spatial": "3d-blast",
+   "priority": 5,
+   "optional": false,
+   "import": "memory"
+  },
+  {
+   "id": "car_burnout",
+   "label": "Wreck, the fire dying",
+   "trigger": "After the blast: the fire dies back and the metal ticks as it cools.",
+   "on_log": null,
+   "file": "Audio/087/car_burnout",
+   "path": "unity/Assets/Suborned/Resources/Audio/087/car_burnout.wav",
+   "sha256": "b39252d33220d2b791f0496f97fb6383097729987d6fb0771de01b60ccbe861b",
+   "source": {
+    "kind": "generated",
+    "by": "Seed Audio 1.0 via Runware (bytedance:seed-audio@1.0)",
+    "files": [
+     "car_burnout_t32.wav"
+    ],
+    "prompt": "Sound effect only. The wreck of a heavy metal car after an explosion, its fire slowly dying: a thin fading flame, metal creaking and ticking as it cools, the odd small pop and a fading hiss, about ten seconds, ending in silence. No voice, no speech, no music.",
+    "seed": null,
+    "ledger_ids": [
+     120
+    ]
+   },
+   "licence": "Runware terms: Partner Model outputs may be used commercially; briefs/087/licences/generated.md",
+   "cost_usd": 0.02633,
+   "measured": {
+    "seconds": 7.632,
+    "sample_rate": 32000,
+    "channels": 1,
+    "bytes": 488464,
+    "sample_peak_dbfs": -16.7,
+    "true_peak_dbtp": -16.7,
+    "lufs_momentary_max": -29.0,
+    "clipped_samples": 0,
+    "bands_db_lt200_lt1k_lt4k_hi": [
+     -1.8,
+     -6.3,
+     -10.5,
+     -16.4
+    ],
+    "centroid_hz": 463,
+    "onset_s": 0.003,
+    "peak_at_s": 0.132,
+    "small_speaker_lufs_m": -31.8
+   },
+   "mix_group": "fight",
+   "voices_max": 2,
+   "cooldown_s": 0.0,
+   "loop": false,
+   "spatial": "3d",
+   "priority": 120,
+   "optional": false,
+   "import": "memory"
+  },
+  {
+   "id": "street_bed_even",
+   "label": "Street ambience, evened",
+   "trigger": "Would replace street_bed, if Sky keeps it: same place in the mix, no swing.",
+   "on_log": null,
+   "file": "Audio/087/street_bed_even",
+   "path": "unity/Assets/Suborned/Resources/Audio/087/street_bed_even.wav",
+   "sha256": "f248e073280831eb39d5c08c362a98277ba8b94e734f7164f9a1cb781c18e851",
+   "source": {
+    "kind": "generated",
+    "by": "Seed Audio 1.0 via Runware (bytedance:seed-audio@1.0)",
+    "files": [
+     "street_bed_t22.wav",
+     "street_bed_t21.wav"
+    ],
+    "prompt": "Sound effect only. Warm calm daytime ambience of a large city plaza from above: a distant soft hum of traffic, a far-off murmur of many people with no clear words, a light breeze, a faint electric tram far away. Steady and even for twenty seconds with no sudden events. No horns, no birds. No voice, no speech, no music.",
+    "seed": null,
+    "ledger_ids": [
+     101,
+     100
+    ]
+   },
+   "licence": "Runware terms: Partner Model outputs may be used commercially; briefs/087/licences/generated.md",
+   "cost_usd": 0.10928,
+   "measured": {
+    "seconds": 35.1,
+    "sample_rate": 32000,
+    "channels": 2,
+    "bytes": 4492844,
+    "sample_peak_dbfs": -25.7,
+    "true_peak_dbtp": -25.6,
+    "lufs_momentary_max": -35.7,
+    "clipped_samples": 0,
+    "bands_db_lt200_lt1k_lt4k_hi": [
+     -4.4,
+     -2.7,
+     -10.1,
+     -26.8
+    ],
+    "centroid_hz": 435,
+    "lufs_integrated": -38.0,
+    "seam": {
+     "step_percentile": 24.3,
+     "step_ratio": 0.46,
+     "level_jump_db": 0.72,
+     "typical_jump_db_p95": 3.24
+    },
+    "small_speaker_lufs_m": -36.1
+   },
+   "mix_group": "ambience",
+   "voices_max": 1,
+   "cooldown_s": 0.0,
+   "loop": true,
+   "spatial": "2d",
+   "priority": 10,
+   "optional": true,
+   "import": "stream"
   }
  ]
 }

@@ -189,5 +189,185 @@
   "fight_34_46s_lufs": -18.7,
   "cutaway_50_54s_lufs": -41.7,
   "chime_58_63s_lufs_m": -16.9
+ },
+ "cars": {
+  "note": "Sums through a copy of AudioMaster, not the running game. Scene: a car shot out in a firefight (two guns, five hits), burn 6 s, blast, wreck.",
+  "settings": {
+   "defaults_today_master80_effects80_ambience60_no_duck": {
+    "peak_in_db": -2.6,
+    "peak_out_db": -2.6,
+    "most_taken_db": 0.0,
+    "hard_stops": 0,
+    "fight_before_blast_lufs": -20.9,
+    "blast_lufs_m": -12.8,
+    "wreck_13_17s_lufs": -45.1
+   },
+   "defaults_today_master80_effects80_ambience60_duck": {
+    "peak_in_db": -2.6,
+    "peak_out_db": -2.6,
+    "most_taken_db": 0.0,
+    "hard_stops": 0,
+    "fight_before_blast_lufs": -20.9,
+    "blast_lufs_m": -13.6,
+    "wreck_13_17s_lufs": -45.1
+   },
+   "proposed_master80_effects100_ambience100_no_duck": {
+    "peak_in_db": -0.6,
+    "peak_out_db": -0.6,
+    "most_taken_db": 0.4,
+    "hard_stops": 0,
+    "fight_before_blast_lufs": -18.9,
+    "blast_lufs_m": -10.9,
+    "wreck_13_17s_lufs": -40.6
+   },
+   "proposed_master80_effects100_ambience100_duck": {
+    "peak_in_db": -0.6,
+    "peak_out_db": -0.6,
+    "most_taken_db": 0.0,
+    "hard_stops": 0,
+    "fight_before_blast_lufs": -18.9,
+    "blast_lufs_m": -11.6,
+    "wreck_13_17s_lufs": -40.6
+   },
+   "all_100_no_duck": {
+    "peak_in_db": 1.3,
+    "peak_out_db": 0.0,
+    "most_taken_db": 1.8,
+    "hard_stops": 14,
+    "fight_before_blast_lufs": -17.0,
+    "blast_lufs_m": -9.8,
+    "wreck_13_17s_lufs": -38.7
+   },
+   "all_100_duck": {
+    "peak_in_db": 1.3,
+    "peak_out_db": 0.0,
+    "most_taken_db": 1.4,
+    "hard_stops": 14,
+    "fight_before_blast_lufs": -17.0,
+    "blast_lufs_m": -10.1,
+    "wreck_13_17s_lufs": -38.7
+   }
+  },
+  "blast_alone_at_defaults_peak_db": -5.9,
+  "over_bed": {
+   "car_disabled": {
+    "top_bands_hz": [
+     2016,
+     4032,
+     6400
+    ],
+    "margin_top3_db": 32.7,
+    "bands_clear_6db": 10,
+    "loudness_margin_lu": null
+   },
+   "car_ignite": {
+    "top_bands_hz": [
+     100,
+     126,
+     159
+    ],
+    "margin_top3_db": 26.9,
+    "bands_clear_6db": 24,
+    "loudness_margin_lu": null
+   },
+   "car_warn": {
+    "top_bands_hz": [
+     1270,
+     2016,
+     2540
+    ],
+    "margin_top3_db": 26.5,
+    "bands_clear_6db": 18,
+    "loudness_margin_lu": null
+   },
+   "car_explode": {
+    "top_bands_hz": [
+     63,
+     79,
+     100
+    ],
+    "margin_top3_db": 32.3,
+    "bands_clear_6db": 24,
+    "loudness_margin_lu": null
+   }
+  },
+  "over_steady_pistols": {
+   "car_disabled": {
+    "top_bands_hz": [
+     2016,
+     4032,
+     6400
+    ],
+    "margin_top3_db": 2.4,
+    "bands_clear_6db": 1,
+    "loudness_margin_lu": null
+   },
+   "car_ignite": {
+    "top_bands_hz": [
+     100,
+     126,
+     159
+    ],
+    "margin_top3_db": 28.5,
+    "bands_clear_6db": 13,
+    "loudness_margin_lu": null
+   },
+   "car_warn": {
+    "top_bands_hz": [
+     1270,
+     2016,
+     2540
+    ],
+    "margin_top3_db": 12.1,
+    "bands_clear_6db": 10,
+    "loudness_margin_lu": null
+   },
+   "car_explode": {
+    "top_bands_hz": [
+     63,
+     79,
+     100
+    ],
+    "margin_top3_db": 37.6,
+    "bands_clear_6db": 23,
+    "loudness_margin_lu": null
+   }
+  },
+  "burn_loop_end_vs_start_lufs": {
+   "first_2s": -27.7,
+   "last_2s": -20.1,
+   "pitch_up_semitones": 3
+  },
+  "bed_swing": {
+   "street_bed": {
+    "integrated": -38.0,
+    "loudest_4s": -34.9,
+    "quietest_4s": -44.4,
+    "swing_lu": 9.5
+   },
+   "street_bed_even": {
+    "integrated": -38.0,
+    "loudest_4s": -36.8,
+    "quietest_4s": -38.9,
+    "swing_lu": 2.1
+   }
+  }
+ },
+ "in_game_0_2_211": {
+  "measured_by_latch": {
+   "bed_lufs": -48,
+   "help_scene_lufs": -49,
+   "fight_lufs": -29,
+   "ambience_default": 60
+  },
+  "capture_checked_by_chime": "briefs/087/latch/r087-seam-street_bed.wav reads -47.8 LUFS over 4 s at the loop point, where the clip itself reads -35.1. -12.7 dB in all.",
+  "that_gap_adds_up_as": {
+   "master_80_db": -1.9,
+   "ambience_60_db": -4.4,
+   "paused_half_db": -6.0,
+   "sum_db": -12.4
+  },
+  "inference": "The capture ran paused (PackLoops halves the bed when paused and sets its volume every frame, over PackSoloLoop's 1.0). If -48 came from this capture, the bed in play is about -42 at the loop point, about -44.3 overall at defaults, and about -50 in the quiet half of street_bed.",
+  "seam_note": "r087-seam-room_tone.wav has the bed's spectrum, not room tone's (share below 200 Hz -4.4 dB against the clip's -2.2; 1-4 kHz -10.9 against -18.6): PackLoops seems to have restarted the bed during the solo. So room_tone's seam has not been checked after Vorbis."
  }
 }

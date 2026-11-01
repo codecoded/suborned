@@ -84,4 +84,4 @@ def main():
     subprocess.run(['ffmpeg', '-v', 'error', '-y', '-f', 'concat', '-safe', '0', '-i', str(lst), '-i', str(wav), '-vf', 'fps=5,format=yuv420p', '-c:v', 'libx264', '-preset', 'medium', '-crf', '30', '-c:a', 'aac', '-b:a', '128k', '-shortest', '-movflags', '+faststart', str(REPO / 'briefs/087/reel.mp4')], check=True, cwd=str(TMP))
 
 
-main()
+if __name__ == '__main__': main()

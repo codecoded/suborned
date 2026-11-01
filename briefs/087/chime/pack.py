@@ -7,8 +7,8 @@ KENNEY = {'source': 'Kenney', 'licence': 'CC0-1.0'}
 OFF = 'view only, 2D'
 
 
-def c(id, label, group, src, cut=None, level=-24, trigger='', spatial='2d', voices=1, cooldown=0.0, loop=False, hp=None, lp=None, fade=0.0, fin=0.0, kind='seed', pitch=0, edit=None, rate=48000, stereo=False, xf=0.0, load='decompress', note='', priority=128, onlog=None, take=None, optional=False, drive=0.0):
-    return dict(id=id, label=label, group=group, src=src, cut=cut, level=level, trigger=trigger, spatial=spatial, voices=voices, cooldown=cooldown, loop=loop, hp=hp, lp=lp, fade=fade, fin=fin, kind=kind, pitch=pitch, edit=edit, rate=rate, stereo=stereo, xf=xf, load=load, note=note, priority=priority, onlog=onlog, optional=optional, drive=drive)
+def c(id, label, group, src, cut=None, level=-24, trigger='', spatial='2d', voices=1, cooldown=0.0, loop=False, hp=None, lp=None, fade=0.0, fin=0.0, kind='seed', pitch=0, edit=None, rate=48000, stereo=False, xf=0.0, load='decompress', note='', priority=128, onlog=None, take=None, optional=False, drive=0.0, layers=None, even=False):
+    return dict(id=id, label=label, group=group, src=src, cut=cut, level=level, trigger=trigger, spatial=spatial, voices=voices, cooldown=cooldown, loop=loop, hp=hp, lp=lp, fade=fade, fin=fin, kind=kind, pitch=pitch, edit=edit, rate=rate, stereo=stereo, xf=xf, load=load, note=note, priority=priority, onlog=onlog, optional=optional, drive=drive, layers=layers, even=even)
 
 
 CUES = [
@@ -45,6 +45,15 @@ CUES = [
     c('street_bed', 'Street ambience', 'ambience', ['street_bed_t21.wav', 'street_bed_t23.wav'], None, -38, 'All through play: the warm floor under everything.', hp=45, loop=True, xf=3.0, rate=32000, stereo=True, load='stream', priority=10),
     c('foot_concrete_1', 'Footstep one (optional)', 'ambience', K + 'impact-sounds/x/Audio/footstep_concrete_000.ogg', None, -37, 'Optional: a selected agent walking at play zoom.', kind='kenney', hp=90, spatial='3d-near', voices=2, priority=200, optional=True),
     c('foot_concrete_2', 'Footstep two (optional)', 'ambience', K + 'impact-sounds/x/Audio/footstep_concrete_001.ogg', None, -37, 'Optional: the other foot.', kind='kenney', hp=90, spatial='3d-near', voices=2, priority=200, optional=True),
+    # ---- cars (Sky: "What about car explosion and on fire?"): heavy 1950s metal with an atomic-age engine
+    c('car_disabled', 'Car disabled, its engine dies', 'fight', 'car_disabled_t32.wav', (0.05, 3.6), -19, 'A car takes its fifth damage: it stops for good.', hp=120, fin=0.02, fade=0.5, spatial='3d-far', cooldown=0.5, voices=2, onlog=['car.disabled'], load='memory', priority=40),
+    c('car_ignite', 'Car catches fire', 'fight', 'car_ignite_t32.wav', (0.08, 2.3), -18, 'The car reaches 0: it burns, and blows in 6 s.', hp=70, fin=0.003, fade=0.8, spatial='3d-far', voices=2, onlog=['car.burning'], load='memory', priority=30),
+    c('car_burn', 'Car burning, the countdown', 'danger', 'car_burn_t31.wav', (0.3, 14.7), -26, 'From car.burning until it blows. The host raises its pitch and level over the burn (wiring.md), so it can be read as a countdown.', hp=70, loop=True, xf=1.0, spatial='3d', voices=2, load='memory', priority=25, layers=[('car_burn_t33.wav', 0.3, 14.7, 0.0, -2.0, 900)]),
+    c('car_warn', 'Car about to blow: tick', 'danger', 'car_warn_t31.wav', (0.17, 0.5), -20, 'At 3, 2, 1 and 0.5 s before the blast, rising by pitch.', hp=350, fade=0.12, spatial='3d-far', voices=2, load='decompress', priority=25),
+    c('car_explode', 'Car explodes', 'blast', 'car_explode_t33.wav', (0.2, 4.4), -11, 'The blast: 3 damage within 5 m, the cell included.', hp=35, fin=0.002, fade=1.0, drive=7, spatial='3d-blast', voices=2, onlog=['car.exploded'], load='memory', priority=5, layers=[('car_explode_t32.wav', 2.0, 4.6, 0.9, -7.0, 500)]),
+    c('car_burnout', 'Wreck, the fire dying', 'fight', 'car_burnout_t32.wav', (0.3, 8.0), -29, 'After the blast: the fire dies back and the metal ticks as it cools.', hp=70, fin=0.25, fade=3.0, spatial='3d', voices=2, load='memory', rate=32000, priority=120),
+    # ---- a level-matched bed, for Sky's call: see wiring.md. street_bed swings 9.5 LU, because its two takes were not matched
+    c('street_bed_even', 'Street ambience, evened', 'ambience', ['street_bed_t22.wav', 'street_bed_t21.wav'], None, -38, 'Would replace street_bed, if Sky keeps it: same place in the mix, no swing.', hp=45, loop=True, xf=3.0, rate=32000, stereo=True, load='stream', priority=10, even=True, optional=True),
 ]
 
 # Who holds what: bus → Options slider. Master is applied today; the rest must be wired (wiring.md).
@@ -53,6 +62,7 @@ BUSES = {
     'clock': {'parent': 'master', 'db': 0, 'options': 'Effects', 'duck_convo_db': 0},
     'danger': {'parent': 'master', 'db': 0, 'options': 'Effects', 'duck_convo_db': -18},
     'fight': {'parent': 'master', 'db': -3, 'options': 'Effects', 'duck_convo_db': -18},
+    'blast': {'parent': 'master', 'db': -2, 'options': 'Effects', 'duck_convo_db': -18},
     'convo': {'parent': 'master', 'db': 0, 'options': 'Effects', 'duck_convo_db': 0},
     'ambience': {'parent': 'master', 'db': 0, 'options': 'Ambience (new)', 'duck_convo_db': -14},
     'vehicles': {'parent': 'master', 'db': -3, 'options': 'Effects', 'duck_convo_db': -18},
@@ -63,5 +73,6 @@ SPATIAL = {
     '3d': {'blend': 1, 'rolloff': 'logarithmic', 'minDistanceM': 12, 'maxDistanceM': 90},
     '3d-near': {'blend': 1, 'rolloff': 'logarithmic', 'minDistanceM': 8, 'maxDistanceM': 45},
     '3d-far': {'blend': 0.7, 'rolloff': 'logarithmic', 'minDistanceM': 20, 'maxDistanceM': 150},
+    '3d-blast': {'blend': 0.5, 'rolloff': 'logarithmic', 'minDistanceM': 40, 'maxDistanceM': 220},
     '3d-fight': {'blend': 0.7, 'rolloff': 'logarithmic', 'minDistanceM': 18, 'maxDistanceM': 140},
 }

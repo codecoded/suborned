@@ -18,3 +18,12 @@
 - **Sonniss #GameAudioGDC** (https://sonniss.com/gdc-bundle-license/, version 2.0): fine in a finished game, no attribution. But it bars distributing the sounds as sound effects, edited or not, and **this repo is public** (`gh repo view`: PUBLIC), so raw clips under `unity/Assets` could breach it. Usable later only from a git-ignored folder, as the kit is.
 - **ElevenLabs Sound Effects v2 on fal:** the model page carries a "Commercial use" tag, but fal's terms grant "personal or internal business use" and don't address output ownership. That isn't clear enough for a commercial game, so no call was made.
 - **Mirelo SFX 1.5 on Runware:** tried and not used. Most one-shots buried in a noise floor, and no tonal partials in the chime takes.
+
+# Music sketches (read 2026-11-01; job `paid/087-music/`)
+**All four picked sketches:** ACE-Step v1.5 XL Base, `runware:ace-step@v1.5-xl-base`, called through Runware.
+- Repo licence: MIT (https://raw.githubusercontent.com/ace-step/ACE-Step-1.5/main/LICENSE, "Copyright (c) 2026 ACEStep"). That notice is on the code; the model card lists the model as MIT too (read through a search summary).
+- Output: the Hugging Face model card (https://huggingface.co/ACE-Step/Ace-Step1.5) says generated music may be used commercially. I read it through a search summary, not the full card, and not a card for the XL variant.
+- Runware terms: open-source models carry their own licence, and commercial use "may be permitted, restricted or prohibited depending on the Model Licence". Runware doesn't vouch for that information, so MIT is what this rests on.
+- As with all generated sound: outputs may have no copyright, so others may be free to reuse them.
+
+**MiniMax Music 2.6 (not in the reel):** a Partner-type model on Runware by the same inference as Seed Audio, so Runware's commercial clause should apply. MiniMax's own music terms (https://www.minimax.io/audio/doc/terms-of-service-music.html) require "clearly labeling AI-generated Output Content" and bar removing its identifiers, and don't say who owns the output. Those terms are for its own music feature; whether they reach calls through Runware I couldn't tell. Less clear than ACE-Step, and a reason to prefer ACE-Step on top of the measures.

@@ -29,7 +29,7 @@ def cut(x, sr, a, b): return x[int(a * sr):int(b * sr)]
 def make(c):
     srcs = c['src'] if isinstance(c['src'], list) else [c['src']]; parts = []; sr = None
     for s in srcs:
-        x, sr = load(src_of(c, s)); parts.append(x)
+        x, sr = load(src_of(c, s)); parts.append(x * 10 ** ((c['level'] - A.lufs_i(x, sr)) / 20) if c['even'] else x)
     x = parts[0]
     if len(parts) > 1:
         for y in parts[1:]: x = A.join(cut(x, sr, 0, 99)[:-int(0.1 * sr)], y[int(0.1 * sr):], sr, c['xf'])
@@ -40,6 +40,10 @@ def make(c):
         for g in segs[1:]: y = A.join(y, g, sr, 0.02)
         x = y
     x = x if c['stereo'] else x.mean(axis=1, keepdims=True)
+    for src, a, b, at, db, hp_hz in c['layers'] or []:  # a layer: a cut of another take, high-passed, laid in at `at`, so one clip carries the blast and the debris
+        y, ysr = load(src_of(c, src)); y = A.hp(cut(y, ysr, a, b).mean(axis=1, keepdims=True), hp_hz, ysr) * 10 ** (db / 20); i = int(at * sr); n = i + len(y)
+        if n > len(x): x = np.vstack([x, np.zeros((n - len(x), 1))])
+        x = x.copy(); x[i:n] += A.fade(y, sr, 0.03, 0.2)
     if c['pitch']:  # a tape-speed shift: pitch and length together
         r = 2 ** (c['pitch'] / 12); x = A.resample(x, int(round(sr * r)), sr)
     x = A.resample(x, sr, c['rate']); sr = c['rate']
@@ -118,6 +122,7 @@ def main():
         if c.get('_period'): m['step_period_s'], m['step_confidence'], m['steps_in_loop'] = c['_period']
         if c['group'] in ('danger', 'clock') and c['id'] != 'street_bed':
             k = A.clear_of(y, sr, *bed); k['loudness_margin_lu'] = round(A.lufs_m(y, sr) - A.lufs_i(*bed), 1); m['clear_of_street_bed'] = k
+        led = led + [ledger.get(l[0]) for l in c['layers'] or []]; srcs = srcs + [l[0] for l in c['layers'] or []]; cost = 0.0 if c['kind'] == 'kenney' else round(sum((r or {}).get('cost_usd') or 0 for r in led), 5)
         src_rec = {'kind': 'generated' if c['kind'] != 'kenney' else 'library', 'by': 'Seed Audio 1.0 via Runware (bytedance:seed-audio@1.0)' if c['kind'] != 'kenney' else 'Kenney',
                    'files': [str(Path(s).name) for s in srcs], 'prompt': (led[0] or {}).get('prompt') if led[0] else None, 'seed': (led[0] or {}).get('seed') if led[0] else None, 'ledger_ids': [(r or {}).get('id') for r in led] if c['kind'] != 'kenney' else []}
         rows.append({'id': c['id'], 'label': c['label'], 'trigger': c['trigger'], 'on_log': c['onlog'], 'file': f"Audio/087/{c['id']}", 'path': str(p.relative_to(REPO)), 'sha256': hashlib.sha256(p.read_bytes()).hexdigest(), 'source': src_rec, 'licence': 'CC0-1.0, Kenney; briefs/087/licences/kenney-*.txt' if c['kind'] == 'kenney' else 'Runware terms: Partner Model outputs may be used commercially; briefs/087/licences/generated.md',

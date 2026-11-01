@@ -1,0 +1,56 @@
+[
+ {
+  "id": "car_disabled",
+  "s": 3,
+  "takes": 3,
+  "model": "bytedance:seed-audio@1.0",
+  "est": 0.08,
+  "base": 30,
+  "prompt": "Sound effect only. A heavy 1950s chrome car's atomic turbine engine dying: a high electric turbine whine winding down over about two seconds, a deep metal clunk as it seizes, a last hiss of pressure, then silence. No gasoline engine sputter, no horn. No voice, no speech, no music."
+ },
+ {
+  "id": "car_ignite",
+  "s": 3,
+  "takes": 3,
+  "model": "bytedance:seed-audio@1.0",
+  "est": 0.08,
+  "base": 30,
+  "prompt": "Sound effect only. One sudden whoomp of a heavy car catching fire: a deep soft burst of flame and a rush of air around hot metal, about one second, then silence. No explosion, no glass. No voice, no speech, no music."
+ },
+ {
+  "id": "car_burn",
+  "s": 3,
+  "takes": 3,
+  "model": "bytedance:seed-audio@1.0",
+  "est": 0.08,
+  "base": 30,
+  "prompt": "Sound effect only. A heavy metal car on fire, burning steadily: low roaring flames, crackle and small pops, hot metal ticking, and under it a tense low electric hum of an overheating atomic engine. Continuous for fifteen seconds with no change and no ending. No explosion, no sirens. No voice, no speech, no music."
+ },
+ {
+  "id": "car_warn",
+  "s": 3,
+  "takes": 2,
+  "model": "bytedance:seed-audio@1.0",
+  "est": 0.08,
+  "base": 30,
+  "prompt": "Sound effect only. One short dry metal tick of an overheating pressure gauge on a heavy machine, a small hard high ping, under a quarter of a second, then silence. No voice, no speech, no music."
+ },
+ {
+  "id": "car_explode",
+  "s": 3,
+  "takes": 4,
+  "model": "bytedance:seed-audio@1.0",
+  "est": 0.08,
+  "base": 30,
+  "prompt": "Sound effect only. One huge explosion of a heavy steel 1950s car with an atomic engine in a stone city square: an instant deep concussive blast with a bright electric crack at its front, then heavy metal panels and chrome parts raining down and clattering on stone, about four seconds, then silence. One blast only. Not a movie gasoline fireball, no sci-fi laser. No voice, no speech, no music."
+ },
+ {
+  "id": "car_burnout",
+  "s": 3,
+  "takes": 2,
+  "model": "bytedance:seed-audio@1.0",
+  "est": 0.08,
+  "base": 30,
+  "prompt": "Sound effect only. The wreck of a heavy metal car after an explosion, its fire slowly dying: a thin fading flame, metal creaking and ticking as it cools, the odd small pop and a fading hiss, about ten seconds, ending in silence. No voice, no speech, no music."
+ }
+]
