@@ -13,7 +13,7 @@
 // bytes moved out of the world, so a further change has to be declared here before it passes.
 import { describe, expect, setDefaultTimeout, test } from 'bun:test';
 import { createHash } from 'node:crypto';
-import { readdirSync } from 'node:fs';
+import { readdirSync, readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { Mission, offsetS } from '../../../contracts/missions/mission.schema';
 import { check } from '../../plan/checks';
@@ -228,6 +228,24 @@ const play = (p: PeopleIn) => met(p, {
   'p-cafe-11': both(tie('lover', 'p-records-office-15'), x => { x.secret = 'affair'; }), // Sky: Inez and the door guard are lovers
   'p-records-office-61': both(toBay(1051), tie('workmate', 'p-records-office-01')),
   'p-records-office-01': both(waitTo(1053), tie('workmate', 'p-records-office-61')),
+});
+
+describe('handover listen partner (brief 085, view only)', () => {
+  const people = JSON.parse(readFileSync(resolve(import.meta.dir, '../../../sim/data/handover.people.json'), 'utf8')).people as { id: string; name: string; job: string; stops: [string, number, number, number][] }[];
+  const inez = mission.listenPartners!.find(p => p.role === 'waitress')!, named = people.filter(p => p.name === inez.name && p.id.startsWith(`p-${inez.employer}-`) && p.job === inez.position), milena = named[0]!;
+  test('Inez talks to Milena: a server like her, indoors at the café door for the whole mission, so the view can bring her out', () => {
+    expect(named.map(p => p.id)).toEqual(['p-cafe-12']); // name and post pick one person: the mission holds no person id
+    const close = offsetS('7:30'), during = milena.stops.filter(([, from, to]) => from < close && to > 0);
+    expect(during.length).toBeGreaterThan(0);
+    for (const [place, , , out] of during) expect([place, out]).toEqual(['cafe-entrance', 0]);
+    expect(during[0]![1]).toBeLessThanOrEqual(0); expect(during.at(-1)![2]).toBeGreaterThanOrEqual(close);
+  });
+  test('the schema rejects a partner for a role or a door the mission does not name', () => {
+    const bad = (edit: (p: { role: string; from: string }) => void) => { const m = JSON.parse(raw); edit(m.listenPartners[0]); return Mission.safeParse(m).success; };
+    expect(bad(() => {})).toBe(true);
+    expect(bad(p => { p.role = 'doorman'; })).toBe(false);
+    expect(bad(p => { p.from = 'Nowhere'; })).toBe(false);
+  });
 });
 
 describe('handover roles', () => {

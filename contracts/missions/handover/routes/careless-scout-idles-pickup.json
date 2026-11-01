@@ -1,7 +1,7 @@
 {
  "schema": "suborned.sim.script/1",
  "mission": "handover",
- "note": "Careless loiter (brief 031), the twin of route-b: route-b, but the Scout waits for the 3:10 tip in the pickup camera's view: reported as a loiterer at its desk's next scan (Alert 1, the dial's two robots, no Trail); the route still wins, one Alert dearer than its twin (Alert 0). As route-b: the Reroute at 5:00, the Enforcer at the square until 5:50, the Scout's lock 0.5 s after the Fixer's.",
+ "note": "Careless loiter (brief 031), the twin of route-b: route-b, but once the Listen is over the Scout walks back to stand by the driver in the pickup camera's view and waits there for the tip. The discreet Listen itself ends out of every cone (engine 0.39.0), so standing there is the carelessness: the camera notices him, grows wary, and reports him at about 2:25 (it lands at about 2:38, Alert 1); the patrol's report of the idling Fixer takes it to Alert 2. The route still wins on this script's seed, one Alert dearer than its twin (Alert 1). As route-b: the Reroute at 4:00, the Enforcer at the square until 4:50, the Scout's lock 0.5 s after the Fixer's.",
  "start": {},
  "orders": [
   {"tick":0,"op":"scout","do":"move","to":[7950,-4000]},
@@ -11,6 +11,7 @@
   {"tick":620,"op":"fixer","do":"move","to":"d:Boarding pavilion"},
   {"tick":620,"op":"fixer","do":"turn","target":"driver","approach":"pay"},
   {"tick":670,"op":"scout","do":"listen","target":"driver"},
+  {"tick":986,"op":"scout","do":"move","to":"d:Meet driver"},
   {"tick":1800,"op":"scout","do":"move","to":[8600,-3400]},
   {"tick":1900,"op":"scout","do":"mislead","target":"rivals"},
   {"tick":2400,"op":"tech","do":"reroute","target":"patrol"},

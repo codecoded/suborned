@@ -1,7 +1,7 @@
 {
  "schema": "suborned.mission.plan/1",
  "mission": "handover",
- "note": "Careless loiter (brief 031), the twin of route-b: route-b, but the Scout waits for the 3:10 tip in the pickup camera's view: reported as a loiterer at its desk's next scan (Alert 1, the dial's two robots, no Trail); the route still wins, one Alert dearer than its twin (Alert 0). As route-b: the Reroute at 5:00, the Enforcer at the square until 5:50, the Scout's lock 0.5 s after the Fixer's.",
+ "note": "Careless loiter (brief 031), the twin of route-b: route-b, but once the Listen is over the Scout walks back to stand by the driver in the pickup camera's view and waits there for the tip. The discreet Listen itself ends out of every cone (engine 0.39.0), so standing there is the carelessness: the camera notices him, grows wary, and reports him at about 2:25 (it lands at about 2:38, Alert 1); the patrol's report of the idling Fixer takes it to Alert 2. The route still wins on this script's seed, one Alert dearer than its twin (Alert 1). As route-b: the Reroute at 4:00, the Enforcer at the square until 4:50, the Scout's lock 0.5 s after the Fixer's.",
  "start": {},
  "until": 4500,
  "steps": [
@@ -35,7 +35,7 @@
    "do": "move",
    "to": "d:Meet driver",
    "gap": 62,
-   "why": "the corner is on the way: on to the driver once there (the walk is about 60 s), so the Scout never stands in the guard's cone; brief 054: no Watch on the driver to give first, Listen needs 3 m"
+   "why": "the corner is on the way: on to the driver once there (the walk is about 60 s), so the Scout never stands in the guard's cone; brief 054: no Watch on the driver to give first; a Listen within 5 m needs no walk in (engine 0.39.0)"
   },
   {
    "op": "scout",
@@ -44,6 +44,16 @@
    "label": "heard",
    "gap": 5,
    "why": "as route-b: given once the Scout stands at the meeting point, so the Listen starts where he stands (engine 0.23.0 walks an out-of-reach Listen in)"
+  },
+  {
+   "op": "scout",
+   "do": "move",
+   "to": "d:Meet driver",
+   "after": [
+    "heard"
+   ],
+   "label": "loiter",
+   "why": "the carelessness (engine 0.39.0): the discreet Listen ends with the Scout out of every cone, so it costs nothing; he walks back to stand by the driver in the pickup camera's view and waits there for the tip, and the camera's desk reports him"
   },
   {
    "op": "fixer",
@@ -59,7 +69,7 @@
    "approach": "pay",
    "by": "4:40",
    "label": "turned",
-   "why": "the card shows Pay works on this driver (a Mercenary); §07's Help is one step worse on him"
+   "why": "the card shows Pay works on this driver (a Mercenary): $70,000 at one order. Help is his wrong approach: two visits at $20,000 is cheaper, at 35 s a visit"
   },
   {
    "op": "scout",
@@ -73,7 +83,7 @@
    ],
    "gap": 0,
    "at": "3:00",
-   "why": "once the Listen is over (42 s) and 10 s more, the margin a player who is a little late needs (engine 0.23.0: a Listen that has to walk in ends later, and a move given while it runs is refused as busy, so the tip at 3:10 was missed); near the rivals' car (3.6 m from where they park), 2.8 m outside the pickup camera's cone: the wait for the 3:10 tip is out of its sight (brief 031)"
+   "why": "near the rivals' car (3.6 m from where they park) for the 3:10 tip; by now he has idled in the camera's view long enough to be reported"
   },
   {
    "op": "scout",

@@ -281,7 +281,9 @@ describe.skipIf(!hasDotnet())('the Handover, played headless (Keel\'s engine on 
     const c = await check(L, engineAt('tree'), () => {}, { slack: false });
     for (const id of ['route-a', 'route-b', 'route-g', 'loud']) expect([id, c.plays[id]!.outcome]).toEqual([id, 'success']);
     expect(c.plays['route-a']!.alert).toBeLessThan(c.plays.loud!.alert);
-    expect(c.report.conditions.filter(x => !x.ok).map(x => x.id).filter(x => !KNOWN_RED.includes(x))).toEqual([]);
+    const red = c.report.conditions.filter(x => !x.ok).map(x => x.id);
+    expect(red.filter(x => !KNOWN_RED.includes(x))).toEqual([]);
+    expect(KNOWN_RED.filter(x => !red.includes(x))).toEqual([]); // fixed: take it off the list
     expect(Object.values(c.plays).every(p => p.replayIdentical)).toBe(true);
   }, 300_000);
   // The latest check pinned to a commit. Checks recorded on the working tree (c007-c011: the r016 cast, Keel's engine uncommitted)

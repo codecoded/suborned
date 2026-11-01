@@ -1,7 +1,7 @@
 {
  "schema": "suborned.mission.plan/1",
  "mission": "handover",
- "note": "Route A with Pressure for Help (Keel S25; Sky Q4), fight it out: Pressure leans on Inez's affair, learned by Listen ($0, +3 T); the cast's Inez is Fearful, so it is also her own approach and one order turns her, and she calls the guard away at about 1:46. No Reroute (brief 067 A). c038 (Waymark, engine 0.34.1): the Enforcer goes to the door from 2:40, not as soon as she calls: Pressure brings no warning from Inez, and Vale out before the rival car posts (2:24 on the call's timing) meant all five coming hot at the Enforcer with no posts (the c037 script lost rivals-reach-vale at 3:17.2; composed fresh it won 3 of 8 jitters). Out at about 3:20, after the crew has posted, he holds Vale at (20.0, -65.0) as route-a does while the three break the crew, then boards; the car leaves at once and the three walk out. Faster than route-a by the Pressure's one turn, at 2 T more and no money.",
+ "note": "Route A with Pressure for Help (Keel S25; Sky Q4), fight it out: Pressure leans on Inez's affair, learned by Listen ($0, +3 T); the cast's Inez is Fearful, so it is also her own approach and one order turns her, and she calls the guard at about 1:25. Pressed, she warns him (engine 0.38.0): he reaches her at about 2:21, stays 5 s and runs back at 2.2 m/s, on his door at about 3:02, so the door is clear for about 1:37 of the call, not the walk both ways a helped Inez buys. No Reroute (brief 067 A). This script sends the Enforcer to the door from 2:40: in at about 2:42, about 20 s before the guard is back, and out at about 3:20, after the crew has posted; he holds Vale at (20.0, -65.0) as route-a does while the three break the crew, then boards; the car leaves at once and the three walk out. The 2:40 is this script's, not the route's: played across seeds at a person's pace, going at once wins more than going 80 s after the call, when the guard is often back first (briefs/085/motive/probe/plans press-late0, press-late80). Slower than route-a (Go at about 4:19 against 3:41) because it waits for the posts, at 2 T more (6 against 4) and no money (route-a pays $40,000).",
  "start": {},
  "until": 4500,
  "steps": [
@@ -52,7 +52,7 @@
    "target": "entrance",
    "label": "loop",
    "at": "1:25",
-   "why": "brief 058 (Loop v2): the loop lands 20 s after it is ordered and runs 2:00 from the landing on its own, so it is planted at 1:25 (live 1:45 to 3:45), not as soon as the Tech reaches the cabinet (it would run out before the Enter at about 2:53). No Reroute follows it: the patrol sweeps the service yard, not the door (brief 067 A), and informed play doesn't pay 1 T for nothing"
+   "why": "brief 058 (Loop v2): the loop lands 20 s after it is ordered and runs 2:00 from the landing on its own, so it is planted at 1:25 (live 1:45 to 3:45), over the Enter with room for a late player; planted as soon as the Tech reaches the cabinet it is live 0:33 to 2:33, which only a prompt call beats. No Reroute follows it: the patrol sweeps the service yard, not the door (brief 067 A), and informed play doesn't pay 1 T for nothing"
   },
   {
    "op": "enforcer",
@@ -89,7 +89,7 @@
    ],
    "run": true,
    "at": "2:40",
-   "why": "c038: Pressure turns her in one order and she calls the guard away at about 1:46, but the Enforcer runs for the door only from 2:40 (in at about 2:42, out at about 3:20), so Vale comes out to the posted crew. Out at 2:24 (on the call's own timing) he met all five arriving hot with no posts and no warning from Inez (the Pressure's price): c037's script lost rivals-reach-vale at 3:17.2 on 0.34.1, and composed fresh it won 3 of 8 jitters; from 2:40 it wins 16 of 16"
+   "why": "Pressure turns her in one order and she calls the guard at about 1:25; the Enforcer runs for the door only from 2:40 (in at about 2:42, about 20 s before the guard, warned, is back at about 3:02; out at about 3:20), so Vale comes out to the posted crew. Later than about 3:00 the guard sees the Enter: a pressed Inez's window (engine 0.38.0)"
   },
   {
    "op": "enforcer",

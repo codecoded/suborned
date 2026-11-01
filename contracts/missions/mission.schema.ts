@@ -129,6 +129,8 @@ export const Mission = z.strictObject({
   stands: z.array(z.strictObject({ what: z.string().min(1), where: z.string().min(1), src, note })),
   /** The people the mission needs, by role (/3). */
   roles: z.array(role),
+  /** Who steps out to talk with a role's person while the Scout listens (brief 085, Motive's discreet-listen.md §1): view only, never read into the site or the sim. */
+  listenPartners: z.array(z.strictObject({ role: id, employer: id, position: id, name: z.string().min(1).describe('the person, by name and post, as the mission holds no person ids (the test resolves it to one person)'), from: z.string().min(1).describe('the destination whose door they step out of'), src, note })).optional(),
   /** Route windows restated against the world (/3, later). */
   windows: z.array(window).optional(),
   /** The rival role: how the public sees the mission's rival crew (Sky 2026-10-16; rulebook fight.public, default fight.rivalsPublic): read into the site. */
@@ -160,6 +162,7 @@ export const Mission = z.strictObject({
   .refine(m => m.roles.every(r => (r.tiedTo ?? []).every(t => t.role !== r.id && m.roles.some(x => x.id === t.role))), { path: ['roles'], error: 'a tie names another role of the mission' })
   .refine(m => m.roles.every(r => !r.waitsFor || !!m.roles.find(x => x.id === r.waitsFor)?.leavesTo), { path: ['roles'], error: 'waitsFor names a role with leavesTo' })
   .refine(m => m.roles.every(r => !r.leavesTo || m.destinations.some(d => d.name === r.leavesTo!.at)), { path: ['roles'], error: 'leavesTo names a destination' })
+  .refine(m => (m.listenPartners ?? []).every(p => m.roles.some(r => r.id === p.role) && m.destinations.some(d => d.name === p.from)), { path: ['listenPartners'], error: 'a listen partner names a role and a destination of the mission' })
   .refine(m => (m.windows ?? []).every(w => m.roles.some(r => r.id === w.role) && [w.walk.from, w.walk.to].every(n => m.destinations.some(d => d.name === n))), { path: ['windows'], error: 'a window names a role and two destinations of the mission' })
   .refine(m => (m.securityBonus === undefined) === (m.securityBonusWhy === undefined), { path: ['securityBonus'], error: 'securityBonus and securityBonusWhy come together' })
   .refine(m => !m.clock.ruling || (!m.clock.provisional && !m.clock.contradiction), { path: ['clock'], error: 'a ruled start is not provisional and holds no contradiction' })

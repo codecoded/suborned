@@ -152,6 +152,17 @@
    "note": "On shift, inside, to the chime (5:30 = 17:30, his shift end). leavesTo: his routine's next stop is the official bay, begun by 6:10 (17:30:40; routines are whole minutes, so by 17:31). The service-lane branch is the turned driver's change to the pickup, not the routine's. Vale is a pinned name part (people.rules.json names.pinned)."
   }
  ],
+ "listenPartners": [
+  {
+   "role": "waitress",
+   "employer": "cafe",
+   "position": "server",
+   "name": "Milena Rask",
+   "from": "Café door",
+   "src": "brief 085, briefs/085/motive/discreet-listen.md §1-2 (Sky's \"have Inez walk near scout and talk to another NPC\")",
+   "note": "Who Inez talks to while the Scout listens: Milena Rask, a server on shift inside the café (out 0) all mission, so the agreed scene's lines stand. View only: the engine does not know her, so the view draws her stepping out of the door, standing with Inez for the Listen and going back in. She can't be clicked, shot or block a cone, and she goes in if a fight starts. Nothing here reaches the site or the sim's hashes. Who else may be a partner when a mission names none: someone tied to the person on the street, then someone of the same job on shift at the same place, then a handset (voice only)."
+  }
+ ],
  "windows": [
   {
    "id": "front-door",

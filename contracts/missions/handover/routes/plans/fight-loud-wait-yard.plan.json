@@ -35,7 +35,7 @@
    "do": "move",
    "to": "d:Meet driver",
    "gap": 62,
-   "why": "the corner is on the way: on to the driver once there (the walk is about 60 s), so the Scout never stands in the guard's cone; brief 054: no Watch on the driver to give first, Listen needs 3 m"
+   "why": "the corner is on the way: on to the driver once there (the walk is about 60 s), so the Scout never stands in the guard's cone; brief 054: no Watch on the driver to give first; a Listen within 5 m needs no walk in (engine 0.39.0)"
   },
   {
    "op": "scout",
@@ -59,7 +59,7 @@
    "approach": "pay",
    "by": "4:40",
    "label": "turned",
-   "why": "the card shows Pay works on this driver (a Mercenary); §07's Help is one step worse on him"
+   "why": "the card shows Pay works on this driver (a Mercenary): $70,000 at one order. Help is his wrong approach: two visits at $20,000 is cheaper, at 35 s a visit"
   },
   {
    "op": "scout",
@@ -72,7 +72,7 @@
     "heard"
    ],
    "gap": 52,
-   "why": "once the Listen is over (42 s) and 10 s more, the margin a player who is a little late needs (engine 0.23.0: a Listen that has to walk in ends later, and a move given while it runs is refused as busy, so the tip at 3:10 was missed); near the rivals' car (3.6 m from where they park), 2.8 m outside the pickup camera's cone: the wait for the 3:10 tip is out of its sight (brief 031)"
+   "why": "once the Listen is over (30 s, and his walk to a spot) and a margin, the margin a player who is a little late needs (engine 0.23.0: a Listen that has to walk in ends later, and a move given while it runs is refused as busy, so the tip at 3:10 was missed); near the rivals' car (3.6 m from where they park), 2.8 m outside the pickup camera's cone: the wait for the 3:10 tip is out of its sight (brief 031)"
   },
   {
    "op": "scout",

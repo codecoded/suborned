@@ -1,7 +1,7 @@
 {
  "schema": "suborned.mission.plan/1",
  "mission": "handover",
- "note": "Route A, board and go (brief 018 §5), the route's primary: the same route as route-a to the ambush (no Reroute: the patrol sweeps the service yard, brief 067 A); then the Enforcer walks Vale to the car as it springs, the three fire until the blocker is down, then board, and the car leaves with the whole cell. Route A, the front door, quiet (GDD v0.26.0 §07; Keel N11): watch and listen to Inez, loop the entrance camera at 1:25, help Inez as often as the card asks (twice: the cast's Inez is Fearful, §04) and have her call the guard away, enter while the door is unwatched, take Vale out by the service door, and fight the rivals' ambush at the getaway car with the whole armed cell (Arms 3). The cell runs where a player in a hurry would (to the café, the cabinet and the door): a run is noticed, never an Alert (engine 0.34.0), so the quiet route ends at Alert 0.",
+ "note": "Route A, board and go (brief 018 §5), the route's primary: the same route as route-a to the ambush (no Reroute: the patrol sweeps the service yard, brief 067 A); then the Enforcer walks Vale to the car as it springs, the three fire until the blocker is down, then board, and the car leaves with the whole cell. Route A, the front door, quiet (GDD v0.26.0 §07; Keel N11): watch and listen to Inez, loop the entrance camera at 1:25, help Inez as often as the card asks (twice, the cast's Inez being Fearful, §04: $20,000 a visit) and have her call the guard away, enter while the door is unwatched, take Vale out by the service door, and fight the rivals' ambush at the getaway car with the whole armed cell (Arms 3). The cell runs where a player in a hurry would (to the café, the cabinet and the door): a run is noticed, never an Alert (engine 0.34.0), so the quiet route ends at Alert 0.",
  "start": {},
  "until": 4500,
  "steps": [
@@ -52,7 +52,7 @@
    "target": "entrance",
    "label": "loop",
    "at": "1:25",
-   "why": "brief 058 (Loop v2): the loop lands 20 s after it is ordered and runs 2:00 from the landing on its own, so it is planted at 1:25 (live 1:45 to 3:45), not as soon as the Tech reaches the cabinet (it would run out before the Enter at about 2:53). No Reroute follows it: the patrol sweeps the service yard, not the door (brief 067 A), and informed play doesn't pay 1 T for nothing"
+   "why": "brief 058 (Loop v2): the loop lands 20 s after it is ordered and runs 2:00 from the landing on its own, so it is planted at 1:25 (live 1:45 to 3:45), over the Enter with room for a late player; planted as soon as the Tech reaches the cabinet it is live 0:33 to 2:33, which only a prompt call beats. No Reroute follows it: the patrol sweeps the service yard, not the door (brief 067 A), and informed play doesn't pay 1 T for nothing"
   },
   {
    "op": "enforcer",
@@ -72,7 +72,7 @@
    "do": "turn",
    "target": "waitress",
    "approach": "help",
-   "why": "the first Help: the card after Listen reads her Fearful, so it says \"not yet\" (§04: a Fearful person needs Help ×2)"
+   "why": "the first Help: the card after Listen reads her Fearful, so it says \"not yet\" (§04: a Fearful person needs Help ×2, two visits at $20,000, $40,000 in all)"
   },
   {
    "op": "fixer",

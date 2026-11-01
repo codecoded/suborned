@@ -1,7 +1,7 @@
 {
  "schema": "suborned.mission.plan/1",
  "mission": "handover",
- "note": "Route A, the front door, quiet (GDD v0.26.0 §07; Keel N11), fight it out (brief 018 §5). The Scout watches Inez and listens; the Tech loops the entrance camera at 1:25 (live 1:45 to 3:45, so it still runs at the Enter) and takes no Reroute (brief 067 A: the patrol sweeps the service yard, not the door; informed play doesn't pay 1 T for nothing); the Fixer helps Inez twice (the cast's Inez is Fearful, §04) and has her call the guard away; the Enforcer enters while the door is unwatched and comes out by the service door with Vale. He holds Vale at (20.0, -65.0), 20.4 m from the car and 20.8 m or more from every ambush spot (Motive's ra-h3, briefs/067/motive.md §1.5), beyond the pistol's 16 m, so the cell's fire springs the ambush; the three fight the rival crew until it breaks (fight.over), then he boards with Vale and the car leaves at once; the three, on a calm street, walk out at no cost. c038 (Waymark, engine 0.34.1): the cell walks at 1.8 m/s and its runs are noticed, never an Alert, so route A ends at Alert 0.",
+ "note": "Route A, the front door, quiet (GDD v0.26.0 §07; Keel N11), fight it out (brief 018 §5). The Scout watches Inez and listens; the Tech loops the entrance camera at 1:25 (live 1:45 to 3:45, so it still runs at the Enter) and takes no Reroute (brief 067 A: the patrol sweeps the service yard, not the door; informed play doesn't pay 1 T for nothing); the Fixer helps Inez twice (the cast's Inez is Fearful, §04; two visits at $20,000, $40,000 in all) and has her call the guard away; the Enforcer enters while the door is unwatched and comes out by the service door with Vale. He holds Vale at (20.0, -65.0), 20.4 m from the car and 20.8 m or more from every ambush spot (Motive's ra-h3, briefs/067/motive.md §1.5), beyond the pistol's 16 m, so the cell's fire springs the ambush; the three fight the rival crew until it breaks (fight.over), then he boards with Vale and the car leaves at once; the three, on a calm street, walk out at no cost. c038 (Waymark, engine 0.34.1): the cell walks at 1.8 m/s and its runs are noticed, never an Alert, so route A ends at Alert 0.",
  "start": {},
  "until": 4500,
  "steps": [
@@ -52,7 +52,7 @@
    "target": "entrance",
    "label": "loop",
    "at": "1:25",
-   "why": "brief 058 (Loop v2): the loop lands 20 s after it is ordered and runs 2:00 from the landing on its own, so it is planted at 1:25 (live 1:45 to 3:45), not as soon as the Tech reaches the cabinet (it would run out before the Enter at about 2:53). No Reroute follows it: the patrol sweeps the service yard, not the door (brief 067 A), and informed play doesn't pay 1 T for nothing"
+   "why": "brief 058 (Loop v2): the loop lands 20 s after it is ordered and runs 2:00 from the landing on its own, so it is planted at 1:25 (live 1:45 to 3:45), over the Enter with room for a late player; planted as soon as the Tech reaches the cabinet it is live 0:33 to 2:33, which only a prompt call beats. No Reroute follows it: the patrol sweeps the service yard, not the door (brief 067 A), and informed play doesn't pay 1 T for nothing"
   },
   {
    "op": "enforcer",
@@ -72,7 +72,7 @@
    "do": "turn",
    "target": "waitress",
    "approach": "help",
-   "why": "the first Help: the card after Listen reads her Fearful, so it says \"not yet\" (§04: a Fearful person needs Help ×2)"
+   "why": "the first Help: the card after Listen reads her Fearful, so it says \"not yet\" (§04: a Fearful person needs Help ×2, two visits at $20,000, $40,000 in all)"
   },
   {
    "op": "fixer",
@@ -80,7 +80,7 @@
    "target": "waitress",
    "approach": "help",
    "label": "turned",
-   "why": "the first Help: the card after Listen reads her Fearful, so it says \"not yet\" (§04: a Fearful person needs Help ×2)"
+   "why": "the second Help: she turns"
   },
   {
    "op": "fixer",

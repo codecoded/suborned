@@ -1,7 +1,7 @@
 {
  "schema": "suborned.mission.plan/1",
  "mission": "handover",
- "note": "Careless timing (brief 058 §6; Loop v2: a loop runs 2:00 from its landing), the twin of route-a: route-a with the loop planted first, as soon as the Tech reaches the cabinet (live 0:32.7 to 2:32.7), not at 1:25: it has run out 20 s before the Enter at about 2:53, and the entrance camera sees it (entry seen by a live camera).",
+ "note": "Careless timing (brief 058 §6; Loop v2: a loop runs 2:00 from its landing), the twin of route-a: the loop planted first, as soon as the Tech reaches the cabinet (live 0:33 to 2:33), and the Call left until 2:36 though Help is done at about 2:10: it has run out about 5 s before the Enter at about 2:38, and the entrance camera sees it (entry seen by a live camera). A first-planted loop still covers a prompt call, so the carelessness here is both steps together.",
  "start": {},
  "until": 4500,
  "steps": [
@@ -71,7 +71,7 @@
    "do": "turn",
    "target": "waitress",
    "approach": "help",
-   "why": "the first Help: the card after Listen reads her Fearful, so it says \"not yet\" (§04: a Fearful person needs Help ×2)"
+   "why": "the first Help: the card after Listen reads her Fearful, so it says \"not yet\" (§04: a Fearful person needs Help ×2, two visits at $20,000, $40,000 in all)"
   },
   {
    "op": "fixer",
@@ -79,7 +79,7 @@
    "target": "waitress",
    "approach": "help",
    "label": "turned",
-   "why": "the first Help: the card after Listen reads her Fearful, so it says \"not yet\" (§04: a Fearful person needs Help ×2)"
+   "why": "the second Help: she turns"
   },
   {
    "op": "fixer",

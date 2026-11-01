@@ -52,7 +52,7 @@
    "target": "entrance",
    "label": "loop",
    "at": "1:25",
-   "why": "brief 058 (Loop v2): the loop lands 20 s after it is ordered and runs 2:00 from the landing on its own, so it is planted at 1:25 (live 1:45 to 3:45), not as soon as the Tech reaches the cabinet (it would run out before the Enter at about 2:53). No Reroute follows it: the patrol sweeps the service yard, not the door (brief 067 A), and informed play doesn't pay 1 T for nothing"
+   "why": "brief 058 (Loop v2): the loop lands 20 s after it is ordered and runs 2:00 from the landing on its own, so it is planted at 1:25 (live 1:45 to 3:45), over the Enter with room for a late player; planted as soon as the Tech reaches the cabinet it is live 0:33 to 2:33, which only a prompt call beats. No Reroute follows it: the patrol sweeps the service yard, not the door (brief 067 A), and informed play doesn't pay 1 T for nothing"
   },
   {
    "op": "enforcer",
@@ -90,7 +90,7 @@
    ],
    "run": true,
    "at": "2:40",
-   "why": "c038: Pressure turns her in one order and she calls the guard away at about 1:46, but the Enforcer runs for the door only from 2:40 (in at about 2:42, out at about 3:20), so Vale comes out to the posted crew. Out at 2:24 (on the call's own timing) he met all five arriving hot with no posts and no warning from Inez (the Pressure's price): c037's script lost rivals-reach-vale at 3:17.2 on 0.34.1, and composed fresh it won 3 of 8 jitters; from 2:40 it wins 16 of 16"
+   "why": "Pressure turns her in one order and she calls the guard at about 1:25; the Enforcer runs for the door only from 2:40 (in at about 2:42, about 20 s before the guard, warned, is back at about 3:02; out at about 3:20), so Vale comes out to the posted crew. Later than about 3:00 the guard sees the Enter: a pressed Inez's window (engine 0.38.0)"
   },
   {
    "op": "enforcer",
