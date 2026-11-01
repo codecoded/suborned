@@ -8,6 +8,9 @@ namespace Suborned.Sim
     {
         static string E(string k, string d) => Environment.GetEnvironmentVariable(k) ?? d;
         public static readonly bool On = E("ML_ON", "0") == "1", Note = E("ML_NOTE", "0") == "1", SeatsOn = E("ML_SEATS", "1") == "1";
+        public static readonly bool Path = E("ML_MODE", "") == "path" || E("ML_MODE", "") == "early", Early = E("ML_MODE", "") == "early";
+        public static readonly int SeatGraceS = int.Parse(E("ML_GRACE", "10"));
+        public static readonly int PathMinCm = int.Parse(E("ML_PMIN", "150")), SeatLookS = int.Parse(E("ML_LOOK", "60"));
         public static readonly bool Post = E("ML_POST", "0") == "1", NoCone = E("ML_NOCONE", "1") == "1";
         public static readonly int MinCm = int.Parse(E("ML_MIN", "300"));
         static List<(string name, Pt at)>? chairs;
@@ -62,6 +65,69 @@ namespace Suborned.Sim
                 }
             return best;
         }
+        (Pt at, string kind, Path path)? MlEarly(Op op, Person p, int reach, int listen, int speed)
+        {
+            (Pt at, string kind, Path path)? lean = null; int leanT = -1;
+            for (int t = 0; t <= 120; t += 2)
+            {
+                if (lean.HasValue && t > leanT + MotiveListen.SeatGraceS) break;
+                var her = t == 0 ? PersonPos(p) : PoseAhead(p, T(t))?.pos; if (!her.HasValue) continue;
+                (Pt, long)? best = null;
+                foreach (var (name, at) in MotiveListen.Chairs())
+                {
+                    var st = Walk.NearestFree(at); if (!st.HasValue || G.Dist(st.Value, at) > 130 || !G.Within(st.Value, her.Value, reach) || G.Within(st.Value, her.Value, MotiveListen.PathMinCm)) continue;
+                    if (!MlSeatFree(name, Tick, Tick + T(t) + listen + T(5)) || MlWatched(st.Value) || G.Dist(op.Pos, st.Value) * 10L > speed * (long)T(t)) continue;
+                    long d = G.D2(op.Pos, st.Value); if (best == null || d < best.Value.Item2) best = (st.Value, d);
+                }
+                if (best != null && Walk.Route(op.Pos, best.Value.Item1) is Pt[] rs) { var ps = new Path(rs); if ((ps.Length + speed - 1) / speed <= T(t)) return (best.Value.Item1, "seat", ps); }
+                if (lean.HasValue) continue;
+                best = null; int cell = S.Grid.Cell;
+                for (int dx = -reach; dx <= reach; dx += cell) for (int dy = -reach; dy <= reach; dy += cell)
+                    {
+                        var q = new Pt(her.Value.X + dx, her.Value.Y + dy);
+                        if (!S.Grid.Free(q) || !G.Within(q, her.Value, reach) || G.Within(q, her.Value, MotiveListen.PathMinCm) || !MlBesideSolid(q) || G.Dist(op.Pos, q) * 10L > speed * (long)T(t) || !Sees(q, her.Value) || MlWatched(q)) continue;
+                        long d = G.D2(op.Pos, q); if (best == null || d < best.Value.Item2) best = (q, d);
+                    }
+                if (best != null && Walk.Route(op.Pos, best.Value.Item1) is Pt[] rl) { var pl = new Path(rl); if ((pl.Length + speed - 1) / speed <= T(t)) { lean = (best.Value.Item1, "lean", pl); leanT = t; } }
+            }
+            return lean;
+        }
+        /// <summary>The spot her walk will bring her near: earliest second she comes within reach (never nearer than PathMin) of a free chair the Scout can reach first, up to SeatLook s ahead; else ground beside something solid.</summary>
+        (Pt at, string kind, Path path)? MlOnPath(Op op, Person p, int reach, int listen, int speed)
+        {
+            if (MotiveListen.Early) return MlEarly(op, p, reach, listen, speed);
+            for (int pass = 0; pass < 2; pass++)
+            {
+                if (pass == 0 && !MotiveListen.SeatsOn) continue;
+                for (int t = 0; t <= (pass == 0 ? MotiveListen.SeatLookS : 120); t += 2)
+                {
+                    var her = t == 0 ? PersonPos(p) : PoseAhead(p, T(t))?.pos; if (!her.HasValue) continue;
+                    (Pt, long)? best = null;
+                    if (pass == 0)
+                        foreach (var (name, at) in MotiveListen.Chairs())
+                        {
+                            var st = Walk.NearestFree(at); if (!st.HasValue || G.Dist(st.Value, at) > 130 || !G.Within(st.Value, her.Value, reach) || G.Within(st.Value, her.Value, MotiveListen.PathMinCm)) continue;
+                            if (!MlSeatFree(name, Tick, Tick + T(t) + listen + T(5)) || MlWatched(st.Value) || G.Dist(op.Pos, st.Value) * 10L > speed * (long)T(t)) continue;
+                            long d = G.D2(op.Pos, st.Value); if (best == null || d < best.Value.Item2) best = (st.Value, d);
+                        }
+                    else
+                    {
+                        int cell = S.Grid.Cell;
+                        for (int dx = -reach; dx <= reach; dx += cell) for (int dy = -reach; dy <= reach; dy += cell)
+                            {
+                                var q = new Pt(her.Value.X + dx, her.Value.Y + dy);
+                                if (!S.Grid.Free(q) || !G.Within(q, her.Value, reach) || G.Within(q, her.Value, MotiveListen.PathMinCm) || !MlBesideSolid(q) || G.Dist(op.Pos, q) * 10L > speed * (long)T(t) || !Sees(q, her.Value) || MlWatched(q)) continue;
+                                long d = G.D2(op.Pos, q); if (best == null || d < best.Value.Item2) best = (q, d);
+                            }
+                    }
+                    if (best == null) continue;
+                    var rt = Walk.Route(op.Pos, best.Value.Item1); if (rt == null) continue;
+                    var pa = new Path(rt); if ((pa.Length + speed - 1) / speed > T(t)) continue;
+                    return (best.Value.Item1, pass == 0 ? "seat" : "lean", pa);
+                }
+            }
+            return null;
+        }
         Path? ListenRoute(Op op, Person p)
         {
             int reach = ActReachOf(op, "listen"), listen = T(R.Ev("scout.listen").Price[0].SV is var sv ? (int)sv : 30), speed = Math.Max(1, PaceOf(op, false));
@@ -74,6 +140,10 @@ namespace Suborned.Sim
             }
             var at = PersonPos(p); if (!at.HasValue) return Intercept(op, p, reach)?.path;
             (Pt at, string kind)? pick = null; Path? path = null;
+            if (MotiveListen.Path && ServerOf(p) != null)
+            {
+                var ch = MlOnPath(op, p, reach, listen, speed); if (ch.HasValue) { mlSpot[op.Id] = (ch.Value.at, ch.Value.kind, Tick); return ch.Value.path; }
+            }
             if (MotiveListen.Post && ServerOf(p) is RoundsData.Server sv0)
             {
                 var c0 = MlChoose(op, sv0.At, reach, Tick + T(30) + listen + T(5));

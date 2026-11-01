@@ -1,5 +1,5 @@
 --- sim/Suborned.Sim/GameApproach.cs	2026-10-26 03:39:56
-+++ out/scratch/motive/085l/tree/sim/Suborned.Sim/GameApproach.cs	2026-11-01 16:31:40
++++ out/scratch/motive/085l/tree/sim/Suborned.Sim/GameApproach.cs	2026-11-01 17:16:37
 @@ -33,7 +33,16 @@
          }
  
@@ -35,7 +35,7 @@
              {
                  op.Act = null; op.Walk = null; op.WalkMm = 0;
                  var saved = refusal; refusal = default; string why;
-+                mlArriving = o.Do == "listen" && MotiveListen.On; if (mlArriving) { if (mlSpot.TryGetValue(op.Id, out var sq) && MotiveListen.Note) Note("mp." + sq.kind, $"{G.Dist(op.Pos, at.Value)}"); mlSpot.Remove(op.Id); }
++                mlArriving = o.Do == "listen" && MotiveListen.On; if (mlArriving) { if (mlSpot.TryGetValue(op.Id, out var sq) && MotiveListen.Note) { Note("mp." + sq.kind, $"{G.Dist(op.Pos, at.Value)}"); if (ServerOf(p) is RoundsData.Server sv9) Note("mp.door", $"{G.Dist(sv9.At, at.Value)}"); } mlSpot.Remove(op.Id); }
                  try { why = o.Do == "turn" ? Turn(op, o) : Scout(op, o); }
                  catch (Exception e) when (!(e is OutOfMemoryException)) { why = No("engine-error", "engine error: " + e.GetType().Name + ": " + e.Message); }
 +                mlArriving = false;
