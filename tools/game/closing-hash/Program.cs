@@ -9,6 +9,8 @@ foreach (var path in args.Skip(1))
 {
     var script = Script.Parse(File.ReadAllText(path));
     var orders = script.Orders.Select((o, i) => (o, i)).OrderBy(p => p.o.Tick).ThenBy(p => p.i).Select(p => p.o).ToList();
+    // as ClosingHash.cs in the sim tests: the session was recorded on the rules before brief 080, and loud-fight reaches its fight on seed 3
+    if (path.Contains("sky-0.2.58-session1")) { script.Start.Pre080 = true; script.Start.OldClock = true; } else if (path.EndsWith("routes/loud-fight.json")) script.Start.Seed = 3;
     var g = Engine.New(inputs, script.Start); int oi = 0, until = script.Until > 0 ? script.Until : 7000, savedTick = 0, lastFight = -1;
     var rows = new List<(int tick, string why, ulong cheap, ulong replay)>();
     void Save(string why)
