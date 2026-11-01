@@ -159,7 +159,7 @@ namespace Suborned.Play
         void HoldGive(ContextPlan plan, int way, Target t, Vector2 at, bool run, string source, bool fromSel = true, List<int> only = null)
         {
             var rep = plan?.Row(way); if (rep == null) return;
-            if (rep.I.Order?.Do == "fire") { DoRow(rep, t, at, plan.Pn.World, source); return; } // a Fire wedge: the fire path
+            if (rep.I.Order?.Do == "fire") { DoWay(rep, t, at, plan.Pn.World, source); return; } // a Fire wedge: every selected agent who can, one card (HostSquad)
             var doers = only?.FindAll(k => RowFor(plan, way, k) != null); if (doers == null || doers.Count == 0) doers = DoersOf(plan, way);
             var given = new List<int>();
             foreach (var k in doers)
@@ -577,81 +577,6 @@ namespace Suborned.Play
         }
 
         // ---------------------------------------------------------------- third person (the hold preset)
-
-        /// <summary>Third person in the hold preset: a right tap opens the ring; a right hold (the setting "Right hold fires", the default) fills
-        /// and, let go when full, gives the driven agent and the squad a lasting fire order (as the map's); in a fight a right click on a hostile focuses at once;
-        /// a left hold acts on the thing under the cursor (or the focus), committing on release; a left drag orbits. True when it took the pointer.</summary>
-        bool TpHold(UnityEngine.InputSystem.Mouse mouse, Vector2 p, bool onHud)
-        {
-            if (!HoldOn || Ring != null) return false;
-            var kb = Keyboard.current; bool shift = controls.Held(kb, PlayAction.AddToGroup); float now = Time.unscaledTime;
-            HoldLatchFrame(p);
-            if (controls.tpRightFires)
-            {
-                if (mouse.rightButton.wasPressedThisFrame && !onHud && !Aiming)
-                {
-                    RightClickUsed = true; rp = new Press { On = true, At = p, T0 = now, T = TargetAt(p) };
-                    if (lp.On && Charge is { Button: 0, Done: false }) { CancelHold(); rp.Used = true; return true; } // a right click cancels a left hold
-                    var ft = rp.T != null && rp.T.Kind != "op" ? rp.T : TpFireFocus() ?? TpHostileAhead(); // item 7: the cursor off a target, the focus the pill names
-                    if (FocusTarget(ft, out var fid, out var fforce) && Driving && dAgent >= 0) { rp.Used = true; FocusFire(ft, fid, fforce, p, null); }
-                    return true; // under 0.2 s it is a tap (the ring); the charge begins at 0.2 s
-                }
-                if (rp.On && mouse.rightButton.isPressed && Charge?.Button != 1 && !Aiming && !rp.Used && !rp.Cancelled && now - rp.T0 >= RightTapS)
-                {
-                    var (id, force) = HoldFireId(rp.T);
-                    if (id.Length == 0 && (rp.T == null || rp.T.Kind == "op") && TpFireFocus() is Target df) { rp.T = df; (id, force) = HoldFireId(df); } // item 7 (Keel 2026-10-22): the focus the pill offers fire on, as the left hold falls back to it
-                    if (id.Length == 0 && TpHostileAhead() is Target ha) { rp.T = ha; (id, force) = HoldFireId(ha); }
-                    if (id.Length > 0) Charge = new HoldCharge { T = rp.T, Button = 1, Start = rp.T0, Fire = true, FireId = id, Force = force, Bystander = force, Verb = "Fire", Extra = FireExtra(id, force) };
-                    else rp.Used = true;
-                }
-                if (rp.On)
-                {
-                    if (!mouse.rightButton.isPressed)
-                    {
-                        var was = rp; rp = default; var c = Charge?.Button == 1 ? Charge : null;
-                        if (was.Used || was.Cancelled) { if (c != null) Charge = null; return true; }
-                        if (c != null) { Charge = null; if (c.Ready) TpFireLock(c, p); else { HoldCancels++; Status = "Fire cancelled"; } return true; }
-                        if (now - was.T0 < RightTapS && (p - was.At).magnitude < RingMovePx * KitScale) { var t = was.T; if ((t == null || t.Kind == "op") && DriveFocus != null) t = DriveFocus; if (t == null || t.Kind == "op") ActContext(t, was.At); else TapRing(t, was.At); } // the tap's ring: the focus too
-                        return true;
-                    }
-                    return true;
-                }
-            }
-            if (mouse.leftButton.wasPressedThisFrame && !onHud && !Aiming)
-            {
-                var t = TargetAt(p); if (t == null || t.Kind == "op") t = DriveFocus;
-                var (plan, way) = MainOf(t, p);
-                lp = new Press { On = true, At = p, T0 = now, T = t };
-                if (way >= 0) Charge = new HoldCharge { T = t, Button = 0, Start = now, Plan = plan, Way = way, Run = shift, Verb = plan.Row(way).I.Label, Doers = DoersOf(plan, way) };
-                return true;
-            }
-            if (lp.On)
-            {
-                var c = Charge?.Button == 0 ? Charge : null;
-                if (lp.Cancelled) { if (!mouse.leftButton.isPressed) lp = default; return true; }
-                if (c == null && (p - lp.At).magnitude >= RingMovePx * KitScale && !lp.Used) { var from = lp.At; lp = default; dragFrom = from; dragging = true; orbiting = false; return false; } // a drag with no hold: the orbit takes it
-                if (!mouse.leftButton.isPressed)
-                {
-                    var was = lp; lp = default;
-                    if (c != null) { Charge = null; if (c.Ready) HoldGive(c.Plan, c.Way, c.T, was.At, c.Run || shift, "left", false, c.Doers); else if (now - c.Start >= ChargeShowS) { HoldCancels++; Status = $"{c.Verb} cancelled"; } }
-                    return true;
-                }
-                return true;
-            }
-            return false;
-        }
-
-        /// <summary>Third person, a right hold let go when full: the lasting fire order of the driven agent and the squad (the engine never walks a driven agent in:
-        /// out of reach, its order holds until it is in range).</summary>
-        void TpFireLock(HoldCharge c, Vector2 p)
-        {
-            if (!Driving || dAgent < 0) return;
-            var who = Shooters(false, c.FireId, c.Force, mark: true); if (who.Count == 0) { NobodyFires(p, c.T); return; } // brief 085: the squad fires with the agent in hand, each as on the map (holstered draws, far walks in, can't says why)
-            var list = new List<Order>(); foreach (var k in who) list.Add(new Order { Op = Op.Name((OpId)k), Do = "fire", Target = c.FireId, Force = c.Force });
-            holdCommits = true; try { Fight(list, "right", p, TargetWorld(c.T), $"fire at {Name(c.FireId)}"); } finally { holdCommits = false; }
-            LocksDrop(who); FireLocks.Add(new FireSession { Agents = who, Id = c.FireId, Name = FireName(c.FireId), Force = c.Force, Start = Time.unscaledTime });
-            FireHoldsBegun++; FireLogAdd($"tp-fire\t{string.Join(",", who)}\t{c.FireId}");
-        }
 
         /// <summary>Third person: the focus when the pill offers fire on it (security, a hostile, a combatant; never a passer-by the pill did not
         /// name), so the right hold and the pill agree (next-batch item 7).</summary>

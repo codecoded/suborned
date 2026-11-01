@@ -16,11 +16,11 @@ namespace Suborned.Play
     ///  · guard: at his post in the door's box, the pointer on him and 20 px beside him hovers him with a pill, a click 20 px beside him opens his ring; further off the box is still the door's; third person's focus is him. Pictures `r085-*`.</summary>
     public static class Proof085
     {
-        static void Keys(params Key[] down) { if (Keyboard.current is Keyboard kb) InputSystem.QueueStateEvent(kb, new KeyboardState(down)); }
-        static void Mouse2(Vector2 sp, bool left = false, bool right = false) { if (Mouse.current is Mouse m) { var st = new MouseState { position = sp }; if (left) st = st.WithButton(MouseButton.Left, true); if (right) st = st.WithButton(MouseButton.Right, true); InputSystem.QueueStateEvent(m, st); } }
-        static IEnumerator Frames(int n) { for (int i = 0; i < n; i++) yield return null; }
-        static IEnumerator Press(Key k) { Keys(k); yield return Frames(3); Keys(); yield return Frames(3); }
-        static IEnumerator Fresh(HandoverHost h)
+        internal static void Keys(params Key[] down) { if (Keyboard.current is Keyboard kb) InputSystem.QueueStateEvent(kb, new KeyboardState(down)); }
+        internal static void Mouse2(Vector2 sp, bool left = false, bool right = false) { if (Mouse.current is Mouse m) { var st = new MouseState { position = sp }; if (left) st = st.WithButton(MouseButton.Left, true); if (right) st = st.WithButton(MouseButton.Right, true); InputSystem.QueueStateEvent(m, st); } }
+        internal static IEnumerator Frames(int n) { for (int i = 0; i < n; i++) yield return null; }
+        internal static IEnumerator Press(Key k) { Keys(k); yield return Frames(3); Keys(); yield return Frames(3); }
+        internal static IEnumerator Fresh(HandoverHost h)
         {
             HandoverHost.PointerWorld = null; HandoverHost.PointerOverride = null; Keys(); Mouse2(new Vector2(Screen.width * .5f, Screen.height * .5f));
             if (h.Driving) h.DriveLetGoToMap(); if (h.Following) h.FollowToggle();
@@ -81,6 +81,7 @@ namespace Suborned.Play
             Mouse2(new Vector2(4, 4)); yield return Press(Key.T); yield return new WaitForSecondsRealtime(0.7f); h.SetPaused(true); h.FollowFace(gt.position); yield return Frames(6);
             string fk = $"{h.DriveFocus?.Kind}/{h.DriveFocus?.Key}"; row("r085guardFocus", !(h.DriveFocus?.Kind == "door"), $"driving {h.Driving}, focus {fk}");
             if (h.Driving) h.DriveLetGoToMap(); yield return Frames(2); Keys(); Mouse2(new Vector2(Screen.width * .5f, Screen.height * .5f)); yield return Frames(2);
+            yield return Proof085Squad.Run(h, row); // Sky on 0.2.212: the ring's Fire and the ring in third person
             yield return Proof085Scenes.Run(h, dir, log, row); // whole conversations, bystanders, the pressed call, the insets, the capture clip, the Door price
         }
     }

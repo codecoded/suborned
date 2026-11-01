@@ -66,7 +66,7 @@ namespace Suborned.Play
                 case ContextRank.Act.Default:
                     if (!twice) { SelectThing(t); return true; }
                     ClearSel(); if (Panel == null && BoardSelection(t, screen)) return true;
-                    DoubleActs++; DoRow(plan.Row(ch.Pick), t, screen, plan.Pn.World, "left"); return true;
+                    DoubleActs++; DoWay(plan.Row(ch.Pick), t, screen, plan.Pn.World, "left"); return true;
                 case ContextRank.Act.Ring:
                     if (!twice && SafeRing(ch)) { SelectThing(t); return true; }
                     TapRing(t, screen); return true;

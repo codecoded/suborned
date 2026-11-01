@@ -3,7 +3,7 @@ using Suborned.Play; using Suborned.Sim; using UnityEngine; using UnityEngine.In
 using Debug = UnityEngine.Debug; using Path = System.IO.Path; using Order = Suborned.Sim.Order;
 
 /// <summary>Recordings for Sky's phone, brief 085: a helper assembly beside a copy of the player, none of it in the game. Real time, the real player and HUD; frames through ScreenCapture, paced to the wall; dead walks are skipped by stepping the clock with recording off.</summary>
-public sealed class Rec085 : MonoBehaviour
+public sealed partial class Rec085 : MonoBehaviour
 {
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
     static void Boot()
@@ -21,7 +21,7 @@ public sealed class Rec085 : MonoBehaviour
         while ((h = FindAnyObjectByType<HandoverHost>()) == null || h.Game == null) { if (Time.realtimeSinceStartup - w0 > 90f) { Application.Quit(3); yield break; } yield return null; }
         yield return new WaitForSecondsRealtime(4f); Note($"screen {Screen.width}x{Screen.height}, {BuildStamp.Line}");
         StartCoroutine(Pump());
-        IEnumerator run = what == "route-a" ? RouteA() : what == "pressure" ? Pressure() : Camera();
+        IEnumerator run = what == "squad" ? Squad() : what == "sky" ? Sky(false) : what == "skycheck" ? Sky(true) : what == "sound" ? Sound() : what == "route-a" ? RouteA() : what == "pressure" ? Pressure() : Camera();
         while (true) { object cur; try { if (!run.MoveNext()) break; cur = run.Current; } catch (Exception e) { Note("threw: " + e); break; } yield return cur; }
         rec = false; yield return null; yield return null; HandoverHost.BeforeStep = null; done = true;
         try { pipe?.Close(); ff?.WaitForExit(); } catch (Exception e) { Note("ffmpeg: " + e.Message); }
@@ -50,11 +50,13 @@ public sealed class Rec085 : MonoBehaviour
         var si = new ProcessStartInfo("/opt/homebrew/bin/ffmpeg", $"-y -v error -f rawvideo -pix_fmt {fmt} -s {t.width}x{t.height} -r 30 -i - -vf vflip -c:v libx264 -preset veryfast -crf 16 -threads 4 -pix_fmt yuv420p \"{outFile}\"") { UseShellExecute = false, RedirectStandardInput = true, CreateNoWindow = true };
         ff = Process.Start(si); pipe = ff.StandardInput.BaseStream;
     }
-    void RecOn() { segFrames = 0; rec = true; }
-    void RecOff() { rec = false; }
+    void RecOn() { segFrames = 0; rec = true; if (tapBuf != null) AudioMaster.Tap = tapBuf; }
+    void RecOff() { rec = false; AudioMaster.Tap = null; }
+    float[] tapBuf; Vector2 dotAt; bool dotOn, dotDown;
 
     void OnGUI()
     {
+        if (dotOn) { var kp = GUI.color; float ds = dotDown ? 22f : 14f; GUI.color = dotDown ? new Color(0.38f, 0.88f, 0.92f, 0.95f) : new Color(1f, 1f, 1f, 0.9f); GUI.DrawTexture(new Rect(dotAt.x - ds / 2f, Screen.height - dotAt.y - ds / 2f, ds, ds), Texture2D.whiteTexture, ScaleMode.StretchToFill, true, 0f, GUI.color, 0f, ds / 2f); GUI.color = kp; }
         if (label.Length == 0) return; var st = new GUIStyle(GUI.skin.box) { fontSize = Mathf.RoundToInt(Screen.height / 30f), alignment = TextAnchor.MiddleCenter }; st.normal.textColor = Color.white;
         var c = new GUIContent(label); var s = st.CalcSize(c); var r = new Rect((Screen.width - s.x - 24f) / 2f, Screen.height * 0.02f, s.x + 24f, s.y + 10f);
         var keep = GUI.color; GUI.color = new Color(0f, 0f, 0f, 0.85f); GUI.DrawTexture(r, Texture2D.whiteTexture); GUI.color = keep; GUI.Label(r, c, st);
@@ -103,6 +105,23 @@ public sealed class Rec085 : MonoBehaviour
         Note($"{name}: ring {h.Ring != null}{f}"); yield return new WaitForSecondsRealtime(seconds);
         if (h.Ring != null) h.CloseRing(); Mouse2(new Vector2(Screen.width * .5f, 40f)); yield return new WaitForSecondsRealtime(0.2f);
     }
+
+    // ---- sound: the cafe street, the Help scene and its card, a watcher noticing, a short fight; the mix itself as the audio track
+    IEnumerator Sound()
+    {
+        tapBuf = new float[AudioSettings.outputSampleRate * 2 * 170]; AudioMaster.TapAt = 0;
+        yield return Fresh("route-a", o => o.Tick < 1000); h.TurnSnap(0); var inez = h.Views.Find("waitress"); h.LookAt(inez.position); h.Select(OpId.Fixer, false);
+        yield return Jump(() => Near(1, "help", 100)); h.LookAt(inez.position); AudioMaster.Reset(); Note($"pack {h.PackRead}; {Settings.Current.audio.master}/{Settings.Current.audio.effects}/{Settings.Current.audio.ambience}");
+        yield return Scene("help-1", 4f); Note($"after the Help: peak in {M(AudioMaster.PeakIn)}, out {M(AudioMaster.PeakOut)}, taken {AudioMaster.MostReductionDb:0.0} dB, RMS {AudioMaster.RmsMaxDb:0.0}");
+        h.Select(OpId.Scout, false); var sc = h.Views.Find("op/scout"); var at = G.S.At("d:Office entrance"); h.Issue(new Order { Op = "scout", Do = "move", Point = G.Walk.NearestFree(at) ?? at, Run = true }); Note("the Scout runs for the Office door (mine)"); int n0 = G.Log.Count; float w = Time.unscaledTime; bool seen = false; while (Time.unscaledTime - w < 22f && !seen) { h.LookAt(sc.position); for (int j = n0; j < G.Log.Count; j++) if (G.Log[j].Code.StartsWith("attention.")) { seen = true; Note(G.Log[j].Code + ": " + G.Log[j].Text); } n0 = G.Log.Count; yield return null; }
+        yield return new WaitForSecondsRealtime(3f); RecOff(); AudioMaster.Reset();
+        var en = h.Views.Find("op/enforcer"); var near = new Pt(6925, -4250); h.Issue(new Order { Op = "enforcer", Do = "move", Point = near }); yield return Jump(() => G.Ops[3].Walk == null, 1500); h.Issue(new Order { Op = "enforcer", Do = "draw" }); h.LookAt(en.position); h.SetPaused(false); RecOn(); yield return new WaitForSecondsRealtime(1.5f);
+        bool fired = h.Issue(new Order { Op = "enforcer", Do = "fire", Target = "guard" }); Note($"fire on the guard: {fired}"); w = Time.unscaledTime; n0 = G.Log.Count; int shots = 0; while (Time.unscaledTime - w < 24f) { h.LookAt(en.position); for (int j = n0; j < G.Log.Count; j++) { var c = G.Log[j].Code; if (c.StartsWith("shot.")) shots++; if (c.EndsWith(".down") || c == "alarm.dispatches" || c.StartsWith("patrol.")) Note(c); } n0 = G.Log.Count; yield return null; }
+        Note($"fight: {shots} shots; peak in {M(AudioMaster.PeakIn)}, out {M(AudioMaster.PeakOut)}, taken {AudioMaster.MostReductionDb:0.0} dB, hard stops {AudioMaster.HardStops}, RMS {AudioMaster.RmsMaxDb:0.0}"); RecOff();
+        var cues = new HashSet<string>(); foreach (var q in h.CuesPlayed) cues.Add(q.Split('@')[0]); Note("cues: " + string.Join(",", cues));
+        int nt = AudioMaster.TapAt; using (var fs = File.Create(outFile + ".f32")) using (var bw = new BinaryWriter(fs)) for (int i = 0; i < nt; i++) bw.Write(tapBuf[i]); Note($"audio {nt / 2 / (float)AudioSettings.outputSampleRate:0.00} s at {AudioSettings.outputSampleRate}");
+    }
+    static string M(float v) => (20f * Mathf.Log10(Mathf.Max(v, 1e-6f))).ToString("0.0");
 
     // ---- 1
     IEnumerator RouteA()

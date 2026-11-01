@@ -84,7 +84,7 @@ namespace Suborned.Play
             var ch = plan.Choice;
             switch (ch.Act)
             {
-                case ContextRank.Act.Default: DoRow(plan.Row(ch.Pick), t, screen, plan.Pn.World, "right"); return;
+                case ContextRank.Act.Default: DoWay(plan.Row(ch.Pick), t, screen, plan.Pn.World, "right"); return;
                 case ContextRank.Act.Ring: OpenRing(plan, screen, false); return;
                 case ContextRank.Act.Lock: LockPop(plan.Row(ch.Pick), screen, plan.Pn.World); return;
                 case ContextRank.Act.Hint:
@@ -172,7 +172,7 @@ namespace Suborned.Play
                 if (rs.Segs.Count >= RingMaxWays) break;
                 var r = plan.Row(w); var o = r.I.Order;
                 var s = new RingSeg { Way = w, Row = r, Word = RingWord(r.I), Icon = r.I.Lead.Length > 0 ? r.I.Lead : HudModel.AtlasIcon(o.Do, o.Approach, ""), Violent = o.Do is "takedown" or "fire" };
-                s.By.AddRange(plan.Givers[w]);
+                s.By.AddRange(o.Do == "fire" ? FireFaces(o, plan.Givers[w]) : plan.Givers[w]); // a Fire wedge shows who it will reach (HostSquad)
                 s.Draws = o.Do == "fire" && !drawn; // the draw is in the price (brief 030 §5): the pill's "draws 0.6 s" (DrawS)
                 s.Harmful = Harmful(o, plan.T, drawn); // brief 038 §4.3: never lit, never taken by the second click
                 s.HoldWedge = HoldOn ? o.Do == "fire" : o.Do == "takedown" && o.How == "kill" || o.Do == "fire" && !Combatant(plan.T); // brief 041 (Sky): Kill and Knock out are on a click in the ring; only Fire is held // brief 024 rule 2, brief 038 §4.3: Kill and Fire on a non-combatant take the 0.5 s hold
@@ -340,7 +340,7 @@ namespace Suborned.Play
             var s = rs.Segs[seg]; var plan = rs.Plan; var at = rs.Screen; SideTake(s, plan?.T); CloseRing();
             if (s.More) { OpenPanel(plan.T, at); return; }
             if (HoldOn && s.Way >= 0) { HoldGive(plan, s.Way, plan.T, at, ringRun, "left"); return; } // brief 041: Shift on a wedge runs there
-            DoRow(s.Row, plan.T, at, plan.Pn.World, "left");
+            DoWay(s.Row, plan.T, at, plan.Pn.World, "left");
         }
 
         /// <summary>Proofs: the open ring's first wedge giving `verb` (on `target` when given) taken as a left click on it takes it; false when none.</summary>
@@ -364,7 +364,7 @@ namespace Suborned.Play
         void RingKey(int slot)
         {
             var rs = Ring; if (rs == null) return;
-            for (int i = 0; i < rs.Segs.Count; i++) if (rs.Segs[i].Key == slot) { RingTake(i); return; }
+            for (int i = 0; i < rs.Segs.Count; i++) if (rs.Segs[i].Key == slot) { if (!RingKeyFire(rs, i)) RingTake(i); return; }
             var plan = rs.Plan; // not one of the five shown: the agent's row in the plan
             for (int w = 0; w < plan.Rep.Count; w++) { var r = plan.Row(w); if (r.By == Agent && r.Key == slot) { CloseRing(); DoRow(r, plan.T, rs.Screen, plan.Pn.World, "left"); return; } }
             PopKey("nothing-here", null, plan.Pn.World, Feedback.Info, $"Nothing for the {AgentNames[(int)Agent]} there.");

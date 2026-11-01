@@ -1,0 +1,13 @@
+[0.0s tick 0] screen 1600x900, Build 0.2.215 · c048 · sim 0.39.0 · 48c2c4a9+
+[0.0s tick 540] capture 1600x900 RGBA32
+[2.0s tick 560] map ring: Watch | Reroute | Fire [dashed] | ...
+[4.8s tick 588] map after: scout:'' says too far, fixer:'patrol' drawn, tech:'patrol' drawn, enforcer:'patrol' drawn
+[11.8s tick 658] map later: scout:'', fixer:'' drawn, tech:'' drawn, enforcer:'' drawn
+[13.8s tick 569] third ring: Watch | Reroute | Fire [dashed] | ...
+[16.6s tick 598] third after: scout:'' says too far, fixer:'patrol' drawn, tech:'patrol' drawn, enforcer:'patrol' drawn
+[23.6s tick 668] third later: scout:'', fixer:'' drawn, tech:'' drawn, enforcer:'' drawn
+[25.6s tick 549] left tap: Watch | Fire [dashed] | ...
+[29.1s tick 584] right tap: Watch | Fire [dashed] | ...
+[32.0s tick 613] enforcer after: scout:'', fixer:'', tech:'', enforcer:'patrol' drawn
+[36.6s tick 659] enforcer later: scout:'', fixer:'', tech:'', enforcer:'patrol' drawn
+[36.6s tick 660] frames 1097, repeated 41

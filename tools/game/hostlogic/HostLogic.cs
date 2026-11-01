@@ -235,6 +235,46 @@ public class Squad
             Assert.That(gun.Order, Is.EqualTo(id), $"{where}: agent {k} took no fire order: refused '{h.FireRefusalOf(k).code}'"); Assert.That(gun.Drawn, $"{where}: agent {k} needed F");
         }
     }
+    /// <summary>Brief 085 (Sky on 0.2.212): a wedge taken as the player takes it: the ring opened on the patrol, its Fire wedge's held hold done (holdCommits), RingTake. Returns the wedge's faces.</summary>
+    static void Near(HandoverHost h, params int[] who) { var g = h.Game; var at = g.PosOf("patrol").Value; foreach (var k in who) g.Ops[k].Pos = new Pt(at.X + 300 + 120 * k, at.Y + 300); }
+    static int[] RingFire(HandoverHost h, bool held = true)
+    {
+        Near(h, 0, 1, 2); var p = Host.Plan(h, "patrol", "patrol"); Host.Call(h, "OpenRing", p, new Vector2(100, 100), false); var rs = h.Ring; Assert.That(rs, Is.Not.Null, "no ring on the patrol"); int seg = rs.Segs.FindIndex(x => x.Row?.I?.Order?.Do == "fire"); Assert.That(seg, Is.GreaterThanOrEqualTo(0), $"no Fire wedge: {h.RingWords}; rows {string.Join(",", p.Pn.Rows.Select(r => $"{r.By}:{r.I?.Order?.Do}:{r.Available}:{r.Lock.code}"))}; order {string.Join(",", p.Choice.Order)}; patrol at {h.Game.PosOf("patrol")}");
+        var faces = rs.Segs[seg].By.Select(k => (int)k).OrderBy(k => k).ToArray(); Host.Set(h, "holdCommits", held); try { Host.Call(h, "RingTake", seg); } finally { Host.Set(h, "holdCommits", false); } return faces;
+    }
+    static void OnlyFire(HandoverHost h, params int[] who) { for (int k = 0; k < 4; k++) Assert.That(h.Game.Ops[k].Gun.Order, Is.EqualTo(who.Contains(k) ? "patrol" : ""), $"agent {k}"); }
+    [Test] public void AFireFromTheRingGoesToEveryoneSelected() => EachSeed(h =>
+    {
+        Three(h); int n0 = h.Game.Orders.Count; var faces = RingFire(h); OnlyFire(h, 0, 1, 2); Assert.That(faces, Is.EqualTo(new[] { 0, 1, 2 }), "the wedge's faces"); Assert.That(h.Loud, Is.Null, "a held wedge was the card's hold");
+        Assert.That(Host.Orders(h, n0).Where(x => x.EndsWith(":fire")).ToArray(), Is.EquivalentTo(new[] { "scout:fire", "fixer:fire", "tech:fire" })); Assert.That(h.Feed.Count(c => c.Title == "Going loud"), Is.LessThanOrEqualTo(1), "one card for the squad");
+    });
+    [Test] public void AnUnheldFireFromTheRingOpensOneCardForTheSquad()
+    {
+        var h = Host.Fresh(); Three(h); RingFire(h, held: false); Assert.That(h.Loud, Is.Not.Null, "calm patrol: the going-loud card"); Assert.That(h.Loud.Orders.Select(o => o.Op + ":" + o.Do).ToArray(), Is.EquivalentTo(new[] { "scout:fire", "fixer:fire", "tech:fire" }), "one card, the squad's orders on it"); OnlyFire(h);
+    }
+    [Test] public void AFireFromTheRingLeavesTheBusyOneSayingWhyAndShowsWhoFires()
+    {
+        var h = Host.Fresh(); h.GiveWatchScripted(OpId.Scout, "waitress"); Assert.That(Host.Until(h, () => h.Game.Ops[0].Busy != null)); Three(h); var faces = RingFire(h); OnlyFire(h, 1, 2); Assert.That(h.FireRefusalWord(0), Is.Not.Empty, "the Scout left out with no word"); Assert.That(faces, Is.EqualTo(new[] { 1, 2 }), "the wedge named who wouldn't fire");
+    }
+    [Test] public void AFireFromTheRingWithOnlyTheBusyOneSelectedStillCancelsHisAct()
+    {
+        var h = Host.Fresh(); h.GiveWatchScripted(OpId.Scout, "waitress"); Assert.That(Host.Until(h, () => h.Game.Ops[0].Busy != null)); h.Select(OpId.Scout, false); RingFire(h); OnlyFire(h, 0); Assert.That(h.Game.Ops[0].Busy, Is.Null, "the wedge offered Fire: his act gave way, the 0.2.113 row");
+    }
+    [Test] public void AFireFromTheRingInThirdPersonTakesTheOneInHandAndTheSquad()
+    {
+        var h = Host.Fresh(); Three(h); Hand(h, 1); var faces = RingFire(h); OnlyFire(h, 0, 1, 2); Assert.That(faces, Is.EqualTo(new[] { 0, 1, 2 })); Assert.That(h.Selected.Take(3).All(x => x), "nobody leaves the squad for a fire");
+    }
+    [Test] public void AFireThatNamesOneAgentStaysOneAgent()
+    {
+        var h = Host.Fresh(); Three(h); Near(h, 0, 1, 2); var p = Host.Plan(h, "patrol", "patrol"); var row = p.Pn.Rows.Find(r => r.By == OpId.Fixer && r.I?.Order?.Do == "fire"); Host.Set(h, "holdCommits", true); Host.Call(h, "DoRow", row, p.T, Vector2.zero, null, "left"); OnlyFire(h, 1);
+        h = Host.Fresh(); Three(h); Near(h, 0, 1, 2); p = Host.Plan(h, "patrol", "patrol"); Host.Call(h, "OpenRing", p, new Vector2(100, 100), false); var rs = h.Ring; int seg = rs.Segs.FindIndex(x => x.Row?.I?.Order?.Do == "fire"); Host.Set(h, "holdCommits", true);
+        Assert.That((bool)Host.Call(h, "RingKeyFire", rs, seg), "Shift+1-4 on a Fire wedge"); OnlyFire(h, (int)rs.Segs[seg].Row.By);
+    }
+    [Test] public void ASaveDuringTheFailCameraLeavesTheWholeScript()
+    {
+        var h = Host.Fresh(); var path = System.IO.Path.GetTempFileName(); Host.Set(h, "SessionPath", path); Host.Tick(h, 40); Host.Call(h, "Save"); var whole = File.ReadAllText(path); var played = h.Game;
+        var copy = Engine.New(h.Bundle.Inputs, played.Start); Host.Set(h, "failGame", copy); Host.Set(h, "Game", copy); Host.Call(h, "Save"); Assert.That(File.ReadAllText(path), Is.EqualTo(whole), "the rewound copy wrote over the session"); File.Delete(path);
+    }
     [Test] public void AGroundClickWalksEveryFreeAgent() => EachSeed(h =>
     {
         h.SelectAll(); int n0 = h.Game.Orders.Count; var (spent, who) = Host.Click(h); Assert.That(spent, Is.False); Assert.That(who, Is.Null, "nobody is busy: the whole selection goes");

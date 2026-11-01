@@ -86,7 +86,7 @@ namespace Suborned.Play
             }
             Want(HandoverHost.TpIn.ETap, HandoverHost.TpState.Free, HandoverHost.TpDo.Act); Want(HandoverHost.TpIn.EHold, HandoverHost.TpState.Free, HandoverHost.HoldRing ? HandoverHost.TpDo.Ring : HandoverHost.TpDo.Act); // brief 041: the Double click scheme opens nothing on a hold
             Want(HandoverHost.TpIn.LeftHold, HandoverHost.TpState.Free, HandoverHost.HoldRing ? HandoverHost.TpDo.Ring : HandoverHost.TpDo.Act);
-            Want(HandoverHost.TpIn.RightTap, HandoverHost.TpState.Free, HandoverHost.TpDo.Nothing); Want(HandoverHost.TpIn.LeftTap, HandoverHost.TpState.Free, HandoverHost.TpDo.Ring); /* item 33: a left click rings, a right tap does nothing */ Want(HandoverHost.TpIn.RightHold, HandoverHost.TpState.Free, HandoverHost.TpDo.Aim);
+            Want(HandoverHost.TpIn.RightTap, HandoverHost.TpState.Free, HandoverHost.TpDo.RingAtTarget); Want(HandoverHost.TpIn.LeftTap, HandoverHost.TpState.Free, HandoverHost.TpDo.Ring); /* item 33: a left click rings; Aster 2026-11-02: a right tap rings too */ Want(HandoverHost.TpIn.RightHold, HandoverHost.TpState.Free, HandoverHost.TpDo.Aim);
             Want(HandoverHost.TpIn.RightHold, HandoverHost.TpState.CarryingVale, HandoverHost.TpDo.Nothing); Want(HandoverHost.TpIn.LeftDrag, HandoverHost.TpState.Walking, HandoverHost.TpDo.Orbit);
             int n = System.Enum.GetValues(typeof(HandoverHost.TpIn)).Length * System.Enum.GetValues(typeof(HandoverHost.TpState)).Length;
             log.Add("inputMap: " + HandoverHost.TpTable().Replace("\n", " | "));

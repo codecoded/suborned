@@ -1572,7 +1572,7 @@ namespace Suborned.Play
         /// to this tick ends with, one Hash.State), never a replay of the run on the main thread (0.3–0.7 s a save late in the mission).</summary>
         void Save()
         {
-            if (Game == null || SessionPath.Length == 0) return;
+            if (Game == null || SessionPath.Length == 0 || ReferenceEquals(Game, failGame)) return; // the fail camera's rewound copy is never the session: a Save there wrote a short script over the whole one
             savedTick = Game.Tick; if (FrameCost.IndexOf("save", StringComparison.Ordinal) < 0) FrameCost += FrameCost.Length > 0 ? "+save" : "save";
             try
             {
