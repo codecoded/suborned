@@ -29,4 +29,6 @@ Camera (Sky, 2026-10-31, with Desperados III and Shadow Tactics shots): "is this
 
 Listening (Sky, 2026-11-01, on the Scout in the Listen shot: "Why is scout talking to the waitress?"): "I think when Scours go listen, they should sit down at cafe, or stand by a wall etc, not walk up to them". Motive sets the rule, Vantage the spots, Keel the sim, Latch and Forma the look.
 
+Decisions by Aster (Sky, 2026-11-01: "Upto you"): the Handover plays Fable's seven hand-written scenes, not Terra's (`briefs/085/terra/`, `briefs/085/fable/terra-warmed.json`), which stay as evidence for future missions: Sky found Terra "coherent" and "pretty cold". The discreet Listen goes ahead at Motive's 5 m: the Scout takes a wall or a free chair, Inez pauses, Milena steps out as view only. The generator is not trusted to run alone; future missions draft, then a hand pass and Sky's read.
+
 After this round: the `HandoverHost.cs` split (brief 084), with one full batch.
