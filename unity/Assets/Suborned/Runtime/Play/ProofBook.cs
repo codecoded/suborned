@@ -61,41 +61,38 @@ namespace Suborned.Play
             foreach (var (_, o) in rl) { rg.RunTo(o.Tick); rg.Issue(o); } rg.RunTo(stop); ulong back = Hash.State(rg);
             Row("bookReplay", live == back && g.Tick == stop && rg.Tick == stop, $"tick {g.Tick}, {sc.Orders.Count} orders, live {live:x}, replayed {back:x}, saved {saved}");
             // ---- every slot empty takes no room
-            var full = new BookPage { HeroFace = "x", Name = "A name", Sub = "a sub", State = "State", FactsHead = "head" }; full.Facts.Add(new BookFact { Word = "fact" }); full.Gear.Add(new BookFact { Word = "gear" }); full.Ways.Add(new BookWay { Word = "way" }); full.Scales.Add(new BookScale { Word = "s", Value = 1, Max = 2 }); full.Knows.Add(new BookKnow { Word = "k" }); full.Track.Add(new BookStop { Word = "t", Time = "0:01" }); full.Others.Add(new BookOther { Word = "o" });
+            var full = new BookPage { HeroFace = "x", Name = "A name", Sub = "a sub", State = "State", FactsHead = "head" }; full.Facts.Add(new BookFact { Word = "fact" }); full.Gear.Add(new BookFact { Word = "gear" }); full.Ways.Add(new BookWay { Word = "way" }); full.Can.Add(new BookCan { Word = "can", Line = "a line" }); full.Scales.Add(new BookScale { Word = "s", Value = 1, Max = 2 }); full.Knows.Add(new BookKnow { Word = "k" }); full.Track.Add(new BookStop { Word = "t", Time = "0:01" }); full.Others.Add(new BookOther { Word = "o" });
             var empty = BookLayout.Place(new BookPage(), Tw); float fb = BookLayout.Place(full, Tw).Bottom; bool noItems = empty.Items.Count == 0 && empty.Bottom == BookLayout.Top && fb > 400f;
             Row("bookEmptySlots", noItems, $"an empty page has {empty.Items.Count} items and ends where it starts; the full one ends at {fb:0}");
             // ---- a test section by data alone, the signs re-space
             yield return Fresh(h); h.BookOpenNow("job"); yield return Frames(2); int signs0 = HudToolkit.BookSigns; h.BookClose(); yield return Frames(2);
             h.BookSections.Insert(3, TestSection()); h.BookOpenNow("cash"); yield return Frames(3); bool test = h.BookPageNow?.Section == "cash" && HudToolkit.BookSigns == signs0 + 1 && HudToolkit.BookLaidOut != null && !HudToolkit.BookLaidOut.Has(BookSlot.Facts); h.BookClose(); h.BookSections.RemoveAt(3); yield return Frames(2);
             Row("bookTestSection", test, $"signs {signs0} then {signs0 + 1}, its page up, its empty slots absent {test}");
-            // ---- a way: closes the book, opens that thing's ring for that agent, no order; the page's words are the ring's on the same target, for every way of every agent
-            yield return Fresh(h); g = h.Game; h.SetPaused(true); yield return Frames(2); int bad = 0, seen = 0, shutWays = 0; var said = new List<string>();
-            for (int k = 0; k < 4; k++)
+            // ---- an agent's page: the same rows at any place and time, and it names no person; nothing on it is a way
+            yield return Fresh(h); g = h.Game; h.controls.planTogether = false; h.SetPaused(true); yield return Frames(2);
+            string Shape(int k) { h.BookShow("cell", k); var p = h.BookPageNow; return $"{p.Facts.Count}/{p.Gear.Count}/{p.Scales.Count}/{p.Ways.Count} " + string.Join("|", p.Can.ConvertAll(c => c.Id + ":" + c.Word + ":" + c.Line)); }
+            var names = new List<string> { "Inez", "Vale", "Okafor", "Zhou" }; foreach (var r in new[] { "waitress", "driver", "guard", "councillor" }) { var pp = g.PersonByRole(r); if (pp?.Name?.Length > 0) names.Add(pp.Name); var tn = h.Text?.TargetName(r, ""); if (tn?.Length > 0) names.Add(tn.Replace("The ", "").Replace("the ", "")); }
+            var shapes = new string[4]; int rowsMoved = 0, namedBad = 0; var nsaid = new List<string>(); h.BookOpenNow("cell", 0); yield return Frames(1);
+            for (int k = 0; k < 4; k++) { shapes[k] = Shape(k); if (h.BookPageNow.Ways.Count > 0) namedBad++; foreach (var c in h.BookPageNow.Can) foreach (var nm in names) if ((c.Word + " " + c.Line).Contains(nm)) { namedBad++; nsaid.Add($"{(OpId)k} {c.Word}: {nm}"); } }
+            h.BookClose(); yield return Frames(1); var ras = Route(); var seenTick = new List<int>();
+            foreach (var o in ras) { if (o.Tick >= 1400) break; h.RunTo(o.Tick); h.Issue(new Order { Op = o.Op, Do = o.Do, To = o.To, Point = o.Point, Target = o.Target, Approach = o.Approach, How = o.How, Run = o.Run }); if (o.Tick > 0 && o.Tick % 3 == 0 || o.Tick == 1195) { seenTick.Add(o.Tick); h.BookOpenNow("cell", 0); yield return Frames(1); for (int k = 0; k < 4; k++) if (Shape(k) != shapes[k]) { rowsMoved++; nsaid.Add($"{(OpId)k} at {o.Tick}: {Shape(k)}"); } h.BookClose(); yield return Frames(1); } }
+            h.RunTo(1400); h.BookOpenNow("cell", 0); yield return Frames(1); for (int k = 0; k < 4; k++) if (Shape(k) != shapes[k]) rowsMoved++; var counts = new int[4]; for (int k = 0; k < 4; k++) { h.BookShow("cell", k); counts[k] = h.BookPageNow.Can.Count; } h.BookClose(); yield return Frames(1);
+            Row("bookAgentRows", rowsMoved == 0 && namedBad == 0 && seenTick.Count >= 2 && counts[0] == h.BookCanOf(0).Count && counts[1] == HandoverHost.Slots[1].Length, $"rows {string.Join(" ", counts)} at tick 0, {string.Join(" ", seenTick)} and 1400; moved {rowsMoved}, named a person {namedBad}, {string.Join("; ", nsaid)}");
+            // ---- what is still a way (the job's): closes the book, opens that thing's ring for the selection as it is, gives no order; the ring is the ring a click on that thing opens; the page shows no price of its own
+            yield return Fresh(h); g = h.Game; h.SetPaused(true); yield return Frames(2); int bad = 0, seen = 0; var said = new List<string>(); h.Select(OpId.Scout, false);
+            h.BookOpenNow("job"); yield return Frames(2); int nWays = h.BookPageNow.Ways.Count; h.BookClose(); yield return Frames(1);
+            for (int w = 0; w < nWays; w++)
             {
-                h.BookOpenNow("cell", k); yield return Frames(2); var ways = h.BookPageNow.Ways; h.BookClose(); yield return Frames(1);
-                for (int w = 0; w < ways.Count; w++)
-                {
-                    h.BookOpenNow("cell", k); yield return Frames(1); var way = h.BookPageNow.Ways[w]; int ord0 = g.Orders.Count; h.BookTakeWay(way); yield return Frames(1); seen++; if (way.Shut) shutWays++;
-                    var plan = h.Ring?.Plan; PanelRowOf(plan, way, out var row);
-                    bool ok = !h.BookOpen && g.Orders.Count == ord0 && h.Agent == (OpId)k && (h.Ring != null || way.Target?.Kind == "rivals") && (plan == null || row != null && row.Available == !way.Shut && (way.Shut ? way.SubText == h.BookLockText(row) : way.Sub.Count == 0 || string.Join(" · ", way.Sub.ConvertAll(f => f.Text)) == h.BookPriceText(row)));
-                    if (!ok) { bad++; said.Add($"{(OpId)k} {way.Word}: ring {h.RingWords}; page {way.SubText}"); }
-                    h.CloseRing(); yield return Frames(1);
-                }
+                h.BookOpenNow("job"); yield return Frames(1); var way = h.BookPageNow.Ways[w]; int ord0 = g.Orders.Count, sel0 = (int)h.Agent; h.BookTakeWay(way); yield return Frames(1); seen++;
+                var ring = h.RingWords; var t = h.Ring?.Plan?.T; string same = ""; if (t != null) { var again = h.ContextFor(t, h.Ring.Screen); same = again.Rep.Count == h.Ring.Plan.Rep.Count ? "" : "ring differs"; }
+                if (h.BookOpen || g.Orders.Count != ord0 || t?.Key != way.Target?.Key || (int)h.Agent != sel0 || same.Length > 0 || way.SubText.Contains("$")) { bad++; said.Add($"{way.Word}: ring {ring} on {t?.Key}, {same}"); } else said.Add($"{way.Word} ({way.SubText}): {ring}");
+                h.CloseRing(); yield return Frames(1);
             }
-            Row("bookWayIsTheRing", bad == 0 && seen >= 12, $"{seen} ways on the four agents, {shutWays} locked, {bad} disagreed {string.Join("; ", said)}");
-            // ---- the job page's way opens its contact's ring, no order
-            h.BookOpenNow("job"); yield return Frames(2); var jw = h.BookPageNow.Ways; int jo = g.Orders.Count; h.BookTakeWay(jw.Count > 0 ? jw[0] : null); yield return Frames(1); bool jr = !h.BookOpen && h.Ring?.Plan?.T?.Key == "waitress" && g.Orders.Count == jo; string jwords = h.RingWords; h.CloseRing();
-            Row("bookJobWay", jr, $"{jw.Count} ways; Front door opened the ring on {jwords}");
+            Row("bookWayIsTheRing", bad == 0 && seen == 2, $"{seen} ways on the job page, {bad} wrong; {string.Join("; ", said)}");
             // ---- no cost while shut: the hook's own cost, nothing in the panel's tree, and the frames either side of an open
             int e0 = HudToolkit.PanelElementCount; h.BookOpenNow("cell"); yield return Frames(3); int eUp = HudToolkit.PanelElementCount; double build = h.BookBuildMs; h.BookClose(); yield return Frames(3); int e1 = HudToolkit.PanelElementCount; var (msEach, bytes) = h.BookShutProbe(10000);
             Row("bookShutCost", e1 == e0 && eUp > e0 && bytes == 0 && msEach < 0.01, $"panel elements {e0} shut, {eUp} up, {e1} shut again; the shut check {msEach * 1000:0.##} us a frame, {bytes} bytes over 10000; a page builds in {build:0.#} ms (at open, never per frame)");
             h.SetPaused(false);
-        }
-
-        static void PanelRowOf(HandoverHost.ContextPlan plan, BookWay way, out HandoverHost.PanelRow row)
-        {
-            row = null; if (plan?.Pn == null) return;
-            foreach (var r in plan.Pn.Rows) { var o = r.I?.Order; if (o != null && (int)r.By == way.By && o.Do + "|" + (o.Approach ?? "") + "|" + (o.How ?? "") == way.Verb) { row = r; return; } }
         }
     }
 
@@ -113,7 +110,7 @@ namespace Suborned.Play
             yield return new WaitForSecondsRealtime(3f); /* the size is -capture-size's */
             h.controls.conversations = ConversationScenes.Never; h.controls.planTogether = false; h.Begin(); h.IntelOpen = false; h.StartClock(); h.SetPaused(true); yield return null;
             var g = h.Game; var lines = new List<string>(); int stop = 1600; // 2:40
-            void Say(string n) { var p = h.BookPageNow; lines.Add($"{n}: {p?.Name} | {p?.Sub} | clock {HandoverHost.MissionClock(g.Tick)} | facts {string.Join(", ", (p?.Facts ?? new List<BookFact>()).ConvertAll(f => f.Word))} | gear {string.Join(", ", (p?.Gear ?? new List<BookFact>()).ConvertAll(f => f.Word + " " + f.Note))} | ways {string.Join(", ", (p?.Ways ?? new List<BookWay>()).ConvertAll(w => (w.Shut ? "~" : "") + w.Word + " [" + w.SubText + "]"))} | track {string.Join(", ", (p?.Track ?? new List<BookStop>()).ConvertAll(s => s.Word + " " + s.Time))} | build {h.BookBuildMs:0.#} ms"); File.WriteAllLines(Path.Combine(Dir, "pages.txt"), lines); }
+            void Say(string n) { var p = h.BookPageNow; lines.Add($"{n}: {p?.Name} | {p?.Sub} | clock {HandoverHost.MissionClock(g.Tick)} | facts {string.Join(", ", (p?.Facts ?? new List<BookFact>()).ConvertAll(f => f.Word))} | gear {string.Join(", ", (p?.Gear ?? new List<BookFact>()).ConvertAll(f => f.Word + " " + f.Note))} | ways {string.Join(", ", (p?.Ways ?? new List<BookWay>()).ConvertAll(w => (w.Shut ? "~" : "") + w.Word + " [" + w.SubText + "]"))} | can {string.Join(", ", (p?.Can ?? new List<BookCan>()).ConvertAll(c => c.Word + " [" + c.Line + "]"))} | track {string.Join(", ", (p?.Track ?? new List<BookStop>()).ConvertAll(s => s.Word + " " + s.Time))} | build {h.BookBuildMs:0.#} ms"); File.WriteAllLines(Path.Combine(Dir, "pages.txt"), lines); }
             bool enforcerShot = false; foreach (var o in ProofBook.Route()) { if (o.Tick >= stop) break; if (!enforcerShot && o.Tick >= 500) { h.RunTo(500); enforcerShot = true; h.BookOpenNow("cell", 3); yield return Shot("cell-enforcer"); Say("cell-enforcer"); h.BookShow("cell", 0); yield return Shot("cell-scout"); Say("cell-scout"); h.BookClose(); yield return null; } h.RunTo(o.Tick); h.Issue(new Order { Op = o.Op, Do = o.Do, To = o.To, Point = o.Point, Target = o.Target, Approach = o.Approach, How = o.How, Run = o.Run }); }
             h.RunTo(stop); h.SetPaused(false); yield return new WaitForSecondsRealtime(0.3f); h.SetPaused(true);
             h.BookOpenNow("job"); yield return Shot("job"); Say("job");

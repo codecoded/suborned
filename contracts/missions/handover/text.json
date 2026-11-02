@@ -2893,7 +2893,14 @@
      "weapons": {
        "pistol": "Sidearm",
     "carbine": "Carbine"
-     }
+     },
+   "does": {
+    "act": {
+     "word": "Take",
+     "icon": "take",
+     "line": "Goes in by the door or takes the target at the car, and carries them out."
+    }
+   }
    }
  },
  "pending": {

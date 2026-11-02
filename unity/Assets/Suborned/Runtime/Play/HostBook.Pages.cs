@@ -18,6 +18,7 @@ namespace Suborned.Play
         public readonly List<End> Ends = new();
         public readonly Dictionary<string, Stop> Stops = new();
         public readonly Dictionary<string, string> Weapons = new();
+        public readonly Dictionary<string, (string word, string icon, string line)> Does = new();
 
         static BookWordsFile one;
         public static BookWordsFile Get()
@@ -35,6 +36,7 @@ namespace Suborned.Play
                 foreach (var x in j["stops"].Items) one.Stops[S(x, "at")] = new Stop { Icon = S(x, "icon"), Log = S(x, "log") };
                 var c = b["cell"]; one.Health = S(c, "health"); one.Reach = S(c, "reach"); one.Drawn = S(c, "drawn"); one.Holstered = S(c, "holstered");
                 foreach (var kv in c["weapons"].Entries) one.Weapons[kv.Key] = kv.Value.Str();
+                foreach (var kv in c["does"].Entries) one.Does[kv.Key] = (S(kv.Value, "word"), S(kv.Value, "icon"), S(kv.Value, "line"));
             }
             catch (Exception e) { Debug.LogWarning($"Book: text.json's book block not read ({e.Message})"); }
             return one;
@@ -79,7 +81,7 @@ namespace Suborned.Play
             return p;
         }
 
-        /// <summary>The cell page: an agent as the game tracks them: what they're doing, health, weapon and whether it's drawn, how far they watch, what they can do now and what's locked.</summary>
+        /// <summary>The cell page: an agent as the game tracks them: what they're doing, health, weapon and whether it's drawn, how far they watch, and what they can do in general, never on whom (Sky on 0.2.221: "can't scale").</summary>
         public BookPage BookCellPage(int k)
         {
             var bw = BookWordsFile.Get(); var g = Game; var op = g.Ops[k]; string role = Op.Name((OpId)k);
@@ -89,67 +91,24 @@ namespace Suborned.Play
             if (bw.Reach.Length > 0) p.Facts.Add(new BookFact { Icon = "watch", Word = bw.Reach.Replace("{m}", (g.R.WatchReachCm((OpId)k) / 100).ToString()) });
             if (op.Gun.W != null) p.Gear.Add(new BookFact { Icon = "fire", Word = bw.Weapons.TryGetValue(op.Gun.W.Id, out var wn) ? wn : op.Gun.W.Id, Note = Drawn(k) ? bw.Drawn : bw.Holstered });
             p.Scales.Add(new BookScale { Word = bw.Health, Value = op.Gun.Health, Max = op.Gun.Max });
-            foreach (var w in BookWaysOf(k)) p.Ways.Add(w);
+            p.Can.AddRange(BookCanOf(k));
             for (int i = 0; i < 4; i++) if (i != k) { var r = Op.Name((OpId)i); p.Others.Add(new BookOther { Agent = i, Face = $"portraits/portrait_{r}_{(g.Ops[i].Down ? "down" : "normal")}", Word = Text != null && Text.Speakers.TryGetValue(r, out var on) ? on : r }); }
             var vt = views?.Find("op/" + role); bool shown = vt && vt.gameObject.activeInHierarchy;
             p.Subject = shown ? vt.position : frame.World(op.Pos); p.Line = shown; p.SubjectView = "op/" + role;
             return p;
         }
 
-        /// <summary>The things a way can be on, as the pointer would name them (TargetOf): the cast, the door, the cabinet, the cameras, the patrol, the cars, the rivals.</summary>
-        List<Target> BookTargets()
+        /// <summary>An agent's own verbs, the table the hotbar's plate starts from (Slots: PlateOf only swaps knobs while carrying, so reading the table keeps the rows the same at any place and
+        /// time), each with its word and one line from actions.*, the takedown one verb, whatever the ring calls its ways. A verb with no line of its own takes book.cell.does.</summary>
+        public List<BookCan> BookCanOf(int k)
         {
-            var l = new List<Target>();
-            foreach (var r in new[] { "waitress", "driver", "guard", "councillor" }) l.Add(new Target { Kind = "person", Key = r, Id = r, Label = Name(r) });
-            l.Add(new Target { Kind = "door", Key = "door", Label = "the public door" }); l.Add(new Target { Kind = "cabinet", Key = "cabinet", Label = "the control cabinet" });
-            foreach (var c in Game.S.Cameras) l.Add(new Target { Kind = "camera", Key = c.Id, Label = CameraName(c.Id) });
-            l.Add(new Target { Kind = "patrol", Key = "patrol", Label = "the patrol" });
-            l.Add(new Target { Kind = "car", Key = "official", Label = Text?.TargetName("car-official", "Vale's car") ?? "Vale's car" }); l.Add(new Target { Kind = "car", Key = "getaway", Label = "the getaway car" });
-            l.Add(WatcherTarget("car:rivals"));
+            var l = new List<BookCan>(); var bw = BookWordsFile.Get();
+            foreach (var s in Slots[k])
+            {
+                PlayText.ActionText a = null; Text?.Actions.TryGetValue(s.Id, out a); bw.Does.TryGetValue(s.Id, out var own);
+                l.Add(new BookCan { Id = s.Id, Icon = !string.IsNullOrEmpty(own.icon) ? own.icon : HudModel.AtlasIcon(s.Id, s.Id, ""), Word = !string.IsNullOrEmpty(own.word) ? own.word : a != null && a.Label.Length > 0 ? a.Label : s.Label, Line = !string.IsNullOrEmpty(own.line) ? own.line : a?.Does ?? "" });
+            }
             return l;
         }
-
-        /// <summary>What an agent can do now, one sign a way, each read from the same rows the ring ranks (ContextFor, BuildPanel), with the selection on that agent alone for the read and put back
-        /// before it returns, so the page can't disagree with the ring. Each way lands on the first thing it's open on, else the first where it's locked (its short lock). Fire and the body ways
-        /// aren't listed: they belong to a moment, not an agent (the gear slot says the weapon).</summary>
-        public List<BookWay> BookWaysOf(int k)
-        {
-            var keepSel = (bool[])Selected.Clone(); var keepAgent = Agent; var byWord = new Dictionary<string, BookWay>(); var order = new List<string>();
-            try
-            {
-                Array.Clear(Selected, 0, 4); Selected[k] = true; Agent = (OpId)k;
-                Vector2 mid = new(Screen.width / 2f, Screen.height / 2f);
-                foreach (var t in BookTargets())
-                {
-                    ContextPlan plan = null; if (!Guard("book", () => plan = ContextFor(t, mid)) || plan?.Pn == null) continue;
-                    foreach (var r in plan.Pn.Rows)
-                    {
-                        var o = r.I?.Order; if (o == null || r.By != (OpId)k || o.Do is "fire" or "carry" or "restrain" or "drop" or "stash" or "go" or "board" or "drive-car") continue;
-                        var word = RingWord(r.I); byWord.TryGetValue(word, out var have); if (have != null && (!have.Shut || !r.Available) && !(o.Do == "takedown" && t.Key == "guard" && r.Available)) continue; /* a takedown lands on the guard, never first on a bystander in the cast */
-                        if (have == null) order.Add(word);
-                        byWord[word] = BookWayFrom(r, t, k, word);
-                    }
-                }
-            }
-            finally { Array.Copy(keepSel, Selected, 4); Agent = keepAgent; }
-            var l = new List<BookWay>(); foreach (var w in order) l.Add(byWord[w]); return l;
-        }
-
-        /// <summary>A sign from a ring's row: the icon, the word, the lock (ShutCalmSegs's ShortOf) or the price (the wedge's PriceLine).</summary>
-        BookWay BookWayFrom(PanelRow r, Target t, int k, string word)
-        {
-            var o = r.I.Order; var w = new BookWay { Word = word, Verb = o.Do + "|" + (o.Approach ?? "") + "|" + (o.How ?? ""), Icon = r.I.Lead.Length > 0 ? r.I.Lead : HudModel.AtlasIcon(o.Do, o.Approach, ""), By = k, Shut = !r.Available, Target = t, LockCode = r.Lock.code ?? "" };
-            if (!r.Available) { w.Sub.Add(new BookField { Text = BookLockText(r) }); return w; }
-            w.Named = TitleName(t);
-            foreach (var f in HudModel.PriceLine(this, r.I)) if (!string.IsNullOrEmpty(f.Text)) w.Sub.Add(new BookField { Icon = f.Icon ?? "", Text = f.Text });
-            return w;
-        }
-
-        /// <summary>A locked row's words, as the ring's shut wedge prints them.</summary>
-        public string BookLockText(PanelRow r) => ShortOf(r.I.Order, r.Lock) ?? r.Reason;
-        /// <summary>The proof: a price as the ring's pill prints it.</summary>
-        public string BookPriceText(PanelRow r) { var p = new List<string>(); foreach (var f in HudModel.PriceLine(this, r.I)) if (!string.IsNullOrEmpty(f.Text)) p.Add(f.Text); return string.Join(" · ", p); }
-
-        static string TitleName(Target t) { var s = t?.Label ?? ""; if (s.StartsWith("the ", StringComparison.Ordinal)) s = s[4..]; return s.Length > 0 ? char.ToUpperInvariant(s[0]) + s[1..] : s; }
     }
 }

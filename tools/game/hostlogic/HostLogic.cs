@@ -438,15 +438,16 @@ public sealed class BookCases
     static float Tw(string t, float size, string font) => (t ?? "").Length * size * .52f;
     [Test] public void EmptySlotsTakeNoRoom()
     {
-        BookPage Full() { var p = new BookPage { HeroFace = "x", Name = "A name", Sub = "a sub", State = "On", FactsHead = "head" }; p.Facts.Add(new BookFact { Word = "fact" }); p.Gear.Add(new BookFact { Word = "gear" }); p.Ways.Add(new BookWay { Word = "way" }); p.Scales.Add(new BookScale { Word = "s", Value = 1, Max = 2 }); p.Knows.Add(new BookKnow { Word = "k" }); p.Track.Add(new BookStop { Word = "t", Time = "0:01" }); p.Others.Add(new BookOther { Word = "o" }); return p; }
+        BookPage Full() { var p = new BookPage { HeroFace = "x", Name = "A name", Sub = "a sub", State = "On", FactsHead = "head" }; p.Facts.Add(new BookFact { Word = "fact" }); p.Gear.Add(new BookFact { Word = "gear" }); p.Ways.Add(new BookWay { Word = "way" }); p.Can.Add(new BookCan { Word = "can", Line = "a line" }); p.Scales.Add(new BookScale { Word = "s", Value = 1, Max = 2 }); p.Knows.Add(new BookKnow { Word = "k" }); p.Track.Add(new BookStop { Word = "t", Time = "0:01" }); p.Others.Add(new BookOther { Word = "o" }); return p; }
         var full = BookLayout.Place(Full(), Tw); Assert.That(BookLayout.Place(new BookPage(), Tw).Items, Is.Empty); Assert.That(full.Items.Count, Is.GreaterThanOrEqualTo(10));
         void Without(Action<BookPage> cut, BookSlot slot) { var p = Full(); cut(p); var r = BookLayout.Place(p, Tw); Assert.That(r.Has(slot), Is.False, slot + " is empty"); Assert.That(r.Bottom, Is.LessThanOrEqualTo(full.Bottom), slot + " takes no room"); }
-        Without(p => p.Facts.Clear(), BookSlot.Facts); Without(p => p.Gear.Clear(), BookSlot.Gear); Without(p => p.Ways.Clear(), BookSlot.Ways); Without(p => p.Scales.Clear(), BookSlot.Scales); Without(p => p.Knows.Clear(), BookSlot.Knows); Without(p => p.Track.Clear(), BookSlot.Track); Without(p => p.Others.Clear(), BookSlot.Others); Without(p => p.Name = "", BookSlot.Name); Without(p => { p.Sub = ""; p.State = ""; }, BookSlot.Sub);
+        Without(p => p.Facts.Clear(), BookSlot.Facts); Without(p => p.Gear.Clear(), BookSlot.Gear); Without(p => p.Ways.Clear(), BookSlot.Ways); Without(p => p.Can.Clear(), BookSlot.Can); Without(p => p.Scales.Clear(), BookSlot.Scales); Without(p => p.Knows.Clear(), BookSlot.Knows); Without(p => p.Track.Clear(), BookSlot.Track); Without(p => p.Others.Clear(), BookSlot.Others); Without(p => p.Name = "", BookSlot.Name); Without(p => { p.Sub = ""; p.State = ""; }, BookSlot.Sub);
         var noGear = Full(); noGear.Gear.Clear(); noGear.Track.Clear(); var withGear = Full(); withGear.Track.Clear(); Assert.That(BookLayout.Place(withGear, Tw).Of(BookSlot.Ways).First().At.y, Is.GreaterThan(BookLayout.Place(noGear, Tw).Of(BookSlot.Ways).First().At.y), "the ways rise when the gear is empty");
     }
     [Test] public void FitRulesStepDown()
     {
         var p = new BookPage(); for (int i = 0; i < 12; i++) p.Facts.Add(new BookFact { Word = "A fact of some length" }); var f = BookLayout.FitFacts(p.Facts, Tw); Assert.That(f.cols, Is.EqualTo(2)); Assert.That(f.size, Is.LessThan(30f)); Assert.That(BookLayout.NameSize(new string('n', 30), 0, Tw), Is.LessThan(112f));
+        var cn = new BookPage(); for (int i = 0; i < 9; i++) cn.Can.Add(new BookCan { Word = "w", Line = string.Join(" ", Enumerable.Repeat("nnnnnnn", 14)) }); Assert.That(BookLayout.Place(cn, Tw).CanLines[0].Length, Is.EqualTo(2)); Assert.That(BookLayout.Place(cn, Tw).Of(BookSlot.Can).First().Size, Is.LessThan(32f), "many verbs step down");
         var w = new BookPage(); for (int i = 0; i < 6; i++) w.Ways.Add(new BookWay { Word = "Pressure" }); var ys = BookLayout.Place(w, Tw).Of(BookSlot.Ways).Select(i => i.At.y).Distinct().Count(); Assert.That(ys, Is.GreaterThan(1), "ways wrap");
         Assert.That(BookLayout.SignY(0, 5), Is.LessThan(BookLayout.SignY(0, 4)), "a fifth sign re-spaces the list");
     }
@@ -461,10 +462,11 @@ public sealed class BookCases
         var h = Host.Fresh(); var job = h.BookJobPage(); Assert.That(job.Name, Is.Not.Empty); /* the ways read the built copy of brief.json: ProofBook.bookJobWay holds them */ Assert.That(job.Track.Count, Is.EqualTo(5)); Assert.That(job.Track[0].Word, Is.EqualTo("?"), "the rivals stay unknown until they come");
         for (int k = 0; k < 4; k++)
         {
-            var sel = (bool[])h.Selected.Clone(); var a = h.Agent; var c = h.BookCellPage(k); Assert.That(h.Selected, Is.EqualTo(sel), "the read puts the selection back"); Assert.That(h.Agent, Is.EqualTo(a)); Assert.That(c.Gear.Count, Is.EqualTo(1)); Assert.That(c.Scales[0].Max, Is.EqualTo(h.Game.Ops[k].Gun.Max)); Assert.That(c.Ways, Is.Not.Empty);
-            foreach (var w in c.Ways) { Assert.That(w.Target, Is.Not.Null, w.Word); Assert.That(w.Word, Is.Not.Empty); }
+            var c = h.BookCellPage(k); Assert.That(c.Gear.Count, Is.EqualTo(1)); Assert.That(c.Scales[0].Max, Is.EqualTo(h.Game.Ops[k].Gun.Max)); Assert.That(c.Ways, Is.Empty, "no ways on an agent"); Assert.That(c.Can.Count, Is.EqualTo(HandoverHost.Slots[k].Length), "one row a verb of the plate");
+            foreach (var w in c.Can) { Assert.That(w.Word, Is.Not.Empty, w.Id); Assert.That(w.Line, Is.Not.Empty, w.Id); foreach (var n in new[] { "Inez", "Vale", "Okafor" }) Assert.That(w.Word + w.Line, Does.Not.Contain(n)); }
         }
-        var s = h.BookCellPage(0); Assert.That(s.Facts.Exists(f => f.Word.Contains("30")), "the Scout's reach is the rulebook's 30 m"); Assert.That(s.Ways.ConvertAll(w => w.Word), Does.Contain("Listen"));
-        var tip = s.Ways.Find(w => w.Word == "Tip"); Assert.That(tip?.Shut == true, "no rivals yet: Tip is locked, in the ring's words: " + tip?.SubText); int orders = h.Game.Orders.Count; h.BookCellPage(1); h.BookCellPage(2); h.BookCellPage(3); Assert.That(h.Game.Orders.Count, Is.EqualTo(orders), "a page gives no order");
+        var s = h.BookCellPage(0); Assert.That(s.Facts.Exists(f => f.Word.Contains("30")), "the Scout's reach is the rulebook's 30 m");
+        var e = h.BookCellPage(3).Can; Assert.That(e.FindAll(x => x.Id == "takedown").Count, Is.EqualTo(1), "the takedown is one verb"); Assert.That(e.Exists(x => x.Word is "Kill" or "Knockout"), Is.False);
+        var before = string.Join("|", h.BookCellPage(3).Can.ConvertAll(x => x.Word)); Host.Tick(h, 400); Assert.That(string.Join("|", h.BookCellPage(3).Can.ConvertAll(x => x.Word)), Is.EqualTo(before), "the rows don't move with the clock"); int orders = h.Game.Orders.Count; h.BookCellPage(1); Assert.That(h.Game.Orders.Count, Is.EqualTo(orders), "a page gives no order");
     }
 }

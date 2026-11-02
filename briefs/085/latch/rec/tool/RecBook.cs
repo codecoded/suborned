@@ -19,14 +19,13 @@ public sealed partial class Rec085
         yield return Fresh("route-a"); yield return Jump(() => G.Tick >= 1000); h.SetPaused(false); yield return new WaitForSecondsRealtime(0.5f);
         RecOn(); yield return new WaitForSecondsRealtime(2.2f); int t0 = G.Tick; Note($"J at tick {t0}"); yield return BPress(Key.J); Note($"book {h.BookOpen}, paused {h.Paused}, section {h.BookSectionNow}");
         yield return new WaitForSecondsRealtime(2.4f);
-        yield return BClick("book-sign-job", 0, () => h.BookSectionNow == "job", () => h.BookShow("job")); yield return new WaitForSecondsRealtime(3.2f);
-        yield return BClick("book-sign-cell", 0, () => h.BookSectionNow == "cell", () => h.BookShow("cell")); yield return new WaitForSecondsRealtime(1.2f);
         int target = (int)OpId.Enforcer; int idx = 0; foreach (var o in h.BookPageNow.Others) { if (o.Agent == target) break; idx++; }
-        yield return BClick("book-other", idx, () => h.BookAgent == target, () => h.BookShow("cell", target)); yield return new WaitForSecondsRealtime(2.4f);
-        idx = 0; foreach (var o in h.BookPageNow.Others) { if (o.Agent == (int)OpId.Scout) break; idx++; }
-        yield return BClick("book-other", idx, () => h.BookAgent == 0, () => h.BookShow("cell", 0)); yield return new WaitForSecondsRealtime(1.6f);
-        int orders = G.Orders.Count; var way = h.BookPageNow.Ways.Find(w => !w.Shut); int wi = h.BookPageNow.Ways.IndexOf(way);
-        yield return BClick("book-way", wi, () => !h.BookOpen, () => h.BookTakeWay(way)); Note($"way {way?.Word}: ring {h.RingWords}, orders added {G.Orders.Count - orders}, paused {h.Paused}");
+        yield return BClick("book-other", idx, () => h.BookAgent == target, () => h.BookShow("cell", target)); yield return new WaitForSecondsRealtime(2.6f);
+        idx = 0; foreach (var o in h.BookPageNow.Others) { if (o.Agent == (int)OpId.Fixer) break; idx++; }
+        yield return BClick("book-other", idx, () => h.BookAgent == 1, () => h.BookShow("cell", 1)); yield return new WaitForSecondsRealtime(2.2f);
+        yield return BClick("book-sign-job", 0, () => h.BookSectionNow == "job", () => h.BookShow("job")); yield return new WaitForSecondsRealtime(3f);
+        int orders = G.Orders.Count; var way = h.BookPageNow.Ways[0];
+        yield return BClick("book-way", 0, () => !h.BookOpen, () => h.BookTakeWay(way)); Note($"way {way?.Word}: ring {h.RingWords}, orders added {G.Orders.Count - orders}, paused {h.Paused}");
         yield return new WaitForSecondsRealtime(2.6f); yield return BPress(Key.Escape); Note($"ring closed {h.Ring == null}, tick {G.Tick}"); yield return new WaitForSecondsRealtime(2.4f); yield return BPress(Key.J); yield return new WaitForSecondsRealtime(1.4f); yield return BClick("book-back", 0, () => !h.BookOpen, () => h.BookClose()); yield return new WaitForSecondsRealtime(1.6f); RecOff();
         Note($"end: tick {G.Tick}, book {h.BookOpen}, paused {h.Paused}");
     }

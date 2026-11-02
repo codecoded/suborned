@@ -118,6 +118,7 @@ namespace Suborned.Play
                     case BookSlot.Facts: BkFact(body, pg.Facts[it.Index], it); break;
                     case BookSlot.Gear: BkFact(body, pg.Gear[it.Index], it); break;
                     case BookSlot.Ways: BkWay(body, pg.Ways[it.Index], it.At); break;
+                    case BookSlot.Can: BkCan(body, pg.Can[it.Index], it, r.CanLines[it.Index], r); break;
                     case BookSlot.Scales: BkScales(body, pg, it); break;
                     case BookSlot.Knows: BkKnows(body, pg, it); break;
                     case BookSlot.Track: BkStop(body, pg, it, r); break;
@@ -150,10 +151,19 @@ namespace Suborned.Play
             VisualElement inl = null; if (!w.Shut) { inl = E(e, null, 6f, 6f, at.width - 12f, at.height - 12f); Round(inl, 13f); Border(inl, 2f, Cream); }
             Icon(E(e, null, 26f, at.height / 2f - 28f, 56f, 56f), w.Shut ? "lock" : w.Icon, ink);
             BkPut(e, 100f, at.height / 2f - 16f, w.Word, 40f, "Jost-Bold", inkHex);
-            float sx = 100f; if (w.Named.Length > 0) { BkPut(e, sx, at.height / 2f + 24f, w.Named, 25f, "Jost-Medium", subHex); sx += BkTw(w.Named, 25f, "Jost-Medium") + 10f; }
+            float sx = 100f;
             foreach (var f in w.Sub) { if (f.Icon.Length > 0 && f.Icon != "p_time") { Icon(E(e, null, sx, at.height / 2f + 13f, 20f, 20f), f.Icon, ink); sx += 22f; } BkPut(e, sx, at.height / 2f + 24f, f.Text, 25f, "Jost-Medium", subHex); sx += BkTw(f.Text, 25f, "Jost-Medium") + 10f; }
             e.RegisterCallback<PointerEnterEvent>(_ => { if (inl != null) Border(inl, 2f, BkTurq); else Border(e, 2f, BkInk); }); e.RegisterCallback<PointerLeaveEvent>(_ => { if (inl != null) Border(inl, 2f, Cream); else Border(e, 2f, BkSoft); });
             e.RegisterCallback<ClickEvent>(ev => { ev.StopPropagation(); host.BookTakeWay(w); });
+        }
+
+        /// <summary>A verb the agent has: a pictogram, its word, its one line. Not a sign and no click: nothing here looks pressable, the ring is where you act.</summary>
+        void BkCan(VisualElement body, BookCan c, BookLayout.Item it, string[] lines, BookLayout.Result r)
+        {
+            float d = it.D, x = it.At.x, tx = x + d + 14f, ws = it.Size, ls = ws <= 23f ? 18f : ws <= 26f ? 20f : 21.5f, y0 = it.At.y;
+            Icon(E(body, null, x + 1f, y0 + 2f, d - 2f, d - 2f), c.Icon, BkInk);
+            BkPut(body, tx, y0 + ws * .6f, c.Word, ws, "Jost-SemiBold", BkInkHex);
+            for (int i = 0; i < lines.Length; i++) BkPut(body, tx, y0 + ws * 1.25f + ls * 1.3f * (i + .4f), lines[i], ls, "Jost-Medium", BkSoftHex);
         }
 
         void BkScales(VisualElement body, BookPage pg, BookLayout.Item it)

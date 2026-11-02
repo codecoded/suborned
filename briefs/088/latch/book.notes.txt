@@ -1,16 +1,15 @@
-[0.0s tick 0] screen 1920x1080, Build 0.2.221 · c048 · sim 0.39.0 · 2a65d8b0+
+[0.0s tick 0] screen 1920x1080, Build 0.2.225 · c048 · sim 0.39.0 · 4812b36c+
 [0.0s tick 596] skipped a scene: 
 [0.0s tick 946] skipped a scene: 
 [0.0s tick 1005] capture 1920x1080 RGBA32
 [2.1s tick 1027] J at tick 1027
-[2.4s tick 1027] book True, paused True, section cell
-[5.7s tick 1027] book-sign-job 0: clicked
-[9.7s tick 1027] book-sign-cell 0: clicked
-[11.8s tick 1027] book-other 2: clicked
-[15.1s tick 1027] book-other 0: clicked
-[17.5s tick 1028] book-way 0: clicked
-[17.5s tick 1028] way Listen: ring Listen | ..., orders added 0, paused False
-[20.3s tick 1055] ring closed True, tick 1055
-[25.1s tick 1080] book-back 0: clicked
-[26.7s tick 1096] end: tick 1096, book False, paused False
-[26.7s tick 1097] frames 802, repeated 41
+[2.3s tick 1027] book True, paused True, section cell
+[5.6s tick 1027] book-other 2: clicked
+[9.0s tick 1027] book-other 1: clicked
+[12.0s tick 1027] book-sign-job 0: clicked
+[15.8s tick 1027] book-way 0: clicked
+[15.8s tick 1027] way Front door: ring ~Listen (Already heard) | ..., orders added 0, paused False
+[18.6s tick 1055] ring closed True, tick 1055
+[23.3s tick 1079] book-back 0: clicked
+[24.9s tick 1095] end: tick 1095, book False, paused False
+[24.9s tick 1096] frames 748, repeated 20

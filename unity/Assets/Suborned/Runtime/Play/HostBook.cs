@@ -113,11 +113,10 @@ namespace Suborned.Play
             for (int k = 1; k <= BookSections.Count; k++) { var s = BookSections[(i + k) % BookSections.Count]; if (s.Page != null) { BookShow(s.Id); return; } }
         }
 
-        /// <summary>A way clicked: the book closes and the thing's ring opens, the agent the way is for selected. No order is given; a thing that isn't on the street yet says its lock.</summary>
+        /// <summary>A way clicked: the book closes and the thing's ring opens for the selection as it is. No order is given.</summary>
         public void BookTakeWay(BookWay w)
         {
             if (!BookOpen || w == null) return; BookClose();
-            if (w.By >= 0) Select((OpId)w.By, false);
             var t = w.Target; if (t == null) return;
             var world = TargetWorld(t); Vector2 screen = new(Screen.width / 2f, Screen.height / 2f);
             if (world is Vector3 at) { if (!Following) LookAt(at); if (cam) { var sp = cam.WorldToScreenPoint(at + Vector3.up * 1f); if (sp.z > 0f) screen = sp; } }

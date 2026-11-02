@@ -23,6 +23,8 @@ A proof of concept in the game of the job and cell pages in the light page's loo
 ## Our own agents (Sky, 2026-11-02)
 "What about our own players? In future probably need to show stats and inventory / perks". The cell page uses the same slots, so this is data: this round shows what the game tracks now (health, weapon and whether it's drawn, what they can do and what's locked, the Scout's reach), and a stats slot and a gear slot exist so the campaign's wounds and gear need no redesign. Aster's suggestion, for Sky to rule on when the campaign opens: perks come from people, not level-ups (GDD §06: "people, not upgrades"), shown with who gives them, and lost with that person. Special moves stay out: Sky never agreed them (`briefs/parked.md`). Sky agreed: "I was thinking acout for example might get a drone to help listen from further away but really you'd turn someone at key locations to have them feedback to you".
 
+An agent's page says what the agent can do in general, never on whom (Sky on 0.2.221, of "Knockout, Guard, 12 s": "Don't think we show actions like that for an agent, as can't scale"). Its rows depend only on the agent. The ring stays the only place to act, with the price first.
+
 ## Not in this round
 The people pages (they wait for the faces panel), the journal, filters and lists, the campaign's use, and a GDD change, which follows once Sky has seen a real capture.
 
