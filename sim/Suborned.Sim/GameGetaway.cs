@@ -226,7 +226,7 @@ namespace Suborned.Sim
                 var c = OpOf(op.Carrying.Value); op.Carrying = null; c.CarriedBy = null; c.InCar = true; c.Pos = seat;
                 with = " with the " + Sim.Op.Name(c.Id); Chain.Add(Sim.Op.Name(c.Id) + "-in-getaway-car");
             }
-            if (op.Id == OpId.Enforcer && Vale == ValeAt.WithEnforcer) { Vale = ValeAt.Car; valeAboardAt = Tick; with = " with Vale"; Chain.Add("vale-in-getaway-car"); }
+            if (op.Id == OpId.Enforcer && Vale == ValeAt.WithEnforcer) { Vale = ValeAt.Car; valeAboardAt = Tick; with = $" with {ValeName}"; Chain.Add("vale-in-getaway-car"); }
             Note("board.in", $"The {name} is in the car{with}.");
         }
 
@@ -295,8 +295,8 @@ namespace Suborned.Sim
                 else { Chain.Add(name + "-walks-out"); Note("walked", $"The {name} is left behind on a calm street and walks out."); }
             }
             CarLeftTick = Tick;
-            if (Vale == ValeAt.Car) { Result = Outcome.Success; Chain.Add("car-leaves-with-vale"); Note("success", "The car leaves with Vale. The crew escapes."); }
-            else { Result = Outcome.Withdrawn; Withdrew(true); Chain.Add("car-leaves-without-vale"); Note("withdraw.car", "The car leaves without Vale: the cell withdraws."); }
+            if (Vale == ValeAt.Car) { Result = Outcome.Success; Chain.Add("car-leaves-with-vale"); Note("success", $"The car leaves with {ValeName}. The crew escapes."); }
+            else { Result = Outcome.Withdrawn; Withdrew(true); Chain.Add("car-leaves-without-vale"); Note("withdraw.car", $"The car leaves without {ValeName}: the cell withdraws."); }
             EndOpenFight(); // brief 018 §4: the final fight is judged at the tick the car leaves
             fightClosedLate = true; // Finish replaces a checkpoint already taken at this tick with the state after Go
         }

@@ -175,12 +175,12 @@ namespace Suborned.Sim
         string Takedown(Op op, Order o)
         {
             if (op.Id != OpId.Enforcer) return No("only-enforcer", "only the Enforcer takes people down (§03; brief 013)");
-            if (Vale == ValeAt.WithEnforcer || Vale == ValeAt.Taking) return No("carry-vale", "the Enforcer is carrying Vale");
+            if (Vale == ValeAt.WithEnforcer || Vale == ValeAt.Taking) return No("carry-vale", $"the Enforcer is carrying {ValeName}");
             if (op.Carrying.HasValue || op.CarryBody.Length > 0) return No("already-carrying", "already carrying");
             if (o.How != "knockout" && o.How != "kill") return No("takedown-how", "a takedown is a knockout or a kill");
             var p = TakedownPerson(o.Target);
             if (p == null) return No("target-unknown", $"'{o.Target}' is no one here (unknown = reject)");
-            if (p == ValeP && o.How == "knockout") return No("takedown-vale", "Vale is taken, not knocked out: use Take");
+            if (p == ValeP && o.How == "knockout") return No("takedown-vale", $"{Cap(ValeName)} is taken, not knocked out: use Take");
             var at = PosOfPerson(p);
             if (!at.HasValue) return p.Down ? No("person-down", $"{o.Target} is down") : No("person-away", $"{o.Target} is not out on the street");
             if (!G.Within(op.Pos, at.Value, R.TakedownReachCm)) return No("too-far", $"stand within {R.TakedownReachCm} cm of {o.Target}", cm: R.TakedownReachCm);
@@ -237,7 +237,7 @@ namespace Suborned.Sim
             {
                 b.WakeAt = INF;
                 Chain.Add("killed:" + Who(p)); Note("takedown.dead", $"{Who(p)} is dead. The body lies where it fell.");
-                if (p == ValeP) { Vale = ValeAt.Dead; Fail("vale-dead", "Vale is dead. The live capture objective has failed.", () => With(Because("killed", true, Locate(Sim.Op.Name(op.Id), "killed", b.At), Locate("councillor", "victim", null, b.At)), Sim.Op.Name(op.Id))); }
+                if (p == ValeP) { Vale = ValeAt.Dead; Fail("vale-dead", $"{Cap(ValeName)} is dead. The live capture objective has failed.", () => With(Because("killed", true, Locate(Sim.Op.Name(op.Id), "killed", b.At), Locate("councillor", "victim", null, b.At)), Sim.Op.Name(op.Id))); }
             }
             else
             {
@@ -496,7 +496,7 @@ namespace Suborned.Sim
         {
             string actor = what == "carry" && b != null && b.Carrier.HasValue ? Sim.Op.Name(b.Carrier.Value) : "enforcer";
             markedFoes.Add(actor); KnowFace(actor); // engine 0.19.0 (ai.intent face)
-            Note("takedown.seen", $"The {w.Replace("camera:", "")} sees {(what == "carry" ? "a body carried" : a.Take ? "Vale taken" : "the takedown")}: Alert {Math.Max(Alert, R.DrawSeenSecurity)}.");
+            Note("takedown.seen", $"The {w.Replace("camera:", "")} sees {(what == "carry" ? "a body carried" : a.Take ? $"{ValeName} taken" : "the takedown")}: Alert {Math.Max(Alert, R.DrawSeenSecurity)}.");
             if (w == "guard" && !GuardDown)
             {
                 var pose = GuardPose(); if (pose.HasValue && pose.Value.phase != "door" && !GuardHeld) { GuardHeld = true; heldPos = pose.Value.pos; heldFacing = pose.Value.facing; heldPhase = "drawing on the cell"; GuardAwayUntil = INF; }
@@ -892,7 +892,7 @@ namespace Suborned.Sim
             var q = new TakedownQuote();
             var p = TakedownPerson(target); var e = Enforcer; bool rival = CrewOfPerson(p!) != null;
             if (p == null) { q.Refused = "no one here"; q.RefusedCode = "target-unknown"; return q; }
-            if (p == ValeP && how == "knockout") { q.Refused = "Vale is taken, not knocked out: use Take"; q.RefusedCode = "takedown-vale"; }
+            if (p == ValeP && how == "knockout") { q.Refused = $"{Cap(ValeName)} is taken, not knocked out: use Take"; q.RefusedCode = "takedown-vale"; }
             var at = PosOfPerson(p);
             if (!at.HasValue) { q.Refused = p.Down ? "down" : "not on the street"; q.RefusedCode = p.Down ? "person-down" : "person-away"; return q; }
             bool kill = how == "kill";

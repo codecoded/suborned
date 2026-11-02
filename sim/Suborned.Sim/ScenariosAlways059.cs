@@ -583,7 +583,7 @@ namespace Suborned.Sim
                 if (!r.Line(brk >= 0, $"brief 039 drift (B, cover and pin; Motive re-composes): the crew breaks ({g.Result} {g.FailCode} at {Report.Clock(g.Tick)}): the press rule is read only once it does")) { r.Is(true, "loud-x4 played"); return; }
                 r.Is(g.Log.Exists(l => l.Tick < brk && l.Code == "ai.kite" && l.Text.Contains("presses")), "before the break the crew presses for the Enforcer holding Vale (the press is live)");
                 r.Is(!g.Log.Exists(l => l.Tick >= brk && l.Code == "ai.kite" && l.Text.Contains("presses")), "after the break no member presses");
-                r.Is(g.Log.Exists(l => l.Tick > brk && l.Code == "board.in" && l.Text.Contains("Vale")), "the Enforcer walks Vale out after it and boards");
+                r.Is(g.Log.Exists(l => l.Tick > brk && l.Code == "board.in" && l.Text.Contains(g.ValeName)), "the Enforcer walks Vale out after it and boards (the log names him from the cast, brief 089)");
             });
 
             Add("BAL-LANE", "059", "Motive M059-B2 (GDD §06: the blocker keeps its lane and answers only from it): route A; the Enforcer holds Vale at the service lane, far from the car, while the Scout's shot from the pistol's long band springs the ambush (brief 059: a shot at a lurker gives it away). The rival blocker walks to his lane post; the Fixer then fires on him from the long band, beyond his effective reach: he takes no kite step out of the line and stays on the lane.", r =>

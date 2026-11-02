@@ -1037,7 +1037,7 @@ namespace Suborned.Sim
                 r.To(r.SendTo(Scout, TipSpot(r))); r.To(T(320)); r.Do(Scout, "mislead", "rivals");
                 r.To(T(370) + T(g.R.ValeInS)); r.Until(() => g.PickupService, T(60)); r.Do(Enf, "take"); r.Done(Enf); // brief 059: in his car in the service bay
                 var (ok, why) = g.Issue(new Order { Tick = g.Tick, Op = Enf, Do = "move", To = "d:Getaway bay", Run = true });
-                r.Is(!ok && why.Contains("Vale"), $"carrying Vale, the run is refused: {why}");
+                r.Is(!ok && why.Contains(g.ValeName), $"carrying {g.ValeName}, the run is refused: {why}");
                 r.Eq(g.QuoteMove(Enf, r.Stand("d:Getaway bay")).RunRefused, why, "the move chip shows the same reason");
                 r.Send(Enf, "d:Getaway bay");
                 r.Eq(r.Op(Enf).WalkSpeed, g.R.CellSpeed, "he walks");

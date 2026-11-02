@@ -379,7 +379,7 @@ namespace Suborned.Sim
             var sp = new List<Pt>(sec1); for (int i = 1; i < sec2.Length; i++) sp.Add(sec2[i]);
             securityPath = new Path(sp.ToArray());
             if (Range) InitRange(); // brief 029 (GameRange.cs): the fight range: no mission, no schedule, no cast but what is spawned
-            else Note("start", "Vale is inside. His official car will collect him later. The city is already moving.");
+            else Note("start", $"{Cap(ValeName)} is inside. His official car will collect him later. The city is already moving.");
             CarEpochStep(); // engine 0.33.1 (car.footprint): the cars standing at the start (the crowd's legs built at load go round them)
             if (!Range) SeedStart(); // brief 080 (GameSeed.cs): the crowd's phases, the patrol's, the rivals' posts; nothing at seed 0
         }
@@ -469,8 +469,8 @@ namespace Suborned.Sim
             // driver, Vale leaves by other means (the rivals reach Vale only physically now: the tail, the fight)
             if (!Over && Tick >= T(overS) && Vale != ValeAt.WithEnforcer && Vale != ValeAt.Car && Vale != ValeAt.Taking)
             {
-                if (Vale == ValeAt.InCar) Note("car.leaves", "The driver gives up waiting and drives Vale away.");
-                Fail("vale-leaves", "Vale leaves the district in the official car.", () => Because("too-late", true, Locate("car", "left"), Locate("councillor", "left")));
+                if (Vale == ValeAt.InCar) Note("car.leaves", $"The driver gives up waiting and drives {ValeName} away.");
+                Fail("vale-leaves", $"{Cap(ValeName)} leaves the district in the official car.", () => Because("too-late", true, Locate("car", "left"), Locate("councillor", "left")));
             }
             FightEnds(); // fight.public: a fight ends quiet after its last shot, the final fight at its end, any fight with the mission
             if (Tick % 100 == 0 || Over) Checkpoints.Add((Tick, Hash.State(this)));
@@ -492,7 +492,7 @@ namespace Suborned.Sim
                 return;
             }
             if (guardRunning) { if (Tick == GuardAwayUntil) { guardRunning = false; Note("guard.back", "The guard is back at the office entrance."); } return; }
-            if (Tick == LureTick + walkT) { GuardReachedCafe = true; Note("guard.at-cafe", GuardCallPressed ? "The guard reaches Inez at the café. She tells him someone knows about them." : "The guard reaches Inez at the café. She keeps him talking, away from the door."); }
+            if (Tick == LureTick + walkT) { GuardReachedCafe = true; Note("guard.at-cafe", GuardCallPressed ? $"The guard reaches {InezName} at the café. She tells him someone knows about them." : $"The guard reaches {InezName} at the café. She keeps him talking, away from the door."); }
             if (Tick == LureTick + walkT + stayT) Note("guard.leaves-cafe", GuardCallPressed ? "The guard leaves the café and runs back toward his post." : "The guard leaves the café and walks back toward his post.");
             if (Tick == GuardAwayUntil) Note("guard.back", "The guard returns to the office entrance.");
         }
@@ -516,7 +516,7 @@ namespace Suborned.Sim
             if (Tick == CarInBayTick)
             {
                 PickupService = Vale == ValeAt.InCar || Vale == ValeAt.Taking;
-                Note("car.parks", CarAtMouth ? "Vale's car stops at the mouth of the service drive. Take him from the back seat." : "Vale's car parks in the service bay. Take him from the back seat.");
+                Note("car.parks", CarAtMouth ? $"{Cap(ValeName)}'s car stops at the mouth of the service drive. Take him from the back seat." : $"{Cap(ValeName)}'s car parks in the service bay. Take him from the back seat.");
                 SawGetaway(InCarName()); // Motive M059-2.4: our car already behind his
             }
         }
@@ -555,12 +555,12 @@ namespace Suborned.Sim
                 Vale = ValeAt.Leaving; // brief 059 K1: always to the official bay
                 var to = BesideCar(CarPos(), 1); // engine 0.33.1 (car.footprint): to his car's kerb-side door, off its ground (0.33.0: its centre, S.ValeCar)
                 valePath = new Path(Walk.Route(S.Stand(S.ValeExit), to) ?? new[] { S.Stand(S.ValeExit), to });
-                Note("vale.exits", "Vale steps out of the official entrance and walks to his car.");
+                Note("vale.exits", $"{Cap(ValeName)} steps out of the official entrance and walks to his car.");
             }
             if (Tick == T(valeAtCarS) && Vale == ValeAt.Leaving)
             {
                 Vale = ValeAt.Pickup;
-                Note("vale.at-car", "Vale reaches the official car under the pickup camera.");
+                Note("vale.at-car", $"{Cap(ValeName)} reaches the official car under the pickup camera.");
             }
             // brief 059 K1, K2 (car.pickup.valeIn): he gets in. With his driver at the car, unturned he drives Vale away (the mission is over, Sky 3a);
             // turned, he drives Vale round to the service bay. With no driver (down) or the car disabled, Vale waits by it.
@@ -569,12 +569,12 @@ namespace Suborned.Sim
                 Vale = ValeAt.InCar;
                 if (!Driver.Turned)
                 {
-                    Note("car.leaves", "Vale gets into his car and his driver drives him away.");
-                    Fail("vale-leaves", "Vale leaves the district in the official car.", () => Because("driven-away", true, Locate("car", "left"), Locate("councillor", "left")));
+                    Note("car.leaves", $"{Cap(ValeName)} gets into his car and his driver drives him away.");
+                    Fail("vale-leaves", $"{Cap(ValeName)} leaves the district in the official car.", () => Because("driven-away", true, Locate("car", "left"), Locate("councillor", "left")));
                     return;
                 }
                 valeDriveStart = Tick; carToService = new Path(S.CarServicePath); carDrive = CarProfile(carToService); carMouthMm = MouthMm(carToService);
-                Note("car.leaves", "Vale gets into his car. The turned driver drives him round to the service bay.");
+                Note("car.leaves", $"{Cap(ValeName)} gets into his car. The turned driver drives him round to the service bay.");
                 ValeCarMoves(); // F2: the rival car follows rivals.follow later
             }
         }

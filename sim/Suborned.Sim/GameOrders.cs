@@ -265,7 +265,7 @@ namespace Suborned.Sim
             var ev = R.Ev("turn." + o.Approach);
             if (!IsPersonRoleName(o.Target)) return No("target-unknown", $"'{o.Target}' is no one the cell can turn here"); // engine 0.30.0 (Suture's bot pass): refused, not thrown
             var p = PersonByRole(o.Target); var miss = Present(p, out var pos); if (miss.Length > 0) return miss;
-            if (p == ValeP) return No("vale-not-contact", "Vale is the target, not a contact");
+            if (p == ValeP) return No("vale-not-contact", $"{Cap(ValeName)} is the target, not a contact");
             var x = Ctx(p, ev);
             x.Reach = G.Within(op.Pos, pos, approachReach);
             bool walk = !x.Reach && WalksIn(op); // engine 0.23.0 (rulebook cell.approach): out of reach, checked as if in reach, then walked in
@@ -287,7 +287,7 @@ namespace Suborned.Sim
         {
             switch (o.Do)
             {
-                case "watch" when o.Target == "rivals" || o.Target == "car:rivals": RivalsWatched = true; Note($"{Sim.Op.Name(op.Id)}.watch.watched", "The rivals' timetable is read: their next move, where each will go, and that their car follows Vale's."); break; // brief 059 §2.2
+                case "watch" when o.Target == "rivals" || o.Target == "car:rivals": RivalsWatched = true; Note($"{Sim.Op.Name(op.Id)}.watch.watched", $"The rivals' timetable is read: their next move, where each will go, and that their car follows {ValeName}'s."); break; // brief 059 §2.2
                 case "watch" when IsContainer(o.Target): LandWatchContainer(op, o); break; // a container's round (GameStashWatch.cs)
                 case "watch" when !IsPersonRoleName(o.Target): LandWatchWatcher(op, o); break; // a camera or the patrol (rulebook sight), the Scout's or the Tech's
                 case "watch": case "listen":
@@ -319,11 +319,11 @@ namespace Suborned.Sim
                         bool serviceHeld = DoorHeld(ExitDoor), frontHeld = serviceHeld && DoorHeld(EnterDoor);
                         if (frontHeld)
                         {
-                            if (!Log.Exists(l => l.Tick == Tick - 1 && l.Code == "enter.in")) Note("enter.in", "Both doors are held: the Enforcer waits inside with Vale.");
+                            if (!Log.Exists(l => l.Tick == Tick - 1 && l.Code == "enter.in")) Note("enter.in", $"Both doors are held: the Enforcer waits inside with {ValeName}.");
                             op.Busy = o; op.BusyEnd = Tick + 1; break; // re-tried each tick until a door frees
                         }
                         op.Inside = false; op.Pos = serviceHeld ? S.Stand(S.GuardPost) : S.Stand(S.ValeService); EntryInProgress = false; Vale = ValeAt.WithEnforcer;
-                        Note("enter.out", serviceHeld ? "The service door is held: Vale and the Enforcer come out at the public door." : "Vale and the Enforcer come out at the service lane."); StartFight(); break;
+                        Note("enter.out", serviceHeld ? $"The service door is held: {ValeName} and the Enforcer come out at the public door." : $"{Cap(ValeName)} and the Enforcer come out at the service lane."); StartFight(); break;
                     }
                 case "takedown": LandTakedown(op, o); break;
                 case "board": LandBoard(op); break;
@@ -341,7 +341,7 @@ namespace Suborned.Sim
                 case "take":
                     Vale = ValeAt.WithEnforcer; op.Gun.Order = ""; op.Gun.Force = false; op.Gun.Target = ""; // brief 018: walking Vale, he doesn't fire
                     if (!Driver.Turned) AddTrail(R.TakeTrailUnturned, "take:unturned-driver");
-                    Chain.Add("vale-taken-outside"); Note("take.done", "Vale is with the Enforcer. Get to the car."); StartFight(); break;
+                    Chain.Add("vale-taken-outside"); Note("take.done", $"{Cap(ValeName)} is with the Enforcer. Get to the car."); StartFight(); break;
             }
         }
 
@@ -752,14 +752,14 @@ namespace Suborned.Sim
             if (op.CarryBody.Length > 0) return No("already-carrying", "carrying a body");
             if (Alert >= 3 && DialNow.DoorsLock) return No("doors-locked", "lockdown: the Office doors are locked (brief 013, the dial)");
             if (DoorHeld(EnterDoor)) return No("door-held", "a unit holds the scene at this door: nobody goes in (rev 4: a found body)");
-            if (Vale != ValeAt.Office || EntryInProgress) return No("vale-not-inside", "Vale is not inside");
+            if (Vale != ValeAt.Office || EntryInProgress) return No("vale-not-inside", $"{Cap(ValeName)} is not inside");
             if (!G.Within(op.Pos, S.At(S.GuardPost), R.AtReachCm)) return No("stand-at-door", "stand at the public door", cm: R.AtReachCm);
             op.Walk = null;
-            if (GuardAtDoor) { Fail("entry-seen-guard", "The guard is back at the door. Vale is warned.", () => With(Because("seen", true, Locate("guard", "saw", op.Pos)), "enforcer")); return ""; }
-            if (CameraWatching("entrance", op.Pos)) { Fail("entry-seen-camera", "The entrance camera reports the breach. Vale is locked down.", () => With(Because("seen", true, Locate("camera:entrance", "saw", op.Pos)), "enforcer")); return ""; }
+            if (GuardAtDoor) { Fail("entry-seen-guard", $"The guard is back at the door. {Cap(ValeName)} is warned.", () => With(Because("seen", true, Locate("guard", "saw", op.Pos)), "enforcer")); return ""; }
+            if (CameraWatching("entrance", op.Pos)) { Fail("entry-seen-camera", $"The entrance camera reports the breach. {Cap(ValeName)} is locked down.", () => With(Because("seen", true, Locate("camera:entrance", "saw", op.Pos)), "enforcer")); return ""; }
             if (PatrolWatching(S.At(S.GuardPost)))
             {
-                if (!R.EnterPatrolReports) { Fail("entry-seen-patrol", "The patrol reports the breach. Vale is locked down.", () => With(Because("seen", true, Locate("patrol", "saw", S.At(S.GuardPost))), "enforcer")); return ""; }
+                if (!R.EnterPatrolReports) { Fail("entry-seen-patrol", $"The patrol reports the breach. {Cap(ValeName)} is locked down.", () => With(Because("seen", true, Locate("patrol", "saw", S.At(S.GuardPost))), "enforcer")); return ""; }
                 EntrySeenByPatrol(S.At(S.GuardPost)); // engine 0.34.2 (Sky 2026-10-26: not a failure): a seen act, reported (GameEntrySeen.cs)
             }
             RouteKind = "front"; RouteGuard = BodyOf(GuardP) is Body gb ? (gb.Dead ? "killed" : "knocked-out") : GuardDown ? "shot" : "waitress"; RouteBot = SweepSeesEntrance(Tick) ? "rerouted" : SweepCoversEntrance ? "gap" : ""; // a takedown is no shooting (brief 013 E4); engine 0.34.0: no sweep at the door, no patrol in the front route (brief 067 A)
@@ -769,24 +769,24 @@ namespace Suborned.Sim
             bool alarm = Alert >= 2; // Sky 2026-10-15 Q5 (rulebook cell.enter.alarm): once Alert ≥ 2 the Office staff hide Vale
             op.Gun.Order = ""; op.Gun.Target = "";
             Engage(op, o, R.EnterS + (alarm ? R.EnterAlarmS : 0));
-            Note("enter.in", alarm ? "The Enforcer is inside. The alarm is up: the staff are hiding Vale. Watch the service lane." : "The Enforcer is inside. Watch the service lane.");
+            Note("enter.in", alarm ? $"The Enforcer is inside. The alarm is up: the staff are hiding {ValeName}. Watch the service lane." : "The Enforcer is inside. Watch the service lane.");
             return "";
         }
         string Take(Op op, Order o)
         {
-            if (op.Id != OpId.Enforcer) return No("only-enforcer", "only the Enforcer takes Vale (§03)");
+            if (op.Id != OpId.Enforcer) return No("only-enforcer", $"only the Enforcer takes {ValeName} (§03)");
             if (op.CarryBody.Length > 0) return No("already-carrying", "carrying a body");
             // brief 059 K3: with his driver turned Vale is taken in his car round the back, never at the front (driver-brings-vale) and not while
             // it drives round (car-not-parked)
-            if (Vale == ValeAt.InCar && !PickupService && valeDriveStart >= 0) return No("car-not-parked", "Vale's car is driving round: take him once it parks");
-            if (Vale == ValeAt.Pickup && Driver.Turned && !Driver.Down && !OfficialOut) return No("driver-brings-vale", "the turned driver is bringing Vale round the back: take him there");
-            if (Vale != ValeAt.Pickup && !(Vale == ValeAt.InCar && PickupService)) return No("vale-not-at-car", "Vale is not at his car");
+            if (Vale == ValeAt.InCar && !PickupService && valeDriveStart >= 0) return No("car-not-parked", $"{Cap(ValeName)}'s car is driving round: take him once it parks");
+            if (Vale == ValeAt.Pickup && Driver.Turned && !Driver.Down && !OfficialOut) return No("driver-brings-vale", $"the turned driver is bringing {ValeName} round the back: take him there");
+            if (Vale != ValeAt.Pickup && !(Vale == ValeAt.InCar && PickupService)) return No("vale-not-at-car", $"{Cap(ValeName)} is not at his car");
             var vp = ValePos()!.Value;
-            if (!G.Within(op.Pos, vp, actReach)) return No("stand-beside-vale", "stand beside Vale", m: actReach / 100);
+            if (!G.Within(op.Pos, vp, actReach)) return No("stand-beside-vale", $"stand beside {ValeName}", m: actReach / 100);
             op.Walk = null;
-            if (!PickupService && !TakeInCar && CameraWatching("pickup", op.Pos)) { Fail("abduction-seen-camera", "The pickup camera reports the abduction. Vale is rescued.", () => With(Because("seen", true, Locate("camera:pickup", "saw", op.Pos), Locate("councillor", "victim")), "enforcer")); return ""; }
+            if (!PickupService && !TakeInCar && CameraWatching("pickup", op.Pos)) { Fail("abduction-seen-camera", $"The pickup camera reports the abduction. {Cap(ValeName)} is rescued.", () => With(Because("seen", true, Locate("camera:pickup", "saw", op.Pos), Locate("councillor", "victim")), "enforcer")); return ""; }
             if (!PickupService && FrontCrew(op) is string who) // the front: the crew watching the pickup reaches him first (brief 059: the lookout posted, or the car parked with its wheelman; a drawn member within his reach)
-            { Fail("rivals-reach-vale", "The rival crew is watching the pickup and reaches Vale first.", () => With(Because("beat-to-pickup", true, Locate(who, "reached", vp), Locate("councillor", "victim")), "enforcer")); return ""; }
+            { Fail("rivals-reach-vale", $"The rival crew is watching the pickup and reaches {ValeName} first.", () => With(Because("beat-to-pickup", true, Locate(who, "reached", vp), Locate("councillor", "victim")), "enforcer")); return ""; }
             RouteKind = PickupService ? "service" : "pickup"; RouteRival = RivalsArrived ? RivalsDelayMethod : "";
             AtTake = new RouteFacts { CameraBlocked = !PickupService && !PickupCameraLive() }; // engine 0.30.0 (brief 060 #8): the debrief's route lines, output only
             Vale = ValeAt.Taking;

@@ -62,10 +62,12 @@ export function qFail(p: Play, ctx: Ctx): Finding[] {
   return out;
 }
 
+/** board.in with the councillor aboard: the Enforcer's board names him ("… with Popovic."); one carrying an agent says "with the scout". */
+const VALE_ABOARD = /^The enforcer is in the car with (?!the )\S/;
 /** The log facts each debrief route id claims (sim Debrief.cs route ids → the engine log lines that back them). */
 export const CLAIMS: Record<string, { why: string; backed: (p: Play) => boolean }> = {
-  'vale-reaches-getaway-car': { why: 'board.in "with Vale"', backed: p => has(p, 'board.in', /with Vale/) },
-  'vale-taken-through-office': { why: 'enter.out with Vale', backed: p => has(p, 'enter.out', /Vale/) },
+  'vale-reaches-getaway-car': { why: 'board.in, the Enforcer with the councillor', backed: p => has(p, 'board.in', VALE_ABOARD) }, // by role, not his name (brief 089: the engine names him from the cast)
+  'vale-taken-through-office': { why: 'enter.out (always with the councillor)', backed: p => has(p, 'enter.out') },
   'vale-intercepted-outside': { why: 'take.done', backed: p => has(p, 'take.done') },
   'waitress-pulls-guard-away': { why: 'guard.at-cafe', backed: p => has(p, 'guard.at-cafe') },
   'entrance-camera-looped': { why: 'loop.on', backed: p => has(p, 'loop.on') },

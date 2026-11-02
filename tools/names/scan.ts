@@ -2,6 +2,7 @@
 //   text            contracts/missions/handover/text.json: every string but the notes, rules, sources, triggers and engine codes (SKIP_KEYS)
 //   people          sim/data/handover.{people,site,rounds}.json: every `name` (a person's name: the lookalike patterns apply)
 //   play            unity/Assets/Suborned/Runtime/Play/*.cs: the string literals (the host's fallbacks), comments left out
+//   sim             sim/Suborned.Sim/*.cs: the engine's string literals (its log, fail, refusal and debrief sentences, Keel), comments and the scenarios left out
 //   streaming-*     the same words and people as staged in unity/Assets/StreamingAssets/sim (git-ignored: checked when present)
 //   pool            the generator's name pool: `names.given` and `names.family` of contracts/people/*.cast.json, and of any contracts/people/**/*pool*.json
 //                   Pulse moves them to (read when present). The real frequency lists (contracts/people/names/<country>.json) are source data that hold
@@ -127,6 +128,10 @@ const PEOPLE = ['handover.people.json', 'handover.site.json', 'handover.rounds.j
 const PLAY = 'unity/Assets/Suborned/Runtime/Play';
 /** Play files that are checks, not the game: the proofs, the bot runs and the shot runners compare and report words, they never show them. */
 export const NOT_SHOWN = /^(Proof\w*|BotRun(\.\w+)?|FrontEnd\.Proof|\w*Shots\w*|ShotRunner)\.cs$/;
+/** The engine (brief 089, Keel): its sentences name the cast from the site's cast, never a literal (GameNames.cs); the scenarios are checks that
+ *  describe and compare runs, never shown. Lower-case codes and ids ("vale-dead", ValeAt) are not words, as in Play. */
+const SIM = 'sim/Suborned.Sim';
+export const SIM_NOT_SHOWN = /^Scenarios\w*\.cs$/;
 const SA = 'unity/Assets/StreamingAssets/sim';
 
 export const SOURCES: Source[] = [
@@ -134,6 +139,7 @@ export const SOURCES: Source[] = [
   { id: 'people', file: 'sim/data', optional: false, strings: r => PEOPLE.flatMap(f => nameStrings('people', json(r, `sim/data/${f}`)).map(s => ({ ...s, path: `${f}:${s.path}` }))) },
   { id: 'pool', file: 'contracts/people', optional: false, strings: r => poolFiles(r).flatMap(f => poolStrings('pool', f.replace('contracts/people/', ''), json(r, f))) },
   { id: 'play', file: PLAY, optional: false, strings: r => readdirSync(join(r, PLAY)).filter(f => f.endsWith('.cs') && !NOT_SHOWN.test(f)).sort().flatMap(f => csStrings('play', f, readFileSync(join(r, PLAY, f), 'utf8'))) },
+  { id: 'sim', file: SIM, optional: false, strings: r => readdirSync(join(r, SIM)).filter(f => f.endsWith('.cs') && !SIM_NOT_SHOWN.test(f)).sort().flatMap(f => csStrings('sim', f, readFileSync(join(r, SIM, f), 'utf8'))) },
   { id: 'streaming-text', file: `${SA}/text.json`, optional: true, strings: r => textStrings('streaming-text', json(r, `${SA}/text.json`)) },
   { id: 'streaming-people', file: `${SA}/handover.people.json`, optional: true, strings: r => PEOPLE.filter(f => existsSync(join(r, SA, f))).flatMap(f => nameStrings('streaming-people', json(r, `${SA}/${f}`)).map(s => ({ ...s, path: `${f}:${s.path}` }))) },
 ];

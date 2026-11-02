@@ -161,7 +161,7 @@ namespace Suborned.Sim
             var pose = MemberPose(m); if (!pose.HasValue) return pressing;
             var pos = pose.Value.pos; var to = ClearStop(m.Id, StopPoint(pos, e.Pos, g.W.EffCm)); // engine 0.36.0 (fight.spacing): the crew does not press into one spot
             var path = to == pos ? null : KitePath(m.Id, pos, to, int.MaxValue / 20);
-            if (!pressing) Note("ai.kite", $"{m.Id} sees Vale taken and presses for the Enforcer.");
+            if (!pressing) Note("ai.kite", $"{m.Id} sees {ValeName} taken and presses for the Enforcer.");
             m.Disp = new KiteDisp { P = path ?? new Path(new[] { pos, pos }), Start = Tick, Face = Facing(path?.End ?? pos, e.Pos), Press = true };
             return true;
         }

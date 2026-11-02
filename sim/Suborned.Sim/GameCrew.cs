@@ -122,12 +122,12 @@ namespace Suborned.Sim
                     CarHalt(CrewCar.Parked, ccStop, end, head);
                     if (was == CrewCar.Rounding)
                     {
-                        Note("rivals.arrive", "A rival car parks across from Vale's car. A lookout gets out to watch the official door.");
+                        Note("rivals.arrive", $"A rival car parks across from {ValeName}'s car. A lookout gets out to watch the official door.");
                         if (Lookout.Mode == CrewMode.Aboard && Up(Lookout)) Lookout.OutAt = Tick + T(Cr.OutS);
                     }
                     else
                     {
-                        Note("rivals.back", "The rival car is back. It parks across from Vale's car.");
+                        Note("rivals.back", $"The rival car is back. It parks across from {ValeName}'s car.");
                         if (CrewBrokenPre) // M059-3.5: back from a break: whoever is aboard but the wheelman gets out to post again
                         {
                             CrewBrokenPre = false; int k = 0;
@@ -182,9 +182,9 @@ namespace Suborned.Sim
             if (RivalsDrawn) // F5, drawn before 2:35: straight to the Office front
             { CarLeg(CrewCar.Front, CarRoute(S.RivalCarEntry, S.RivalCarFront), S.RivalCarFront); Note("rivals.coming", "A rival car turns in off Orbit Walk, racing for the gunfire."); return; }
             if (crewLate) // F6: the cell has Vale before they come: straight to the stand's rival stop
-            { var st = FightStand; CarLeg(CrewCar.Entering, CarRoute(S.RivalCarEntry, st.RivalStop), st.RivalStop); Note("rivals.coming", "A rival car turns in off Orbit Walk. It is after Vale too."); return; }
+            { var st = FightStand; CarLeg(CrewCar.Entering, CarRoute(S.RivalCarEntry, st.RivalStop), st.RivalStop); Note("rivals.coming", $"A rival car turns in off Orbit Walk. It is after {ValeName} too."); return; }
             CarLeg(CrewCar.Entering, CarRoute(S.RivalCarEntry, S.RivalCarDrop), S.RivalCarDrop);
-            Note("rivals.coming", "A rival car turns in off Orbit Walk. It is after Vale too.");
+            Note("rivals.coming", $"A rival car turns in off Orbit Walk. It is after {ValeName} too.");
         }
 
         void CrewNext()
@@ -251,7 +251,7 @@ namespace Suborned.Sim
             {
                 case "spot": Post(m, "spot", end, FaceFrom(end, CrewStand.CarAt)); Note("rivals.post", $"{m.Id} takes his post round our car."); break;
                 case "lookout": Post(m, "lookout", end, FaceFrom(end, S.At(S.CarPickup))); Note("rivals.post", $"{m.Id}, the lookout, watches the official door."); break;
-                case "door": Post(m, "door", end, FaceFrom(end, CarPos())); Note("rivals.at-vale", "The rival wheelman reaches Vale's car."); break;
+                case "door": Post(m, "door", end, FaceFrom(end, CarPos())); Note("rivals.at-vale", $"The rival wheelman reaches {ValeName}'s car."); break;
                 case "front": Post(m, "front", end, back); break;
                 case "word": m.Mode = CrewMode.Talking; m.ModeTick = Tick; m.Until = Tick + T(Cr.WarnS); m.Post = "word"; m.Base = FaceFrom(end, DriverPos() ?? S.Stand(S.CarDriver)); break;
                 case "exit": m.Mode = CrewMode.Gone; m.ModeTick = Tick; Note("rivals.lookout-gone", "The rival lookout walks off down Apron Road and is gone."); break;
@@ -341,7 +341,7 @@ namespace Suborned.Sim
             if (CarSt != CrewCar.Parked || FightBranch.Length > 0 || RivalsDrawn || Wheelman.Mode != CrewMode.Aboard || !Up(Wheelman)) return;
             if (Vale != ValeAt.InCar && Vale != ValeAt.Taking) return;
             CarLeg(CrewCar.Tail, CarRouteP(ccAt, S.CarStand(S.RivalCarTail)), S.RivalCarTail);
-            Note("rivals.follows", "The rival car pulls out after Vale's car.");
+            Note("rivals.follows", $"The rival car pulls out after {ValeName}'s car.");
         }
         /// <summary>K9 (the yard case): the wheelman on foot within act reach of Vale's car before the Take is done reaches Vale.</summary>
         void YardReach()
@@ -351,7 +351,7 @@ namespace Suborned.Sim
             var w = Wheelman; if (!Up(w) || w.Fight || !w.OnFoot) return;
             var car = CarPos(); var at = MemberPos(w, Tick);
             if (!G.Within(at, car, actReach)) return;
-            Fail("rivals-reach-vale", "The rival wheelman reaches Vale's car first and takes him.", () => With(Because("tail", true, Locate(w.Id, "reached", at), Locate("councillor", "victim")), ""));
+            Fail("rivals-reach-vale", $"The rival wheelman reaches {ValeName}'s car first and takes him.", () => With(Because("tail", true, Locate(w.Id, "reached", at), Locate("councillor", "victim")), ""));
         }
 
         // ---------------------------------------------------------------- the false tip (F3)

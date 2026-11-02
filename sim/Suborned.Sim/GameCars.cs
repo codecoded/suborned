@@ -122,7 +122,7 @@ namespace Suborned.Sim
                     StopOfficial(c.At); // it stops where it is (the driver-shot rule's own stop)
                     bool driverIn = !Driver.Down && valeDriveStart >= 0, valeIn = Vale == ValeAt.InCar; // at the pickup the driver stands beside it already (brief 059: until Vale is in)
                     if (valeIn) { Vale = ValeAt.Pickup; PickupService = false; } // brief 059: he gets out and stands by it
-                    if (driverIn || valeIn) Note("car.out", driverIn && valeIn ? "The driver and Vale get out of the official car." : driverIn ? "The driver gets out of the official car." : "Vale gets out of the official car.");
+                    if (driverIn || valeIn) Note("car.out", driverIn && valeIn ? $"The driver and {ValeName} get out of the official car." : driverIn ? "The driver gets out of the official car." : $"{Cap(ValeName)} gets out of the official car.");
                     return;
             }
         }

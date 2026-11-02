@@ -43,7 +43,7 @@ namespace Suborned.Sim
             walk = false; var g = op.Gun;
             if (g.W == null) return No("no-weapon", $"{name} carries no weapon (Arms)");
             if (op.Carrying.HasValue || op.CarryBody.Length > 0) return No("fire-carrying", "carrying, the operative doesn't fire");
-            if (CarriesVale(op)) return No("fire-carrying-vale", "walking Vale, the Enforcer doesn't fire: the others cover him (brief 018)");
+            if (CarriesVale(op)) return No("fire-carrying-vale", $"walking {ValeName}, the Enforcer doesn't fire: the others cover him (brief 018)");
             string t = FireTarget(op, target);
             if (t.Length == 0) return No("no-target", target == "hostiles" ? "no hostile in range with a clear line" : $"no {target} to fire at");
             if (IsOpId(t)) return No("fire-on-cell", "the cell doesn't fire on its own");

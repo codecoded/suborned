@@ -114,7 +114,7 @@ namespace Suborned.Sim
             if (FightBranch.Length == 0 || FightOverTick != INF) return;
             JoinResponse();
             if (FightBranch == "loud" && !blockersPicked && pickFrom.Length == 0) pickFrom = "police"; // brief 018 §1: the first officer to arrive takes the lane (picked after this tick's fire)
-            if (RivalReachesVale()) { Fail("rivals-reach-vale", "A rival reaches the car with nobody beside it and takes Vale out.", RivalsAtCar); return; }
+            if (RivalReachesVale()) { Fail("rivals-reach-vale", $"A rival reaches the car with nobody beside it and takes {ValeName} out.", RivalsAtCar); return; }
             var e = Enforcer; var car = Car;
             if (FightBranch == "safe" && FightSprung == INF && ((Vale == ValeAt.WithEnforcer && !e.Inside && G.Within(e.Pos, car, R.SafeAmbushCm)) || (R.FightAlways && Vale == ValeAt.Car))) Spring(false); // engine 0.33.0 (Motive M059-S1.3): or Vale already in the car
             bool anyUp = false; foreach (var h in Hostiles) if (!h.Down && h.Gun.St != "break" && h.Gun.St != "gone") anyUp = true;
@@ -137,7 +137,7 @@ namespace Suborned.Sim
                 // lying in wait, the crew fires aimNew after springing, plus the warning if Inez gave it (motive-fights.md §2.2 timing); brief 059: a
                 // member still in the car springs when he gets out (he comes in on his path)
                 foreach (var h in Hostiles) { if (CrewOf(h.Id) is CrewMember cm && !cm.Fight) continue; h.Present = true; h.Gun.Engaged = true; h.Gun.St = "alerted"; h.Gun.Until = h.Gun.NextShot = Tick + AimNewT + (FightWarned ? T(R.SafeWarnS) : 0); }
-                Note("fight.ambush", shot ? "The cell's shot gives the ambush away: the rival crew springs." : FightWarned ? "Inez's warning comes in time: the ambush is seen before it fires." : "The rival crew springs its ambush at the getaway car.");
+                Note("fight.ambush", shot ? "The cell's shot gives the ambush away: the rival crew springs." : FightWarned ? $"{Cap(InezName)}'s warning comes in time: the ambush is seen before it fires." : "The rival crew springs its ambush at the getaway car.");
                 if (!blockersPicked) pickFrom = "rivals"; // brief 018 §1: one goes for the road as the ambush springs (picked after this tick's fire)
                 if (GuardAlly)
                 {

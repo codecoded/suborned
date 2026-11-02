@@ -58,7 +58,7 @@ namespace Suborned.Sim
                 if (h.Blocker) { if (forCar.Contains(h.Id)) (quit ??= new List<string>()).Add(h.Id); continue; } // he keeps his lane (picked blocker later: he goes back to it)
                 if (forCar.Contains(h.Id)) { if (!h.Moving(Tick) && !AtGetaway(h.Pos(Tick))) ToCar(h); continue; } // stopped short (a walk round a body or a car): on again
                 forCar.Add(h.Id); ReleaseCover(h.Gun); h.Gun.St = "engage"; ToCar(h);
-                Note("rivals.for-car", $"{h.Id} sees nobody of the cell guarding the car and goes for Vale.");
+                Note("rivals.for-car", $"{h.Id} sees nobody of the cell guarding the car and goes for {ValeName}.");
             }
             if (quit != null) foreach (var id in quit) forCar.Remove(id);
         }

@@ -208,7 +208,7 @@ namespace Suborned.Sim
                     if (g.Order.Length > 0) { Note("fire.cancelled", $"{name} stops firing on {g.Order} for the covering fire."); OrderEnd(op, false); }
                     if (!g.Drawn || g.HolsterAt >= 0) { StartDraw(op); g.DrawnBy = "fire"; }
                     cfT = o.Target; cfFrom = Math.Max(Tick, g.DrawReady); cfNext = cfFrom; cfUntil = cfFrom + T(R.CoverFireS); Spent(op);
-                    Note("move.covering-fire", $"The Enforcer lays down covering fire on {o.Target} for {R.CoverFireS} s{(CarriesVale(op) ? ", one-handed, holding Vale" : "")}.");
+                    Note("move.covering-fire", $"The Enforcer lays down covering fire on {o.Target} for {R.CoverFireS} s{(CarriesVale(op) ? $", one-handed, holding {ValeName}" : "")}.");
                     return "";
                 }
             }

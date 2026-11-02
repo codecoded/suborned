@@ -3,7 +3,7 @@
 import { describe, expect, test } from 'bun:test';
 import { type Config, loadBan, makeBan, match } from './ban.ts';
 import { type Hit, check, failures, hitsIn, judge } from './check.ts';
-import { csStrings, generatorBan, nameStrings, poolStrings, textStrings } from './scan.ts';
+import { SIM_NOT_SHOWN, csStrings, generatorBan, nameStrings, poolStrings, textStrings } from './scan.ts';
 
 const BAN = { strong: { Vale: 'D', Okafor: 'B,D', Elena: 'B' }, reported: ['Reed', 'Moss'], lookalike: ['^el[aeiy]', '^v[aeiy][a-z]{1,3}$'] };
 const cfg: Pick<Config, 'allow' | 'alsoWords'> = { allow: [], alsoWords: ['Reed', 'Moss'] };
@@ -68,6 +68,11 @@ describe('names: what is read', () => {
     const cs = `// "Vale" in a comment\nvar a = "Take Vale"; /* "Okafor" */ char q = '"'; var b = $"{who} after {Name("Vale")}'s car"; var c = @"say ""Vale""";\nvar d = "a\\"b";`;
     expect(csStrings('play', 'X.cs', cs).map(x => `${x.path} ${x.text.trim()}`)).toEqual(['X.cs:2 Take Vale', 'X.cs:2 Vale', 'X.cs:2 after  \'s car', 'X.cs:2 say "Vale"', 'X.cs:3 a b']);
   });
+  test('the engine (sim): its sentences are read, its scenarios are not (Keel, brief 089)', () => {
+    expect(SIM_NOT_SHOWN.test('ScenariosHandover.cs') && SIM_NOT_SHOWN.test('Scenarios.cs')).toBe(true);
+    expect(SIM_NOT_SHOWN.test('GameSeed.cs') || SIM_NOT_SHOWN.test('Debrief.cs')).toBe(false);
+    expect(csStrings('sim', 'G.cs', 'Note("x", $"{Cap(ValeName)} is dead."); Fail("vale-dead", "Vale is dead.");').map(x => words(x.text, false, true)).flat()).toEqual(['Vale']);
+  });
 });
 
 describe('names: the expected hits cannot silently stay', () => {
@@ -102,7 +107,7 @@ describe('names: the repository', () => {
     const t0 = performance.now(), r = check();
     const lines = [...r.fresh.map(h => `new: ${h.source} ${h.path} "${h.word}" (${h.name}, ${h.why})`), ...r.stale.map(e => `gone, take it off expected.hits: ${e.source} ${e.name}`), ...r.unused.map(i => `ignore covers nothing: ${i.source} ${i.at}`)];
     expect(lines).toEqual([]);
-    for (const s of ['text', 'people', 'pool', 'play']) expect(r.sources).toContain(s);
+    for (const s of ['text', 'people', 'pool', 'play', 'sim']) expect(r.sources).toContain(s);
     expect(r.generator).toBeNull();
     expect(performance.now() - t0).toBeLessThan(10_000);
   });

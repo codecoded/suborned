@@ -433,7 +433,7 @@ namespace Suborned.Sim
                     civSees++; if (firstCiv.Length == 0) firstCiv = Who(c);
                     if (!violenceBy.Add(t + "/" + c.Id)) continue;
                     ViolenceSeen(t, c, name);
-                    if (c == Inez && !InezWitnessedShooting) { InezWitnessedShooting = true; Note("witness.waitress", $"Inez sees the {t} shot at near her café. She is now a witness."); }
+                    if (c == Inez && !InezWitnessedShooting) { InezWitnessedShooting = true; Note("witness.waitress", $"{Cap(InezName)} sees the {t} shot at near her café. She is now a witness."); }
                     else if (c != Inez) Note("witness.crowd", $"{c.Name} sees the {t} shot at.");
                 }
             if (CivilianOf(t) is Person shotAt) CivilianShotAt(shotAt, op);
@@ -450,11 +450,11 @@ namespace Suborned.Sim
         // who: the reporter's id for the fail cause (FailCause.cs; "witness": the first civilian who saw it, "heard": nobody saw it)
         (int delay, string text, string who) Reporter(string t, Pt shooter, bool civSees)
         {
-            if (IsCivilian(t)) return (R.RespCivilianS, t == "waitress" ? "Inez is shot at the café. Witnesses call security." : t == "driver" ? "The official driver is shot at. Security rushes to the pickup." : t == "councillor" ? "Shots at the councillor are reported." : "A shooting in the street is reported.", "witness");
+            if (IsCivilian(t)) return (R.RespCivilianS, t == "waitress" ? $"{Cap(InezName)} is shot at the café. Witnesses call security." : t == "driver" ? "The official driver is shot at. Security rushes to the pickup." : t == "councillor" ? "Shots at the councillor are reported." : "A shooting in the street is reported.", "witness");
             if (t == "patrol") return (R.RespSeenS, "Gunfire at the patrol is reported.", "patrol");
             if (IsCrewId(t) && !IsFightHostile(t)) return CameraWatching("pickup", shooter) ? (R.RespSeenS, "The firefight with the rivals is reported.", "camera:pickup") : (R.RespRivalsUnseenS, "The firefight with the rivals is reported.", "heard"); // brief 059: a member of the crew on the street
             if (SecIndex(t) >= 0 || IsFightHostile(t) || UnitOf(t) != null) return (-1, "", "");
-            if (civSees) return (R.RespWitnessS, InezWitnessedShooting ? "Inez reports the shooting." : "A witness reports the shooting.", "witness");
+            if (civSees) return (R.RespWitnessS, InezWitnessedShooting ? $"{Cap(InezName)} reports the shooting." : "A witness reports the shooting.", "witness");
             bool guard = t == "guard" ? GuardWatching(shooter) : false;
             if (guard) return (R.RespSeenS, "The guard calls in the shooting.", "guard");
             if (PatrolWatching(shooter)) return (R.RespSeenS, "The patrol reports gunfire.", "patrol");
@@ -537,7 +537,7 @@ namespace Suborned.Sim
             if (!down) return;
             if (op.Id == OpId.Enforcer && Vale != ValeAt.Car && !Range) // brief 029: in the range the Enforcer is any operative; brief 018 §2: once Vale is in the car, the Enforcer is any operative
             {
-                if (FightBranch == "safe" && Vale == ValeAt.WithEnforcer) Fail("rivals-reach-vale", "The Enforcer is down and the rival crew takes Vale off him.", () => ShotDown("downed-enforcer", "enforcer")); // the rivals' goal (Motive addendum Q7)
+                if (FightBranch == "safe" && Vale == ValeAt.WithEnforcer) Fail("rivals-reach-vale", $"The Enforcer is down and the rival crew takes {ValeName} off him.", () => ShotDown("downed-enforcer", "enforcer")); // the rivals' goal (Motive addendum Q7)
                 else Fail("enforcer-down", "The Enforcer is down.", () => ShotDown("shot", "enforcer"));
                 return;
             }
@@ -573,7 +573,7 @@ namespace Suborned.Sim
             if (p == ValeP)
             {
                 Vale = ValeAt.Dead; ValeP.Down = true;
-                Fail("vale-dead", "Vale is dead. The live capture objective has failed.", () => ShotDown("shot", "councillor"));
+                Fail("vale-dead", $"{Cap(ValeName)} is dead. The live capture objective has failed.", () => ShotDown("shot", "councillor"));
                 return;
             }
             if (p == Driver) StopOfficial(CarPos());
@@ -583,7 +583,7 @@ namespace Suborned.Sim
             if (fell.HasValue) ShotBody(p, fell.Value, resolving?.T ?? p.Id); // tuning.md §9.2 gap 1: a dead body where they fell
             Chain.Add(Who(p) + "-shot");
             Note("civilian.down", $"{p.Name} ({Who(p)}) is down.");
-            if (p == Driver && Vale != ValeAt.Office) Fail("driver-shot", "The driver is shot during handover. Security pulls Vale away.", () => ShotDown("shot", "driver"));
+            if (p == Driver && Vale != ValeAt.Office) Fail("driver-shot", $"The driver is shot during handover. Security pulls {ValeName} away.", () => ShotDown("shot", "driver"));
         }
 
         // ---------------------------------------------------------------- what the city sees
@@ -845,7 +845,7 @@ namespace Suborned.Sim
             var g = op.Gun;
             if (g.W == null) return No("no-weapon", $"{o.Op} carries no weapon (Arms)");
             if (op.Carrying.HasValue || op.CarryBody.Length > 0) return No("fire-carrying", "carrying, the operative doesn't fire");
-            if (CarriesVale(op)) return No("fire-carrying-vale", "walking Vale, the Enforcer doesn't fire: the others cover him (brief 018)");
+            if (CarriesVale(op)) return No("fire-carrying-vale", $"walking {ValeName}, the Enforcer doesn't fire: the others cover him (brief 018)");
             string t = FireTarget(op, o.Target);
             if (t.Length == 0) return No("no-target", o.Target == "hostiles" ? "no hostile in range with a clear line" : $"no {o.Target} to fire at");
             if (IsOpId(t)) return No("fire-on-cell", "the cell doesn't fire on its own");
@@ -907,7 +907,7 @@ namespace Suborned.Sim
 
         string Carry(Op op, Order o)
         {
-            if (op.Id == OpId.Enforcer && (Vale == ValeAt.WithEnforcer || Vale == ValeAt.Taking)) return No("carry-vale", "the Enforcer is carrying Vale");
+            if (op.Id == OpId.Enforcer && (Vale == ValeAt.WithEnforcer || Vale == ValeAt.Taking)) return No("carry-vale", $"the Enforcer is carrying {ValeName}");
             if (op.Carrying.HasValue || op.CarryBody.Length > 0) return No("already-carrying", "already carrying");
             if (!IsOpId(o.Target)) return TakedownPerson(o.Target) != null ? CarryBody(op, o) : No("carry-names-downed", "carry names a downed operative or a body"); // engine 0.33.0: a member of the crew too (M059-3.1)
             var other = OpOf(Sim.Op.Parse(o.Target));
@@ -947,7 +947,7 @@ namespace Suborned.Sim
             if (o.Do != "draw" && o.Do != "fire" && o.Do != "volley") { c.Why = "no-change"; return c; }
             var op = OpOf(Sim.Op.Parse(o.Op)); var g = op.Gun;
             if (g.W == null) { c.Refused = $"{o.Op} carries no weapon (Arms)"; return c; }
-            if ((o.Do == "fire" || o.Do == "volley") && CarriesVale(op)) { c.Refused = "walking Vale, the Enforcer doesn't fire"; return c; }
+            if ((o.Do == "fire" || o.Do == "volley") && CarriesVale(op)) { c.Refused = $"walking {ValeName}, the Enforcer doesn't fire"; return c; }
             if (o.Do == "fire" || o.Do == "volley") { var ft = FireTarget(op, o.Target); var fp = ft.Length > 0 && !IsOpId(ft) ? PersonById(ft) : null; c.Fails = ft == "car:getaway" ? "getaway-lost" : ft == "car:official" && (Vale == ValeAt.Pickup || Vale == ValeAt.Taking || Vale == ValeAt.InCar) ? "vale-dead" : fp == null ? "" : fp == ValeP ? "vale-dead" : fp == Driver && Vale != ValeAt.Office ? "driver-shot" : ""; } // §9.3: always the hold; §10.7: the getaway car, or the official car with Vale at it
             if (FightOn || FightBranch.Length > 0) { c.Why = "fight-on"; return c; }
             if (loudNow) { c.Why = "already-loud"; return c; }
@@ -1032,7 +1032,7 @@ namespace Suborned.Sim
         string RunRefusal(Op op)
         {
             if (op.Down) return No("agent-down", $"the {Sim.Op.Name(op.Id)} is down");
-            if (op.Id == OpId.Enforcer && (Vale == ValeAt.WithEnforcer || Vale == ValeAt.Taking)) return No("run-carrying-vale", "carrying Vale, the Enforcer walks: a man being taken walks");
+            if (op.Id == OpId.Enforcer && (Vale == ValeAt.WithEnforcer || Vale == ValeAt.Taking)) return No("run-carrying-vale", $"carrying {ValeName}, the Enforcer walks: a man being taken walks");
             if (op.Carrying.HasValue || op.CarryBody.Length > 0) return No("run-carrying-downed", "carrying, the operative walks");
             if (op.Id == OpId.Tech && Tethered) return No("run-tethered", "the Tech is tethered to the cabinet while the loop holds");
             if (op.Busy != null) return No("agent-busy", $"{Sim.Op.Name(op.Id)} is busy until {op.BusyEnd}", tick: op.BusyEnd);

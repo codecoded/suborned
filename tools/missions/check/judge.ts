@@ -72,7 +72,7 @@ export type Digest = Pick<Play, 'outcome' | 'fail' | 'tick' | 'cash' | 'trail' |
    *  the join point it was walking to (its `ai.join`); a base script's only */
   held?: { tick: number; how: string; who: string; join?: string }[];
   /** brief 059 (MC-13): the script's Go orders the engine refused, with the refusal code (car-held: a held car), and when Vale was aboard
-   *  (board.in "… with Vale"); a base script's only */
+   *  (board.in "The enforcer is in the car with <his name>."); a base script's only */
   goRefused?: { tick: number; code: string }[]; valeIn?: number;
 };
 /** Trail in total: the mission's and what the debrief carries into the campaign (brief 013). */
@@ -93,7 +93,7 @@ export const digest = (p: Play, scriptSha: string, keepMarks = true): Digest => 
     if (l.code.startsWith('car.held.')) { const who = l.text.split(' ')[0]!, join = joins.get(who); held.push({ tick: l.tick, how: l.code.slice('car.held.'.length), who, ...(join ? { join } : {}) }); }
   }
   const goRefused = keepMarks ? p.orders.filter(o => o.order.do === 'go' && !o.ok).map(o => ({ tick: o.order.tick, code: o.code ?? 'refused' })) : [];
-  const valeIn = keepMarks ? p.log.find(l => l.code === 'board.in' && / with Vale\.$/.test(l.text))?.tick : undefined;
+  const valeIn = keepMarks ? p.log.find(l => l.code === 'board.in' && /^The enforcer is in the car with (?!the )\S/.test(l.text))?.tick : undefined; // by role, never his name (brief 089: the engine names him from the cast)
   const free = blockerOut(p.log), nm = p.debrief?.nextMission, left = Object.fromEntries((nm?.lines ?? []).filter(l => l.line === 'left-behind').map(l => [l.who, l.detail.startsWith('walked') ? 'walked' : l.detail.replace(/^captured \((\w+)\)$/, 'captured $1')])), tdFrom = p.log.find(l => l.code === 'takedown.starts')?.tick, tdTo = p.log.filter(l => TD_END.test(l.code)).at(-1)?.tick;
   return {
     outcome: p.outcome, fail: p.fail, tick: p.tick, cash: p.cash, trail: p.trail, alert: p.alert, gunfire: p.gunfire, startHash: p.startHash, finalHash: p.finalHash, replayIdentical: p.replayIdentical,

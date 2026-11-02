@@ -18,7 +18,7 @@ namespace Suborned.Sim
     }
     public sealed class CastRole
     {
-        public string Role = "", Id = "", Name = "", Temperament = "", Need = "", Secret = "", Lover = ""; // Secret, Lover: from the people file (motive-lovers.md)
+        public string Role = "", Id = "", Name = "", Called = "", Temperament = "", Need = "", Secret = "", Lover = ""; // Secret, Lover: from the people file (motive-lovers.md)
     }
 
     /// <summary>Brief 059 K6 (site getaway.stands): a place the getaway car can stand: its car place, heading, exit lane (brief 018), the fight's
@@ -391,8 +391,8 @@ namespace Suborned.Sim
             var cast = r["cast"]; cast.Only("waitress", "driver", "guard", "councillor", "from", "sha256", "startsAt", "fixture", "src");
             foreach (var role in new[] { "waitress", "driver", "guard", "councillor" })
             {
-                var v = cast[role]; v.Only("id", "name", "temperament", "need", "secret", "lover");
-                Cast.Add(new CastRole { Role = role, Id = v["id"].Str(), Name = v["name"].Str(), Temperament = v["temperament"].Str(), Need = v["need"].Str(), Secret = v.Opt("secret")?.Str() ?? "", Lover = v.Opt("lover")?.Str() ?? "" });
+                var v = cast[role]; v.Only("id", "name", "called", "temperament", "need", "secret", "lover"); // called: brief 089, optional (GameNames.cs)
+                Cast.Add(new CastRole { Role = role, Id = v["id"].Str(), Name = v["name"].Str(), Called = v.Opt("called")?.Str() ?? "", Temperament = v["temperament"].Str(), Need = v["need"].Str(), Secret = v.Opt("secret")?.Str() ?? "", Lover = v.Opt("lover")?.Str() ?? "" });
             }
         }
 

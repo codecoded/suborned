@@ -98,14 +98,14 @@ namespace Suborned.Sim
             if (CloseWarnedAt < 0 && Tick >= T(overS) - T(R.CloseWarnS))
             {
                 CloseWarnedAt = Tick; int left = Math.Max(0, T(overS) - Tick) / Hz;
-                Note("close.warning", $"Vale's absence is noticed. The district closes in {left} s.");
+                Note("close.warning", $"{Cap(ValeName)}'s absence is noticed. The district closes in {left} s.");
             }
             if (Tick < T(overS)) return;
             string why; Blamed? who = null;
             if (Vale == ValeAt.WithEnforcer) { why = "on-foot"; who = Locate(NearestHostileToVale(), "closed-in"); }
             else if (!CarHasDriver()) { why = "no-driver"; string by = ""; int last = -1; foreach (var o in Ops) if (o.Gun.Down && o.Gun.ShotByTick > last) { last = o.Gun.ShotByTick; by = o.Gun.ShotBy; } who = Locate(by.Length > 0 ? by : "getaway-car", "closed-in"); }
             else { var hs = CarHolders(); why = hs.Count > 0 ? "car-held" : "no-go"; who = Locate(hs.Count > 0 ? hs[0] : "getaway-car", "closed-in"); }
-            string words = why == "no-driver" ? "nobody left who can drive" : why == "car-held" ? "the car held" : why == "on-foot" ? "Vale still on foot" : "the car never told to go";
+            string words = why == "no-driver" ? "nobody left who can drive" : why == "car-held" ? "the car held" : why == "on-foot" ? $"{ValeName} still on foot" : "the car never told to go";
             Fail("closed-in", $"The district closes on the cell: {words}.", () => Because(why, true, who));
         }
         string NearestHostileToVale()
