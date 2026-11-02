@@ -1,9 +1,11 @@
 // The mission's words on their own (brief 078): a change to text.json reaches the player with no engine build. contracts/missions/handover/text.json against its schema (the same check tools/sim/unity.ts makes), text.test.ts,
 // the words the proofs compare (tools/game/proofwords.json), then the same bytes into unity/Assets/StreamingAssets/sim/text.json. Host content, never an engine input: engine.json does not hash it.
+// Then the name check (brief 089, tools/names): no name language models favour in the words, the people or the Play fallbacks, before the copy.
 // usage: bun tools/game/words.ts    (the batch's `words` step; exit 1 on any failure)
 import { mkdirSync, readdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { join, resolve } from 'node:path';
 import { TextFile } from '../../contracts/missions/handover/text.schema';
+import { check as checkNames, failures as nameFailures } from '../names/check';
 
 export const ROOT = resolve(import.meta.dir, '../..');
 const TEXT = join(ROOT, 'contracts/missions/handover/text.json'), PLAY = join(ROOT, 'unity/Assets/Suborned/Runtime/Play'), PINS = join(ROOT, 'tools/game/proofwords.json');
@@ -40,6 +42,8 @@ if (import.meta.main) {
   if (gaps.length) { console.error(gaps.join('\n')); process.exit(1); }
   const test = Bun.spawnSync([process.execPath, 'test', 'contracts/missions/handover/text.test.ts'], { cwd: ROOT, stdout: 'pipe', stderr: 'pipe' });
   if (test.exitCode !== 0) { console.error(test.stderr.toString().split('\n').slice(-30).join('\n')); process.exit(1); }
+  const names = nameFailures(checkNames(ROOT, undefined, ['text', 'people', 'pool', 'play'])); // the committed sources: the StreamingAssets copy is about to be replaced
+  if (names.length) { console.error(`names (bun tools/names/check.ts):\n${names.join('\n')}`); process.exit(1); }
   const dir = join(ROOT, 'unity/Assets/StreamingAssets/sim'); mkdirSync(dir, { recursive: true }); writeFileSync(join(dir, 'text.json'), body);
-  console.log(`words: schema, text.test.ts and the proofs' words pass; text.json into StreamingAssets/sim in ${((performance.now() - t0) / 1000).toFixed(1)} s`);
+  console.log(`words: schema, text.test.ts, the proofs' words and the name check pass; text.json into StreamingAssets/sim in ${((performance.now() - t0) / 1000).toFixed(1)} s`);
 }
