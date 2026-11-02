@@ -4,7 +4,7 @@
 
 **Deadline:** 3 November 2026, 23:59 GMT (4 November, 06:59 Bangkok).
 
-**Status:** preparation in progress; the playable-link gate and video are not yet certified.
+**Status:** preparation in progress; the playable-link gate is not yet certified. The labelled evidence walkthrough is hosted unlisted on YouTube.
 
 The Suborned is a single-player game of real-time squad tactics and social infiltration in a bright retro-future city. The Handover demo asks the player to take Councillor Popovic alive using a four-person cell. AI content is generated during development; no model runs during play.
 
@@ -12,7 +12,7 @@ The Suborned is a single-player game of real-time squad tactics and social infil
 
 - **Playable game:** https://codecoded.itch.io/the-suborned
 - **Pipeline source:** https://github.com/codecoded/suborned/tree/assignment-07
-- **Pipeline video:** pending; do not submit without replacing this with a publicly accessible video URL.
+- **Pipeline evidence walkthrough (Unlisted):** https://youtu.be/Iyf6Bg8n-Xo (signed-out playback verified; historical AI generation and executed offline export replay are labelled).
 - **One-page audit:** [audit.pdf](audit.pdf), with [HTML source](audit.html).
 - **Original instructions:** [assignment-brief.pdf](assignment-brief.pdf).
 
@@ -56,7 +56,7 @@ The four selected downed options were ring-refined and desaturated to 18% after 
 
 The author-machine artifact is `out/scratch/a07/video/TheSuborned-A07-pipeline-walkthrough.mp4` (41 seconds). Its [receipt](evidence/video.json) records the SHA-256. It shows a historical generated sheet and actual cost receipts, stdout from a newly executed deterministic export, the production sprite set, the automatic import/build hooks and live gameplay frames from 0.2.232.
 
-Every frame labels this as an **offline replay of historical generation**. It is an annotated evidence walkthrough, not a screen recording of a fresh model call or a new Unity build. It makes no claim about the two-minute first-play gate. Hosting and the public URL remain pending. If the course requires live model execution on video, this walkthrough is supporting evidence and a new explicitly approved, budgeted generation recording is still needed.
+Every frame labels this as an **offline replay of historical generation**. It is an annotated evidence walkthrough, not a screen recording of a fresh model call or a new Unity build. It makes no claim about the two-minute first-play gate. Hosted on YouTube as **Unlisted**: https://youtu.be/Iyf6Bg8n-Xo. Playback was verified in an incognito session showing the Sign in button and Unlisted label. If the course requires live model execution on video, this walkthrough is supporting evidence and a new explicitly approved, budgeted generation recording is still needed.
 
 To reproduce on the author machine (retained production sheets, captured gameplay frames, Pillow/OpenCV/NumPy and ffmpeg required):
 
@@ -72,8 +72,10 @@ python3 courses/a07-complete-ai-dev-pipeline/walkthrough.py
 - [ ] Confirm marker's supported platform or provide a compatible build.
 - [ ] Choose the exact submission build and upload it; page, download and evidence must agree.
 - [ ] Record a fresh, timed visit → download → launch → control of the game on another machine, with no development tools or command-line workaround. Pass only at ≤120 seconds.
-- [ ] Record and publish a pipeline video: show the historical model receipts, run the deterministic exporter, show the generated files, automatic Unity import/build hook, and state changes in the playable game. Label recorded model-output replay clearly. If a fresh live generation is required, approve a separate budgeted run first.
-- [ ] Insert the public video URL; check repository access while signed out.
+- [x] Publish the labelled evidence walkthrough: historical generation, newly executed deterministic exporter, production sprites, automatic Unity import/build hook source, and recorded gameplay state changes. It does not record a fresh model call or a new Unity build.
+- [ ] If the marker requires fresh live generation on video, approve a separate budgeted recording; the offline walkthrough is supporting evidence in that case.
+- [x] Insert the unlisted video URL and verify signed-out playback.
+- [ ] Check repository access while signed out.
 - [ ] Review the one-page audit against the final video and public build, then submit.
 
 There is no claim that these remaining gates have passed. [Submission status](submission.json) keeps the missing links and checks explicit.
