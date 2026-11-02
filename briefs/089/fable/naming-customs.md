@@ -1,12 +1,90 @@
-# 089 · Three naming customs for Sky to pick from
+# 089 · Names for Sky: normal names (D), or three customs (A–C)
 
-Fable, 2026-11-02. Nothing has been renamed. Every family name below came out of a rule run on real name lists. I then chose the named cast from that output, so their fit to each person is my judgement. The ordinary people are the generator's raw draws, with no choosing.
+Fable, 2026-11-02. Nothing has been renamed. Every name below came out of a rule run on real name lists, with no model choosing. Where I chose among draws, I say so.
 
-**My pick: A, Card names.** It's the one idea you can say in a sentence, and it could only belong to this city. It gives the shortest names on screen, and it says something quietly unpleasant about the place.
+**My pick: D, normal names.** It's what you asked for, and it's what GTA and its peers do. A–C stay below in case you want the city to have a custom after all. Of those, A is still my choice.
 
-Read each pair of lines aloud. Your ear decides this, and mine can't: it's the ear that picked Okafor.
+Read the lines aloud. Your ear decides this, and mine can't: it's the ear that picked Okafor.
 
 ---
+
+## D. Normal names, the way GTA does it
+
+**What GTA and its peers do** (only what I could check):
+- **GTA:** the leads have real, plain names that fit where they come from. Niko Bellic is an Eastern European immigrant who grew up in the Yugoslav wars. Carl "CJ" Johnson is from Los Santos. GTA V has Michael De Santa (born Townley, hiding under a new name), Franklin Clinton and Trevor Philips.
+- **Flavour comes from nicknames,** not invented names: CJ, and Big Smoke, whose real name is Melvin Harris.
+- **The satire lives in brands and places:** Sprunk for Sprite, Cluckin' Bell for KFC, Los Santos for Los Angeles.
+- **Pedestrians:** I couldn't find how GTA names them.
+- **Watch Dogs: Legion:** every Londoner is generated. Its director says a person's background sets the name they show. I couldn't confirm it draws from real census lists.
+- **Desperados III:** plain names that fit each person, plus one nickname: John Cooper, Arthur "Doc" McCoy, Hector Mendoza, Kate O'Hara, Isabelle Moreau.
+
+**The principle:** real, plausible names that fit a person's origin, age and class. Flavour comes from nicknames and how people are introduced, and the satire lives in brands and places.
+
+**The custom for us.** Real given and family names, drawn by rule from real name-frequency lists for each origin, and matched to the person's origin and sex. Age is also wanted, but the trial lists can't do it yet.
+- The top 3 of each national list are skipped, so the city isn't all Smiths.
+- Ban-list names are skipped.
+- No model chooses: a person's draw comes from their id, as it does now.
+
+Trial today: 16 origins, 1,330 family names, about 1,400 given names.
+
+**Cast.** Each person gets six draws. Draw 1 is used unless it fails: I skipped draws only for a famous bearer, a poor fit to the portrait, or a clash. Five of the nine below are chosen by hand.
+- **Councillor Popovic** (Vale), Uros Popovic. Hand: draw 4. I skipped Lungu (Zambia's late president, and there's a real "Councillor Lungu"), Morales (Evo Morales) and Gallagher (Oasis). The portrait is a grey European official.
+- **Andreea Ursu** (Inez), "Miss Ursu". Hand: draw 5. The portrait has a brown bob and glasses. I skipped Mendoza, because Desperados III already has Hector Mendoza.
+- **Arthur Reilly** (the guard). Hand: draw 5. I skipped Ladapo, because Joseph Ladapo is Florida's Surgeon General. "Reilly" reads at once.
+- **Aleksander Lukac** (the driver). Draw 1. Fits the portrait, a light-skinned man with a headband.
+- **Nora Castillo** (Milena), shown as "Nora, inside". Hand: draw 4. Draws 1 and 2, Croia and Ajda, don't read at first sight.
+
+**Heard**
+> Andreea: Who says? Did Reilly say something? Who else has he told?
+> Scout: Bureau loan, behind, could be cleared. Reilly, Office door, could be used.
+> Fixer: It's time, Miss Ursu. Call Reilly across now. You'll do fine.
+> Fixer: Fair enough, Lukac. A couple of minutes. We'll be at the bay.
+> Goal: Take Councillor Popovic alive to the getaway car.
+
+**Eight people, raw:** Hassan Dahan · Maryam Domingo · Lesedi Zuma · Marjorie Santana · Muhammad Sampath · Irina Shkreli · Aron Karklins · Charlie Ramirez
+
+**The cell: just normal names.** I chose each origin from the portrait, then took draw 1, except the Scout.
+- **Scout · Emily Salazar** (Latin American). Hand: draw 2, because draw 1 was another Nora.
+- **Fixer · Ayumi Murata** (East Asian). Murata is also an electronics maker, a minor clash.
+- **Tech · Mohammed Duru** (West African). The rule mixed a Muslim given name with an Igbo surname. It's possible, but the fix below is better.
+- **Enforcer · Artem Grabowski** (Slavic).
+
+> Roster: Fixer · Ayumi Murata
+> Scout: Murata, Reilly's on the Office door.
+
+**Cost compared with A–C.** Lowest of the four: no new lore and no new word.
+- Better pools, taken from public frequency tables.
+- A sex tag on names and on people.
+- An age band.
+- One rule: given and family names come from the same country, not just the same region.
+
+The generator already draws a given and a family name with an origin.
+
+**Weak spots**
+- **Thin lists:** the trial given names are top-10 lists of recent babies, so the young sound modern and the old do too. Pulse needs deeper tables by year, such as [England and Wales baby names by year, 1996 on, with top-100 lists from 1904](https://www.ons.gov.uk/peoplepopulationandcommunity/birthsdeathsandmarriages/livebirths/bulletins/babynamesenglandandwales/previousReleases). For surnames there's the [US 2010 census table](https://www.census.gov/data/developers/data-sets/surnames.2000.html), about 162,000 names with shares by race and Hispanic origin, plus national tables for other countries.
+- **Messy origins in the trial:** Lesedi and Charlie are used for both sexes, and table words like "Portuguese" got in until I filtered them.
+- **Normal names can still be famous names.** The check has to stay.
+
+**Sources**
+- [Carl "CJ" Johnson, Wikipedia](https://www.wikipedia.org/wiki/Carl_%22CJ%22_Johnson)
+- [Niko Bellic background](https://www.gfinityesports.com/article/gta-protagonists-ranked-by-how-evil-they-are-from-niko-bellic-to-trevor-philips)
+- [GTA V characters](https://www.techradar.com/how-to/gta-5-characters-a-breakdown-of-whos-who-in-los-santos)
+- [Michael De Santa, also known as Townley](https://muc.fandom.com/wiki/Michael_De_Santa)
+- [Big Smoke is Melvin Harris](https://www.grandtheftwiki.com/Characters_by_Surname_(E-G))
+- [GTA fake brands](https://www.gamesradar.com/12-most-famous-fake-brands-video-games)
+- [Sprunk and Cluckin' Bell](https://www.marketingdive.com/news/gta-v-parodies-real-life-brands-including-kfc-sprite/181822/)
+- [Watch Dogs: Legion, how NPCs are made](https://gamingbolt.com/watch-dogs-legion-creative-director-reveals-how-they-made-all-npcs-playable)
+- [Watch Dogs: Legion, Census](https://news.ubisoft.com/en-us/article/4po3S9Pwp1YcgBmGPmQxAh/watch-dogs-legion-the-tools-that-built-london)
+- [Desperados III, Wikipedia](https://en.wikipedia.org/wiki/Desperados_III)
+- [Desperados III credits](https://www.mobygames.com/game/windows/desperados-iii/credits)
+
+**Checks.** All 21 D names passed the ban list. Web checks turned up no single famous bearer for Popovic or Grabowski. Lukac has several bearers, but none who owns the name. Reilly, Ursu, Murata and Castillo had only a quick look, so treat them as lightly checked.
+
+---
+
+# The three customs (A–C), for comparison
+
+A–C each invent a custom. My pick among them is A, Card names: it's the one idea you can say in a sentence, and it says something quietly unpleasant about the place. For Sky's ask, D comes first.
 
 ## A. Card names
 
@@ -129,18 +207,18 @@ Today: 112 family names, about 138,000 full names.
 
 ## At a glance
 
-| | A Card | B Joined | C Trade |
-|---|---|---|---|
-| Idea in a line | the form cut it | a marriage | your ancestor's job |
-| Typical length | 5 letters | 7 | 9 |
-| Mixed city shows in surname | yes | yes, twice | no |
-| Grows to thousands | yes, after one read-through | yes | barely |
-| Main risk | looks like typos | looks generated | looks cute |
+| | D Normal | A Card | B Joined | C Trade |
+|---|---|---|---|---|
+| Idea in a line | real names | the form cut it | a marriage | your ancestor's job |
+| Typical length | 6 letters | 5 | 7 | 9 |
+| Mixed city shows in surname | yes | yes | yes, twice | no |
+| Grows to thousands | yes, with better lists | yes, after one read-through | yes | barely |
+| Main risk | a famous bearer | looks like typos | looks generated | looks cute |
 
 ## What I need from you
 
-1. **Which custom?** Mixing them weakens all three, so I'd take one.
-2. **Does Inez stay?** Inez is on no list I found. She fits A as she is, and "Ines" is already in the pool. You said all names, so the samples replace her. Keeping her is one line of data.
+1. **D, or a custom?** I'd take D. If you want a custom, take one, because mixing them weakens all three.
+2. **Does Inez stay?** Inez is on no list I found, and she's a perfectly normal name, which suits D best of all. You said all names, so the samples replace her. Keeping her is one line of data.
 3. **Should family share a surname?** Today a shared surname means nothing (see below). With every custom, a family could carry one name, so a player who notices can trace people. It's a small design change, so it needs your word first.
 
 ---
