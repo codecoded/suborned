@@ -25,7 +25,7 @@ bun install --frozen-lockfile
 bun courses/a07-complete-ai-dev-pipeline/people-run.ts verify
 ```
 
-The check uses tracked files only. It needs no model, database, Docker, Unity, paid credentials or retained game build. It checks the accepted AI run, promoted cast, cost arithmetic, critic-gating evidence and the production source hashes. It does not certify the playable-link gate.
+The check was run successfully in a fresh source-only checkout of commit `990c0bf9`; see [validation](evidence/source-validation.json). It uses tracked files only. It needs no model, database, Docker, Unity, paid credentials or retained game build. It checks the accepted AI run, promoted cast, cost arithmetic, critic-gating evidence and the production source hashes. It does not certify the playable-link gate.
 
 | Requirement | Concrete evidence |
 | --- | --- |

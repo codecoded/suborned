@@ -97,6 +97,10 @@
     "unlisted": true,
     "duration": 95.121,
     "readyState": 4,
-    "playing": true
+    "playing": true,
+    "selected_quality": "hd2160",
+    "decoded_width": 3840,
+    "decoded_height": 2160,
+    "current_time_seconds": 21.844293
   }
 }

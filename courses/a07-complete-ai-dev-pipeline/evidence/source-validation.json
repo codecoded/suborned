@@ -1,0 +1,12 @@
+{
+  "source_commit": "990c0bf9",
+  "environment": "Fresh local git clone of assignment-07; tracked files only; no retained out/ build or media",
+  "commands": [
+    "bun install --frozen-lockfile",
+    "bun courses/a07-complete-ai-dev-pipeline/people-run.ts verify"
+  ],
+  "exit_code": 0,
+  "result": "Archived r016 replay, promoted cast, recorded cost arithmetic, critic gate and 12 production source hashes passed. No model, database, Docker or Unity required.",
+  "typecheck": "bun run typecheck passed in working checkout",
+  "limits": "Not a fresh model generation, a public-download verification or a two-minute first-play certification"
+}
