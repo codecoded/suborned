@@ -1,0 +1,582 @@
+{
+ "picked": {
+  "scene01_milena": {
+   "seed": 51,
+   "word_error": 0.0,
+   "heard": "Have you eaten? You've looked at that office door all shift.",
+   "wav": "scene01_milena_clone_s51.wav"
+  },
+  "scene02_inez": {
+   "seed": 51,
+   "word_error": 0.0,
+   "heard": "Eat? With the bureau after me? Waiting tables I can't keep up.",
+   "wav": "scene02_inez_clone_s51.wav"
+  },
+  "scene03_milena": {
+   "seed": 51,
+   "word_error": 0.0,
+   "heard": "I owe them too. We'll be buried with those cards half stamped.",
+   "wav": "scene03_milena_clone_s51.wav"
+  },
+  "scene04_inez": {
+   "seed": 51,
+   "word_error": 0.0,
+   "heard": "Then bury me somewhere I can sit down.",
+   "wav": "scene04_inez_clone_s51.wav"
+  },
+  "scene05_milena": {
+   "seed": 51,
+   "word_error": 0.0,
+   "heard": "You'd get up to look at that door. Is it so handsome?",
+   "wav": "scene05_milena_clone_s51.wav"
+  },
+  "scene06_inez": {
+   "seed": 51,
+   "word_error": 0.0,
+   "heard": "Who says? Did Arthur say something? Who else has he told?",
+   "wav": "scene06_inez_clone_s51.wav"
+  },
+  "scene07_milena": {
+   "seed": 51,
+   "word_error": 0.0,
+   "heard": "He said nothing, you goose. You just did.",
+   "wav": "scene07_milena_clone_s51.wav"
+  },
+  "scene08_inez": {
+   "seed": 51,
+   "word_error": 0.0,
+   "heard": "Yes, I'm seeing him. If the office hears, it costs us both...",
+   "wav": "scene08_inez_clone_s51.wav"
+  },
+  "scene09_milena": {
+   "seed": 51,
+   "word_error": 0.0,
+   "heard": "Not from me, they won't. Stop looking though. You can't afford it.",
+   "wav": "scene09_milena_clone_s51.wav"
+  },
+  "scene10_larthi": {
+   "seed": 51,
+   "word_error": 0.0,
+   "heard": "Bureau loan behind could be cleared. Arthur, office door could be used.",
+   "wav": "scene10_larthi_clone_s51.wav"
+  },
+  "name01_hasti": {
+   "seed": 52,
+   "word_error": 0.0,
+   "heard": "That's the rest paid. You owe the Bureau nothing, Miss Nicolau.",
+   "wav": "name01_hasti_clone_s52.wav"
+  },
+  "name02_hasti": {
+   "seed": 53,
+   "word_error": 0.0,
+   "heard": "Fair enough, Lukach. A couple of minutes. We'll be at the bay.",
+   "wav": "name02_hasti_clone_s53.wav"
+  },
+  "name03_lukac": {
+   "seed": 51,
+   "word_error": 0.0,
+   "heard": "It's paid then. It's been a lean month for what exactly?",
+   "wav": "name03_lukac_clone_s51.wav"
+  },
+  "name04_arthur": {
+   "seed": 51,
+   "word_error": 0.25,
+   "heard": "It's only a door. Alright, I'm coming.",
+   "wav": "name04_arthur_clone_s51.wav"
+  },
+  "name05_larthi": {
+   "seed": 51,
+   "word_error": 0.333,
+   "heard": "Popovich has been missed.",
+   "wav": "name05_larthi_clone_s51.wav"
+  },
+  "name06_arruns": {
+   "seed": 51,
+   "word_error": 0.0,
+   "heard": "LARTY with me",
+   "wav": "name06_arruns_clone_s51.wav"
+  },
+  "name07_sethre": {
+   "seed": 51,
+   "word_error": 0.0,
+   "heard": "The loop's running. Two minutes, Larti.",
+   "wav": "name07_sethre_clone_s51.wav"
+  },
+  "name08_popovic": {
+   "seed": 51,
+   "word_error": 0.0,
+   "heard": "Councillor Popovich, I'll take my car now.",
+   "wav": "name08_popovic_clone_s51.wav"
+  },
+  "shout01_arthur": {
+   "seed": 81,
+   "word_error": 0.0,
+   "heard": "Hold it! No running in the square!",
+   "wav": "shout01_arthur_sclone_s81.wav"
+  },
+  "shout02_arthur": {
+   "seed": 81,
+   "word_error": 0.0,
+   "heard": "Weapon drop it drop it now",
+   "wav": "shout02_arthur_sclone_s81.wav"
+  },
+  "shout03_arthur": {
+   "seed": 81,
+   "word_error": 0.0,
+   "heard": "Armed men, not in my square.",
+   "wav": "shout03_arthur_sclone_s81.wav"
+  },
+  "shout04_arthur": {
+   "seed": 81,
+   "word_error": 0.0,
+   "heard": "You stop right there!",
+   "wav": "shout04_arthur_sclone_s81.wav"
+  },
+  "shout05_larthi": {
+   "seed": 81,
+   "word_error": 0.0,
+   "heard": "That car's on fire. Get clear.",
+   "wav": "shout05_larthi_sclone_s81.wav"
+  },
+  "shout06_larthi": {
+   "seed": 81,
+   "word_error": 0.0,
+   "heard": "Cut loose.",
+   "wav": "shout06_larthi_sclone_s81.wav"
+  },
+  "shout07_arruns": {
+   "seed": 81,
+   "word_error": 0.0,
+   "heard": "Quiet. Quiet.",
+   "wav": "shout07_arruns_sclone_s81.wav"
+  },
+  "shout08_police": {
+   "seed": 81,
+   "word_error": 0.0,
+   "heard": "Civic police, drop your weapons!",
+   "wav": "shout08_police_sclone_s81.wav"
+  },
+  "shout09_rival": {
+   "seed": 81,
+   "word_error": 0.0,
+   "heard": "That's him! Take the car!",
+   "wav": "shout09_rival_sclone_s81.wav"
+  },
+  "shout10_watcher": {
+   "seed": 81,
+   "word_error": 0.0,
+   "heard": "Gun on camera call it in",
+   "wav": "shout10_watcher_sclone_s81.wav"
+  }
+ },
+ "measured": {
+  "scene01_milena": {
+   "file": "scene01_milena_clone_s51.wav",
+   "seconds": 4.72,
+   "rate": 24000,
+   "speaking_s": 2.86,
+   "lufs_i": -20.4,
+   "lufs_m": -17.1,
+   "true_peak": -5.3,
+   "f0_median": 183.2,
+   "f0_spread_semitones": 6.0,
+   "voiced_share": 0.44,
+   "centroid_hz": 418,
+   "above_4k_db": -20.1
+  },
+  "scene02_inez": {
+   "file": "scene02_inez_clone_s51.wav",
+   "seconds": 5.44,
+   "rate": 24000,
+   "speaking_s": 3.46,
+   "lufs_i": -20.6,
+   "lufs_m": -16.9,
+   "true_peak": -4.6,
+   "f0_median": 289.2,
+   "f0_spread_semitones": 8.0,
+   "voiced_share": 0.54,
+   "centroid_hz": 1028,
+   "above_4k_db": -17.7
+  },
+  "scene03_milena": {
+   "file": "scene03_milena_clone_s51.wav",
+   "seconds": 4.88,
+   "rate": 24000,
+   "speaking_s": 3.68,
+   "lufs_i": -20.4,
+   "lufs_m": -16.5,
+   "true_peak": -5.9,
+   "f0_median": 180.5,
+   "f0_spread_semitones": 5.6,
+   "voiced_share": 0.52,
+   "centroid_hz": 425,
+   "above_4k_db": -18.6
+  },
+  "scene04_inez": {
+   "file": "scene04_inez_clone_s51.wav",
+   "seconds": 2.96,
+   "rate": 24000,
+   "speaking_s": 2.2,
+   "lufs_i": -24.0,
+   "lufs_m": -22.4,
+   "true_peak": -8.4,
+   "f0_median": 296.3,
+   "f0_spread_semitones": 6.1,
+   "voiced_share": 0.62,
+   "centroid_hz": 734,
+   "above_4k_db": -20.5
+  },
+  "scene05_milena": {
+   "file": "scene05_milena_clone_s51.wav",
+   "seconds": 3.76,
+   "rate": 24000,
+   "speaking_s": 2.48,
+   "lufs_i": -20.9,
+   "lufs_m": -18.3,
+   "true_peak": -7.4,
+   "f0_median": 216.2,
+   "f0_spread_semitones": 9.1,
+   "voiced_share": 0.51,
+   "centroid_hz": 432,
+   "above_4k_db": -18.6
+  },
+  "scene06_inez": {
+   "file": "scene06_inez_clone_s51.wav",
+   "seconds": 4.48,
+   "rate": 24000,
+   "speaking_s": 3.02,
+   "lufs_i": -22.4,
+   "lufs_m": -18.6,
+   "true_peak": -5.3,
+   "f0_median": 296.3,
+   "f0_spread_semitones": 11.2,
+   "voiced_share": 0.47,
+   "centroid_hz": 1100,
+   "above_4k_db": -15.2
+  },
+  "scene07_milena": {
+   "file": "scene07_milena_clone_s51.wav",
+   "seconds": 3.84,
+   "rate": 24000,
+   "speaking_s": 2.1,
+   "lufs_i": -23.5,
+   "lufs_m": -19.9,
+   "true_peak": -7.1,
+   "f0_median": 155.8,
+   "f0_spread_semitones": 5.6,
+   "voiced_share": 0.37,
+   "centroid_hz": 465,
+   "above_4k_db": -15.6
+  },
+  "scene08_inez": {
+   "file": "scene08_inez_clone_s51.wav",
+   "seconds": 4.56,
+   "rate": 24000,
+   "speaking_s": 3.36,
+   "lufs_i": -21.4,
+   "lufs_m": -17.4,
+   "true_peak": -4.8,
+   "f0_median": 269.7,
+   "f0_spread_semitones": 6.2,
+   "voiced_share": 0.53,
+   "centroid_hz": 1108,
+   "above_4k_db": -17.4
+  },
+  "scene09_milena": {
+   "file": "scene09_milena_clone_s51.wav",
+   "seconds": 5.44,
+   "rate": 24000,
+   "speaking_s": 3.32,
+   "lufs_i": -21.6,
+   "lufs_m": -18.3,
+   "true_peak": -4.9,
+   "f0_median": 173.3,
+   "f0_spread_semitones": 9.1,
+   "voiced_share": 0.47,
+   "centroid_hz": 341,
+   "above_4k_db": -22.0
+  },
+  "scene10_larthi": {
+   "file": "scene10_larthi_clone_s51.wav",
+   "seconds": 6.24,
+   "rate": 24000,
+   "speaking_s": 3.78,
+   "lufs_i": -19.1,
+   "lufs_m": -15.0,
+   "true_peak": -3.7,
+   "f0_median": 208.7,
+   "f0_spread_semitones": 3.5,
+   "voiced_share": 0.5,
+   "centroid_hz": 440,
+   "above_4k_db": -21.5
+  },
+  "name01_hasti": {
+   "file": "name01_hasti_clone_s52.wav",
+   "seconds": 4.56,
+   "rate": 24000,
+   "speaking_s": 2.88,
+   "lufs_i": -21.1,
+   "lufs_m": -17.2,
+   "true_peak": -5.6,
+   "f0_median": 208.7,
+   "f0_spread_semitones": 7.7,
+   "voiced_share": 0.52,
+   "centroid_hz": 590,
+   "above_4k_db": -21.1
+  },
+  "name02_hasti": {
+   "file": "name02_hasti_clone_s53.wav",
+   "seconds": 4.48,
+   "rate": 24000,
+   "speaking_s": 2.58,
+   "lufs_i": -21.4,
+   "lufs_m": -17.1,
+   "true_peak": -5.0,
+   "f0_median": 206.9,
+   "f0_spread_semitones": 7.7,
+   "voiced_share": 0.42,
+   "centroid_hz": 662,
+   "above_4k_db": -19.5
+  },
+  "name03_lukac": {
+   "file": "name03_lukac_clone_s51.wav",
+   "seconds": 4.0,
+   "rate": 24000,
+   "speaking_s": 2.72,
+   "lufs_i": -23.8,
+   "lufs_m": -19.0,
+   "true_peak": -5.6,
+   "f0_median": 104.1,
+   "f0_spread_semitones": 4.3,
+   "voiced_share": 0.29,
+   "centroid_hz": 438,
+   "above_4k_db": -23.5
+  },
+  "name04_arthur": {
+   "file": "name04_arthur_clone_s51.wav",
+   "seconds": 3.04,
+   "rate": 24000,
+   "speaking_s": 1.92,
+   "lufs_i": -23.8,
+   "lufs_m": -19.2,
+   "true_peak": -4.9,
+   "f0_median": 125.7,
+   "f0_spread_semitones": 5.8,
+   "voiced_share": 0.38,
+   "centroid_hz": 651,
+   "above_4k_db": -22.4
+  },
+  "name05_larthi": {
+   "file": "name05_larthi_clone_s51.wav",
+   "seconds": 1.6,
+   "rate": 24000,
+   "speaking_s": 1.1,
+   "lufs_i": -18.5,
+   "lufs_m": -17.0,
+   "true_peak": -3.2,
+   "f0_median": 177.8,
+   "f0_spread_semitones": 1.8,
+   "voiced_share": 0.46,
+   "centroid_hz": 531,
+   "above_4k_db": -14.7
+  },
+  "name06_arruns": {
+   "file": "name06_arruns_clone_s51.wav",
+   "seconds": 2.0,
+   "rate": 24000,
+   "speaking_s": 1.48,
+   "lufs_i": -25.1,
+   "lufs_m": -20.9,
+   "true_peak": -5.2,
+   "f0_median": 89.2,
+   "f0_spread_semitones": 3.3,
+   "voiced_share": 0.24,
+   "centroid_hz": 509,
+   "above_4k_db": -21.8
+  },
+  "name07_sethre": {
+   "file": "name07_sethre_clone_s51.wav",
+   "seconds": 3.92,
+   "rate": 24000,
+   "speaking_s": 2.2,
+   "lufs_i": -23.6,
+   "lufs_m": -20.4,
+   "true_peak": -7.4,
+   "f0_median": 100.0,
+   "f0_spread_semitones": 3.8,
+   "voiced_share": 0.37,
+   "centroid_hz": 315,
+   "above_4k_db": -18.5
+  },
+  "name08_popovic": {
+   "file": "name08_popovic_clone_s51.wav",
+   "seconds": 3.52,
+   "rate": 24000,
+   "speaking_s": 2.14,
+   "lufs_i": -22.2,
+   "lufs_m": -19.9,
+   "true_peak": -4.2,
+   "f0_median": 125.3,
+   "f0_spread_semitones": 8.9,
+   "voiced_share": 0.24,
+   "centroid_hz": 736,
+   "above_4k_db": -21.4
+  },
+  "shout01_arthur": {
+   "file": "shout01_arthur_sclone_s81.wav",
+   "seconds": 2.08,
+   "rate": 24000,
+   "speaking_s": 1.42,
+   "lufs_i": -20.5,
+   "lufs_m": -18.0,
+   "true_peak": -3.5,
+   "f0_median": 242.4,
+   "f0_spread_semitones": 10.3,
+   "voiced_share": 0.46,
+   "centroid_hz": 950,
+   "above_4k_db": -19.6
+  },
+  "shout02_arthur": {
+   "file": "shout02_arthur_sclone_s81.wav",
+   "seconds": 2.48,
+   "rate": 24000,
+   "speaking_s": 1.46,
+   "lufs_i": -18.9,
+   "lufs_m": -16.2,
+   "true_peak": -2.1,
+   "f0_median": 252.6,
+   "f0_spread_semitones": 10.8,
+   "voiced_share": 0.52,
+   "centroid_hz": 1178,
+   "above_4k_db": -23.8
+  },
+  "shout03_arthur": {
+   "file": "shout03_arthur_sclone_s81.wav",
+   "seconds": 2.24,
+   "rate": 24000,
+   "speaking_s": 1.56,
+   "lufs_i": -19.4,
+   "lufs_m": -16.6,
+   "true_peak": -4.1,
+   "f0_median": 240.0,
+   "f0_spread_semitones": 7.9,
+   "voiced_share": 0.54,
+   "centroid_hz": 1102,
+   "above_4k_db": -22.4
+  },
+  "shout04_arthur": {
+   "file": "shout04_arthur_sclone_s81.wav",
+   "seconds": 1.36,
+   "rate": 24000,
+   "speaking_s": 1.1,
+   "lufs_i": -17.6,
+   "lufs_m": -16.6,
+   "true_peak": -3.0,
+   "f0_median": 303.8,
+   "f0_spread_semitones": 6.5,
+   "voiced_share": 0.58,
+   "centroid_hz": 1036,
+   "above_4k_db": -20.2
+  },
+  "shout05_larthi": {
+   "file": "shout05_larthi_sclone_s81.wav",
+   "seconds": 2.48,
+   "rate": 24000,
+   "speaking_s": 1.66,
+   "lufs_i": -19.3,
+   "lufs_m": -17.1,
+   "true_peak": -4.8,
+   "f0_median": 260.9,
+   "f0_spread_semitones": 8.6,
+   "voiced_share": 0.51,
+   "centroid_hz": 1143,
+   "above_4k_db": -17.3
+  },
+  "shout06_larthi": {
+   "file": "shout06_larthi_sclone_s81.wav",
+   "seconds": 1.44,
+   "rate": 24000,
+   "speaking_s": 0.62,
+   "lufs_i": -20.7,
+   "lufs_m": -18.8,
+   "true_peak": -4.9,
+   "f0_median": 282.4,
+   "f0_spread_semitones": 7.2,
+   "voiced_share": 0.23,
+   "centroid_hz": 1124,
+   "above_4k_db": -12.7
+  },
+  "shout07_arruns": {
+   "file": "shout07_arruns_sclone_s81.wav",
+   "seconds": 2.32,
+   "rate": 24000,
+   "speaking_s": 1.1,
+   "lufs_i": -20.5,
+   "lufs_m": -18.0,
+   "true_peak": -4.4,
+   "f0_median": 184.6,
+   "f0_spread_semitones": 7.6,
+   "voiced_share": 0.19,
+   "centroid_hz": 1164,
+   "above_4k_db": -26.5
+  },
+  "shout08_police": {
+   "file": "shout08_police_sclone_s81.wav",
+   "seconds": 2.08,
+   "rate": 24000,
+   "speaking_s": 1.76,
+   "lufs_i": -19.3,
+   "lufs_m": -16.8,
+   "true_peak": -4.2,
+   "f0_median": 266.7,
+   "f0_spread_semitones": 10.6,
+   "voiced_share": 0.47,
+   "centroid_hz": 1274,
+   "above_4k_db": -15.6
+  },
+  "shout09_rival": {
+   "file": "shout09_rival_sclone_s81.wav",
+   "seconds": 2.48,
+   "rate": 24000,
+   "speaking_s": 1.56,
+   "lufs_i": -20.6,
+   "lufs_m": -18.4,
+   "true_peak": -4.0,
+   "f0_median": 260.9,
+   "f0_spread_semitones": 15.5,
+   "voiced_share": 0.44,
+   "centroid_hz": 1167,
+   "above_4k_db": -23.0
+  },
+  "shout10_watcher": {
+   "file": "shout10_watcher_sclone_s81.wav",
+   "seconds": 2.24,
+   "rate": 24000,
+   "speaking_s": 1.52,
+   "lufs_i": -19.1,
+   "lufs_m": -17.0,
+   "true_peak": -4.6,
+   "f0_median": 269.7,
+   "f0_spread_semitones": 11.1,
+   "voiced_share": 0.51,
+   "centroid_hz": 1253,
+   "above_4k_db": -21.2
+  }
+ },
+ "speech_pitch_by_person_hz": {
+  "milena": 180.0,
+  "inez": 293.0,
+  "larthi": 193.0,
+  "hasti": 208.0,
+  "lukac": 104.0,
+  "arthur": 126.0,
+  "arruns": 89.0,
+  "sethre": 100.0,
+  "popovic": 125.0
+ },
+ "reel": {
+  "seconds": 132.1,
+  "lufs_i": -18.4,
+  "peak_db": -1.0
+ }
+}

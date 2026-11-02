@@ -1,0 +1,91 @@
+{
+ "note": "Round two (Sky picked Qwen3-TTS VoiceDesign). Each person is designed once, on a neutral reference sentence that is never in the game, then every line is cloned from that reference with the Base model, so the voice holds. Bands are the median pitch a calm reading should fall in (Hz).",
+ "ref_text": "I've walked this square every day for years, and I know most of the doors, and most of the faces that come through them.",
+ "roles": {
+  "larthi": {
+   "band": [
+    160,
+    230
+   ],
+   "describe": "Female, about 25 years old, low alto, quiet and dry, clipped and watchful, speaks evenly and briefly; neutral unplaceable accent."
+  },
+  "hasti": {
+   "band": [
+    165,
+    240
+   ],
+   "describe": "Female, early thirties, warm mezzo-soprano, unhurried and reassuring, kind, measured pace; neutral accent."
+  },
+  "sethre": {
+   "band": [
+    90,
+    150
+   ],
+   "describe": "Male, about 30 years old, calm baritone with a low, relaxed pitch, patient and quietly amused, even pace; neutral accent."
+  },
+  "arruns": {
+   "band": [
+    75,
+    130
+   ],
+   "describe": "Male, about 60 years old, a big man with a deep bass voice, slow, calm and economical, heavy and grounded."
+  },
+  "popovic": {
+   "band": [
+    90,
+    150
+   ],
+   "describe": "Male, early sixties, a city councillor, dry precise baritone, clipped consonants, used to being obeyed; faint Central European colouring."
+  },
+  "arthur": {
+   "band": [
+    90,
+    150
+   ],
+   "describe": "Male, about 40 years old, a door guard, warm working-class baritone, plain and friendly, a little tired; soft city accent."
+  },
+  "lukac": {
+   "band": [
+    85,
+    140
+   ],
+   "describe": "Male, mid forties, a chauffeur, laconic low baritone, wry and weary; faint Central European colouring."
+  },
+  "inez": {
+   "band": [
+    180,
+    280
+   ],
+   "describe": "Female, mid twenties, a waitress, bright quick soprano, nervous and defensive, words tumbling out, warm underneath."
+  },
+  "milena": {
+   "band": [
+    165,
+    240
+   ],
+   "describe": "Female, late thirties, dry teasing alto, fond and knowing, unhurried, gently mocking a friend."
+  },
+  "police": {
+   "band": [
+    90,
+    150
+   ],
+   "describe": "Male, mid thirties, a uniformed police officer, strong commanding baritone, sharp and authoritative."
+  },
+  "rival": {
+   "band": [
+    85,
+    145
+   ],
+   "describe": "Male, mid thirties, a rough hard man with a low gravelly baritone, blunt and urgent."
+  },
+  "watcher": {
+   "band": [
+    90,
+    150
+   ],
+   "describe": "Male, fifties, a security desk clerk, flat bureaucratic baritone, precise, turning urgent."
+  }
+ },
+ "shout_ref_text": "Hey! You there! Stop, and keep your hands where I can see them!"
+}
