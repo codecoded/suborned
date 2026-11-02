@@ -40,7 +40,7 @@ namespace Suborned.Play
                 case TpIn.LeftHold: return s == TpState.Aiming ? TpDo.Fire : s == TpState.RingOpen ? TpDo.TakeWedge : HoldRing ? TpDo.Ring : TpDo.Act;
                 case TpIn.LeftDrag: return s == TpState.Aiming ? TpDo.Fire : TpDo.Orbit;
                 case TpIn.LeftAiming: return s == TpState.Aiming ? TpDo.Fire : TpDo.Nothing; // no hidden hip fire
-                case TpIn.RightTap: return s == TpState.Aiming ? TpDo.LowerAim : s == TpState.RingOpen ? TpDo.Nothing : TpDo.RingAtTarget; // Aster 2026-11-02 (Sky on 0.2.212): third person's right tap opens the ring; the map's does nothing (item 33)
+                case TpIn.RightTap: return s == TpState.Aiming ? TpDo.LowerAim : TpDo.Nothing; // item 33: a right tap does nothing, as on the map (Sky 2026-11-02: "same"); the right button is for firing: its hold aims
                 case TpIn.RightHold: return s is TpState.RingOpen or TpState.CarryingVale ? TpDo.Nothing : TpDo.Aim; // walking Vale, the Enforcer doesn't fire
                 case TpIn.MiddleDrag: return TpDo.Look;
             }

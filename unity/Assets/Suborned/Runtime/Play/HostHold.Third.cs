@@ -5,7 +5,7 @@ using UnityEngine.InputSystem;
 
 namespace Suborned.Play
 {
-    /// <summary>Third person in the hold preset (moved from HostHold.cs, brief 085). A tap on a thing opens its ring, left or right, nothing taken; a right hold (the setting "Right hold fires", the
+    /// <summary>Third person in the hold preset (moved from HostHold.cs, brief 085). The buttons mean what they mean on the map (Sky 2026-11-02: "same"): a left tap on a thing opens its ring, nothing taken; a right tap does nothing; a right hold (the setting "Right hold fires", the
     /// default) fills and, let go when full, gives the driven agent and the squad a lasting fire order (as the map's); in a fight a right click on a hostile focuses at once; a left hold acts on the
     /// thing under the cursor (or the focus), committing on release; a left drag orbits.
     /// Sky on 0.2.212, "the action ring doesn't come up": a left tap on a thing gave nothing, while the map's left click rings and the table (TpResolve) said Ring, so the habit of the map failed
@@ -47,7 +47,7 @@ namespace Suborned.Play
                     if (lp.On && Charge is { Button: 0, Done: false }) { CancelHold(); rp.Used = true; return true; } // a right click cancels a left hold
                     var ft = rp.T != null && rp.T.Kind != "op" ? rp.T : TpFireFocus() ?? TpHostileAhead(); // item 7: the cursor off a target, the focus the pill names
                     if (FocusTarget(ft, out var fid, out var fforce) && Driving && dAgent >= 0) { rp.Used = true; FocusFire(ft, fid, fforce, p, null); }
-                    return true; // under 0.2 s it is a tap (the ring); the charge begins at 0.2 s
+                    return true; // under 0.2 s it is a tap (nothing); the charge begins at 0.2 s
                 }
                 if (rp.On && mouse.rightButton.isPressed && Charge?.Button != 1 && !Aiming && !rp.Used && !rp.Cancelled && now - rp.T0 >= RightTapS)
                 {
@@ -64,8 +64,7 @@ namespace Suborned.Play
                         var was = rp; rp = default; var c = Charge?.Button == 1 ? Charge : null;
                         if (was.Used || was.Cancelled) { if (c != null) Charge = null; return true; }
                         if (c != null) { Charge = null; if (c.Ready) TpFireLock(c, p); else { HoldCancels++; Status = "Fire cancelled"; SideLog("click", "fire-cancelled", c.T); } return true; }
-                        // no charge began, so it came up before a frame saw 0.2 s: a tap however the frames fell. The tap's ring: the focus too
-                        if ((p - was.At).magnitude < TpTapSlopPx * KitScale) { var t = was.T; if ((t == null || t.Kind == "op") && DriveFocus != null) t = DriveFocus; if (t == null || t.Kind == "op") ActContext(t, was.At); else TapRing(t, was.At); }
+                        RightTaps++; // no charge began: a tap, which does nothing, as on the map (item 33)
                         return true;
                     }
                     return true;

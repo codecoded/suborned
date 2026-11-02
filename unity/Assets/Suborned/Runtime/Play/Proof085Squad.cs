@@ -11,7 +11,7 @@ namespace Suborned.Play
 {
     /// <summary>Sky on 0.2.212, by real input (Mouse2), on the patrol: "I didn't seem to have them all aiming" and "the action ring doesn't come up" in third person.
     ///  · r085ringFireMap, r085ringFireThird: a ring opened and its Fire wedge held with the squad selected: every able agent takes the order (the agent in hand too), the busy Scout says why, the wedge's faces and the right hold's are who fired, one card, nobody leaves the squad.
-    ///  · r085tpLeftTap, r085tpRightTap: the Enforcer in hand, holstered and drawn: a left tap and a right tap open the ring, quick, slow, with a trackpad's 10 px; r085tpHoldStays: a right press let go at 0.25 s still cancels the fire charge and opens nothing.
+    ///  · r085tpLeftTap, r085tpRightTap: the Enforcer in hand, holstered and drawn: a left tap opens the ring, quick and with a trackpad's 10 px; a right tap opens nothing, as on the map (Sky 2026-11-02: "same"); r085tpHoldStays: a right press let go at 0.25 s still cancels the fire charge and opens nothing.
     ///  · r085tpFireFromRing: Fire taken from that ring. r085mapStays: the map's left click rings and its right tap does nothing.</summary>
     public static class Proof085Squad
     {
@@ -85,7 +85,7 @@ namespace Suborned.Play
             IEnumerator Case(bool left, float s, float move, bool[] ok)
             {
                 var at = OnPatrol(h); yield return Tap(at, left, !left, s, move);
-                ok[0] = h.Ring != null && h.Ring.Plan.T.Kind == "patrol" && h.Ring.Segs.Exists(x => x.Row?.I?.Order?.Do == "fire"); said.Add($"{(left ? "left" : "right")} {s * 1000f:0} ms +{move:0}: [{h.RingWords}]"); h.CloseRing(); Mouse2(new Vector2(Screen.width * .5f, 6f)); yield return Frames(3);
+                ok[0] = left ? h.Ring != null && h.Ring.Plan.T.Kind == "patrol" && h.Ring.Segs.Exists(x => x.Row?.I?.Order?.Do == "fire") : h.Ring == null; said.Add($"{(left ? "left" : "right")} {s * 1000f:0} ms +{move:0}: [{h.RingWords}]"); h.CloseRing(); Mouse2(new Vector2(Screen.width * .5f, 6f)); yield return Frames(3);
             }
             var r = new bool[1]; bool lefts = inHand, rights = inHand; string state = "holstered";
             foreach (var stage in new[] { 0, 1 })
