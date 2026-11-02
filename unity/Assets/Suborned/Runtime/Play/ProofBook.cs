@@ -80,18 +80,20 @@ namespace Suborned.Play
             foreach (var o in ras) { if (o.Tick >= 1400) break; h.RunTo(o.Tick); h.Issue(new Order { Op = o.Op, Do = o.Do, To = o.To, Point = o.Point, Target = o.Target, Approach = o.Approach, How = o.How, Run = o.Run }); if (o.Tick > 0 && o.Tick % 3 == 0 || o.Tick == 1195) { seenTick.Add(o.Tick); h.BookOpenNow("cell", 0); yield return Frames(1); for (int k = 0; k < 4; k++) if (Shape(k) != shapes[k]) { rowsMoved++; nsaid.Add($"{(OpId)k} at {o.Tick}: {Shape(k)}"); } h.BookClose(); yield return Frames(1); } }
             h.RunTo(1400); h.BookOpenNow("cell", 0); yield return Frames(1); for (int k = 0; k < 4; k++) if (Shape(k) != shapes[k]) rowsMoved++; var counts = new int[4]; for (int k = 0; k < 4; k++) { h.BookShow("cell", k); counts[k] = h.BookPageNow.Can.Count; } h.BookClose(); yield return Frames(1);
             Row("bookAgentRows", rowsMoved == 0 && namedBad == 0 && seenTick.Count >= 2 && counts[0] == h.BookCanOf(0).Count && counts[1] == HandoverHost.Slots[1].Length, $"rows {string.Join(" ", counts)} at tick 0, {string.Join(" ", seenTick)} and 1400; moved {rowsMoved}, named a person {namedBad}, {string.Join("; ", nsaid)}");
-            // ---- the weapon block's figures are the engine's: damage, the shot's gap, hits to down a guard, the bands' metres and the chance the stat sheet rolls; a test weapon by data too
-            int wbad = 0; var wsaid = new List<string>();
+            // ---- the weapon block's pips are the data scale applied to the engine's own values, for each agent's weapon and a test weapon by data
+            int wbad = 0; var wsaid = new List<string>(); var scales = BookWordsFile.Get().WeaponStats;
             for (int k = 0; k <= 4; k++)
             {
-                var w = k < 4 ? g.Ops[k].Gun.W : TestWeapon(); int ag = k < 4 ? k : 3; var bw = h.BookWeaponOf(ag, w); if (w == null) continue; var R = g.R;
-                int Want(long d) => R.Sheet.Sum(g.Ops[ag].Gun.Aim, R, w, d, Gait.Stand, 1000, false, false).Pct; long pb = Math.Min(R.PointBlankCm, w.EffCm);
-                bool ok = bw.Damage == w.Damage && Mathf.Approximately(bw.EveryS, w.Every / (float)Game.Hz) && bw.GuardHits == (g.GuardGun.Max + w.Damage - 1) / w.Damage && bw.Bands.Count == 3
-                    && Mathf.Approximately(bw.Bands[0].toM, pb / 100f) && Mathf.Approximately(bw.Bands[1].toM, w.EffCm / 100f) && Mathf.Approximately(bw.Bands[2].toM, w.MaxCm / 100f)
-                    && bw.Bands[0].pct == Want(pb) && bw.Bands[1].pct == Want(w.EffCm) && bw.Bands[2].pct == Want(w.MaxCm) && bw.Stats.Contains(w.Damage.ToString());
-                if (!ok) wbad++; wsaid.Add($"{(k < 4 ? ((OpId)k).ToString() : "test")} {w.Id}: {bw.Stats}; {string.Join(" ", bw.Bands.ConvertAll(b => $"{b.toM:0.#}m {b.pct}%"))}");
+                var w = k < 4 ? g.Ops[k].Gun.W : TestWeapon(); int ag = k < 4 ? k : 3; if (w == null) continue; var bw = h.BookWeaponOf(ag, w);
+                var got = new List<string>(); bool ok = bw.Stats.Count == scales.Count && scales.Count >= 4;
+                for (int i = 0; i < scales.Count && ok; i++)
+                {
+                    var (id, _, fullV, pips) = scales[i]; float v = id == "damage" ? w.Damage : id == "rate" ? 600f / w.Every * Game.Hz / 10f : id == "range" ? w.MaxCm / 100f : g.Ops[ag].Gun.Aim; // the engine's fields, read here apart from the page's own read
+                    int want = Mathf.Clamp((int)Math.Round(v / fullV * pips, MidpointRounding.AwayFromZero), v > 0 ? 1 : 0, pips); ok &= bw.Stats[i].id == id && bw.Stats[i].pips == want && bw.Stats[i].of == pips; got.Add($"{id} {bw.Stats[i].pips}/{pips} ({v:0.#})");
+                }
+                if (!ok) wbad++; wsaid.Add($"{(k < 4 ? ((OpId)k).ToString() : "test")} {w.Id}: {string.Join(", ", got)}");
             }
-            Row("bookWeaponFigures", wbad == 0 && g.Rolled, $"rolled {g.Rolled}, {wbad} wrong; {string.Join(" | ", wsaid)}");
+            Row("bookWeaponFigures", wbad == 0, $"{wbad} wrong; {string.Join(" | ", wsaid)}");
             // ---- what is still a way (the job's): closes the book, opens that thing's ring for the selection as it is, gives no order; the ring is the ring a click on that thing opens; the page shows no price of its own
             yield return Fresh(h); g = h.Game; h.SetPaused(true); yield return Frames(2); int bad = 0, seen = 0; var said = new List<string>(); h.Select(OpId.Scout, false);
             h.BookOpenNow("job"); yield return Frames(2); int nWays = h.BookPageNow.Ways.Count; h.BookClose(); yield return Frames(1);
@@ -124,7 +126,7 @@ namespace Suborned.Play
             yield return new WaitForSecondsRealtime(3f); /* the size is -capture-size's */
             h.controls.conversations = ConversationScenes.Never; h.controls.planTogether = false; h.Begin(); h.IntelOpen = false; h.StartClock(); h.SetPaused(true); yield return null;
             var g = h.Game; var lines = new List<string>(); int stop = 1600; // 2:40
-            void Say(string n) { var p = h.BookPageNow; lines.Add($"{n}: {p?.Name} | {p?.Sub} | clock {HandoverHost.MissionClock(g.Tick)} | facts {string.Join(", ", (p?.Facts ?? new List<BookFact>()).ConvertAll(f => f.Word))} | weapon {p?.Weapon?.Word} {p?.Weapon?.Note} [{p?.Weapon?.Stats}] {string.Join(" ", (p?.Weapon?.Bands ?? new List<(float, float, int)>()).ConvertAll(b => $"{b.Item2:0.#}m {b.Item3}%"))} | ways {string.Join(", ", (p?.Ways ?? new List<BookWay>()).ConvertAll(w => (w.Shut ? "~" : "") + w.Word + " [" + w.SubText + "]"))} | can {string.Join(", ", (p?.Can ?? new List<BookCan>()).ConvertAll(c => c.Word + " [" + c.Line + "]"))} | track {string.Join(", ", (p?.Track ?? new List<BookStop>()).ConvertAll(s => s.Word + " " + s.Time))} | build {h.BookBuildMs:0.#} ms"); File.WriteAllLines(Path.Combine(Dir, "pages.txt"), lines); }
+            void Say(string n) { var p = h.BookPageNow; lines.Add($"{n}: {p?.Name} | {p?.Sub} | clock {HandoverHost.MissionClock(g.Tick)} | facts {string.Join(", ", (p?.Facts ?? new List<BookFact>()).ConvertAll(f => f.Word))} | weapon {p?.Weapon?.Word} {p?.Weapon?.Note} {string.Join(" ", (p?.Weapon?.Stats ?? new List<(string, string, int, int, float)>()).ConvertAll(x => $"{x.Item2} {x.Item3}/{x.Item4}"))} | ways {string.Join(", ", (p?.Ways ?? new List<BookWay>()).ConvertAll(w => (w.Shut ? "~" : "") + w.Word + " [" + w.SubText + "]"))} | can {string.Join(", ", (p?.Can ?? new List<BookCan>()).ConvertAll(c => c.Word + " [" + c.Line + "]"))} | track {string.Join(", ", (p?.Track ?? new List<BookStop>()).ConvertAll(s => s.Word + " " + s.Time))} | build {h.BookBuildMs:0.#} ms"); File.WriteAllLines(Path.Combine(Dir, "pages.txt"), lines); }
             bool enforcerShot = false; foreach (var o in ProofBook.Route()) { if (o.Tick >= stop) break; if (!enforcerShot && o.Tick >= 500) { h.RunTo(500); enforcerShot = true; h.BookOpenNow("cell", 3); yield return Shot("cell-enforcer"); Say("cell-enforcer"); h.BookShow("cell", 0); yield return Shot("cell-scout"); Say("cell-scout"); h.BookClose(); yield return null; } h.RunTo(o.Tick); h.Issue(new Order { Op = o.Op, Do = o.Do, To = o.To, Point = o.Point, Target = o.Target, Approach = o.Approach, How = o.How, Run = o.Run }); }
             h.RunTo(stop); h.SetPaused(false); yield return new WaitForSecondsRealtime(0.3f); h.SetPaused(true);
             h.BookOpenNow("job"); yield return Shot("job"); Say("job");

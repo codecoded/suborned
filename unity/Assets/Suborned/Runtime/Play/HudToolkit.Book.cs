@@ -167,22 +167,18 @@ namespace Suborned.Play
             for (int i = 0; i < lines.Length; i++) BkPut(body, tx, y0 + ws * 1.25f + ls * 1.3f * (i + .4f), lines[i], ls, "Jost-Medium", BkSoftHex);
         }
 
-        /// <summary>The weapon block: its line, its stats, then the range bar to scale, darker where a hit is likelier (the civic swatches), each band's chance over it and its far edge under it.</summary>
+        /// <summary>The weapon block: its line, then its ratings in two short columns, each a word and a row of pips (the health dots' own look).</summary>
         void BkWeapon(VisualElement body, BookWeapon w, BookLayout.Item it, BookLayout.Result r)
         {
             BkFact(body, new BookFact { Icon = "fire", Word = w.Word, Note = w.Note }, it);
-            float x = it.At.x + 2f, y = it.At.y + 46f + 8f;
-            BkPut(body, x, y + 14f, w.Stats, 22f, "Jost-Medium", BkInkHex);
-            BkPut(body, x, y + 32f + 12f, w.ChanceHead, 18f, "Jost-Medium", BkSoftHex);
-            float by = r.BarY; Color[] tones = { BkDeep, Hex(0x72b5a7), BkPale };
-            for (int i = 0; i < r.Bar.Count; i++)
+            float x = it.At.x + 2f, y0 = it.At.y + 46f + 10f, col = 300f, wordW = 0f; int rows = (w.Stats.Count + 1) / 2;
+            foreach (var s in w.Stats) wordW = Mathf.Max(wordW, BkTw(s.word, 22f, "Jost-SemiBold"));
+            for (int i = 0; i < w.Stats.Count; i++)
             {
-                var (x0, x1, px, mx, m) = r.Bar[i]; var band = E(body, null, x0, by, Mathf.Max(2f, x1 - x0 - 2f), 14f); band.style.backgroundColor = tones[Mathf.Min(i, 2)]; Round(band, i == 0 ? 3f : 0f);
-                BkPut(body, px, by - 14f, r.Bar.Count > 0 ? w.Bands[i].pct + "%" : "", 21f, "Jost-SemiBold", BkInkHex);
-                var tick = E(body, null, x1 - 1f, by + 14f, 1.5f, 6f); tick.style.backgroundColor = BkSoft;
-                BkPut(body, mx, by + 32f, m, 18f, "Jost-Medium", BkSoftHex);
+                var s = w.Stats[i]; float cx = x + (i / rows) * col, cy = y0 + (i % rows) * 36f + 16f;
+                BkPut(body, cx, cy, s.word, 22f, "Jost-SemiBold", BkInkHex); float px = cx + wordW + 14f;
+                for (int k = 0; k < s.of; k++) { var d = E(body, null, px + k * 20f, cy - 8f, 16f, 16f); Round(d, 8f); if (k < s.pips) d.style.backgroundColor = BkDeep; else Border(d, 1.5f, BkSoft); }
             }
-            if (r.Bar.Count > 0) BkPut(body, x, by + 32f, "0", 18f, "Jost-Medium", BkSoftHex);
         }
 
         void BkScales(VisualElement body, BookPage pg, BookLayout.Item it)

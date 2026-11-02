@@ -2889,11 +2889,13 @@
      "health": "Health",
      "reach": "Watches from {m} m",
      "weapon": {
-    "damage": "{n} damage a hit",
-    "every": "a shot every {s} s",
-    "guard": "downs a guard in {n} hits",
-    "guardOne": "downs a guard in one hit",
-    "chance": "Chance to hit, standing, in the open"
+    "rule": "The weapon's ratings, in this order: each id's engine value (damage a hit; rate in shots a minute; range to its last metre; aim, the shooter's stat-sheet aim) set against `full`, the value that fills `pips` pips. Pips = value / full x pips, rounded, at least one for any value above nothing.",
+    "stats": [
+     { "id": "damage", "word": "Damage", "full": 3, "pips": 5 },
+     { "id": "rate", "word": "Rate", "full": 50, "pips": 5 },
+     { "id": "range", "word": "Range", "full": 40, "pips": 5 },
+     { "id": "aim", "word": "Aim", "full": 80, "pips": 5 }
+    ]
    },
    "drawn": "drawn",
      "holstered": "holstered",
