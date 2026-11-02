@@ -17,7 +17,7 @@ const byId = (id: string) => c.items.find((x) => x.id === id)!;
 const pick = (q: ConversationQuery) => lookupConversation(c, q)?.id;
 const inez = { about: 'waitress', temperament: 'fearful' };
 /** The scenes Sky has read as they play. The rest play too, awaiting his read; approved.json keeps the last words he agreed for them. */
-const AGREED = ['listen-inez', 'help-inez-2', 'call-inez'], AWAITING = ['help-inez-1', 'pressure-inez', 'pay-driver', 'call-inez-pressure'];
+const AGREED = ['help-inez-2', 'call-inez'], AWAITING = ['listen-inez', 'help-inez-1', 'pressure-inez', 'pay-driver', 'call-inez-pressure'];
 const shown = (id: string) => conversationLines(c, byId(id)).map((l) => [l.name, l.text]);
 
 describe('the words', () => {
@@ -61,7 +61,7 @@ describe('the words', () => {
   test('the three held moments and the leaned-on words, as Sky agreed; every field is on the line it names', () => {
     const fields = c.items.flatMap((sc) => sc.beats.flatMap((b, i) => { const { speaker: _s, line: _l, ...view } = b; return Object.keys(view).length ? [[sc.id, i + 1, view]] : []; }));
     expect(fields).toEqual([
-      ['listen-inez', 5, { lean: 'handsome' }],
+      ['listen-inez', 5, { lean: 'guard' }],
       ['listen-inez', 7, { lean: 'did', revealAfter: 'He said nothing, you goose.', revealS: 0.9 }],
       ['help-inez-2', 6, { lean: 'Arthur' }],
       ['help-inez-2', 8, { lean: 'did' }],
