@@ -16,7 +16,7 @@
 // the DLL's informational version, so a build made before a commit differs from one made after it in those bytes only)
 import { cpSync, existsSync, mkdirSync, readdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { createHash } from 'node:crypto';
-import { join, resolve } from 'node:path';
+import { join, posix, resolve } from 'node:path';
 import { CLIP_ROOT, CUES, CUES_SCHEMA, judgeCues } from './cues';
 
 const root = join(import.meta.dir, '..', '..');
@@ -144,10 +144,14 @@ let text = 'absent (the host shows its placeholders)';
   if (body && schema) {
     const dir = join(work, 'text'); mkdirSync(join(dir, 'contracts/missions/handover'), { recursive: true });
     writeFileSync(join(dir, TEXT_SCHEMA), schema);
-    // the schema imports the people rules and the rulebook ref from the same source tree
-    for (const dep of ['contracts/missions/handover/conversations.schema.ts', 'contracts/missions/handover/book.schema.ts', 'contracts/people/people.rules.schema.ts', 'contracts/rules/rulebook.ref.ts', 'contracts/rules/rulebook.schema.ts']) {
-      const b = at(dep); if (!b) { console.error(`${TEXT_SCHEMA} needs ${dep}, which is missing`); process.exit(1); }
-      mkdirSync(join(dir, dep, '..'), { recursive: true }); writeFileSync(join(dir, dep), b);
+    // what the schema imports, and what they import, from the same source tree: followed from its relative imports, not a hand list (a new import, book.schema.ts in 0.2.230, broke the hand list)
+    for (const todo: [string, Buffer][] = [[TEXT_SCHEMA, schema]], seen = new Set([TEXT_SCHEMA]); todo.length;) {
+      const [from, src] = todo.pop()!;
+      for (const [, spec] of src.toString('utf8').matchAll(/\bfrom\s+['"](\.{1,2}\/[^'"]+)['"]/g)) {
+        const dep = posix.join(posix.dirname(from), spec!); if (seen.has(dep)) continue; seen.add(dep);
+        const b = at(dep); if (!b) { console.error(`${from} imports ${dep}, which is missing`); process.exit(1); }
+        mkdirSync(join(dir, dep, '..'), { recursive: true }); writeFileSync(join(dir, dep), b); todo.push([dep, b]);
+      }
     }
     const { TextFile } = await import(join(dir, TEXT_SCHEMA));
     const r = TextFile.safeParse(JSON.parse(body.toString('utf8')));
