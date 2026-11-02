@@ -121,12 +121,12 @@ describe('the Handover\'s hand-written text as fixture tables', () => {
     expect(r.checks.map(c => c.id)).toEqual(['D-0', 'D-1', 'D-2', 'D-3', 'D-4', 'D-5', 'D-6', 'D-7', 'D-8', 'D-9', 'D-10', 'D-11', 'D-12']);
   });
   test('the hand-written text itself, taken whole, is held to the same rules: it passes all but one, the generator\'s bar is stricter (it genders no one)', () => {
-    const r = run(undefined, { keepNames: true, named: ['Inez', 'Vale'] });
+    const r = run(undefined, { keepNames: true, named: ['Inez', 'Popovic'] });
     expect(failed(r)).toEqual(['D-5']);
     const faults = detail(r, 'D-5').split('; ').filter(x => !x.startsWith('+'));
     expect(faults.length).toBeGreaterThan(5);
     for (const f of faults) expect(f).toContain('(gendered)');
-    expect(run(undefined, { keepNames: true }).checks.find(c => c.id === 'D-4')!.ok).toBe(false); // without naming Inez and Vale it fails the names rule too
+    expect(run(undefined, { keepNames: true }).checks.find(c => c.id === 'D-4')!.ok).toBe(false); // without naming Inez and Popovic it fails the names rule too
     for (const id of ['D-2', 'D-3', 'D-4', 'D-6', 'D-7', 'D-12']) expect(r.checks.find(c => c.id === id)!.ok, id).toBe(true);
   });
   test('the real lines are in the tables: Inez\'s Help-turned for an Idealist is the counter group\'s cell', () => {
@@ -136,7 +136,7 @@ describe('the Handover\'s hand-written text as fixture tables', () => {
   });
   test('the stand-in without keepNames carries no name and no gendered word', () => {
     const all = JSON.stringify(standAll());
-    expect(all).not.toMatch(/Inez|Vale\b/);
+    expect(all).not.toMatch(/Inez|Popovic\b/);
     expect(all).not.toMatch(/\b(he|him|she|her|sir|madam)\b/i);
   });
   test('dropping a reference cell fails D-12, and so does a cell with fewer variants than the Handover\'s', () => {

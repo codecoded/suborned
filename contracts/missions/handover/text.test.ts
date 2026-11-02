@@ -174,17 +174,17 @@ describe('tone and names', () => {
     const hits = strings.filter((s) => /human shield|suicide|strapped|blow yourself|detonat|sacrifice/i.test(s.text)).map((s) => s.path);
     expect(hits).toEqual([]);
   });
-  test('only Inez and Vale are named; no one else from the city\'s name pool', () => {
+  test('only Inez and Popovic are named; no one else from the city\'s name pool', () => {
     const cast = json('contracts/people/harbour-district.cast.json') as { names: { given: { name: string }[]; family: { name: string }[] } };
     const pool = new Set([...cast.names.given, ...cast.names.family].map((n) => n.name));
     const named = new Set<string>(t.names.named);
-    expect([...named].sort()).toEqual(['Inez', 'Vale']);
+    expect([...named].sort()).toEqual(['Inez', 'Popovic']);
     const hits: string[] = [];
     for (const s of strings) for (const w of s.text.match(/[\p{L}'-]+/gu) ?? []) if (pool.has(w) && !named.has(w)) hits.push(`${w}: ${s.path}`);
     expect(hits).toEqual([]);
   });
   test('no capitalised word mid-sentence other than the cast, the places, the verbs and the agents', () => {
-    const ok = new Set(['Inez', 'Vale', 'Bureau', 'Scout', 'Fixer', 'Tech', 'Enforcer', 'Councillor', 'Council', 'Office', 'Records', 'Civic', 'Police', 'Handover',
+    const ok = new Set(['Inez', 'Popovic', 'Bureau', 'Scout', 'Fixer', 'Tech', 'Enforcer', 'Councillor', 'Council', 'Office', 'Records', 'Civic', 'Police', 'Handover',
       'Return', 'Ctrl', 'I', 'F', 'G', 'N', 'Q', 'E', 'X', 'Trail', 'Alert', 'Ask', 'Pay', 'Help', 'Pressure', 'Call', 'Watch', 'Listen', 'Loop', 'Reroute', 'Enter', 'Take', 'Fire', 'Carry', 'Board', 'Go', 'Kill', 'Halcyon', 'Security', 'Disable', 'Drive', 'Orbit', 'Walk']); // Disable and Drive: briefs 058, 059; Orbit Walk: the street the rival car turns in from (brief 059); X: the cease-fire key H21 teaches (brief 067)
     const hits: string[] = [];
     for (const s of strings) {
@@ -261,7 +261,7 @@ describe('times and numbers agree with the mission', () => {
   test('the brief card is 3–5 sentences, opens on the order, and names the objective', () => {
     expect(t.briefing.card.length).toBeGreaterThanOrEqual(3);
     expect(t.briefing.card.length).toBeLessThanOrEqual(5);
-    expect(t.briefing.card[0]).toMatch(/^Councillor Vale has a file on us/);
+    expect(t.briefing.card[0]).toMatch(/^Councillor Popovic has a file on us/);
     expect(t.briefing.card.join(' ')).toMatch(/alive/);
   });
   test('the briefing page (brief 070): two sentences a way, the five clock stations, a line for each face, nothing about Day or Night', () => {
@@ -295,8 +295,8 @@ describe('times and numbers agree with the mission', () => {
     for (const k of Object.keys(p.captions ?? {})) expect(m.points.some((x) => x.id === k) || k in m.destinations, k).toBe(true);
     expect(p.ways.pickup.line).toMatch(/service bay/); expect(p.captions!['service-bay']).toMatch(/service bay$/i);
     const at = t.briefing.timeline.find((x) => x.at === '5:10')!.label;
-    expect(at).toBe('Vale at his car; unless turned, the driver leaves'); expect(at).not.toMatch(/\.\s/); // play's timeline keeps the true label
-    expect(p.stations).toEqual({ '5:10': "Vale's car leaves" }); // Glyph R1 on 0.2.133: the page's station; 4:40 carries the condition
+    expect(at).toBe('Popovic at his car; unless turned, the driver leaves'); expect(at).not.toMatch(/\.\s/); // play's timeline keeps the true label
+    expect(p.stations).toEqual({ '5:10': "Popovic's car leaves" }); // Glyph R1 on 0.2.133: the page's station; 4:40 carries the condition
     for (const k of Object.keys(p.stations ?? {})) expect(p.clock, k).toContain(k);
     expect(t.briefing.timeline.find((x) => x.at === '4:40')!.label).toMatch(/turn the driver/);
   });
@@ -305,7 +305,7 @@ describe('times and numbers agree with the mission', () => {
     expect(t.briefing.card.at(-1)).toMatch(/5:10.*7:30.*turn/);
     const at = (m: string) => t.briefing.timeline.find((x) => x.at === m)!.label;
     expect(at('5:10')).toMatch(/[Uu]nless turned/); expect(at('7:30')).toMatch(/turned driver/);
-    expect(JSON.stringify(t.briefing)).not.toMatch(/At 7:30 Vale's driver|the driver drives Vale away/);
+    expect(JSON.stringify(t.briefing)).not.toMatch(/At 7:30 Popovic's driver|the driver drives Popovic away/);
   });
   test('the hints name the two known approaches', () => {
     expect(t.briefing.hints['front-door']).toMatch(/Inez/);
@@ -1011,7 +1011,7 @@ describe('the end card\'s words (debrief ids)', () => {
     for (const c of Object.values(s.causes)) expect(fillCard(s.line, { district: 'Harbour', band: 'Neutral', from: '-3', to: '-3', cause: fillCard(c, { who: 'Dimitra Marchetti' }) }).length).toBeLessThanOrEqual(MAX_LINE);
   });
   test('the headline for a win, a withdrawal and a bare failure; a fail with words in the briefing takes its first sentence', () => {
-    expect(d.headline.win).toBe('Vale is in the car');
+    expect(d.headline.win).toBe('Popovic is in the car');
     for (const f of FAILS) if (f !== 'engine-error') expect(t.briefing.fails[f], f).toBeTruthy();
     expect(fillCard(d.tally, { clock: '7:12', usd: 62000, trail: 3 })).toBe('Done at 7:12 · $62,000 spent · Trail 3');
   });
@@ -1179,14 +1179,14 @@ describe('brief 014: the short forms, the price line, the beats', () => {
     expect(bad).toEqual([]);
   });
   test('the objective is one imperative with a ringed noun for each thing that has a marker, and the briefing goal says the same', () => {
-    expect(marked(L.objective.take)).toEqual(['Vale']);
-    expect(marked(L.objective.bring)).toEqual(['Vale']);
-    expect(marked(L.objective.carry)).toEqual(['Vale', 'car']);
-    expect(marked(L.briefing.goal)).toEqual(['Vale', 'car']);
+    expect(marked(L.objective.take)).toEqual(['Popovic']);
+    expect(marked(L.objective.bring)).toEqual(['Popovic']);
+    expect(marked(L.objective.carry)).toEqual(['Popovic', 'car']);
+    expect(marked(L.briefing.goal)).toEqual(['Popovic', 'car']);
     for (const x of [L.objective.take, L.objective.bring, L.objective.carry]) expect(words(x)).toBeLessThanOrEqual(5);
-    expect(L.objective.take).toBe('Take [Vale] alive.');
-    expect(L.objective.bring).toBe('Bring [Vale] out.');
-    expect(L.objective.carry).toBe('Get [Vale] to the [car].');
+    expect(L.objective.take).toBe('Take [Popovic] alive.');
+    expect(L.objective.bring).toBe('Bring [Popovic] out.');
+    expect(L.objective.carry).toBe('Get [Popovic] to the [car].');
   });
   test('the goal line progresses take, bring, carry: each step names a line and the state the host reads', () => {
     expect(L.objective.steps.map((x) => x.key)).toEqual(['take', 'bring', 'carry', 'go']);
@@ -1199,8 +1199,8 @@ describe('brief 014: the short forms, the price line, the beats', () => {
     expect([a.verb, b.verb, c.verb]).toEqual(['enter', 'board', 'take']);
     for (const h of [a, b, c]) { expect(h.agent).toBe('enforcer'); expect(h.line).toMatch(/\bEnforcer\b/); expect(h.priority).toBeLessThan(0); expect(marked(h.short).length).toBe(1); expect(words(h.short)).toBeLessThanOrEqual(6); }
     expect(a.short).toBe('Go in by the [door].');
-    expect(b.short).toBe('Board the [car] with Vale.');
-    expect(c.short).toBe('Take [Vale] from the back seat.');
+    expect(b.short).toBe('Board the [car] with Popovic.');
+    expect(c.short).toBe('Take [Popovic] from the back seat.');
     // H14's Alt line says that being seen on the way in fails (plain words, brief 019)
     expect(a.line).toMatch(/if he is seen, it fails/);
     // the triggers say what Latch builds
@@ -1332,7 +1332,7 @@ describe('brief 014: the short forms, the price line, the beats', () => {
   test('the end card is one line: a headline for each fail code, and for a win and a withdrawal', () => {
     expect(Object.keys(L.end.fail).sort()).toEqual(Object.keys(t.briefing.fails).sort());
     for (const [k, x] of Object.entries(L.end.fail)) expect(x, k).toMatch(/^[A-Z][^.!?]*\.$/);
-    expect(L.end.win).toBe('Vale is in the car.');
+    expect(L.end.win).toBe('Popovic is in the car.');
   });
   test('cancel costs and pops are a few words; every cancel cost has one', () => {
     expect(Object.keys(L.cancel).sort()).toEqual(Object.keys(t.cancelCosts).sort());
@@ -1371,7 +1371,7 @@ describe('brief 014: the short forms, the price line, the beats', () => {
   });
   test('the timeline marks have a word for Alt', () => {
     // brief 059 (engine 0.32.0, GDD v0.25.0 §07): the rival car's entry (2:35) and drop (2:46) are marks; 3:10 is its park (Keel's drafts, Fable words them)
-    expect(t.briefing.timeline.map((x) => x.short)).toEqual(['Rivals in', 'Rivals post', 'Rivals park', 'Chime', 'Last chance', 'Vale out', 'Vale at car', 'Close']);
+    expect(t.briefing.timeline.map((x) => x.short)).toEqual(['Rivals in', 'Rivals post', 'Rivals park', 'Chime', 'Last chance', 'Popovic out', 'Popovic at car', 'Close']);
   });
   test('every player-facing group of the file has a fate, and the fates are the brief\'s', () => {
     for (const f of Object.values(L.fates)) expect(FATES).toContain(f);
@@ -1435,10 +1435,10 @@ describe('brief 057 section 4: the sealed fail line says what happened by the ca
   test('the unknown line is the briefing line and says the engine\'s fail; no line says Vale did not reach a car he reached', () => {
     expect(S.line.unknown).toBe(t.briefing.fails.sealed);
     expect(S.line.unknown).toMatch(/car hadn't left when security sealed the district/);
-    expect(JSON.stringify(t.briefing.fails)).not.toMatch(/before Vale reached/);
+    expect(JSON.stringify(t.briefing.fails)).not.toMatch(/before Popovic reached/);
     expect(S.line.held).toContain('{holders}');
-    expect(S.line.ready).toMatch(/Vale was in the car/); expect(S.line.ready).toMatch(/Go/);
-    expect(S.line.empty).toMatch(/Vale wasn't in the car/);
+    expect(S.line.ready).toMatch(/Popovic was in the car/); expect(S.line.ready).toMatch(/Go/);
+    expect(S.line.empty).toMatch(/Popovic wasn't in the car/);
     expect(S.story.ready).toBe('Go was never given.');
     expect(S.story.held).toContain('{holders}');
   });
@@ -1590,7 +1590,7 @@ describe('briefs 058, 059, 062: cameras, the pickup and rivals, the briefing', (
     expect(shorts).toEqual({ 'drive-held': 'Blocked · down {holders}', 'drive-no-driver': 'Board first', 'drive-busy': 'Car busy', 'drive-here': 'Already here', 'drive-fight': 'Fight or Go', 'unknown-stand': 'Not a stand' });
     expect(t.locks['stand-shut']).toBeUndefined(); // the early Drive to the yard is not refused (GDD section 07): the mark is a caution, the engine has no such code
     // the beat when his car stops short
-    expect(t.cards.items['car.blocked']!.beat).toBe('Vale\'s car stops short.'); expect(wordCount(t.cards.items['car.blocked']!.beat as string)).toBeLessThanOrEqual(BEAT_MAX);
+    expect(t.cards.items['car.blocked']!.beat).toBe('Popovic\'s car stops.'); // brief 089: the name grew, the beat keeps to 24 characters expect(wordCount(t.cards.items['car.blocked']!.beat as string)).toBeLessThanOrEqual(BEAT_MAX);
     // H20 is offered ahead of H16 (the Take) while our car is still at the square
     const [h16, h20] = [t.hints.items.H16!, t.hints.items.H20!];
     expect(h20.verb).toBe('drive-car'); expect(h20.priority).toBeLessThan(h16.priority); expect(h20.short).toBe('Drive the [car] round the back.'); expect(h20.rings).toBe('the getaway car');
@@ -1648,7 +1648,7 @@ describe('briefs 058, 059, 062: cameras, the pickup and rivals, the briefing', (
   test('brief.json: the briefing\'s hook and objective are short, plain and agree with the win (brief 062 section 4)', () => {
     const bj = json('contracts/missions/handover/brief.json') as { pick: string; variants: Record<string, { hook: string; dossier: { objective: string } }> };
     const v = bj.variants[bj.pick]!;
-    expect(v.hook).toBe('Vale has a file on you.'); expect(v.dossier.objective).toBe('Take him alive before it reaches Security.');
+    expect(v.hook).toBe('Popovic has a file on you.'); expect(v.dossier.objective).toBe('Take him alive before it reaches Security.');
     expect(wordCount(v.hook)).toBeLessThanOrEqual(8); expect(wordCount(v.dossier.objective)).toBeLessThanOrEqual(8);
     for (const x of [v.hook, v.dossier.objective]) { expect(x.length).toBeLessThanOrEqual(MAX_LINE); expect(x).not.toMatch(/\b(hack|network|database|digital|computer|trail|alert)\b/i); }
   });
@@ -1725,9 +1725,9 @@ describe('brief 067: engine 0.33.1, the beat heard anywhere, the Watch on the ri
     }
     expect(bad).toEqual([]);
     // a target's name never starts with a preposition or a verb: it follows one
-    for (const [k, n] of Object.entries(t.names.targets)) expect(n, k).toMatch(/^(the |a |an |Vale|Inez)/);
+    for (const [k, n] of Object.entries(t.names.targets)) expect(n, k).toMatch(/^(the |a |an |Popovic|Inez)/);
     // what the pill and the panel print, word for word
-    expect(fill('listen', 'guard')).toBe('Listen to the guard'); expect(fill('listen', 'waitress')).toBe('Listen to Inez'); expect(fill('listen', 'councillor')).toBe('Listen to Vale');
+    expect(fill('listen', 'guard')).toBe('Listen to the guard'); expect(fill('listen', 'waitress')).toBe('Listen to Inez'); expect(fill('listen', 'councillor')).toBe('Listen to Popovic');
     expect(fill('watch', 'guard')).toBe('Watch the guard'); expect(fill('watch', 'rivals')).toBe('Watch the rival crew');
     expect(fill('pressure', 'waitress')).toBe('Pressure Inez'); expect(fill('pay', 'driver')).toBe('Pay the driver');
     expect(fill('fire', 'hostile')).toBe('Fire at a hostile'); expect(fill('enter', 'door')).toBe('Go in by the public door');
@@ -1810,7 +1810,7 @@ describe('brief 067, engine 0.34.x: Go needs a driver, the cell down, the rivals
   });
   test('the whole cell down is a fail with words wherever a fail has them: the sentence, the end card, the fail camera and two voices', () => {
     expect(FAILS).toContain('cell-down');
-    expect(t.briefing.fails['cell-down']).toBe('The whole cell is down. Nobody is left to get Vale out.');
+    expect(t.briefing.fails['cell-down']).toBe('The whole cell is down. Nobody is left to get Popovic out.');
     expect(L.end.fail['cell-down']).toBe('Whole cell down.');
     expect(L.failcam.caption['cell-down']).toEqual({ shot: '{by} shot {agent}.' }); // why shot: the shooter first, then the operative, as for enforcer-down
     expect(L.failcam.tip['cell-down']).toEqual({ shot: 'Keep someone outside the car.' });
@@ -1832,8 +1832,8 @@ describe('brief 067, engine 0.34.x: Go needs a driver, the cell down, the rivals
     for (const l of lookup(t, { event: 'rivals-for-car', speaker: 'scout' })!.lines) expect(l, l).toMatch(/outside|unguarded/i);
     // the host already makes a fallback card of both codes (HostFeed.FeedEvents), so the text carries their words: what, why and the fix, no sight rule (the cell is in the car), no beat (the feed is at its ten)
     const fc = t.cards.items['rivals.for-car']!, bc = t.cards.items['rivals.back-to-cover']!;
-    expect(fc.title).toBe('Rivals going for Vale'); expect(fc.kind).toBe('warning'); expect(fc.fate).toBe('icon');
-    expect(fc.result).toBe('No gun is drawn outside the car, so they come for Vale. Draw one there (F).'); // engine 0.35.2 (GDD v0.30.2 section 06): only a drawn op guards a held car, so the fix is F
+    expect(fc.title).toBe('Rivals going for Popovic'); expect(fc.kind).toBe('warning'); expect(fc.fate).toBe('icon');
+    expect(fc.result).toBe('No gun is drawn outside the car, so they come for Popovic. Draw one there (F).'); // engine 0.35.2 (GDD v0.30.2 section 06): only a drawn op guards a held car, so the fix is F
     expect(bc.title).toBe('Rivals back in cover'); expect(bc.fate).toBe('alt');
     expect(bc.result).toBe('They fall back to cover: a gun is drawn by the car, or nothing blocks it.'); // "blocks", never "held" (GDD section 10)
     for (const c of [fc, bc]) { expect(c.sight).toBeUndefined(); expect(c.beat).toBeUndefined(); expect(JSON.stringify(c)).not.toMatch(/\bheld\b/i); }

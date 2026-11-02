@@ -64,26 +64,26 @@
   "dataSrc": "Waymark, 2026-10-25 (brief 062 'Portraits and ids', Glyph, Fable and Waymark): the briefing's mission data, read by Latch's Briefing.cs (HostBriefing.cs BriefScreen.Load: brief.json first, then mission.json brief). target: role is the roles[] id of the man to take (his photograph is portraits/card_<role>); at is where the briefing's Target leader lands, a mission.json destination as a place id (d:<name>, as camera.place): d:Official entrance, the door Vale comes out of at 4:50 under the canopy (timeline), not the guard's public door (Glyph N1 on 0.2.122, briefs/041/port-progress.md); tools/missions/handover/brief.ts rejects an unknown one. ways: one per way in; id is the text.json less.briefing.ways key and, for front-door, mission.json windows[0].id (route A); contact a roles[] id (its face portraits/face_<contact>); steps up to three kit icons after the face (front door: Inez, the guard's badge, the door; pickup: the driver, the car, the take). pickup has no window yet. clock: the marks from mission.json timeline (0:00 the start, 4:30 the handover chime, 7:30 the close: rivals take Vale or the car leaves). camera: the briefing frame (062 §5: overhead-pickup, the Office door right of centre at play zoom), 5 m on from d:Meet driver, opening yaw; the same frame the host derived before this data existed, so the screen does not move.",
   "variants": {
     "A": {
-      "hook": "Vale has a file on you.",
+      "hook": "Popovic has a file on you.",
       "handler": [
-        "The cameras caught your cell. Councillor Vale put it on paper.",
+        "The cameras caught your cell. Councillor Popovic put it on paper.",
         "No networks here. The file lives in a folder and in his head.",
         "Reach him first. Then we learn who else has read it."
       ],
       "dossier": {
-        "target": "Councillor Vale. Holds the file on you.",
+        "target": "Councillor Popovic. Holds the file on you.",
         "location": "Civic Records Office, the civic block.",
         "window": "Shift change, 4:30. He leaves soon after.",
         "objective": "Take him alive before it reaches Security."
       },
       "intel": [
         "Inez, café waitress. She knows the door guard.",
-        "Vale's driver needs cash.",
+        "Popovic's driver needs cash.",
         "A rival crew wants him too.",
         "Cameras are watched by people. People can be turned."
       ],
       "signoff": "Quiet hands. Go.",
-      "short": "Take Councillor Vale alive before he delivers the file. Deliver him to the getaway car.",
+      "short": "Take Councillor Popovic alive before he delivers the file. Deliver him to the getaway car.",
       "sources": [
         {
           "field": "target.role",
@@ -140,22 +140,22 @@
       ]
     },
     "B": {
-      "hook": "Vale leaves work with a file on you. Security gets it tonight.",
+      "hook": "Popovic leaves work with a file on you. Security gets it tonight.",
       "handler": [],
       "dossier": {
-        "target": "Councillor Vale. He built the file on your cell.",
+        "target": "Councillor Popovic. He built the file on your cell.",
         "location": "Civic Records Office, the civic block.",
         "window": "Shift change, 4:30. He leaves soon after.",
         "objective": "Take him alive. Deliver him to the getaway car."
       },
       "intel": [
         "Inez, café waitress. She knows the door guard.",
-        "Vale's driver needs cash.",
+        "Popovic's driver needs cash.",
         "A rival crew wants him too.",
         "Cameras are watched by people. People can be turned."
       ],
       "signoff": "Quiet hands. Go.",
-      "short": "Take Councillor Vale alive before he delivers the file. Deliver him to the getaway car.",
+      "short": "Take Councillor Popovic alive before he delivers the file. Deliver him to the getaway car.",
       "sources": [
         {
           "field": "target.role",
@@ -200,21 +200,21 @@
       ]
     },
     "C": {
-      "hook": "Vale has a file on you. Reach him before Security does.",
+      "hook": "Popovic has a file on you. Reach him before Security does.",
       "handler": [
-        "Take Councillor Vale alive.",
+        "Take Councillor Popovic alive.",
         "Outside the Records Office, before he delivers it.",
         "Deliver him to the getaway car."
       ],
       "dossier": {
-        "target": "Councillor Vale",
+        "target": "Councillor Popovic",
         "location": "Civic Records Office",
         "window": "4:30 shift change",
-        "objective": "Vale alive, in the getaway car."
+        "objective": "Popovic alive, in the getaway car."
       },
       "intel": [],
       "signoff": "",
-      "short": "Take Councillor Vale alive before he delivers the file. Deliver him to the getaway car.",
+      "short": "Take Councillor Popovic alive before he delivers the file. Deliver him to the getaway car.",
       "sources": [
         {
           "field": "hook",

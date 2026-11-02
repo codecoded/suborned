@@ -69,7 +69,7 @@ export const FAILS = ['abduction-seen-camera', 'cell-down', 'closed-in', 'driver
 /** Fail codes the engine keeps only for rulebooks pinned before a change; live text words none of them. `entry-seen-patrol` (engine 0.34.2, Sky 2026-10-26,
  *  GDD v0.28.0 section 07): the patrol seeing the Enter is a report (log entry.seen, entry.reported, entry.stopped), no fail. */
 export const RETIRED_FAILS = ['entry-seen-patrol'] as const;
-export const NAMED = ['Inez', 'Vale'] as const; // the only people the words may name (people.rules names.pinned); others by role
+export const NAMED = ['Inez', 'Popovic'] as const; // the only people the words may name (people.rules names.pinned); others by role
 /** Speakers only a scene has: the people around the target (the café's owner, a customer, an Office clerk). */
 export const SCENE_ONLY = ['keeper', 'clerk', 'customer'] as const;
 export const SCENE_SPEAKERS = [...SPEAKERS, ...SCENE_ONLY] as const;
@@ -280,7 +280,7 @@ export const Less = z.strictObject({
       .describe('the goal line in order: take, then bring, then carry; each `key` names the line above, `when` is the state the host reads (Latch builds the trigger)'),
   }),
   briefing: z.strictObject({
-    rule: z.string().min(1), goal: Short(32),
+    rule: z.string().min(1), goal: Short(40).refine((x) => x.replace(/[[\]]/g, '').length <= 32, 'at most 32 characters as drawn: the brackets around a ringed noun are colour, not characters (text.test.ts plain)'),
     begin: Short(12).describe('brief 062: the light-line item that starts the mission (always focused; Space begins)'),
     target: Short(12).describe('brief 062: the header of the file card (brief 070: the page\'s Target head); `fact` and `office` (the street overlay\'s file-card fact and Office tag) are retired with it'),
     ways: z.record(code, Short(16)).describe('brief 062: the name of each way in on the two way cards, by the mission\'s way id (front-door, pickup)'),

@@ -34,11 +34,7 @@
    {"source":"streaming-people","name":"Stavros"},
    {"source":"streaming-people","name":"Thea"},
    {"source":"streaming-people","name":"Tomas"},
-   {"source":"streaming-people","name":"Vale"},
-   {"source":"streaming-text","name":"Okafor"},
-   {"source":"streaming-text","name":"Vale"},
-   {"source":"text","name":"Okafor"},
-   {"source":"text","name":"Vale"}
+   {"source":"streaming-people","name":"Vale"}
   ]
  }
 }

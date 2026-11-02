@@ -63,7 +63,7 @@ describe('the words', () => {
     expect(fields).toEqual([
       ['listen-inez', 5, { lean: 'handsome' }],
       ['listen-inez', 7, { lean: 'did', revealAfter: 'He said nothing, you goose.', revealS: 0.9 }],
-      ['help-inez-2', 6, { lean: 'Okafor' }],
+      ['help-inez-2', 6, { lean: 'Arthur' }],
       ['help-inez-2', 8, { lean: 'did' }],
       ['call-inez', 3, { holdBefore: 1.2 }],
       ['call-inez', 6, { lean: 'you' }],
@@ -130,7 +130,7 @@ describe('the words', () => {
     const pool = new Set([...cast.names.given, ...cast.names.family].map((n) => n.name));
     const said = new Set<string>();
     for (const sc of c.items) for (const s of [...sc.beats.map((b) => b.line), ...sc.learned, ...sc.opens]) for (const w of s.match(/[\p{L}'-]+/gu) ?? []) if (pool.has(w.replace(/'s$/, ''))) said.add(w.replace(/'s$/, ''));
-    expect([...said].filter((w) => !['Inez', 'Okafor', 'Zhou', 'Milena', 'Nikolaou'].includes(w))).toEqual([]);
+    expect([...said].filter((w) => !['Inez', 'Arthur', 'Lukac', 'Milena', 'Nikolaou'].includes(w))).toEqual([]);
   });
   test('the schema holds its limits: a long card, a scene with no temperament', () => {
     const ok = byId('help-inez-1');

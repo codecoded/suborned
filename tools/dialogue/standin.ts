@@ -80,7 +80,7 @@ function scene(k: SceneKey): SceneT {
   return { ...k, variants };
 }
 
-/** The stand-in tables for a scope. `text`: the Handover's text; where it has a group's situation, its lines stand in the cell, unless they name someone (the Handover names Inez and Vale;
+/** The stand-in tables for a scope. `text`: the Handover's text; where it has a group's situation, its lines stand in the cell, unless they name someone (the Handover names Inez and Popovic;
  *  generated tables name no one) or gender someone (he, sir: generated tables gender no one), or `keepNames` is set (the fixture test, which runs the checker on the hand-written text itself). */
 export function standIn(scope: string, dr: DialogueRules, rb: Rulebook, people: PeopleRules, text?: Pick<TextFile, 'dialogue' | 'scenes'>, o: { keepNames?: boolean } = {}): Voices {
   const s = dr.scopes[scope];

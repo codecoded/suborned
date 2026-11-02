@@ -41,7 +41,7 @@ function who(id: string, role: string, also = ''): string {
 }
 const INEZ = 'p-cafe-14', MILENA = 'p-cafe-12', apart = metres('cafe-entrance', 'office-entrance');
 const WORLD = 'The place: the café and its terrace face Records Square; the Civic Records Office is across the square. Evening, shift change coming. A polite, orderly city that writes everything down. Records are paper: stamped cards, forms, pneumatic tubes. Calls are voice, by telephone. Robots follow fixed routines. Everyone in the scene is a person of this city except the cell.';
-const INEZ_GUARD = `Inez and the door guard are lovers, in secret. He stands the Office's public door, ${apart} m across the square from her. The two are never together unless she calls him. In speech call him Okafor (never his given name, and no gendered word beyond "he").`;
+const INEZ_GUARD = `Inez and the door guard are lovers, in secret. He stands the Office's public door, ${apart} m across the square from her. The two are never together unless she calls him. In speech call him Arthur, his given name: it is what Inez calls him, and the cell knows him by what it heard from her (never his surname, and no gendered word beyond "he").`;
 
 export type SceneB = { id: string; sheet: string; jobs: Job[]; excerpts: string[] };
 /** Bare facts plus each person's want, fear and stake, and what causes the yes or the no. No quotable phrasing and no direction for how a line should land. */
@@ -54,7 +54,7 @@ Situation: the Scout has sat at the next table for half a minute. The player hea
 ${who(INEZ, 'Inez')}
 ${who(MILENA, 'Milena', 'Works the same café, inside this shift; she owes the Bureau too. No secret of hers comes up.')}
 ${INEZ_GUARD} Milena has noticed where Inez keeps looking; she doesn't know for sure until this talk.
-Inez wants: to get through this shift with the debt and Okafor both out of sight. Fears: the tables noticing; the Office hearing of Okafor, which costs them both. Stake: his post and her place.
+Inez wants: to get through this shift with the debt and Arthur both out of sight. Fears: the tables noticing; the Office hearing of Arthur, which costs them both. Stake: his post and her place.
 Milena wants: something small from Inez this shift that has a price, of the writer's choosing, within a waitress's work. Her noticing is what she has to trade. Fears: her own debt being the subject. Stake: a better shift.
 The cause of the turn: Inez gives Milena something, or gives something away, to stop the noticing.
 Facts the whole scene carries, in speech or in the Scout's line: Inez is a waitress at this café; she owes the Bureau and is behind; she is seeing the guard on the Office door; if the Office hears of it, it costs them both; she is nervous by nature.
@@ -67,14 +67,14 @@ Voices from the contract: waitress: ${voicesB('waitress')}. scout: ${voicesB('sc
     id: 'pressure-inez', jobs: ['pressure', 'yes-or-no', 'lie-to-loved', 'dodge'],
     excerpts: ['krogstad-so-good', 'milverton-terms', 'tulkinghorn-whose-secret', 'milverton-coat', 'jig-then-ill-do-it', 'nora-here-no'],
     sheet: `${WORLD}
-Situation: the Fixer comes to Inez at the café door with no money, and keeps the voice low because a threat can be seen. The Fixer knows about her and Okafor; the Office doesn't.
+Situation: the Fixer comes to Inez at the café door with no money, and keeps the voice low because a threat can be seen. The Fixer knows about her and Arthur; the Office doesn't.
 ${who(INEZ, 'Inez')}
 ${INEZ_GUARD}
-The Fixer wants: her agreement that when the Fixer telephones, she calls Okafor over from his door; he comes to her side and stays about a minute. Fears: being seen making a threat; being remembered. Stake: the plan, and the Fixer's own face.
-Inez wants: this person gone before the tables see, and Okafor safe. Fears: the Office learning of the two of them. Stake: his post and her place.
+The Fixer wants: her agreement that when the Fixer telephones, she calls Arthur over from his door; he comes to her side and stays about a minute. Fears: being seen making a threat; being remembered. Stake: the plan, and the Fixer's own face.
+Inez wants: this person gone before the tables see, and Arthur safe. Fears: the Office learning of the two of them. Stake: his post and her place.
 The cause of her yes: something the Fixer says or does just before it shows her the Office could really learn of it, and that refusing won't keep it from them. She gives in quickly, and hates it.
 What it costs the Fixer: being taken for kind no longer works on her. She will remember the Fixer's face and could describe it if she's ever questioned. The Fixer knows it, and does not get to leave the matter closed.
-Facts the whole scene carries, in speech or in the cards: the threat is to expose the two of them; she agreed out of fear and resents it; when told, she calls Okafor off the door.
+Facts the whole scene carries, in speech or in the cards: the threat is to expose the two of them; she agreed out of fear and resents it; when told, she calls Arthur off the door.
 Speakers: Inez, Fixer.
 learned: 1 line, and it mentions she knows the Fixer's face. opens: "Call Inez".
 Voices from the contract: waitress: ${voicesB('waitress')}. fixer: ${voicesB('fixer')}.`,

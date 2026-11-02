@@ -293,7 +293,7 @@ Today: 112 family names, about 138,000 full names.
 
 ## The ban list
 
-Saved with sources: `briefs/089/research/llm-name-ban-list.json`. "Strong" means counted in a study or a run. "Reported" means named in a complaint or one person's blocklist.
+Saved with sources: `contracts/people/llm-name-ban-list.json`. "Strong" means counted in a study or a run. "Reported" means named in a complaint or one person's blocklist.
 
 **How many of ours are on it**
 - **Said in play, 6 names:** 2 are on the strong list, **Vale and Okafor**. Sky's ear was right about both. Inez, Zhou, Milena and Nikolaou are on no list I found.

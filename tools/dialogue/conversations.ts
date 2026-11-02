@@ -40,21 +40,21 @@ const GUARD_REASON = `He only leaves his post for a reason: she says she has som
 /** GDD v0.34.0 §07 (Sky, brief 085): a pressured Inez, and only she, tells him. She still needs a reason to get him off the door. */
 const GUARD_REASON_THEN_TELLS = `He only leaves his post for a reason: she says she has something to tell him that can't wait and can't be said on the line. It's her reason, in her own words, and he steps off the door for it.`;
 const VOICES = (...k: string[]) => k.map(v => `- ${v}: ${text.tone.voices[v]}`).join('\n');
-const INEZ_GUARD = `Inez and the door guard are lovers, in secret. He stands the Office's public door, ${apart} m across the square from her. The two are never together unless she calls him. In speech call him Okafor (never his given name, and no gendered word beyond "he").`;
+const INEZ_GUARD = `Inez and the door guard are lovers, in secret. He stands the Office's public door, ${apart} m across the square from her. The two are never together unless she calls him. In speech call him Arthur, his given name: it is what Inez calls him, and the cell knows him by what it heard from her (never his surname, and no gendered word beyond "he").`;
 
 type Spec = { id: string; title: string; after?: string[]; kind: 'learn' | 'turn' | 'call'; maxBeats: number; speakers: string[]; query: string[]; sheet: string; mustSay: { what: string; re: RegExp }[] };
 export const specs: Spec[] = [
   {
     id: 'listen-inez', title: 'Listen to Inez', kind: 'learn', maxBeats: 10, speakers: ['Inez', 'Milena', 'Scout'],
     query: ['Inez door guard lovers debt affair Help Pressure secret', 'Fearful temperament hesitates Listen reveals need secret', 'world records paper calls voice orderly city fears disorder', 'conversation scene overheard Listen'],
-    mustSay: [{ what: 'the Bureau loan', re: /bureau/i }, { what: 'the guard', re: /okafor|guard/i }],
+    mustSay: [{ what: 'the Bureau loan', re: /bureau/i }, { what: 'the guard', re: /arthur|guard/i }],
     sheet: `${WORLD}
 Situation: the Scout has stood two metres away, between the palms, for half a minute. The player hears what the Scout hears. Inez is standing at the café door between tables. Milena is a voice through the open door, from just inside. Neither knows the Scout is listening.
 ${INEZ_WHO}
 ${who(MILENA, 'Milena', 'Works the same café, inside this shift; she owes the Bureau too. No secret of hers comes up. She\'s fond of Inez: she teases her, worries whether she\'s eaten, and won\'t tell.')}
 ${INEZ_GUARD} Milena has noticed where Inez keeps looking; she doesn't know for sure until this talk.
 The scene must make plain, by its end: Inez is a waitress at this café; she owes the Bureau and can't keep up; she is seeing the guard on the Office door; if the Office hears of it, it costs them both; she is nervous by nature.
-Last beat: the Scout, very low, to the cell, terse fragments: what was heard, and what each thing could get you with her: the loan could be cleared, Okafor could be used. Never counts the ways, and gives no verdict on which is better.
+Last beat: the Scout, very low, to the cell, terse fragments: what was heard, and what each thing could get you with her: the loan could be cleared, Arthur could be used. Never counts the ways, and gives no verdict on which is better.
 Speakers: Inez, Milena, Scout.
 learned: 2 lines (the debt; the lover). opens: "Help" and "Pressure" (both are now open on Inez; they cost what the ring says).
 ${VOICES('waitress', 'scout')}`,
@@ -75,15 +75,15 @@ ${VOICES('waitress', 'fixer')}`,
   {
     id: 'help-inez-2', title: 'Help Inez, second visit', after: ['listen-inez', 'help-inez-1'], kind: 'turn', maxBeats: 9, speakers: ['Inez', 'Fixer'],
     query: ['Help clear debt gratitude bravery helped Inez warns rivals', 'Inez call guard walks to her side partners stays 60 s', 'capstone the call that pulls the guard off his door'],
-    mustSay: [{ what: 'calling him over', re: /call|come over|fetch|over here|send for/i }, { what: 'the guard', re: /okafor|guard|him/i }],
+    mustSay: [{ what: 'calling him over', re: /call|come over|fetch|over here|send for/i }, { what: 'the guard', re: /arthur|guard|him/i }],
     sheet: `${WORLD}
-Situation: the Fixer comes back and clears the rest of the Bureau loan. This time she is won over, gratefully and still frightened. Now the Fixer finally says what's wanted, and it is small: when the Fixer telephones, she calls Okafor over from his door. ${GUARD_AWAY} ${GUARD_REASON}
+Situation: the Fixer comes back and clears the rest of the Bureau loan. This time she is won over, gratefully and still frightened. Now the Fixer finally says what's wanted, and it is small: when the Fixer telephones, she calls Arthur over from his door. ${GUARD_AWAY} ${GUARD_REASON}
 ${INEZ_WHO}
 ${INEZ_GUARD}
-She must work out for herself that the Fixer knows about Okafor, and be frightened by that; the Fixer is kind about it and makes no threat. She asks what happens to him. The honest answer the Fixer can give: nothing happens to him if this goes right, and he never sees us.
+She must work out for herself that the Fixer knows about Arthur, and be frightened by that; the Fixer is kind about it and makes no threat. She asks what happens to him. The honest answer the Fixer can give: nothing happens to him if this goes right, and he never sees us.
 Fact of the game: because she was helped, she will warn the cell if she sees trouble coming on the square. Let her offer that, in her own frightened way, near the end.
 He's good company and she starts to believe him, because he did come back with the rest. Let her say so in her own way.
-The scene must make plain: the loan is paid; she's with us now; when we say so, she calls Okafor off the door.
+The scene must make plain: the loan is paid; she's with us now; when we say so, she calls Arthur off the door.
 learned: 1 line. opens: "Call Inez".
 ${VOICES('waitress', 'fixer')}`,
   },
@@ -92,37 +92,37 @@ ${VOICES('waitress', 'fixer')}`,
     query: ['Pressure threat fear resentment can identify Fixer seen', 'Inez secret affair Pressure threatens to expose', 'capstone the call that pulls the guard off his door'],
     mustSay: [{ what: 'the affair exposed', re: /office|tell|know|hear/i }, { what: 'calling him over', re: /call|come over|fetch|over here|send for/i }],
     sheet: `${WORLD}
-Situation: the same woman, a different way in. The Fixer comes to Inez at the café door with no money and tells her, gently, that the Office could learn about her and Okafor. She gives in quickly, and hates it. The Fixer is warm in manner, steel underneath, takes no pleasure in it and doesn't pretend otherwise. The Fixer keeps their voice low because a threat can be seen. What's wanted: when the Fixer telephones, she calls Okafor over from his door. ${GUARD_REASON_THEN_TELLS} She will warn him when he arrives, and the door is clear about 1:40, so nobody in this scene says how long he's away.
+Situation: the same woman, a different way in. The Fixer comes to Inez at the café door with no money and tells her, gently, that the Office could learn about her and Arthur. She gives in quickly, and hates it. The Fixer is warm in manner, steel underneath, takes no pleasure in it and doesn't pretend otherwise. The Fixer keeps their voice low because a threat can be seen. What's wanted: when the Fixer telephones, she calls Arthur over from his door. ${GUARD_REASON_THEN_TELLS} She will warn him when he arrives, and the door is clear about 1:40, so nobody in this scene says how long he's away.
 ${INEZ_WHO}
 ${INEZ_GUARD}
 Fact of the game, for learned only, and nobody says it aloud: she will remember the Fixer's face, and could describe it if she's ever questioned. She wouldn't threaten a stranger who frightens her, and the Fixer wouldn't remind her.
 He stays good company all through: gentle, unhurried, kind about her shift in the same breath as the threat. No raised voice and no cruelty, and that's what frightens. By the end the threat is plain.
-The scene must make plain, the cards included: we threatened to expose the two of them; she agreed, and hates it, and never says she's scared; when we say so, she calls Okafor off the door.
+The scene must make plain, the cards included: we threatened to expose the two of them; she agreed, and hates it, and never says she's scared; when we say so, she calls Arthur off the door.
 learned: 1 line, and it mentions she knows the Fixer's face. opens: "Call Inez".
 ${VOICES('waitress', 'fixer')}`,
   },
   {
-    id: 'pay-driver', title: 'Pay the driver', kind: 'turn', maxBeats: 9, speakers: ['Zhou', 'Fixer'],
+    id: 'pay-driver', title: 'Pay the driver', kind: 'turn', maxBeats: 9, speakers: ['Lukac', 'Fixer'],
     query: ['route B pickup driver turned Pay service bay waits', 'official driver needs cash Mercenary Pay', 'getaway rivals lookout turned driver warns lookout off', 'world paper records voice calls'],
     mustSay: [{ what: 'the service bay', re: /service bay|round the back|service drive|round to the/i }, { what: 'the Councillor', re: /councillor/i }],
     sheet: `${WORLD}
-Situation: the Fixer finds Vale's official driver waiting by the official car in the bay on the Office's south side, on Apron Road, and offers money; the game pays it away from the shot, so no envelope. It works. The driver has had a lean month and presses on the terms of the job, never the money, and the conversation is about the exact job, because this is someone who's been paid to be vague before and wants it spelled out.
-${who(DRIVER, 'Zhou', 'Call the driver Zhou; no gendered word. Calls Vale "the Councillor", always.')}
-The job, exactly as the game plays it: when the chime goes the Councillor comes out and gets in. A paid Zhou doesn't drive off. Zhou takes the Councillor round to the service bay at the back, the east yard, and waits there with him. Zhou won't wait for ever: a couple of minutes, then drives on. Zhou also says that if someone's hanging about watching the bay, Zhou can send them off; Zhou has noticed nothing specific and names nobody. What happens to the Councillor at the bay is the Fixer's people's business; Zhou doesn't want to see it.
-The Fixer says "we" and never explains who "we" are. Zhou doesn't ask, and says why not, in a line.
-The Fixer likes Zhou, and it shows once.
-The scene must make plain: Zhou is the Councillor's driver and is short of money; we paid; at the chime the Councillor's car goes to the service bay, not home, and waits a short while; that's where to be.
+Situation: the Fixer finds Popovic's official driver waiting by the official car in the bay on the Office's south side, on Apron Road, and offers money; the game pays it away from the shot, so no envelope. It works. The driver has had a lean month and presses on the terms of the job, never the money, and the conversation is about the exact job, because this is someone who's been paid to be vague before and wants it spelled out.
+${who(DRIVER, 'Lukac', 'Call the driver Lukac, his surname: the Fixer matches his brisk way and adds no Mr; no gendered word. Calls Popovic "the Councillor", always.')}
+The job, exactly as the game plays it: when the chime goes the Councillor comes out and gets in. A paid Lukac doesn't drive off. Lukac takes the Councillor round to the service bay at the back, the east yard, and waits there with him. Lukac won't wait for ever: a couple of minutes, then drives on. Lukac also says that if someone's hanging about watching the bay, Lukac can send them off; Lukac has noticed nothing specific and names nobody. What happens to the Councillor at the bay is the Fixer's people's business; Lukac doesn't want to see it.
+The Fixer says "we" and never explains who "we" are. Lukac doesn't ask, and says why not, in a line.
+The Fixer likes Lukac, and it shows once.
+The scene must make plain: Lukac is the Councillor's driver and is short of money; we paid; at the chime the Councillor's car goes to the service bay, not home, and waits a short while; that's where to be.
 learned: 1 line. opens: nothing new to press; instead 1 line naming the place to be ("Be at the service bay").
 ${VOICES('driver', 'fixer')}`,
   },
   {
-    id: 'call-inez', title: 'The call, after Help', after: ['listen-inez', 'help-inez-1', 'help-inez-2'], kind: 'call', maxBeats: 8, speakers: ['Fixer', 'Inez', 'Okafor'],
+    id: 'call-inez', title: 'The call, after Help', after: ['listen-inez', 'help-inez-1', 'help-inez-2'], kind: 'call', maxBeats: 8, speakers: ['Fixer', 'Inez', 'Arthur'],
     query: ['capstone the call pulls guard off door partners ring side stays 60 s', 'route A front door Call Inez window Enforcer enters', 'calls are voice telephone'],
     mustSay: [{ what: 'he leaves the door', re: /door|post|step/i }],
     sheet: `${WORLD}
-Situation: the moment the whole front-door plan was for. The Fixer telephones the café and says it's time. Inez, whom the cell has helped, then gets Okafor to leave his door: she calls across to him on the Office door's handset. ${GUARD_AWAY} ${GUARD_REASON} The shot cuts between them, each standing alone; no one is seen holding a telephone.
+Situation: the moment the whole front-door plan was for. The Fixer telephones the café and says it's time. Inez, whom the cell has helped, then gets Arthur to leave his door: she calls across to him on the Office door's handset. ${GUARD_AWAY} ${GUARD_REASON} The shot cuts between them, each standing alone; no one is seen holding a telephone.
 ${INEZ_WHO}
-${who(GUARD, 'Okafor', 'In speech he is Okafor to the Fixer; Inez may call him "love". He has a shift to finish and likes her more than the job. He says nothing about money here, and doesn\'t say how long the door stands empty.')}
+${who(GUARD, 'Arthur', 'In speech he is Arthur to the Fixer and to Inez; Inez may call him "love". He has a shift to finish and likes her more than the job. He says nothing about money here, and doesn\'t say how long the door stands empty.')}
 ${INEZ_GUARD}
 They're glad of each other. He's fond, a little clumsy, and pleased to be asked. He ends the scene happy to come, knowing nothing.
 She is scared and must sound ordinary to him. He must not suspect. Tenderness matters: this is two people who love each other, and one of them is using it. Let the player feel that, in a line. No coffee spill: he comes because she asked and gave him a reason.
@@ -131,15 +131,15 @@ learned: 1 line ("Door empty a few minutes"). opens: 1 line naming what the door
 ${VOICES('waitress', 'guard', 'fixer')}`,
   },
   {
-    id: 'call-inez-pressure', title: 'The call, after Pressure', after: ['listen-inez', 'pressure-inez'], kind: 'call', maxBeats: 9, speakers: ['Fixer', 'Inez', 'Okafor'],
+    id: 'call-inez-pressure', title: 'The call, after Pressure', after: ['listen-inez', 'pressure-inez'], kind: 'call', maxBeats: 9, speakers: ['Fixer', 'Inez', 'Arthur'],
     query: ['pressured Inez tells the guard someone knows, they looked suspicious, he runs back to his door, window shorter', 'Pressure leaves fear resentment can identify Fixer', 'route A front door Call Inez window Enforcer enters', 'calls are voice telephone'],
     mustSay: [{ what: 'the reason she gives him', re: /tell you|can't wait/i }, { what: 'that he is coming', re: /coming/i }],
     sheet: `${WORLD}
-Situation: the moment the front-door plan was for. The Fixer threatened to tell the Office about Inez and Okafor, and told her not to say a word of it to him. Now the Fixer telephones the café and says it's time. Inez then speaks to Okafor on the Office door's handset. The shot cuts between them, each standing alone; no one is seen holding a telephone. He doesn't arrive in this scene.
+Situation: the moment the front-door plan was for. The Fixer threatened to tell the Office about Inez and Arthur, and told her not to say a word of it to him. Now the Fixer telephones the café and says it's time. Inez then speaks to Arthur on the Office door's handset. The shot cuts between them, each standing alone; no one is seen holding a telephone. He doesn't arrive in this scene.
 ${INEZ_WHO}
-${who(GUARD, 'Okafor', 'In speech he is Okafor to the Fixer; Inez may call him "love". He has a shift to finish and likes her more than the job. He says nothing about money here, and doesn\'t say how long the door stands empty.')}
+${who(GUARD, 'Arthur', 'In speech he is Arthur to the Fixer and to Inez; Inez may call him "love". He has a shift to finish and likes her more than the job. He says nothing about money here, and doesn\'t say how long the door stands empty.')}
 ${INEZ_GUARD}
-It's the same woman the player has just read, and she hates the Fixer. She answers the Fixer as if she's giving way, as she did before. She talks to Okafor the way she always does, an ordinary word about his shift. ${GUARD_REASON_THEN_TELLS} The scene ends with him coming.
+It's the same woman the player has just read, and she hates the Fixer. She answers the Fixer as if she's giving way, as she did before. She talks to Arthur the way she always does, an ordinary word about his shift. ${GUARD_REASON_THEN_TELLS} The scene ends with him coming.
 They're glad of each other, here too: he's fond, a little clumsy, pleased to hear her, and she's fond of him and sick about it. With the Fixer she has no warmth left, and he's as kind as ever.
 Fact of the game, for the cards only: when he reaches her, in play, she tells him someone knows about them and that they looked suspicious, and he runs back to his door, so the door is clear for a much shorter time (Motive: he walks over, stands 5 s with her, runs back). Those two lines aren't in this scene and nothing in it says so aloud: she can't tell him here, because he hasn't walked over yet.
 learned: 1 line: she'll warn him. opens: 1 line truthful about the shorter window and the entrance camera, which still stops an Enter until it's looped or off.

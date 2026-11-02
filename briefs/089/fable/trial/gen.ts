@@ -3,7 +3,7 @@ import { readFileSync, writeFileSync } from 'fs';
 import { plain } from './base';
 const D=import.meta.dir;const R='/Users/sky/Projects/suborned/';
 const base=JSON.parse(readFileSync(D+'/base.json','utf8'));
-const ban=JSON.parse(readFileSync(R+'briefs/089/research/llm-name-ban-list.json','utf8'));
+const ban=JSON.parse(readFileSync(R+'contracts/people/llm-name-ban-list.json','utf8'));
 const banned=new Set([...Object.keys(ban.strong),...ban.reported].map((s:string)=>s.toLowerCase()));
 const looks=ban.lookalike.map((r:string)=>new RegExp(r));
 export const isBanned=(s:string)=>{const l=plain(s).toLowerCase();return banned.has(l)||looks.some((r:RegExp)=>r.test(l));};

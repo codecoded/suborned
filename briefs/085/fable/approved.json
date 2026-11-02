@@ -1,5 +1,5 @@
 {
- "note": "The last words Sky agreed for each scene. listen-inez, help-inez-2 and call-inez: Fable's warmer versions, briefs/085/fable/warmer.json with two wording fixes, agreed 2026-11-01. help-inez-1, pressure-inez and pay-driver: r002, agreed 2026-10-31; text.json may now play a newer version marked awaiting-sky, and a generator run with --only reads these as what the player has read. call-inez's opens card: \"Camera off?\" became \"Camera blind?\" on Motive's review in r004, since a Loop also clears the camera; Sky has not read that one change.",
+ "note": "The last words Sky agreed for each scene. listen-inez, help-inez-2 and call-inez: Fable's warmer versions, briefs/085/fable/warmer.json with two wording fixes, agreed 2026-11-01; names renamed for brief 089 (Okafor is Arthur, Zhou is Lukac, Sky 2026-11-02), a rename alone, so the agreement stands. help-inez-1, pressure-inez and pay-driver: r002, agreed 2026-10-31; text.json may now play a newer version marked awaiting-sky, and a generator run with --only reads these as what the player has read. call-inez's opens card: \"Camera off?\" became \"Camera blind?\" on Motive's review in r004, since a Loop also clears the camera; Sky has not read that one change.",
  "from": "runs/conversations/085/r002",
  "scenes": [
   {
@@ -27,7 +27,7 @@
     ],
     [
      "Inez",
-     "Who says? Did Okafor say something? Who else has he told?"
+     "Who says? Did Arthur say something? Who else has he told?"
     ],
     [
      "Milena",
@@ -43,12 +43,12 @@
     ],
     [
      "Scout",
-     "Bureau loan, behind, could be cleared. Okafor, Office door, could be used."
+     "Bureau loan, behind, could be cleared. Arthur, Office door, could be used."
     ]
    ],
    "learned": [
     "Debt: Bureau loan, and she's behind.",
-    "Secret: seeing Okafor, the door guard."
+    "Secret: seeing Arthur, the door guard."
    ],
    "opens": [
     "Help: clear her Bureau loan.",
@@ -115,11 +115,11 @@
     ],
     [
      "Fixer",
-     "A few minutes. When I telephone, call Okafor off the Office door."
+     "A few minutes. When I telephone, call Arthur off the Office door."
     ],
     [
      "Inez",
-     "Okafor. You know about us, then. What happens to him?"
+     "Arthur. You know about us, then. What happens to him?"
     ],
     [
      "Fixer",
@@ -150,7 +150,7 @@
     ],
     [
      "Fixer",
-     "Not the Bureau. Softly. The Office could learn about you and Okafor."
+     "Not the Bureau. Softly. The Office could learn about you and Arthur."
     ],
     [
      "Inez",
@@ -158,7 +158,7 @@
     ],
     [
      "Fixer",
-     "Hear it first. When I telephone, you call Okafor off the door."
+     "Hear it first. When I telephone, you call Arthur off the door."
     ],
     [
      "Inez",
@@ -166,7 +166,7 @@
     ],
     [
      "Fixer",
-     "Keep Okafor with you a few minutes. That's all we ask."
+     "Keep Arthur with you a few minutes. That's all we ask."
     ],
     [
      "Inez",
@@ -174,7 +174,7 @@
     ],
     [
      "Fixer",
-     "I know what this is. Not a word of us to Okafor."
+     "I know what this is. Not a word of us to Arthur."
     ]
    ],
    "learned": [
@@ -188,7 +188,7 @@
    "id": "pay-driver",
    "beats": [
     [
-     "Zhou",
+     "Lukac",
      "You said money, and it's been a lean month. For what, exactly?"
     ],
     [
@@ -196,7 +196,7 @@
      "We've paid already. One short drive with the Councillor."
     ],
     [
-     "Zhou",
+     "Lukac",
      "I won't ask who's we. Driving the Councillor's never paid like that."
     ],
     [
@@ -204,7 +204,7 @@
      "At the chime he gets in. Not home, the service bay."
     ],
     [
-     "Zhou",
+     "Lukac",
      "East yard, round the back. And I wait how long, exactly?"
     ],
     [
@@ -212,20 +212,20 @@
      "Until we've got him. Not long."
     ],
     [
-     "Zhou",
+     "Lukac",
      "Been paid for 'not long' before. Couple of minutes, then I drive."
     ],
     [
      "Fixer",
-     "A couple of minutes, Zhou. We'll be at the service bay."
+     "A couple of minutes, Lukac. We'll be at the service bay."
     ],
     [
-     "Zhou",
+     "Lukac",
      "I won't look. Anyone watching the service bay, I can send off."
     ]
    ],
    "learned": [
-    "Zhou waits a couple of minutes."
+    "Lukac waits a couple of minutes."
    ],
    "opens": [
     "Be at the service bay"
@@ -236,7 +236,7 @@
    "beats": [
     [
      "Fixer",
-     "It's time, Miss Nikolaou. Call Okafor across now. You'll do fine."
+     "It's time, Miss Nikolaou. Call Arthur across now. You'll do fine."
     ],
     [
      "Inez",
@@ -247,7 +247,7 @@
      "How's your shift, love?"
     ],
     [
-     "Okafor",
+     "Arthur",
      "Long. This door's said nothing all day. It's good to hear you."
     ],
     [
@@ -255,7 +255,7 @@
      "Come across. I've something to tell you, and not down a telephone."
     ],
     [
-     "Okafor",
+     "Arthur",
      "I've this door till shift's end. For you, it can wait."
     ],
     [
@@ -263,7 +263,7 @@
      "Walk, love. Don't run. Let me keep you a while."
     ],
     [
-     "Okafor",
+     "Arthur",
      "Keep me as long as you like."
     ]
    ],

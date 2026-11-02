@@ -19,7 +19,7 @@ const esc = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replac
 const words = (s: string) => s.trim().split(/\s+/).length;
 const secs = (s: S) => Math.round(s.beats.reduce((n, b) => n + words(b[1]), 0) * 0.3 + s.beats.length * 0.5);
 const NAMES: Record<string, string> = { waitress: 'Inez', guard: 'Guard', driver: 'Driver', fixer: 'Fixer', scout: 'Scout' };
-const ROLES: Record<string, string> = { Inez: 'waitress', Milena: 'waitress, inside', Zhou: "Vale's driver", Okafor: 'door guard' };
+const ROLES: Record<string, string> = { Inez: 'waitress', Milena: 'waitress, inside', Lukac: "Popovic's driver", Arthur: 'door guard' };
 
 type Where = 'cut' | 'bub';
 type Row = [Where, string, string];
