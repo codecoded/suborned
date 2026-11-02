@@ -54,7 +54,7 @@
    "usd": 3.33165
   },
   "2026-11-02": {
-   "calls": 29,
+   "calls": 38,
    "usd": 0.5358
   }
  },
@@ -76,7 +76,7 @@
    "usd": 16.80114
   },
   "codex:image_gen": {
-   "calls": 133,
+   "calls": 142,
    "usd": 0.0
   },
   "google:4@2": {
@@ -120,7 +120,7 @@
    "usd": 2.8
   }
  },
- "calls": 556,
+ "calls": 565,
  "failed": 26,
  "jobs": {
   "007-concepts": {
@@ -921,6 +921,43 @@
    "cost_per_used": null,
    "failed": 0,
    "ok": 13,
+   "total_usd": 0.0,
+   "unknown_cost_calls": 0,
+   "used": 0,
+   "used_usd": 0.0
+  },
+  "085-book": {
+   "blocked": 0,
+   "by_day": {
+    "2026-11-02": {
+     "calls": 9,
+     "usd": 0.0
+    }
+   },
+   "by_model": {
+    "codex:image_gen": {
+     "calls": 9,
+     "usd": 0.0
+    }
+   },
+   "by_pass": {
+    "look1": {
+     "calls": 4,
+     "usd": 0.0
+    },
+    "look2": {
+     "calls": 4,
+     "usd": 0.0
+    },
+    "plate": {
+     "calls": 1,
+     "usd": 0.0
+    }
+   },
+   "calls": 9,
+   "cost_per_used": null,
+   "failed": 0,
+   "ok": 9,
    "total_usd": 0.0,
    "unknown_cost_calls": 0,
    "used": 0,
