@@ -159,8 +159,11 @@ namespace Suborned.Play
                 var role = Op.Name((OpId)i); float x = PgM + i * 290;
                 var cm = Cameo(pg, 54f, 2f); cm.style.position = Position.Absolute; cm.style.left = x; cm.style.top = 1023 - 30 - U; Bg(cm.Q("face"), $"portraits/cameo_{role}_normal", Color.white);
                 Pg(cm, "image", () => "face " + role, "face"); // glyph-page-budget 2.2: one picture, one image
-                var who = host.Text != null && host.Text.Speakers.TryGetValue(role, out var sp) ? sp : role;
-                var wl = PgText(pg, x + 72, 992 - U, "Jost-Bold", 12.5f, PgCreamHex, who, 0.16f, true); Pg(wl, "hud", () => who, "cell-head");
+                // the head, as the book's title: the name (book.cell.name) in cream, then "· job" (names.speakers) in the dim; both data
+                string who = host.AgentName(i), job = host.AgentJob(i), tag = who != job ? "· " + job : "";
+                var hd = E(pg, null, x + 72, 992 - U); hd.style.flexDirection = FlexDirection.Row; hd.style.alignItems = Align.FlexEnd; hd.pickingMode = PickingMode.Ignore;
+                var wl = PgText(hd, float.NaN, 0, "Jost-Bold", 12.5f, PgCreamHex, who, 0.16f, true); wl.style.position = Position.Relative; Pg(wl, "hud", () => who, "cell-head");
+                if (tag.Length > 0) { var jl = PgText(hd, float.NaN, 0, "Jost-Bold", 12.5f, PgDimHex, tag, 0.16f, true); jl.style.position = Position.Relative; jl.style.marginLeft = 8; Pg(jl, "hud", () => tag, "cell-head"); }
                 var line = b.CellLines.TryGetValue(role, out var cl) ? cl : "";
                 var ll = PgPara(pg, x + 72, 1012 - U, 212, "Jost-Medium", 13.5f, PgDimHex, line); Pg(ll, "hud", () => line, "cell");
             }
