@@ -6,11 +6,11 @@
   "deadline_utc": "2026-11-03T23:59:00Z",
   "playable_url": "https://codecoded.itch.io/the-suborned",
   "repository_url": "https://github.com/codecoded/suborned/tree/assignment-07",
-  "pipeline_video_url": null,
+  "pipeline_video_url": "https://youtu.be/725LKDmVNQ8",
   "local_walkthrough": "out/scratch/a07/video/TheSuborned-A07-pipeline-walkthrough.mp4",
   "walkthrough_kind": "Annotated offline replay of historical AI generation; not a fresh live model recording",
   "audit": "audit.pdf",
-  "pipeline_example": "brief-033-live-portraits",
+  "pipeline_example": "people-relationships-routines-r016",
   "public_page_observed": {
     "date_bangkok": "2026-11-03",
     "download": "TheSuborned-0.2.231.zip",
@@ -25,21 +25,33 @@
   "ready_to_submit": false,
   "remaining": [
     "compatible marker platform",
-    "matching public build and evidence",
-    "timed cold-start play test",
-    "signed-out repository access check",
-    "primary recorded pipeline execution",
-    "final audit matching demonstrated scope"
+    "timed public cold-start play test",
+    "resolve full-release reproducibility before claiming an identical full rebuild"
   ],
   "supporting_video_url": "https://youtu.be/E2I0FdpXLUk",
   "supporting_video_channel": "CodeCoded / @codecoded",
   "supporting_video_visibility": "unlisted",
-  "primary_pipeline_evidence_status": "requires real recorded execution; portrait walkthrough is supporting evidence only",
+  "primary_pipeline_evidence_status": "published: actual recorded offline execution into a labelled local player variant; historical AI responses replayed",
   "withdrawn_video": {
     "url": "https://youtu.be/Iyf6Bg8n-Xo",
     "channel": "Gamelovr",
     "visibility": "private",
     "reason": "wrong channel"
   },
-  "audit_status": "provisional portrait example; final scope review pending"
+  "audit_status": "one-page people-pipeline audit rendered and visually checked",
+  "local_pipeline_video": "out/scratch/a07/people-run/TheSuborned-A07-People-Pipeline-4K-upload.mp4",
+  "pipeline_recorded": true,
+  "fresh_model_generation_recorded": false,
+  "fresh_unity_build_recorded": false,
+  "replay_variant": "Current-plan expansion, retained 0.2.232 player binary; 4 mission profiles match production, full background population differs",
+  "repository_access": {
+    "checked_utc": "2026-11-02",
+    "signed_out": true,
+    "public": true,
+    "branch": "assignment-07"
+  },
+  "pipeline_video_channel": "CodeCoded / @codecoded",
+  "pipeline_video_visibility": "unlisted",
+  "pipeline_video_signed_out_verified": true,
+  "pipeline_video_4k_available": true
 }

@@ -1,6 +1,8 @@
 # Assignment 7 evidence reassessment
 
-The portrait pipeline is a legitimate production example, but the 41-second walkthrough is **supporting evidence, not sufficient primary pipeline-run evidence**. The current one-page portrait audit is also provisional, not a final audit of the wider development pipeline.
+The primary example is now the **people, relationships and routines pipeline**. A real offline execution has been recorded through expansion, engine-data staging and a running Unity player. The audit now covers that path. The earlier portrait walkthrough remains optional supporting evidence.
+
+The execution exposed a retained pre-remap background population in the shipped game. The four mission profiles match the fresh export, but the full background projection does not. The video labels the current-plan replay variant, the retained player binary and historical AI generation. See README.md and evidence/people.json for the final proof boundary.
 
 ## What the brief actually asks
 
@@ -35,7 +37,7 @@ Lead with **GDD and people rules → RAG → Pulse cast generation → determini
 
 The recording should retain the command, inputs/seed, prompts and model responses (or clearly identify archived responses), checks, generated filenames/hashes, import output and the same content functioning in Unity/the player. Choose and verify a path already used by the game before recording; do not substitute an unadopted experiment or Assignment 6 proposal. If model output is replayed, label it as replay and keep the original run receipts. Any new live model call needs explicit opt-in, a recorded approver and a bounded budget under repo policy.
 
-Record actual calls and retries for the chosen path, identify the most expensive step, and use measured before/after evidence from the optimisation actually made. Include unavoidable manual steps honestly. Then rewrite the one-page audit around that final demonstrated path.
+The original r016 calls and retries, highest-cost critic call and the shared framework's checks-before-critic change are now calculated in evidence/people.json and the one-page audit. The recorded USD values are subscription usage valuations, not additional API payments. The video keeps manual approval, historical generation and downstream projection differences explicit.
 
 The playable-link gate remains independent: a compatible stranger must reach play within 120 seconds. A working itch.io page, existing screenshots and local build proofs do not establish that timing.
 
