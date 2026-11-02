@@ -2759,6 +2759,143 @@
    {"kind":"city","title":"Someone stops to help","outcome":"check","event":"witness-reacts","sight":"in-sight","result":"A passer-by is going to the body. They will find it.","variants":[{"beats":[{"speaker":"crowd","line":"Wait. Someone's down."},{"speaker":"crowd","line":"Careful. Is it a trick?"},{"speaker":"crowd","line":"Hello? Are you hurt?"}]},{"beats":[{"speaker":"crowd","line":"That's a person down there."},{"speaker":"crowd","line":"I'll look. Stay close."},{"speaker":"crowd","line":"Is anyone there? Wake up!"}]}]}
   ]
  },
+ "book": {
+   "rule": "Brief 088, draft for Fable: the book's own words, only what no other block has. A way's name and when come from less.briefing.ways and briefing.page.ways; a cell agent's line from briefing.page.cell; the track from briefing.page.clock and briefing.timeline[].short. `ends` is every way the mission fails (each row names the engine's fail codes; hostlogic holds them to the engine). `stops` gives a station its icon and, when the engine logs it, its log code, so the time shown is the run's.",
+   "back": "Back",
+   "sections": [
+     {
+       "id": "cell",
+       "icon": "units",
+       "word": "Cell"
+     },
+     {
+       "id": "people",
+       "icon": "lovers",
+       "word": "People"
+     },
+     {
+       "id": "job",
+       "icon": "take",
+       "word": "Job"
+     },
+     {
+       "id": "journal",
+       "icon": "papers",
+       "word": "Journal"
+     }
+   ],
+   "job": {
+     "name": "Take Vale alive",
+     "sub": "to the getaway car",
+     "endsHead": "It's over if",
+     "ends": [
+       {
+         "icon": "body_dead",
+         "word": "Vale dies",
+         "fails": [
+           "vale-dead"
+         ]
+       },
+       {
+         "icon": "car",
+         "word": "Vale leaves by car",
+         "fails": [
+           "vale-leaves"
+         ]
+       },
+       {
+         "icon": "takedown",
+         "word": "Rivals reach him",
+         "fails": [
+           "rivals-reach-vale"
+         ]
+       },
+       {
+         "icon": "eye_open",
+         "word": "Seen going in",
+         "fails": [
+           "entry-seen-guard",
+           "entry-seen-camera",
+           "entry-seen-patrol"
+         ]
+       },
+       {
+         "icon": "sawyou",
+         "word": "Seen taking him",
+         "fails": [
+           "abduction-seen-camera"
+         ]
+       },
+       {
+         "icon": "s_downed",
+         "word": "Enforcer down",
+         "fails": [
+           "enforcer-down",
+           "cell-down"
+         ]
+       },
+       {
+         "icon": "bang",
+         "word": "Driver shot",
+         "fails": [
+           "driver-shot"
+         ]
+       },
+       {
+         "icon": "car",
+         "word": "Our car wrecked",
+         "fails": [
+           "getaway-lost"
+         ]
+       },
+       {
+         "icon": "lock",
+         "word": "District seals",
+         "fails": [
+           "sealed",
+           "closed-in"
+         ]
+       }
+     ],
+     "stops": [
+       {
+         "at": "2:35",
+         "icon": "car",
+         "log": "rivals.coming"
+       },
+       {
+         "at": "4:30",
+         "icon": "nextevent",
+         "log": ""
+       },
+       {
+         "at": "4:40",
+         "icon": "turn_person",
+         "log": ""
+       },
+       {
+         "at": "4:50",
+         "icon": "s_moving",
+         "log": "vale.exits"
+       },
+       {
+         "at": "5:10",
+         "icon": "car",
+         "log": "vale.at-car"
+       }
+     ]
+   },
+   "cell": {
+     "health": "Health",
+     "reach": "Watches from {m} m",
+     "drawn": "drawn",
+     "holstered": "holstered",
+     "weapons": {
+       "pistol": "Sidearm",
+    "carbine": "Carbine"
+     }
+   }
+ },
  "pending": {
   "rule": "Words drafted ahead of the engine (briefs 058 and 059, GDD v0.25.0). The host reads none of this. Each entry names its brief and says whether its code, key or trigger is a `guess`: the brief did not name it, and its owner confirms or renames it. When Keel lands a code or a verb, the entry moves unchanged to the section of the same name (locks, cards.items, events, dialogue, actions, activity, hints, less.price, targets) and Latch wires it in that batch; a `replaces` entry takes the place of the live one with the same key.  A test holds every line here to the live limits. Empty since the 059 port (2026-10-26): the Drive, the rival crew's Watch, the driver's tail fact, H16 and H20 are live.",
   "locks": {},

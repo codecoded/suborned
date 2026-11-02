@@ -149,6 +149,7 @@ namespace Suborned.Play
             yield return Fresh(h); h.FollowToggle(); yield return Wait(0.8f); Row("labFollowOnly", h.Following && !h.Driving, $"following {h.Following}, driving {h.Driving}"); h.FollowToggle(); yield return Frames(2);
 
             if (h.Driving) h.DriveLetGoToMap(); if (h.Following) h.FollowToggle(); HandoverHost.PointerOverride = null; Keys(); Btn(new Vector2(Screen.width * .5f, Screen.height * .5f)); yield return Frames(2);
+            yield return ProofBook.Run(h, dir, log, Row); // brief 088: the book
             yield return Proof085.Run(h, dir, log, Row); // brief 085: Sky's play notes on 0.2.177 (the squad in third person, the door guard)
             json[0] = $"{{\"ok\": {B(ok)}, {string.Join(", ", parts)}}}";
         }

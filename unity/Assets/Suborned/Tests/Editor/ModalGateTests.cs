@@ -29,6 +29,15 @@ namespace Suborned.Play.Tests
             foreach (PlayAction a in Enum.GetValues(typeof(PlayAction))) Assert.That(ModalGate.Allows(ModalGate.Modal.Menu, a), Is.False, $"menu: {a}");
         }
 
+        /// <summary>Brief 088: the book stops everything but its own keys, and the view stays until the book moves it.</summary>
+        [Test]
+        public void TheBookStopsTheStreetAndTheCamera()
+        {
+            var m = ModalGate.Modal.Book; Assert.That(ModalGate.AllowsHover(m) || ModalGate.AllowsClicks(m) || ModalGate.AllowsCamera(m), Is.False, "book: street and camera");
+            var allowed = new[] { PlayAction.Book, PlayAction.Debug, PlayAction.CycleAgent, PlayAction.Agent1, PlayAction.Agent2, PlayAction.Agent3, PlayAction.Agent4 };
+            foreach (PlayAction a in Enum.GetValues(typeof(PlayAction))) Assert.That(ModalGate.Allows(m, a), Is.EqualTo(Array.IndexOf(allowed, a) >= 0), $"book: {a}");
+        }
+
         [Test]
         public void OnlyBeginAndTheCameraKeysUnderTheBriefing()
         {

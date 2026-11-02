@@ -21,7 +21,7 @@ public sealed partial class Rec085 : MonoBehaviour
         while ((h = FindAnyObjectByType<HandoverHost>()) == null || h.Game == null) { if (Time.realtimeSinceStartup - w0 > 90f) { Application.Quit(3); yield break; } yield return null; }
         yield return new WaitForSecondsRealtime(4f); Note($"screen {Screen.width}x{Screen.height}, {BuildStamp.Line}");
         StartCoroutine(Pump());
-        IEnumerator run = what == "squad" ? Squad() : what == "sky" ? Sky(false) : what == "skycheck" ? Sky(true) : what == "sound" ? Sound() : what == "route-a" ? RouteA() : what == "pressure" ? Pressure() : Camera();
+        IEnumerator run = what == "book" ? Book() : what == "squad" ? Squad() : what == "sky" ? Sky(false) : what == "skycheck" ? Sky(true) : what == "sound" ? Sound() : what == "route-a" ? RouteA() : what == "pressure" ? Pressure() : Camera();
         while (true) { object cur; try { if (!run.MoveNext()) break; cur = run.Current; } catch (Exception e) { Note("threw: " + e); break; } yield return cur; }
         rec = false; yield return null; yield return null; HandoverHost.BeforeStep = null; done = true;
         try { pipe?.Close(); ff?.WaitForExit(); } catch (Exception e) { Note("ffmpeg: " + e.Message); }

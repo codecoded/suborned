@@ -39,6 +39,7 @@ import { z } from 'zod';
 import { TEMPERAMENTS } from '../../people/people.rules.schema.ts';
 import { fnv1a32 } from '../../rules/rulebook.ref.ts';
 import { CaptureClip, Conversations } from './conversations.schema.ts';
+import { Book } from './book.schema.ts';
 export const AGENTS = ['scout', 'fixer', 'tech', 'enforcer'] as const;
 export const PEOPLE = ['waitress', 'driver', 'guard', 'councillor'] as const;
 export const OTHERS = ['rivals', 'patrol', 'security', 'watcher', 'crowd'] as const;
@@ -383,7 +384,6 @@ export const Less = z.strictObject({
   }),
 });
 export type Less = z.infer<typeof Less>;
-
 // ---------------------------------------------------------------- pending: words drafted ahead of the engine (briefs 058, 059; GDD v0.25.0)
 /** Every entry says whether its code, key or trigger is a `guess` (the brief did not name it; Keel confirms or renames) and the `brief` it comes from. */
 const Meta = { guess: z.boolean().describe('true = the code, key or trigger is the writer\'s guess, not named by the brief; the engine\'s owner confirms or renames it'), brief: z.string().min(1) };
@@ -479,6 +479,7 @@ export const TextFile = z.strictObject({
   silentLogs: z.record(z.string(), z.string()).describe('engine log codes (or prefixes ending in .) that speak no line, with the reason'),
   dialogue: z.array(Entry).min(1),
   scenes: z.strictObject({ rules: z.record(z.string(), z.union([z.string(), z.record(z.string(), z.string())])), items: z.array(Scene).min(1), conversations: Conversations.optional().describe('brief 085: conversations.schema.ts'), clip: CaptureClip.optional().describe('brief 085: the capture clip\'s plate') }),
+  book: Book.describe('brief 088: the book\'s own words (book.schema.ts)'),
   less: Less.describe('brief 014 (less reading): the short forms and grammar the HUD reads at rest; the long lines above are the Alt and debrief text'),
   pending: Pending.optional().describe('briefs 058 and 059: words for engine changes that are approved but not built; nothing here is read by the host until its entry moves to its live place'),
 });
@@ -508,7 +509,6 @@ export function cardResult(t: Pick<TextFile, 'cards'>, code: string, variant?: s
   const r = t.cards.items[code]?.result;
   return typeof r === 'string' || r === undefined ? r : variant === undefined ? undefined : r[variant];
 }
-
 // ---------------------------------------------------------------- the reference lookups (Latch ports these; the checker runs them)
 
 /** What the engine sends with a refusal (sim Answer): -1 = none. */

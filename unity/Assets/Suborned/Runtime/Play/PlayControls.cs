@@ -17,6 +17,7 @@ namespace Suborned.Play
         StepTarget,
         Act,
         SelectAll,
+        Book,
     }
 
     /// <summary>Brief 024 revision (action-game controls): the right button aims while held (the default) or toggles the aim (for the trackpad's two-finger click).</summary>
@@ -104,6 +105,7 @@ namespace Suborned.Play
             new() { action = PlayAction.TargetMode, keys = new[] { Key.Y }, label = "Y" },
             new() { action = PlayAction.StepTarget, keys = new[] { Key.Z }, label = "Z" }, // brief 030 §8: step the target (Tab's old overlap and target uses; Z was free) // brief 027: target mode (Y was free; Motive proposed it) // brief 025: the camera lab (P was free; no fn needed on a MacBook)
             new() { action = PlayAction.Act, keys = new[] { Key.E }, label = "E", context = "third" }, // brief 024 revision: third person's act key (tap acts, hold the options); E is the view's turn on the map, so the two never meet in one mode
+            new() { action = PlayAction.Book, keys = new[] { Key.J }, label = "J" }, // brief 088: the book (J was free)
             new() { action = PlayAction.SelectAll, keys = new[] { Key.Digit5, Key.Numpad5 }, label = "5" }, // brief 041 (the playground's squad): 5 selects all four (Ctrl/Cmd+A too)
         };
         static readonly Binding[] defaults = Defaults();

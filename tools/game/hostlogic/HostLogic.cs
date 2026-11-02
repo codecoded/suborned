@@ -431,3 +431,40 @@ public static class Runner
         return fail > 0 ? 1 : 0;
     }
 }
+
+/// <summary>Brief 088: the book's slot rule, and its pages against the ring, the words and the engine. The picture, the clock under real frames and the keys are ProofBook's (in r083).</summary>
+public sealed class BookCases
+{
+    static float Tw(string t, float size, string font) => (t ?? "").Length * size * .52f;
+    [Test] public void EmptySlotsTakeNoRoom()
+    {
+        BookPage Full() { var p = new BookPage { HeroFace = "x", Name = "A name", Sub = "a sub", State = "On", FactsHead = "head" }; p.Facts.Add(new BookFact { Word = "fact" }); p.Gear.Add(new BookFact { Word = "gear" }); p.Ways.Add(new BookWay { Word = "way" }); p.Scales.Add(new BookScale { Word = "s", Value = 1, Max = 2 }); p.Knows.Add(new BookKnow { Word = "k" }); p.Track.Add(new BookStop { Word = "t", Time = "0:01" }); p.Others.Add(new BookOther { Word = "o" }); return p; }
+        var full = BookLayout.Place(Full(), Tw); Assert.That(BookLayout.Place(new BookPage(), Tw).Items, Is.Empty); Assert.That(full.Items.Count, Is.GreaterThanOrEqualTo(10));
+        void Without(Action<BookPage> cut, BookSlot slot) { var p = Full(); cut(p); var r = BookLayout.Place(p, Tw); Assert.That(r.Has(slot), Is.False, slot + " is empty"); Assert.That(r.Bottom, Is.LessThanOrEqualTo(full.Bottom), slot + " takes no room"); }
+        Without(p => p.Facts.Clear(), BookSlot.Facts); Without(p => p.Gear.Clear(), BookSlot.Gear); Without(p => p.Ways.Clear(), BookSlot.Ways); Without(p => p.Scales.Clear(), BookSlot.Scales); Without(p => p.Knows.Clear(), BookSlot.Knows); Without(p => p.Track.Clear(), BookSlot.Track); Without(p => p.Others.Clear(), BookSlot.Others); Without(p => p.Name = "", BookSlot.Name); Without(p => { p.Sub = ""; p.State = ""; }, BookSlot.Sub);
+        var noGear = Full(); noGear.Gear.Clear(); noGear.Track.Clear(); var withGear = Full(); withGear.Track.Clear(); Assert.That(BookLayout.Place(withGear, Tw).Of(BookSlot.Ways).First().At.y, Is.GreaterThan(BookLayout.Place(noGear, Tw).Of(BookSlot.Ways).First().At.y), "the ways rise when the gear is empty");
+    }
+    [Test] public void FitRulesStepDown()
+    {
+        var p = new BookPage(); for (int i = 0; i < 12; i++) p.Facts.Add(new BookFact { Word = "A fact of some length" }); var f = BookLayout.FitFacts(p.Facts, Tw); Assert.That(f.cols, Is.EqualTo(2)); Assert.That(f.size, Is.LessThan(30f)); Assert.That(BookLayout.NameSize(new string('n', 30), 0, Tw), Is.LessThan(112f));
+        var w = new BookPage(); for (int i = 0; i < 6; i++) w.Ways.Add(new BookWay { Word = "Pressure" }); var ys = BookLayout.Place(w, Tw).Of(BookSlot.Ways).Select(i => i.At.y).Distinct().Count(); Assert.That(ys, Is.GreaterThan(1), "ways wrap");
+        Assert.That(BookLayout.SignY(0, 5), Is.LessThan(BookLayout.SignY(0, 4)), "a fifth sign re-spaces the list");
+    }
+    [Test] public void EveryFailIsOnTheJobPage()
+    {
+        var bw = BookWordsFile.Get(); var listed = new HashSet<string>(bw.Ends.SelectMany(e => e.Fails));
+        var engine = new HashSet<string>(); foreach (var f in Directory.GetFiles(System.IO.Path.Combine(Root.Path, "sim/Suborned.Sim"), "*.cs")) if (!System.IO.Path.GetFileName(f).StartsWith("Scenarios")) foreach (System.Text.RegularExpressions.Match m in System.Text.RegularExpressions.Regex.Matches(File.ReadAllText(f), "Fail\\(\"([a-z-]+)\"")) engine.Add(m.Groups[1].Value);
+        engine.Remove("engine-error"); Assert.That(engine.Count, Is.GreaterThan(8)); Assert.That(listed, Is.EquivalentTo(engine), "the job page's list is every way the engine ends a run");
+    }
+    [Test] public void JobAndCellPagesFromTheGame()
+    {
+        var h = Host.Fresh(); var job = h.BookJobPage(); Assert.That(job.Name, Is.Not.Empty); /* the ways read the built copy of brief.json: ProofBook.bookJobWay holds them */ Assert.That(job.Track.Count, Is.EqualTo(5)); Assert.That(job.Track[0].Word, Is.EqualTo("?"), "the rivals stay unknown until they come");
+        for (int k = 0; k < 4; k++)
+        {
+            var sel = (bool[])h.Selected.Clone(); var a = h.Agent; var c = h.BookCellPage(k); Assert.That(h.Selected, Is.EqualTo(sel), "the read puts the selection back"); Assert.That(h.Agent, Is.EqualTo(a)); Assert.That(c.Gear.Count, Is.EqualTo(1)); Assert.That(c.Scales[0].Max, Is.EqualTo(h.Game.Ops[k].Gun.Max)); Assert.That(c.Ways, Is.Not.Empty);
+            foreach (var w in c.Ways) { Assert.That(w.Target, Is.Not.Null, w.Word); Assert.That(w.Word, Is.Not.Empty); }
+        }
+        var s = h.BookCellPage(0); Assert.That(s.Facts.Exists(f => f.Word.Contains("30")), "the Scout's reach is the rulebook's 30 m"); Assert.That(s.Ways.ConvertAll(w => w.Word), Does.Contain("Listen"));
+        var tip = s.Ways.Find(w => w.Word == "Tip"); Assert.That(tip?.Shut == true, "no rivals yet: Tip is locked, in the ring's words: " + tip?.SubText); int orders = h.Game.Orders.Count; h.BookCellPage(1); h.BookCellPage(2); h.BookCellPage(3); Assert.That(h.Game.Orders.Count, Is.EqualTo(orders), "a page gives no order");
+    }
+}

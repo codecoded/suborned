@@ -352,7 +352,7 @@ namespace Suborned.Play
             ("Command", PlayAction.Verb1, "Pick action 1"), ("Command", PlayAction.Verb2, "Pick action 2"), ("Command", PlayAction.Verb3, "Pick action 3"), ("Command", PlayAction.Verb4, "Pick action 4"),
             ("Command", PlayAction.Cancel, "Cancel"), ("Command", PlayAction.Gait, "Walk or run"),
             ("Command", PlayAction.Pause, "Pause"), ("Command", PlayAction.Faster, "Faster"), ("Command", PlayAction.Slower, "Slower"), ("Command", PlayAction.NextEvent, "Next event"),
-            ("Command", PlayAction.Briefing, "Briefing"), ("Command", PlayAction.DialogueLog, "History"), ("Command", PlayAction.Intel, "Intel"), ("Command", PlayAction.Response, "Response list"),
+            ("Command", PlayAction.Briefing, "Briefing"), ("Command", PlayAction.DialogueLog, "History"), ("Command", PlayAction.Intel, "Intel"), ("Command", PlayAction.Book, "The book"), ("Command", PlayAction.Response, "Response list"),
             ("Command", PlayAction.Hints, "Hints"), ("Command", PlayAction.Acknowledge, "Acknowledge"), ("Command", PlayAction.Peek, "Detail (hold)"), ("Command", PlayAction.AllStrips, "All strips"), ("Command", PlayAction.Restart, "Play again"),
             ("Camera", PlayAction.PanUp, "Pan up"), ("Camera", PlayAction.PanDown, "Pan down"), ("Camera", PlayAction.PanLeft, "Pan left"), ("Camera", PlayAction.PanRight, "Pan right"),
             ("Camera", PlayAction.TurnLeft, "Turn left"), ("Camera", PlayAction.TurnRight, "Turn right"), ("Camera", PlayAction.TurnDrag, "Free turn (middle drag)"), ("Camera", PlayAction.FollowView, "Follow view"),

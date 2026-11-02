@@ -72,6 +72,7 @@ namespace Suborned.Play
         /// <summary>The menu's keys, before anything else in Update: Esc resumes. True while the menu is up (the frame stops there).</summary>
         bool MenuKeys(Keyboard kb)
         {
+            if (BookKeys(kb)) return true; // brief 088: the book, the same kind of stop (HostBook)
             if (!MenuOpen) return false;
             ClearHover();
             if (kb != null && kb.escapeKey.wasPressedThisFrame && Time.frameCount != menuOpenedFrame) ResumeFromMenu();

@@ -44,6 +44,7 @@ namespace Suborned.Play
 
         bool ConvoHud()
         {
+            if (BookHud()) return true; // brief 088: the book has the HUD (HudToolkit.Book)
             var c = host.ConvoNow; bool on = c != null;
             if (!on && !convoHid) return false;
             if (convoLine == null) ConvoBuild();

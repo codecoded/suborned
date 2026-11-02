@@ -8,12 +8,13 @@ namespace Suborned.Play
     /// not modal: the clock runs under them, and the city keeps answering. One table, so a test can read it.</summary>
     public static class ModalGate
     {
-        public enum Modal { None, Briefing, EndCard, Menu }
+        public enum Modal { None, Briefing, EndCard, Menu, Book }
 
         /// <summary>Whether a key action reaches the host while `modal` is up.</summary>
         public static bool Allows(Modal modal, PlayAction a)
         {
             if (modal == Modal.None) return true;
+            if (modal == Modal.Book) return a is PlayAction.Book or PlayAction.Debug or PlayAction.CycleAgent or PlayAction.Agent1 or PlayAction.Agent2 or PlayAction.Agent3 or PlayAction.Agent4; // brief 088: the book: its key (Esc too), Tab between sections, 1-4 between agents; the street and the camera wait
             if (modal == Modal.Menu) return false; // the pause menu (Esc): its three buttons and Esc only; nothing reaches the street or the camera
             switch (a)
             {
@@ -29,6 +30,6 @@ namespace Suborned.Play
         /// modal; the camera's grab and zoom do.</summary>
         public static bool AllowsHover(Modal modal) => modal == Modal.None;
         public static bool AllowsClicks(Modal modal) => modal == Modal.None;
-        public static bool AllowsCamera(Modal modal) => modal != Modal.Menu;
+        public static bool AllowsCamera(Modal modal) => modal is not (Modal.Menu or Modal.Book);
     }
 }

@@ -374,7 +374,7 @@ namespace Suborned.Play
         public int WorldPresses { get; private set; }
 
         /// <summary>The modal up now, if any (ModalGate): the briefing until Begin, the end card.</summary>
-        public ModalGate.Modal Modal => MenuOpen ? ModalGate.Modal.Menu : Ending.Length > 0 ? ModalGate.Modal.EndCard : ShowBriefing ? ModalGate.Modal.Briefing : ModalGate.Modal.None;
+        public ModalGate.Modal Modal => BookOpen ? ModalGate.Modal.Book : MenuOpen ? ModalGate.Modal.Menu : Ending.Length > 0 ? ModalGate.Modal.EndCard : ShowBriefing ? ModalGate.Modal.Briefing : ModalGate.Modal.None;
 
         /// <summary>Nothing hovered: no price chip, ring, aim or walk chip (a modal opened, or the run ended).</summary>
         public void ClearHover() { KnobPredUpdate(null); HoverAnchor = null; HoverName = ""; Hover = null; HoverIntent = null; MoveChip = null; MoveNow = null; AimLine = null; AimNow = null; intentKey = "modal"; dragging = false; BoxScreen = null; }
