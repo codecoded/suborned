@@ -620,7 +620,7 @@ namespace Suborned.Play
         {
             if (!Able((int)Agent)) { Status = $"{Op.Name(Agent)} is down"; return; } // item 29: a downed agent's knobs give nothing
             var plate = PlateOf(Agent);
-            if (slot < plate.Length && plate[slot].Dim && plate[slot].Id == "fire" && Game?.Vale == ValeAt.WithEnforcer && Agent == OpId.Enforcer) { var lk = new Answer { ok = false, code = "fire-carrying-vale", why = "walking Vale, the Enforcer doesn't fire", m = -1, cm = -1, usd = -1, tick = -1 }; var o = new Order { Op = "enforcer", Do = "fire" }; popCode = lk.code; Pop(ShortOf(o, lk) ?? lk.why, null, SelectedWorld(), Feedback.Refused, 2f, PopIcon(lk.code), LockLine(o, lk) ?? lk.why); return; } // the greyed Fire knob says why
+            if (slot < plate.Length && plate[slot].Dim && plate[slot].Id == "fire" && Game?.Vale == ValeAt.WithEnforcer && Agent == OpId.Enforcer) { var lk = new Answer { ok = false, code = "fire-carrying-vale", why = $"walking {ValeWord}, the Enforcer doesn't fire", m = -1, cm = -1, usd = -1, tick = -1 }; var o = new Order { Op = "enforcer", Do = "fire" }; popCode = lk.code; Pop(ShortOf(o, lk) ?? lk.why, null, SelectedWorld(), Feedback.Refused, 2f, PopIcon(lk.code), LockLine(o, lk) ?? lk.why); return; } // the greyed Fire knob says why
             if (slot >= plate.Length || plate[slot].Dim) { Status = $"{Op.Name(Agent)} has no verb on {VerbKey(slot)}"; return; }
             if (plate[slot].Id is "drop" or "stash") { PlateAct(plate[slot].Id); return; } // carrying: Put down and Hide act at once (Glyph §4)
             if (plate[slot].Id == "takedown") { Way = Picked == slot && Way == "knockout" ? "kill" : "knockout"; } // 4 again flips; kill is never the default (Glyph §1)
@@ -691,7 +691,7 @@ namespace Suborned.Play
             bool ctrl = controls.Held(Keyboard.current, PlayAction.Force);
             bool pickedOther = Picked >= 0 && PickedId != "fire"; // brief 038 §4.5: a picked verb never turns into another act (a picked Watch with a gun drawn does not fire)
             if (t != null && !pickedOther && ShotAt(t, ctrl, out var fireAt, out var force)) { if (Panel != null) ClosePanel(); if (Picked >= 0) { Picked = -1; intentKey = ""; } FireSelected(fireAt, force, screen, "right"); sweeping = true; CommanderHoldFireBegin(); return; }
-            if (t != null && t.Kind == "person" && t.Key == "councillor" && ctrl) { PopKey("never-vale", screen, TargetWorld(t), Feedback.Refused, "never fire on Vale: the mission fails"); return; }
+            if (t != null && t.Kind == "person" && t.Key == "councillor" && ctrl) { PopKey("never-vale", screen, TargetWorld(t), Feedback.Refused, $"never fire on {ValeWord}: the mission fails"); return; }
             if (controls.panelOnRight && t != null && t.Kind != "op")
             {
                 if (Panel == null && BoardSelection(t, screen)) return; // brief 018: the whole cell selected, a right click on the car boards each
@@ -796,7 +796,7 @@ namespace Suborned.Play
                 if (n.StartsWith("body/")) { var bp = Game.PersonById(n[5..]) ?? Game.BodyById(n[5..])?.P; return bp == null ? null : new Target { Kind = "body", Key = n[5..], Id = n[5..], Label = PersonName(bp) }; } // engine 0.33.0: a rival's body (BodyById finds the crew; PersonById the cast and the crowd)
                 if (n.StartsWith("stash/")) { var st = Game.S.Stashes.Find(x => x.Id == n[6..]); return st == null ? null : new Target { Kind = "stash", Key = st.Id, Id = st.Id, Label = StashName(st) }; }
                 if (n.StartsWith("unit/")) return new Target { Kind = "unit", Key = n[5..], Label = n.Contains("robot") ? "a response robot" : "an officer" };
-                if (n == "car/official") return new Target { Kind = "car", Key = "official", Label = Text?.TargetName("car-official", "Vale's car") ?? "Vale's car" }; // Fable 067 (the glossary): "Vale's car"
+                if (n == "car/official") return new Target { Kind = "car", Key = "official", Label = Text?.TargetName("car-official", $"{ValeWord}'s car") ?? $"{ValeWord}'s car" }; // Fable 067 (the glossary): $"{ValeWord}'s car"
                 if (n.StartsWith("stand/")) return StandTarget(n); // brief 059 K6: a stand of the getaway car (its Drive)
                 if (n.StartsWith("car/range-")) { var rc = Game.RangeCars().Find(c => c.Id == "car:" + n[4..]); return rc == null || rc.State == "wrecked" ? null : new Target { Kind = "car", Key = n[4..], Label = "the car" }; } // engine 0.18: a range car (a wreck is no target)
                 if (n.StartsWith("bystander/")) { var bl = Game.RangeBystanders(); int bi = int.Parse(n[10..]); if (bi >= bl.Count || bl[bi].Down || bl[bi].State == "safe") return null; return new Target { Kind = "bystander", Key = bl[bi].Id, Id = bl[bi].Id, Label = "a passer-by" }; } // engine 0.18: a range bystander
@@ -929,7 +929,7 @@ namespace Suborned.Play
                     { var i = I("reroute", "patrol", "", "Reroute the patrol"); i.Time = $"{R.RerouteS} s"; i.Trail = $"T +{R.RerouteTrail}"; return i; }
                 case "act":
                     if (t.Kind == "door") { var i = I("enter", "", "", "Enter the Office"); i.Time = $"{R.EnterS} s"; i.Alert = "seen = fail"; var sq = g.SeenAt(g.S.Stand(g.S.GuardPost)); i.Seen = SeenWords(sq); i.SeenQ = sq; return i; } // brief 014: the eye on the line (the engine's card-only SeenAt)
-                    if ((t.Kind == "person" && t.Key == "councillor") || (t.Kind == "car" && t.Key == "official") || (t.Kind == "person" && t.Key == "driver" && g.Vale == ValeAt.Pickup)) { var i = I("take", "", "", "Take Vale"); i.Time = $"{R.TakeS} s"; i.Trail = g.Driver.Turned ? "T 0" : $"T +{R.TakeTrailUnturned}"; return i; } // Sky, route B: Vale stands in (or is hidden by) his car at the pickup; the car takes the click too
+                    if ((t.Kind == "person" && t.Key == "councillor") || (t.Kind == "car" && t.Key == "official") || (t.Kind == "person" && t.Key == "driver" && g.Vale == ValeAt.Pickup)) { var i = I("take", "", "", $"Take {ValeWord}"); i.Time = $"{R.TakeS} s"; i.Trail = g.Driver.Turned ? "T 0" : $"T +{R.TakeTrailUnturned}"; return i; } // Sky, route B: Vale stands in (or is hidden by) his car at the pickup; the car takes the click too
                     if (t.Kind == "car" && t.Key == "getaway") return g.Ops[(int)by].InCar ? GoIntent(by) : BoardIntent(by); // brief 018: Extract retired into Board and Go
                     return null;
                 case "takedown": return TakedownIntent(slot, t, Way);
@@ -1307,12 +1307,12 @@ namespace Suborned.Play
                 case "restrain": case "carry" when !IsOpName(o.Target): return op.CarryBody.Length > 0 || op.Carrying.HasValue ? No("already-carrying", "already carrying") : yes;
                 case "reroute": return g.PatrolAwayUntil > g.Tick ? No("patrol-away", "the patrol is already away", g.PatrolAwayUntil) : yes;
                 case "mislead": return MisleadOpen() ? yes : No("no-rivals", "no rival car parked here with its wheelman in it"); // brief 059 F3 (the engine's MisleadRefusal, mirrored for the card; the order still asks the engine)
-                case "enter": return g.Vale == ValeAt.Office ? yes : No("vale-not-inside", "Vale is not inside");
+                case "enter": return g.Vale == ValeAt.Office ? yes : No("vale-not-inside", $"{ValeWord} is not inside");
                 case "take": // brief 059 K3 (the engine's Take, mirrored for the card): round the back with a turned driver, never at the front or on the way
-                    if (g.Vale == ValeAt.InCar && !g.PickupService && g.CarInBayTick >= 0) return No("car-not-parked", "Vale's car is driving round: take him once it parks", g.CarInBayTick);
-                    if (g.Vale == ValeAt.Pickup && g.Driver.Turned && !g.Driver.Down) return No("driver-brings-vale", "the turned driver is bringing Vale round the back: take him there");
-                    return g.Vale == ValeAt.Pickup || g.Vale == ValeAt.InCar && g.PickupService ? yes : No("vale-not-at-car", "Vale is not at his car yet");
-                case "fire" when by == OpId.Enforcer && g.Vale == ValeAt.WithEnforcer: return No("fire-carrying-vale", "walking Vale, the Enforcer doesn't fire: the others cover him");
+                    if (g.Vale == ValeAt.InCar && !g.PickupService && g.CarInBayTick >= 0) return No("car-not-parked", $"{ValeWord}'s car is driving round: take him once it parks", g.CarInBayTick);
+                    if (g.Vale == ValeAt.Pickup && g.Driver.Turned && !g.Driver.Down) return No("driver-brings-vale", $"the turned driver is bringing {ValeWord} round the back: take him there");
+                    return g.Vale == ValeAt.Pickup || g.Vale == ValeAt.InCar && g.PickupService ? yes : No("vale-not-at-car", $"{ValeWord} is not at his car yet");
+                case "fire" when by == OpId.Enforcer && g.Vale == ValeAt.WithEnforcer: return No("fire-carrying-vale", $"walking {ValeWord}, the Enforcer doesn't fire: the others cover him");
                 case "fire":
                     {   // the 0.2.116 bot row (Q-OFFER: fire-carrying x14, no-target x2): the wedge shows the engine's own refusal (FireQuery) as its lock;
                         // agent-busy is the host's to settle (Playable waits for the act or cancels it), so it never locks Fire

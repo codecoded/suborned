@@ -100,7 +100,7 @@ namespace Suborned.Play
                     {
                         state = "offer"; t = on; harm = Harmful(hi.Order); icon = hi.Order.Do == "fire" ? "fire" : hi.Lead.Length > 0 ? hi.Lead : HudModel.AtlasIcon(hi.Order.Do, hi.Order.Approach, "");
                         text = (h.HoverFire ? (h.FightOnNow ? "" : "Right hold · ") : "Hold · ") + PillLine(h, hi); if (!h.HoverFire) pillPredNow = hi.PredMark; faces.AddRange(h.HoverFire ? h.FireShooters(on) : h.HoverDoers); seen = h.HoverSeen; // in a fight a right click fires: no "Right hold" (the quiet fight pill)
-                        pillAfterNow = hi.Order.Do == "drive-car" && hi.Outcome == "after Vale's car"; // Glyph 2026-10-26 §3: the yard before Vale's car parks: the caution plate
+                        pillAfterNow = hi.Order.Do == "drive-car" && hi.Outcome == $"after {host.ValeWord}'s car"; // Glyph 2026-10-26 §3: the yard before Vale's car parks: the caution plate
                     }
                     else if (on != null && h.HoverIntent is { Locked: true } lk && on.Kind != "op")
                     {   // brief 067 E3 (Glyph; Suture's 0.2.122 findings §2a): the locked pill: the lock disc, the way with its target in cream, a dim dot and

@@ -197,7 +197,7 @@ namespace Suborned.Play
                             {
                                 var pl = PlateDark(marks, 26f, 0.3f); pl.style.position = Position.Absolute; pl.style.width = 60; pl.style.paddingLeft = 9; pl.style.paddingRight = 7; pl.style.justifyContent = Justify.SpaceBetween;
                                 var ni = E(pl, null, w: 14, h: 14); ni.name = "g"; ni.style.flexShrink = 0; var cm = Cameo(pl, 12f, 2f); cm.name = "vale"; Bg(cm.Q("face"), "badges/npc_councillor", Color.white);
-                                standPlates.Add(pl); manifest.Add((pl, "image", () => "stand after Vale's car"));
+                                standPlates.Add(pl); manifest.Add((pl, "image", () => $"stand after {host.ValeWord}'s car"));
                             }
                             var p2 = standPlates[plates++]; Show(p2, true); Icon(p2.Q("g"), "nextevent", Cream); p2.style.left = pq.x - 30; p2.style.top = pq.y - 26 - 14; p2.style.opacity = fade;
                         }

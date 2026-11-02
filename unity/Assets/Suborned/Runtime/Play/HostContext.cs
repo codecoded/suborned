@@ -501,7 +501,7 @@ namespace Suborned.Play
         void PointerRightOn(Target t, Vector2 screen)
         {
             bool ctrl = controls.Held(Keyboard.current, PlayAction.Force);
-            if (t.Kind == "person" && t.Key == "councillor") { PopKey("never-vale", screen, TargetWorld(t), Feedback.Refused, "never fire on Vale: the mission fails"); return; }
+            if (t.Kind == "person" && t.Key == "councillor") { PopKey("never-vale", screen, TargetWorld(t), Feedback.Refused, $"never fire on {ValeWord}: the mission fails"); return; }
             if (ShotAt(t, ctrl, out var id, out var force)) { if (Panel != null) ClosePanel(); FireSelected(id, force, screen, "E"); }
         }
 

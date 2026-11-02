@@ -73,7 +73,7 @@ namespace Suborned.Play
             // ---- an agent's page: the same rows at any place and time, and it names no person; nothing on it is a way
             yield return Fresh(h); g = h.Game; h.controls.planTogether = false; h.SetPaused(true); yield return Frames(2);
             string Shape(int k) { h.BookShow("cell", k); var p = h.BookPageNow; return $"{p.Facts.Count}/{p.Gear.Count}/{p.Scales.Count}/{p.Ways.Count} " + string.Join("|", p.Can.ConvertAll(c => c.Id + ":" + c.Word + ":" + c.Line)); }
-            var names = new List<string> { "Inez", "Vale", "Okafor", "Zhou" }; foreach (var r in new[] { "waitress", "driver", "guard", "councillor" }) { var pp = g.PersonByRole(r); if (pp?.Name?.Length > 0) names.Add(pp.Name); var tn = h.Text?.TargetName(r, ""); if (tn?.Length > 0) names.Add(tn.Replace("The ", "").Replace("the ", "")); }
+            var names = new List<string> { h.ValeWord }; foreach (var r in new[] { "waitress", "driver", "guard", "councillor" }) { var pp = g.PersonByRole(r); if (pp?.Name?.Length > 0) names.Add(pp.Name); var tn = h.Text?.TargetName(r, ""); if (tn?.Length > 0) names.Add(tn.Replace("The ", "").Replace("the ", "")); }
             var shapes = new string[4]; int rowsMoved = 0, namedBad = 0; var nsaid = new List<string>(); h.BookOpenNow("cell", 0); yield return Frames(1);
             for (int k = 0; k < 4; k++) { shapes[k] = Shape(k); if (h.BookPageNow.Ways.Count > 0) namedBad++; foreach (var c in h.BookPageNow.Can) foreach (var nm in names) if ((c.Word + " " + c.Line).Contains(nm)) { namedBad++; nsaid.Add($"{(OpId)k} {c.Word}: {nm}"); } }
             h.BookClose(); yield return Frames(1); var ras = Route(); var seenTick = new List<int>();

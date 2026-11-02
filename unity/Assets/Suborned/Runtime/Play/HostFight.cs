@@ -287,7 +287,7 @@ namespace Suborned.Play
             AimLine = null; AimNoLine = false; AimNow = null; LabChunk = null; LabFire = null; LabFireAgent = -1; if (!ModalGate.AllowsHover(Modal)) return;
             var t = Hover; if (t == null || Game == null || Game.Over || HoldOn) return; // brief 041 (hold): the verb pill is the only hover marker
             bool ctrl = Keyboard.current != null && (Keyboard.current.leftCtrlKey.isPressed || Keyboard.current.rightCtrlKey.isPressed);
-            if (t.Kind == "person" && t.Key == "councillor") { if (ctrl || AnyDrawn()) { AimLine = "Vale · never: shooting him fails the mission"; AimNow = new AimParts { Badge = "badges/npc_councillor", Refused = Text != null && Text.Pops.TryGetValue("never-vale", out var nv) ? nv : "Never Vale" }; } return; }
+            if (t.Kind == "person" && t.Key == "councillor") { if (ctrl || AnyDrawn()) { AimLine = $"{ValeWord} · never: shooting him fails the mission"; AimNow = new AimParts { Badge = "badges/npc_councillor", Refused = Text != null && Text.Pops.TryGetValue("never-vale", out var nv) ? nv : $"Never {ValeWord}" }; } return; }
             if (!ShotAt(t, ctrl, out var id, out var force)) return;
             int k = -1; for (int i = 0; i < 4; i++) if (Selected[i] && Armed(i)) { k = i; break; }
             if (k < 0) return;

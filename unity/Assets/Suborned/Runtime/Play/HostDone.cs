@@ -315,9 +315,9 @@ namespace Suborned.Play
                 case "enter":
                     chip.AnchorKey = "op/enforcer";
                     if (l.Code == "enter.in") Line("enter", DW("gain.inside", "Inside"));
-                    else if (g.Vale == ValeAt.WithEnforcer) Line("take", DW("gain.vale", "Vale")); else { Line("refused", DW("gain.no-vale", "No Vale")); tone = "bad"; }
+                    else if (g.Vale == ValeAt.WithEnforcer) Line("take", DW("gain.vale", $"{ValeWord}")); else { Line("refused", DW("gain.no-vale", $"No {ValeWord}")); tone = "bad"; }
                     break;
-                case "take": chip.AnchorKey = "councillor"; Line("take", DW("gain.vale", "Vale")); break;
+                case "take": chip.AnchorKey = "councillor"; Line("take", DW("gain.vale", $"{ValeWord}")); break;
                 case "board": chip.AnchorKey = "car/getaway"; Line("car", DW("gain.aboard", "Aboard")); break;
                 case "drive-car": chip.AnchorKey = "car/getaway"; Line("car", DW("gain.parked", "Parked")); break; // Glyph 059 board 04: the arrival, one row
                 case "takedown":
@@ -428,7 +428,7 @@ namespace Suborned.Play
             Activity a = null; Guard("activity", () => a = Game.ActivityOf((OpId)k)); if (a == null || !a.CanCancel) return "";
             var code = a.CancelCost ?? ""; if (CancelFree.Contains(code) || code is "quiet" or "put-down" or "keeps-vale") return "";
             if (code == "lost") { int s = Math.Max(0, (Game.Tick - Game.Ops[k].BusyStart) / Game.Hz); return s >= 1 ? DW("cancel.cost.lost", "{s} s lost").Replace("{s}", s.ToString()) : ""; }
-            return DW("cancel.cost." + code, code switch { "aborted" => "They remember", "released" => "They report", "staff-report" => "Staff report", "vale-reports" => "Vale reports", "ends" => "Loop ends", _ => "" });
+            return DW("cancel.cost." + code, code switch { "aborted" => "They remember", "released" => "They report", "staff-report" => "Staff report", "vale-reports" => $"{ValeWord} reports", "ends" => "Loop ends", _ => "" });
         }
 
         /// <summary>The tag over the pill before you let go (Sky 2026-10-22: never cancel unseen): "Cancels Listen · 12 s lost"; null when the

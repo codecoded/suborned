@@ -37,7 +37,7 @@ namespace Suborned.Play
 
     public sealed class BookPage
     {
-        public string Section = "", HeroFace = "", HeroIcon = "", Name = "", Sub = "", State = "", FactsHead = "";
+        public string Section = "", HeroFace = "", HeroIcon = "", Name = "", NameTag = "", Sub = "", State = "", FactsHead = "";
         public readonly List<BookFact> Facts = new(), Gear = new();
         public readonly List<BookWay> Ways = new();
         public readonly List<BookCan> Can = new();
@@ -98,6 +98,9 @@ namespace Suborned.Play
             if (p.Name.Length > 0)
             {
                 float s = r.NameSize = NameSize(p.Name, p.Facts.Count, tw);
+                // the name's tag (the job word beside an agent's name, "Larthi · Scout"): at about two-fifths of the name's size; the name steps down until both fit
+                if (p.NameTag.Length > 0) foreach (var k in new[] { 1f, .85f, .72f, .6f }) { s = r.NameSize * k; if (tw(p.Name, s, "Jost-Bold") + 18f + tw("· " + p.NameTag, s * .42f, "Jost-Medium") <= W) break; }
+                r.NameSize = s;
                 r.Items.Add(new Item { Slot = BookSlot.Name, Cy = y + s * .5f, Size = s, At = new Rect(X, y, W, s) }); y += s + 16f;
             }
             if (p.Sub.Length > 0 || p.State.Length > 0)

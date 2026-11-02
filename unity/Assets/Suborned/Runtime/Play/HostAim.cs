@@ -276,7 +276,7 @@ namespace Suborned.Play
         void FirePress(Vector2 p)
         {
             var at = AimAt != null ? TargetWorld(AimAt) : null;
-            if (AimAt != null && AimAt.Kind == "person" && AimAt.Key == "councillor") { PopKey("never-vale", p, at, Feedback.Refused, "never fire on Vale: the mission fails"); return; }
+            if (AimAt != null && AimAt.Kind == "person" && AimAt.Key == "councillor") { PopKey("never-vale", p, at, Feedback.Refused, $"never fire on {ValeWord}: the mission fails"); return; }
             if (AimId.Length == 0) { PopKey("nothing-there", p, null, Feedback.Info); return; }
             if (!Drawn(dAgent) && Game.Ops[dAgent].Gun.DrawReady <= Game.Tick && Loud == null) { PopKey("not-drawn", p, at, Feedback.Info); return; }
             LoudCard c = null; if (!Guard("loud", () => c = Game.GoingLoud(FireOrder(AimId, aimForce)))) return;
@@ -378,7 +378,7 @@ namespace Suborned.Play
             if (t == null || !cam) { PopKey("nothing-here", null, views.DrivePos, Feedback.Info); return; }
             var w = TargetWorld(t) ?? views.DrivePos; var sp = cam.WorldToScreenPoint(w + Vector3.up); var screen = new Vector2(sp.x, sp.y);
             if (t.Kind == "op") { ActContext(t, screen); return; }
-            if (t.Kind == "person" && t.Key == "councillor" && IsFire(t)) { PopKey("never-vale", screen, w, Feedback.Refused, "never fire on Vale: the mission fails"); return; }
+            if (t.Kind == "person" && t.Key == "councillor" && IsFire(t)) { PopKey("never-vale", screen, w, Feedback.Refused, $"never fire on {ValeWord}: the mission fails"); return; }
             if (Picked >= 0) { ActContext(t, screen); return; } // an armed verb (Shift+1-4) is the deliberate path: it acts (a harmful one still goes through the ring)
             ContextPlan plan = null; if (!Guard("panel", () => plan = ContextFor(t, screen)) || plan == null) return;
             var ch = plan.Choice;

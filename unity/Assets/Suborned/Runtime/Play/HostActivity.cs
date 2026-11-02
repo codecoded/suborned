@@ -56,7 +56,7 @@ namespace Suborned.Play
                     "walking" or "running" => (a.Phase == "running" ? "Running" : "Walking") + (q != null ? $" to {ActPlaceName(k, q)}" : ""),
                     "firing" => $"Firing on {Name(a.Target)}",
                     "drawing" => "Drawing",
-                    "holding" => a.Verb == "loop" ? "Holding the loop" : a.Verb == "take" ? "Holding Vale: to the car" : a.Verb == "carry" ? $"Carrying the {a.Target}" : "Holding",
+                    "holding" => a.Verb == "loop" ? "Holding the loop" : a.Verb == "take" ? $"Holding {ValeWord}: to the car" : a.Verb == "carry" ? $"Carrying the {a.Target}" : "Holding",
                     _ => Doingly(a.Verb, op.Busy?.Approach ?? "", a.Target),
                 };
                 // what the cancel stops: the engine's activity; walking to an act, the act is dropped as well
@@ -91,7 +91,7 @@ namespace Suborned.Play
 
         string ActPlaceName(int k, Order q) => q.Do switch
         {
-            "loop" or "disable" or "reroute" => "the cabinet", "enter" => "the public door", "board" => "the getaway car", "take" => "Vale",
+            "loop" or "disable" or "reroute" => "the cabinet", "enter" => "the public door", "board" => "the getaway car", "take" => $"{ValeWord}",
             _ => q.Target.Length > 0 ? Name(q.Target) : "the act",
         };
 
@@ -112,7 +112,7 @@ namespace Suborned.Play
             {
                 "watch" => $"Watching {who}", "listen" => $"Listening to {who}", "ask" => $"Asking {who}", "pay" => $"Paying {who}", "help" => $"Helping {who}",
                 "pressure" => $"Pressuring {who}", "loop" => "Looping the camera", "disable" => "Cutting the line", "reroute" => "Rerouting the patrol", "mislead" => "Tipping off the rivals",
-                "enter" => "Inside: finding Vale", "take" => "Taking Vale", "carry" => $"Lifting the {target}", "holster" => "Holstering", "call" => $"Calling {who}",
+                "enter" => $"Inside: finding {ValeWord}", "take" => $"Taking {ValeWord}", "carry" => $"Lifting the {target}", "holster" => "Holstering", "call" => $"Calling {who}",
                 var v => v.Length > 0 ? char.ToUpperInvariant(v[0]) + v[1..] : "Busy",
             };
         }

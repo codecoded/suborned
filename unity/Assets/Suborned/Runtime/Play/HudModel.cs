@@ -107,7 +107,7 @@ namespace Suborned.Play
             {
                 var p = g.PersonByRole(Roles[i]); var r = Intel[i];
                 r.Role = Roles[i]; r.Name = h.Text?.TargetName(Roles[i], p.Name) ?? p.Name; r.Name = r.Name.Length > 0 ? char.ToUpperInvariant(r.Name[0]) + r.Name[1..] : r.Name;
-                r.Job = Roles[i] switch { "waitress" => "café waitress", "driver" => "Vale's driver", "guard" => "door guard", _ => "the councillor" };
+                r.Job = Roles[i] switch { "waitress" => "café waitress", "driver" => $"{h.ValeWord}'s driver", "guard" => "door guard", _ => "the councillor" };
                 r.NeedIcon = p.KNeed ? p.Need : p.Suspected.Length > 0 ? p.Suspected : "p_unknown"; r.NeedMark = p.KNeed ? "ok" : p.Suspected.Length > 0 ? "sus" : "unk";
                 r.TempIcon = p.KTemperament ? p.Temperament : "p_unknown"; r.Turned = p.Turned;
                 r.Known = p.KRoutine || p.KNeed || p.KTemperament || p.Turned || p.Suspected.Length > 0; if (r.Known) IntelKnown++;
@@ -199,7 +199,7 @@ namespace Suborned.Play
             HoverRing = act ? h.TargetWorld(hov) : null;
             string alt = !ended && h.Panel == null && h.Loud == null ? h.AimLine ?? (hov == null ? h.MoveChip : null) : null;
             var it = h.HoverIntent;
-            if (alt != null) { ChipText = alt; Chip = h.AimLine == null ? ChipKind.Move : h.AimLine.StartsWith("CIVILIAN") || h.AimLine.StartsWith("Vale") ? ChipKind.AimWarn : ChipKind.Aim; }
+            if (alt != null) { ChipText = alt; Chip = h.AimLine == null ? ChipKind.Move : h.AimLine.StartsWith("CIVILIAN") || h.AimLine.StartsWith(h.ValeWord) ? ChipKind.AimWarn : ChipKind.Aim; }
             else if (it != null && hov != null && !ended && h.Panel == null && it.Actionable)
             {
                 // the price, only where a right click acts; a target this agent can't act on shows the hover ring alone (Fable A6, A7: no "can't
@@ -349,8 +349,8 @@ namespace Suborned.Play
             string sealStory = null;
             if (g.FailCode == "closed-in" && g.Cause is Suborned.Sim.FailCause cin && h.ClosedInWords(cin) is { Length: > 0 } cl) failLine = cl; // brief 080: less.closedIn by Cause.Why
             if (g.FailCode == "sealed" && g.Cause is Suborned.Sim.FailCause sc) { var (sl, _, ss) = h.SealedWords(sc); if (!string.IsNullOrEmpty(sl)) failLine = sl; sealStory = ss; } // brief 057 §4: the line says which of held, ready, empty it was (FailCause.Car), so the card and the story agree
-            EndLines.Add(g.Result == Outcome.Success ? "Vale is in the car" : g.Result == Outcome.Withdrawn ? "You withdrew" : head.Length > 0 ? head : "The attempt failed");
-            EndLines.Add(g.Result == Outcome.Success ? "The crew escapes with Vale alive." : failLine.Length > 0 ? failLine : g.FailText);
+            EndLines.Add(g.Result == Outcome.Success ? $"{h.ValeWord} is in the car" : g.Result == Outcome.Withdrawn ? "You withdrew" : head.Length > 0 ? head : "The attempt failed");
+            EndLines.Add(g.Result == Outcome.Success ? $"The crew escapes with {h.ValeWord} alive." : failLine.Length > 0 ? failLine : g.FailText);
             EndLines.Add($"Done at {HandoverHost.MissionClock(g.Tick)}   ·   ${g.S.Purse - g.Cash:N0} spent   ·   Trail {g.Trail}");
             if (d != null)
             {
@@ -359,7 +359,7 @@ namespace Suborned.Play
                 EndLines.Add($"{sec} {inv}".Trim());
                 foreach (var st in h.StandingLines()) EndLines.Add(st.line); // brief 014: one Standing line per district (the debrief)
                 var ids = new List<string>(d.Route); if (h.SealedCar == "empty") ids.Remove("vale-reaches-getaway-car"); // brief 057 §4 (Suture: Debrief.cs claims it on every route; Keel's fix comes): never say Vale reached the car when the fail says he had not
-                var route = ids.ConvertAll(id => h.Text != null && h.Text.Route.TryGetValue(id, out var rw) ? rw : RouteWords(id)).FindAll(x => x != null);
+                var route = ids.ConvertAll(id => h.Text != null && h.Text.Route.TryGetValue(id, out var rw) ? rw : RouteWords(id)?.Replace("{vale}", h.ValeWord)).FindAll(x => x != null);
                 if (!string.IsNullOrEmpty(sealStory)) route.Add(sealStory); // "Police held the car." / "Go was never given." after "Vale reached the getaway car."
                 if (route.Count > 0) EndLines.Add(string.Join(" ", route));
                 if (d.FightBranch.Length > 0) EndLines.Add(FightLine(h, d));
@@ -412,9 +412,9 @@ namespace Suborned.Play
         {
             "waitress-pulls-guard-away" => "Inez drew the guard off the door.", "guard-shot-beside-waitress" => "The guard was shot beside Inez.", "guard-shot-away-from-waitress" => "The guard was shot away from Inez.",
             "entrance-camera-looped" => "The entrance camera was looped.", "patrol-diverted" => "The patrol was rerouted.", "entry-timed-between-sweeps" => "The Enforcer went in between the patrol's sweeps.",
-            "vale-taken-through-office" => "The Enforcer took Vale through the Office.", "vale-reaches-getaway-car" => "Vale reached the getaway car.",
-            "driver-moves-vale-to-service-lane" => "The driver brought Vale round to the service lane.", // engine 0.33.0: pickup-camera-blocked is retired with car.blocks
-            "rivals-driven-back" => "The rivals were driven back.", "rivals-follow-false-tip" => "The rivals followed a false tip.", "vale-intercepted-outside" => "Vale was taken outside.",
+            "vale-taken-through-office" => "The Enforcer took {vale} through the Office.", "vale-reaches-getaway-car" => "{vale} reached the getaway car.",
+            "driver-moves-vale-to-service-lane" => "The driver brought {vale} round to the service lane.", // engine 0.33.0: pickup-camera-blocked is retired with car.blocks
+            "rivals-driven-back" => "The rivals were driven back.", "rivals-follow-false-tip" => "The rivals followed a false tip.", "vale-intercepted-outside" => "{vale} was taken outside.",
             _ => null,
         };
 

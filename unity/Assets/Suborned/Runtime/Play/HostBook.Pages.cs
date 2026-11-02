@@ -18,7 +18,7 @@ namespace Suborned.Play
         public readonly List<(string id, string icon, string word)> SectionRows = new();
         public readonly List<End> Ends = new();
         public readonly Dictionary<string, Stop> Stops = new();
-        public readonly Dictionary<string, string> Weapons = new(), Who = new();
+        public readonly Dictionary<string, string> Weapons = new(), Who = new(), AgentNames = new();
         public sealed class Need { public string Id = "", Words = "", Check = "", Known = ""; }
         public readonly Dictionary<string, List<Need>> Needs = new();
         public readonly Dictionary<string, (string word, string icon, string line)> Does = new();
@@ -39,6 +39,7 @@ namespace Suborned.Play
                 if (j.Opt("needs") is JNode nd) foreach (var kv in nd["ways"].Entries) { var l = new List<Need>(); foreach (var x in kv.Value.Items) l.Add(new Need { Id = S(x, "id"), Words = S(x, "words"), Check = S(x, "check"), Known = S(x, "known") }); one.Needs[kv.Key] = l; }
                 foreach (var x in j["stops"].Items) one.Stops[S(x, "at")] = new Stop { Icon = S(x, "icon"), Log = S(x, "log") };
                 var c = b["cell"]; one.Health = S(c, "health"); one.Reach = S(c, "reach"); one.Drawn = S(c, "drawn"); one.Holstered = S(c, "holstered"); foreach (var x in c["weapon"]["stats"].Items) one.WeaponStats.Add((S(x, "id"), S(x, "word"), float.Parse(x["full"].NumberText, System.Globalization.CultureInfo.InvariantCulture), x["pips"].Int()));
+                if (c.Opt("name") is JNode an) foreach (var kv in an.Entries) one.AgentNames[kv.Key] = kv.Value.Str();
                 if (c.Opt("who") is JNode wh) foreach (var kv in wh.Entries) one.Who[kv.Key] = kv.Value.Str();
                 foreach (var kv in c["weapons"].Entries) one.Weapons[kv.Key] = kv.Value.Str();
                 foreach (var kv in c["does"].Entries) one.Does[kv.Key] = (S(kv.Value, "word"), S(kv.Value, "icon"), S(kv.Value, "line"));
@@ -94,14 +95,14 @@ namespace Suborned.Play
         public BookPage BookCellPage(int k, Weapon weapon = null)
         {
             var bw = BookWordsFile.Get(); var g = Game; var op = g.Ops[k]; string role = Op.Name((OpId)k);
-            string name = Text != null && Text.Speakers.TryGetValue(role, out var sp) ? sp : role;
-            var p = new BookPage { Section = "cell", HeroFace = "portraits/hero_" + role, Name = name, Sub = bw.Who.TryGetValue(role, out var who) ? who : "" };
+            string name = AgentName(k);
+            var p = new BookPage { Section = "cell", HeroFace = "portraits/hero_" + role, Name = name, NameTag = AgentJob(k), Sub = bw.Who.TryGetValue(role, out var who) ? who : "" };
             var d = DoingOf(k); p.Facts.Add(new BookFact { Icon = op.Down ? "s_downed" : d.Phase is "walking" or "running" ? "s_moving" : HudModel.AtlasIcon(d.Verb, op.Busy?.Approach ?? "", d.Phase), Word = op.Down ? (Text != null && Text.Activity.TryGetValue("down", out var dw) ? dw : "Down") : d.Label });
             if (bw.Reach.Length > 0) p.Facts.Add(new BookFact { Icon = "watch", Word = bw.Reach.Replace("{m}", (g.R.WatchReachCm((OpId)k) / 100).ToString()) });
             p.Weapon = BookWeaponOf(k, weapon);
             p.Scales.Add(new BookScale { Word = bw.Health, Value = op.Gun.Health, Max = op.Gun.Max });
             p.Can.AddRange(BookCanOf(k));
-            for (int i = 0; i < 4; i++) if (i != k) { var r = Op.Name((OpId)i); p.Others.Add(new BookOther { Agent = i, Face = $"portraits/portrait_{r}_{(g.Ops[i].Down ? "down" : "normal")}", Word = Text != null && Text.Speakers.TryGetValue(r, out var on) ? on : r }); }
+            for (int i = 0; i < 4; i++) if (i != k) { var r = Op.Name((OpId)i); p.Others.Add(new BookOther { Agent = i, Face = $"portraits/portrait_{r}_{(g.Ops[i].Down ? "down" : "normal")}", Word = AgentName(i) }); }
             var vt = views?.Find("op/" + role); bool shown = vt && vt.gameObject.activeInHierarchy;
             p.Subject = shown ? vt.position : frame.World(op.Pos); p.Line = shown; p.SubjectView = "op/" + role;
             return p;

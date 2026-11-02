@@ -159,7 +159,7 @@ namespace Suborned.Play
             var tnode = Brief("target"); string targetAt = tnode != null && tnode.Kind != JKind.Str ? S(tnode, "at") : null;
             b.TargetRole = tnode is JNode tr && tr.Kind == JKind.Str ? tr.Str() : S(tnode, "role") ?? "councillor";
             string dt = v.dossier?.target ?? ""; int dot = dt.IndexOf('.');
-            b.TargetName = dot > 0 ? dt[..dot] : tx?.TargetName(b.TargetRole, "Vale") ?? "Vale";
+            b.TargetName = dot > 0 ? dt[..dot] : tx?.TargetName(b.TargetRole, h.ValeWord) ?? h.ValeWord;
             b.TargetFact = dot > 0 ? dt[(dot + 1)..].Trim() : ""; b.TargetFact2 = tx?.PageTarget ?? "";
             b.TargetPhoto = $"portraits/card_{b.TargetRole}"; b.TargetBadge = HudModel.PersonBadge(b.TargetRole);
             Vector3 W(Pt p) => h.frame.World(p);

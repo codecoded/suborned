@@ -87,7 +87,7 @@ namespace Suborned.Play
             var g = Game; int ticks = -1; Guard("drive ticks", () => ticks = g.DriveTicks(st.Id));
             var i = new Intent { Slot = -1, Label = "Drive", Order = new Order { Op = Op.Name(by), Do = "drive-car", Target = st.Id } };
             i.Time = ticks < 0 ? "" : $"{(ticks + Game.Hz - 1) / Game.Hz} s"; i.Usd = "$0"; i.Trail = "T 0"; i.Alert = "A 0";
-            i.Outcome = StandAfterVale(st) ? "after Vale's car" : "";
+            i.Outcome = StandAfterVale(st) ? $"after {ValeWord}'s car" : "";
             return i;
         }
 

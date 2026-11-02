@@ -196,8 +196,8 @@ namespace Suborned.Play
                 case "loop": c.Tone = g.LoopOn ? Feedback.Ok : Feedback.Info; return g.LoopOn ? "Camera looped. The Tech is free to go." : "The loop didn't hold."; // engine 0.31.0: no tether
                 case "reroute": c.Tone = Feedback.Ok; return "The patrol is off its sweep for a while.";
                 case "mislead": { bool away = g.CarSt is CrewCar.TipOut or CrewCar.Away or CrewCar.TipBack; c.Tone = away ? Feedback.Ok : Feedback.Info; return away ? "The rivals follow the false tip. They may be back." : "The tip missed."; } // brief 059 F3: the car leaves on the tip (CarSt), the crew on foot stays
-                case "enter": return g.Vale == ValeAt.WithEnforcer ? "Out at the service lane with Vale." : g.Ops[(int)OpId.Enforcer].Inside ? "Inside the Office." : "Back out without Vale.";
-                case "take": c.Tone = g.Vale == ValeAt.WithEnforcer ? Feedback.Ok : Feedback.Info; return g.Vale == ValeAt.WithEnforcer ? "Vale is with the Enforcer: get him to the car." : "Vale was not taken.";
+                case "enter": return g.Vale == ValeAt.WithEnforcer ? $"Out at the service lane with {ValeWord}." : g.Ops[(int)OpId.Enforcer].Inside ? "Inside the Office." : $"Back out without {ValeWord}.";
+                case "take": c.Tone = g.Vale == ValeAt.WithEnforcer ? Feedback.Ok : Feedback.Info; return g.Vale == ValeAt.WithEnforcer ? $"{ValeWord} is with the Enforcer: get him to the car." : $"{ValeWord} was not taken.";
                 case "carry": return "Lifted: walk them to the car.";
             }
             return "Done.";
@@ -275,7 +275,7 @@ namespace Suborned.Play
         {
             ["rivals.arrive"] = ("city", "Rival car arrives", "car/rivals"), ["rivals.misled"] = ("city", "Rivals sent away", "car/rivals"), ["rivals.drawn"] = ("warning", "Rivals heading in", "car/rivals"),
             ["guard.at-cafe"] = ("city", "The guard is at the café", "guard"), ["guard.back"] = ("city", "Guard back on the door", "guard"),
-            ["vale.exits"] = ("city", "Vale comes out", "councillor"), ["vale.at-car"] = ("city", "Vale reaches his car", "councillor"),
+            ["vale.exits"] = ("city", "{vale} comes out", "councillor"), ["vale.at-car"] = ("city", "{vale} reaches his car", "councillor"),
             ["car.leaves"] = ("city", "The official car leaves", "car/official"), // engine 0.32.0: car.blocks is never logged (the driver's Call is retired)
             ["loop.ends"] = ("warning", "The loop ends", "camera/entrance"), ["security.called"] = ("warning", "Security is coming", "security/0"), ["patrol.breaks"] = ("warning", "The patrol turns on you", "patrol"),
             ["run.seen"] = ("warning", "Runner seen", ""), ["report"] = ("warning", "Reported", ""), ["fight.loud"] = ("fight", "Police coming in", "security/0"), ["fight.safe"] = ("fight", "The rivals wait at the car", "car/getaway"),
@@ -285,7 +285,7 @@ namespace Suborned.Play
             ["rivals.recalled"] = ("fight", "Rivals called back", "car/rivals"), ["rivals.wiped"] = ("fight", "The rival crew is finished", "car/getaway"), ["rivals.see-takedown"] = ("warning", "A crewmate saw it", ""),
             ["rivals.wakes"] = ("warning", "A rival is awake", ""), ["rivals.frees"] = ("city", "A rival is untied", ""),
             // engine 0.34.0 (Motive M067-K3 a): hiding in a held car loses; host titles until Fable's cards.items carry them
-            ["rivals.for-car"] = ("warning", "Rivals going for Vale", "car/getaway"), ["rivals.back-to-cover"] = ("city", "Rivals back in cover", "car/getaway"),
+            ["rivals.for-car"] = ("warning", "Rivals going for {vale}", "car/getaway"), ["rivals.back-to-cover"] = ("city", "Rivals back in cover", "car/getaway"),
         };
         /// <summary>City scenes' card titles by the text's event id (Fable's table D).</summary>
         static readonly Dictionary<string, string> SceneTitles = new() { ["rivals-arrive"] = "Rival car arrives", ["chime"] = "Handover chime", ["guard-at-cafe"] = "The guard is at the café" };
@@ -314,7 +314,7 @@ namespace Suborned.Play
             // brief 013: Fable's cards (text.json cards.items) for the codes no scene covers, with their sight and needs rules
             if (TextCard(l, out var cardHidden)) { if (cardHidden) quiet = l; return; }
             if (!FeedEvents.TryGetValue(l.Code, out var ev)) return;
-            var c = NewCard(ev.kind, ev.title, ev.kind == "fight" ? "fire" : ev.kind == "warning" ? "!" : "·", "", null, ev.place);
+            var c = NewCard(ev.kind, ev.title.Replace("{vale}", ValeWord), ev.kind == "fight" ? "fire" : ev.kind == "warning" ? "!" : "·", "", null, ev.place);
             c.Event = l.Code; c.Footer = EventResult(l); c.Tone = ev.kind is "warning" or "fight" ? Feedback.Refused : Feedback.Info;
             lastEvent = c;
         }
@@ -338,7 +338,7 @@ namespace Suborned.Play
             string Between(string a, string b) { int i = t.IndexOf(a, StringComparison.Ordinal); if (i < 0) return null; i += a.Length; int j = t.IndexOf(b, i, StringComparison.Ordinal); return j > i ? t[i..j] : null; }
             switch (l.Code)
             {
-                case "rivals.arrive": return "Parked by the pickup. They want Vale too.";
+                case "rivals.arrive": return $"Parked by the pickup. They want {ValeWord} too.";
                 case "rivals.misled": return "They may be back.";
                 case "rivals.drawn": return "They heard the shots.";
                 case "guard.at-cafe": return "Away from the door.";
@@ -360,7 +360,7 @@ namespace Suborned.Play
                 case "rivals.see-takedown": return "A rival saw his crewmate go down and opened fire. It's loud now.";
                 case "rivals.wakes": return "He is up again and goes for the Enforcer on sight.";
                 case "rivals.frees": return "A crewmate found him tied and untied him.";
-                case "rivals.for-car": return Text?.CardFor("rivals.for-car")?.Result is { Length: > 0 } rf ? rf : "No gun is drawn outside the car, so they come for Vale. Draw one there (F)."; // engine 0.35.2: only a drawn op guards a held car (Fable's card first)
+                case "rivals.for-car": return Text?.CardFor("rivals.for-car")?.Result is { Length: > 0 } rf ? rf : $"No gun is drawn outside the car, so they come for {ValeWord}. Draw one there (F)."; // engine 0.35.2: only a drawn op guards a held car (Fable's card first)
                 case "rivals.back-to-cover": return t.Contains("no longer held") ? "The car is free: they go back to cover." : "A gun is drawn outside the car again: they go back to cover."; // engine 0.35.2: "sees the cell drawn outside the car again"
                 case "captured": return t;
             }

@@ -111,7 +111,7 @@ namespace Suborned.Play
                 switch (it.Slot)
                 {
                     case BookSlot.Hero: BkHero(body, pg, it.At); break;
-                    case BookSlot.Name: BkPut(body, it.At.x, it.Cy, pg.Name, it.Size, "Jost-Bold", BkInkHex); break;
+                    case BookSlot.Name: BkPut(body, it.At.x, it.Cy, pg.Name, it.Size, "Jost-Bold", BkInkHex); if (pg.NameTag.Length > 0) BkPut(body, it.At.x + BkTw(pg.Name, it.Size, "Jost-Bold") + 18f, it.Cy + it.Size * .2f, "· " + pg.NameTag, it.Size * .42f, "Jost-Medium", BkSoftHex); break;
                     case BookSlot.Sub: { float lh = r.SubSize * 1.3f; for (int n = 0; n < r.SubLines.Length; n++) BkPut(body, it.At.x, it.Cy + n * lh, r.SubLines[n], r.SubSize, "Jost-Medium", BkSoftHex); break; }
                     case BookSlot.State: { var e = BkBox(body, it.At); Round(e, 23f); e.style.backgroundColor = BkOrange; BkPut(e, 17f, 23f, pg.State, it.Size, "Jost-Bold", BkCreamHex); break; }
                     case BookSlot.FactsHead: BkFold(body, pg, it); break;

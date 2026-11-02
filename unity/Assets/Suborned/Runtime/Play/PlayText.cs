@@ -130,7 +130,7 @@ namespace Suborned.Play
             if (roles.Count != 1 || !Holders.TryGetValue(role, out var w)) { var mx = Holders.TryGetValue("mixed", out var m) ? m.many : "hostiles"; return mx.Replace("{n}", list.Count.ToString()); }
             return list.Count == 1 ? w.one : w.many.Replace("{n}", list.Count.ToString());
         }
-        public string ObjTake = "Take [Vale] alive.", ObjBring = "Bring [Vale] out.", ObjCarry = "Get [Vale] to the [car].", BriefGoal = "Take [Vale] alive to the [car].", EndWin = "Vale is in the car.", EndWithdraw = "You withdrew.";
+        public string ObjTake = "Take [the councillor] alive.", ObjBring = "Bring [the councillor] out.", ObjCarry = "Get [the councillor] to the [car].", BriefGoal = "Take [the councillor] alive to the [car].", EndWin = "The councillor is in the car.", EndWithdraw = "You withdrew.";
         /// <summary>debrief.standing (Fable, brief 014): the line's form, the band names, the cause words.</summary>
         public string StandingLine = "{district}: {band} {to}, was {from}. {cause}"; public readonly Dictionary<string, string> StandingBands = new(), StandingCauses = new();
         /// <summary>Brief 054 / 057 (Fable, less.mood): the mood words, the approach words, the "likely" and "harder" tags, the Watch card's footers.</summary>
@@ -529,33 +529,33 @@ namespace Suborned.Play
             var t = new PlayText
             {
                 Title = "The Handover",
-                Objective = "Take Councillor Vale alive and get him into your getaway car.",
-                Win = "Vale, alive, in your getaway car.",
-                ClockLine = "Handover chime at 4:30. Vale's driver takes him away at 5:10, or 7:30 if turned.", // brief 070: Fable's briefing.clock.line, true whether or not the driver is turned
+                Objective = "Take the councillor alive and get him into your getaway car.",
+                Win = "The councillor, alive, in your getaway car.",
+                ClockLine = "Handover chime at 4:30. the councillor's driver takes him away at 5:10, or 7:30 if turned.", // brief 070: Fable's briefing.clock.line, true whether or not the driver is turned
                 PurseLine = "$100,000 for the whole job. Every payment can be traced.",
-                Tracker = "Take Vale alive to the getaway car · closes {close}",
+                Tracker = "Take the councillor alive to the getaway car · closes {close}",
             };
             t.Card.AddRange(new[]
             {
-                "Councillor Vale signed the clearance order for the marked block.",
+                "the councillor signed the clearance order for the marked block.",
                 "At shift handover he leaves the Civic Records Office for his official car.",
                 "Take him alive. Nobody in the city should know it was you.",
             });
             t.Fails.AddRange(new[]
             {
-                ("vale-dead", "Vale is killed."), ("vale-leaves", "Vale drives off in the official car."), ("rivals-reach-vale", "The rival crew reaches Vale first."),
+                ("vale-dead", "The councillor is killed."), ("vale-leaves", "The councillor drives off in the official car."), ("rivals-reach-vale", "The rival crew reaches the councillor first."),
                 ("sealed", "The district seals."), ("enforcer-down", "The Enforcer goes down."), ("entry-seen-guard", "Your entry is seen by the guard or a live camera."), /* engine 0.34.2: the patrol seeing the Enter is a report, no fail */
                 ("cell-down", "The whole cell is down."), // engine 0.34.0 (Motive M067-K3 b)
             });
             t.Hints.Add("The front door: Inez at the café can draw the door guard away, if she's on your side.");
-            t.Hints.Add("The pickup: Vale's driver needs money. A turned driver can move the car or block the pickup camera.");
+            t.Hints.Add("The pickup: the councillor's driver needs money. A turned driver can move the car or block the pickup camera.");
             t.Cell["scout"] = "Scout: watches and listens; learns routines, needs and temperaments.";
             t.Cell["fixer"] = "Fixer: turns people (ask, pay, help, pressure) and calls them once turned.";
             t.Cell["tech"] = "Tech: loops a camera or reroutes the patrol from the control cabinet.";
-            t.Cell["enforcer"] = "Enforcer: enters, takes Vale, puts him in the car; fights.";
-            foreach (var (k, v) in new[] { ("scout", "Scout"), ("fixer", "Fixer"), ("tech", "Tech"), ("enforcer", "Enforcer"), ("waitress", "Inez"), ("driver", "Driver"), ("guard", "Guard"), ("councillor", "Vale") })
+            t.Cell["enforcer"] = "Enforcer: enters, takes the councillor, puts him in the car; fights.";
+            foreach (var (k, v) in new[] { ("scout", "Scout"), ("fixer", "Fixer"), ("tech", "Tech"), ("enforcer", "Enforcer"), ("waitress", "Inez"), ("driver", "Driver"), ("guard", "Guard"), ("councillor", "The councillor") })
                 t.Speakers[k] = v;
-            foreach (var (k, v) in new[] { ("waitress", "Inez"), ("driver", "the driver"), ("guard", "the guard"), ("councillor", "Vale"), ("patrol", "the patrol"), ("rivals", "the rival crew") })
+            foreach (var (k, v) in new[] { ("waitress", "Inez"), ("driver", "the driver"), ("guard", "the guard"), ("councillor", "The councillor"), ("patrol", "the patrol"), ("rivals", "the rival crew") })
                 t.TargetNames[k] = v;
             void A(string verb, string label, string does) => t.Actions[verb] = new ActionText { Label = label, Does = does };
             A("watch", "Watch", "learn their routine from a distance: where they go, and when");
@@ -569,9 +569,9 @@ namespace Suborned.Play
             A("disable", "Disable camera", "cut a camera for good; the desk soon notices, and that counts as a report");
             A("reroute", "Reroute patrol", "send the patrol false orders: it leaves its sweep for a while"); // engine 0.34.0: the patrol sweeps the service yard, not the entrance
             A("mislead", "False tip", "a false tip sends the rival crew elsewhere for a while");
-            A("enter", "Enter", "slip in at the public door to reach Vale; anyone watching the door sees");
-            A("take", "Take Vale", "seize Vale at his car");
-            A("board", "Board", "get into the getaway car (Vale or a downed agent first)"); // brief 018: placeholders until Fable's lines land
+            A("enter", "Enter", "slip in at the public door to reach the councillor; anyone watching the door sees");
+            A("take", "Take the councillor", "seize the councillor at his car");
+            A("board", "Board", "get into the getaway car (the councillor or a downed agent first)"); // brief 018: placeholders until Fable's lines land
             A("go", "Go", "the car leaves with whoever is in it");
             A("fire", "Fire", "fire until they are down: the run goes loud");
             void Lk(string code, string pattern, string line) { var l = new LockText { Code = code, Line = line }; l.Match.Add(new Regex(pattern, RegexOptions.IgnoreCase)); t.Locks.Add(l); }
@@ -581,19 +581,19 @@ namespace Suborned.Play
             Lk("busy", "busy until", "Wait until the current act lands, or cancel it (C).");
             Lk("cash", "not enough cash", "You can't afford the worst case; try a cheaper approach.");
             Lk("refused", "refused this already", "They said no to this; try another approach.");
-            Lk("vale-inside", "Vale is not inside", "Only while Vale is in the Office (before 4:50).");
-            Lk("vale-car", "not at his car", "Wait for Vale to reach his car (after 4:50).");
-            Lk("no-vale", "don't have Vale", "Take Vale first (Enforcer).");
+            Lk("vale-inside", "The councillor is not inside", "Only while the councillor is in the Office (before 4:50).");
+            Lk("vale-car", "not at his car", "Wait for the councillor to reach his car (after 4:50).");
+            Lk("no-vale", "don't have the councillor", "Take the councillor first (Enforcer).");
             Lk("no-rivals", "no rivals", "The rival crew arrives later.");
             void E(string id, string kind, string[] log, params string[] speakers) { var e = new EventText { Id = id, Kind = kind }; if (log != null) e.Log.AddRange(log); e.Speakers.AddRange(speakers); t.Events[id] = e; }
             E("ack", "order", null, "scout", "fixer", "tech", "enforcer");
             E("reply", "reply", null, "waitress", "driver", "guard");
             E("read", "read", null, "scout");
             foreach (var (k, v) in new[] { ("idle", "Ready"), ("down", "Down"), ("walking", "Walking"), ("running", "Running"), ("drawing", "Drawing"), ("holstering", "Holstering"),
-                ("firing", "Firing on {who}"), ("holding.loop", "Holding the loop"), ("holding.take", "Carrying Vale to the car"), ("holding.carry", "Carrying {who}"),
+                ("firing", "Firing on {who}"), ("holding.loop", "Holding the loop"), ("holding.take", "Carrying the councillor to the car"), ("holding.carry", "Carrying {who}"),
                 ("acting.watch", "Watching {who}"), ("acting.listen", "Listening to {who}"), ("acting.ask", "Asking {who}"), ("acting.pay", "Paying {who}"), ("acting.help", "Helping {who}"),
                 ("acting.pressure", "Pressing {who}"), ("acting.loop", "Looping the camera"), ("acting.reroute", "Rerouting the patrol"), ("acting.mislead", "Tipping off the rivals"),
-                ("acting.enter", "Inside the Office"), ("acting.take", "Taking Vale"), ("acting.carry", "Lifting {who}") })
+                ("acting.enter", "Inside the Office"), ("acting.take", "Taking the councillor"), ("acting.carry", "Lifting {who}") })
                 t.Activity[k] = v;
             void D(string ev, string verb, string speaker, string outcome, params string[] lines) { var e = new Entry { Event = ev, Verb = verb, Speaker = speaker, Outcome = outcome }; e.Lines.AddRange(lines); t.Dialogue.Add(e); }
             D("ack", null, "scout", null, "On my way.", "Moving.");

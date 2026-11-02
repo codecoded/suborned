@@ -343,7 +343,7 @@ namespace Suborned.Play
                     }
                     return true;
                 }
-                if (!rp.Used && rp.T is { Kind: "person", Key: "councillor" } && now - rp.T0 >= RightTapS) { rp.Used = true; PopKey("never-vale", rp.At, TargetWorld(rp.T), Feedback.Refused, "never fire on Vale: the mission fails"); }
+                if (!rp.Used && rp.T is { Kind: "person", Key: "councillor" } && now - rp.T0 >= RightTapS) { rp.Used = true; PopKey("never-vale", rp.At, TargetWorld(rp.T), Feedback.Refused, $"never fire on {ValeWord}: the mission fails"); }
                 return true;
             }
             return !onHud && (mouse.leftButton.isPressed || mouse.rightButton.isPressed); // a press that began on the HUD: the street hears none of it

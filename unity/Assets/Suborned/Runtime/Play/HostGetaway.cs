@@ -25,7 +25,7 @@ namespace Suborned.Play
             int secs = R.BoardS + (carrying ? R.CarryS : 0); // seconds (rulebook cell.board.s, carry.s)
             var i = new Intent { Slot = -1, Label = "Board", Order = new Order { Op = Op.Name(k), Do = "board", Target = "car" } };
             i.Time = $"{secs} s"; i.Usd = "$0"; i.Trail = "T 0"; i.Alert = "A 0";
-            i.Outcome = k == OpId.Enforcer && g.Vale == ValeAt.WithEnforcer ? "with Vale" : op.Carrying.HasValue ? "with the " + Op.Name(op.Carrying.Value) : "";
+            i.Outcome = k == OpId.Enforcer && g.Vale == ValeAt.WithEnforcer ? $"with {ValeWord}" : op.Carrying.HasValue ? "with the " + Op.Name(op.Carrying.Value) : "";
             return i;
         }
 

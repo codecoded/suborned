@@ -10,7 +10,6 @@
   "until": "2026-11-16",
   "why": "the hits on 2026-11-02, before Fable renames Vale and Okafor (text.json, the Play fallbacks) and Pulse rebuilds the pools (the cast pool, the people files); each entry fails once its hit is gone, and all of them fail after `until`",
   "hits": [
-   {"source":"play","name":"Vale"},
    {"source":"pool","name":"Amara"},
    {"source":"pool","name":"Astrid"},
    {"source":"pool","name":"Elena"},
@@ -22,19 +21,7 @@
    {"source":"pool","name":"Priya"},
    {"source":"pool","name":"Stavros"},
    {"source":"pool","name":"Thea"},
-   {"source":"pool","name":"Tomas"},
-   {"source":"streaming-people","name":"Amara"},
-   {"source":"streaming-people","name":"Astrid"},
-   {"source":"streaming-people","name":"Elena"},
-   {"source":"streaming-people","name":"Kenji"},
-   {"source":"streaming-people","name":"Mateo"},
-   {"source":"streaming-people","name":"Novak"},
-   {"source":"streaming-people","name":"Okafor"},
-   {"source":"streaming-people","name":"Priya"},
-   {"source":"streaming-people","name":"Stavros"},
-   {"source":"streaming-people","name":"Thea"},
-   {"source":"streaming-people","name":"Tomas"},
-   {"source":"streaming-people","name":"Vale"}
+   {"source":"pool","name":"Tomas"}
   ]
  }
 }

@@ -20,12 +20,12 @@ namespace Suborned.Play
         readonly ActMem[] acts = new ActMem[4];
 
         /// <summary>The act in its -ing form, as the pill says it ("Watching", "Paying", "Looping the camera").</summary>
-        static string IngOf(Order o, Target t)
+        string IngOf(Order o, Target t)
         {
             switch (o?.Do ?? "")
             {
                 case "watch": return "Watching"; case "listen": return "Listening"; case "call": return "Calling"; case "loop": return "Looping the camera"; case "disable": return "Cutting the line";
-                case "reroute": return "Rerouting the patrol"; case "mislead": return "Tipping off the rivals"; case "enter": return "Going in"; case "take": return "Taking Vale";
+                case "reroute": return "Rerouting the patrol"; case "mislead": return "Tipping off the rivals"; case "enter": return "Going in"; case "take": return $"Taking {ValeWord}";
                 case "board": return "Boarding"; case "carry": return "Lifting"; case "restrain": return "Tying"; case "stash": return "Hiding"; case "drop": return "Putting down";
                 case "takedown": return o.How == "kill" ? "Killing" : "Knocking out";
                 case "turn": return o.Approach switch { "ask" => "Asking", "pay" => "Paying", "help" => "Helping", "pressure" => "Pressuring", _ => "Talking" };

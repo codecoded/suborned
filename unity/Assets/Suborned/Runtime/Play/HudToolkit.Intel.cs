@@ -190,7 +190,7 @@ namespace Suborned.Play
                 var c = icards[i]; var role = intelOrder[i]; c.Who = role; var p = g.PersonByRole(role);
                 c.Root.style.backgroundColor = i == 0 ? CardFillFirst : CardFill; Show(c.Bar, i == 0);
                 Bg(c.Badge, FaceOf(role), Color.white); /* brief 062: the painted face, the guard his pictogram */ Show(c.BadgeRing, p.Turned); Show(c.BadgeTick, p.Turned);
-                string name = stress ? "Bartholomew" : host.Text?.TargetName(role, p.Name) ?? p.Name; if (name.Length > 0) name = char.ToUpperInvariant(name[0]) + name[1..]; string job = role switch { "waitress" => "café waitress", "driver" => "Vale's driver", "guard" => "door guard", _ => "" }; // "The driver", as the mock
+                string name = stress ? "Bartholomew" : host.Text?.TargetName(role, p.Name) ?? p.Name; if (name.Length > 0) name = char.ToUpperInvariant(name[0]) + name[1..]; string job = role switch { "waitress" => "café waitress", "driver" => $"{host.ValeWord}'s driver", "guard" => "door guard", _ => "" }; // "The driver", as the mock
                 Text(c.Name, name); Text(c.Role, "·  " + job);
                 float nw = c.Name.resolvedStyle.width; c.Role.style.left = 52 + (float.IsNaN(nw) ? 60 : nw) + 6;
                 // the slots, from the engine's knowledge
