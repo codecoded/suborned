@@ -1,8 +1,7 @@
-"""Make an explicitly labelled evidence walkthrough, not a new live AI-generation recording.
+"""Render 4K supporting evidence, not a screen recording of live generation.
 
-Runs the real deterministic exporter, retains its stdout, then presents those results
-with historical input sheets, tracked Unity sprites, importer code and real game frames.
-Author machine only: needs retained AI sheets, screenshots, Pillow, NumPy, OpenCV and ffmpeg.
+Actually runs the existing exporter before rendering. Requires the retained author
+inputs, game captures, Pillow, OpenCV and ffmpeg. No API calls or Unity execution.
 """
 import contextlib
 import hashlib
@@ -10,14 +9,16 @@ import importlib.util
 import io
 import json
 import subprocess
-import textwrap
 from pathlib import Path
 from PIL import Image, ImageDraw, ImageFont
 
 ROOT = Path(__file__).resolve().parents[2]
 HERE = Path(__file__).resolve().parent
-OUT = ROOT / 'out/scratch/a07/video'
+OUT = ROOT / 'out/scratch/a07/video-hq'
 OUT.mkdir(parents=True, exist_ok=True)
+W, H = 3840, 2160
+BG, INK, MUTED, ACCENT, GOLD = '#102e30', '#f7f4ec', '#acc5bf', '#8cd6c3', '#ecd49b'
+FONTS = ROOT / 'briefs/011/ui/kit/fonts'
 spec = importlib.util.spec_from_file_location('a07_evidence', HERE / 'evidence.py')
 evidence = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(evidence)
@@ -28,77 +29,177 @@ with contextlib.redirect_stdout(log):
 (OUT / 'executed-output.txt').write_text(log.getvalue())
 print(log.getvalue(), flush=True)
 
-FONT = '/System/Library/Fonts/Supplemental/Arial.ttf'
-MONO = '/System/Library/Fonts/Menlo.ttc'
-def font(size, mono=False):
-    return ImageFont.truetype(MONO if mono else FONT, size)
 
-def page(title, subtitle):
-    im = Image.new('RGB', (1600, 900), '#f4f0e7')
+def font(size, style='body'):
+    names = {'body': FONTS / 'Barlow-Regular.ttf', 'bold': FONTS / 'Jost-SemiBold.ttf',
+             'mono': Path('/System/Library/Fonts/Menlo.ttc')}
+    return ImageFont.truetype(str(names[style]), size)
+
+
+def text(im, value, xy, size=68, colour=INK, style='body', width=None):
+    d, f = ImageDraw.Draw(im), font(size, style)
+    x, y = xy
+    for line in value.split('\n'):
+        assert d.textlength(line, font=f) <= (width or W - x - 110), f'Text too wide: {line}'
+        assert y + size * 1.3 < H - 130, f'Text too low: {line}'
+        d.text((x, y), line, font=f, fill=colour)
+        y += round(size * 1.35)
+
+
+def base(title, index, label):
+    im = Image.new('RGB', (W, H), BG)
     d = ImageDraw.Draw(im)
-    d.text((55, 25), 'THE SUBORNED / ASSIGNMENT 7', fill='#146b66', font=font(22))
-    d.text((55, 75), title, fill='#173c3d', font=font(43))
-    d.text((55, 137), subtitle, fill='#536567', font=font(23))
-    d.line((55, 815, 1545, 815), fill='#c9d2cd', width=2)
-    d.text((55, 836), 'OFFLINE REPLAY | Original model generation is historical. No fresh API calls in this video.', fill='#a34430', font=font(22))
+    d.rectangle((112, 104, 124, 160), fill=ACCENT)
+    text(im, 'THE SUBORNED', (156, 87), 55, ACCENT, 'bold')
+    text(im, f'A07 / {label.upper()}', (2500, 94), 43, MUTED)
+    text(im, title, (112, 225), 126, INK, 'bold')
+    d.line((112, H - 125, W - 112, H - 125), fill='#3b5a58', width=2)
+    d.text((112, H - 99), 'SUPPORTING EVIDENCE / Historical generation + executed offline export',
+           font=font(40), fill=MUTED)
+    d.text((W - 295, H - 101), f'{index:02d} / 08', font=font(40), fill=MUTED)
     return im
 
-def lines(im, text, xy, width=90, size=25, colour='#173c3d', mono=False):
-    d = ImageDraw.Draw(im); x, y = xy
-    for paragraph in text.split('\n'):
-        for line in textwrap.wrap(paragraph, width=width, replace_whitespace=False) or ['']:
-            d.text((x, y), line, fill=colour, font=font(size, mono)); y += int(size * 1.5)
 
 def picture(im, path, box):
-    image = Image.open(path).convert('RGBA')
-    image.thumbnail((box[2] - box[0], box[3] - box[1]), Image.Resampling.LANCZOS)
-    im.paste(image, (box[0] + (box[2]-box[0]-image.width)//2, box[1]), image)
+    with Image.open(path) as src:
+        src = src.convert('RGBA')
+        scale = min((box[2] - box[0]) / src.width, (box[3] - box[1]) / src.height)
+        src = src.resize((round(src.width * scale), round(src.height * scale)), Image.Resampling.LANCZOS)
+        xy = (box[0] + (box[2] - box[0] - src.width) // 2,
+              box[1] + (box[3] - box[1] - src.height) // 2)
+        im.paste(src, xy, src)
+
 
 stages = []
-im = page('1 / Recorded AI generation', '14 real Seedream / Runware receipts: $1.15560, including superseded takes.')
-picture(im, ROOT / 'briefs/033/portraits/scout_states_t3.png', (50, 200, 650, 790))
-lines(im, 'Original prompt: a 3 x 3 expression sheet of the same person, reference-conditioned.\n\nNine states: calm, focused, noticed, under fire, firing, hurt, badly hurt, downed, success.\n\nHuman-approved source takes: Scout / Fixer / Enforcer t3; Tech t4.\n\nThe ledger retains prompts, raw output hashes and provider-reported costs.', (710, 220), width=48, size=26)
-stages.append((im, 9))
 
-im = page('2 / Executed exporter output', 'This command ran while preparing this walkthrough; stdout is retained in executed-output.txt.')
-lines(im, '$ python3 courses/a07-complete-ai-dev-pipeline/evidence.py replay\n\n' + log.getvalue(), (60, 230), width=99, size=23, mono=True)
-lines(im, 'The exporter uses ring detection, masking, resizing and fixed filenames.\n32 unmodified states reproduce the production assets exactly.\nFour approved downed replacements are explicitly excluded from the grid replay.', (60, 630), width=100, size=25)
-stages.append((im, 9))
 
-im = page('3 / Production assets', '36 final sprites are tracked in Unity. Four downed replacements remain a documented manual override.')
-states = evidence.STATES
+def stage(im, seconds, name):
+    path = OUT / f'{len(stages):03d}-{name}.png'
+    im.save(path)
+    stages.append((path, seconds))
+
+
+im = base('From generated art to a live HUD', 1, 'Evidence overview')
+for i, agent in enumerate(evidence.AGENTS):
+    picture(im, ROOT / f'briefs/033/portraits/final/master/{agent}_calm.png',
+            (170 + i * 920, 530, 870 + i * 920, 1230))
+    text(im, agent.upper(), (350 + i * 920, 1290), 66, ACCENT, 'bold')
+text(im, 'Four agents. Nine expressions each. Present in local build 0.2.232.', (170, 1510), 80)
+text(im, 'An annotated evidence walkthrough.\nNo live model generation or Unity build is recorded here.', (170, 1690), 68, MUTED)
+stage(im, 9, 'overview')
+
+im = base('01 / Historical AI generation', 2, 'Source + receipts')
+picture(im, ROOT / 'briefs/033/portraits/scout_states_t3.png', (120, 440, 1640, 1960))
+text(im, 'SEEDREAM / RUNWARE', (1810, 490), 58, ACCENT, 'bold')
+text(im, '14 calls', (1810, 630), 156, INK, 'bold')
+text(im, '$1.15560 actual', (1810, 845), 117, GOLD, 'bold')
+text(im, 'Includes rejected and superseded takes.', (1810, 1040), 66, MUTED)
+text(im, 'Retained evidence', (1810, 1260), 76, INK, 'bold')
+text(im, 'Original prompts and model IDs\nProvider-reported costs\nRaw output hashes and selected takes', (1810, 1390), 70, MUTED)
+text(im, 'Original generation is historical.', (1810, 1810), 60, GOLD)
+stage(im, 11, 'generation')
+
+im = base('02 / Export replay executed', 3, 'Author-machine execution')
+ImageDraw.Draw(im).rounded_rectangle((112, 480, 3728, 1450), radius=30, fill='#091e20')
+text(im, '$ python3 …/evidence.py replay', (190, 565), 76, ACCENT, 'mono')
+for i, agent in enumerate(evidence.AGENTS):
+    text(im, f'{agent:<9} ok 9', (190, 760 + i * 125), 76, INK, 'mono')
+text(im, '32 exact matches', (1900, 770), 115, ACCENT, 'bold')
+text(im, 'Byte for byte against Unity sprites.', (1900, 950), 67, MUTED)
+text(im, '4 downed overrides excluded.', (1900, 1100), 67, GOLD)
+text(im, 'Ring detection / alpha mask / resize / fixed filenames', (140, 1570), 79)
+text(im, 'The command ran before this video was rendered; full stdout is retained.\nThis page reports the results. No API calls were made.', (140, 1740), 63, MUTED)
+stage(im, 13, 'export')
+
+im = base('03 / The production sprite set', 4, 'Tracked Unity assets')
+text(im, '36 finals match local build inputs. Runtime sprites are 128 px; enlarged here.', (112, 405), 65, MUTED)
+for col, state in enumerate(evidence.STATES):
+    text(im, state.replace('_', '\n'), (720 + col * 330, 560), 43, MUTED)
 for row, agent in enumerate(evidence.AGENTS):
-    ImageDraw.Draw(im).text((60, 250 + row * 125), agent.upper(), fill='#173c3d', font=font(23))
-    for col, state in enumerate(states):
-        x, y = 240 + col * 142, 215 + row * 133
-        picture(im, evidence.UNITY / f'{agent}_{state}@2x.png', (x, y, x + 100, y + 100))
-        if row == 0:
-            ImageDraw.Draw(im).text((x, 190), state.replace('_', ' '), fill='#536567', font=font(16))
-lines(im, '36 / 36 finals = installed Unity sprites = recorded local build inputs.', (60, 765), size=25)
-stages.append((im, 8))
+    y = 750 + row * 290
+    text(im, agent.upper(), (140, y + 70), 66, ACCENT, 'bold')
+    for col, state in enumerate(evidence.STATES):
+        x = 720 + col * 330
+        picture(im, evidence.UNITY / f'{agent}_{state}@2x.png', (x, y, x + 236, y + 236))
+text(im, 'Manual exception: four downed replacements were selected and finished by hand.', (140, 1900), 63, GOLD)
+stage(im, 11, 'sprites')
 
-im = page('4 / Automatic engine integration', 'Existing production code; this walkthrough does not run the Unity Editor or rebuild the game.')
-code = (ROOT / 'unity/Assets/Suborned/Editor/World/Play/GameBuild.cs').read_text()
-hook = next(l.strip() for l in code.splitlines() if 'KitImport.LivePortraits()' in l)
-lines(im, 'GameBuild.cs calls:\n' + hook + '\n\nKitImport.cs copies changed @2x PNGs and configures Sprite importers automatically.\n\nHostPortraits.cs selects expressions from simulation activity, attention, firing and health.\n\nHudToolkit.Live.cs loads:\nKit/portraits/live/<agent>_<state>@2x\n\nThe 36 installed assets match build 0.2.232 input hashes.', (60, 220), width=90, size=27)
-stages.append((im, 9))
+im = base('04 / The engine integration', 5, 'Production code excerpts')
+build = (ROOT / 'unity/Assets/Suborned/Editor/World/Play/GameBuild.cs').read_text()
+hook = next(line.split('//')[0].strip() for line in build.splitlines() if 'KitImport.LivePortraits()' in line)
+text(im, 'BUILD HOOK / GameBuild.cs', (150, 470), 55, ACCENT, 'bold')
+text(im, hook, (150, 595), 66, INK, 'mono')
+text(im, 'KitImport.cs copies PNGs and sets Sprite importers.', (150, 780), 79)
+ImageDraw.Draw(im).line((150, 995, 3690, 995), fill='#3b5a58', width=3)
+text(im, 'RUNTIME / HudToolkit.Live.cs', (150, 1110), 55, ACCENT, 'bold')
+code = (ROOT / 'unity/Assets/Suborned/Runtime/Play/HudToolkit.Live.cs').read_text()
+assert 'host.FaceOf(i)' in code and 'HandoverHost.FaceFiles[(int)face]' in code
+text(im, 'host.FaceOf(i)', (150, 1250), 87, INK, 'mono')
+text(im, 'Simulation state selects the named portrait.\nThe HUD cross-fades between expression sprites.', (150, 1435), 83)
+text(im, 'Existing code hooks; Unity is not running in this walkthrough.', (150, 1830), 65, GOLD)
+stage(im, 13, 'integration')
 
-target = OUT / 'TheSuborned-A07-pipeline-walkthrough.mp4'
-proc = subprocess.Popen(['ffmpeg', '-y', '-loglevel', 'error', '-f', 'rawvideo', '-pix_fmt', 'rgb24', '-s', '1600x900', '-r', '10', '-i', '-', '-an', '-c:v', 'libx264', '-preset', 'fast', '-crf', '21', '-pix_fmt', 'yuv420p', '-movflags', '+faststart', str(target)], stdin=subprocess.PIPE)
-for im, seconds in stages:
-    frame = im.tobytes()
-    for _ in range(seconds * 10): proc.stdin.write(frame)
-# Existing frame-by-frame capture from the playable build, with the clock running.
+im = base('05 / Repair only the rejected state', 6, 'Recorded cost change')
+text(im, 'BEFORE / Full nine-state sheet', (160, 500), 67, MUTED)
+text(im, '$0.09630 per call', (160, 610), 116, INK, 'bold')
+ImageDraw.Draw(im).rectangle((160, 810, 3480, 915), fill='#647f7b')
+text(im, 'AFTER / Three downed options only', (160, 1050), 67, MUTED)
+text(im, '$0.04815 per call', (160, 1160), 116, ACCENT, 'bold')
+ImageDraw.Draw(im).rectangle((160, 1360, 1820, 1465), fill=ACCENT)
+text(im, '50% lower cost per repair call', (160, 1610), 100, GOLD, 'bold')
+text(im, 'A narrower output scope, not equal work or a per-portrait saving.\nPortrait-job costs only; excludes other jobs and subscriptions.', (160, 1790), 65, MUTED)
+stage(im, 12, 'costs')
+
+# Play every source gameplay frame at its native 20 fps, once full frame and once
+# as a labelled HUD detail replay. No generated/interpolated gameplay frames.
 game = ROOT / 'out/scratch/itch-screenshots/fire/raw/firefight-live'
-game_report = json.loads((game.parent / 'shots.json').read_text())
-assert game_report['status'] == 'ok' and '0.2.232' in game_report['build']
-for _ in range(2):
-    for i in range(0, 60, 2):
-        im = page('5 / In the playable game', 'Recorded live gameplay from build 0.2.232: roster portraits react during combat.')
-        picture(im, game / f'f{i:04d}.png', (200, 185, 1400, 810))
-        proc.stdin.write(im.tobytes())
-proc.stdin.close()
-assert proc.wait() == 0
-receipt = {'video': target.name, 'sha256': hashlib.sha256(target.read_bytes()).hexdigest(), 'seconds': sum(t for _, t in stages) + 6, 'type': 'annotated evidence walkthrough of real offline exporter execution and historical generation; not a screen recording of fresh AI generation', 'model_calls_during_video_preparation': 0, 'game_build': '0.2.232', 'public_video_url': None}
+report = json.loads((game.parent / 'shots.json').read_text())
+assert report['status'] == 'ok' and '0.2.232' in report['build']
+for detail in (False, True):
+    for i in range(60):
+        with Image.open(game / f'f{i:04d}.png') as src:
+            if not detail:
+                im = src.convert('RGB').resize((W, H), Image.Resampling.LANCZOS)
+                d = ImageDraw.Draw(im)
+                d.rectangle((0, H - 155, W, H), fill=BG)
+                d.text((100, H - 125), 'RECORDED GAMEPLAY / 0.2.232 / 1080p source, 20 fps', font=font(53, 'bold'), fill=INK)
+            else:
+                im = base('06 / The portraits in the live HUD', 7, 'Gameplay detail replay')
+                crop = src.crop((0, 0, 300, 530)).convert('RGBA')
+                crop = crop.resize((760, 1343), Image.Resampling.LANCZOS)
+                im.paste(crop, (240, 490))
+                text(im, 'Actual roster during combat', (1280, 670), 109, INK, 'bold')
+                text(im, 'The same three-second capture,\nreplayed as a close-up.', (1280, 945), 84, MUTED)
+                text(im, 'No staged expression overrides\nwere used for this capture.', (1280, 1345), 84, MUTED)
+        stage(im, .05, f'game-{int(detail)}-{i:03d}')
+
+im = base('Evidence you can inspect', 8, 'Repository + limits')
+text(im, 'github.com/codecoded/suborned', (150, 520), 108, ACCENT, 'bold')
+text(im, 'branch: assignment-07', (150, 690), 83, MUTED)
+text(im, 'courses/a07-complete-ai-dev-pipeline/', (150, 880), 76, INK, 'mono')
+text(im, 'Receipts. Hashes. Cost arithmetic. Export replay. Integration code.', (150, 1080), 77)
+text(im, 'Still required for the final submission', (150, 1420), 94, GOLD, 'bold')
+text(im, 'A recorded primary pipeline execution into the engine,\nthe final audit, and a verified two-minute first-play path.', (150, 1590), 80, MUTED)
+stage(im, 10, 'evidence')
+
+manifest = OUT / 'frames.ffconcat'
+manifest.write_text('ffconcat version 1.0\n' + ''.join(
+    f"file '{path.name}'\noption framerate 20\nduration {seconds:.3f}\n"
+    for path, seconds in stages) + f"file '{stages[-1][0].name}'\noption framerate 20\n")
+target = OUT / 'TheSuborned-A07-supporting-evidence-4K.mp4'
+seconds = round(sum(t for _, t in stages), 2)
+subprocess.run(['ffmpeg', '-y', '-loglevel', 'warning', '-f', 'concat', '-safe', '0',
+                '-i', str(manifest), '-t', str(seconds), '-r', '20', '-an',
+                '-c:v', 'libx264', '-preset', 'veryfast', '-crf', '16',
+                '-pix_fmt', 'yuv420p', '-movflags', '+faststart', str(target)], check=True)
+receipt = {
+    'video': target.name, 'sha256': hashlib.sha256(target.read_bytes()).hexdigest(),
+    'seconds': seconds, 'resolution': [W, H], 'fps': 20, 'crf': 16,
+    'gameplay_source': '1920x1080 at 20 fps; full-frame upscale and labelled detail replay',
+    'type': 'Annotated supporting evidence; historical generation and actual offline export results, not a primary execution recording',
+    'model_calls_during_video_preparation': 0, 'game_build': '0.2.232', 'public_video_url': None,
+    'chapters': [{'start': round(sum(t for _, t in stages[:i]), 2), 'image': p.name}
+                 for i, (p, _) in enumerate(stages) if i < 6 or i == len(stages) - 1],
+}
 (OUT / 'video.json').write_text(json.dumps(receipt, indent=2) + '\n')
-print(target)
+print(target, flush=True)

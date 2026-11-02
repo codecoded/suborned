@@ -6,6 +6,8 @@
 
 **Status:** reassessment in progress. The portrait walkthrough is supporting evidence only; the primary pipeline-run recording, final audit and playable-link gate are outstanding. See [the reassessment](ASSESSMENT.md).
 
+**Primary demonstration choice:** the people/relationships/routines path, beginning with the accepted `r016` cast and following its checked expansion into simulation input and Unity. World/DecoKit is the visual companion. The portrait clip is optional supporting material; a higher-resolution local draft has been rendered but is not uploaded or approved as primary evidence.
+
 The Suborned is a single-player game of real-time squad tactics and social infiltration in a bright retro-future city. The Handover demo asks the player to take Councillor Popovic alive using a four-person cell. AI content is generated during development; no model runs during play.
 
 ## Submission links
