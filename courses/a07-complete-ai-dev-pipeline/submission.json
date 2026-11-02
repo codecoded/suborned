@@ -1,0 +1,27 @@
+{
+  "schema": "suborned.assignment07/1",
+  "student": "Sky Rumsey",
+  "game": "The Suborned",
+  "branch": "assignment-07",
+  "deadline_utc": "2026-11-03T23:59:00Z",
+  "playable_url": "https://codecoded.itch.io/the-suborned",
+  "repository_url": "https://github.com/codecoded/suborned/tree/assignment-07",
+  "pipeline_video_url": null,
+  "local_walkthrough": "out/scratch/a07/video/TheSuborned-A07-pipeline-walkthrough.mp4",
+  "walkthrough_kind": "Annotated offline replay of historical AI generation; not a fresh live model recording",
+  "audit": "audit.pdf",
+  "pipeline_example": "brief-033-live-portraits",
+  "public_page_observed": {
+    "date_bangkok": "2026-11-03",
+    "download": "TheSuborned-0.2.231.zip",
+    "size_displayed_mb": 521,
+    "platform": "macOS",
+    "gallery_build": "0.2.232",
+    "login_required_to_view": false
+  },
+  "local_evidence_build": "0.2.232",
+  "two_minute_play_test": null,
+  "marker_platform": null,
+  "ready_to_submit": false,
+  "remaining": ["compatible marker platform", "matching public build and evidence", "timed cold-start play test", "public pipeline video", "signed-out repository access check"]
+}

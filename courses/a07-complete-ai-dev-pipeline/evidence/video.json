@@ -1,0 +1,9 @@
+{
+  "video": "TheSuborned-A07-pipeline-walkthrough.mp4",
+  "sha256": "cad76ed3e64b6e487220371bdcb9af7fbcde3f2d3539544f031a3e41d41beb8a",
+  "seconds": 41,
+  "type": "annotated evidence walkthrough of real offline exporter execution and historical generation; not a screen recording of fresh AI generation",
+  "model_calls_during_video_preparation": 0,
+  "game_build": "0.2.232",
+  "public_video_url": null
+}

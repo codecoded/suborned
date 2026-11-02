@@ -1,0 +1,291 @@
+{
+  "schema": "suborned.a07.portraits/1",
+  "build": {
+    "result": "Succeeded",
+    "at": "2026-11-02T16:22:30.6638210Z",
+    "seconds": 11,
+    "app": "/Users/sky/Projects/suborned/out/build/play/The Suborned.app",
+    "version": "0.2.232",
+    "build": 232,
+    "recording": "c049",
+    "sim": "0.39.0",
+    "sha": "bc1df7d0",
+    "dirty": true,
+    "engine": "working tree on 0b87d377e0e6",
+    "dllSha256": "42409c7add6d9fc6fab850bfaa725b5b522a0fb154368bad0696843388eaf400",
+    "errors": 0,
+    "warnings": 16,
+    "post": "named The Suborned, version 0.2.232 (232), icon tools/game/app-icon.png, ad hoc signature ok"
+  },
+  "chosen_ai_sheets": [
+    {
+      "agent": "scout",
+      "source": "briefs/033/portraits/scout_states_t3.png",
+      "sha256": "f264c4de239acad6b2a4ea012e7414758a16e5172a09c5c0a8f64b9121b082ba",
+      "take": 3
+    },
+    {
+      "agent": "fixer",
+      "source": "briefs/033/portraits/fixer_states_t3.png",
+      "sha256": "60c0e5eeae3c06444cfef3a0c21865bd4a0ed203c39f4104725621e149471a21",
+      "take": 3
+    },
+    {
+      "agent": "tech",
+      "source": "briefs/033/portraits/tech_states_t4.png",
+      "sha256": "6cdd1309013f3bf435baac38b9a6636d2561efe0edb1877f77b698f0e8c33ae2",
+      "take": 4
+    },
+    {
+      "agent": "enforcer",
+      "source": "briefs/033/portraits/enforcer_states_t3.png",
+      "sha256": "0fb06fb851e9166141f3821cb18bf86a0ede9b8def4039dfc7318763cc26a9c7",
+      "take": 3
+    }
+  ],
+  "states": [
+    "calm",
+    "focused",
+    "noticed",
+    "under_fire",
+    "firing",
+    "hurt",
+    "badly_hurt",
+    "downed",
+    "success"
+  ],
+  "agents": [
+    "scout",
+    "fixer",
+    "tech",
+    "enforcer"
+  ],
+  "sprites": [
+    {
+      "file": "unity/Assets/Suborned/UI/Resources/Kit/portraits/live/scout_calm@2x.png",
+      "sha256": "345c7b7c6b73fb109faffd33cf6b8ea953502119d13c75e75db8f91f3d9eeb2e",
+      "build_git_blob": "f55ba4aac7726119386c9ea0c74a6af006b4da42",
+      "source_matches": true
+    },
+    {
+      "file": "unity/Assets/Suborned/UI/Resources/Kit/portraits/live/scout_focused@2x.png",
+      "sha256": "810262d5d6241a487f55ade00d46bac8fb7b984c61f7bf4b1efb46679bbeb0ae",
+      "build_git_blob": "539b535a815255c8cda740d21327f093ba554530",
+      "source_matches": true
+    },
+    {
+      "file": "unity/Assets/Suborned/UI/Resources/Kit/portraits/live/scout_noticed@2x.png",
+      "sha256": "4acbe9656a83cfe6a903cc6982045b28a230bae267910cebfe6f26d62a1745e7",
+      "build_git_blob": "9b6c4c3dca6c2b11d7442b84f7186a63bc4d97df",
+      "source_matches": true
+    },
+    {
+      "file": "unity/Assets/Suborned/UI/Resources/Kit/portraits/live/scout_under_fire@2x.png",
+      "sha256": "b795304f1bb4253822ca60ddc85d55318e54d91262a82ae37d22791db734aded",
+      "build_git_blob": "98ffe6e0514dd21e78bfb3a53cc7a30158b2dcf7",
+      "source_matches": true
+    },
+    {
+      "file": "unity/Assets/Suborned/UI/Resources/Kit/portraits/live/scout_firing@2x.png",
+      "sha256": "b3b7f5de33bb74898e744c911dd271a4e7ea32ce0a4e19fe427475b862d581a1",
+      "build_git_blob": "56f4d7faa2929ef9faa27fe72ed764e8bfd037d3",
+      "source_matches": true
+    },
+    {
+      "file": "unity/Assets/Suborned/UI/Resources/Kit/portraits/live/scout_hurt@2x.png",
+      "sha256": "e4305aabf317fe5fe09228e202e5c35a42fef651d14acbaae5b31607a61087cf",
+      "build_git_blob": "2975fc78b3492d80a04dc8e76c8b816379a3058c",
+      "source_matches": true
+    },
+    {
+      "file": "unity/Assets/Suborned/UI/Resources/Kit/portraits/live/scout_badly_hurt@2x.png",
+      "sha256": "084275ed3d3ff7072bc8eab3f79420be95efa20c535d455722ff1bc9ab5b1ae2",
+      "build_git_blob": "be92c09672c4ff402cf6d259567ac174ccf2e246",
+      "source_matches": true
+    },
+    {
+      "file": "unity/Assets/Suborned/UI/Resources/Kit/portraits/live/scout_downed@2x.png",
+      "sha256": "d99367045f6e0ea17f552eaa75014eb51ebdef95d57c874a0b1dde197293c511",
+      "build_git_blob": "00d17e0e9497d434fe8f612fbf74058ae9802154",
+      "source_matches": true
+    },
+    {
+      "file": "unity/Assets/Suborned/UI/Resources/Kit/portraits/live/scout_success@2x.png",
+      "sha256": "1bad050deaaa5c8df47a391d199872df94a593969e2ed3add0ed08ecd2e372e0",
+      "build_git_blob": "aef0765d6db5122a399daab92fc0ecbeba105a87",
+      "source_matches": true
+    },
+    {
+      "file": "unity/Assets/Suborned/UI/Resources/Kit/portraits/live/fixer_calm@2x.png",
+      "sha256": "f40d096e5e9f37aea14390452ee3e1cc7595f0dc548e8fe3e7346e47b8d15f3c",
+      "build_git_blob": "0f76d7d5da4e9c270b20f35c3fa8db1009790879",
+      "source_matches": true
+    },
+    {
+      "file": "unity/Assets/Suborned/UI/Resources/Kit/portraits/live/fixer_focused@2x.png",
+      "sha256": "5626158ae51492345a4fa8a0639e0c970b040f91bdc3c94b827c501a8b8d11d5",
+      "build_git_blob": "34b63754e8b1fbae1bb1ed49094c0ac15370ecd0",
+      "source_matches": true
+    },
+    {
+      "file": "unity/Assets/Suborned/UI/Resources/Kit/portraits/live/fixer_noticed@2x.png",
+      "sha256": "ad893343fd266c9e6ca02f9f530a45dcd2f04bd9b12f6455e4ff577e7ae16523",
+      "build_git_blob": "237f8136c8fbbbc0710634a5c9c5c27caea690a2",
+      "source_matches": true
+    },
+    {
+      "file": "unity/Assets/Suborned/UI/Resources/Kit/portraits/live/fixer_under_fire@2x.png",
+      "sha256": "873a9a1cad67f93ade69eeabde5ca7e5a2c112cf175e521273bc9e618f423e51",
+      "build_git_blob": "4623057d7b014e4c9e06b350fc5f139396147105",
+      "source_matches": true
+    },
+    {
+      "file": "unity/Assets/Suborned/UI/Resources/Kit/portraits/live/fixer_firing@2x.png",
+      "sha256": "3fda4bd4b08009facc274d7bdaf2af72b6e15569b73cb8ffcf2f43902ed9e6ef",
+      "build_git_blob": "3b4d62f6509424f92432ef4e3a2c448ce5f6399d",
+      "source_matches": true
+    },
+    {
+      "file": "unity/Assets/Suborned/UI/Resources/Kit/portraits/live/fixer_hurt@2x.png",
+      "sha256": "0deeb5ac8fcb21d71856d945831a0d82c159defc281837cca20119a6e2b43bb4",
+      "build_git_blob": "8f62562701db3d3fb8fe76ad06e90e1e57b1493c",
+      "source_matches": true
+    },
+    {
+      "file": "unity/Assets/Suborned/UI/Resources/Kit/portraits/live/fixer_badly_hurt@2x.png",
+      "sha256": "e3fb748ed9e66cd6d3066fcc7eb66cc54a572ee5abbea089d159de8d9f261ac6",
+      "build_git_blob": "50d6fbeeed0d5150a38ceb0bfa7787c43c7c3520",
+      "source_matches": true
+    },
+    {
+      "file": "unity/Assets/Suborned/UI/Resources/Kit/portraits/live/fixer_downed@2x.png",
+      "sha256": "234994e6903ccbd38f79121e436c12720568053c2a2ed8d9f74847b27c2be33b",
+      "build_git_blob": "d24018f8851f9ccb75b2a15b077e9e4b18de1ff0",
+      "source_matches": true
+    },
+    {
+      "file": "unity/Assets/Suborned/UI/Resources/Kit/portraits/live/fixer_success@2x.png",
+      "sha256": "f5356302b12ef58680d2db75e72d85055d1555451edddf3fae0c0e16306cba46",
+      "build_git_blob": "2b2d011f3f35ad5030212aeffa512b246c93535c",
+      "source_matches": true
+    },
+    {
+      "file": "unity/Assets/Suborned/UI/Resources/Kit/portraits/live/tech_calm@2x.png",
+      "sha256": "56d09cef35501af3f25ce730448559528f596fd10bea9596bfa100b2805ccfff",
+      "build_git_blob": "b921fdae99270598c53ac768822be4a8c2d52d05",
+      "source_matches": true
+    },
+    {
+      "file": "unity/Assets/Suborned/UI/Resources/Kit/portraits/live/tech_focused@2x.png",
+      "sha256": "dccf6260888d70751cc583c9defc2de1e03ad999c1fcf8dab384557178c627ee",
+      "build_git_blob": "9ae52782ea6c0945a71284be2b7f8ee66a7ecf06",
+      "source_matches": true
+    },
+    {
+      "file": "unity/Assets/Suborned/UI/Resources/Kit/portraits/live/tech_noticed@2x.png",
+      "sha256": "f0a106357c23c41f9a73485ae8461ee34b51c81eba46c1f866e7d7893c42a497",
+      "build_git_blob": "825b1f02cf65e5f73fc9d3856a6823cbb6a437f9",
+      "source_matches": true
+    },
+    {
+      "file": "unity/Assets/Suborned/UI/Resources/Kit/portraits/live/tech_under_fire@2x.png",
+      "sha256": "20cccb5aeb23cdcc219b495d02d143bdb2a23c39d64990d8533689bce99f0e9c",
+      "build_git_blob": "ac90064debc6e68ebc67c0c87ce44edf91e74c4d",
+      "source_matches": true
+    },
+    {
+      "file": "unity/Assets/Suborned/UI/Resources/Kit/portraits/live/tech_firing@2x.png",
+      "sha256": "650c841d2efcb981bb4ab627bbab90efcc8a186ed9f2a0a8aa9b4850666a6e4b",
+      "build_git_blob": "93801d1b619e3659ad92ce3a800e05d596bacc0a",
+      "source_matches": true
+    },
+    {
+      "file": "unity/Assets/Suborned/UI/Resources/Kit/portraits/live/tech_hurt@2x.png",
+      "sha256": "1d5b76eb6bd2a703225d93b02d64a2b217d4d04ac12f9cda7f880738c579e301",
+      "build_git_blob": "1200c60e28945dedea91bc7402e352371a64e194",
+      "source_matches": true
+    },
+    {
+      "file": "unity/Assets/Suborned/UI/Resources/Kit/portraits/live/tech_badly_hurt@2x.png",
+      "sha256": "deea1e076c3beffa9da23d24b12fcd3ee90fb51ddd05deba2b6be91d0c3f1fa5",
+      "build_git_blob": "d577de43f6ad0ecbdb0b0961e6677a328949a223",
+      "source_matches": true
+    },
+    {
+      "file": "unity/Assets/Suborned/UI/Resources/Kit/portraits/live/tech_downed@2x.png",
+      "sha256": "b5fad1c204a2d361ebe3d33d521c0c4af9b83982b95655fda535c86ccd66a266",
+      "build_git_blob": "8b4f521af472d9f89108a00318a8097f9a91c6e2",
+      "source_matches": true
+    },
+    {
+      "file": "unity/Assets/Suborned/UI/Resources/Kit/portraits/live/tech_success@2x.png",
+      "sha256": "af25ec0f5c3ba580376869e4e7a77ead981fe8b2dfaf2dcb69395d5a17828f95",
+      "build_git_blob": "fd62518c1f03e43ff429037beac298afde157aae",
+      "source_matches": true
+    },
+    {
+      "file": "unity/Assets/Suborned/UI/Resources/Kit/portraits/live/enforcer_calm@2x.png",
+      "sha256": "6608c54b7a33790b710d7055e45c2f5e104ccdaf709d9bf0c13dcc48db8f29a3",
+      "build_git_blob": "1918a8437d3ea4ef5e6c2a2e00c67ed46b412394",
+      "source_matches": true
+    },
+    {
+      "file": "unity/Assets/Suborned/UI/Resources/Kit/portraits/live/enforcer_focused@2x.png",
+      "sha256": "99fd00493eaa36c127bab022b0bebe2c8528936c27879a9797a0e8c29ff1da63",
+      "build_git_blob": "86f114b5c8054941f8725d271461946afe21335b",
+      "source_matches": true
+    },
+    {
+      "file": "unity/Assets/Suborned/UI/Resources/Kit/portraits/live/enforcer_noticed@2x.png",
+      "sha256": "a21a989840d774e89c6c6fc1fe10747dcaa3cfe377a2e5fc3ec93d8ec5f090db",
+      "build_git_blob": "b6d6eef25701e4d47f263e2a64a788927f2512ca",
+      "source_matches": true
+    },
+    {
+      "file": "unity/Assets/Suborned/UI/Resources/Kit/portraits/live/enforcer_under_fire@2x.png",
+      "sha256": "c6e7ff6871d9ff135ae4cc2bb0b0aca6226750bab712ae2549a236d045f5e0dc",
+      "build_git_blob": "674a54d9344dcc4aa855daa8be743d14a79918fe",
+      "source_matches": true
+    },
+    {
+      "file": "unity/Assets/Suborned/UI/Resources/Kit/portraits/live/enforcer_firing@2x.png",
+      "sha256": "9384b303f467f05b6cfa22cbb5e0aca16fef558885f72e47b6aa099f3bdc4de6",
+      "build_git_blob": "dbc0bfcc4f698c7b175f29d35a545d220eb00993",
+      "source_matches": true
+    },
+    {
+      "file": "unity/Assets/Suborned/UI/Resources/Kit/portraits/live/enforcer_hurt@2x.png",
+      "sha256": "689023baaf9c9e82fbec0ce6b79bf8d29ea60a73d6ed90d38db236f52f4cae0a",
+      "build_git_blob": "d83945f9e2bc6f4acbe538f9bd7d51ee22b029af",
+      "source_matches": true
+    },
+    {
+      "file": "unity/Assets/Suborned/UI/Resources/Kit/portraits/live/enforcer_badly_hurt@2x.png",
+      "sha256": "926b7c045c0577923b283a195fbab9ded6f756086a872eca679544e78ab32e8a",
+      "build_git_blob": "c68a2026940fc4c07446efe27e7e59bc9d69dae7",
+      "source_matches": true
+    },
+    {
+      "file": "unity/Assets/Suborned/UI/Resources/Kit/portraits/live/enforcer_downed@2x.png",
+      "sha256": "1fa02f4f6865240a78e96fa46a5f4b3c4b7c84b0a1eee6cd79c660bc2facae42",
+      "build_git_blob": "c7e768abfbd3f4156dab352b88c63688fb6a70da",
+      "source_matches": true
+    },
+    {
+      "file": "unity/Assets/Suborned/UI/Resources/Kit/portraits/live/enforcer_success@2x.png",
+      "sha256": "c1b5b8e2e7a91bc2fb20d8e7642b1074b5f075fbdcc99c26ccc071fe6e09762c",
+      "build_git_blob": "5ecf806ecc1f2322e767cc5e2659d4987dbfdc56",
+      "source_matches": true
+    }
+  ],
+  "code": {
+    "tools/figures/portraits_gen.py": "faf7504027122ec95e6cb708cffefcf7a0ee8d8b5585c8e14b8ebc9bbf03b053",
+    "tools/figures/portraits_export.py": "8cd786ca590a7fd47bc82dd3b5049c180fed7bdd12c0ef5e03fc9d81e9c7fa89",
+    "unity/Assets/Suborned/Editor/World/UI/KitImport.cs": "35a1c8f563db4986faea0b7c2ee137affe2469b0896ffc15699e5263fe25c930",
+    "unity/Assets/Suborned/Editor/World/Play/GameBuild.cs": "82fd1afd6cab6d07008ea32eeb364d6e4b309fe9e77686bad3f4284df4646e83",
+    "unity/Assets/Suborned/Runtime/Play/HostPortraits.cs": "c368c2a210f2b9f5365f93f71e05dbd9a0ddc6f6e2f23ae6641f05a5c125496a",
+    "unity/Assets/Suborned/Runtime/Play/HudToolkit.Live.cs": "bfe6fbd593f86f2b47d7e696508074306f50bc8243d0869ff8148b4e43fea93f"
+  },
+  "manual_exception": "Four downed portraits are approved option-b replacements from t5, ring-refined and desaturated to 18%. Original export script does not reproduce this final treatment. Kept as an explicit manual step; no claim of 100% automation.",
+  "proof": "36 production finals equal 36 tracked Unity sprites; each sprite blob matches the recorded local build input. This proves local build 0.2.232 inputs, not the public download or a cold-start time."
+}

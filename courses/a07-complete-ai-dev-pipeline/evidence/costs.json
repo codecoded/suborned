@@ -1,0 +1,48 @@
+{
+  "scope": "Recorded 033-portraits campaign, t1-t5; includes superseded takes",
+  "total_actual_usd": "1.15560",
+  "calls": 14,
+  "by_pass": {
+    "t1": {
+      "calls": 4,
+      "usd": "0.3852"
+    },
+    "t2": {
+      "calls": 1,
+      "usd": "0.0963"
+    },
+    "t3": {
+      "calls": 4,
+      "usd": "0.3852"
+    },
+    "t4": {
+      "calls": 1,
+      "usd": "0.0963"
+    },
+    "t5": {
+      "calls": 4,
+      "usd": "0.19260"
+    }
+  },
+  "highest_cost_per_call_usd": "0.0963",
+  "highest_cost_step": "Nine-state 2048x2048 sheet generation: t1-t4, 10 calls, $0.9630 total",
+  "before": {
+    "passes": [
+      "t1",
+      "t2",
+      "t3",
+      "t4"
+    ],
+    "shape": "2048x2048, nine states",
+    "usd_per_call": "0.0963"
+  },
+  "after": {
+    "passes": [
+      "t5"
+    ],
+    "shape": "2048x704, three options for the downed state only",
+    "usd_per_call": "0.04815"
+  },
+  "cost_reduction_per_repair_call_percent": 50,
+  "limits": "Different output scope, not equal work: repair one rejected state instead of regenerating all nine. Recorded per-call cost, not per-portrait savings. Excludes subscriptions, labour, hardware, hosting and other asset jobs. Ledger was migrated from PROVENANCE; dates are marked mtime."
+}
