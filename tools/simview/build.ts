@@ -1,5 +1,6 @@
 // bun run simview (brief 081): the Handover's runs through the real engine (suborned-sim dump), the real world's Handover zone, one self-contained page: briefs/081/simview.html.
 // Scripts and the hashes they must end on come from the newest mission record (runs/missions/handover/cNNN); exit 1 if any run's final hash differs from it, or the dump's reads moved a checkpoint.
+// A run the record holds no single play of (an adaptive plan's digest, or a script no longer played) is shown and marked unchecked, not failed.
 // usage: bun run simview [--record c046] [--out path] [--crowd-step n]
 import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
@@ -69,8 +70,26 @@ export async function dump(dll: string, record: string, script: string, crowdSte
     const pass = q.exitCode === 0 && x.finalHash === sc.expect.hash && x.checkpoints.slice(0, -1).every((c: [number, string]) => longer.get(c[0]) === c[1]);
     return { code, path, say: out.trim() + err.trim(), data, recorded: pass ? { finalHash: data.finalHash, outcome: data.outcome, fail: data.fail, tick: data.tick } : { finalHash: `scenario ${scenario}: final ${x.finalHash}, expected ${sc.expect.hash}` } };
   }
-  const recorded = JSON.parse(readFileSync(join(ROOT, 'runs/missions/handover', record, 'run.json'), 'utf8')).plays?.[script];
-  return { code, path, say: out.trim() + err.trim(), recorded, data };
+  return { code, path, say: out.trim() + err.trim(), recorded: recordedPlay(record, script).play, data };
+}
+
+/** What a mission record holds for a script. From c047 (brief 080) a reference route (route-a, route-b, route-g, loud) is an adaptive plan played across seeds:
+ *  its play is a digest (scriptSha `adaptive:<plan>`, the median tick of the wins, the first seed's hashes), not one run, so a dump of the fixed script in
+ *  routes/ can't end on it; and some scripts the page shows (loud-fight, route-g-kill) are no longer played at all. Only a `script` play is a run a dump replays. */
+export type Recorded = { kind: 'script' | 'adaptive' | 'missing'; play?: any; plan?: string };
+export function recordedPlay(record: string, script: string): Recorded {
+  const play = JSON.parse(readFileSync(join(ROOT, 'runs/missions/handover', record, 'run.json'), 'utf8')).plays?.[script];
+  if (!play) return { kind: 'missing' };
+  const sha = String(play.scriptSha ?? '');
+  return sha.startsWith('adaptive:') ? { kind: 'adaptive', play, plan: sha.slice('adaptive:'.length) } : { kind: 'script', play };
+}
+
+/** A dump against its record: 'ok', 'differs', or 'unchecked' (the record holds no single run of this script). A scenario carries its own record. */
+export function judge(d: { code: number; recorded: any; data: any }, rec: Recorded | null): 'ok' | 'differs' | 'unchecked' {
+  if (!d.data.readsChangedNothing || d.code !== 0) return 'differs';
+  if (rec && rec.kind !== 'script') return 'unchecked';
+  const r = d.recorded, x = d.data;
+  return r && r.finalHash === x.finalHash && r.outcome === x.outcome && r.fail === x.fail && r.tick === x.tick ? 'ok' : 'differs';
 }
 
 const b64gz = (s: string) => Buffer.from(Bun.gzipSync(Buffer.from(s), { level: 9 })).toString('base64');
@@ -88,17 +107,17 @@ async function main() {
   if (!bundle.success) throw new Error(bundle.logs.join('\n'));
   const js = (await bundle.outputs[0]!.text()).replace(/<\/script/gi, '<\\/script');
   const css = readFileSync(join(import.meta.dir, 'style.css'), 'utf8'), shell = readFileSync(join(import.meta.dir, 'shell.html'), 'utf8');
-  let bad = 0;
+  let bad = 0, unchecked = 0;
   for (;;) {
-    bad = 0;
+    bad = 0; unchecked = 0;
     const runs: any[] = [], blobs: string[] = [];
     const done = await Promise.all(RUNS.map(r => dump(dll, record, r.script, crowdStep, r.scenario)));
     done.forEach((d, i) => {
-      const r = RUNS[i]!, rec = d.recorded, x = d.data;
-      const ok = d.code === 0 && x.readsChangedNothing && rec && rec.finalHash === x.finalHash && rec.outcome === x.outcome && rec.fail === x.fail && rec.tick === x.tick;
-      if (!ok) bad++;
-      console.log(`${ok ? 'ok  ' : 'FAIL'} ${r.script}: ${x.outcome} ${x.fail} t${x.tick} final ${x.finalHash} record ${rec?.finalHash ?? 'none'} reads ${x.readsChangedNothing ? 'clean' : 'MOVED THE RUN'} shots ${x.shots.length}`);
-      runs.push({ id: r.script, key: `${r.script}#${x.seed ?? 'noseed'}`, script: r.script, seed: x.seed, title: r.title, blurb: r.blurb, outcome: x.outcome, fail: x.fail, failText: x.failText, tick: x.tick, shots: x.shots.length, finalHash: x.finalHash, recorded: rec?.finalHash ?? '', hashOk: !!ok, alert: +x.hud.at(-1)[1].split(',')[0], trail: +x.hud.at(-1)[1].split(',')[1], scenario: !!r.scenario });
+      const r = RUNS[i]!, rec = d.recorded, x = d.data, held = r.scenario ? null : recordedPlay(record, r.script), verdict = judge(d, held);
+      if (verdict === 'differs') bad++; else if (verdict === 'unchecked') unchecked++;
+      const against = held?.kind === 'adaptive' ? `record plays plan ${held.plan} across seeds` : held?.kind === 'missing' ? 'not in the record' : `record ${rec?.finalHash ?? 'none'}`;
+      console.log(`${{ ok: 'ok  ', differs: 'FAIL', unchecked: '--  ' }[verdict]} ${r.script}: ${x.outcome} ${x.fail} t${x.tick} final ${x.finalHash} ${against} reads ${x.readsChangedNothing ? 'clean' : 'MOVED THE RUN'} shots ${x.shots.length}`);
+      runs.push({ id: r.script, key: `${r.script}#${x.seed ?? 'noseed'}`, script: r.script, seed: x.seed, title: r.title, blurb: r.blurb, outcome: x.outcome, fail: x.fail, failText: x.failText, tick: x.tick, shots: x.shots.length, finalHash: x.finalHash, recorded: verdict === 'unchecked' ? '' : rec?.finalHash ?? '', hashOk: verdict === 'ok', hash: verdict, alert: +x.hud.at(-1)[1].split(',')[0], trail: +x.hud.at(-1)[1].split(',')[1], scenario: !!r.scenario });
       blobs.push(`<script type="text/plain" id="run-${i}">${b64gz(JSON.stringify(x))}</script>`);
     });
     const manifest = { engine: done[0]!.data.engine, record, built: new Date().toISOString().slice(0, 16).replace('T', ' '), inputs: done[0]!.data.inputsHash, crowdStep, runs };
@@ -109,7 +128,7 @@ async function main() {
     if (html.length > MAX_BYTES && crowdStep < 10) { crowdStep = crowdStep < 2 ? 2 : crowdStep * 2; console.log(`page ${(html.length / 1048576).toFixed(1)} MB: thinning the crowd to every ${crowdStep} ticks`); continue; }
     mkdirSync(dirname(out), { recursive: true });
     writeFileSync(out, html);
-    console.log(`${out}: ${(html.length / 1048576).toFixed(2)} MB, ${runs.length} runs, crowd every ${crowdStep} tick(s), final hash ${runs.length - bad}/${runs.length} match the record (${record}; the car-blast scenario against its own checkpoints)`);
+    console.log(`${out}: ${(html.length / 1048576).toFixed(2)} MB, ${runs.length} runs, crowd every ${crowdStep} tick(s), final hash ${runs.length - bad - unchecked}/${runs.length - unchecked} match the record (${record}; the car-blast scenario against its own checkpoints)${unchecked ? `; ${unchecked} unchecked: the record holds no single run of them (adaptive plans, or not played)` : ''}`);
     break;
   }
   if (bad) process.exit(1);

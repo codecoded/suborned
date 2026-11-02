@@ -405,7 +405,7 @@ function drawRuns() {
     const cb = el('input') as HTMLInputElement; cb.type = 'checkbox'; cb.checked = selected.includes(i);
     cb.onclick = ev => { ev.stopPropagation(); const s = selected.includes(i) ? selected.filter(x => x !== i) : [...selected, i]; if (s.length >= 1 && s.length <= 4) void show(s); else drawRuns(); };
     const cls = r.outcome === 'success' ? 'ok' : r.outcome === 'failure' ? 'fail' : 'wd';
-    const txt = el('div', '', `<div class="t">${esc(r.title)}</div><div class="m"><span class="${cls}">${r.outcome}${r.fail ? ' · ' + esc(r.fail) : ''}</span> · ${clock(r.tick)} · ${r.shots} shots · T${r.trail} · A${r.alert}</div><div class="m" title="final hash">${r.hashOk ? '<span class="ok">hash ok</span>' : '<span class="fail">hash differs</span>'} ${r.finalHash.slice(0, 8)} · seed ${r.seed ?? 'none yet'}</div><div class="m">${esc(r.blurb)}</div>`);
+    const txt = el('div', '', `<div class="t">${esc(r.title)}</div><div class="m"><span class="${cls}">${r.outcome}${r.fail ? ' · ' + esc(r.fail) : ''}</span> · ${clock(r.tick)} · ${r.shots} shots · T${r.trail} · A${r.alert}</div><div class="m" title="final hash">${r.hashOk ? '<span class="ok">hash ok</span>' : r.hash === 'unchecked' ? '<span title="the record holds this route as an adaptive plan across seeds, or not at all">no recorded run</span>' : '<span class="fail">hash differs</span>'} ${r.finalHash.slice(0, 8)} · seed ${r.seed ?? 'none yet'}</div><div class="m">${esc(r.blurb)}</div>`);
     row.append(cb, txt); row.onclick = () => void show([i]); box.append(row);
   });
   box.append(el('h3', '', 'Compare'));
@@ -531,7 +531,7 @@ tl.addEventListener('pointermove', e => {
 
 // ---- the page's plain statement, the legend, and the loop
 function banner() {
-  const ok = manifest.runs.filter((r: any) => r.hashOk).length, all = manifest.runs.length;
+  const ok = manifest.runs.filter((r: any) => r.hashOk).length, all = manifest.runs.filter((r: any) => r.hash !== 'unchecked').length;
   $('banner').innerHTML = `Engine <b>${esc(manifest.engine.replace('suborned.sim/', ''))}</b> · record ${esc(manifest.record)} · built ${esc(manifest.built)} · final hash <b class="${ok === all ? '' : 'bad'}">${ok}/${all}</b> match the record · <b>Seeds aren't in yet</b> (brief 080): the same orders play identically, so runs differ only by route.`;
   $('legend').innerHTML = Object.values(SIDE).map(s => `<span style="background:${s.c}"></span>${s.name}`).join('') + '<span style="background:#ff3020;border-radius:0;height:3px;vertical-align:2px"></span>hit<span style="background:#f4f4f4;border-radius:0;height:2px;vertical-align:2px"></span>miss';
 }
