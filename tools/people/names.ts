@@ -17,7 +17,7 @@ import type { Rules } from './rules';
 
 type L = NonNullable<Rules['names']['lists']>;
 type Entry = [string, number];
-export type CountryList = { country: string; decades: number[]; given: Record<string, { f: Entry[]; m: Entry[] }>; family: { any?: Entry[]; m?: Entry[]; f?: Entry[] } };
+export type CountryList = { country: string; decades: number[]; given: Record<string, { f: Entry[]; m: Entry[] }>; family: Record<string, Entry[] | undefined>; /** an unranked list (Wikipedia's categories) has no top to skip */ ranked?: { given: boolean; family: boolean } };
 export type NameTexts = Record<string, string>;
 export type Lists = { rules: L; avoid: Set<string>; pattern: RegExp; countries: Map<string, CountryList>; ban: Ban; excluded: { part: Set<string>; full: Set<string> }; figures: Mapping; pinned: Set<string> };
 export type Sex = 'f' | 'm';
@@ -65,16 +65,32 @@ export function refused(L: Lists, name: string): string | undefined {
 const cache = new WeakMap<Lists, Map<string, Entry[]>>();
 const memo = (L: Lists, key: string, make: () => Entry[]) => { let m = cache.get(L); if (!m) cache.set(L, m = new Map()); let v = m.get(key); if (!v) m.set(key, v = make()); return v; };
 const allowed = (L: Lists, n: string) => !refused(L, n) && !L.pinned.has(n);
-const usable = (L: Lists, xs: Entry[]) => xs.slice(L.rules.skipTop).filter(([n]) => allowed(L, n));
-/** A list less its top `skipTop`: what a draw is weighted over. */
-const listed = (L: Lists, xs: Entry[]) => xs.slice(L.rules.skipTop);
+const skipOf = (L: Lists, country: string, part: 'given' | 'family') => (L.countries.get(country)!.ranked?.[part] === false ? 0 : L.rules.skipTop);
+const usable = (L: Lists, xs: Entry[], skip: number) => xs.slice(skip).filter(([n]) => allowed(L, n));
+/** A list less its top `skipTop` (a ranked list): what a draw is weighted over. */
+const listed = (xs: Entry[], skip: number) => xs.slice(skip);
 /** The decade of birth a list is read at: ageReference − age, held to the decades the lists cover. */
 export const decadeOf = (L: Lists, c: CountryList, age: number) => String(Math.min(Math.max(Math.floor((L.rules.ageReference - age) / 10) * 10, c.decades[0]!), c.decades.at(-1)!));
-export const givenPool = (L: Lists, country: string, sex: Sex, decade: string) => memo(L, `g/${country}/${sex}/${decade}`, () => usable(L, L.countries.get(country)!.given[decade]![sex]));
-const givenList = (L: Lists, country: string, sex: Sex, decade: string) => memo(L, `gl/${country}/${sex}/${decade}`, () => listed(L, L.countries.get(country)!.given[decade]![sex]));
-/** A family's names: the list for any sex, or (Poland) the men's list, a woman carrying its woman's form. */
-export const familyPool = (L: Lists, country: string) => memo(L, `f/${country}`, () => { const f = L.countries.get(country)!.family; return usable(L, (f.any ?? f.m)!); });
-const familyList = (L: Lists, country: string) => memo(L, `fl/${country}`, () => { const f = L.countries.get(country)!.family; return listed(L, (f.any ?? f.m)!); });
+export const givenPool = (L: Lists, country: string, sex: Sex, decade: string) => memo(L, `g/${country}/${sex}/${decade}`, () => usable(L, L.countries.get(country)!.given[decade]![sex], skipOf(L, country, 'given')));
+const givenList = (L: Lists, country: string, sex: Sex, decade: string) => memo(L, `gl/${country}/${sex}/${decade}`, () => listed(L.countries.get(country)!.given[decade]![sex], skipOf(L, country, 'given')));
+/** A family's names: the list for any sex, or (Poland) the men's list, a woman carrying its woman's form; `key` a sub-list (the US census's shares: white, black, api). */
+const famOf = (L: Lists, country: string, key: string) => { const f = L.countries.get(country)!.family; return (f[key] ?? f.any ?? f.m)!; };
+export const familyPool = (L: Lists, country: string, key = 'any') => memo(L, `f/${country}/${key}`, () => usable(L, famOf(L, country, key), skipOf(L, country, 'family')));
+const familyList = (L: Lists, country: string, key = 'any') => memo(L, `fl/${country}/${key}`, () => listed(famOf(L, country, key), skipOf(L, country, 'family')));
+/** The heritage a figure shows (rules names.lists.heritage.figures), or undefined: drawn from every country. */
+export const heritageOf = (L: Lists, figure: string | null | undefined) => (figure ? L.rules.heritage?.figures[figure] : undefined);
+/** A family's heritage: the one its members' figures show, 'mixed' if they show several, undefined if none shows one. */
+export function familyHeritage(L: Lists, members: string[], figures: Map<string, string | null>): string | undefined {
+  const hs = new Set(members.map(id => heritageOf(L, figures.get(id))).filter((h): h is string => !!h));
+  return hs.size > 1 ? 'mixed' : [...hs][0];
+}
+/** The countries a family of that heritage may be drawn from, and the US surname list it draws from there. */
+export function countriesFor(L: Lists, heritage: string | undefined): string[] {
+  const h = L.rules.heritage, all = Object.keys(L.rules.countries).sort();
+  if (!h || !heritage) return all;
+  return heritage === 'mixed' ? [...h.mixed.countries].sort() : (h.groups[heritage]?.countries ?? all);
+}
+export const familyKey = (L: Lists, country: string, heritage: string | undefined) => (country !== 'us' || !heritage ? 'any' : heritage === 'mixed' ? L.rules.heritage!.mixed.family : (L.rules.heritage!.groups[heritage]?.usFamily ?? 'any'));
 /** A draw from a whole list (less its top), redrawn on the same stream while the name may not be drawn: an exclusion moves only the people who drew that name. */
 const draw = (L: Lists, r: Rng, xs: Entry[]) => { for (let i = 0; i < 500; i++) { const n = r.weighted(xs, x => x[1])[0]; if (allowed(L, n)) return n; } return xs.find(([n]) => allowed(L, n))![0]; };
 
@@ -108,16 +124,18 @@ export function assignNames(L: Lists, rules: Rules, persons: Person[], pins: Pin
   // otherwise in the order of a hash of their id, each to the country furthest below its weighted share of the people so far (ties by the family's own draw)
   const fams = familiesOf(persons), pinnedCountry = (m: string[]) => { const pinned = m.find(id => pins.get(id)?.family); return (pinned && pins.get(pinned)!.country) || m.map(id => pins.get(id)?.country).find(Boolean); };
   const W = countries.reduce((n, [, c]) => n + c.weight, 0), have = new Map(countries.map(([c]) => [c, 0])), countryOf = new Map<string, string>();
-  const order = [...fams].sort((a, b) => Number(!pinnedCountry(a)) - Number(!pinnedCountry(b)) || b.length - a.length || rng(`${a[0]}/country`).f() - rng(`${b[0]}/country`).f() || (a[0]! < b[0]! ? -1 : 1));
+  // brief 089 follow-up: a family is drawn among the countries of the heritage its figures show (the narrowest first, so they get their places before the open ones)
+  const her = new Map(fams.map(m => [m[0]!, familyHeritage(L, m, figures)])), cand = new Map(fams.map(m => [m[0]!, countriesFor(L, her.get(m[0]!))]));
+  const order = [...fams].sort((a, b) => Number(!pinnedCountry(a)) - Number(!pinnedCountry(b)) || cand.get(a[0]!)!.length - cand.get(b[0]!)!.length || b.length - a.length || rng(`${a[0]}/country`).f() - rng(`${b[0]}/country`).f() || (a[0]! < b[0]! ? -1 : 1));
   for (const m of order) {
-    const r = rng(`${m[0]}/country`), tie = new Map(countries.map(([c]) => [c, r.f()]));
-    const c = pinnedCountry(m) ?? [...countries].sort(([a, x], [b, y]) => ((have.get(b)! + m.length) / (y.weight / W) - (have.get(a)! + m.length) / (x.weight / W)) * -1 || tie.get(a)! - tie.get(b)!)[0]![0];
+    const r = rng(`${m[0]}/country`), tie = new Map(countries.map(([c]) => [c, r.f()])), ok = cand.get(m[0]!)!;
+    const c = pinnedCountry(m) ?? [...countries].filter(([c]) => ok.includes(c)).sort(([a, x], [b, y]) => ((have.get(b)! + m.length) / (y.weight / W) - (have.get(a)! + m.length) / (x.weight / W)) * -1 || tie.get(a)! - tie.get(b)!)[0]![0];
     countryOf.set(m[0]!, c); have.set(c, (have.get(c) ?? 0) + m.length);
   }
   for (const members of fams) {
     const fid = members[0]!, pinned = members.find(id => pins.get(id)?.family), country = countryOf.get(fid)!;
     if (!L.countries.has(country)) { gaps.push(`${fid}: country ${country} has no list`); continue; }
-    const family = pinned ? pins.get(pinned)!.family! : draw(L, rng(`${fid}/family`), familyList(L, country));
+    const family = pinned ? pins.get(pinned)!.family! : draw(L, rng(`${fid}/family`), familyList(L, country, familyKey(L, country, her.get(fid))));
     for (const id of members) {
       const p = byId.get(id)! as Person & { sex?: Sex; age?: number; origin?: string }, pin = pins.get(id), figure = figures.get(id) ?? null;
       const [lo, hi] = bandOf(L.rules, figure, p.position), sex = figureSex(figure ?? ''), age = rng(`${id}/age`).int(lo, hi);
@@ -145,7 +163,8 @@ export function checkNames(L: Lists, rules: Rules, persons: Person[], pinsAt: { 
     for (const d of Object.keys(list.given)) for (const s of ['f', 'm'] as const) if (givenPool(L, c, s, d).length < n.minGiven) bad.push(`${c} ${s} born ${d}s: ${givenPool(L, c, s, d).length} given names to draw from, rules ${n.minGiven}`);
     if (familyPool(L, c).length < n.minFamily) bad.push(`${c}: ${familyPool(L, c).length} family names to draw from, rules ${n.minFamily}`);
   }
-  const full = new Set<string>(), share = new Map<string, number>();
+  const full = new Set<string>(), share = new Map<string, number>(), famOfId = new Map<string, string>(), herOf = new Map<string, string | undefined>();
+  for (const m of familiesOf(persons)) { const h = familyHeritage(L, m, figures); for (const id of m) { famOfId.set(id, m[0]!); herOf.set(id, h); } }
   for (const p of persons as (Person & { sex?: Sex; age?: number; origin?: string })[]) {
     const [g, ...f] = p.name.split(' '), c = p.origin, list = c ? L.countries.get(c) : undefined, mine = pinned.get(p.id) ?? new Set();
     if (!g || f.length !== 1) { bad.push(`${p.id}: ${p.name} is not a given and a family name`); continue; }
@@ -155,7 +174,10 @@ export function checkNames(L: Lists, rules: Rules, persons: Person[], pinsAt: { 
     const [lo, hi] = bandOf(L.rules, figures.get(p.id) ?? null, p.position);
     if (p.age < lo || p.age > hi) bad.push(`${p.id}: age ${p.age} is outside the band ${lo}-${hi}`);
     if (!mine.has(g) && !givenPool(L, c!, p.sex, decadeOf(L, list, p.age)).some(([x]) => x === g)) bad.push(`${p.id}: ${g} is not a drawable ${p.sex} given name of ${c} for the ${decadeOf(L, list, p.age)}s`);
-    const fam = f[0]!, base = familyPool(L, c!).some(([x]) => x === fam || (c === 'pl' && p.sex === 'f' && womansForm(L, x) === fam));
+    // the country fits the heritage the family's figures show (a pinned family keeps its pin's)
+    const kinPinned = persons.some(q => famOfId.get(q.id) === famOfId.get(p.id) && pinned.has(q.id));
+    if (!kinPinned && !countriesFor(L, herOf.get(p.id)).includes(c!)) bad.push(`${p.id}: ${c}, but the family's figures show ${herOf.get(p.id)} (${countriesFor(L, herOf.get(p.id)).join(', ')})`);
+    const fam = f[0]!, base = familyPool(L, c!, familyKey(L, c!, herOf.get(p.id))).some(([x]) => x === fam || (c === 'pl' && p.sex === 'f' && womansForm(L, x) === fam));
     if (!base && !pinned.has(p.id) && !persons.some(q => pinned.get(q.id)?.has(fam))) bad.push(`${p.id}: ${fam} is not a drawable family name of ${c}`);
     if (full.has(p.name)) bad.push(`${p.id}: ${p.name} is used twice`);
     full.add(p.name);

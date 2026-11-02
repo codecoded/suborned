@@ -439,8 +439,8 @@
     "noEraDate": "no digits, years, dates, generational suffixes (Jr, Sr, II, III) or titles in a name; the pattern forbids them",
     "avoid": ["Betty", "Peggy", "Dottie", "Dolores", "Mabel", "Gertrude", "Hank", "Buddy", "Butch", "Biff", "Skip", "Sonny", "Junior", "Chester", "Elmer"],
     "minGiven": 20,
-    "minFamily": 300,
-    "origins": ["us", "fr", "es", "no", "se", "pl"],
+    "minFamily": 15,
+    "origins": ["us", "fr", "es", "no", "se", "pl", "jp", "kr", "cn", "in", "ng"],
     "minOrigins": 6,
     "maxOriginShare": 0.25,
     "uniqueFullName": true,
@@ -459,7 +459,7 @@
     ],
     "lists": {
       "dir": "contracts/people/names",
-      "countries": { "us": { "weight": 1 }, "fr": { "weight": 1 }, "es": { "weight": 1 }, "no": { "weight": 1 }, "se": { "weight": 1 }, "pl": { "weight": 1 } },
+      "countries": { "us": { "weight": 1 }, "fr": { "weight": 1 }, "es": { "weight": 1 }, "no": { "weight": 1 }, "se": { "weight": 1 }, "pl": { "weight": 1 }, "jp": { "weight": 1 }, "kr": { "weight": 1 }, "cn": { "weight": 1 }, "in": { "weight": 1 }, "ng": { "weight": 1 } },
       "skipTop": 3,
       "banList": "contracts/people/llm-name-ban-list.json",
       "exclusions": "contracts/people/names/exclusions.json",
@@ -471,12 +471,25 @@
       },
       "sex": "figure",
       "families": "share",
+      "heritage": {
+        "figures": { "c6": "european", "d5c": "european", "d4": "european", "d4b": "european", "workers_d5": "european", "cafe_w3": "european", "councillor": "european", "d6": "east-asian", "c1": "east-asian", "d2m": "african", "driver": "african", "guard": "african", "security": "african", "cafe_w2": "african", "cafe_w5": "south-asian" },
+        "groups": {
+          "european": { "countries": ["us", "fr", "es", "no", "se", "pl"], "usFamily": "white" },
+          "east-asian": { "countries": ["jp", "kr", "cn", "us"], "usFamily": "api" },
+          "african": { "countries": ["ng", "us"], "usFamily": "black" },
+          "south-asian": { "countries": ["in"] }
+        },
+        "mixed": { "countries": ["us", "fr", "se"], "family": "any" },
+        "src": "brief 089 follow-up (Aster, 2026-11-02): the city is mixed and its figures show it; names fit the figure, as GTA fits a name to a character's background",
+        "proposed": true,
+        "reason": "Pulse read each figure's face in its front render (briefs/020/people/crowd.png and cast.png; Vale C as on the brief 063 boards) and wrote down the heritage it shows: light-skinned European faces (c6, d5c, d4 and its recolour d4b, workers_d5, cafe_w3, Vale C), East Asian (d6, c1), Black (d2m and its recolour the driver, the duty suit worn by every guard and officer, cafe_w2), South Asian (cafe_w5); the elder EL1, the shopper SH2 (sunglasses) and Inez's W6 show none clearly and draw from every country. A family is drawn among its heritage's countries (an American from the census surnames weighted by the census's own share for that group); a family whose figures show different heritages is drawn among the US, France and Sweden, countries of many heritages whose national lists already carry names of many origins (from the US lists by all surnames, not by one share). The pinned five keep their names whatever they wear."
+      },
       "src": "brief 089, Sky 2026-11-02: the city gets normal names, as GTA and Desperados III do, drawn from real frequency lists by origin, sex and age, never by a model; families share a surname (\"sure - family name makes it more a real city\")",
       "proposed": true,
       "reason": "A person (or a family) is drawn one country by weight, then a given name from that country's list for their sex and decade of birth (age counted back from ageReference) and a family name from the same country's list, each weighted by how common it is, the top 3 of each list never drawn, nor any name on the ban list, the exclusions or the avoid list, nor a pinned name. Sex is the body of the figure the host dresses the person in, so a name fits the figure the player sees. Ages: the default working band, residents to old age, the councillor older (his portrait is grey), the elder figure EL1 66 and up. Everyone a family tie joins carries the family's one name and country; the data has no spouse tie, so spouses share it too (the custom of five of the six countries; in Spain a wife keeps hers, but the city shows one surname). Draws are by the person's id and the family's (its first member's id), so the same people get the same names."
     },
     "src": "§15 people: people prompts carry no era date; mixed cast (ages, builds, ethnicities); brief 010 A: a pool per district, no era date, a mixed cast; brief 089",
     "proposed": true,
-    "reason": "the GDD gives the principle, not the numbers. Each person is drawn one of the closed list's countries; ≥ 6 countries and no country over a quarter of the people keep the cast mixed. Each country list keeps at least minGiven given names per sex and decade and minFamily family names after the skips. The avoid list holds names that date a person to 1950s Americana (the §15 failure in names). Pinned: the five named people (Sky, brief 089) take their names on whoever the Handover casts in the role (or, for Milena, the person the mission's listen partner is); no other name is ever authored."
+    "reason": "the GDD gives the principle, not the numbers. Each person is drawn one of the closed list's countries; ≥ 6 countries and no country over a quarter of the people keep the cast mixed. Each country list keeps at least minGiven given names per sex and decade and minFamily family names after the skips (15: Wikipedia's ranked surname tables for China and Korea are short). The avoid list holds names that date a person to 1950s Americana (the §15 failure in names). Pinned: the five named people (Sky, brief 089) take their names on whoever the Handover casts in the role (or, for Milena, the person the mission's listen partner is); no other name is ever authored."
   }
 }

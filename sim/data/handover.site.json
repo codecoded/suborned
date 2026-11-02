@@ -3318,7 +3318,7 @@
    "lover": ""
   },
   "from": "out/people/harbour-district.people.json",
-  "sha256": "7f1665f0dee4c06693ecb82cc451dc716b649fa8f47f8ee673a02792d18de836",
+  "sha256": "c91285a123c8ba02b0176dd8b38ee4faaf98b08ef967e7edda71ad9b74bdd969",
   "startsAt": "17:25:30",
   "src": "tools/missions/handover/cast.ts castRoles with { play: true }, as rule M-2 casts it (brief 011, Aster): every role there when needed, tied and placed as mission.json asks"
  },

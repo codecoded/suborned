@@ -102,6 +102,12 @@ const Lists = z.strictObject({
   ages: z.strictObject({ default: band, byPosition: z.record(id, band), byFigure: z.record(z.string(), band) }).describe('the age band a person is drawn in: by the figure the host dresses them in, else by position, else the default'),
   sex: z.literal('figure').describe('a person\'s sex is the body of the figure the host dresses them in (tools/people/looks.ts)'),
   families: z.literal('share').describe('people tied by a family tie share one family name and one country'),
+  heritage: z.strictObject({
+    figures: z.record(z.string(), id).describe('the heritage a figure shows, read from its renders; a figure not listed shows none, and its people are drawn from every country'),
+    groups: z.record(id, z.strictObject({ countries: z.array(id).min(1), usFamily: id.optional().describe('the US surname list (by the census\'s shares) an American of this heritage draws from') })),
+    mixed: z.strictObject({ countries: z.array(id).min(1), family: id }).describe('a family whose members\' figures show different heritages: drawn among these countries (`family`: the US surname list it draws from)'),
+    ...grounded,
+  }).refine(needsReason, reasonMsg).optional().describe('brief 089 follow-up: a person\'s country is drawn among those of the heritage their figure shows'),
   ...grounded,
 }).refine(needsReason, reasonMsg);
 

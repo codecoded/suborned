@@ -23,7 +23,8 @@
     "url": "https://www2.census.gov/topics/genealogy/2010surnames/names.zip",
     "file": "census/Names_2010Census.csv",
     "licence": "US federal government work, public domain (17 U.S.C. 105)",
-    "note": "the table writes names in capitals without punctuation; extract.py restores Mc- and a short list of O'- names (O'Brien, O'Connor, ...)"
+    "note": "the table writes names in capitals without punctuation; extract.py restores Mc- and a short list of O'- names (O'Brien, O'Connor, ...)",
+    "shares": "white, black, api: the same census table, each surname weighted by its count × the census's own percentage of bearers who are white, black or Asian and Pacific Islander (extract_wiki.py), so an American is drawn a surname as common among people of the heritage their figure shows; \"(S)\" (suppressed) counts as 0"
    }
   },
   "fr": {
@@ -107,7 +108,22 @@
     "file": "scb-TNamn10-pins-2020.json",
     "sha256": "57d55a619ee3949c7e843610a1e1b316bae5c821c842669de8d5fc633b9ecdf1",
     "licence": "CC BY 4.0",
-    "counts": { "given": { "Milena": 839, "Inez": 3533, "Arthur": 1177, "Aleksander": 834, "Uros": 80 }, "family": { "Rask": 2003, "Nikolaou": 45, "Reilly": 59, "Lukac": 49, "Popovic": 490 } },
+    "counts": {
+     "given": {
+      "Milena": 839,
+      "Inez": 3533,
+      "Arthur": 1177,
+      "Aleksander": 834,
+      "Uros": 80
+     },
+     "family": {
+      "Rask": 2003,
+      "Nikolaou": 45,
+      "Reilly": 59,
+      "Lukac": 49,
+      "Popovic": 490
+     }
+    },
     "note": "the evidence that each of the five pinned names is a given and a family name of one country (rule: same country): all five are borne in Sweden, by the counts here and in BE0001ENamn10 2020. The US tables also hold Inez (SSA, 1940s-1970s) with Nikolaou (178 bearers in 2010), and Reilly, Popovic, Lukac and Rask."
    }
   },
@@ -129,11 +145,96 @@
     "licence": "CC0 1.0",
     "note": "Polish family names have a man's and a woman's form (Kowalski, Kowalska): a person draws from the list of their sex; a family's name is drawn once from the men's list and a woman of the family carries its woman's form (-ski, -cki, -dzki to -ska, -cka, -dzka; other names unchanged)"
    }
+  },
+  "jp": {
+   "country": "Japan",
+   "kind": "secondary: Wikipedia, citing national estimates for surnames; given names from a Wikipedia category, no frequencies",
+   "given": {
+    "title": "Category:Japanese masculine given names; Category:Japanese feminine given names",
+    "url": "https://en.wikipedia.org/wiki/Category:Japanese_masculine_given_names ; https://en.wikipedia.org/wiki/Category:Japanese_feminine_given_names",
+    "licence": "Wikipedia, CC BY-SA 4.0 (text and data reused with attribution; the derived list here carries the same licence)",
+    "age": "none: the category has no years or counts, so every name weighs the same in every decade, and rare names (Aikoku, Akatsuki) weigh as much as common ones"
+   },
+   "family": {
+    "title": "List of common Japanese surnames (2008 estimates, about 100 names with counts)",
+    "url": "https://en.wikipedia.org/wiki/List_of_common_Japanese_surnames",
+    "revision": "List of common Japanese surnames, revision 1377792037",
+    "licence": "Wikipedia, CC BY-SA 4.0 (text and data reused with attribution; the derived list here carries the same licence)",
+    "note": "macrons dropped (Satō → Sato), as the names are usually written in English"
+   }
+  },
+  "kr": {
+   "country": "South Korea",
+   "kind": "secondary: Wikipedia, citing the 2015 census (surnames, rank only) and Supreme Court and Statistics Korea name counts (given names by birth year)",
+   "given": {
+    "title": "List of the most popular given names in South Korea (top 10 by sex for 1940, 1945, 1950, 1960, 1970, 1980, 1990, 2004, 2007)",
+    "url": "https://en.wikipedia.org/wiki/List_of_the_most_popular_given_names_in_South_Korea",
+    "revision": "List of the most popular given names in South Korea, revision 1377792182",
+    "licence": "Wikipedia, CC BY-SA 4.0 (text and data reused with attribution; the derived list here carries the same licence)",
+    "age": "the years exist but give only 10 names each, too few for a decade on its own, so the years 1940-2007 are pooled (a name weighs the number of years it is in the top 10)"
+   },
+   "family": {
+    "title": "List of most common surnames in Asian countries, section Korea (2015 census rank)",
+    "url": "https://en.wikipedia.org/wiki/List_of_most_common_surnames_in_Asian_countries#Korea",
+    "revision": "List of most common surnames in Asian countries, revision 1377791933",
+    "licence": "Wikipedia, CC BY-SA 4.0 (text and data reused with attribution; the derived list here carries the same licence)",
+    "note": "rank only: weighted 1/rank (Zipf), an estimate of the shares; the common English spelling Wikipedia lists first (Kim, Lee, Park, Choi)"
+   }
+  },
+  "cn": {
+   "country": "China",
+   "kind": "secondary: Wikipedia, citing the Ministry of Public Security 2018 report for surnames; given names from a Wikipedia category",
+   "given": {
+    "title": "Category:Chinese masculine given names; Category:Chinese feminine given names",
+    "url": "https://en.wikipedia.org/wiki/Category:Chinese_masculine_given_names ; https://en.wikipedia.org/wiki/Category:Chinese_feminine_given_names",
+    "licence": "Wikipedia, CC BY-SA 4.0 (text and data reused with attribution; the derived list here carries the same licence)",
+    "age": "none; a short list (27 women's, 46 men's names), some known from one famous bearer"
+   },
+   "family": {
+    "title": "List of most common surnames in Asian countries, section China (top 20, counts of 2018)",
+    "url": "https://en.wikipedia.org/wiki/List_of_most_common_surnames_in_Asian_countries#China",
+    "revision": "List of most common surnames in Asian countries, revision 1377791933",
+    "licence": "Wikipedia, CC BY-SA 4.0 (text and data reused with attribution; the derived list here carries the same licence)",
+    "note": "pinyin without tone marks (Wáng → Wang)"
+   }
+  },
+  "in": {
+   "country": "India",
+   "kind": "secondary: Wikipedia categories of given names and of surnames by language; no frequencies, no ranks",
+   "given": {
+    "title": "Category:Indian masculine given names; Category:Indian feminine given names",
+    "url": "https://en.wikipedia.org/wiki/Category:Indian_masculine_given_names ; https://en.wikipedia.org/wiki/Category:Indian_feminine_given_names",
+    "licence": "Wikipedia, CC BY-SA 4.0 (text and data reused with attribution; the derived list here carries the same licence)",
+    "age": "none; unranked, so no top is skipped"
+   },
+   "family": {
+    "title": "Categories: Punjabi-, Telugu-, Marathi-, Tamil- and Bengali-language surnames",
+    "url": "https://en.wikipedia.org/wiki/Category:Punjabi-language_surnames",
+    "licence": "Wikipedia, CC BY-SA 4.0 (text and data reused with attribution; the derived list here carries the same licence)",
+    "note": "unranked (every name weighs the same), so no top is skipped; Wikipedia's ranked India table rests on Forebears estimates and lists markers that are not surnames (Devi, Kumari), so it is not used"
+   }
+  },
+  "ng": {
+   "country": "Nigeria",
+   "kind": "secondary: Wikipedia categories of given names and of surnames by language (Yoruba, Igbo, Hausa); no frequencies, no ranks",
+   "given": {
+    "title": "Category:Nigerian masculine given names, Category:Yoruba masculine given names; the feminine ones",
+    "url": "https://en.wikipedia.org/wiki/Category:Nigerian_masculine_given_names ; https://en.wikipedia.org/wiki/Category:Nigerian_feminine_given_names",
+    "licence": "Wikipedia, CC BY-SA 4.0 (text and data reused with attribution; the derived list here carries the same licence)",
+    "age": "none; unranked; women's names are few (40)"
+   },
+   "family": {
+    "title": "Categories: Yoruba-, Igbo- and Hausa-language surnames",
+    "url": "https://en.wikipedia.org/wiki/Category:Yoruba-language_surnames",
+    "licence": "Wikipedia, CC BY-SA 4.0 (text and data reused with attribution; the derived list here carries the same licence)",
+    "note": "unranked, so no top is skipped"
+   }
   }
  },
  "gaps": [
-  "No origin outside Europe and the United States has an open national list of given and family names that could be fetched (checked or tried: England and Wales and Ireland publish given names only; Scotland's tables moved and would not download; the Czech ministry stopped publishing in 2017; Finland's DVV files refused a scripted download). The city's people of African, Asian, Middle Eastern and Latin American descent therefore come only through the United States lists (the 2010 Census surnames: Nguyen, Hernandez, Washington, Kim ...), with American given names. The old pools' 21 origins are down to 6 countries.",
   "SSA's own site refused the download; the given names come from a published copy of its lists that ends in 2008.",
-  "Spain's and Sweden's given-name tables are short per decade (50 and the national top 200); Poland's have no year of birth before 2000."
- ]
+  "Spain's and Sweden's given-name tables are short per decade (50 and the national top 200); Poland's have no year of birth before 2000.",
+  "No open national frequency list was found for Japan, Korea, China, India or Nigeria (or Ghana, whose names on Wikipedia are too few to draw from), so those lists are Wikipedia's, a secondary source: ranked tables for surnames where Wikipedia has them, categories with no frequencies elsewhere. A category is a list of names that have a Wikipedia page, so it leans to names with a famous bearer; the read-through (exclusions.json) catches those it draws."
+ ],
+ "wiki": "The Wikipedia texts were fetched on 2026-11-02 through the MediaWiki API (action=parse for wikitext, list=categorymembers for categories) into out/scratch/pulse/names-dl/wiki/ and cut by tools/people/names/extract_wiki.py; each country file records the sha256 of every file it read."
 }

@@ -10,7 +10,8 @@ import { checkPeople } from '../check';
 import { expand, type Ctx } from '../expand';
 import { readTexts, world, type World } from '../inputs';
 import { FORMA_WOMEN, HOST_WOMEN } from '../looks';
-import { familiesOf, familyForm, familyPool, feminine, parseLists, womansForm } from '../names';
+import { countriesFor, familiesOf, familyForm, familyHeritage, familyPool, feminine, figuresOf, heritageOf, parseLists, womansForm } from '../names';
+import { castForNames } from '../roles';
 
 const root = join(import.meta.dir, '..', '..', '..');
 type P = Person & { sex: 'f' | 'm'; age: number; origin: string };
@@ -71,6 +72,32 @@ describe('names from the lists (brief 089)', () => {
     expect(FORMA_WOMEN.some(f => HOST_WOMEN.includes(f))).toBe(false); // the two Forma names that the host does not walk as women (yet)
     expect(persons.find(p => p.id === 'p-cafe-14')!.sex).toBe('f');
     for (const id of ['p-records-office-07', 'p-records-office-01', 'p-records-office-31']) expect(persons.find(p => p.id === id)!.sex).toBe('m');
+  });
+});
+
+describe('names fit the figure (brief 089 follow-up)', () => {
+  const figs = () => { const castRole = new Map<string, string>(); for (const [i, x] of castForNames(persons, ctx.casting!, w.rules).entries()) if (x.pinned) castRole.set(x.pinned, w.mission.roles[i]!.id); return figuresOf(ctx.names!, persons, castRole, Math.round(ctx.atMin * 60)); };
+  test('every family is drawn among the countries of the heritage its figures show; a mixed one among the many-heritage countries', () => {
+    const L = ctx.names!, f = figs(), pinnedIds = new Set(persons.filter(p => w.rules.names.pinned.some(x => p.name.split(' ').includes(x.name))).map(p => p.id));
+    let matched = 0;
+    for (const m of familiesOf(persons)) {
+      if (m.some(id => pinnedIds.has(id))) continue;
+      const h = familyHeritage(L, m, f), c = persons.find(p => p.id === m[0])!.origin;
+      expect(countriesFor(L, h)).toContain(c);
+      if (h && h !== 'mixed') matched += m.length;
+    }
+    expect(matched).toBeGreaterThan(persons.length / 2);
+    expect(heritageOf(L, 'd6')).toBe('east-asian'); expect(heritageOf(L, 'cafe_w5')).toBe('south-asian'); expect(heritageOf(L, 'el1')).toBeUndefined();
+  });
+  test('every heritage group names only countries with lists, and every figure the table names is a figure', () => {
+    const L = ctx.names!, h = w.rules.names.lists!.heritage!;
+    for (const g of Object.values(h.groups)) for (const c of g.countries) expect(L.countries.has(c)).toBe(true);
+    for (const fig of Object.keys(h.figures)) expect(L.figures.figures.has(fig)).toBe(true);
+  });
+  test('P-8 fails on a country the figure does not show', () => {
+    const L = ctx.names!, f = figs(), p = persons.find(q => familiesOf(persons).find(m => m.includes(q.id))!.length === 1 && familyHeritage(L, [q.id], f) === 'european' && !w.rules.names.pinned.some(x => q.name.includes(x.name)))!;
+    const pp = clone(people), q = pp.persons.find(x => x.id === p.id)! as P; q.origin = 'jp'; q.name = `Akiko Tanaka`;
+    expect(p8(pp).detail).toMatch(/the family's figures show european/);
   });
 });
 
