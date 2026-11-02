@@ -1,0 +1,71 @@
+{
+ "options": {
+  "1": {
+   "name": "Valve radio",
+   "what": "a calm announcer heard through a small valve set: narrow, warm, a little fuzzy",
+   "word_error_alone": {
+    "mean": 0.0,
+    "lines_with_errors": 0,
+    "of": 27
+   },
+   "word_error_street": {
+    "mean": 0.0,
+    "lines_with_errors": 0,
+    "of": 27
+   },
+   "word_error_fight": {
+    "mean": 0.015,
+    "lines_with_errors": 2,
+    "of": 27
+   }
+  },
+  "2": {
+   "name": "Brass horn with a ring",
+   "what": "the same voice from a small brass horn, with a light metallic ring: a clockwork machine",
+   "word_error_alone": {
+    "mean": 0.0,
+    "lines_with_errors": 0,
+    "of": 27
+   },
+   "word_error_street": {
+    "mean": 0.0,
+    "lines_with_errors": 0,
+    "of": 27
+   },
+   "word_error_fight": {
+    "mean": 0.052,
+    "lines_with_errors": 3,
+    "of": 27
+   }
+  },
+  "3": {
+   "name": "Mechanical voice",
+   "what": "the words played on one fixed pitch, like an early talking machine, a quarter of the real voice kept for clarity",
+   "word_error_alone": {
+    "mean": 0.019,
+    "lines_with_errors": 2,
+    "of": 27
+   },
+   "word_error_street": {
+    "mean": 0.052,
+    "lines_with_errors": 3,
+    "of": 27
+   },
+   "word_error_fight": {
+    "mean": 0.086,
+    "lines_with_errors": 6,
+    "of": 27
+   }
+  }
+ },
+ "reel": {
+  "seconds": 318.2,
+  "lufs_i": -19.0
+ },
+ "base_voice": {
+  "reference": "q/rref/robot_s122.wav",
+  "pitch_hz": 161,
+  "pitch_spread_semitones": 5.0,
+  "why": "heard word for word, in band, the evenest of six takes"
+ }
+}

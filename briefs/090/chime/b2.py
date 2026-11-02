@@ -70,4 +70,4 @@ def main():
     (REPO / 'briefs/090/b2.json').write_text(json.dumps(res, indent=1, ensure_ascii=False) + '\n'); print(json.dumps({k: res[k] for k in ('speech_pitch_by_person_hz', 'reel')})); print({k: (v['word_error'], v['heard']) for k, v in res['picked'].items() if v['word_error'] > 0})
 
 
-main()
+if __name__ == "__main__": main()

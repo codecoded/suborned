@@ -87,5 +87,35 @@
    "describe": "Male, fifties, a security desk clerk, flat bureaucratic baritone, precise, turning urgent."
   }
  },
- "shout_ref_text": "Hey! You there! Stop, and keep your hands where I can see them!"
+ "shout_ref_text": "Hey! You there! Stop, and keep your hands where I can see them!",
+ "milena_options": {
+  "m1": {
+   "band": [
+    200,
+    320
+   ],
+   "describe": "Female, about 25 years old, a cafe waitress, bright clear mezzo-soprano, quick lively pace, a grin in her voice, playful and teasing, lots of pitch movement; neutral accent."
+  },
+  "m2": {
+   "band": [
+    185,
+    270
+   ],
+   "describe": "Female, about 25 years old, a cafe waitress from Sweden, light Swedish accent with a gentle sing-song lilt, rising and falling melody, cheerful, dry and teasing, relaxed pace."
+  },
+  "m3": {
+   "band": [
+    140,
+    190
+   ],
+   "describe": "Female, early forties, an older waitress, low husky smoky voice with a little gravel, slow and unhurried, dry warmth, wry and fond, like a big sister."
+  }
+ },
+ "robot": {
+  "band": [
+   110,
+   190
+  ],
+  "describe": "A calm, polite public-address announcer voice, mid pitch, perfectly even and precise, no emotion, measured pace with each word evenly spaced, courteous and unhurried."
+ }
 }
