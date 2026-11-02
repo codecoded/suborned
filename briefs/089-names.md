@@ -12,6 +12,10 @@ Every name in the game comes from a naming custom only this world has, and the c
 - The player-visible names change in data (`contracts/missions/handover/text.json`, `contracts/people/`); internal code names (`ValeAt`, `councillor`, `waitress`) may stay; a saved run still replays. Scenes are reread by Fable, because names are said aloud in them.
 - A new GDD version, then `bun run crew`, after Sky's pick.
 
+## Sky's calls
+- The city: normal names, as GTA and Desperados III do (Sky: "why can't they be a bit more normal> What does GTA do?"; option D in `briefs/089/fable/naming-customs.md`), drawn from real frequency lists by origin, sex and age, never by a model.
+- The cell: "I think the cell has a bit more esoteric names as they're a different timeline".
+
 ## Scope
 People first: the named cast, the cell and the generator's pools. Places and institutions are listed for Sky to judge. `assignment-04` and its evidence under `courses/` are never changed.
 

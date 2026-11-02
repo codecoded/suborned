@@ -2,7 +2,7 @@
 
 Fable, 2026-11-02. Nothing has been renamed. Every name below came out of a rule run on real name lists, with no model choosing. Where I chose among draws, I say so.
 
-**My pick: D, normal names.** It's what you asked for, and it's what GTA and its peers do. A–C stay below in case you want the city to have a custom after all. Of those, A is still my choice.
+**My pick: D, normal names, for the city.** Sky has agreed. For the cell, see "The cell" below: my pick is Etruscan names. It's what you asked for, and it's what GTA and its peers do. A–C stay below in case you want the city to have a custom after all. Of those, A is still my choice.
 
 Read the lines aloud. Your ear decides this, and mine can't: it's the ear that picked Okafor.
 
@@ -79,6 +79,72 @@ The generator already draws a given and a family name with an origin.
 - [Desperados III credits](https://www.mobygames.com/game/windows/desperados-iii/credits)
 
 **Checks.** All 21 D names passed the ban list. Web checks turned up no single famous bearer for Popovic or Grabowski. Lukac has several bearers, but none who owns the name. Reilly, Ursu, Murata and Castillo had only a quick look, so treat them as lightly checked.
+
+---
+
+## The cell
+
+Sky picked D for the city and wants the cell "a bit more esoteric" because they come from another timeline. Below are three rules, each with four names checked against the ban list.
+
+**My pick: 1, Etruscan names.** In their timeline the Etruscans never died out. All four names are real and recorded in Etruscan inscriptions. They're short and say the timeline in one line without being fantasy, and none is a name the city uses.
+
+One snag: in play, no city person learns their names (§04: the cell is known by face only). So the city-voice line in each set below is how it would sound if a turned contact were told the name. Today that could only happen in the book or the debrief.
+
+### 1. Etruscan names (my pick)
+**Rule:** one name each, taken from the attested Etruscan first names ([Praenomen, Etruscan list](https://en.wikipedia.org/wiki/Praenomen)). The list is only about 20 names long, so I chose by fit. Names the Etruscans borrowed from Latin are left out.
+- **Scout · Laris** (LAH-riss), masculine. **Larthi** (LAR-tee) is the feminine form, if Sky makes the Scout a woman. Short and light: young and watchful.
+- **Fixer · Hasti** (HAH-stee), feminine. Soft and warm, two syllables.
+- **Tech · Sethre** (SETH-ray), masculine. Quiet and dry.
+- **Enforcer · Arruns** (AR-roons), masculine. Two blunt syllables. Arruns was the name of Etruscan kings' sons ([Lewis & Short](https://www.alatius.com/ls/index.php?id=3841)).
+
+> Andreea: Thank you, Hasti. I mean that. Reilly never knew.
+> Roster: Fixer · Hasti
+> Scout: Hasti, Reilly's on the Office door.
+
+**Rejected:**
+- Vel and Vela: they match the ban list's V-name pattern (Vex, Vael).
+- Thana: the word for a police station in South Asia.
+- Ramtha: the name of a well-known New Age "channelled" spirit.
+- Larth: too close to Laris.
+
+**Weak spot:** Sethre and Larth sit near the fantasy edge. Sky should read them aloud.
+
+### 2. Rare real names from small languages
+**Rule:** real given names from small naming traditions (Basque, Faroese, Georgian, Frisian, Igbo, Yoruba), drawn by id the way D draws. Names of 6 letters or fewer, with the ban list and the city's own names skipped. I chose among 8 draws each by fit.
+- **Scout · Eneko** (eh-NEH-ko, Basque, masculine; once the name of kings of Navarre). Or **Irati** (ee-RAH-tee, Basque, feminine, "fern field"). None of the 16 draws for the Scout is used for both sexes. If Irati, the Enforcer becomes Asier (ah-see-AIR), to keep the first letters apart.
+- **Fixer · Nekane** (neh-KAH-neh, Basque, feminine; the Basque form of Dolores, "sorrows"). The steel under the warmth.
+- **Tech · Fuwape** (foo-WAH-peh, Yoruba). Unhurried rhythm.
+- **Enforcer · Irakli** (ee-RAH-klee, Georgian form of Heracles).
+
+> Andreea: Thank you, Nekane. I mean that. Reilly never knew.
+> Roster: Fixer · Nekane
+
+**Weak spot:** these read as foreign, not as another timeline.
+
+### 3. Named for the month: the Revolution's calendar stuck
+**Rule:** in their timeline, France's revolutionary calendar was never abolished, and children are named for the month they're born in. One name each, and the same names for both sexes. It ran 1793 to 1805 here ([French Republican calendar](https://en.wikipedia.org/wiki/French_Republican_calendar)). The month is drawn by id.
+- **Scout · Brumaire** (broo-MAIR, "mist"). Hard to see.
+- **Fixer · Floréal** (floh-ray-AHL, "flowering"). Warm.
+- **Tech · Nivôse** (nee-VOHZ, "snowy"). Calm.
+- **Enforcer · Messidor** (MESS-ee-dor, "harvest"). Late in the year, older.
+
+> Andreea: Thank you, Floréal. I mean that. Reilly never knew.
+> Roster: Fixer · Floréal
+
+**Weak spots:**
+- There are only 12 names, all French.
+- History readers know 18 Brumaire as Napoleon's coup.
+- Messidor is a 1979 film ([Wikipedia](https://en.wikipedia.org/wiki/Messidor_(film))), and Nivôse is a French navy ship.
+- These are the longest of the three sets.
+
+### Checks
+- **Ban list:** all twelve names and the alternates (Larthi, Irati, Asier) pass. Vel and Vela fail.
+- **Web checks:** Eneko, Irati, Nekane and Irakli are real, with no single famous bearer ([Basque names](https://behindthename.com/names/origin/basque), [Irakli](https://babelfree.com/dictionary/en/meaning-of-irakli)).
+- **Couldn't check:**
+  - Laris, Hasti, Sethre and Fuwape: searches found nothing at all, neither a famous bearer nor a meaning.
+  - Hasti is also a Persian word, "existence". That's from my own knowledge, not confirmed by a search.
+  - Rude or unlucky meanings in other languages weren't checked.
+  - Etruscan pronunciation is a scholarly reconstruction. What I give is a reading for English speakers.
 
 ---
 
