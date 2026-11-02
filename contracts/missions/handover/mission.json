@@ -25,7 +25,7 @@
  "timeline": [
   {
    "at": "0:00",
-   "what": "Vale inside; routines run; the cell stands loosely by the getaway car at the square's boarding pavilion, in view, and the camera opens on them",
+   "what": "Popovic inside; routines run; the cell stands loosely by the getaway car at the square's boarding pavilion, in view, and the camera opens on them",
    "src": "GDD §07 (v0.23.0)",
    "note": "Reworded 2026-10-17 (Waymark) to GDD v0.23.0 §07's words, which take in the cell's start re-sited on 2026-10-16 (brief 014; see the file's note); the offset is unchanged. Was 'Vale inside; routines run; cell at getaway car' (§07 to v0.22.0); before that the removed anchor 'Vale inside; routines run'. §07's next entry, 'the Office guards check in at 1:00, 2:30, 4:00 and 5:30 (shift end)', is a routine with no single offset, not a timeline entry: the engine reads the marks from the cast guard's post in sim/data/handover.people.json and the rulebook's check-in-period-s (90 s); the status pill does not show them (a watched guard's clock pip does, GDD §10); tools/missions/handover/mission.test.ts checks §07's marks against that data."
   },
@@ -43,7 +43,7 @@
   },
   {
    "at": "3:10",
-   "what": "the rival car parks across from Vale's car; its lookout watches the official bay",
+   "what": "the rival car parks across from Popovic's car; its lookout watches the official bay",
    "src": "GDD §07 (v0.25.0; brief 059, Sky's answers 1a, 2a, 3a, 2026-10-25)",
    "note": "The park at rival-park (90.5, -31), Apron Road's south kerb (Vantage, brief 059 §5); the lookout steps out rivals.out later and posts at rival-lookout. Read by tools/sim/site.ts as schedule.rivalsArrive (/rival car parks/)."
   },
@@ -60,19 +60,19 @@
   },
   {
    "at": "4:50",
-   "what": "Vale comes out of the official door",
+   "what": "Popovic comes out of the official door",
    "src": "GDD §07 (v0.25.0; brief 059, Sky's answers 1a, 2a, 3a, 2026-10-25)",
    "note": "Brief 059 K1: he always walks to his car at the official bay (the service-lane walk is retired: a turned driver drives him round). Read by tools/sim/site.ts as schedule.valeExits (/Vale comes out/)."
   },
   {
    "at": "5:10",
-   "what": "Vale at his car, in by 5:13: his own driver drives him away (over); a turned driver drives him round to the service bay (5:25) and waits there",
+   "what": "Popovic at his car, in by 5:13: his own driver drives him away (over); a turned driver drives him round to the service bay (5:25) and waits there",
    "src": "GDD §07 (v0.25.0; brief 059, Sky's answers 1a, 2a, 3a, 2026-10-25)",
    "note": "Brief 059 K1, K2: 6:10 is schedule.valeAtCar (/Vale at his car/); he gets in car.pickup.valeIn (3 s) later. Unturned, the driver drives him away and the mission fails vale-leaves (Sky 3a); turned, the drive round on the drive grid at car.pace parks in the service bay at about 6:26 (engine 0.32.0: 6:25.9)."
   },
   {
    "at": "7:30",
-   "what": "the turned driver gives up and drives Vale on (over)",
+   "what": "the turned driver gives up and drives Popovic on (over)",
    "src": "GDD §07 (v0.25.0; brief 059 K4); Sky 2026-10-15 (brief 011 Decisions, balance; briefs/011/motive-balance.md): the close moves 8:00 → 8:30",
    "note": "The close (schedule.over, read by tools/sim/site.ts as /\\(over\\)$/). Brief 059 K4: with no Take begun by then the turned driver drives Vale on and the mission fails vale-leaves; a Take begun before it holds him until it ends. If the Enforcer holds Vale at 8:30 the run goes on (horizon.open) and wins only when Vale reaches the getaway car."
   }
