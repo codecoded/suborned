@@ -469,6 +469,9 @@ public sealed class BookCases
         int Pips(int k, string id) => h.BookCellPage(k).Weapon.Stats.Find(x => x.id == id).pips;
         Assert.That(Pips(3, "damage"), Is.GreaterThan(Pips(0, "damage")), "the carbine reads heavier"); Assert.That(Pips(3, "range"), Is.GreaterThan(Pips(0, "range")), "and longer"); Assert.That(Pips(3, "aim"), Is.GreaterThan(Pips(2, "aim")), "the Enforcer aims better than the Tech");
         Assert.That(HandoverHost.BookPips(0f, 3f, 5), Is.EqualTo(0)); Assert.That(HandoverHost.BookPips(0.1f, 3f, 5), Is.EqualTo(1)); Assert.That(HandoverHost.BookPips(99f, 3f, 5), Is.EqualTo(5));
+        foreach (var l in BookWordsFile.Get().Needs.Values) foreach (var n in l) { Assert.That(h.BookCheck(n.Check), Is.Not.Null, n.Id + ": " + n.Check); foreach (var m in new[] { "call", "loop", "takedown", "knock", "kill", "pay", "help", "pressure", "cut" }) Assert.That(n.Words.ToLowerInvariant(), Does.Not.Contain(m), n.Id + " names a method"); }
+        Assert.That(h.BookCheck("guard-away"), Is.EqualTo(!h.Game.GuardAtDoor)); Assert.That(h.BookCheck("vale:Car"), Is.False); Assert.That(h.BookCheck("no-such-word"), Is.Null);
+        Assert.That(h.BookCellPage(0).Sub, Does.StartWith("Young"), "the who line, not the mission's");
         var e = h.BookCellPage(3).Can; Assert.That(e.FindAll(x => x.Id == "takedown").Count, Is.EqualTo(1), "the takedown is one verb"); Assert.That(e.Exists(x => x.Word is "Kill" or "Knockout"), Is.False);
         var before = string.Join("|", h.BookCellPage(3).Can.ConvertAll(x => x.Word)); Host.Tick(h, 400); Assert.That(string.Join("|", h.BookCellPage(3).Can.ConvertAll(x => x.Word)), Is.EqualTo(before), "the rows don't move with the clock"); int orders = h.Game.Orders.Count; h.BookCellPage(1); Assert.That(h.Game.Orders.Count, Is.EqualTo(orders), "a page gives no order");
     }

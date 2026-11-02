@@ -22,7 +22,7 @@ namespace Suborned.Play
         static IEnumerator Wait(float s) { yield return new WaitForSecondsRealtime(s); }
         static IEnumerator Press(Key k) { Keys(k); yield return Frames(2); Keys(); yield return Frames(2); }
         /// <summary>Route A's orders, as recorded (contracts/missions/handover/routes).</summary>
-        internal static List<Order> Route() { var path = Path.Combine(Path.GetDirectoryName(Path.GetDirectoryName(FightLab.Dir(""))), "contracts", "missions", "handover", "routes", "route-a.json"); return Script.Parse(File.ReadAllText(path)).Orders; }
+        internal static List<Order> Route(string name = "route-a") { var path = Path.Combine(Path.GetDirectoryName(Path.GetDirectoryName(FightLab.Dir(""))), "contracts", "missions", "handover", "routes", name + ".json"); return Script.Parse(File.ReadAllText(path)).Orders; }
         static float Tw(string s, float size, string font) => (s ?? "").Length * size * .52f;
 
         static IEnumerator Fresh(HandoverHost h) { if (h.BookOpen) h.BookClose(); h.controls.conversations = ConversationScenes.Never; h.Begin(); h.IntelOpen = false; h.StartClock(); h.SetPaused(false); yield return Frames(3); }
@@ -94,6 +94,30 @@ namespace Suborned.Play
                 if (!ok) wbad++; wsaid.Add($"{(k < 4 ? ((OpId)k).ToString() : "test")} {w.Id}: {string.Join(", ", got)}");
             }
             Row("bookWeaponFigures", wbad == 0, $"{wbad} wrong; {string.Join(" | ", wsaid)}");
+            // ---- the job's conditions: each mark equals its live check at points along route A and the pickup route; every check in the data is in the vocabulary; a test condition by data appears
+            int nbad = 0, npts = 0; var nmet = new Dictionary<string, int>(); var nsaid2 = new List<string>(); var nw = BookWordsFile.Get().Needs; bool vocab = true;
+            foreach (var l in nw.Values) foreach (var n in l) vocab &= h.BookCheck(n.Check) != null && (n.Known.Length == 0 || h.BookCheck(n.Known) != null);
+            foreach (var route in new[] { "route-a", "route-b" })
+            {
+                yield return Fresh(h); g = h.Game; h.SetPaused(true); var ro = Route(route); int oi = 0;
+                for (int at = 300; at <= 4200 && !g.Over; at += 300)
+                {
+                    while (oi < ro.Count && ro[oi].Tick <= at && !g.Over) { var o = ro[oi++]; h.RunTo(o.Tick); h.Issue(new Order { Op = o.Op, Do = o.Do, To = o.To, Point = o.Point, Target = o.Target, Approach = o.Approach, How = o.How, Run = o.Run }); }
+                    if (g.Over) break; h.RunTo(at); h.BookOpenNow("job"); yield return Frames(1); npts++;
+                    foreach (var n in h.BookPageNow.Needs)
+                    {
+                        bool withV = g.Vale == ValeAt.WithEnforcer || g.Vale == ValeAt.Car, unk = n.Id == "pickup-camera" && g.Known("camera:pickup") is not { Sight: true };
+                        bool want = n.Id switch { "guard-away" => !g.GuardAtDoor, "door-camera" => g.CameraDark("entrance") || g.LoopOn && g.LoopCam == "entrance", "inside" => g.Ops[3].Inside || withV, "getaway" => g.Vale == ValeAt.Car,
+                            "driver" => g.PersonByRole("driver").Turned, "pickup-camera" => !unk && (g.CameraDark("pickup") || g.LoopOn && g.LoopCam == "pickup"), "has-vale" => withV, _ => !n.Met };
+                        if (n.Met != want || n.Unknown != unk) { nbad++; nsaid2.Add($"{route} {HandoverHost.MissionClock(at)} {n.Group}/{n.Id}: page {n.Met}{(n.Unknown ? "?" : "")}, engine {want}{(unk ? "?" : "")}"); }
+                        if (n.Met) nmet[n.Group + "/" + n.Id] = (nmet.TryGetValue(n.Group + "/" + n.Id, out var c) ? c : 0) + 1;
+                    }
+                    h.BookClose(); yield return Frames(1);
+                }
+            }
+            nw["front-door"].Add(new BookWordsFile.Need { Id = "test-need", Words = "A test condition", Check = "log:start" }); h.BookOpenNow("job"); yield return Frames(2);
+            var tneed = h.BookPageNow.Needs.Find(x => x.Id == "test-need"); bool testOk = tneed != null && tneed.Met == g.Log.Exists(x => x.Code == "start") && HudToolkit.BookLaidOut.Has(BookSlot.Needs); h.BookClose(); nw["front-door"].RemoveAll(x => x.Id == "test-need"); yield return Frames(1);
+            Row("bookNeeds", nbad == 0 && vocab && testOk && npts >= 10 && nmet.Count >= 5, $"{npts} points on route A and the pickup route, {nbad} wrong; vocabulary {vocab}; test condition {testOk}; ticked at some point: {string.Join(", ", nmet.Keys)} {string.Join("; ", nsaid2)}");
             // ---- what is still a way (the job's): closes the book, opens that thing's ring for the selection as it is, gives no order; the ring is the ring a click on that thing opens; the page shows no price of its own
             yield return Fresh(h); g = h.Game; h.SetPaused(true); yield return Frames(2); int bad = 0, seen = 0; var said = new List<string>(); h.Select(OpId.Scout, false);
             h.BookOpenNow("job"); yield return Frames(2); int nWays = h.BookPageNow.Ways.Count; h.BookClose(); yield return Frames(1);
@@ -126,12 +150,15 @@ namespace Suborned.Play
             yield return new WaitForSecondsRealtime(3f); /* the size is -capture-size's */
             h.controls.conversations = ConversationScenes.Never; h.controls.planTogether = false; h.Begin(); h.IntelOpen = false; h.StartClock(); h.SetPaused(true); yield return null;
             var g = h.Game; var lines = new List<string>(); int stop = 1600; // 2:40
-            void Say(string n) { var p = h.BookPageNow; lines.Add($"{n}: {p?.Name} | {p?.Sub} | clock {HandoverHost.MissionClock(g.Tick)} | facts {string.Join(", ", (p?.Facts ?? new List<BookFact>()).ConvertAll(f => f.Word))} | weapon {p?.Weapon?.Word} {p?.Weapon?.Note} {string.Join(" ", (p?.Weapon?.Stats ?? new List<(string, string, int, int, float)>()).ConvertAll(x => $"{x.Item2} {x.Item3}/{x.Item4}"))} | ways {string.Join(", ", (p?.Ways ?? new List<BookWay>()).ConvertAll(w => (w.Shut ? "~" : "") + w.Word + " [" + w.SubText + "]"))} | can {string.Join(", ", (p?.Can ?? new List<BookCan>()).ConvertAll(c => c.Word + " [" + c.Line + "]"))} | track {string.Join(", ", (p?.Track ?? new List<BookStop>()).ConvertAll(s => s.Word + " " + s.Time))} | build {h.BookBuildMs:0.#} ms"); File.WriteAllLines(Path.Combine(Dir, "pages.txt"), lines); }
-            bool enforcerShot = false; foreach (var o in ProofBook.Route()) { if (o.Tick >= stop) break; if (!enforcerShot && o.Tick >= 500) { h.RunTo(500); enforcerShot = true; h.BookOpenNow("cell", 3); yield return Shot("cell-enforcer"); Say("cell-enforcer"); h.BookShow("cell", 0); yield return Shot("cell-scout"); Say("cell-scout"); h.BookClose(); yield return null; } h.RunTo(o.Tick); h.Issue(new Order { Op = o.Op, Do = o.Do, To = o.To, Point = o.Point, Target = o.Target, Approach = o.Approach, How = o.How, Run = o.Run }); }
+            void Say(string n) { var p = h.BookPageNow; lines.Add($"{n}: {p?.Name} | {p?.Sub} | clock {HandoverHost.MissionClock(g.Tick)} | facts {string.Join(", ", (p?.Facts ?? new List<BookFact>()).ConvertAll(f => f.Word))} | weapon {p?.Weapon?.Word} {p?.Weapon?.Note} {string.Join(" ", (p?.Weapon?.Stats ?? new List<(string, string, int, int, float)>()).ConvertAll(x => $"{x.Item2} {x.Item3}/{x.Item4}"))} | ways {string.Join(", ", (p?.Ways ?? new List<BookWay>()).ConvertAll(w => (w.Shut ? "~" : "") + w.Word + " [" + w.SubText + "]"))} | can {string.Join(", ", (p?.Can ?? new List<BookCan>()).ConvertAll(c => c.Word + " [" + c.Line + "]"))} | needs {string.Join(", ", (p?.Needs ?? new List<BookNeed>()).ConvertAll(n => (n.Met ? "[x] " : n.Unknown ? "[?] " : "[ ] ") + n.Words))} | track {string.Join(", ", (p?.Track ?? new List<BookStop>()).ConvertAll(s => s.Word + " " + s.Time))} | build {h.BookBuildMs:0.#} ms"); File.WriteAllLines(Path.Combine(Dir, "pages.txt"), lines); }
+            bool enforcerShot = false, jobShot = false; foreach (var o in ProofBook.Route()) { if (o.Tick >= stop) break; if (!jobShot && o.Tick >= 50) { h.RunTo(50); jobShot = true; h.BookOpenNow("job"); yield return Shot("job"); Say("job"); h.BookClose(); yield return null; } if (!enforcerShot && o.Tick >= 500) { h.RunTo(500); enforcerShot = true; h.BookOpenNow("cell", 3); yield return Shot("cell-enforcer"); Say("cell-enforcer"); h.BookShow("cell", 0); yield return Shot("cell-scout"); Say("cell-scout"); h.BookClose(); yield return null; } h.RunTo(o.Tick); h.Issue(new Order { Op = o.Op, Do = o.Do, To = o.To, Point = o.Point, Target = o.Target, Approach = o.Approach, How = o.How, Run = o.Run }); }
             h.RunTo(stop); h.SetPaused(false); yield return new WaitForSecondsRealtime(0.3f); h.SetPaused(true);
-            h.BookOpenNow("job"); yield return Shot("job"); Say("job");
+            h.BookOpenNow("cell", 1);
             for (int k = 1; k < 3; k++) { h.BookShow("cell", k); string n = "cell-" + Op.Name((OpId)k); yield return Shot(n); Say(n); }
             h.BookClose(); yield return null; h.BookSections.Insert(3, new BookSection("longarm", "fire", "Test", hh => hh.BookCellPage(3, ProofBook.TestWeapon()))); h.BookOpenNow("longarm"); yield return Shot("weapon-test"); Say("weapon-test"); h.BookClose(); h.BookSections.RemoveAt(3); yield return null; h.BookSections.Insert(3, ProofBook.TestSection()); h.BookOpenNow("cash"); yield return Shot("test-section"); Say("test-section"); h.BookClose(); h.BookSections.RemoveAt(3);
+            var rest = ProofBook.Route(); foreach (var o in rest) { if (o.Tick < stop) continue; if (g.Log.Exists(x => x.Code == "enter.in") || g.Over) break; h.RunTo(o.Tick); h.Issue(new Order { Op = o.Op, Do = o.Do, To = o.To, Point = o.Point, Target = o.Target, Approach = o.Approach, How = o.How, Run = o.Run }); }
+            for (int i = 0; i < 1200 && !g.Log.Exists(x => x.Code == "enter.in") && !g.Over; i++) h.RunTo(g.Tick + 1);
+            h.RunTo(g.Tick + 20); h.SetPaused(false); yield return new WaitForSecondsRealtime(0.3f); h.SetPaused(true); h.BookOpenNow("job"); yield return Shot("job-late"); Say("job-late"); h.BookToggleEnds(); yield return Shot("job-ends-open"); Say("job-ends-open"); h.BookToggleEnds(); h.BookClose();
             yield return new WaitForSecondsRealtime(0.5f); yield return new WaitForEndOfFrame(); var t = ScreenCapture.CaptureScreenshotAsTexture(); File.WriteAllBytes(Path.Combine(Dir, "street-after.png"), t.EncodeToPNG()); Destroy(t);
             Application.Quit(0);
         }

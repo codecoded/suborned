@@ -18,7 +18,9 @@ namespace Suborned.Play
         public readonly List<(string id, string icon, string word)> SectionRows = new();
         public readonly List<End> Ends = new();
         public readonly Dictionary<string, Stop> Stops = new();
-        public readonly Dictionary<string, string> Weapons = new();
+        public readonly Dictionary<string, string> Weapons = new(), Who = new();
+        public sealed class Need { public string Id = "", Words = "", Check = "", Known = ""; }
+        public readonly Dictionary<string, List<Need>> Needs = new();
         public readonly Dictionary<string, (string word, string icon, string line)> Does = new();
 
         static BookWordsFile one;
@@ -34,8 +36,10 @@ namespace Suborned.Play
                 foreach (var x in b["sections"].Items) one.SectionRows.Add((S(x, "id"), S(x, "icon"), S(x, "word")));
                 var j = b["job"]; one.JobName = S(j, "name"); one.JobSub = S(j, "sub"); one.EndsHead = S(j, "endsHead");
                 foreach (var x in j["ends"].Items) { var e = new End { Icon = S(x, "icon"), Word = S(x, "word") }; foreach (var f in x["fails"].Items) e.Fails.Add(f.Str()); one.Ends.Add(e); }
+                if (j.Opt("needs") is JNode nd) foreach (var kv in nd["ways"].Entries) { var l = new List<Need>(); foreach (var x in kv.Value.Items) l.Add(new Need { Id = S(x, "id"), Words = S(x, "words"), Check = S(x, "check"), Known = S(x, "known") }); one.Needs[kv.Key] = l; }
                 foreach (var x in j["stops"].Items) one.Stops[S(x, "at")] = new Stop { Icon = S(x, "icon"), Log = S(x, "log") };
                 var c = b["cell"]; one.Health = S(c, "health"); one.Reach = S(c, "reach"); one.Drawn = S(c, "drawn"); one.Holstered = S(c, "holstered"); foreach (var x in c["weapon"]["stats"].Items) one.WeaponStats.Add((S(x, "id"), S(x, "word"), float.Parse(x["full"].NumberText, System.Globalization.CultureInfo.InvariantCulture), x["pips"].Int()));
+                if (c.Opt("who") is JNode wh) foreach (var kv in wh.Entries) one.Who[kv.Key] = kv.Value.Str();
                 foreach (var kv in c["weapons"].Entries) one.Weapons[kv.Key] = kv.Value.Str();
                 foreach (var kv in c["does"].Entries) one.Does[kv.Key] = (S(kv.Value, "word"), S(kv.Value, "icon"), S(kv.Value, "line"));
             }
@@ -55,10 +59,13 @@ namespace Suborned.Play
     {
         /// <summary>The job page: from the briefing's own data (the target, the ways, the clock) and the book's list of what ends it. The clock's times are the run's, read
         /// from the log once a beat has happened; a beat the cell can't know yet stays "?" until it has.</summary>
+        /// <summary>The job page's "It's over if" list, folded to its head until opened (the page holds the ways' conditions now).</summary>
+        public bool BookEndsOpen { get; private set; }
+        public void BookToggleEnds() { BookEndsOpen = !BookEndsOpen; if (BookOpen) BookShow("job"); }
         public BookPage BookJobPage()
         {
             var bw = BookWordsFile.Get(); var g = Game; var p = new BookPage { Section = "job", HeroFace = "portraits/hero_councillor", Name = bw.JobName, Sub = bw.JobSub, FactsHead = bw.EndsHead };
-            foreach (var e in bw.Ends) p.Facts.Add(new BookFact { Icon = e.Icon, Word = e.Word });
+            p.FactsCount = bw.Ends.Count; p.FactsFolded = !BookEndsOpen; if (BookEndsOpen) foreach (var e in bw.Ends) p.Facts.Add(new BookFact { Icon = e.Icon, Word = e.Word });
             var mission = BriefScreen.MissionFile("brief.json");
             if (mission?.Opt("ways") is JNode ways && ways.Kind == JKind.Arr)
                 foreach (var w in ways.Items)
@@ -68,6 +75,7 @@ namespace Suborned.Play
                     if (Text != null && Text.PageWays.TryGetValue(id, out var pw) && pw.when.Length > 0) way.Sub.Add(new BookField { Text = pw.when });
                     p.Ways.Add(way);
                 }
+            BookNeeds(p);
             if (Text != null)
                 foreach (var at in Text.PageClock)
                 {
@@ -87,7 +95,7 @@ namespace Suborned.Play
         {
             var bw = BookWordsFile.Get(); var g = Game; var op = g.Ops[k]; string role = Op.Name((OpId)k);
             string name = Text != null && Text.Speakers.TryGetValue(role, out var sp) ? sp : role;
-            var p = new BookPage { Section = "cell", HeroFace = "portraits/hero_" + role, Name = name, Sub = Text != null && Text.PageCell.TryGetValue(role, out var cl) ? cl : "" };
+            var p = new BookPage { Section = "cell", HeroFace = "portraits/hero_" + role, Name = name, Sub = bw.Who.TryGetValue(role, out var who) ? who : "" };
             var d = DoingOf(k); p.Facts.Add(new BookFact { Icon = op.Down ? "s_downed" : d.Phase is "walking" or "running" ? "s_moving" : HudModel.AtlasIcon(d.Verb, op.Busy?.Approach ?? "", d.Phase), Word = op.Down ? (Text != null && Text.Activity.TryGetValue("down", out var dw) ? dw : "Down") : d.Label });
             if (bw.Reach.Length > 0) p.Facts.Add(new BookFact { Icon = "watch", Word = bw.Reach.Replace("{m}", (g.R.WatchReachCm((OpId)k) / 100).ToString()) });
             p.Weapon = BookWeaponOf(k, weapon);

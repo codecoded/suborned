@@ -2857,7 +2857,24 @@
          ]
        }
      ],
-     "stops": [
+     "needs": {
+    "rule": "What each way in needs, as conditions, never methods: any act that makes one true ticks it. check and known use the host's vocabulary (HostBook.Needs.cs): guard-away, camera-blind:<camera>, inside:<agent>, vale:<state>, turned:<role>, log:<code>, sight:<watcher>; ' | ' is any of. known keeps the condition at '?' until it holds. Words may carry {t:valeExits} {t:valeAtCar} {t:driverLast} {t:chime}.",
+    "ways": {
+     "front-door": [
+      { "id": "guard-away", "words": "The guard is away from the door", "check": "guard-away" },
+      { "id": "door-camera", "words": "The door camera isn't watching", "check": "camera-blind:entrance" },
+      { "id": "inside", "words": "The Enforcer is inside before {t:valeExits}", "check": "inside:enforcer | vale:WithEnforcer,Car" },
+      { "id": "getaway", "words": "Vale reaches the getaway car", "check": "vale:Car" }
+     ],
+     "pickup": [
+      { "id": "driver", "words": "The driver is on our side", "check": "turned:driver" },
+      { "id": "pickup-camera", "words": "The pickup camera isn't watching", "check": "camera-blind:pickup", "known": "sight:camera:pickup" },
+      { "id": "has-vale", "words": "The Enforcer has Vale", "check": "vale:WithEnforcer,Car" },
+      { "id": "getaway", "words": "Vale reaches the getaway car", "check": "vale:Car" }
+     ]
+    }
+   },
+   "stops": [
        {
          "at": "2:35",
          "icon": "car",
@@ -2888,7 +2905,13 @@
    "cell": {
      "health": "Health",
      "reach": "Watches from {m} m",
-     "weapon": {
+     "who": {
+    "scout": "Young, quiet and watchful. Says little, and is rarely wrong.",
+    "fixer": "Warm and unhurried. Puts strangers at ease, and means what she says.",
+    "tech": "Calm and patient. Finds this city's old wiring quietly amusing.",
+    "enforcer": "Big, older and calm. Says as little as he can."
+   },
+   "weapon": {
     "rule": "The weapon's ratings, in this order: each id's engine value (damage a hit; rate in shots a minute; range to its last metre; aim, the shooter's stat-sheet aim) set against `full`, the value that fills `pips` pips. Pips = value / full x pips, rounded, at least one for any value above nothing.",
     "stats": [
      { "id": "damage", "word": "Damage", "full": 3, "pips": 5 },

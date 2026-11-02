@@ -7,7 +7,7 @@ namespace Suborned.Play
     /// <summary>Brief 088, the book's page as data: named slots in a fixed order, no positions. Glyph's rule (briefs/085/glyph/book/look3/notes.md, look4/notes.md):
     /// empty slots take no room, and the layout never knows what the content is. `Gear` and `Scales` carry our own agents' kit and stats (Sky, 2026-11-02), so wounds,
     /// gear and what a person gives need no redesign: more rows, the same code.</summary>
-    public enum BookSlot { Hero, Name, Sub, State, FactsHead, Facts, Gear, Weapon, Ways, Scales, Knows, Can, Track, Others }
+    public enum BookSlot { Hero, Name, Sub, State, FactsHead, Facts, Gear, Weapon, Ways, Needs, Scales, Knows, Can, Track, Others }
 
     public sealed class BookFact { public string Icon = "", Word = "", Note = ""; public bool Unknown; }
     public sealed class BookField { public string Icon = "", Text = ""; }
@@ -27,6 +27,9 @@ namespace Suborned.Play
         public string Id = "", Word = "", Note = "";
         public readonly List<(string id, string word, int pips, int of, float value)> Stats = new();
     }
+    /// <summary>A condition a way in needs (book.job.needs, data): its words, the way it belongs to, and its state now: Met, not yet, or Unknown ("?") while the cell hasn't learned what it rests on.
+    /// It names no method: any act that makes it true ticks it.</summary>
+    public sealed class BookNeed { public string Id = "", Group = "", Words = ""; public bool Met, Unknown; }
     public sealed class BookScale { public string Word = ""; public int Value, Max; }
     public sealed class BookKnow { public string Icon = "", Face = "", Word = ""; }
     public sealed class BookStop { public string Icon = "", Word = "", Time = ""; public bool Past; }
@@ -39,6 +42,9 @@ namespace Suborned.Play
         public readonly List<BookWay> Ways = new();
         public readonly List<BookCan> Can = new();
         public BookWeapon Weapon;
+        public readonly List<BookNeed> Needs = new();
+        /// <summary>The facts fold under their head: shut, the head alone says how many (FactsCount) and opens them.</summary>
+        public bool FactsFolded; public int FactsCount;
         public readonly List<BookScale> Scales = new();
         public readonly List<BookKnow> Knows = new();
         public readonly List<BookStop> Track = new();
@@ -61,7 +67,7 @@ namespace Suborned.Play
         /// <summary>A text width in grid px: (text, size, font).</summary>
         public delegate float Measure(string text, float size, string font);
         public struct Item { public BookSlot Slot; public int Index; public Rect At; public float Size, Cy, D; }
-        public sealed class Result { public readonly List<Item> Items = new(); public float Bottom, NameSize, TrackStep, TrackSize; public string[] SubLines = Array.Empty<string>(); public readonly Dictionary<int, string[]> CanLines = new(); public float SubSize = 30f; public int Rows; public bool Has(BookSlot s) { foreach (var i in Items) if (i.Slot == s) return true; return false; } public IEnumerable<Item> Of(BookSlot s) { foreach (var i in Items) if (i.Slot == s) yield return i; } }
+        public sealed class Result { public readonly List<Item> Items = new(); public float Bottom, NameSize, TrackStep, TrackSize; public string[] SubLines = Array.Empty<string>(); public readonly Dictionary<int, string[]> CanLines = new(), NeedLines = new(); public float SubSize = 30f; public int Rows; public bool Has(BookSlot s) { foreach (var i in Items) if (i.Slot == s) return true; return false; } public IEnumerable<Item> Of(BookSlot s) { foreach (var i in Items) if (i.Slot == s) yield return i; } }
 
         static readonly (float size, float step, float d)[] One = { (36, 60, 46), (31, 54, 42) }, Two = { (30, 52, 40), (27, 46, 36), (24, 40, 32), (22, 37, 30) };
 
@@ -107,7 +113,7 @@ namespace Suborned.Play
                 if (p.State.Length > 0) { float sx = X + (p.Sub.Length > 0 ? tw(r.SubLines[r.SubLines.Length - 1], sz, "Jost-Medium") + 18f : 0f), w = tw(p.State, 30f, "Jost-Bold") + 34f; r.Items.Add(new Item { Slot = BookSlot.State, Cy = y + lh * (r.SubLines.Length - 1), Size = 30f, At = new Rect(sx, y + lh * (r.SubLines.Length - 1) - 23f, w, 46f) }); }
                 y += lh * (r.SubLines.Length - 1) + 36f;
             }
-            if (p.Facts.Count > 0 && p.FactsHead.Length > 0) { r.Items.Add(new Item { Slot = BookSlot.FactsHead, Cy = y + 12f, Size = 24f, At = new Rect(X, y, W, 24f) }); y += 34f; }
+            if (p.FactsHead.Length > 0 && (p.Facts.Count > 0 || p.FactsFolded)) { r.Items.Add(new Item { Slot = BookSlot.FactsHead, Cy = y + 12f, Size = 24f, At = new Rect(X, y, W, 24f) }); y += 34f; }
             if (p.Facts.Count > 0)
             {
                 var (cols, rows, size, step, d) = FitFacts(p.Facts, tw); float cw = W / cols; r.Rows = rows;
@@ -136,6 +142,21 @@ namespace Suborned.Play
                     r.Items.Add(new Item { Slot = BookSlot.Ways, Index = i, Size = 40f, At = new Rect(cx, y, ww, WayH) }); cx += ww + 14f;
                 }
                 y += WayH + 22f;
+            }
+            if (p.Needs.Count > 0)
+            {
+                // the conditions, under each way's sign: a column a way (its sign's x, to the next sign), rows top down, a line wrapping to two; groups with no sign stack after
+                var cols = new List<(string g, float x, float w)>(); var ws = new List<Item>(); foreach (var it in r.Items) if (it.Slot == BookSlot.Ways) ws.Add(it);
+                for (int i = 0; i < ws.Count; i++) { float x0 = ws[i].At.x, x1 = i + 1 < ws.Count && ws[i + 1].At.y == ws[i].At.y ? ws[i + 1].At.x - 14f : X + CanW; cols.Add((p.Ways[ws[i].Index].Verb, x0, x1 - x0)); }
+                float top = y - 10f, bottom = top; int n = 0;
+                foreach (var (g, cx, cw) in cols)
+                {
+                    float cy = top;
+                    for (int i = 0; i < p.Needs.Count; i++) { if (p.Needs[i].Group != g) continue; var lines = Wrap(p.Needs[i].Words, 21f, "Jost-Medium", cw - 34f, tw); r.NeedLines[i] = lines; float h = 27f * lines.Length + 8f; r.Items.Add(new Item { Slot = BookSlot.Needs, Index = i, Size = 21f, D = 22f, At = new Rect(cx, cy, cw, h) }); cy += h; n++; }
+                    bottom = Mathf.Max(bottom, cy);
+                }
+                for (int i = 0; i < p.Needs.Count; i++) if (!r.NeedLines.ContainsKey(i)) { var lines = Wrap(p.Needs[i].Words, 21f, "Jost-Medium", CanW - 34f, tw); r.NeedLines[i] = lines; float h = 27f * lines.Length + 8f; r.Items.Add(new Item { Slot = BookSlot.Needs, Index = i, Size = 21f, D = 22f, At = new Rect(X, bottom, CanW, h) }); bottom += h; }
+                y = bottom + 16f;
             }
             if (p.Scales.Count > 0) { r.Items.Add(new Item { Slot = BookSlot.Scales, Size = 25f, Cy = y + 14f, At = new Rect(X + 2f, y, W, 30f) }); y += 42f; }
             if (p.Knows.Count > 0) { r.Items.Add(new Item { Slot = BookSlot.Knows, Size = 25f, Cy = y + 14f, At = new Rect(X + 2f, y, W, 30f) }); y += 42f; }

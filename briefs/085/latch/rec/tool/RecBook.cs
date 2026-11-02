@@ -24,6 +24,7 @@ public sealed partial class Rec085
         idx = 0; foreach (var o in h.BookPageNow.Others) { if (o.Agent == (int)OpId.Fixer) break; idx++; }
         yield return BClick("book-other", idx, () => h.BookAgent == 1, () => h.BookShow("cell", 1)); yield return new WaitForSecondsRealtime(2.2f);
         yield return BClick("book-sign-job", 0, () => h.BookSectionNow == "job", () => h.BookShow("job")); yield return new WaitForSecondsRealtime(3f);
+        yield return BClick("book-fold", 0, () => h.BookEndsOpen, () => h.BookToggleEnds()); yield return new WaitForSecondsRealtime(2.2f); yield return BClick("book-fold", 0, () => !h.BookEndsOpen, () => h.BookToggleEnds()); yield return new WaitForSecondsRealtime(1f);
         int orders = G.Orders.Count; var way = h.BookPageNow.Ways[0];
         yield return BClick("book-way", 0, () => !h.BookOpen, () => h.BookTakeWay(way)); Note($"way {way?.Word}: ring {h.RingWords}, orders added {G.Orders.Count - orders}, paused {h.Paused}");
         yield return new WaitForSecondsRealtime(2.6f); yield return BPress(Key.Escape); Note($"ring closed {h.Ring == null}, tick {G.Tick}"); yield return new WaitForSecondsRealtime(2.4f); yield return BPress(Key.J); yield return new WaitForSecondsRealtime(1.4f); yield return BClick("book-back", 0, () => !h.BookOpen, () => h.BookClose()); yield return new WaitForSecondsRealtime(1.6f); RecOff();

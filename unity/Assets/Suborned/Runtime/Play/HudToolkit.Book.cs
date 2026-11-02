@@ -114,7 +114,8 @@ namespace Suborned.Play
                     case BookSlot.Name: BkPut(body, it.At.x, it.Cy, pg.Name, it.Size, "Jost-Bold", BkInkHex); break;
                     case BookSlot.Sub: { float lh = r.SubSize * 1.3f; for (int n = 0; n < r.SubLines.Length; n++) BkPut(body, it.At.x, it.Cy + n * lh, r.SubLines[n], r.SubSize, "Jost-Medium", BkSoftHex); break; }
                     case BookSlot.State: { var e = BkBox(body, it.At); Round(e, 23f); e.style.backgroundColor = BkOrange; BkPut(e, 17f, 23f, pg.State, it.Size, "Jost-Bold", BkCreamHex); break; }
-                    case BookSlot.FactsHead: BkPut(body, it.At.x, it.Cy, pg.FactsHead, it.Size, "Jost-Medium", BkSoftHex); break;
+                    case BookSlot.FactsHead: BkFold(body, pg, it); break;
+                    case BookSlot.Needs: BkNeed(body, pg.Needs[it.Index], it, r.NeedLines[it.Index]); break;
                     case BookSlot.Facts: BkFact(body, pg.Facts[it.Index], it); break;
                     case BookSlot.Gear: BkFact(body, pg.Gear[it.Index], it); break;
                     case BookSlot.Weapon: BkWeapon(body, pg.Weapon, it, r); break;
@@ -179,6 +180,24 @@ namespace Suborned.Play
                 BkPut(body, cx, cy, s.word, 22f, "Jost-SemiBold", BkInkHex); float px = cx + wordW + 14f;
                 for (int k = 0; k < s.of; k++) { var d = E(body, null, px + k * 20f, cy - 8f, 16f, 16f); Round(d, 8f); if (k < s.pips) d.style.backgroundColor = BkDeep; else Border(d, 1.5f, BkSoft); }
             }
+        }
+
+        /// <summary>A facts head that folds: shut, it says how many and a chevron; a click opens or shuts the list.</summary>
+        void BkFold(VisualElement body, BookPage pg, BookLayout.Item it)
+        {
+            string t = pg.FactsHead + (pg.FactsFolded ? "  " + pg.FactsCount : ""); float w = BkTw(t, it.Size, "Jost-Medium") + 34f;
+            var e = E(body, null, it.At.x, it.Cy - 16f, w, 32f, true); e.name = "book-fold"; BkPut(e, 0f, 16f, t, it.Size, "Jost-Medium", BkSoftHex);
+            var ch = E(e, null, w - 22f, 8f, 16f, 16f); Icon(ch, "chev_down", BkSoft); if (pg.FactsFolded) ch.style.rotate = new Rotate(-90f);
+            e.RegisterCallback<ClickEvent>(ev => { ev.StopPropagation(); host.BookToggleEnds(); });
+        }
+
+        /// <summary>A condition: a round mark (filled with a tick when it holds, hollow when not, "?" until learned) and its words. Not a button.</summary>
+        void BkNeed(VisualElement body, BookNeed n, BookLayout.Item it, string[] lines)
+        {
+            float x = it.At.x, y = it.At.y, d = it.D; var m = E(body, null, x, y + 2f, d, d); Round(m, d / 2f); m.name = "book-need";
+            if (n.Met) { m.style.backgroundColor = BkDeep; Icon(E(m, null, 4f, 4f, d - 8f, d - 8f), "check", Cream); }
+            else { Border(m, 1.8f, BkSoft); if (n.Unknown) BkPut(m, d * .3f, d / 2f, "?", d * .6f, "Jost-Bold", BkSoftHex); }
+            for (int i = 0; i < lines.Length; i++) BkPut(body, x + d + 12f, y + 13f + 27f * i, lines[i], it.Size, "Jost-Medium", n.Met ? BkInkHex : n.Unknown ? BkSoftHex : BkInkHex);
         }
 
         void BkScales(VisualElement body, BookPage pg, BookLayout.Item it)
