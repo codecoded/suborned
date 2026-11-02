@@ -1,0 +1,135 @@
+{
+ "larthi": {
+  "1": {
+   "id": "l1",
+   "label": "Bright and quick",
+   "describe": "Female, early twenties, energetic and chatty, quick bright clear mezzo-soprano, warm and smiling, eager, crisp clear diction.",
+   "lines": {
+    "scene10": {
+     "word_error": 0.0,
+     "pitch_hz": 266.7,
+     "speaking_s": 3.82
+    },
+    "shout05": {
+     "word_error": 0.0,
+     "pitch_hz": 289.2,
+     "speaking_s": 1.8
+    },
+    "shout06": {
+     "word_error": 0.0,
+     "pitch_hz": 275.9,
+     "speaking_s": 0.76
+    },
+    "name05": {
+     "word_error": 0.333,
+     "pitch_hz": 333.3,
+     "speaking_s": 1.24
+    }
+   }
+  },
+  "2": {
+   "id": "l2",
+   "label": "Husky and lively",
+   "describe": "Female, mid twenties, a low husky raspy alto voice, but lively and talkative, quick and warm, grinning, very clear articulation.",
+   "lines": {
+    "scene10": {
+     "word_error": 0.0,
+     "pitch_hz": 172.0,
+     "speaking_s": 3.66
+    },
+    "shout05": {
+     "word_error": 0.0,
+     "pitch_hz": 155.3,
+     "speaking_s": 1.62
+    },
+    "shout06": {
+     "word_error": 0.0,
+     "pitch_hz": 147.2,
+     "speaking_s": 0.62
+    },
+    "name05": {
+     "word_error": 0.333,
+     "pitch_hz": 172.7,
+     "speaking_s": 1.12
+    }
+   }
+  },
+  "3": {
+   "id": "l4",
+   "label": "Italian lilt",
+   "describe": "Female, early twenties, a light Italian accent, energetic and chatty, warm, quick musical speech with lots of melody, clear diction, a slightly lower voice.",
+   "lines": {
+    "scene10": {
+     "word_error": 0.0,
+     "pitch_hz": 226.4,
+     "speaking_s": 3.78
+    },
+    "shout05": {
+     "word_error": 0.0,
+     "pitch_hz": 292.7,
+     "speaking_s": 1.72
+    },
+    "shout06": {
+     "word_error": 0.0,
+     "pitch_hz": 235.3,
+     "speaking_s": 0.64
+    },
+    "name05": {
+     "word_error": 0.333,
+     "pitch_hz": 307.7,
+     "speaking_s": 1.04
+    }
+   }
+  }
+ },
+ "milena": {
+  "1": {
+   "id": "a1",
+   "label": "London",
+   "describe": "Female, about 25, a London cafe waitress, working-class London accent, quick dry wit, teasing, chirpy but low-key.",
+   "word_error": 0.0,
+   "pitch_hz": 200.0
+  },
+  "2": {
+   "id": "a2",
+   "label": "Irish",
+   "describe": "Female, about 27, soft Irish accent from Dublin, warm teasing lilt, easy and fond, unhurried.",
+   "word_error": 0.0,
+   "pitch_hz": 215.3
+  },
+  "3": {
+   "id": "a3",
+   "label": "Scottish",
+   "describe": "Female, about 26, Glasgow Scottish accent, sharp dry humour, brisk, warm underneath.",
+   "word_error": 0.0,
+   "pitch_hz": 272.7
+  },
+  "4": {
+   "id": "a4",
+   "label": "American",
+   "describe": "Female, about 24, an American diner waitress from New York, fast deadpan wisecracks, bright and a little nasal.",
+   "word_error": 0.0,
+   "pitch_hz": 206.0
+  },
+  "5": {
+   "id": "a5",
+   "label": "Eastern European",
+   "describe": "Female, about 28, light Polish accent in English, low calm voice, dry deadpan humour, fond, slightly formal English.",
+   "word_error": 0.0,
+   "pitch_hz": 210.5
+  }
+ },
+ "larthi_seconds": 44.3,
+ "milena_seconds": 91.0,
+ "picks": {
+  "l1": "l1_s141.wav",
+  "l2": "l2_s150.wav",
+  "l3": "l3_s141.wav",
+  "l4": "l4_s148.wav",
+  "a1": "a1_s144.wav",
+  "a2": "a2_s142.wav",
+  "a3": "a3_s143.wav",
+  "a4": "a4_s144.wav",
+  "a5": "a5_s143.wav"
+ }
+}

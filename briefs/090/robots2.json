@@ -1,0 +1,38 @@
+{
+ "2": {
+  "name": "Robot 2: brass horn with a ring",
+  "misses_alone": "0 of 27",
+  "word_error_alone": 0.0,
+  "misses_fight": "3 of 27",
+  "word_error_fight": 0.052
+ },
+ "a": {
+  "name": "Step a: horn, a quarter machine",
+  "misses_alone": "0 of 27",
+  "word_error_alone": 0.0,
+  "misses_fight": "5 of 27",
+  "word_error_fight": 0.066
+ },
+ "b": {
+  "name": "Step b: half horn, half machine",
+  "misses_alone": "2 of 27",
+  "word_error_alone": 0.046,
+  "misses_fight": "12 of 27",
+  "word_error_fight": 0.188
+ },
+ "c": {
+  "name": "Step c: machine through the horn, a quarter voice",
+  "misses_alone": "3 of 27",
+  "word_error_alone": 0.059,
+  "misses_fight": "15 of 27",
+  "word_error_fight": 0.298
+ },
+ "3": {
+  "name": "Robot 3: mechanical, one fixed pitch",
+  "misses_alone": "2 of 27",
+  "word_error_alone": 0.019,
+  "misses_fight": "6 of 27",
+  "word_error_fight": 0.086
+ },
+ "reel_seconds": 133.2
+}

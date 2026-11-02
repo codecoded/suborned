@@ -117,5 +117,81 @@
    190
   ],
   "describe": "A calm, polite public-address announcer voice, mid pitch, perfectly even and precise, no emotion, measured pace with each word evenly spaced, courteous and unhurried."
+ },
+ "milena_auditions": {
+  "a1": {
+   "band": [
+    165,
+    290
+   ],
+   "label": "London",
+   "describe": "Female, about 25, a London cafe waitress, working-class London accent, quick dry wit, teasing, chirpy but low-key."
+  },
+  "a2": {
+   "band": [
+    165,
+    290
+   ],
+   "label": "Irish",
+   "describe": "Female, about 27, soft Irish accent from Dublin, warm teasing lilt, easy and fond, unhurried."
+  },
+  "a3": {
+   "band": [
+    165,
+    290
+   ],
+   "label": "Scottish",
+   "describe": "Female, about 26, Glasgow Scottish accent, sharp dry humour, brisk, warm underneath."
+  },
+  "a4": {
+   "band": [
+    165,
+    300
+   ],
+   "label": "American",
+   "describe": "Female, about 24, an American diner waitress from New York, fast deadpan wisecracks, bright and a little nasal."
+  },
+  "a5": {
+   "band": [
+    150,
+    260
+   ],
+   "label": "Eastern European",
+   "describe": "Female, about 28, light Polish accent in English, low calm voice, dry deadpan humour, fond, slightly formal English."
+  }
+ },
+ "larthi_options": {
+  "l1": {
+   "band": [
+    200,
+    300
+   ],
+   "label": "Bright and quick",
+   "describe": "Female, early twenties, energetic and chatty, quick bright clear mezzo-soprano, warm and smiling, eager, crisp clear diction."
+  },
+  "l2": {
+   "band": [
+    150,
+    240
+   ],
+   "label": "Husky and lively",
+   "describe": "Female, mid twenties, a low husky raspy alto voice, but lively and talkative, quick and warm, grinning, very clear articulation."
+  },
+  "l3": {
+   "band": [
+    190,
+    300
+   ],
+   "label": "Cheeky and quick",
+   "describe": "Female, about 22, upbeat and talkative, rapid and friendly, a little cheeky, light Mediterranean colouring in her English, clear."
+  },
+  "l4": {
+   "band": [
+    160,
+    280
+   ],
+   "label": "Italian lilt",
+   "describe": "Female, early twenties, a light Italian accent, energetic and chatty, warm, quick musical speech with lots of melody, clear diction, a slightly lower voice."
+  }
  }
 }
