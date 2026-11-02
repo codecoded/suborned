@@ -4,7 +4,7 @@
 
 **Deadline:** 3 November 2026, 23:59 GMT (4 November, 06:59 Bangkok).
 
-**Status:** preparation in progress; the playable-link gate is not yet certified. The labelled evidence walkthrough is hosted unlisted on YouTube.
+**Status:** reassessment in progress. The portrait walkthrough is supporting evidence only; the primary pipeline-run recording, final audit and playable-link gate are outstanding. See [the reassessment](ASSESSMENT.md).
 
 The Suborned is a single-player game of real-time squad tactics and social infiltration in a bright retro-future city. The Handover demo asks the player to take Councillor Popovic alive using a four-person cell. AI content is generated during development; no model runs during play.
 
@@ -12,13 +12,14 @@ The Suborned is a single-player game of real-time squad tactics and social infil
 
 - **Playable game:** https://codecoded.itch.io/the-suborned
 - **Pipeline source:** https://github.com/codecoded/suborned/tree/assignment-07
-- **Pipeline evidence walkthrough (Unlisted):** https://youtu.be/Iyf6Bg8n-Xo (signed-out playback verified; historical AI generation and executed offline export replay are labelled).
-- **One-page audit:** [audit.pdf](audit.pdf), with [HTML source](audit.html).
+- **Primary pipeline-run video:** pending.
+- **Supporting portrait walkthrough (CodeCoded, Unlisted):** https://youtu.be/E2I0FdpXLUk (signed-out playback verified; historical AI generation and executed offline export replay are labelled).
+- **Provisional one-page portrait audit (not the final wider-pipeline audit):** [audit.pdf](audit.pdf), with [HTML source](audit.html).
 - **Original instructions:** [assignment-brief.pdf](assignment-brief.pdf).
 
 The public page was checked anonymously on 3 November (Bangkok). It offered `TheSuborned-0.2.231.zip`, 521 MB, for macOS, and explicitly said its gallery showed 0.2.232. Local evidence below is from build **0.2.232**. Sending that build by Taildrop did not update the public download. No download/first-play timing has been recorded. Apple silicon compatibility is established locally; the marker's machine is unknown. A working landing page alone does not meet the two-minute gate.
 
-## For markers
+## Supporting evidence for markers
 
 The focused pipeline example is **36 live roster portraits**: four agents × nine expressions. The expressions change with the simulation's actual attention, activity, firing and health states. These are production assets already used in the game, not Assignment 6's unintegrated conversation proposals.
 
@@ -52,11 +53,11 @@ It writes only to `out/scratch/a07/portrait-replay/`. The author-machine run rep
 
 The four selected downed options were ring-refined and desaturated to 18% after human selection ([brief 033](../../briefs/033-live-portraits.md)). The original grid exporter does not reproduce that treatment. We document this rather than claim 100% automation. A versioned selection/override manifest, one deterministic override exporter, and a source-asset archive would remove the implementation friction; human aesthetic approval would remain a deliberate gate.
 
-## Video prepared for review
+## Supporting video prepared for review
 
 The author-machine artifact is `out/scratch/a07/video/TheSuborned-A07-pipeline-walkthrough.mp4` (41 seconds). Its [receipt](evidence/video.json) records the SHA-256. It shows a historical generated sheet and actual cost receipts, stdout from a newly executed deterministic export, the production sprite set, the automatic import/build hooks and live gameplay frames from 0.2.232.
 
-Every frame labels this as an **offline replay of historical generation**. It is an annotated evidence walkthrough, not a screen recording of a fresh model call or a new Unity build. It makes no claim about the two-minute first-play gate. Hosted on YouTube as **Unlisted**: https://youtu.be/Iyf6Bg8n-Xo. Playback was verified in an incognito session showing the Sign in button and Unlisted label. If the course requires live model execution on video, this walkthrough is supporting evidence and a new explicitly approved, budgeted generation recording is still needed.
+Every frame labels this as an **offline replay of historical generation**. It is an annotated evidence walkthrough, not a screen recording of a fresh model call or a new Unity build. It makes no claim about the two-minute first-play gate. Hosted on **CodeCoded / @codecoded** as **Unlisted**: https://youtu.be/E2I0FdpXLUk. The previous Gamelovr copy was made Private after the channel mistake was identified. The brief does not explicitly require newly purchased model calls, but this annotated replay is not sufficient primary run evidence. Record one complete production path executing into the engine. New live calls require explicit opt-in and budget guards.
 
 To reproduce on the author machine (retained production sheets, captured gameplay frames, Pillow/OpenCV/NumPy and ffmpeg required):
 
@@ -68,13 +69,14 @@ python3 courses/a07-complete-ai-dev-pipeline/walkthrough.py
 
 - [x] Branch and focused pipeline evidence prepared.
 - [x] Public itch.io project exists and offers a downloadable build.
-- [x] One-page audit PDF rendered and checked; offline evidence walkthrough prepared.
+- [x] Provisional portrait audit PDF rendered and checked; supporting walkthrough prepared.
+- [ ] Final one-page audit aligned with the demonstrated primary pipeline.
 - [ ] Confirm marker's supported platform or provide a compatible build.
 - [ ] Choose the exact submission build and upload it; page, download and evidence must agree.
 - [ ] Record a fresh, timed visit → download → launch → control of the game on another machine, with no development tools or command-line workaround. Pass only at ≤120 seconds.
 - [x] Publish the labelled evidence walkthrough: historical generation, newly executed deterministic exporter, production sprites, automatic Unity import/build hook source, and recorded gameplay state changes. It does not record a fresh model call or a new Unity build.
-- [ ] If the marker requires fresh live generation on video, approve a separate budgeted recording; the offline walkthrough is supporting evidence in that case.
-- [x] Insert the unlisted video URL and verify signed-out playback.
+- [ ] Record a complete production path running into Unity/the player; label archived model responses if used. Obtain explicit opt-in before any new model call.
+- [ ] Insert and verify the primary pipeline-run video URL. The supporting clip has a separate link.
 - [ ] Check repository access while signed out.
 - [ ] Review the one-page audit against the final video and public build, then submit.
 

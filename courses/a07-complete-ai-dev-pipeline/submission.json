@@ -6,7 +6,7 @@
   "deadline_utc": "2026-11-03T23:59:00Z",
   "playable_url": "https://codecoded.itch.io/the-suborned",
   "repository_url": "https://github.com/codecoded/suborned/tree/assignment-07",
-  "pipeline_video_url": "https://youtu.be/Iyf6Bg8n-Xo",
+  "pipeline_video_url": null,
   "local_walkthrough": "out/scratch/a07/video/TheSuborned-A07-pipeline-walkthrough.mp4",
   "walkthrough_kind": "Annotated offline replay of historical AI generation; not a fresh live model recording",
   "audit": "audit.pdf",
@@ -27,8 +27,19 @@
     "compatible marker platform",
     "matching public build and evidence",
     "timed cold-start play test",
-    "signed-out repository access check"
+    "signed-out repository access check",
+    "primary recorded pipeline execution",
+    "final audit matching demonstrated scope"
   ],
-  "pipeline_video_visibility": "unlisted",
-  "video_signed_out_playback_verified": true
+  "supporting_video_url": "https://youtu.be/E2I0FdpXLUk",
+  "supporting_video_channel": "CodeCoded / @codecoded",
+  "supporting_video_visibility": "unlisted",
+  "primary_pipeline_evidence_status": "requires real recorded execution; portrait walkthrough is supporting evidence only",
+  "withdrawn_video": {
+    "url": "https://youtu.be/Iyf6Bg8n-Xo",
+    "channel": "Gamelovr",
+    "visibility": "private",
+    "reason": "wrong channel"
+  },
+  "audit_status": "provisional portrait example; final scope review pending"
 }

@@ -5,9 +5,15 @@
   "type": "annotated evidence walkthrough of real offline exporter execution and historical generation; not a screen recording of fresh AI generation",
   "model_calls_during_video_preparation": 0,
   "game_build": "0.2.232",
-  "public_video_url": "https://youtu.be/Iyf6Bg8n-Xo",
+  "public_video_url": "https://youtu.be/E2I0FdpXLUk",
   "visibility": "unlisted",
-  "youtube_channel": "Gamelovr",
+  "youtube_channel": "CodeCoded / @codecoded",
   "signed_out_playback_verified": true,
-  "youtube_checks": "No issues found"
+  "youtube_checks": "No issues found",
+  "role": "supporting evidence only; not the primary pipeline-run video",
+  "withdrawn_upload": {
+    "url": "https://youtu.be/Iyf6Bg8n-Xo",
+    "channel": "Gamelovr",
+    "visibility": "private"
+  }
 }

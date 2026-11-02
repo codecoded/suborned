@@ -2,7 +2,7 @@
 <style>
 @page{size:A4;margin:16mm}*{box-sizing:border-box}body{font:10pt/1.38 sans-serif;color:#173c3d;margin:0}main{max-width:178mm;margin:auto}h1{font-size:23pt;line-height:1.05;margin:6pt 0 8pt}h2{font-size:11pt;margin:14pt 0 4pt;color:#146b66}p{margin:4pt 0 7pt}.meta{font-size:9pt;color:#536567}.label{font-size:9pt;letter-spacing:1pt;color:#a34430}footer{font-size:8pt;border-top:1px solid #ccd5d2;margin-top:14pt;padding-top:7pt;color:#536567}strong{color:#143536}a{color:inherit}.status{border-left:3px solid #a34430;padding-left:9pt;margin-top:10pt}@media screen{body{background:#f4f0e7;padding:30px}main{background:white;padding:25px;max-width:800px}}@media print{a{text-decoration:none}}
 </style><main>
-<div class="label">ASSIGNMENT 7 / COMPLETE AI DEV PIPELINE</div>
+<div class="label">ASSIGNMENT 7 / PROVISIONAL PORTRAIT AUDIT</div>
 <h1>The Suborned</h1><p class="meta">Sky Rumsey &middot; Unity 6000.6.2f1 &middot; Audit scope: live roster portraits, brief 033</p>
 <h2>01 / Production and functionality</h2>
 <p><strong>Produced:</strong> four agents &times; nine expression sprites = 36 production portraits. Seedream generates reference-conditioned sheets; OpenCV detects the rings; Python crops, masks and exports consistently named PNGs. The build calls <code>KitImport.LivePortraits</code>, which copies and imports sprites automatically. Runtime expressions follow activity, attention, firing and health. All 36 source finals match the tracked Unity assets and local build 0.2.232 inputs.</p>
@@ -16,5 +16,5 @@
 <h2>04 / Mid-project cost reduction</h2>
 <p><strong>Before:</strong> regenerate a 2048&times;2048 nine-state sheet ($0.0963 per call). <strong>After:</strong> request a 2048&times;704 strip with three alternatives only for the rejected downed state ($0.04815 per call). The four actual t5 repair calls totalled $0.19260: <strong>50% less per call</strong>. Scope changed; this is not a per-portrait or equal-work benchmark. The approved strip replaces one state while the other eight are retained.</p>
 <footer>Evidence: <code>evidence/generation-ledger.json</code>, <code>costs.json</code>, <code>integration.json</code>; production scripts under <code>tools/figures/</code>; importer and runtime under <code>unity/Assets/Suborned/</code>. Receipts were migrated from PROVENANCE; timestamps retain their mtime provenance. Original generation is historical; deterministic replay makes no model calls.</footer>
-<p class="meta status">Submission status: public page offers 0.2.231; local evidence is 0.2.232. Evidence walkthrough: <a href="https://youtu.be/Iyf6Bg8n-Xo">https://youtu.be/Iyf6Bg8n-Xo</a> (Unlisted). The &le;120-second cold-start play test remains outstanding.</p>
+<p class="meta status">Submission status: public page offers 0.2.231; local evidence is 0.2.232. Supporting clip (CodeCoded): <a href="https://youtu.be/E2I0FdpXLUk">https://youtu.be/E2I0FdpXLUk</a> (Unlisted). Primary run video, final pipeline scope and the &le;120-second first-play test remain outstanding.</p>
 </main></html>
