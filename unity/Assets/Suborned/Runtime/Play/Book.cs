@@ -7,7 +7,7 @@ namespace Suborned.Play
     /// <summary>Brief 088, the book's page as data: named slots in a fixed order, no positions. Glyph's rule (briefs/085/glyph/book/look3/notes.md, look4/notes.md):
     /// empty slots take no room, and the layout never knows what the content is. `Gear` and `Scales` carry our own agents' kit and stats (Sky, 2026-11-02), so wounds,
     /// gear and what a person gives need no redesign: more rows, the same code.</summary>
-    public enum BookSlot { Hero, Name, Sub, State, FactsHead, Facts, Gear, Ways, Scales, Knows, Can, Track, Others }
+    public enum BookSlot { Hero, Name, Sub, State, FactsHead, Facts, Gear, Weapon, Ways, Scales, Knows, Can, Track, Others }
 
     public sealed class BookFact { public string Icon = "", Word = "", Note = ""; public bool Unknown; }
     public sealed class BookField { public string Icon = "", Text = ""; }
@@ -20,6 +20,13 @@ namespace Suborned.Play
     }
     /// <summary>What someone can do in general: a verb and its one line. No target, price, time or lock, and no click: the ring is the only place to act. The rows depend only on who it is.</summary>
     public sealed class BookCan { public string Id = "", Icon = "", Word = "", Line = ""; }
+    /// <summary>A weapon as the engine fires it (Weapon and the stat sheet), any weapon from data: its word, drawn or not, damage a hit, seconds a shot, hits to down a guard,
+    /// and the chance to hit standing in the open over its three bands. A band with no distance (point blank 0) isn't drawn.</summary>
+    public sealed class BookWeapon
+    {
+        public string Id = "", Word = "", Note = "", Stats = "", ChanceHead = ""; public int Damage, GuardHits; public float EveryS;
+        public readonly List<(float fromM, float toM, int pct)> Bands = new();
+    }
     public sealed class BookScale { public string Word = ""; public int Value, Max; }
     public sealed class BookKnow { public string Icon = "", Face = "", Word = ""; }
     public sealed class BookStop { public string Icon = "", Word = "", Time = ""; public bool Past; }
@@ -31,6 +38,7 @@ namespace Suborned.Play
         public readonly List<BookFact> Facts = new(), Gear = new();
         public readonly List<BookWay> Ways = new();
         public readonly List<BookCan> Can = new();
+        public BookWeapon Weapon;
         public readonly List<BookScale> Scales = new();
         public readonly List<BookKnow> Knows = new();
         public readonly List<BookStop> Track = new();
@@ -53,7 +61,7 @@ namespace Suborned.Play
         /// <summary>A text width in grid px: (text, size, font).</summary>
         public delegate float Measure(string text, float size, string font);
         public struct Item { public BookSlot Slot; public int Index; public Rect At; public float Size, Cy, D; }
-        public sealed class Result { public readonly List<Item> Items = new(); public float Bottom, NameSize, TrackStep, TrackSize; public string[] SubLines = Array.Empty<string>(); public readonly Dictionary<int, string[]> CanLines = new(); public float SubSize = 30f; public int Rows; public bool Has(BookSlot s) { foreach (var i in Items) if (i.Slot == s) return true; return false; } public IEnumerable<Item> Of(BookSlot s) { foreach (var i in Items) if (i.Slot == s) yield return i; } }
+        public sealed class Result { public readonly List<Item> Items = new(); public float Bottom, NameSize, TrackStep, TrackSize; public string[] SubLines = Array.Empty<string>(); public readonly Dictionary<int, string[]> CanLines = new(); public readonly List<(float x0, float x1, float pctX, float mX, string m)> Bar = new(); public float BarY; public float SubSize = 30f; public int Rows; public bool Has(BookSlot s) { foreach (var i in Items) if (i.Slot == s) return true; return false; } public IEnumerable<Item> Of(BookSlot s) { foreach (var i in Items) if (i.Slot == s) yield return i; } }
 
         static readonly (float size, float step, float d)[] One = { (36, 60, 46), (31, 54, 42) }, Two = { (30, 52, 40), (27, 46, 36), (24, 40, 32), (22, 37, 30) };
 
@@ -111,6 +119,19 @@ namespace Suborned.Play
                 var (_, _, size, step, d) = FitFacts(p.Gear, tw);
                 for (int i = 0; i < Mathf.Min(p.Gear.Count, 4); i++) r.Items.Add(new Item { Slot = BookSlot.Gear, Index = i, Size = size, D = d, Cy = y + i * step + d / 2f, At = new Rect(X, y + i * step, W, d) });
                 y += Mathf.Min(p.Gear.Count, 4) * step + 6f;
+            }
+            if (p.Weapon is BookWeapon wpn)
+            {
+                // the weapon: its line (as a fact), the stats line, then the range to scale (20 px a metre, less for a long weapon), each band's chance over it, its metres under
+                r.Items.Add(new Item { Slot = BookSlot.Weapon, Size = 36f, D = 46f, Cy = y + 23f, At = new Rect(X, y, CanW, 190f) });
+                float maxM = 0f; foreach (var b in wpn.Bands) maxM = Mathf.Max(maxM, b.toM); float ppm = maxM > 0f ? Mathf.Min(20f, 640f / maxM) : 20f, bx = X + 2f, lastP = -1e9f, lastM = bx + tw("0", 18f, "Jost-Medium") + 6f;
+                foreach (var b in wpn.Bands)
+                {
+                    float x0 = bx + b.fromM * ppm, x1 = bx + b.toM * ppm, pw = tw(b.pct + "%", 21f, "Jost-SemiBold"), px = Mathf.Max((x0 + x1) / 2f - pw / 2f, lastP + 10f); lastP = px + pw;
+                    string m = Mathf.RoundToInt(b.toM) + " m"; float mw = tw(m, 18f, "Jost-Medium"), mx = Mathf.Max(x1 - mw / 2f, lastM + 8f); lastM = mx + mw;
+                    r.Bar.Add((x0, x1, px, mx, m));
+                }
+                r.BarY = y + 46f + 8f + 32f + 26f + 28f; y += 190f + 8f;
             }
             if (p.Ways.Count > 0)
             {

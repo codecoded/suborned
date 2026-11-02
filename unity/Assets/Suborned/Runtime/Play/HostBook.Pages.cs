@@ -13,7 +13,7 @@ namespace Suborned.Play
     {
         public sealed class End { public string Icon = "", Word = ""; public readonly List<string> Fails = new(); }
         public sealed class Stop { public string Icon = "", Log = ""; }
-        public string Back = "Back", JobName = "", JobSub = "", EndsHead = "", Health = "Health", Reach = "", Drawn = "", Holstered = "";
+        public string Back = "Back", JobName = "", JobSub = "", EndsHead = "", Health = "Health", Reach = "", Drawn = "", Holstered = "", Damage = "", Every = "", Guard = "", Guard1 = "", ChanceHead = "";
         public readonly List<(string id, string icon, string word)> SectionRows = new();
         public readonly List<End> Ends = new();
         public readonly Dictionary<string, Stop> Stops = new();
@@ -34,7 +34,7 @@ namespace Suborned.Play
                 var j = b["job"]; one.JobName = S(j, "name"); one.JobSub = S(j, "sub"); one.EndsHead = S(j, "endsHead");
                 foreach (var x in j["ends"].Items) { var e = new End { Icon = S(x, "icon"), Word = S(x, "word") }; foreach (var f in x["fails"].Items) e.Fails.Add(f.Str()); one.Ends.Add(e); }
                 foreach (var x in j["stops"].Items) one.Stops[S(x, "at")] = new Stop { Icon = S(x, "icon"), Log = S(x, "log") };
-                var c = b["cell"]; one.Health = S(c, "health"); one.Reach = S(c, "reach"); one.Drawn = S(c, "drawn"); one.Holstered = S(c, "holstered");
+                var c = b["cell"]; one.Health = S(c, "health"); one.Reach = S(c, "reach"); one.Drawn = S(c, "drawn"); one.Holstered = S(c, "holstered"); var wd = c["weapon"]; one.Damage = S(wd, "damage"); one.Every = S(wd, "every"); one.Guard = S(wd, "guard"); one.Guard1 = S(wd, "guardOne"); one.ChanceHead = S(wd, "chance");
                 foreach (var kv in c["weapons"].Entries) one.Weapons[kv.Key] = kv.Value.Str();
                 foreach (var kv in c["does"].Entries) one.Does[kv.Key] = (S(kv.Value, "word"), S(kv.Value, "icon"), S(kv.Value, "line"));
             }
@@ -82,20 +82,38 @@ namespace Suborned.Play
         }
 
         /// <summary>The cell page: an agent as the game tracks them: what they're doing, health, weapon and whether it's drawn, how far they watch, and what they can do in general, never on whom (Sky on 0.2.221: "can't scale").</summary>
-        public BookPage BookCellPage(int k)
+        public BookPage BookCellPage(int k, Weapon weapon = null)
         {
             var bw = BookWordsFile.Get(); var g = Game; var op = g.Ops[k]; string role = Op.Name((OpId)k);
             string name = Text != null && Text.Speakers.TryGetValue(role, out var sp) ? sp : role;
             var p = new BookPage { Section = "cell", HeroFace = "portraits/hero_" + role, Name = name, Sub = Text != null && Text.PageCell.TryGetValue(role, out var cl) ? cl : "" };
             var d = DoingOf(k); p.Facts.Add(new BookFact { Icon = op.Down ? "s_downed" : d.Phase is "walking" or "running" ? "s_moving" : HudModel.AtlasIcon(d.Verb, op.Busy?.Approach ?? "", d.Phase), Word = op.Down ? (Text != null && Text.Activity.TryGetValue("down", out var dw) ? dw : "Down") : d.Label });
             if (bw.Reach.Length > 0) p.Facts.Add(new BookFact { Icon = "watch", Word = bw.Reach.Replace("{m}", (g.R.WatchReachCm((OpId)k) / 100).ToString()) });
-            if (op.Gun.W != null) p.Gear.Add(new BookFact { Icon = "fire", Word = bw.Weapons.TryGetValue(op.Gun.W.Id, out var wn) ? wn : op.Gun.W.Id, Note = Drawn(k) ? bw.Drawn : bw.Holstered });
+            p.Weapon = BookWeaponOf(k, weapon);
             p.Scales.Add(new BookScale { Word = bw.Health, Value = op.Gun.Health, Max = op.Gun.Max });
             p.Can.AddRange(BookCanOf(k));
             for (int i = 0; i < 4; i++) if (i != k) { var r = Op.Name((OpId)i); p.Others.Add(new BookOther { Agent = i, Face = $"portraits/portrait_{r}_{(g.Ops[i].Down ? "down" : "normal")}", Word = Text != null && Text.Speakers.TryGetValue(r, out var on) ? on : r }); }
             var vt = views?.Find("op/" + role); bool shown = vt && vt.gameObject.activeInHierarchy;
             p.Subject = shown ? vt.position : frame.World(op.Pos); p.Line = shown; p.SubjectView = "op/" + role;
             return p;
+        }
+
+        /// <summary>The weapon block from the engine's own numbers: the weapon (the agent's, or any weapon given: a future one is data), the draw state, damage, the shot's
+        /// gap in seconds, hits to down a guard (the guard's health / damage), and the chance the engine rolls at each band's far edge, standing, in the open (the stat sheet's
+        /// Sum, the read the fire chip shows; before brief 080 the old per-band accuracy). Nothing per weapon here.</summary>
+        public BookWeapon BookWeaponOf(int k, Weapon w = null)
+        {
+            var g = Game; var op = g.Ops[k]; w ??= op.Gun.W; if (w == null) return null; var bw = BookWordsFile.Get(); var R = g.R;
+            int Pct(long d) => g.Rolled ? R.Sheet.Sum(op.Gun.Aim, R, w, d, Gait.Stand, 1000, false, false).Pct : (int)((d <= R.PointBlankCm ? R.AccPoint : d <= w.EffCm ? R.AccEff : R.AccLong) / 10);
+            var b = new BookWeapon { Id = w.Id, Word = bw.Weapons.TryGetValue(w.Id, out var wn) ? wn : char.ToUpperInvariant(w.Id[0]) + w.Id[1..], Note = w == op.Gun.W ? (Drawn(k) ? bw.Drawn : bw.Holstered) : "", Damage = w.Damage, EveryS = w.Every / (float)Game.Hz, ChanceHead = bw.ChanceHead };
+            int gh = g.GuardGun.Max; b.GuardHits = (gh + w.Damage - 1) / w.Damage;
+            var st = new List<string> { bw.Damage.Replace("{n}", w.Damage.ToString()), bw.Every.Replace("{s}", b.EveryS.ToString("0.0#", System.Globalization.CultureInfo.InvariantCulture)) };
+            if (gh > 0) st.Add(b.GuardHits == 1 ? bw.Guard1 : bw.Guard.Replace("{n}", b.GuardHits.ToString())); b.Stats = string.Join(" · ", st);
+            long pb = Math.Min(R.PointBlankCm, w.EffCm);
+            if (pb > 0) b.Bands.Add((0f, pb / 100f, Pct(pb)));
+            if (w.EffCm > pb) b.Bands.Add((pb / 100f, w.EffCm / 100f, Pct(w.EffCm)));
+            if (w.MaxCm > w.EffCm) b.Bands.Add((w.EffCm / 100f, w.MaxCm / 100f, Pct(w.MaxCm)));
+            return b;
         }
 
         /// <summary>An agent's own verbs, the table the hotbar's plate starts from (Slots: PlateOf only swaps knobs while carrying, so reading the table keeps the rows the same at any place and

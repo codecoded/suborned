@@ -2888,7 +2888,14 @@
    "cell": {
      "health": "Health",
      "reach": "Watches from {m} m",
-     "drawn": "drawn",
+     "weapon": {
+    "damage": "{n} damage a hit",
+    "every": "a shot every {s} s",
+    "guard": "downs a guard in {n} hits",
+    "guardOne": "downs a guard in one hit",
+    "chance": "Chance to hit, standing, in the open"
+   },
+   "drawn": "drawn",
      "holstered": "holstered",
      "weapons": {
        "pistol": "Sidearm",
