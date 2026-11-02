@@ -1,5 +1,5 @@
 {
- "note": "The last words Sky agreed for each scene. listen-inez, help-inez-2 and call-inez: Fable's warmer versions, briefs/085/fable/warmer.json with two wording fixes, agreed 2026-11-01; names renamed for brief 089 (Okafor is Arthur, Zhou is Lukac, Sky 2026-11-02), a rename alone, so the agreement stands. help-inez-1, pressure-inez and pay-driver: r002, agreed 2026-10-31; text.json may now play a newer version marked awaiting-sky, and a generator run with --only reads these as what the player has read. call-inez's opens card: \"Camera off?\" became \"Camera blind?\" on Motive's review in r004, since a Loop also clears the camera; Sky has not read that one change.",
+ "note": "The last words Sky agreed for each scene. listen-inez, help-inez-2 and call-inez: Fable's warmer versions, briefs/085/fable/warmer.json with two wording fixes, agreed 2026-11-01; names renamed for brief 089 (Okafor is Arthur, Zhou is Lukac, Sky 2026-11-02), a rename alone, so the agreement stands. help-inez-1, pressure-inez and pay-driver: r002, agreed 2026-10-31; text.json may now play a newer version marked awaiting-sky, and a generator run with --only reads these as what the player has read. call-inez's opens card: \"Camera off?\" became \"Camera blind?\" on Motive's review in r004, since a Loop also clears the camera; Sky has not read that one change. Plain pass, Sky 2026-11-02 (\"plain version is better\"): help-inez-2, pay-driver, call-inez and call-inez-pressure agreed in their plain wording (briefs/085/fable/plain-pass.md); listen-inez keeps its last agreed words here, since its new line 5 still awaits his read.",
  "from": "runs/conversations/085/r002",
  "scenes": [
   {
@@ -103,11 +103,11 @@
     ],
     [
      "Inez",
-     "Not so loud. I've owed them since my last good shoes."
+     "Not so loud. I've owed them for years."
     ],
     [
      "Fixer",
-     "Then buy shoes first, Miss Nikolaou. We'll wait our turn."
+     "Then take a breath first, Miss Nikolaou. We'll wait our turn."
     ],
     [
      "Inez",
@@ -127,7 +127,7 @@
     ],
     [
      "Inez",
-     "You did bring the rest. I'll say it won't go by telephone."
+     "You kept your word. I'll tell him to come over in person."
     ],
     [
      "Inez",
@@ -189,19 +189,19 @@
    "beats": [
     [
      "Lukac",
-     "You said money, and it's been a lean month. For what, exactly?"
+     "It's paid, then. It's been a lean month. For what, exactly?"
     ],
     [
      "Fixer",
-     "We've paid already. One short drive with the Councillor."
+     "One short drive with the Councillor. You've earned an easy one."
     ],
     [
      "Lukac",
-     "I won't ask who's we. Driving the Councillor's never paid like that."
+     "Easy. I won't ask who you are. Better I don't know."
     ],
     [
      "Fixer",
-     "At the chime he gets in. Not home, the service bay."
+     "At the chime he gets in. Not home. The service bay."
     ],
     [
      "Lukac",
@@ -213,15 +213,15 @@
     ],
     [
      "Lukac",
-     "Been paid for 'not long' before. Couple of minutes, then I drive."
+     "I've heard 'not long' before. A couple of minutes, then I drive."
     ],
     [
      "Fixer",
-     "A couple of minutes, Lukac. We'll be at the service bay."
+     "Fair enough, Lukac. A couple of minutes. We'll be at the bay."
     ],
     [
      "Lukac",
-     "I won't look. Anyone watching the service bay, I can send off."
+     "I won't look. Anyone watching the bay, I can send off."
     ]
    ],
    "learned": [
@@ -248,7 +248,7 @@
     ],
     [
      "Arthur",
-     "Long. This door's said nothing all day. It's good to hear you."
+     "Long. Nobody's come to the door all day. Good to hear you."
     ],
     [
      "Inez",
@@ -272,6 +272,53 @@
    ],
    "opens": [
     "Camera blind? Then enter the Office."
+   ]
+  },
+  {
+   "id": "call-inez-pressure",
+   "beats": [
+    [
+     "Fixer",
+     "It's time, Miss Nikolaou. Call Arthur over."
+    ],
+    [
+     "Inez",
+     "Yes. I said I would. Yes."
+    ],
+    [
+     "Fixer",
+     "You're doing well. Not a word of us to him."
+    ],
+    [
+     "Inez",
+     "It's me, love. How long till your shift ends?"
+    ],
+    [
+     "Arthur",
+     "Too long. You sound done in. What is it?"
+    ],
+    [
+     "Inez",
+     "I've something to tell you. It can't go by telephone."
+    ],
+    [
+     "Arthur",
+     "Can it wait till I'm off? I've this door till then."
+    ],
+    [
+     "Inez",
+     "It can't wait. Please."
+    ],
+    [
+     "Arthur",
+     "It's only a door. All right, I'm coming."
+    ]
+   ],
+   "learned": [
+    "She'll warn him when he arrives."
+   ],
+   "opens": [
+    "Door 1:40. Camera blind? Then enter."
    ]
   }
  ]

@@ -17,7 +17,7 @@ const byId = (id: string) => c.items.find((x) => x.id === id)!;
 const pick = (q: ConversationQuery) => lookupConversation(c, q)?.id;
 const inez = { about: 'waitress', temperament: 'fearful' };
 /** The scenes Sky has read as they play. The rest play too, awaiting his read; approved.json keeps the last words he agreed for them. */
-const AGREED = ['help-inez-2', 'call-inez'], AWAITING = ['listen-inez', 'help-inez-1', 'pressure-inez', 'pay-driver', 'call-inez-pressure'];
+const AGREED = ['help-inez-2', 'pay-driver', 'call-inez', 'call-inez-pressure'], AWAITING = ['listen-inez', 'help-inez-1', 'pressure-inez'];
 const shown = (id: string) => conversationLines(c, byId(id)).map((l) => [l.name, l.text]);
 
 describe('the words', () => {
@@ -28,13 +28,13 @@ describe('the words', () => {
       expect(byId(a.id).learned, a.id).toEqual(a.learned);
       expect(byId(a.id).opens, a.id).toEqual(a.opens);
     }
-    expect(approved.scenes.length).toBe(6);
+    expect(approved.scenes.length).toBe(7);
   });
   test('the scenes he has not read are flagged but gated by nothing; the pressed call ends with the guard coming, and leaves the telling to the street', () => {
     expect(c.items.filter((x) => x.status !== 'agreed').map((x) => x.id).sort()).toEqual([...AWAITING].sort());
     for (const id of AWAITING) expect(lookupConversation(c, { ...byId(id).when, turned: false, helped: id === 'help-inez-2', outcome: byId(id).when.outcome })?.id, id).toBe(id);
     const run = byId('call-inez-pressure');
-    expect(run.status).toBe('awaiting-sky');
+    expect(run.status).toBe('agreed');
     expect(run.beats.at(-1)!.speaker).toBe('guard'); expect(run.beats.at(-1)!.line).toMatch(/I'm coming/);
     expect(run.beats.map((b) => b.line).join(' ')).not.toMatch(/someone knows|suspicious/i);
     expect(run.street!.map((s) => [s.on, s.pressed])).toEqual([['guard.at-cafe', true]]);
@@ -62,9 +62,9 @@ describe('the words', () => {
     const fields = c.items.flatMap((sc) => sc.beats.flatMap((b, i) => { const { speaker: _s, line: _l, ...view } = b; return Object.keys(view).length ? [[sc.id, i + 1, view]] : []; }));
     expect(fields).toEqual([
       ['listen-inez', 5, { lean: 'guard' }],
-      ['listen-inez', 7, { lean: 'did', revealAfter: 'He said nothing, you goose.', revealS: 0.9 }],
+      ['listen-inez', 7, { lean: 'yourself', revealAfter: 'He said nothing.', revealS: 0.9 }],
       ['help-inez-2', 6, { lean: 'Arthur' }],
-      ['help-inez-2', 8, { lean: 'did' }],
+      ['help-inez-2', 8, { lean: 'word' }],
       ['call-inez', 3, { holdBefore: 1.2 }],
       ['call-inez', 6, { lean: 'you' }],
       ['call-inez', 8, { holdAfter: 1.5, holdOn: 'waitress' }],
