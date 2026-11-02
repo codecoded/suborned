@@ -19,3 +19,6 @@ No AI at runtime: lines are voiced at build time and the game plays recordings. 
 
 ## Owners
 Chime (picks, makes, measures) · Fable (lines, if any need a spoken pass) · Sky (his ears).
+
+## Sky's pick (2026-11-02)
+"Service B": Qwen3-TTS VoiceDesign (`alibaba:qwen@3-tts-1.7b-voicedesign`, Apache-2.0), voices built from written descriptions, no clones. Its known faults from the test: some word slips ("Yo, stop right there", "A car's", "Got on camera"), some male parts measured high in pitch (Sethre about 400 Hz, the rival about 310 Hz), 24 kHz output, and no pronunciation control (names respelled).
