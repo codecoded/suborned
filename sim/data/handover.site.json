@@ -3295,7 +3295,7 @@
   },
   "driver": {
    "id": "p-records-office-31",
-   "name": "Mei Zhou",
+   "name": "Aleksander Lukac",
    "temperament": "mercenary",
    "need": "cash",
    "secret": "",
@@ -3303,7 +3303,7 @@
   },
   "guard": {
    "id": "p-records-office-01",
-   "name": "Folake Okafor",
+   "name": "Arthur Reilly",
    "temperament": "mercenary",
    "need": "debt",
    "secret": "affair",
@@ -3311,14 +3311,14 @@
   },
   "councillor": {
    "id": "p-records-office-07",
-   "name": "Efua Vale",
+   "name": "Uros Popovic",
    "temperament": "mercenary",
    "need": "debt",
    "secret": "",
    "lover": ""
   },
   "from": "out/people/harbour-district.people.json",
-  "sha256": "00e804f28c66d72644c2bb9b52396ba0cb20d951084736d02969306fc564fa7b",
+  "sha256": "7f1665f0dee4c06693ecb82cc451dc716b649fa8f47f8ee673a02792d18de836",
   "startsAt": "17:25:30",
   "src": "tools/missions/handover/cast.ts castRoles with { play: true }, as rule M-2 casts it (brief 011, Aster): every role there when needed, tied and placed as mission.json asks"
  },

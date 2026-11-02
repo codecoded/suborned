@@ -15,9 +15,10 @@ import { heldPlaces, inMission } from './posts';
 import { deriveKnowledge } from './knowledge';
 import { withSecrets } from './secrets';
 import { drawNeedRecord, drawSecretRecord, type Needs } from './needs';
-import { pinnedByRole, type Casting } from './roles';
+import { castForNames, pinnedByRole, type Casting } from './roles';
+import { assignNames, type Lists, type Pins } from './names';
 
-export type Ctx = { scope: Scope; rules: Rules; cast: Cast; walk: Walker; planId: string; planVersion: string; atMin: number; hashes: People['inputs']; /** the Handover, to give pinned names by role */ casting?: Casting; /** brief 017: the need kinds and the catalogue; absent, no person draws a record (a pinned older run) */ needs?: Needs };
+export type Ctx = { scope: Scope; rules: Rules; cast: Cast; walk: Walker; planId: string; planVersion: string; atMin: number; hashes: People['inputs']; /** the Handover, to give pinned names by role */ casting?: Casting; /** brief 017: the need kinds and the catalogue; absent, no person draws a record (a pinned older run) */ needs?: Needs; /** brief 089: the real name lists; absent (rules without names.lists, a pinned older run), the names come from the cast's pool */ names?: Lists };
 const KEEPER = 'keeper';
 
 export const rowOf = (cast: Cast, area: string, occupation: string): Row | undefined => cast.rows.find(r => r.area === area && r.occupation === occupation);
@@ -308,13 +309,19 @@ export function expand(c: Ctx): { people: People; gaps: string[]; notes: string[
   }
   const pick = (r: Rng, xs: { name: string }[]) => r.pick(xs).name;
   const pins = rules.names.pinned;
-  const pinned = new Map<string, { given?: string; family?: string }>();
+  const pinned: Pins = new Map();
   for (const [i, hit] of pinnedByRole(persons, c.casting, rules).entries()) {
     const pin = pins[i]!;
-    if (hit.who) pinned.set(hit.who, { ...pinned.get(hit.who), [pin.part]: pin.name });
-    else gaps.push(`pinned name ${pin.name}: the Handover casts nobody as ${pin.position ?? pin.role} of ${pin.employer} (${hit.why})`);
+    if (hit.who) pinned.set(hit.who, { ...pinned.get(hit.who), [pin.part]: pin.name, ...(pin.country ? { country: pin.country } : {}) });
+    else if (!hit.skipped) gaps.push(`pinned name ${pin.name}: the Handover casts nobody as ${pin.position ?? pin.role} of ${pin.employer} (${hit.why})`);
   }
-  for (const a of persons) {
+  if (c.names && rules.names.lists) {
+    // brief 089: real names from the lists, by country, sex (the figure's body), age and family; the pins where the Handover casts them
+    const castRole = new Map<string, string>();
+    if (c.casting) for (const [i, x] of castForNames(persons, c.casting, rules).entries()) if (x.pinned) castRole.set(x.pinned, c.casting.mission.roles[i]!.id);
+    gaps.push(...assignNames(c.names, rules, persons, pinned, castRole, Math.round(c.atMin * 60)));
+  } else for (const a of persons) {
+    if (!cast.names) { gaps.push(`${a.id}: the cast has no name pool and the rules no name lists`); continue; }
     const r = rng(`${a.id}/name`), pin = pinned.get(a.id);
     for (let tries = 0; ; tries++) {
       const full = `${pin?.given ?? pick(r, cast.names.given)} ${pin?.family ?? pick(r, cast.names.family)}`;

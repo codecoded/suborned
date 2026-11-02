@@ -104,7 +104,7 @@ export function checkNeeds(a: { needs: Needs; rules: Rules; cast: Cast; scope: S
   // N-3 labels
   {
     const bad: string[] = [], L = N.label, seenId = new Set<string>(), seenLabel = new Map<string, string>();
-    const names = new Set<string>([...cast.names.given.map(n => n.name), ...cast.names.family.map(n => n.name), ...rules.names.pinned.map(n => n.name)].map(n => n.toLowerCase()));
+    const names = new Set<string>([...(cast.names?.given ?? []).map(n => n.name), ...(cast.names?.family ?? []).map(n => n.name), ...P.flatMap(p => p.name.split(' ')), ...rules.names.pinned.map(n => n.name)].map(n => n.toLowerCase())); // brief 089: with real names the people's own names (no pool in the cast)
     for (const { r } of recs) {
       if (seenId.has(r.id)) bad.push(`record id ${r.id} is used twice`); seenId.add(r.id);
       const w = words(r.label), lw = w.map(x => x.toLowerCase());

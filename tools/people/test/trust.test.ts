@@ -1,4 +1,5 @@
 // What the people file and M-2 trust (Redline H1, M1, 2026-10-15) and what Keel's rulebook reads of the export (keel-rulebook.md point 8).
+import { namesHash } from '../names';
 import { beforeAll, describe, expect, test } from 'bun:test';
 import { cpSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
@@ -32,6 +33,7 @@ describe('the people file carries what it was made from', () => {
     expect(gen.people.inputs).toEqual({
       cast: sha256(JSON.stringify(ctx.cast)), life: sha256(texts.life), block: sha256(texts.block), rules: sha256(texts.rules), mission: sha256(texts.mission), plan: sha256(texts.plan),
       needs: sha256(`${texts.needs!.rules}\n${texts.needs!.catalogue}`), // brief 017: the need kinds and the catalogue
+      names: namesHash(texts.names!), // brief 089: the name lists, their sources, the ban list, the exclusions and the figure files
     });
     expect(People.safeParse(gen.people).success).toBe(true);
     expect(People.safeParse({ ...gen.people, inputs: { ...gen.people.inputs, tools: 'x' } }).success).toBe(true); // `bun run people` adds the tools hash

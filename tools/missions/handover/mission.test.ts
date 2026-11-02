@@ -310,7 +310,7 @@ describe('handover roles', () => {
     expect(c.value).toBe(mission.roles.map(r => `${r.id} ${STANDIN_PINS[r.id]}`).join(', '));
     const name = (id: string) => s.p.persons.find(p => p.id === id)!.name;
     expect(name(STANDIN_PINS.waitress!)).toStartWith('Inez '); // people.rules.json names.pinned: Inez is the waitress the mission casts
-    expect(name(STANDIN_PINS.councillor!)).toEndWith(' Vale');
+    expect(name(STANDIN_PINS.councillor!)).toBe('Uros Popovic'); // brief 089
   });
 
   test('the promoted cast (r016) passes M-2 and pins the people the engine plays', async () => {
@@ -321,7 +321,8 @@ describe('handover roles', () => {
     const site = JSON.parse(await text('sim/data/handover.site.json')).cast; // Keel's engine plays the same people (sim:site, M-2)
     expect(Object.fromEntries(mission.roles.map(r => [r.id, site[r.id].id]))).toEqual(PINS);
     expect(site.waitress.name).toStartWith('Inez '); // people.rules.json names.pinned
-    expect(site.councillor.name).toEndWith(' Vale');
+    expect(site.councillor.name).toBe('Uros Popovic'); // brief 089: the councillor's pinned name
+    expect([site.guard.name, site.driver.name]).toEqual(['Arthur Reilly', 'Aleksander Lukac']);
     expect([site.waitress.temperament, site.waitress.lover, site.guard.lover]).toEqual(['fearful', 'guard', 'waitress']); // r016: a Fearful Inez takes Help ×2 (route A)
   });
 

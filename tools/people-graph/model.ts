@@ -36,6 +36,7 @@ export const PERSON_FIELDS: Record<keyof Person, string> = {
   secret: 'person.secret (the secret lookup; an affair is the lover tie\'s other face, held by both lovers)',
   needRecord: 'not in the graph yet: brief 017 phase 1 adds the record id to the people file only (the engine reads the kind, `need`); a record lookup follows with phase 2',
   secretRecord: 'not in the graph yet: as needRecord',
+  sex: 'not in the graph yet: brief 089 adds it to the people file for the name draw (the figure\'s body)', age: 'not in the graph yet: brief 089, as sex (the decade of birth the given name is drawn from)', origin: 'not in the graph yet: brief 089, as sex (the country of the name lists)',
 };
 
 const by = <T>(key: (x: T) => string) => (a: T, b: T) => (key(a) < key(b) ? -1 : key(a) > key(b) ? 1 : 0);

@@ -59,7 +59,8 @@ export const NamePool = z.object({
 
 export const Cast = z.object({
   schema: z.literal('suborned.cast/1'), scope: word,
-  rows: z.array(Row).min(1).max(24), names: NamePool,
+  rows: z.array(Row).min(1).max(24),
+  names: NamePool.optional().describe('the model-written name pool of a cast before brief 089; rules with names.lists never read it (names come from real lists), so a new cast leaves it out'),
 });
 export type Cast = z.infer<typeof Cast>;
 export type Row = z.infer<typeof Row>;

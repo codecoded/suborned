@@ -1,0 +1,62 @@
+{
+ "schema": "suborned.names.exclusions/1",
+ "by": "Pulse, brief 089",
+ "what": "The read-through of the names drawn for the city (people.rules.json names.lists.exclusions): famous names, words and clashes. An entry is a given or family name (part) that is never drawn; `full` excludes only that pairing. Read again whenever the draws change.",
+ "names": [
+  {
+   "full": "James Jones",
+   "why": "famous: the novelist (From Here to Eternity), and one letter from Jim Jones of Jonestown"
+  },
+  {
+   "name": "España",
+   "part": "family",
+   "why": "a word: reads as \"Spain\" (Joaquin España); a real Spanish surname, but it names the country"
+  },
+  {
+   "name": "Bigot",
+   "part": "family",
+   "why": "an English word, an insult (Julie Bigot); a real French surname"
+  },
+  {
+   "name": "Odd",
+   "part": "given",
+   "why": "an English word (Odd Henriksen); a real Norwegian man's name"
+  },
+  {
+   "name": "Mendoza",
+   "part": "family",
+   "why": "a clash: Desperados III has Hector Mendoza (Fable skipped it for Inez for the same reason)"
+  },
+  {
+   "full": "Brian Wilson",
+   "why": "famous: the Beach Boys' songwriter"
+  },
+  {
+   "full": "David Jones",
+   "why": "famous: David Bowie's birth name, and Davy Jones of the Monkees"
+  },
+  {
+   "full": "Aaron Hernandez",
+   "why": "famous: the American footballer convicted of murder"
+  },
+  {
+   "name": "Riley",
+   "part": "family",
+   "why": "a clash: sounds the same as the door guard, Arthur Reilly, whose name is said in the scenes"
+  },
+  {
+   "full": "George Lopez",
+   "why": "famous: the American comedian"
+  },
+  {
+   "full": "Timothy West",
+   "why": "famous: the English actor"
+  },
+  {
+   "name": "Ferrari",
+   "part": "family",
+   "why": "a clash: the car maker (Michel Ferrari); a real Italian surname in France"
+  }
+ ],
+ "read": "Pulse read the 130 names the Handover's people drew on 2026-11-02 (and again after each change below), for famous bearers, English words and clashes; Fable has not read them yet."
+}

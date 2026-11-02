@@ -143,11 +143,11 @@ describe('mix, knowledge and fields read (P3, P5, P2)', () => {
 });
 
 describe('names are given by role, not by luck', () => {
-  test('Inez and Vale are the people the Handover casts in those roles', () => {
+  test('the pinned names (Inez Nikolaou, Milena Rask, Uros Popovic, Arthur Reilly, Aleksander Lukac) sit on the people the Handover casts in those roles, and Milena on her id', () => {
     const by = pinnedByRole(gen.people.persons, ctx.casting, w.rules), names = w.rules.names.pinned;
     expect(by.every(x => x.who)).toBe(true);
     for (const [i, x] of by.entries()) expect(gen.people.persons.find(q => q.id === x.who)!.name.split(' ')[names[i]!.part === 'given' ? 0 : 1]).toBe(names[i]!.name);
-    expect(by.map(x => x.role)).toEqual(['waitress', 'councillor']);
+    expect(by.map(x => x.role ?? 'by id')).toEqual(['waitress', 'waitress', 'by id', 'by id', 'councillor', 'councillor', 'guard', 'guard', 'driver', 'driver']);
   });
   test('a mission that pins another waitress moves the name to her (it breaks if the expander goes back to choosing by order)', () => {
     const cast = castHandover(gen.people.persons, w.scope, w.mission, w.plan, w.rules), other = cast[0]!.who.find(id => id !== cast[0]!.pinned)!;
@@ -208,6 +208,6 @@ describe('the Handover', () => {
     const inez = gen.people.persons.filter(p => p.name.startsWith('Inez '));
     expect(inez).toHaveLength(1);
     expect(c[0]!.who).toContain(inez[0]!.id);
-    expect(gen.people.persons.filter(p => p.name.endsWith(' Vale') && p.work?.role === 'councillor')).toHaveLength(1);
+    expect(gen.people.persons.filter(p => p.name === 'Uros Popovic' && p.work?.role === 'councillor')).toHaveLength(1);
   });
 });

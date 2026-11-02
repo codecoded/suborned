@@ -35,7 +35,7 @@ const clone = <X>(x: X): X => JSON.parse(JSON.stringify(x));
 beforeAll(async () => {
   const w = world(await readTexts(PLAN), 'civic-block'), cast = Cast.parse(JSON.parse(readFileSync(join(root, 'tools/people/test/handover-fix.cast.json'), 'utf8')));
   LOVERS = People.parse(JSON.parse(JSON.stringify(expandPeople(w.ctx(cast)).people)));
-  P = { text: JSON.stringify(LOVERS, null, 1) + '\n', pool: [...cast.names.given, ...cast.names.family].map(n => n.name) };
+  P = { text: JSON.stringify(LOVERS, null, 1) + '\n', pool: [...new Set([...(cast.names ? [...cast.names.given, ...cast.names.family].map(n => n.name) : []), ...LOVERS.persons.flatMap(p => p.name.split(' '))])] };
   T = parseTexts(await readTexts_({ people: P.text, names: P.pool }));
   text = await readText();
 });

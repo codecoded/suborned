@@ -14,5 +14,5 @@ export async function peopleOf(planFile: string): Promise<{ text: string; pool: 
   if (!promo.ok) throw new Error(`the promoted cast of ${w.plan.id} does not hold: ${promo.problems.join('; ')}`);
   const cast = Cast.parse(JSON.parse(promo.castText!)), gen = expand(w.ctx(cast));
   const written = { ...gen.people, inputs: { ...gen.people.inputs, tools: await peopleHash() } };
-  return { text: JSON.stringify(written, null, 1) + '\n', pool: [...cast.names.given, ...cast.names.family].map(n => n.name), plan: { id: w.plan.id, version: w.plan.version } };
+  return { text: JSON.stringify(written, null, 1) + '\n', pool: [...new Set([...(cast.names ? [...cast.names.given, ...cast.names.family].map(n => n.name) : []), ...gen.people.persons.flatMap(p => p.name.split(' '))])], plan: { id: w.plan.id, version: w.plan.version } };
 }

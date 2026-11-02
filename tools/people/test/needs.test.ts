@@ -161,7 +161,7 @@ describe('checker rules N-1..N-8 pass on the real inputs and fail on their examp
     expect(lab('Loan 7')).toContain('N-3');
     expect(lab('Brother held')).toContain('N-3'); // gendered
     expect(lab('Wartime loan')).toContain('N-3'); // era
-    expect(lab(`${promoted.cast.names.given[0]!.name} loan`)).toContain('N-3'); // a name from the pool
+    expect(lab(`${promoted.cast.names!.given[0]!.name} loan`)).toContain('N-3'); // a name from the pool
     expect(lab('Pinned Inez')).toContain('N-3'); // a pinned name
     expect(lab('bureau loan')).toContain('N-3'); // case
     expect(lab('')).toContain('N-3');

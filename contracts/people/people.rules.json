@@ -207,7 +207,7 @@
         "direction": "both", "maxPerPerson": 4, "between": "any", "introduces": true,
         "src": "§04 between missions: introduces a friend (new contact); arrested (lost unless freed)",
         "proposed": true,
-        "reason": "limit 4 [S]. Family may live apart and need not share a family name (a mixed cast, §15)."
+        "reason": "limit 4 [S]. Family may live apart; they share one family name (names.lists.families, Sky 2026-11-02, brief 089)."
       },
       "workmate": {
         "direction": "both", "maxPerPerson": 3, "between": "same-employer", "introduces": true,
@@ -434,23 +434,49 @@
   },
   "names": {
     "scope": "district",
-    "pool": "one pool per district, carried by the cast tables (brief 010 B); every simulated person's given and family name come from it",
+    "pool": "real names (brief 089, Sky: \"why can't they be a bit more normal\"): every simulated person's given and family name are drawn from the national frequency lists of one country (`lists`), by sex and decade of birth; the cast tables' old pools are no longer read",
     "form": { "parts": ["given", "family"], "pattern": "^\\p{Lu}[\\p{L}'-]{1,15}$" },
     "noEraDate": "no digits, years, dates, generational suffixes (Jr, Sr, II, III) or titles in a name; the pattern forbids them",
     "avoid": ["Betty", "Peggy", "Dottie", "Dolores", "Mabel", "Gertrude", "Hank", "Buddy", "Butch", "Biff", "Skip", "Sonny", "Junior", "Chester", "Elmer"],
-    "minGiven": 60,
-    "minFamily": 80,
-    "origins": ["anglo", "celtic", "french", "iberian", "italian", "germanic", "nordic", "slavic", "greek", "levantine", "arabic", "persian", "turkish", "west-african", "east-african", "south-asian", "east-asian", "southeast-asian", "polynesian", "caribbean", "latin-american"],
+    "minGiven": 20,
+    "minFamily": 300,
+    "origins": ["us", "fr", "es", "no", "se", "pl"],
     "minOrigins": 6,
     "maxOriginShare": 0.25,
     "uniqueFullName": true,
     "background": "unnamed",
     "pinned": [
-      { "part": "given", "name": "Inez", "position": "server", "employer": "cafe", "src": "§07 cast: Inez (café waitress, in debt)" },
-      { "part": "family", "name": "Vale", "role": "councillor", "employer": "records-office", "src": "§07 cast: Councillor Vale" }
+      { "part": "given", "name": "Inez", "position": "server", "employer": "cafe", "country": "se", "src": "§07 cast: Inez (café waitress, in debt); Sky 2026-11-02 (brief 089): Inez keeps her name" },
+      { "part": "family", "name": "Nikolaou", "position": "server", "employer": "cafe", "country": "se", "src": "brief 089: Inez keeps her surname; Inez and Nikolaou are both borne in Sweden (sources.json se.pins) and in the US" },
+      { "part": "given", "name": "Milena", "position": "server", "employer": "cafe", "person": "p-cafe-12", "country": "se", "src": "brief 089: Milena keeps her name; she is the listen partner mission.json names (Milena Rask, p-cafe-12 by tools/missions/handover/mission.test.ts), whom no mission role casts" },
+      { "part": "family", "name": "Rask", "position": "server", "employer": "cafe", "person": "p-cafe-12", "country": "se", "src": "brief 089: Milena keeps her surname; Milena and Rask are both borne in Sweden (sources.json se.pins)" },
+      { "part": "given", "name": "Uros", "role": "councillor", "employer": "records-office", "country": "se", "src": "§07 cast: the Councillor; brief 089 (Sky did not object to Fable's draw): Councillor Uros Popovic" },
+      { "part": "family", "name": "Popovic", "role": "councillor", "employer": "records-office", "country": "se", "src": "brief 089: Councillor Uros Popovic; both borne in Sweden (sources.json se.pins)" },
+      { "part": "given", "name": "Arthur", "role": "guard", "employer": "records-office", "country": "se", "src": "§07 cast: the door guard; brief 089: Arthur Reilly" },
+      { "part": "family", "name": "Reilly", "role": "guard", "employer": "records-office", "country": "se", "src": "brief 089: the door guard Arthur Reilly; both borne in Sweden (sources.json se.pins) and in the US" },
+      { "part": "given", "name": "Aleksander", "role": "official-driver", "employer": "records-office", "country": "se", "src": "§07 cast: the driver; brief 089: Aleksander Lukac" },
+      { "part": "family", "name": "Lukac", "role": "official-driver", "employer": "records-office", "country": "se", "src": "brief 089: the driver Aleksander Lukac; both borne in Sweden (sources.json se.pins)" }
     ],
-    "src": "§15 people: people prompts carry no era date; mixed cast (ages, builds, ethnicities); brief 010 A: a pool per district, no era date, a mixed cast",
+    "lists": {
+      "dir": "contracts/people/names",
+      "countries": { "us": { "weight": 1 }, "fr": { "weight": 1 }, "es": { "weight": 1 }, "no": { "weight": 1 }, "se": { "weight": 1 }, "pl": { "weight": 1 } },
+      "skipTop": 3,
+      "banList": "contracts/people/llm-name-ban-list.json",
+      "exclusions": "contracts/people/names/exclusions.json",
+      "ageReference": 2026,
+      "ages": {
+        "default": [22, 62],
+        "byPosition": { "resident": [20, 84], "keeper": [30, 66], "councillor": [52, 66], "guard": [24, 58] },
+        "byFigure": { "el1": [66, 84] }
+      },
+      "sex": "figure",
+      "families": "share",
+      "src": "brief 089, Sky 2026-11-02: the city gets normal names, as GTA and Desperados III do, drawn from real frequency lists by origin, sex and age, never by a model; families share a surname (\"sure - family name makes it more a real city\")",
+      "proposed": true,
+      "reason": "A person (or a family) is drawn one country by weight, then a given name from that country's list for their sex and decade of birth (age counted back from ageReference) and a family name from the same country's list, each weighted by how common it is, the top 3 of each list never drawn, nor any name on the ban list, the exclusions or the avoid list, nor a pinned name. Sex is the body of the figure the host dresses the person in, so a name fits the figure the player sees. Ages: the default working band, residents to old age, the councillor older (his portrait is grey), the elder figure EL1 66 and up. Everyone a family tie joins carries the family's one name and country; the data has no spouse tie, so spouses share it too (the custom of five of the six countries; in Spain a wife keeps hers, but the city shows one surname). Draws are by the person's id and the family's (its first member's id), so the same people get the same names."
+    },
+    "src": "§15 people: people prompts carry no era date; mixed cast (ages, builds, ethnicities); brief 010 A: a pool per district, no era date, a mixed cast; brief 089",
     "proposed": true,
-    "reason": "the GDD gives the principle, not the numbers. Each pool entry is tagged with one origin from the closed list; ≥ 6 origins and no origin over a quarter of a pool make a mixed cast checkable. 60 × 80 = 4,800 full names keeps every simulated person in a district unique. The avoid list holds names that date a person to 1950s Americana (the §15 failure in names). Pinned: the GDD names Inez and Vale, so the person the Handover pins by role takes that name part; no other name is ever authored."
+    "reason": "the GDD gives the principle, not the numbers. Each person is drawn one of the closed list's countries; ≥ 6 countries and no country over a quarter of the people keep the cast mixed. Each country list keeps at least minGiven given names per sex and decade and minFamily family names after the skips. The avoid list holds names that date a person to 1950s Americana (the §15 failure in names). Pinned: the five named people (Sky, brief 089) take their names on whoever the Handover casts in the role (or, for Milena, the person the mission's listen partner is); no other name is ever authored."
   }
 }

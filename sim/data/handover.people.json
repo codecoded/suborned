@@ -204,7 +204,7 @@
  "people": [
   {
    "id": "p-cafe-01",
-   "name": "Ariadne Holm",
+   "name": "Rose Reynaud",
    "job": "cook",
    "temperament": "idealist",
    "need": "cash",
@@ -219,7 +219,7 @@
   },
   {
    "id": "p-cafe-02",
-   "name": "Ariadne Dahl",
+   "name": "Florence Roland",
    "job": "server",
    "temperament": "idealist",
    "need": "cash",
@@ -234,7 +234,7 @@
   },
   {
    "id": "p-cafe-03",
-   "name": "Anika Nasser",
+   "name": "Terri Salinas",
    "job": "keeper",
    "temperament": "idealist",
    "need": "cash",
@@ -249,7 +249,7 @@
   },
   {
    "id": "p-cafe-04",
-   "name": "Anders Haddad",
+   "name": "Cecilie Solheim",
    "job": "server",
    "temperament": "fearful",
    "need": "debt",
@@ -264,7 +264,7 @@
   },
   {
    "id": "p-cafe-05",
-   "name": "Freya Antoniou",
+   "name": "Ana Serna",
    "job": "server",
    "temperament": "mercenary",
    "need": "debt",
@@ -279,7 +279,7 @@
   },
   {
    "id": "p-cafe-06",
-   "name": "Omar Ekman",
+   "name": "Cathrine Kvam",
    "job": "cook",
    "temperament": "idealist",
    "need": "cash",
@@ -294,7 +294,7 @@
   },
   {
    "id": "p-cafe-07",
-   "name": "Sanjay Holm",
+   "name": "Julie Guerin",
    "job": "server",
    "temperament": "loyal",
    "need": "debt",
@@ -309,7 +309,7 @@
   },
   {
    "id": "p-cafe-08",
-   "name": "Eleni Vidal",
+   "name": "Kristy Davis",
    "job": "cook",
    "temperament": "mercenary",
    "need": "cash",
@@ -324,7 +324,7 @@
   },
   {
    "id": "p-cafe-09",
-   "name": "Amara Thorsen",
+   "name": "Elsa Nilsson",
    "job": "cook",
    "temperament": "loyal",
    "need": "care",
@@ -339,7 +339,7 @@
   },
   {
    "id": "p-cafe-10",
-   "name": "Mateo Rao",
+   "name": "Michelle Bennett",
    "job": "cook",
    "temperament": "idealist",
    "need": "cash",
@@ -354,7 +354,7 @@
   },
   {
    "id": "p-cafe-11",
-   "name": "Astrid Dimitriou",
+   "name": "Laura Payet",
    "job": "server",
    "temperament": "idealist",
    "need": "papers",
@@ -384,7 +384,7 @@
   },
   {
    "id": "p-cafe-13",
-   "name": "Joaquin Holm",
+   "name": "Sonia Gimeno",
    "job": "cook",
    "temperament": "mercenary",
    "need": "advancement",
@@ -414,7 +414,7 @@
   },
   {
    "id": "p-cafe-15",
-   "name": "Jiyeon Kimura",
+   "name": "Ann Nilsson",
    "job": "server",
    "temperament": "loyal",
    "need": "care",
@@ -429,7 +429,7 @@
   },
   {
    "id": "p-cafe-16",
-   "name": "Arjun Nyholm",
+   "name": "Emilia Mazurek",
    "job": "server",
    "temperament": "loyal",
    "need": "cash",
@@ -444,7 +444,7 @@
   },
   {
    "id": "p-cafe-17",
-   "name": "Haruto Lin",
+   "name": "Aude Foucault",
    "job": "cook",
    "temperament": "loyal",
    "need": "cash",
@@ -459,7 +459,7 @@
   },
   {
    "id": "p-cafe-18",
-   "name": "Pilar Zhou",
+   "name": "Kristine Jørgensen",
    "job": "cook",
    "temperament": "fearful",
    "need": "papers",
@@ -474,7 +474,7 @@
   },
   {
    "id": "p-cafe-19",
-   "name": "Tomas Iyer",
+   "name": "Yolanda Flores",
    "job": "server",
    "temperament": "idealist",
    "need": "debt",
@@ -489,7 +489,7 @@
   },
   {
    "id": "p-cafe-20",
-   "name": "Daphne Castillo",
+   "name": "Gunhild Danielsen",
    "job": "server",
    "temperament": "loyal",
    "need": "debt",
@@ -504,7 +504,7 @@
   },
   {
    "id": "p-cafe-21",
-   "name": "Layla Sokol",
+   "name": "Laura Mellado",
    "job": "server",
    "temperament": "idealist",
    "need": "debt",
@@ -519,7 +519,7 @@
   },
   {
    "id": "p-cafe-22",
-   "name": "Soren Pappas",
+   "name": "Maja Grochowska",
    "job": "server",
    "temperament": "mercenary",
    "need": "cash",
@@ -534,7 +534,7 @@
   },
   {
    "id": "p-cafe-23",
-   "name": "Haruto Mensah",
+   "name": "Natasha Wyatt",
    "job": "cook",
    "temperament": "fearful",
    "need": "papers",
@@ -549,7 +549,7 @@
   },
   {
    "id": "p-cafe-24",
-   "name": "Minho Zhou",
+   "name": "Antonia Quintana",
    "job": "server",
    "temperament": "mercenary",
    "need": "debt",
@@ -564,7 +564,7 @@
   },
   {
    "id": "p-garden-row-east-01",
-   "name": "Arjun Nair",
+   "name": "Daniel Olczyk",
    "job": "resident",
    "temperament": "fearful",
    "need": "housing",
@@ -579,7 +579,7 @@
   },
   {
    "id": "p-garden-row-east-02",
-   "name": "Omar Sokol",
+   "name": "Adrian Frąckowiak",
    "job": "resident",
    "temperament": "idealist",
    "need": "debt",
@@ -594,7 +594,7 @@
   },
   {
    "id": "p-garden-row-east-03",
-   "name": "Soren Mavros",
+   "name": "Anne Caillet",
    "job": "resident",
    "temperament": "mercenary",
    "need": "cash",
@@ -609,7 +609,7 @@
   },
   {
    "id": "p-garden-row-east-04",
-   "name": "Mateo Salazar",
+   "name": "Marine Leclere",
    "job": "resident",
    "temperament": "fearful",
    "need": "debt",
@@ -624,7 +624,7 @@
   },
   {
    "id": "p-garden-row-east-05",
-   "name": "Leif Mavros",
+   "name": "Lisa Caillet",
    "job": "resident",
    "temperament": "mercenary",
    "need": "cash",
@@ -639,7 +639,7 @@
   },
   {
    "id": "p-garden-row-east-06",
-   "name": "Idris Castillo",
+   "name": "Magdalena Olczyk",
    "job": "resident",
    "temperament": "loyal",
    "need": "cash",
@@ -654,7 +654,7 @@
   },
   {
    "id": "p-garden-row-east-07",
-   "name": "Thea Zhou",
+   "name": "Oleh Frąckowiak",
    "job": "resident",
    "temperament": "fearful",
    "need": "housing",
@@ -669,7 +669,7 @@
   },
   {
    "id": "p-garden-row-east-08",
-   "name": "Sigrid Ferrer",
+   "name": "Christina Lindqvist",
    "job": "resident",
    "temperament": "mercenary",
    "need": "cash",
@@ -684,7 +684,7 @@
   },
   {
    "id": "p-pylon-row-east-01",
-   "name": "Katya Osei",
+   "name": "Brian Lopez",
    "job": "resident",
    "temperament": "mercenary",
    "need": "cash",
@@ -699,7 +699,7 @@
   },
   {
    "id": "p-pylon-row-east-02",
-   "name": "Daphne Zhou",
+   "name": "Alfred Lopez",
    "job": "resident",
    "temperament": "idealist",
    "need": "cash",
@@ -714,7 +714,7 @@
   },
   {
    "id": "p-pylon-row-east-03",
-   "name": "Nils Mavros",
+   "name": "Janet Lopez",
    "job": "resident",
    "temperament": "mercenary",
    "need": "debt",
@@ -729,7 +729,7 @@
   },
   {
    "id": "p-pylon-row-east-04",
-   "name": "Nils Mendes",
+   "name": "William Lopez",
    "job": "resident",
    "temperament": "idealist",
    "need": "care",
@@ -744,7 +744,7 @@
   },
   {
    "id": "p-pylon-row-east-05",
-   "name": "Wei Salazar",
+   "name": "Kelly Gauthier",
    "job": "resident",
    "temperament": "mercenary",
    "need": "cash",
@@ -759,7 +759,7 @@
   },
   {
    "id": "p-pylon-row-east-06",
-   "name": "Joaquin Bergstrom",
+   "name": "Catherine Gauthier",
    "job": "resident",
    "temperament": "mercenary",
    "need": "debt",
@@ -774,7 +774,7 @@
   },
   {
    "id": "p-pylon-row-east-07",
-   "name": "Tomasz Cheng",
+   "name": "Amber Lopez",
    "job": "resident",
    "temperament": "fearful",
    "need": "housing",
@@ -789,7 +789,7 @@
   },
   {
    "id": "p-pylon-row-east-08",
-   "name": "Meera Salazar",
+   "name": "Gail Lopez",
    "job": "resident",
    "temperament": "idealist",
    "need": "debt",
@@ -804,7 +804,7 @@
   },
   {
    "id": "p-records-office-01",
-   "name": "Folake Okafor",
+   "name": "Arthur Reilly",
    "job": "guard",
    "temperament": "mercenary",
    "need": "debt",
@@ -819,7 +819,7 @@
   },
   {
    "id": "p-records-office-02",
-   "name": "Tariq Nwosu",
+   "name": "Janina Piątkowska",
    "job": "clerk",
    "temperament": "loyal",
    "need": "papers",
@@ -834,7 +834,7 @@
   },
   {
    "id": "p-records-office-03",
-   "name": "Freya Farouk",
+   "name": "Nicolas Viaud",
    "job": "clerk",
    "temperament": "idealist",
    "need": "debt",
@@ -849,7 +849,7 @@
   },
   {
    "id": "p-records-office-04",
-   "name": "Tomasz Iyer",
+   "name": "Silvia Romero",
    "job": "clerk",
    "temperament": "mercenary",
    "need": "cash",
@@ -864,7 +864,7 @@
   },
   {
    "id": "p-records-office-05",
-   "name": "Meera Castillo",
+   "name": "Pedro Font",
    "job": "clerk",
    "temperament": "loyal",
    "need": "papers",
@@ -879,7 +879,7 @@
   },
   {
    "id": "p-records-office-06",
-   "name": "Omar Vlahos",
+   "name": "Sandrine Besson",
    "job": "clerk",
    "temperament": "loyal",
    "need": "care",
@@ -894,7 +894,7 @@
   },
   {
    "id": "p-records-office-07",
-   "name": "Efua Vale",
+   "name": "Uros Popovic",
    "job": "councillor",
    "temperament": "mercenary",
    "need": "debt",
@@ -909,7 +909,7 @@
   },
   {
    "id": "p-records-office-08",
-   "name": "Costas Danso",
+   "name": "Lidia Aranda",
    "job": "clerk",
    "temperament": "idealist",
    "need": "advancement",
@@ -924,7 +924,7 @@
   },
   {
    "id": "p-records-office-09",
-   "name": "Pilar Salazar",
+   "name": "Daniel Stein",
    "job": "clerk",
    "temperament": "idealist",
    "need": "advancement",
@@ -939,7 +939,7 @@
   },
   {
    "id": "p-records-office-10",
-   "name": "Elena Sundberg",
+   "name": "Michał Sosnowski",
    "job": "clerk",
    "temperament": "loyal",
    "need": "cash",
@@ -954,7 +954,7 @@
   },
   {
    "id": "p-records-office-11",
-   "name": "Folake Fujita",
+   "name": "Agnes Jansson",
    "job": "clerk",
    "temperament": "loyal",
    "need": "debt",
@@ -969,7 +969,7 @@
   },
   {
    "id": "p-records-office-12",
-   "name": "Chidi Halvorsen",
+   "name": "Bartosz Szewczyk",
    "job": "clerk",
    "temperament": "mercenary",
    "need": "cash",
@@ -984,7 +984,7 @@
   },
   {
    "id": "p-records-office-13",
-   "name": "Astrid Eriksen",
+   "name": "Karolina Skrzypczak",
    "job": "clerk",
    "temperament": "loyal",
    "need": "care",
@@ -999,7 +999,7 @@
   },
   {
    "id": "p-records-office-14",
-   "name": "Marisol Castillo",
+   "name": "David Perez",
    "job": "clerk",
    "temperament": "loyal",
    "need": "advancement",
@@ -1014,7 +1014,7 @@
   },
   {
    "id": "p-records-office-15",
-   "name": "Nadia Nair",
+   "name": "Jolanta Mazurek",
    "job": "clerk",
    "temperament": "loyal",
    "need": "papers",
@@ -1029,7 +1029,7 @@
   },
   {
    "id": "p-records-office-16",
-   "name": "Kofi Adeyemi",
+   "name": "Karl Moberg",
    "job": "clerk",
    "temperament": "mercenary",
    "need": "debt",
@@ -1044,7 +1044,7 @@
   },
   {
    "id": "p-records-office-17",
-   "name": "Ravi Diallo",
+   "name": "Emeline Robin",
    "job": "clerk",
    "temperament": "fearful",
    "need": "papers",
@@ -1059,7 +1059,7 @@
   },
   {
    "id": "p-records-office-18",
-   "name": "Elena Han",
+   "name": "Michał Górniak",
    "job": "clerk",
    "temperament": "mercenary",
    "need": "cash",
@@ -1074,7 +1074,7 @@
   },
   {
    "id": "p-records-office-19",
-   "name": "Abena Tanaka",
+   "name": "Amandine Weiss",
    "job": "clerk",
    "temperament": "mercenary",
    "need": "advancement",
@@ -1089,7 +1089,7 @@
   },
   {
    "id": "p-records-office-20",
-   "name": "Sigrid Sato",
+   "name": "Tammy Hensley",
    "job": "clerk",
    "temperament": "loyal",
    "need": "care",
@@ -1104,7 +1104,7 @@
   },
   {
    "id": "p-records-office-21",
-   "name": "Ingrid Roldan",
+   "name": "Fredrik Lien",
    "job": "clerk",
    "temperament": "idealist",
    "need": "care",
@@ -1119,7 +1119,7 @@
   },
   {
    "id": "p-records-office-22",
-   "name": "Zora Vidal",
+   "name": "Monika Żurek",
    "job": "clerk",
    "temperament": "mercenary",
    "need": "debt",
@@ -1134,7 +1134,7 @@
   },
   {
    "id": "p-records-office-23",
-   "name": "Kofi Nwosu",
+   "name": "Ryszard Jastrzębski",
    "job": "clerk",
    "temperament": "loyal",
    "need": "advancement",
@@ -1149,7 +1149,7 @@
   },
   {
    "id": "p-records-office-24",
-   "name": "Milena Novak",
+   "name": "Yolanda Romero",
    "job": "clerk",
    "temperament": "loyal",
    "need": "advancement",
@@ -1164,7 +1164,7 @@
   },
   {
    "id": "p-records-office-25",
-   "name": "Tomas Pappas",
+   "name": "Sergio Fernandez",
    "job": "clerk",
    "temperament": "idealist",
    "need": "cash",
@@ -1179,7 +1179,7 @@
   },
   {
    "id": "p-records-office-26",
-   "name": "Sakura Cabrera",
+   "name": "Nikola Żebrowska",
    "job": "clerk",
    "temperament": "loyal",
    "need": "care",
@@ -1194,7 +1194,7 @@
   },
   {
    "id": "p-records-office-27",
-   "name": "Efua Desai",
+   "name": "Evan Marc",
    "job": "clerk",
    "temperament": "mercenary",
    "need": "debt",
@@ -1209,7 +1209,7 @@
   },
   {
    "id": "p-records-office-28",
-   "name": "Joaquin Georgiou",
+   "name": "Carina Fransson",
    "job": "clerk",
    "temperament": "idealist",
    "need": "debt",
@@ -1224,7 +1224,7 @@
   },
   {
    "id": "p-records-office-29",
-   "name": "Anton Navarro",
+   "name": "Trond Meling",
    "job": "guard",
    "temperament": "mercenary",
    "need": "debt",
@@ -1239,7 +1239,7 @@
   },
   {
    "id": "p-records-office-30",
-   "name": "Elena Mendes",
+   "name": "James Lopez",
    "job": "guard",
    "temperament": "mercenary",
    "need": "advancement",
@@ -1254,7 +1254,7 @@
   },
   {
    "id": "p-records-office-31",
-   "name": "Mei Zhou",
+   "name": "Aleksander Lukac",
    "job": "official-driver",
    "temperament": "mercenary",
    "need": "cash",
@@ -1269,7 +1269,7 @@
   },
   {
    "id": "p-records-office-32",
-   "name": "Lian Park",
+   "name": "Eduardo Gimeno",
    "job": "clerk",
    "temperament": "fearful",
    "need": "papers",
@@ -1284,7 +1284,7 @@
   },
   {
    "id": "p-records-office-33",
-   "name": "Anton Halvorsen",
+   "name": "Julia Sandström",
    "job": "clerk",
    "temperament": "idealist",
    "need": "advancement",
@@ -1299,7 +1299,7 @@
   },
   {
    "id": "p-records-office-34",
-   "name": "Abena Georgiou",
+   "name": "Juan Lopez",
    "job": "clerk",
    "temperament": "loyal",
    "need": "advancement",
@@ -1314,7 +1314,7 @@
   },
   {
    "id": "p-records-office-35",
-   "name": "Ravi Lin",
+   "name": "Carmen Arana",
    "job": "clerk",
    "temperament": "idealist",
    "need": "cash",
@@ -1329,7 +1329,7 @@
   },
   {
    "id": "p-records-office-36",
-   "name": "Abena Boateng",
+   "name": "Jørn Andersen",
    "job": "guard",
    "temperament": "mercenary",
    "need": "cash",
@@ -1344,7 +1344,7 @@
   },
   {
    "id": "p-records-office-37",
-   "name": "Irina Salazar",
+   "name": "Elisabeth Andersen",
    "job": "clerk",
    "temperament": "mercenary",
    "need": "debt",
@@ -1359,7 +1359,7 @@
   },
   {
    "id": "p-records-office-38",
-   "name": "Kavya Banerjee",
+   "name": "Marian Olczyk",
    "job": "clerk",
    "temperament": "loyal",
    "need": "advancement",
@@ -1374,7 +1374,7 @@
   },
   {
    "id": "p-records-office-39",
-   "name": "Costas Kamara",
+   "name": "Ronald Ramos",
    "job": "guard",
    "temperament": "mercenary",
    "need": "debt",
@@ -1389,7 +1389,7 @@
   },
   {
    "id": "p-records-office-40",
-   "name": "Elena Diallo",
+   "name": "Patricia Jackson",
    "job": "clerk",
    "temperament": "mercenary",
    "need": "advancement",
@@ -1404,7 +1404,7 @@
   },
   {
    "id": "p-records-office-41",
-   "name": "Anton Mori",
+   "name": "Christian Solli",
    "job": "clerk",
    "temperament": "mercenary",
    "need": "cash",
@@ -1419,7 +1419,7 @@
   },
   {
    "id": "p-records-office-42",
-   "name": "Sakura Zelenko",
+   "name": "Mille Strand",
    "job": "clerk",
    "temperament": "fearful",
    "need": "debt",
@@ -1434,7 +1434,7 @@
   },
   {
    "id": "p-records-office-43",
-   "name": "Efua Vlahos",
+   "name": "Antoine Lopez",
    "job": "clerk",
    "temperament": "mercenary",
    "need": "advancement",
@@ -1449,7 +1449,7 @@
   },
   {
    "id": "p-records-office-44",
-   "name": "Mei Ekman",
+   "name": "Esther Hernandez",
    "job": "clerk",
    "temperament": "loyal",
    "need": "advancement",
@@ -1464,7 +1464,7 @@
   },
   {
    "id": "p-records-office-45",
-   "name": "Arjun Desai",
+   "name": "Alvaro Arana",
    "job": "clerk",
    "temperament": "mercenary",
    "need": "advancement",
@@ -1479,7 +1479,7 @@
   },
   {
    "id": "p-records-office-46",
-   "name": "Kwame Okafor",
+   "name": "Erlend Aune",
    "job": "guard",
    "temperament": "mercenary",
    "need": "cash",
@@ -1494,7 +1494,7 @@
   },
   {
    "id": "p-records-office-47",
-   "name": "Freya Desai",
+   "name": "Øyvind Meling",
    "job": "clerk",
    "temperament": "loyal",
    "need": "advancement",
@@ -1509,7 +1509,7 @@
   },
   {
    "id": "p-records-office-48",
-   "name": "Anika Jaber",
+   "name": "Silvia Alonso",
    "job": "clerk",
    "temperament": "mercenary",
    "need": "advancement",
@@ -1524,7 +1524,7 @@
   },
   {
    "id": "p-records-office-49",
-   "name": "Ravi Kostas",
+   "name": "Kevin Andersen",
    "job": "clerk",
    "temperament": "mercenary",
    "need": "advancement",
@@ -1539,7 +1539,7 @@
   },
   {
    "id": "p-records-office-50",
-   "name": "Tunde Diallo",
+   "name": "Justin Hernandez",
    "job": "clerk",
    "temperament": "mercenary",
    "need": "debt",
@@ -1554,7 +1554,7 @@
   },
   {
    "id": "p-records-office-51",
-   "name": "Kwame Marek",
+   "name": "Krystyna Chrzanowska",
    "job": "clerk",
    "temperament": "mercenary",
    "need": "debt",
@@ -1569,7 +1569,7 @@
   },
   {
    "id": "p-records-office-52",
-   "name": "Costas Halvorsen",
+   "name": "Mathias Simonsen",
    "job": "clerk",
    "temperament": "fearful",
    "need": "debt",
@@ -1584,7 +1584,7 @@
   },
   {
    "id": "p-records-office-53",
-   "name": "Nadia Lin",
+   "name": "Linda Pedersen",
    "job": "clerk",
    "temperament": "loyal",
    "need": "cash",
@@ -1599,7 +1599,7 @@
   },
   {
    "id": "p-records-office-54",
-   "name": "Mateo Rask",
+   "name": "Jacob Rosas",
    "job": "clerk",
    "temperament": "fearful",
    "need": "debt",
@@ -1614,7 +1614,7 @@
   },
   {
    "id": "p-records-office-55",
-   "name": "Nadia Kimura",
+   "name": "Amalie Aune",
    "job": "clerk",
    "temperament": "fearful",
    "need": "debt",
@@ -1629,7 +1629,7 @@
   },
   {
    "id": "p-records-office-56",
-   "name": "Omar Zhou",
+   "name": "Robin Östlund",
    "job": "clerk",
    "temperament": "fearful",
    "need": "papers",
@@ -1644,7 +1644,7 @@
   },
   {
    "id": "p-records-office-57",
-   "name": "Minho Lin",
+   "name": "Mieczysław Grzyb",
    "job": "guard",
    "temperament": "mercenary",
    "need": "debt",
@@ -1659,7 +1659,7 @@
   },
   {
    "id": "p-records-office-58",
-   "name": "Wei Alexiou",
+   "name": "Christer Holmström",
    "job": "clerk",
    "temperament": "idealist",
    "need": "papers",
@@ -1674,7 +1674,7 @@
   },
   {
    "id": "p-records-office-59",
-   "name": "Layla Castillo",
+   "name": "Beata Fijałkowska",
    "job": "clerk",
    "temperament": "mercenary",
    "need": "cash",
@@ -1689,7 +1689,7 @@
   },
   {
    "id": "p-records-office-60",
-   "name": "Ariadne Vidal",
+   "name": "Ingrid Lundqvist",
    "job": "clerk",
    "temperament": "loyal",
    "need": "cash",
@@ -1704,7 +1704,7 @@
   },
   {
    "id": "p-records-office-61",
-   "name": "Pilar Sato",
+   "name": "Morten Simonsen",
    "job": "guard",
    "temperament": "mercenary",
    "need": "advancement",
@@ -1719,7 +1719,7 @@
   },
   {
    "id": "p-records-office-62",
-   "name": "Sanjay Halvorsen",
+   "name": "Linn Ahmed",
    "job": "clerk",
    "temperament": "loyal",
    "need": "papers",
@@ -1734,7 +1734,7 @@
   },
   {
    "id": "p-records-office-63",
-   "name": "Marisol Mavros",
+   "name": "Sébastien Jolivet",
    "job": "clerk",
    "temperament": "mercenary",
    "need": "debt",
@@ -1749,7 +1749,7 @@
   },
   {
    "id": "p-records-office-64",
-   "name": "Milena Dahl",
+   "name": "Henrik Øvrebø",
    "job": "guard",
    "temperament": "mercenary",
    "need": "cash",
@@ -1764,7 +1764,7 @@
   },
   {
    "id": "p-records-office-65",
-   "name": "Nikos Haddad",
+   "name": "Adam Svensson",
    "job": "guard",
    "temperament": "loyal",
    "need": "advancement",
@@ -1779,7 +1779,7 @@
   },
   {
    "id": "p-records-office-66",
-   "name": "Karim Jaber",
+   "name": "Silvia Jimenez",
    "job": "clerk",
    "temperament": "idealist",
    "need": "cash",
@@ -1794,7 +1794,7 @@
   },
   {
    "id": "p-records-office-67",
-   "name": "Stavros Zelenko",
+   "name": "Charles Leclere",
    "job": "guard",
    "temperament": "loyal",
    "need": "debt",
@@ -1809,7 +1809,7 @@
   },
   {
    "id": "p-records-office-68",
-   "name": "Dev Ferentinos",
+   "name": "Adrian Romero",
    "job": "guard",
    "temperament": "loyal",
    "need": "cash",
@@ -1824,7 +1824,7 @@
   },
   {
    "id": "p-records-office-69",
-   "name": "Sakura Iyer",
+   "name": "Roger Nyqvist",
    "job": "clerk",
    "temperament": "loyal",
    "need": "cash",
@@ -1839,7 +1839,7 @@
   },
   {
    "id": "p-records-office-70",
-   "name": "Ingrid Dahl",
+   "name": "Stanisław Pawlik",
    "job": "clerk",
    "temperament": "loyal",
    "need": "care",
@@ -1854,7 +1854,7 @@
   },
   {
    "id": "p-records-office-71",
-   "name": "Kenji Dahl",
+   "name": "Nelly Lopez",
    "job": "clerk",
    "temperament": "mercenary",
    "need": "cash",
@@ -1869,7 +1869,7 @@
   },
   {
    "id": "p-records-office-72",
-   "name": "Anika Dvorak",
+   "name": "Carlos Bryant",
    "job": "clerk",
    "temperament": "mercenary",
    "need": "debt",
@@ -1884,7 +1884,7 @@
   },
   {
    "id": "p-records-office-73",
-   "name": "Astrid Chaudhry",
+   "name": "Eric Guerin",
    "job": "guard",
    "temperament": "mercenary",
    "need": "debt",
@@ -1899,7 +1899,7 @@
   },
   {
    "id": "p-records-office-74",
-   "name": "Astrid Tanaka",
+   "name": "Kristoffer Øverby",
    "job": "guard",
    "temperament": "mercenary",
    "need": "advancement",
@@ -1914,7 +1914,7 @@
   },
   {
    "id": "p-records-office-75",
-   "name": "Lucia Nair",
+   "name": "Noah Santos",
    "job": "guard",
    "temperament": "mercenary",
    "need": "debt",
@@ -1929,7 +1929,7 @@
   },
   {
    "id": "p-records-office-76",
-   "name": "Katya Owusu",
+   "name": "Juan Perez",
    "job": "guard",
    "temperament": "loyal",
    "need": "advancement",
@@ -1944,7 +1944,7 @@
   },
   {
    "id": "p-rocket-west-01",
-   "name": "Leif Cabrera",
+   "name": "Concepcion Romero",
    "job": "resident",
    "temperament": "mercenary",
    "need": "debt",
@@ -1959,7 +1959,7 @@
   },
   {
    "id": "p-rocket-west-02",
-   "name": "Dmitri Dvorak",
+   "name": "Josefin Lundqvist",
    "job": "resident",
    "temperament": "idealist",
    "need": "cash",
@@ -1974,7 +1974,7 @@
   },
   {
    "id": "p-rocket-west-03",
-   "name": "Jiyeon Tanaka",
+   "name": "Kåre Jørgensen",
    "job": "resident",
    "temperament": "loyal",
    "need": "housing",
@@ -1989,7 +1989,7 @@
   },
   {
    "id": "p-rocket-west-04",
-   "name": "Priya Antoniou",
+   "name": "Mikaela Brodin",
    "job": "resident",
    "temperament": "mercenary",
    "need": "cash",
@@ -2004,7 +2004,7 @@
   },
   {
    "id": "p-rocket-west-05",
-   "name": "Folake Varma",
+   "name": "Jerry Hernandez",
    "job": "resident",
    "temperament": "idealist",
    "need": "housing",
@@ -2019,7 +2019,7 @@
   },
   {
    "id": "p-rocket-west-06",
-   "name": "Yannis Castillo",
+   "name": "Kateryna Jastrzębska",
    "job": "resident",
    "temperament": "idealist",
    "need": "housing",
@@ -2034,7 +2034,7 @@
   },
   {
    "id": "p-rocket-west-07",
-   "name": "Omar Halvorsen",
+   "name": "Bernadette Lopez",
    "job": "resident",
    "temperament": "mercenary",
    "need": "cash",
@@ -2049,7 +2049,7 @@
   },
   {
    "id": "p-rocket-west-08",
-   "name": "Efua Tanaka",
+   "name": "Madeleine Brodin",
    "job": "resident",
    "temperament": "fearful",
    "need": "papers",
@@ -2064,7 +2064,7 @@
   },
   {
    "id": "p-s1-gardens-kiosk-01",
-   "name": "Sanjay Sundberg",
+   "name": "Esther Ferrer",
    "job": "keeper",
    "temperament": "fearful",
    "need": "debt",
@@ -2079,7 +2079,7 @@
   },
   {
    "id": "p-s1-gardens-kiosk-02",
-   "name": "Chidi Boateng",
+   "name": "Irena Kozioł",
    "job": "attendant",
    "temperament": "fearful",
    "need": "debt",
@@ -2094,7 +2094,7 @@
   },
   {
    "id": "p-s1-gardens-kiosk-03",
-   "name": "Sakura Osei",
+   "name": "Roger Bäckström",
    "job": "attendant",
    "temperament": "idealist",
    "need": "cash",
@@ -2109,7 +2109,7 @@
   },
   {
    "id": "p-t1-records-kiosk-01",
-   "name": "Bogdan Fujita",
+   "name": "Alberto Mellado",
    "job": "keeper",
    "temperament": "idealist",
    "need": "advancement",
@@ -2124,7 +2124,7 @@
   },
   {
    "id": "p-t1-records-kiosk-02",
-   "name": "Freya Mendes",
+   "name": "John Haile",
    "job": "attendant",
    "temperament": "idealist",
    "need": "cash",
@@ -2139,7 +2139,7 @@
   },
   {
    "id": "p-t1-records-kiosk-03",
-   "name": "Karim Lindqvist",
+   "name": "Marte Nygård",
    "job": "attendant",
    "temperament": "fearful",
    "need": "papers",

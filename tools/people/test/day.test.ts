@@ -56,8 +56,9 @@ describe('the day, split out of the expander', () => {
     // re-pinned 2026-10-19 (brief 023, Sky: add pavement; cause "Splice, 2026-10-19, brief 023 (Sky: add pavement ..." in people/drift.json): a built plot blocks walking only behind its building line, so ten people's walks to a stop are a minute shorter; was 4da93f1ba0e67e7fa700e9689adb06260ea1f15eccc76e4819e5405777210af2
     // re-pinned 2026-10-28 (brief 075 remap, Pulse): the plan is the old town (Datum, v0.5.x): the Records stop is gone, the scope's nearest tram stop is T1/rocket, so the commutes, their walks and the kiosk change; life.json regenerated from that plan; no people rule or expansion code changed; was b32c52df6cf3bbf8a009d2351659dacc89f579e348cc8ea5ec05a788124e75b7 (legacy) and aab7c77774f5be01000bf4630ff4190d318bdb8db0b616212834dff9d741d830
     expect(sha256(JSON.stringify(expand({ ...r013, needs: undefined, rules: legacyRules(w.rules) }).people.persons))).toBe('06965b87ecb7d6cf86a320040e59aa5de1d5c4854b8fe9d55680b23175492f36');
-    expect(sha256(JSON.stringify(bare(r013)))).toBe('a8131d03e8d1ecc13fdc731b86ab7b76c4e5e67d9bb9890062f127af0f8e47c8');
-    expect(sha256(JSON.stringify(r013Gen.people.persons.map(({ needRecord: _a, secretRecord: _b, ...p }) => p)))).toBe('a8131d03e8d1ecc13fdc731b86ab7b76c4e5e67d9bb9890062f127af0f8e47c8');
+    // re-pinned 2026-11-02 (brief 089, Pulse, declared in drift.json): names from the real lists (people.rules.json names.lists): every person's name and their new sex, age and origin fields; nothing else; was a8131d03e8d1ecc13fdc731b86ab7b76c4e5e67d9bb9890062f127af0f8e47c8 (under legacyRules the bytes are as they were)
+    expect(sha256(JSON.stringify(bare(r013)))).toBe('bd3cca85f5b646894662f9123c51bd5816c80e21855b7a332f51db284683111a');
+    expect(sha256(JSON.stringify(r013Gen.people.persons.map(({ needRecord: _a, secretRecord: _b, ...p }) => p)))).toBe('bd3cca85f5b646894662f9123c51bd5816c80e21855b7a332f51db284683111a');
   });
   test('a hop of STEP_OFF m or less costs no minute; a longer one is the walk graph\'s', () => {
     const at = (id: string) => w.scope.places.find(p => p.id === id)!.at as V;
@@ -167,7 +168,7 @@ describe('the Handover fix', () => {
   test('Vale: arrives by official car, works inside at the official entrance, is in the car at the bay at 17:30, then leaves the sheet; never at a table or on the tram', () => {
     const [vale] = role(fixGen.people, 'councillor');
     expect(role(fixGen.people, 'councillor')).toHaveLength(1);
-    expect(vale!.name.endsWith(' Vale')).toBe(true);
+    expect(vale!.name).toBe('Uros Popovic'); // brief 089: the councillor's pinned name
     expect(vale!.routine.variant).toBe('official-car');
     expect(vale!.home).toEqual({ plot: 'beyond', place: 'beyond' });
     expect(vale!.work!.place).toBe('official-entrance');

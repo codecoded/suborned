@@ -17,6 +17,8 @@ import { earlyMin, heldPlaces } from './posts';
 import { atCafeSide, type Unit } from './scope';
 import { allowedTemperaments, isTalker } from './rules';
 import { checkNeeds, N_SRC } from './needs-check';
+import { checkNames } from './names';
+import { castForNames } from './roles';
 
 export const GROUP = 'People';
 const PersonShape = PersonSchema.shape as Record<string, unknown>;
@@ -25,7 +27,8 @@ const PersonShape = PersonSchema.shape as Record<string, unknown>;
 export const FIELD_READER: Record<string, string> = {
   id: '~key: the person\'s key; no rule reads it', tier: '~tiers: rules tiers.simulated (background people are counts, not persons)', name: 'name', temperament: 'temperament', need: 'need',
   institution: 'temperament', start: 'scales', memory: 'memory', ties: 'ties', routine: 'routine', home: 'routine', work: 'routine', look: '~look: the graybox job colour (brief 010 E), no rule reads it',
-  position: 'need', needWeights: 'need', secret: 'secret', needRecord: 'need', secretRecord: 'secret', // brief 017: a record is read where its kind is (the label by Intel; size and holder in phase 2)
+  position: 'need', needWeights: 'need', secret: 'secret', sex: 'name', age: 'name', origin: 'name', // brief 089: the name draw reads them (the given name by sex and decade of birth, both names by country)
+  needRecord: 'need', secretRecord: 'secret', // brief 017: a record is read where its kind is (the label by Intel; size and holder in phase 2)
   // the rulebook draws a replacement need from the person\'s row (Sky Q2): keel-rulebook.md point 8
 };
 export const RULES_SRC: Record<string, string> = {
@@ -37,7 +40,7 @@ export const RULES_SRC: Record<string, string> = {
   'P-5': 'brief 008 rule CD-1 (keep-clear zones of the civic block dressing)',
   'P-6': 'GDD §07 the Handover: its roles, with their need, approach and regularOf, are cast from the city\'s people by the same casting as M-2 (brief 010 D; Motive §3)',
   'P-7': 'people.rules.json ties (kinds, limits, direction, between)',
-  'P-8': 'people.rules.json names (pool, pattern, origins, avoid, unique, pinned); GDD §15 no era date',
+  'P-8': 'people.rules.json names (pool, pattern, origins, avoid, unique, pinned); GDD §15 no era date', // brief 089: with names.lists, the real lists (tools/people/names.ts checkNames); the text stays, so recorded runs replay
   'P-9': 'GDD §01/§09 same orders → same result; rules person.memoryAtStart, tiers',
   'P-10': 'people.rules.json temperamentsBy.mix (P3): no temperament over rowMaxShare of a cast row; a unit of whenStaffAtLeast staff or more carries unitMinDistinct temperaments; GDD §09 risk: sameness',
   'P-11': 'people.rules.json knowledge (P5): a keeper\'s needsKnown derived from workmate and unit-regular ties; the cell is known by face only and nothing else at the start; GDD §03, §08',
@@ -242,8 +245,14 @@ export function checkPeople(c: Ctx, mission: MissionIn | undefined, plan: { civi
   }
 
   // P-8 names
-  {
-    const bad: string[] = [], n = rules.names, re = new RegExp(n.form.pattern, 'u'), pool = cast.names;
+  if (c.names && rules.names.lists) {
+    // brief 089: the names from the real lists (tools/people/names.ts): drawn by the rules, families sharing theirs, the pins where the Handover casts them
+    const at = pinnedByRole(P, mission ? { scope, mission, plan } : undefined, rules), castRole = new Map<string, string>();
+    if (mission) for (const [i, x] of castForNames(P, { scope, mission, plan }, rules).entries()) if (x.pinned) castRole.set(x.pinned, mission.roles[i]!.id);
+    const bad = checkNames(c.names, rules, P, rules.names.pinned.map((pin, i) => ({ pin, who: at[i]?.who, skipped: at[i]?.skipped })), castRole, Math.round(c.atMin * 60));
+    out.push({ id: 'P-8', rule: 'Names are real names drawn from one country\'s lists by sex and decade of birth, never the top of a list or a banned name, unique, shared by a family, and the pinned names present once', bad: [...new Set(bad)], value: `${P.length} names`, limit: 'rules names' });
+  } else {
+    const bad: string[] = [], n = rules.names, re = new RegExp(n.form.pattern, 'u'), pool = cast.names!;
     for (const part of ['given', 'family'] as const) {
       const list = pool[part], min = part === 'given' ? n.minGiven : n.minFamily;
       if (list.length < min) bad.push(`${part} pool has ${list.length}, rules ${min}`);
@@ -334,13 +343,13 @@ export function checkPeople(c: Ctx, mission: MissionIn | undefined, plan: { civi
     const bad: string[] = [], readers = Object.keys(rules.person.readBy.fields), carries = rules.tiers.simulated.carries;
     for (const f of carries) if (!readers.includes(f)) bad.push(`${f} is carried but no rule reads it`);
     for (const f of readers) if (!carries.includes(f)) bad.push(`${f} is read but not carried`);
-    const recordFields = ['needRecord', 'secretRecord'], shape = Object.keys(PersonShape).filter(f => (f !== 'secret' || !!rules.secrets) && (!recordFields.includes(f) || (!!c.needs && (f !== 'secretRecord' || !!rules.secrets)))), seen = new Set<string>(); // a rulebook without `secrets` has no such field (a pinned older one)
+    const recordFields = ['needRecord', 'secretRecord'], nameFields = ['sex', 'age', 'origin'], listed = !!(c.names && rules.names.lists), shape = Object.keys(PersonShape).filter(f => (f !== 'secret' || !!rules.secrets) && (!recordFields.includes(f) || (!!c.needs && (f !== 'secretRecord' || !!rules.secrets))) && (!nameFields.includes(f) || listed)), seen = new Set<string>(); // a rulebook without `secrets` has no such field (a pinned older one)
     for (const f of shape) {
       const to = FIELD_READER[f];
       if (!to) bad.push(`field ${f} of a person has no named reader (add it to FIELD_READER with the rule that reads it)`);
       else if (!to.startsWith('~') && !readers.includes(to)) bad.push(`field ${f} is read by ${to}, which people.rules.json person.readBy does not list`);
     }
-    for (const f of Object.keys(FIELD_READER)) if (!shape.includes(f) && !(f === 'secret' && !rules.secrets) && !(recordFields.includes(f) && (!c.needs || (f === 'secretRecord' && !rules.secrets)))) bad.push(`FIELD_READER names ${f}, which a person does not carry`);
+    for (const f of Object.keys(FIELD_READER)) if (!shape.includes(f) && !(f === 'secret' && !rules.secrets) && !(recordFields.includes(f) && (!c.needs || (f === 'secretRecord' && !rules.secrets))) && !(nameFields.includes(f) && !listed)) bad.push(`FIELD_READER names ${f}, which a person does not carry`);
     for (const p of P) for (const f of Object.keys(p)) if (!shape.includes(f) && !seen.has(f)) { seen.add(f); bad.push(`${p.id} carries ${f}, which the schema does not list`); }
     for (const b of people.background as Record<string, unknown>[]) for (const f of ['name', 'temperament', 'need', 'ties']) if (f in b) bad.push(`background ${b.plot} carries ${f}`);
     out.push({ id: 'P-12', rule: 'Every field a person carries names the rule that reads it', bad: [...new Set(bad)], value: `${shape.length} fields`, limit: 'each read by a rule' });

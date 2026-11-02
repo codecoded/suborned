@@ -29,9 +29,12 @@ export const KLASS: Record<string, Klass> = { guard: 'security', security: 'secu
 
 export type Mapping = { figures: Map<string, FigureSpec>; pools: Map<string, string[]>; variantOf: Record<string, string>; playViews: Record<string, unknown> };
 /** The figures, their pools (as FigureBuild.Build makes them: `family/<first word>` for each family, each job block as written) and which is a recolour of which. */
-export function loadMapping(): Mapping {
-  const specs = (JSON.parse(read('tools/figures/figures.json')) as { figures: FigureSpec[] }).figures;
-  const roles = JSON.parse(read('tools/figures/roles.json')) as { families: Record<string, string[]>; jobBlocks: Record<string, string[]>; variantOf: Record<string, string>; playViews: Record<string, unknown> };
+export const FIGURES_FILE = 'tools/figures/figures.json', ROLES_FILE = 'tools/figures/roles.json';
+export const loadMapping = (): Mapping => mappingOf(read(FIGURES_FILE), read(ROLES_FILE));
+/** The same from the two files' texts (the people generator hashes them as inputs of the names: brief 089). */
+export function mappingOf(figuresText: string, rolesText: string): Mapping {
+  const specs = (JSON.parse(figuresText) as { figures: FigureSpec[] }).figures;
+  const roles = JSON.parse(rolesText) as { families: Record<string, string[]>; jobBlocks: Record<string, string[]>; variantOf: Record<string, string>; playViews: Record<string, unknown> };
   const pools = new Map<string, string[]>();
   for (const [k, v] of Object.entries(roles.families)) pools.set(`family/${k.split(' ')[0]}`, v);
   for (const [k, v] of Object.entries(roles.jobBlocks)) pools.set(k, v);
@@ -62,6 +65,12 @@ export function roleFigure(key: string): string | null {
   if (isCrewId(key) || key.startsWith('body/rival-')) return rivalFigure(key);
   return null;
 }
+/** FigureBuild.Women (unity/Assets/Suborned/Editor/World/People/FigureBuild.cs): the figures that walk with the women's walk; tools/people/test/looks.test.ts holds the two the same. */
+export const HOST_WOMEN = ['scout', 'fixer', 'waitress', 'cafe_w2', 'cafe_w3', 'cafe_w5', 'el1', 'd6', 'sh2', 'rival_d'];
+/** Women's bodies the host does not list (Forma, roles.json note 14: "c6 and d5c are women too and are not in that set today"): the mini dress and the chevron dress. */
+export const FORMA_WOMEN = ['c6', 'd5c'];
+/** The body of a figure (brief 089): a person's sex is the body of the figure the host dresses them in, so the name fits what the player sees. */
+export const figureSex = (figure: string): 'f' | 'm' => (HOST_WOMEN.includes(figure) || FORMA_WOMEN.includes(figure) ? 'f' : 'm');
 /** HostViews.PersonFigure's family of a job. */
 export const famOf = (job: string): string => job === 'server' || job === 'cook' || job === 'waitress' ? 'cafe' : job === 'clerk' || job === 'attendant' || job === 'councillor' ? 'office' : job === 'guard' ? 'guard' : job === 'driver' || job === 'official-driver' ? 'driver' : 'passer';
 /** FigureLibrary.Pick: FNV-1a over the seed's UTF-16 units, modulo the pool's length. */

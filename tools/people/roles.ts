@@ -7,7 +7,7 @@ import type { Rules } from './rules';
 import type { Scope } from './scope';
 
 export type Casting = { scope: Scope; mission: MissionIn; plan: { civic: unknown } };
-export type Pinned = { index: number; role?: string; who?: string; why: string };
+export type Pinned = { index: number; role?: string; who?: string; why: string; /** a pin on one person by id that does not apply to these people (brief 089) */ skipped?: boolean };
 
 /** The cast the names follow: M-2's own, with the roles' playability conditions (`{ play: true }`), once the people meet them, so Inez and Vale sit on the people M-2 pins. Until
  *  they do (the cast does not yet play the mission: guards, driver and councillor fail it), the cast under the rules; and a role the rules cannot cast (no one meets its need)
@@ -26,10 +26,21 @@ export function pinnedByRole(persons: Person[], c: Casting | undefined, rules: R
   const pins = rules.names.pinned;
   if (!c) return pins.map((_, index) => ({ index, why: 'no mission to cast' }));
   const cast = castForNames(persons, c, rules);
-  return pins.map((pin, index) => {
+  const byRole = pins.map((pin, index): Pinned => {
+    if (pin.person) return { index, why: 'by id' };
     const i = c.mission.roles.findIndex(r => r.employer === pin.employer && r.position === pin.position && r.role === pin.role);
     if (i < 0) return { index, why: `the mission has no role of ${pin.position ?? pin.role} of ${pin.employer}` };
     const x = cast[i]!;
     return x.pinned ? { index, role: x.role, who: x.pinned, why: x.why } : { index, role: x.role, why: x.why };
+  });
+  // a pin on one person (brief 089: Milena, the listen partner the mission names and no role casts): that person, if they work the pin's employer and position and no
+  // role's pin lands on them; otherwise (another cast, whose people are others) the pin does not apply: `skipped`, not a fault
+  const roleHeld = new Set(byRole.filter((x, i) => !pins[i]!.person && x.who).map(x => x.who!));
+  return byRole.map((x, index) => {
+    const pin = pins[index]!;
+    if (!pin.person) return x;
+    const p = persons.find(q => q.id === pin.person);
+    return p && !roleHeld.has(p.id) && p.work?.employer === pin.employer && (pin.position ? p.work.position === pin.position : p.work.role === pin.role)
+      ? { index, who: p.id, why: 'pinned by id' } : { index, skipped: true, why: `${pin.person} is not a free ${pin.position ?? pin.role} of ${pin.employer} here` };
   });
 }
