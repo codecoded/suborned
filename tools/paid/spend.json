@@ -54,11 +54,15 @@
    "usd": 3.33165
   },
   "2026-11-02": {
-   "calls": 47,
-   "usd": 0.5358
+   "calls": 188,
+   "usd": 0.80156
   }
  },
  "by_model": {
+  "alibaba:qwen@3-tts-1.7b-voicedesign": {
+   "calls": 28,
+   "usd": 0.0177
+  },
   "bfl:5@1": {
    "calls": 1,
    "usd": 0.045
@@ -79,9 +83,17 @@
    "calls": 151,
    "usd": 0.0
   },
+  "fishaudio:s2.1@pro": {
+   "calls": 28,
+   "usd": 0.01761
+  },
   "google:4@2": {
    "calls": 1,
    "usd": 0.138
+  },
+  "inworld:tts@1.5-max": {
+   "calls": 85,
+   "usd": 0.23045
   },
   "minimax:4@1": {
    "calls": 31,
@@ -120,7 +132,7 @@
    "usd": 2.8
   }
  },
- "calls": 574,
+ "calls": 715,
  "failed": 26,
  "jobs": {
   "007-concepts": {
@@ -1092,6 +1104,44 @@
    "used": 0,
    "used_usd": 0.0
   },
+  "090-voices": {
+   "blocked": 0,
+   "by_day": {
+    "2026-11-02": {
+     "calls": 141,
+     "usd": 0.26576
+    }
+   },
+   "by_model": {
+    "alibaba:qwen@3-tts-1.7b-voicedesign": {
+     "calls": 28,
+     "usd": 0.0177
+    },
+    "fishaudio:s2.1@pro": {
+     "calls": 28,
+     "usd": 0.01761
+    },
+    "inworld:tts@1.5-max": {
+     "calls": 85,
+     "usd": 0.23045
+    }
+   },
+   "by_pass": {
+    "1": {
+     "budget_usd": 5.0,
+     "calls": 141,
+     "usd": 0.26576
+    }
+   },
+   "calls": 141,
+   "cost_per_used": null,
+   "failed": 0,
+   "ok": 141,
+   "total_usd": 0.26576,
+   "unknown_cost_calls": 0,
+   "used": 0,
+   "used_usd": 0.0
+  },
   "900-codexcheck": {
    "blocked": 0,
    "by_day": {
@@ -1127,6 +1177,6 @@
   }
  },
  "schema": "suborned.paid-spend/1",
- "total_usd": 75.79178,
+ "total_usd": 76.05754,
  "used": 72
 }

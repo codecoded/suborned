@@ -1,0 +1,11 @@
+{
+ "A": "fish",
+ "B": "qwen",
+ "C": "inworld",
+ "models": {
+  "inworld": "inworld:tts@1.5-max",
+  "qwen": "alibaba:qwen@3-tts-1.7b-voicedesign",
+  "fish": "fishaudio:s2.1@pro"
+ },
+ "order": "sha256 of 090|service, fixed"
+}
