@@ -51,7 +51,7 @@
     "branch": "assignment-07"
   },
   "pipeline_video_channel": "CodeCoded / @codecoded",
-  "pipeline_video_visibility": "unlisted",
+  "pipeline_video_visibility": "public",
   "pipeline_video_signed_out_verified": true,
   "pipeline_video_4k_available": true,
   "audit_scope": "Whole game development workflow: design, agent code/content work, validation/review, Unity integration, player testing and release",

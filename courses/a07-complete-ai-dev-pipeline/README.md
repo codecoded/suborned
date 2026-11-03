@@ -10,7 +10,7 @@ The audit covers the **whole development workflow**, from game design to release
 
 - Playable game: https://codecoded.itch.io/the-suborned
 - Source: https://github.com/codecoded/suborned/tree/assignment-07
-- Main film: **https://youtu.be/NO-8wQidYPc** — **CodeCoded / @codecoded**, Unlisted; 93 seconds, 4K delivery. Longer officers/rivals opening and gameplay-led introduction, whole-workflow overview and the costed people example.
+- Main film: **https://youtu.be/NO-8wQidYPc** — **CodeCoded / @codecoded**, Public; 93 seconds, 4K delivery. Longer officers/rivals opening and gameplay-led introduction, whole-workflow overview and the costed people example.
 - Detailed worked-example execution: **https://youtu.be/725LKDmVNQ8** — 95 seconds; retained as supporting proof with longer command output.
 - One-page audit: [audit.pdf](audit.pdf), [HTML source](audit.html).
 - Original brief: [assignment-brief.pdf](assignment-brief.pdf).
@@ -100,7 +100,7 @@ The actual mid-project change is **checks before critique**, introduced in brief
 - [x] Accepted cast, provenance and recorded usage verified.
 - [x] Real expansion, engine-data staging and player execution recorded.
 - [x] One-page whole-workflow audit rendered and visually checked; people run retained as the costed worked example.
-- [x] Publish the primary video on CodeCoded, Unlisted; signed-out playback verified; 2160p, 1440p and 1080p renditions available.
+- [x] Publish the primary video on CodeCoded, Public; signed-out playback verified; 2160p, 1440p and 1080p renditions available.
 - [x] Verify source-repository access while signed out (Public; assignment-07 branch visible).
 - [ ] Confirm a compatible marker platform and record a visit-to-control test within 120 seconds.
 - [ ] Resolve public-release/replay-variant differences before claiming an identical full release reproduction.

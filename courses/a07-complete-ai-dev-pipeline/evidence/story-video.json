@@ -163,7 +163,7 @@
   ],
   "youtube_url": "https://youtu.be/NO-8wQidYPc",
   "youtube_channel": "CodeCoded / @codecoded",
-  "visibility": "unlisted",
+  "visibility": "public",
   "signed_out_playback_verified": true,
   "previous_edit": {
     "url": "https://youtu.be/ZbhbxH8Lg3c",
@@ -190,12 +190,14 @@
   "youtube_playback_observed": {
     "signed_out": true,
     "channel": "https://www.youtube.com/@codecoded",
-    "unlisted": true,
+    "unlisted": false,
     "duration": 92.721,
     "readyState": 4,
     "playing": true,
     "decoded_width": 3840,
     "decoded_height": 2160,
-    "current_time_seconds": 10.744457
-  }
+    "current_time_seconds": 10.744457,
+    "public": true
+  },
+  "publication_metadata": "evidence/youtube-publication.json"
 }
