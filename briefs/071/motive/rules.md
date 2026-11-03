@@ -168,3 +168,48 @@ Rule blocks (text for Keel to place; the keys are suggestions):
   - **For Suture:** play the rearguard for sharpness. On the probe, a careless approach loses an agent: at will, one down in 7 s; arriving one at a time, two down.
 
 **Next owner:** Aster (the GDD text into a new version, then `bun run crew`), then Keel after 0.35.0 lands (`getaway-split`, the blocks and scenarios above), then Splice (the lane parts), Vantage, Waymark, Latch, Fable and Glyph.
+
+---
+
+## 6 · v0.30 fixes (2026-10-26, for Aster)
+
+Three consistency points left open after GDD v0.30.0 (9974dba8). Each fix is the simplest reading that keeps Sky's "the fight always comes" and doesn't add a new way to lose. None is a real design choice, so none goes to Sky: each follows from rules Sky has already picked (Option A; S1 = no). No value changes; Keel's tables in §4 already read this way.
+
+### Fix 1 · "Once every op is down … the mission fails" against the cell down failing only while Vale is on the map
+
+- **The clash.** §06's "rivals reach Vale" line says "Once every op is down, in the car or not, the mission fails". §07's fail line says the cell down fails only while Vale is still on the map; after he is out it captures whoever is left.
+- **The fix.** §07 is the rule (R6, Sky's Option A). §06's sentence gets the same limit. "Every op" means every op still on the map: an op in a car that has left is out, not down.
+- The Enforcer sentence also reads "a car of the cell's", because Vale's lent car counts.
+- **Not more punishing.** It turns a fail after the win into captures (the win stands). Before the win nothing changes.
+
+§06, the getaway, the "rivals reach Vale" line (replace its last two sentences):
+> Once every op still on the map is down, in a car or not: while Vale is on the map the mission fails; once he is out the mission ends there and they are left behind (captured). The Enforcer down fails it only while Vale is not yet in a car of the cell's; after that he is any op: carry him in, or he is left behind.
+
+### Fix 2 · With two cars, which departure ends the public fight
+
+- **The rule.** A fight belongs to the car it is at (R9, R13), so only that car's departure judges it.
+- Vale's lent car leaving doesn't judge the rearguard: under the split, the posted crew springs at that moment (R7 c), so the fight hasn't started.
+- If the fight's car changes (loud, once Vale is out, the police come for the remaining car), the fight goes on and is judged at that car.
+- The mission's end (End, or nobody left standing) judges a fight still running, as the getaway Go does today.
+- A public fight is still judged once.
+- Leaving before feared rivals break is still 0, and a capture still moves nothing. So the rearguard's three Standing outcomes are: board and go 0; break the crew +1; left behind 0.
+
+§04 standing, the public-fight line (replace the bracket):
+> a public fight (city people within 30 m of any shot; it ends 30 s after the last shot, or with the final fight, which is judged when it ends, when the car it is at leaves, or when the mission ends, whichever comes first) moves it once, when it ends, by opponent: …(rest unchanged)
+
+§06, the getaway, after "so every route chooses at the car the fight is at" (one sentence added):
+> Only the car the fight is at ends it by leaving: a lent car leaving with Vale while the fight is at the cell's car judges nothing, and the fight is judged when it ends, when its car leaves, or when the mission ends.
+
+For Keel: `fight.public` judges at `fight.over`, at the Go of the fight's car, or at `mission.end`, whichever comes first (today: `fight.over` or the getaway Go). Scenario **SPLIT-PUBLIC**:
+- Go on Vale's car with the rearguard not yet sprung: no `fight.judged`;
+- then board and go at the square: judged 0;
+- its twin, breaking the crew: +1.
+
+### Fix 3 · §13 T11, redrafted (agent copy)
+
+- **Why.** The v0.30 line asks about one car, and its pass names only the blocker. With two cars a Go can be refused three ways: the car is held (its blocker or a hostile within 8 m), the fight is at that car, or another car boxes it in. And the win now comes before the mission ends.
+- **Format.** Same method and default (6 new players), one more branch, one more question.
+
+> | T11 | the getaway reads? | Handover final fight, three plays: the front door (one car), the pickup's split (two cars), loud; at a refused Go ask "why won't this car go?"; after Vale's car leaves ask "have you won, and what is left to do?"; at the debrief ask "who did you leave, and what happens to them?" | ≥ 5/6 name the reason from the marks on that car (its blocker or holders, or the car in the way); ≥ 5/6 say Vale is out and the others still have to get out; ≥ 5/6 say captured or walked out and why |
+
+Owners as in v0.30: Motive and Waymark (§14 opens T11 for both). Suture runs it.

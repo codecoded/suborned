@@ -1,7 +1,7 @@
 {
  "schema": "suborned.mission.plan/1",
  "mission": "handover",
- "note": "probe 2026-10-26: loud under \u00a706's more-than-half break: the Scout and Fixer lock rival-1..3 in turn (3 of the 4 drawn on foot), walk back to their waits once the crew breaks; the Enforcer walks Vale out on rivals.retreat",
+ "note": "probe 2026-10-26: loud under §06's more-than-half break: the Scout and Fixer lock rival-1..3 in turn (3 of the 4 drawn on foot), walk back to their waits once the crew breaks; the Enforcer walks Vale out on rivals.retreat",
  "start": {},
  "until": 5100,
  "steps": [
@@ -117,12 +117,8 @@
    "when": "fight.loud",
    "after": [
     "enter"
-   ]
-  },
-  {
-   "op": "scout",
-   "do": "stance",
-   "stance": "free"
+   ],
+   "why": "; drawn, he fights on his own once his locks are spent (weapons free, always on: brief 039 retires the stance order; its shots are untraced)"
   },
   {
    "op": "scout",
@@ -136,12 +132,8 @@
    "when": "fight.loud",
    "after": [
     "enter"
-   ]
-  },
-  {
-   "op": "fixer",
-   "do": "stance",
-   "stance": "free"
+   ],
+   "why": "; drawn, he fights on his own once his locks are spent (weapons free, always on: brief 039 retires the stance order; its shots are untraced)"
   },
   {
    "op": "fixer",
@@ -155,12 +147,8 @@
    "when": "fight.loud",
    "after": [
     "enter"
-   ]
-  },
-  {
-   "op": "tech",
-   "do": "stance",
-   "stance": "free"
+   ],
+   "why": "; drawn, he fights on his own once his locks are spent (weapons free, always on: brief 039 retires the stance order; its shots are untraced)"
   },
   {
    "op": "tech",

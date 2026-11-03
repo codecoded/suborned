@@ -2,7 +2,7 @@
   "schema": "suborned.geometry.summary/1",
   "brief": "055",
   "world": {
-    "sha256": "4ff817c2384c27f035b484d97ec3de62489789e189fd3d3aaa4d146e68bf4a47",
+    "sha256": "b4c862677d812b39f8f3c61a836c7abb46631584fdeffbd3f9e70d0471932c7f",
     "stale": false
   },
   "window": {
@@ -15,8 +15,8 @@
     "cell": 0.25
   },
   "ground": {
-    "walkCells": 43060,
-    "walkableCells": 43060,
+    "walkCells": 43350,
+    "walkableCells": 43350,
     "sunk": 685,
     "floating": 44,
     "bands": {
@@ -33,15 +33,15 @@
     }
   },
   "walk": {
-    "freeCells": 43060,
+    "freeCells": 43350,
     "throughSolid": 0,
     "lowCeiling": 2,
     "brush": 0,
     "invisibleWall": 118
   },
   "sight": {
-    "drawnAtEye": 460,
-    "drawnAtChest": 621,
+    "drawnAtEye": 463,
+    "drawnAtChest": 685,
     "occludersWithGaps": [
       {
         "id": "plot-04",
@@ -51,7 +51,7 @@
   },
   "routes": {
     "total": 56,
-    "off5cm": 37,
+    "off5cm": 36,
     "off30cm": 6,
     "off50cm": 6,
     "inSolid": 0
@@ -73,8 +73,8 @@
     "blockedBy": ""
   },
   "kit": {
-    "measured": 293,
-    "offPivotOrSize": 12,
+    "measured": 410,
+    "offPivotOrSize": 17,
     "placedHere": []
   },
   "rules": [
@@ -122,7 +122,7 @@
     },
     {
       "id": "G-3a",
-      "count": 58,
+      "count": 59,
       "unit": "objects",
       "example": "street:phone-booth: 9 objects, 61.75 m²"
     },

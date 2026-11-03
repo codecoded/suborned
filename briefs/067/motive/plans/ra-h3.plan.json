@@ -1,7 +1,7 @@
 {
  "schema": "suborned.mission.plan/1",
  "mission": "handover",
- "note": "Route A, the front door, quiet (GDD \u00a707; Keel N11): watch and listen to Inez, loop the entrance camera, help Inez as often as the card asks (twice: the r016 cast's Inez is Fearful, \u00a704) and have her call the guard away, enter while the door is unwatched, take Vale out by the service door, and fight the rivals' ambush at the getaway car with the whole armed cell (Arms 3). The cell runs where a player in a hurry would (to the caf\u00e9, the cabinet and the door): a run is noticed (Alert 1 at most), which the quiet route can afford. Brief 027 (Waymark, 2026-10-21; engine 0.18.0, tuning.md \u00a710.5): fighting it out from the old posts (the Scout at the car's east end, the Fixer at the pavilion pier) left the three captured once both sides fire on the move; the Scout and the Fixer now wait at the car's north-west and south-west corners (cv-003, cv-002), the Tech at the pier as before. Measured with a scripted at-will player: 38 of 48 half-metre and metre moves of one wait stay clean on route G (0 of 48 from the old posts), 48 of 48 on route A, 45 of 48 on route B (briefs/027/waymark/quiet-robust-0.18.txt). The board-and-go twins keep the old posts: with these they win at the same time and Trail, but the crew no longer breaks before the car leaves (Standing 2 for 3).",
+ "note": "Route A, the front door, quiet (GDD §07; Keel N11): watch and listen to Inez, loop the entrance camera, help Inez as often as the card asks (twice: the r016 cast's Inez is Fearful, §04) and have her call the guard away, enter while the door is unwatched, take Vale out by the service door, and fight the rivals' ambush at the getaway car with the whole armed cell (Arms 3). The cell runs where a player in a hurry would (to the café, the cabinet and the door): a run is noticed (Alert 1 at most), which the quiet route can afford. Brief 027 (Waymark, 2026-10-21; engine 0.18.0, tuning.md §10.5): fighting it out from the old posts (the Scout at the car's east end, the Fixer at the pavilion pier) left the three captured once both sides fire on the move; the Scout and the Fixer now wait at the car's north-west and south-west corners (cv-003, cv-002), the Tech at the pier as before. Measured with a scripted at-will player: 38 of 48 half-metre and metre moves of one wait stay clean on route G (0 of 48 from the old posts), 48 of 48 on route A, 45 of 48 on route B (briefs/027/waymark/quiet-robust-0.18.txt). The board-and-go twins keep the old posts: with these they win at the same time and Trail, but the crew no longer breaks before the car leaves (Standing 2 for 3).",
  "start": {},
  "until": 5100,
  "steps": [
@@ -153,11 +153,44 @@
    "why": "probe 067: the hold point at [2000, -6500], 20 m or more from every ambush spot (beyond the pistol max 16 m)"
   },
   {
-   "op": "cell",
-   "do": "panic",
+   "op": "scout",
+   "do": "draw",
    "after": [
     "enter"
-   ]
+   ],
+   "when": "fight.ambush",
+   "every": 0.5,
+   "why": "the ambush springs: F on each of the four (one input, brief 039: the panic order is retired); drawn, he fights on his own (weapons free, always on) until a lock is given"
+  },
+  {
+   "op": "fixer",
+   "do": "draw",
+   "after": [
+    "enter"
+   ],
+   "when": "fight.ambush",
+   "every": 0.5,
+   "why": "the ambush springs: F on each of the four (one input, brief 039: the panic order is retired); drawn, he fights on his own (weapons free, always on) until a lock is given"
+  },
+  {
+   "op": "tech",
+   "do": "draw",
+   "after": [
+    "enter"
+   ],
+   "when": "fight.ambush",
+   "every": 0.5,
+   "why": "the ambush springs: F on each of the four (one input, brief 039: the panic order is retired); drawn, he fights on his own (weapons free, always on) until a lock is given"
+  },
+  {
+   "op": "enforcer",
+   "do": "draw",
+   "after": [
+    "enter"
+   ],
+   "when": "fight.ambush",
+   "every": 0.5,
+   "why": "the ambush springs: F on each of the four (one input, brief 039: the panic order is retired); drawn, he fights on his own (weapons free, always on) until a lock is given"
   },
   {
    "op": "enforcer",
